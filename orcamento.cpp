@@ -294,7 +294,7 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "validade", ui->spinBoxValidade->value());
   setData(row, "data", ui->dateTimeEdit->dateTime());
   setData(row, "total", ui->doubleSpinBoxTotal->value());
-  setData(row, "desconto", ui->doubleSpinBoxDesconto->value());
+  setData(row, "desconto", ui->doubleSpinBoxDescontoGlobal->value());
   //  modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("desconto",
   //                   ui->doubleSpinBoxDescontoGlobal->value());
   // TODO: setando desconto duas vezes?
@@ -707,7 +707,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     qDebug() << "Invalid time!";
     return;
   }
-  if (time > QDateTime::currentDateTime().addDays(data("validade").toInt())) {
+  if (time.addDays(data("validade").toInt()) > QDateTime::currentDateTime()) {
     //    qDebug() << "newer";
   } else {
     //    qDebug() << "older";
@@ -735,20 +735,7 @@ void Orcamento::on_doubleSpinBoxFrete_editingFinished() {
 }
 
 void Orcamento::on_pushButtonCancelar_clicked() {
-  if (model.isDirty()) {
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
-                       QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
-    if (msgBox.exec() == QMessageBox::Yes) {
-      if (!save()) {
-        return;
-      } else {
-        model.revert();
-      }
-    }
-  }
-  close();
+  cancel();
 }
 
 void Orcamento::on_pushButtonCancelarItem_clicked() {

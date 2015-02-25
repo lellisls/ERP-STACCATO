@@ -698,25 +698,20 @@ void Orcamento::on_pushButtonAtualizarOrcamento_clicked() {
 }
 
 void Orcamento::on_pushButtonFecharPedido_clicked() {
-  QDateTime time = data("data").toDateTime();
+  if (!save()) {
+    return;
+  }
+
+  QDateTime time = ui->dateTimeEdit->dateTime();
   if (!time.isValid()) {
     qDebug() << "Invalid time!";
     return;
   }
-  if (time > QDateTime::currentDateTime().addDays(-7)) {
+  if (time > QDateTime::currentDateTime().addDays(data("validade").toInt())) {
     //    qDebug() << "newer";
   } else {
     //    qDebug() << "older";
     QMessageBox::warning(this, "Aviso!", "Orçamento vencido!", QMessageBox::Ok);
-    return;
-  }
-  //  if(modelOrc.data(modelOrc.index()))
-  //  qDebug() << mapperOrc.currentIndex();
-  //  qDebug() << modelOrc.fieldIndex("idOrcamento");
-  //  qDebug() << modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("idOrcamento"));
-  //  qDebug() << modelOrc.data(modelOrc.index(mapperOrc.currentIndex(),
-  //  modelOrc.fieldIndex("idOrcamento"))).toString();
-  if (!save()) {
     return;
   }
 
@@ -783,7 +778,6 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
     ui->doubleSpinBoxQte->setDisabled(true);
     ui->doubleSpinBoxDesconto->setDisabled(true);
     ui->doubleSpinBoxQte->setSingleStep(1.0);
-    ui->doubleSpinBoxQte->setValue(0.0);
     ui->doubleSpinBoxQte->setValue(0.0);
     ui->doubleSpinBoxCaixas->setValue(0.0);
     ui->lineEditFornecedor->clear();

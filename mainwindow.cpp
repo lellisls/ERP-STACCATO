@@ -401,19 +401,19 @@ void MainWindow::on_tableOrcamentos_doubleClicked(const QModelIndex &index) {
   connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
   //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
   orc->viewRegisterById(modelOrcamento->data(modelOrcamento->index(
-                                               index.row(), modelOrcamento->fieldIndex("Código"))));
+                          index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
 void MainWindow::on_tableContasPagar_doubleClicked(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
-        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+    modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableContasReceber_doubleClicked(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(modelCAReceber->data(modelCAReceber->index(
-                                           index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+      index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tablePedidosCompra_doubleClicked(const QModelIndex &index) {
@@ -428,7 +428,7 @@ void MainWindow::on_actionAtualizar_tabelas_triggered() {
 void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   vendas->viewVenda(
-        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))).toString());
+    modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -544,8 +544,8 @@ void MainWindow::on_radioButtonContaReceberPendente_clicked() {
 void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-        modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
-                                                                   "idPedido"))).toString());
+    modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
+                                  "idPedido"))).toString());
 
   Q_UNUSED(index);
 }
@@ -553,8 +553,8 @@ void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex 
 void MainWindow::on_tableEntregasCliente_doubleClicked(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-        modelEntregasCliente->data(modelEntregasCliente->index(
-                                     index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
+    modelEntregasCliente->data(modelEntregasCliente->index(
+                                 index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableNFE_doubleClicked(const QModelIndex &index) {
@@ -565,45 +565,37 @@ void MainWindow::on_pushButtonCriarOrc_clicked() {
   on_actionCriarOrcamento_triggered();
 }
 
-void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
   modelOrcamento->setFilter("Código LIKE '%"+ text +"%'");
 
 //  SELECT * FROM MyTable WHERE (Column1 LIKE '%keyword1%' OR Column2 LIKE
 //  '%keyword1%') AND (Column1 LIKE '%keyword2%' OR Column2 LIKE '%keyword2%');
 }
 
-void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
 
 }
 
-void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
 
 }
 
-void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {
 
 }
 
-void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
 
 }
 
-void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
 
 }
 
-void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {
 
 }
 
-void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text)
-{
+void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
 
 }

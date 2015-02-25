@@ -8,7 +8,7 @@ QT       += core gui sql printsupport webkitwidgets network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Loja2
+TARGET = Loja
 TEMPLATE = app
 
 SOURCES += backgroundproxymodel.cpp \

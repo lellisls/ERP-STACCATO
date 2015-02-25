@@ -840,3 +840,8 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
     ui->comboBoxProfissional->setCurrentValue(queryCliente.value("idUsuarioRel"));
   }
 }
+
+void Orcamento::successMessage() {
+  QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!", QMessageBox::Ok,
+                           QMessageBox::NoButton);
+}

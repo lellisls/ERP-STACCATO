@@ -26,8 +26,8 @@ public slots:
 
 private slots:
   void on_checkBoxCalculaFrete_clicked();
-//    void on_comboBoxCliente_currentIndexChanged(int);
-//    void on_comboBoxProduto_currentIndexChanged(int);
+  //    void on_comboBoxCliente_currentIndexChanged(int);
+  //    void on_comboBoxProduto_currentIndexChanged(int);
   void on_comboBoxVendedor_currentIndexChanged(int);
   void on_doubleSpinBoxDesconto_valueChanged(double);
   void on_doubleSpinBoxDescontoGlobal_valueChanged(double);
@@ -39,8 +39,8 @@ private slots:
   void on_pushButtonAdicionarItem_clicked();
   void on_pushButtonAtualizarItem_clicked();
   void on_pushButtonAtualizarOrcamento_clicked();
-//    void on_pushButtonBuscar_clicked();
-//  void on_pushButtonCadastrarCliente_clicked();
+  //    void on_pushButtonBuscar_clicked();
+  //  void on_pushButtonCadastrarCliente_clicked();
   void on_pushButtonCadastrarOrcamento_clicked();
   void on_pushButtonCancelar_clicked();
   void on_pushButtonCancelarItem_clicked();
@@ -50,7 +50,7 @@ private slots:
   void on_tableProdutos_clicked(const QModelIndex &index);
   void print(QPrinter *printer);
   void on_doubleSpinBoxCaixas_valueChanged(double arg1);
-//    void on_pushButtonBuscarCliente_clicked();
+  //    void on_pushButtonBuscarCliente_clicked();
 
   void on_pushButtonApagarOrc_clicked();
 
@@ -102,7 +102,10 @@ private:
    * \return
    */
   virtual bool newRegister();
-
+  /*!
+  * \brief Mensagem de confirmação padrão para quando cadastro é realizado com sucesso.
+  */
+  void successMessage();
 private:
   // attributes
   QString getItensHtml();

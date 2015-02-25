@@ -1,5 +1,7 @@
 # C++ objects and libs
 
+doc/html
+
 *.slo
 *.lo
 *.o
@@ -7,7 +9,6 @@
 *.la
 *.lai
 *.so
-*.dll
 *.dylib
 
 # Qt-es

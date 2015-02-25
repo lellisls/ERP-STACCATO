@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Venda</class>
+ <widget class="QDialog" name="Venda">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1081</width>
+    <height>532</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Vendas</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" colspan="3">
+    <widget class="QTableView" name="tableVenda">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+    </widget>
+   </item>
+   <item row="0" column="3" rowspan="5">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButtonFecharPedido">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Fechar Pedido</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonNFe">
+       <property name="text">
+        <string>Gerar NFe</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonImprimir">
+       <property name="text">
+        <string>Imprimir</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonCancelar">
+       <property name="text">
+        <string>Cancelar</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0" colspan="3">
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <item row="3" column="1">
+      <widget class="QLabel" name="labelRestanteIgual">
+       <property name="text">
+        <string>=</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5" rowspan="5">
+      <widget class="QTableView" name="tableFluxoCaixa"/>
+     </item>
+     <item row="3" column="4">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxRestante">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <double>999999.989999999990687</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelRestante">
+       <property name="text">
+        <string>Restante</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="labelTotalIgual">
+       <property name="text">
+        <string>=</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelPgt1">
+       <property name="text">
+        <string>Pgt. 1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
+       <property name="maximum">
+        <double>999999.989999999990687</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelPgt2">
+       <property name="text">
+        <string>Pgt. 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+       <property name="maximum">
+        <double>999999.989999999990687</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelPgt3">
+       <property name="text">
+        <string>Pgt. 3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
+       <property name="maximum">
+        <double>999999.989999999990687</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="4">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <double>999999.989999999990687</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QComboBox" name="comboBoxPgt1"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QComboBox" name="comboBoxPgt2"/>
+     </item>
+     <item row="2" column="2">
+      <widget class="QComboBox" name="comboBoxPgt3"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelTotal">
+       <property name="text">
+        <string>Total</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>100</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="3">
+      <widget class="QComboBox" name="comboBoxPgt1Parc">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>1x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>9x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>10x</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QComboBox" name="comboBoxPgt2Parc">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>1x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>9x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>10x</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QComboBox" name="comboBoxPgt3Parc">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>1x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>9x</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>10x</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLineEdit" name="lineEditSubTotal"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Sub-total</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Total</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>=</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>=</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLineEdit" name="lineEditTotal"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLineEdit" name="lineEditFrete"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>Frete</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLabel" name="label_13">
+     <property name="text">
+      <string>=</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

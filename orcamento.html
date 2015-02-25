@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <title>Orçamento</title>
+    <style type="text/css">
+        .form_caja {
+            padding-top: 8px;
+            padding-bottom: 15px;
+            margin: 0 auto 20px auto;
+            background-color: #446bb3;
+            border-radius: 15px;
+            -moz-border-radius: 15px;
+            -webkit-border-radius: 15px;
+            color: #446bb3;
+            padding: 10px;
+        }
+
+        .form_caja thead {
+            background-color: #446bb3;
+            color: #fff;
+            padding: 4px;
+            line-height: 30px;
+        }
+
+        .form_caja tbody tr:nth-child(even) {
+            background: #CCC;
+            text-align: center;
+        }
+
+        .form_caja tbody tr:nth-child(odd) {
+            background: #FFF;
+            text-align: center;
+        }
+
+        th,
+        td {
+            //border: 1px solid black;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            font-style: normal;
+            font-variant: normal;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 26.3999996185303px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 15.3999996185303px;
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 15.3999996185303px;
+        }
+
+        p {
+            //text-align: right;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        blockquote {
+            font-size: 21px;
+            font-weight: 400;
+            line-height: 30px;
+        }
+
+        pre {
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 18.5714282989502px;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <!-- <h1>Orçamento</h1> -->
+    </center>
+    <table cellpadding="10" width="100%">
+        <tr>
+            <td><img height="75px" src="LOGO">
+            </td>
+            <td>
+
+                <!-- <h2>NOME FANTASIA</h2> -->
+                <p>RAZAO SOCIAL</p>
+                <p>LOGRADOURO, NUMERO - BAIRRO - CIDADE - UF</p>
+                <p>Tel: TELEFONE</p>
+            </td>
+            <td>
+                <center>
+                    <div>
+                        <h2><strong>ORÇAMENTO</strong></h2>
+                        <p><strong>Nº: IDORCAMENTO</strong>
+                        </p>
+                        <p><strong>EMISSÃO: DATA</strong>
+                        </p>
+                        <p><strong>STATUS</strong>
+                        </p>
+                    </div>
+                </center>
+            </td>
+        </tr>
+    </table>
+    <table width="100%" cellpadding="10">
+        <tr>
+            <th>Vendedor</th>
+            <th>Cliente</th>
+        </tr>
+        <tr>
+            <td>
+                <center>VENDEDOR</center>
+            </td>
+            <td>
+                <center>CLIENTE</center>
+            </td>
+        </tr>
+    </table>
+    <div class="form_caja">
+        <table width="100%" cellpadding="5">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Produto</th>
+                    <th>Obs.</th>
+                    <th>Pr. Un</th>
+                    <th>Qte</th>
+                    <th>Un</th>
+                    <th>Pr. Parcial</th>
+                    <th>Desconto (%)</th>
+                    <th>Desc. Distr</th>
+                    <th>Preço final</th>
+                </tr>
+            </thead>
+            <tbody>
+                ITENS
+            </tbody>
+        </table>
+        <table width="100%" cellpadding="10">
+            <thead>
+                <tr>
+                    <td width="30%"></td>
+                    <td>
+                        <p><strong>Desc.: </strong>DESCONTO%</p>
+                    </td>
+                    <td>
+                        <p><strong>Frete: R$ </strong>FRETE</p>
+                    </td>
+                    <td>
+                        <p><strong>Subtotal: R$ </strong>SUBTOTAL</p>
+                    </td>
+                    <td>
+                        <p><strong>Total: R$ </strong>TOTAL</p>
+                    </td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+
+</html>

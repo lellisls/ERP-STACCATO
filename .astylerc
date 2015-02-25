@@ -1,0 +1,5 @@
+--indent-cases
+--indent-namespaces
+--indent=spaces=2
+-A2
+--lineend=linux

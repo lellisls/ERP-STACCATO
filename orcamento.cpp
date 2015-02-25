@@ -707,7 +707,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     qDebug() << "Invalid time!";
     return;
   }
-  if (time.addDays(data("validade").toInt()) > QDateTime::currentDateTime()) {
+  if (time.addDays(data("validade").toInt()).date() > QDateTime::currentDateTime().date()) {
     //    qDebug() << "newer";
   } else {
     //    qDebug() << "older";

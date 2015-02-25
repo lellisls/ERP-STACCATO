@@ -16,6 +16,7 @@ void CadastrarCliente::on_pushButtonPJ_clicked() {
   if(CadastroCliente *cad = qobject_cast<CadastroCliente *>(parentWidget())) {
     qDebug() << "cast ok!";
     cad->setTipo("PJ");
+    cad->setTipoClienteFornecedor("CLIENTE");
     cad->show();
     close();
   }
@@ -25,6 +26,7 @@ void CadastrarCliente::on_pushButtonPF_clicked() {
   if(CadastroCliente *cad = qobject_cast<CadastroCliente *>(parentWidget())) {
     qDebug() << "cast ok!";
     cad->setTipo("PF");
+    cad->setTipoClienteFornecedor("CLIENTE");
     cad->show();
     close();
   }

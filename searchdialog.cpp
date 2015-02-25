@@ -168,22 +168,22 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString> > headerData) {
 SearchDialog *SearchDialog::cliente(QWidget * parent) {
 //  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia"},
 //      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
-  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia"},
+  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia", "cpf"},
       "", parent);
 
-  QStringList columns;
-  columns.push_back("idCadastro");
-  columns.push_back("rg");
-  columns.push_back("cpf");
-  columns.push_back("cnpj");
-  columns.push_back("inscEstadual");
-  columns.push_back("idEnderecoFaturamento");
-  columns.push_back("idEnderecoCobranca");
-  columns.push_back("idEnderecoEntrega");
-  columns.push_back("idUsuarioRel");
-  columns.push_back("idCadastroRel");
-  columns.push_back("idProfissionalRel");
-  sdCliente->hideColumns(columns);
+//  QStringList columns;
+//  columns.push_back("idCadastro");
+//  columns.push_back("rg");
+//  columns.push_back("cpf");
+//  columns.push_back("cnpj");
+//  columns.push_back("inscEstadual");
+//  columns.push_back("idEnderecoFaturamento");
+//  columns.push_back("idEnderecoCobranca");
+//  columns.push_back("idEnderecoEntrega");
+//  columns.push_back("idUsuarioRel");
+//  columns.push_back("idCadastroRel");
+//  columns.push_back("idProfissionalRel");
+  sdCliente->hideColumns({"idCadastro", "rg", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel"});
 
   sdCliente->setPrimaryKey("idCadastro");
   sdCliente->setTextKeys({"nomeFantasia","nome"});
@@ -192,6 +192,7 @@ SearchDialog *SearchDialog::cliente(QWidget * parent) {
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
   headerData.push_back(QPair<QString, QString>("nome", "Nome"));
   headerData.push_back(QPair<QString, QString>("apelido", "Apelido"));
+  headerData.push_back(QPair<QString, QString>("cpf", "CPF"));
   headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
   headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));
   headerData.push_back(QPair<QString, QString>("tel", "Tel."));

@@ -24,7 +24,7 @@ class Venda : public QDialog {
     void on_doubleSpinBoxPgt1_valueChanged(double);
     void on_doubleSpinBoxPgt2_valueChanged(double);
     void on_doubleSpinBoxPgt3_valueChanged(double);
-    void on_doubleSpinBoxRestante_valueChanged(double value);
+//    void on_doubleSpinBoxRestante_valueChanged(double value);
     void on_pushButtonCancelar_clicked();
     void on_pushButtonFecharPedido_clicked();
     void on_pushButtonNFe_clicked();
@@ -42,7 +42,7 @@ class Venda : public QDialog {
     // attributes
     Ui::Venda *ui;
     QSqlTableModel modelVenda;
-    QSqlRelationalTableModel modelItem;
+    QSqlRelationalTableModel modelItem, modelFluxoCaixa;
     QString idOrcamento;
     // methods
     bool cadastrar();

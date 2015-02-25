@@ -56,6 +56,9 @@ void ImportaBD::on_pushButtonPortinari_clicked() {
   qDebug() << "id: " << idFornecedor;
 
   QString file = QFileDialog::getOpenFileName(this, "Importar", QDir::currentPath(), tr("Excel (*.xls)"));
+  if(file.isEmpty()){
+    return;
+  }
 
   QFuture<QString> future = QtConcurrent::run(&this->portinari, &ImportaPortinari::importar, file, idFornecedor);
   futureWatcher.setFuture(future);
@@ -94,6 +97,9 @@ void ImportaBD::on_pushButtonApavisa_clicked() {
   qDebug() << "id: " << idFornecedor;
   
   QString file = QFileDialog::getOpenFileName(this, "Importar", QDir::currentPath(), tr("Excel (*.xls)"));
+  if(file.isEmpty()){
+    return;
+  }
 
   QFuture<QString> future = QtConcurrent::run(&this->apavisa, &ImportaApavisa::importar, file, idFornecedor);
   futureWatcher.setFuture(future);

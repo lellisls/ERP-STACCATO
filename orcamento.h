@@ -34,8 +34,8 @@ private slots:
   void on_doubleSpinBoxFrete_editingFinished();
   void on_doubleSpinBoxQte_editingFinished();
   void on_doubleSpinBoxQte_valueChanged(double);
-  void on_doubleSpinBoxSubTotal_valueChanged(double);
-  void on_doubleSpinBoxTotal_editingFinished();
+  void on_doubleSpinBoxTotal_valueChanged(double);
+  void on_doubleSpinBoxFinal_editingFinished();
   void on_pushButtonAdicionarItem_clicked();
   void on_pushButtonAtualizarItem_clicked();
   void on_pushButtonAtualizarOrcamento_clicked();
@@ -106,6 +106,7 @@ private:
   * \brief Mensagem de confirmação padrão para quando cadastro é realizado com sucesso.
   */
   void successMessage();
+
 private:
   // attributes
   QString getItensHtml();
@@ -124,6 +125,7 @@ private:
   void calcPrecoItemTotal();
   void novoItem();
   void updateId();
+  double calcPrecoGlobalTotalSemDesconto();
 };
 
 #endif // ORCAMENTO_H

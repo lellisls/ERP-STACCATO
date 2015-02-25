@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
-    <height>579</height>
+    <width>998</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,469 +29,428 @@
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
         <widget class="QFrame" name="frame">
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="4" column="0" colspan="2">
-           <widget class="QGroupBox" name="groupBox_9">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="title">
-             <string>Mais informações</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_11">
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_41">
-                 <property name="text">
-                  <string>Vendedor</string>
+         <layout class="QGridLayout" name="gridLayout_15">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBoxPJuridica">
+              <property name="title">
+               <string>Info. Pessoa Jurídica</string>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="1" column="0">
+                <widget class="QWidget" name="widgetPJ" native="true">
+                 <layout class="QGridLayout" name="gridLayout_13">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_38">
+                    <property name="text">
+                     <string>Razão Social</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_54">
+                    <property name="text">
+                     <string>Nome Fantasia</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="label_39">
+                    <property name="text">
+                     <string>CNPJ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QLabel" name="label_53">
+                    <property name="text">
+                     <string>Insc. Estadual</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLineEdit" name="lineEditRazaoSocial">
+                    <property name="minimumSize">
+                     <size>
+                      <width>120</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="lineEditNomeFantasia">
+                    <property name="minimumSize">
+                     <size>
+                      <width>120</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QLineEdit" name="lineEditCNPJ">
+                    <property name="minimumSize">
+                     <size>
+                      <width>100</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>135</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QLineEdit" name="lineEditInscEstadual">
+                    <property name="minimumSize">
+                     <size>
+                      <width>100</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>135</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QGroupBox" name="groupBoxDadosPessoais">
+              <property name="title">
+               <string>Dados Pessoais</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="1" column="4">
+                <widget class="QLineEdit" name="lineEditRG">
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_44">
-                 <property name="enabled">
-                  <bool>false</bool>
+               <item row="1" column="3">
+                <widget class="QLineEdit" name="lineEditApelido">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
                  </property>
-                 <property name="text">
-                  <string>Segmento de mercado</string>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="2">
-                <widget class="QCheckBox" name="checkBox_4">
-                 <property name="enabled">
-                  <bool>false</bool>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="lineEditCPF">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
                  </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="labelCPF">
                  <property name="text">
-                  <string>limpar</string>
+                  <string>CPF</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="label_1">
+                 <property name="text">
+                  <string>RG</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLabel" name="labelApelido">
+                 <property name="text">
+                  <string>Apelido</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_43">
+                <widget class="QLabel" name="labelNome">
                  <property name="text">
-                  <string>Vinculado ao cliente</string>
+                  <string>Nome</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0" colspan="3">
-                <widget class="ComboBox" name="comboBoxCliente"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_42">
-                 <property name="text">
-                  <string>Profissional</string>
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="lineEditNome">
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
                  </property>
-                </widget>
-               </item>
-               <item row="7" column="0" colspan="3">
-                <widget class="QLineEdit" name="lineEditSegmento">
-                 <property name="enabled">
-                  <bool>false</bool>
+                 <property name="toolTip">
+                  <string/>
                  </property>
-                </widget>
-               </item>
-               <item row="5" column="0" colspan="3">
-                <widget class="ComboBox" name="comboBoxVendedor"/>
-               </item>
-               <item row="3" column="0" colspan="3">
-                <widget class="ComboBox" name="comboBoxProfissional"/>
-               </item>
-              </layout>
-             </item>
-             <item row="0" column="1">
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QLabel" name="label_40">
-                 <property name="text">
-                  <string>Clientes vinculados ao cliente</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QTextEdit" name="textEditClientes">
-                 <property name="textInteractionFlags">
-                  <set>Qt::NoTextInteraction</set>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);</string>
                  </property>
                 </widget>
                </item>
               </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QGroupBox" name="groupBoxDadosPessoais">
-            <property name="title">
-             <string>Dados Pessoais</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_2">
-             <item row="1" column="4">
-              <widget class="QLineEdit" name="lineEditRG">
-               <property name="minimumSize">
-                <size>
-                 <width>70</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QLineEdit" name="lineEditApelido">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditCPF">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">background-color: rgb(255, 255, 127);</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="labelCPF">
-               <property name="text">
-                <string>CPF</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QLabel" name="label_1">
-               <property name="text">
-                <string>RG</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QLabel" name="labelApelido">
-               <property name="text">
-                <string>Apelido</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="labelNome">
-               <property name="text">
-                <string>Nome</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLineEdit" name="lineEditNome">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">background-color: rgb(255, 255, 127);</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-            <zorder>labelCPF</zorder>
-            <zorder>lineEditCPF</zorder>
-            <zorder>labelApelido</zorder>
-            <zorder>lineEditApelido</zorder>
-            <zorder>label_1</zorder>
-            <zorder>lineEditRG</zorder>
-            <zorder>labelNome</zorder>
-            <zorder>lineEditNome</zorder>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QGroupBox" name="groupBox_4">
-            <property name="title">
-             <string>Tipo</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QRadioButton" name="radioButtonCliente">
-               <property name="text">
-                <string>Cliente</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioButtonForn">
-               <property name="text">
-                <string>Fornecedor</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioButtonAmbos">
-               <property name="text">
-                <string>Ambos</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="2">
-           <widget class="QGroupBox" name="groupBoxPJuridica">
-            <property name="title">
-             <string>Info. Pessoa Jurídica</string>
-            </property>
-            <property name="checkable">
-             <bool>false</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_10">
-             <item row="1" column="0">
-              <widget class="QWidget" name="widgetPJ" native="true">
-               <layout class="QGridLayout" name="gridLayout_13">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_38">
-                  <property name="text">
-                   <string>Razão Social</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLabel" name="label_54">
-                  <property name="text">
-                   <string>Nome Fantasia</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QLabel" name="label_39">
-                  <property name="text">
-                   <string>CNPJ</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="3">
-                 <widget class="QLabel" name="label_53">
-                  <property name="text">
-                   <string>Insc. Estadual</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLineEdit" name="lineEditRazaoSocial">
-                  <property name="minimumSize">
-                   <size>
-                    <width>120</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background-color: rgb(255, 255, 127);</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLineEdit" name="lineEditNomeFantasia">
-                  <property name="minimumSize">
-                   <size>
-                    <width>120</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QLineEdit" name="lineEditCNPJ">
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>135</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background-color: rgb(255, 255, 127);</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="QLineEdit" name="lineEditInscEstadual">
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>135</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background-color: rgb(255, 255, 127);</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QGroupBox" name="groupBoxContatos">
-            <property name="title">
-             <string>Contatos</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="1" column="1">
-              <widget class="LineEditTel" name="lineEditTel_Cel">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QLabel" name="label_14">
-               <property name="text">
-                <string>ID Nextel</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="5">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Nextel</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="6">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>E-mail</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Telefone Principal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>Telefone celular</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="label_20">
-               <property name="text">
-                <string>Telefone comercial</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="LineEditTel" name="lineEditTel_Res">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">background-color: rgb(255, 255, 127);</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="5">
-              <widget class="LineEditTel" name="lineEditNextel">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="LineEditTel" name="lineEditTel_Com">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="4">
-              <widget class="QLineEdit" name="lineEditIdNextel">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="6">
-              <widget class="QLineEdit" name="lineEditEmail">
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">background-color: rgb(255, 255, 127);</string>
-               </property>
-               <property name="inputMethodHints">
-                <set>Qt::ImhEmailCharactersOnly</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
+              <zorder>labelCPF</zorder>
+              <zorder>lineEditCPF</zorder>
+              <zorder>labelApelido</zorder>
+              <zorder>lineEditApelido</zorder>
+              <zorder>label_1</zorder>
+              <zorder>lineEditRG</zorder>
+              <zorder>labelNome</zorder>
+              <zorder>lineEditNome</zorder>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QGroupBox" name="groupBoxContatos">
+              <property name="title">
+               <string>Contatos</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="1" column="1">
+                <widget class="LineEditTel" name="lineEditTel_Cel">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>ID Nextel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Nextel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="6">
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>E-mail</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Telefone Principal</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Telefone celular</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Telefone comercial</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="LineEditTel" name="lineEditTel_Res">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="5">
+                <widget class="LineEditTel" name="lineEditNextel">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="LineEditTel" name="lineEditTel_Com">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="4">
+                <widget class="QLineEdit" name="lineEditIdNextel">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="6">
+                <widget class="QLineEdit" name="lineEditEmail">
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="inputMethodHints">
+                  <set>Qt::ImhEmailCharactersOnly</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QGroupBox" name="groupBoxMaisInfo">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="title">
+               <string>Mais informações</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout">
+               <item row="0" column="0">
+                <layout class="QGridLayout" name="gridLayout_11">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_41">
+                   <property name="text">
+                    <string>Vendedor</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_44">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Segmento de mercado</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="2">
+                  <widget class="QCheckBox" name="checkBox_4">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>limpar</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_43">
+                   <property name="text">
+                    <string>Vinculado ao cliente</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="3">
+                  <widget class="ComboBox" name="comboBoxCliente"/>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_42">
+                   <property name="text">
+                    <string>Profissional</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0" colspan="3">
+                  <widget class="QLineEdit" name="lineEditSegmento">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0" colspan="3">
+                  <widget class="ComboBox" name="comboBoxVendedor"/>
+                 </item>
+                 <item row="3" column="0" colspan="3">
+                  <widget class="ComboBox" name="comboBoxProfissional"/>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="1">
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label_40">
+                   <property name="text">
+                    <string>Clientes vinculados ao cliente</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QTextEdit" name="textEditClientes">
+                   <property name="textInteractionFlags">
+                    <set>Qt::NoTextInteraction</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -516,6 +475,12 @@
            <widget class="QGroupBox" name="groupBox_3">
             <property name="title">
              <string>Endereço do Faturamento (Principal)</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="0" column="0" colspan="2">
@@ -728,9 +693,6 @@
   <tabstop>lineEditNomeFantasia</tabstop>
   <tabstop>lineEditCNPJ</tabstop>
   <tabstop>lineEditInscEstadual</tabstop>
-  <tabstop>radioButtonCliente</tabstop>
-  <tabstop>radioButtonForn</tabstop>
-  <tabstop>radioButtonAmbos</tabstop>
   <tabstop>lineEditNome</tabstop>
   <tabstop>lineEditCPF</tabstop>
   <tabstop>lineEditApelido</tabstop>

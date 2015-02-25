@@ -47,7 +47,7 @@ void CadastroCliente::setupUi() {
     QString str = queryVend.value(0).toString() + " - " + queryVend.value(1).toString();
     ui->comboBoxVendedor->addItem(str, queryVend.value(0));
   }
-  ui->radioButtonCliente->setChecked(true);
+//  ui->radioButtonCliente->setChecked(true);
 }
 
 CadastroCliente::~CadastroCliente() {
@@ -80,20 +80,20 @@ bool CadastroCliente::verifyFields() {
   if (!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditCPF}))
     return false;
 
-  QString tipo;
-  if (ui->radioButtonCliente->isChecked()) {
-    tipo = "CLIENTE";
-  } else if (ui->radioButtonForn->isChecked()) {
-    tipo = "FORNECEDOR";
-  } else if (ui->radioButtonAmbos->isChecked()) {
-    tipo = "AMBOS";
-  } else {
-    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
-                         QMessageBox::NoButton);
-    ui->radioButtonCliente->setFocus();
+//  QString tipo;
+//  if (ui->radioButtonCliente->isChecked()) {
+//    tipo = "CLIENTE";
+//  } else if (ui->radioButtonForn->isChecked()) {
+//    tipo = "FORNECEDOR";
+//  } else if (ui->radioButtonAmbos->isChecked()) {
+//    tipo = "AMBOS";
+//  } else {
+//    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
+//                         QMessageBox::NoButton);
+//    ui->radioButtonCliente->setFocus();
     //    return false;
-    setData("incompleto", true);
-  }
+//    setData("incompleto", true);
+//  }
 
   if (!ui->widgetEnd_1->verifyFields(true)) {
     //    return false;
@@ -136,7 +136,7 @@ bool CadastroCliente::verifyFields() {
     }
   }
 
-  setData("tipo", tipo);
+  setData("clienteFornecedor", tipoClienteFornecedor);
   return true;
 }
 
@@ -167,9 +167,10 @@ bool CadastroCliente::savingProcedures(int row) {
     setData(row, "idEnderecoFaturamento", idEnd);
     setData(row, "idEnderecoCobranca", idEnd2);
     setData(row, "idEnderecoEntrega", idEnd3);
-  } else {
-    setData(row, "idEnderecoFaturamento", 1);
   }
+
+  setData(row, "idEnderecoFaturamento", 1);
+
   if(!ui->lineEditNome->text().isEmpty()) {
     setData(row, "nome", ui->lineEditNome->text());
   }
@@ -212,14 +213,14 @@ bool CadastroCliente::savingProcedures(int row) {
   setData(row, "idCadastroRel", ui->comboBoxCliente->getCurrentValue());
   setData(row, "idProfissionalRel", ui->comboBoxProfissional->getCurrentValue());
   setData(row, "idUsuarioRel", ui->comboBoxVendedor->getCurrentValue());
-  QString tipo = "CLIENTE";
-  if (ui->radioButtonForn->isChecked()) {
-    tipo = "FORNECEDOR";
-  } else if (ui->radioButtonAmbos->isChecked()) {
-    tipo = "AMBOS";
-  }
-  setData(row, "tipo", tipo);
-  setData(row, "tipoPessoa", tipoPessoa);
+//  QString tipo = "CLIENTE";
+//  if (ui->radioButtonForn->isChecked()) {
+//    tipo = "FORNECEDOR";
+//  } else if (ui->radioButtonAmbos->isChecked()) {
+//    tipo = "AMBOS";
+//  }
+  setData(row, "clienteFornecedor", tipoClienteFornecedor);
+  setData(row, "pfpj", tipoPFPJ);
   return true;
 }
 
@@ -271,13 +272,26 @@ void CadastroCliente::updateMode() {
   //  ui->pushButtonNovoCad->show();
   ui->pushButtonRemover->show();
 }
+QString CadastroCliente::getTipoClienteFornecedor() const
+{
+  return tipoClienteFornecedor;
+}
+
+void CadastroCliente::setTipoClienteFornecedor(const QString & value)
+{
+  if(value == "FORNECEDOR"){
+    ui->groupBoxMaisInfo->hide();
+  }
+  tipoClienteFornecedor = value;
+}
+
 
 QString CadastroCliente::getTipo() const {
-  return tipoPessoa;
+  return tipoPFPJ;
 }
 
 void CadastroCliente::setTipo(const QString &value) {
-  tipoPessoa = value;
+  tipoPFPJ = value;
 }
 
 bool CadastroCliente::viewRegister(QModelIndex idx) {
@@ -317,14 +331,14 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
       query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
     ui->textEditClientes->insertPlainText(line);
   }
-  QString tipo = data("tipo").toString();
-  if (tipo == "CLIENTE") {
-    ui->radioButtonCliente->setChecked(true);
-  } else if (tipo == "FORNECEDOR") {
-    ui->radioButtonForn->setChecked(true);
-  } else {
-    ui->radioButtonAmbos->setChecked(true);
-  }
+//  QString tipo = data("tipo").toString();
+//  if (tipo == "CLIENTE") {
+//    ui->radioButtonCliente->setChecked(true);
+//  } else if (tipo == "FORNECEDOR") {
+//    ui->radioButtonForn->setChecked(true);
+//  } else {
+//    ui->radioButtonAmbos->setChecked(true);
+//  }
   return true;
 }
 
@@ -353,13 +367,13 @@ void CadastroCliente::disableEditor() {
 }
 
 void CadastroCliente::show() {
-  if (tipoPessoa == "PF") {
+  if (tipoPFPJ == "PF") {
     ui->groupBoxPJuridica->hide();
     QWidget::show();
     adjustSize();
     return;
   }
-  if (tipoPessoa == "PJ") {
+  if (tipoPFPJ == "PJ") {
     QWidget::show();
     adjustSize();
     return;
@@ -370,19 +384,19 @@ void CadastroCliente::show() {
 
 void CadastroCliente::close() {
   qDebug() << "close!";
-  tipoPessoa = QString();
+  tipoPFPJ = QString();
   QDialog::close();
 }
 
 void CadastroCliente::accept() {
   qDebug() << "accept";
-  tipoPessoa = QString();
+  tipoPFPJ = QString();
   QDialog::accept();
 }
 
 void CadastroCliente::reject() {
   qDebug() << "reject";
-  tipoPessoa = QString();
+  tipoPFPJ = QString();
   QDialog::reject();
 }
 

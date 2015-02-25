@@ -826,6 +826,7 @@
    <addaction name="actionCriarOrcamento"/>
    <addaction name="actionCadastrarProdutos"/>
    <addaction name="actionCadastrarCliente"/>
+   <addaction name="actionCadastrarFornecedor"/>
    <addaction name="actionCadastrarUsuario"/>
    <addaction name="actionCadastrarProfissional"/>
    <addaction name="actionGerenciar_Lojas"/>
@@ -900,6 +901,14 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="actionCadastrarFornecedor">
+   <property name="text">
+    <string>Cadastrar fornecedor</string>
+   </property>
+   <property name="toolTip">
+    <string>Cadastrar fornecedor</string>
    </property>
   </action>
  </widget>

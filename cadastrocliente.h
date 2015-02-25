@@ -51,6 +51,9 @@ private slots:
   QString getTipo() const;
   void setTipo(const QString & value);
 
+  QString getTipoClienteFornecedor() const;
+  void setTipoClienteFornecedor(const QString & value);
+
   private:
 
   /*!
@@ -83,7 +86,8 @@ private:
   //attributes
   Ui::CadastroCliente *ui;
   CadastrarCliente *escolherTipo;
-  QString tipoPessoa;
+  QString tipoPFPJ;
+  QString tipoClienteFornecedor;
   //
   void validaCNPJ(QString text);
   void validaCPF(QString text);

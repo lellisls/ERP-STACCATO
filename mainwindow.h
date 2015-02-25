@@ -92,6 +92,8 @@ class MainWindow : public QMainWindow {
     void on_lineEditBuscaRecebimentos_textChanged(const QString &text);
     void on_lineEditBuscaNFe_textChanged(const QString &text);
 
+    void on_actionCadastrarFornecedor_triggered();
+
   private:
     // attributes
     Ui::MainWindow *ui;

@@ -36,12 +36,27 @@ Venda::Venda(QWidget *parent) : QDialog(parent), ui(new Ui::Venda) {
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelItem.select();
 
+  modelFluxoCaixa.setTable("Venda_has_Pagamento");
+  modelFluxoCaixa.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("tipo"), Qt::Horizontal, "Tipo");
+  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("parcela"), Qt::Horizontal, "Parcelas");
+  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("data"), Qt::Horizontal, "Data");
+  modelFluxoCaixa.select();
+
+  modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+  modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+  modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+
+  ui->tableFluxoCaixa->setModel(&modelFluxoCaixa);
+  ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idVenda"), true);
+  ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idLoja"), true);
+  ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idPagamento"), true);
+
   modelVenda.setTable("Venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVenda.select();
 
   ui->tableVenda->setModel(&modelItem);
-
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVenda"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
@@ -148,13 +163,16 @@ void Venda::setupMapper() {}
 void Venda::updateId() {}
 
 void Venda::on_pushButtonCancelar_clicked() {
-//  Orcamento *orc = new Orcamento(parentWidget());
+  Orcamento *orc = new Orcamento(parentWidget());
 //  orc->updateRegister(idOrcamento);
+  orc->viewRegisterById(idOrcamento);
   qDebug() << "idOrcamento: " << idOrcamento;
   close();
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
+  //TODO: verificar se cadastro do cliente está incompleto
+
   QSqlQuery qry;
 
   qDebug() << "id: " << idOrcamento;
@@ -268,9 +286,9 @@ void Venda::on_doubleSpinBoxPgt3_valueChanged(double) {
 
 }
 
-void Venda::on_doubleSpinBoxRestante_valueChanged(double value) {
-  Q_UNUSED(value);
-}
+//void Venda::on_doubleSpinBoxRestante_valueChanged(double value) {
+//  Q_UNUSED(value);
+//}
 
 void Venda::on_doubleSpinBoxPgt1_editingFinished() {
   double pgt1 = ui->doubleSpinBoxPgt1->value();
@@ -297,7 +315,7 @@ void Venda::on_doubleSpinBoxPgt1_editingFinished() {
     ui->doubleSpinBoxPgt3->setMaximum(pgt3 + restante);
   }
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
-  ui->doubleSpinBoxRestante->setValue(restante);
+//  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
 void Venda::on_doubleSpinBoxPgt2_editingFinished() {
@@ -313,7 +331,7 @@ void Venda::on_doubleSpinBoxPgt2_editingFinished() {
   }
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
   ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
-  ui->doubleSpinBoxRestante->setValue(restante);
+//  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
 void Venda::on_doubleSpinBoxPgt3_editingFinished() {
@@ -322,34 +340,58 @@ void Venda::on_doubleSpinBoxPgt3_editingFinished() {
   double pgt3 = ui->doubleSpinBoxPgt3->value();
   double total = ui->doubleSpinBoxTotal->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
-  ui->doubleSpinBoxRestante->setValue(restante);
+//  ui->doubleSpinBoxRestante->setValue(restante);
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
   ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
 }
 
 void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text)
 {
+  if(text == "Escolha uma opção!"){
+    return;
+  }
   if(text == "Cartão de crédito" or text == "Cheque"){
     ui->comboBoxPgt1Parc->setEnabled(true);
   }else{
     ui->comboBoxPgt1Parc->setDisabled(true);
   }
+
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("tipo")), text);
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("parcela")), ui->comboBoxPgt1Parc->currentIndex() + 1);
+    modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value());
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }
 
 void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text)
 {
+  if(text == "Escolha uma opção!"){
+    return;
+  }
   if(text == "Cartão de crédito" or text == "Cheque"){
     ui->comboBoxPgt2Parc->setEnabled(true);
   }else{
     ui->comboBoxPgt2Parc->setDisabled(true);
   }
+
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(1, modelFluxoCaixa.fieldIndex("tipo")), text);
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(1, modelFluxoCaixa.fieldIndex("parcela")), ui->comboBoxPgt1Parc->currentIndex() + 1);
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(1, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt2->value());
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(1, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }
 
 void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text)
 {
+  if(text == "Escolha uma opção!"){
+    return;
+  }
   if(text == "Cartão de crédito" or text == "Cheque"){
     ui->comboBoxPgt3Parc->setEnabled(true);
   }else{
     ui->comboBoxPgt3Parc->setDisabled(true);
   }
+
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("tipo")), text);
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("parcela")), ui->comboBoxPgt1Parc->currentIndex() + 1);
+    modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value());
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }

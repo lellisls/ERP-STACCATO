@@ -46,6 +46,13 @@ void ImportaBD::on_pushButtonPortinari_clicked() {
       return;
     }
   }
+  if(!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = 'Portinari'")){
+    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+  }
+  qDebug() << "size: " << queryFornecedor.size();
+  if(queryFornecedor.next()){
+  idFornecedor = queryFornecedor.value("idCadastro").toInt();
+  }
   qDebug() << "id: " << idFornecedor;
 
   QString file = QFileDialog::getOpenFileName(this, "Importar", QDir::currentPath(), tr("Excel (*.xls)"));
@@ -76,6 +83,13 @@ void ImportaBD::on_pushButtonApavisa_clicked() {
       qDebug() << "Sem cadastro para realizar importação!";
       return;
     }
+  }
+  if(!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = 'Apavisa'")){
+    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+  }
+  qDebug() << "size: " << queryFornecedor.size();
+  if(queryFornecedor.next()){
+  idFornecedor = queryFornecedor.value("idCadastro").toInt();
   }
   qDebug() << "id: " << idFornecedor;
   

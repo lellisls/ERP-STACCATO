@@ -166,8 +166,10 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString> > headerData) {
 }
 
 SearchDialog *SearchDialog::cliente(QWidget * parent) {
+//  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia"},
+//      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
   SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia"},
-      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
+      "", parent);
 
   QStringList columns;
   columns.push_back("idCadastro");

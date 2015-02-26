@@ -14,7 +14,7 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
   setFilter(filter);
-
+  model.select();
   ui->tableBusca->setModel(&model);
   ui->lineEditBusca->setFocus();
 
@@ -169,7 +169,7 @@ SearchDialog *SearchDialog::cliente(QWidget * parent) {
 //  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia"},
 //      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
   SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia", "cpf"},
-      "", parent);
+      "clienteFornecedor = 'CLIENTE'", parent);
 
 //  QStringList columns;
 //  columns.push_back("idCadastro");
@@ -184,7 +184,6 @@ SearchDialog *SearchDialog::cliente(QWidget * parent) {
 //  columns.push_back("idCadastroRel");
 //  columns.push_back("idProfissionalRel");
   sdCliente->hideColumns({"idCadastro", "rg", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel"});
-
   sdCliente->setPrimaryKey("idCadastro");
   sdCliente->setTextKeys({"nomeFantasia","nome"});
 

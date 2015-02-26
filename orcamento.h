@@ -125,7 +125,6 @@ private:
   void calcPrecoItemTotal();
   void novoItem();
   void updateId();
-  double calcPrecoGlobalTotalSemDesconto();
 };
 
 #endif // ORCAMENTO_H

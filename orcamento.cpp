@@ -71,7 +71,7 @@ Orcamento::Orcamento(QWidget *parent)
   ui->itemBoxCliente->setRegisterDialog(cadCliente);
 
   QSqlQuery qryFrete;
-  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = " + QString::number(UserSession::getLoja()) + "")) {
+  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
     qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
   }
   qDebug() << "qry: " << qryFrete.lastQuery();
@@ -123,9 +123,9 @@ void Orcamento::fillComboBoxes() {
   queryProf.exec();
   while (queryProf.next()) {
     QString str;
-    if(queryProf.value(2).toString().isEmpty()){
+    if(queryProf.value(2).toString().isEmpty()) {
       str = queryProf.value(1).toString();
-    } else{
+    } else {
       str = queryProf.value(1).toString() + " [" + queryProf.value(2).toString() + "] ";
     }
     ui->comboBoxProfissional->addItem(str, queryProf.value(0));
@@ -231,14 +231,14 @@ void Orcamento::updateId() {
     return;
   }
   str =
-      "SELECT sigla FROM Usuario WHERE idUsuario = '" + ui->comboBoxVendedor->currentData().toString() + "';";
+    "SELECT sigla FROM Usuario WHERE idUsuario = '" + ui->comboBoxVendedor->currentData().toString() + "';";
   QSqlQuery queryUsuario(str);
   QString siglaUser = "AAA";
   if (queryUsuario.first()) {
     siglaUser = queryUsuario.value(0).toString();
   }
   QString id =
-      UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QDate::currentDate().toString("yyMMdd") + "-";
+    UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QDate::currentDate().toString("yyMMdd") + "-";
   str = "SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id + "%'";
   str += "UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%'";
   QSqlQuery query(str);
@@ -340,6 +340,8 @@ bool Orcamento::savingProcedures(int row) {
 
 void Orcamento::clearFields() {
   RegisterDialog::clearFields();
+  ui->comboBoxEndereco->clear();
+  ui->comboBoxEndereco->addItem("Escolha uma opção!");
 }
 
 void Orcamento::on_pushButtonRemoverItem_clicked() {
@@ -390,60 +392,47 @@ void Orcamento::on_comboBoxVendedor_currentIndexChanged(int) {
   updateId();
 }
 
-double Orcamento::calcPrecoGlobalTotalSemDesconto(){
-  subTotal = 0.0;
-  subTotalItens = 0.0;
-
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
-    double prcUn = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    double qte = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
-
-    subTotal += qte * prcUn;
-  }
-
-  totalGlobal = subTotal + ui->doubleSpinBoxFrete->value();
-
-  return totalGlobal;
-}
-
 void Orcamento::calcPrecoGlobalTotal() {
-  double totalSemDesconto = calcPrecoGlobalTotalSemDesconto();
-
   subTotal = 0.0;
   subTotalItens = 0.0;
-
+  double bruto;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
-    double prcUn = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    double qte = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
-    double desc = ui->doubleSpinBoxDesconto->value() / 100.0;
+    double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
+    double qteItem   = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
+    double descItem  = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
-    double parcial = qte * prcUn;
-    double parcialDesc = parcial * (1.0 - desc);
-    double total = parcialDesc * (1.0 - descGlobal);
-    subTotal += total;
-    subTotalItens += parcialDesc;
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), parcial); // Pr. Parcial
+    double parcialItem = qteItem * prcUnItem;
+    bruto += parcialItem;
+    double parcialItemDesc = parcialItem * (1.0 - descItem);
+    double totalItem = parcialItemDesc * (1.0 - descGlobal);
+    subTotal += totalItem;
+    subTotalItens += parcialItemDesc;
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), parcialItem); // Pr. Parcial
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")),
-                      parcialDesc); // Pr. Parcial Desc.
+                      parcialItemDesc); // Pr. Parcial Desc.
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal); // Desconto
     // Distr.
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), total); // Pr. Final
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
   if (ui->checkBoxCalculaFrete->isChecked()) {
     double frete = ui->doubleSpinBoxTotalFrete->value() * (porcFrete / 100);
     if (frete < minimoFrete) {
-      ui->doubleSpinBoxFrete->setValue(minimoFrete);
-    } else {
-      ui->doubleSpinBoxFrete->setValue(frete);
+      frete = minimoFrete;
     }
+
+    ui->doubleSpinBoxFrete->setValue(frete);
+    ui->doubleSpinBoxTotal->setValue(bruto);
+    ui->doubleSpinBoxTotalFrete->setValue(bruto+frete);
+    ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
+    ui->doubleSpinBoxFinal->setValue(subTotal + frete);
   }
 
-  double frete = ui->doubleSpinBoxFrete->value();
-//  totalGlobal = subTotal + frete;
-  ui->doubleSpinBoxTotal->setValue(totalSemDesconto);
-  ui->doubleSpinBoxTotalFrete->setValue(totalSemDesconto + frete);
-  ui->doubleSpinBoxDescontoRS->setValue((totalSemDesconto + frete) - subTotal);
-  ui->doubleSpinBoxFinal->setValue(subTotal);
+//  double frete = ui->doubleSpinBoxFrete->value();
+////  totalGlobal = subTotal + frete;
+//  ui->doubleSpinBoxTotal->setValue(totalSemDesconto);
+//  ui->doubleSpinBoxTotalFrete->setValue(totalSemDesconto + frete);
+//  ui->doubleSpinBoxDescontoRS->setValue((totalSemDesconto) - subTotal);
+//  ui->doubleSpinBoxFinal->setValue(subTotal);
 }
 
 void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(double) {
@@ -500,10 +489,10 @@ QString Orcamento::getItensHtml() {
     itens += "  <td>" + modelItem.data(modelItem.index(row, modelItem.fieldIndex("obs"))).toString() +
              "</td>"; // Obs
     itens +=
-        "  <td>" +
-        locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble(),
-                        'f', 2) +
-        "</td>"; // Prc. Un
+      "  <td>" +
+      locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble(),
+                      'f', 2) +
+      "</td>"; // Prc. Un
     itens += "  <td>" +
              locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble(),
                              'f', 2) +
@@ -519,10 +508,10 @@ QString Orcamento::getItensHtml() {
                modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble(), 'f', 2) +
              "</td>"; // Desconto
     itens +=
-        "  <td>" +
-        locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("descGlobal"))).toDouble(),
-                        'f', 2) +
-        "</td>"; // Desconto Disr.
+      "  <td>" +
+      locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("descGlobal"))).toDouble(),
+                      'f', 2) +
+      "</td>"; // Desconto Disr.
     itens += "  <td>" +
              locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("total"))).toDouble(),
                              'f', 2) +
@@ -831,26 +820,16 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   if (!text.isEmpty()) {
-    QSqlQuery queryCliente;
-    if (!queryCliente.exec("SELECT idEnderecoEntrega, idEnderecoFaturamento, idEnderecoCobranca, "
-                           "idProfissionalRel FROM Cadastro WHERE idCadastro = '" +
-                           ui->itemBoxCliente->getValue().toString() + "'") ||
-        !queryCliente.first()) {
-      qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
-    }
-    qDebug() << "getValue: " << ui->itemBoxCliente->getValue();
-    qDebug() << "active: " << queryCliente.isActive();
-    qDebug() << "size: " << queryCliente.size();
-
-    QSqlQuery queryEndereco("SELECT * FROM Endereco WHERE idEndereco = '" + queryCliente.value(0).toString() +
-                            "' OR idEndereco = '" + queryCliente.value(1).toString() + "' OR idEndereco = '" +
-                            queryCliente.value(2).toString() + "'");
+    QSqlQuery queryEndereco;
+    queryEndereco.prepare("SELECT * FROM Endereco WHERE idEndereco IN (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = :idCadastro)");
+    queryEndereco.bindValue(":idCadastro",ui->itemBoxCliente->getValue());
     if (!queryEndereco.exec()) {
-      qDebug() << "Erro ao buscar endereço: " << queryEndereco.lastError();
+      qDebug() << "Erro ao buscar endereços " << queryEndereco.lastError();
     }
 
     ui->comboBoxEndereco->clear();
     ui->comboBoxEndereco->addItem("Escolha uma opção!");
+    ui->comboBoxEndereco->addItem("Nenhum",1);
     while (queryEndereco.next()) {
       QString descricao = queryEndereco.value("descricao").toString();
       QString cep = queryEndereco.value("CEP").toString();
@@ -861,17 +840,24 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
       QStringList list;
       list << descricao << cep << logradouro << numero << cidade;
       QString str;
-      for(int i = 0; i < list.size(); ++i){
-        if(!list.at(i).isEmpty()){
-          if(str.isEmpty()){
-            str += list.at(i);
-          } else{
-            str += " - " + list.at(i);
+      foreach (QString txt, list) {
+        if(!txt.isEmpty()) {
+          if(str.isEmpty()) {
+            str += txt;
+          } else {
+            str += " - " + txt;
           }
         }
       }
 
       ui->comboBoxEndereco->addItem(str, queryEndereco.value(0));
+    }
+
+    QSqlQuery queryCliente;
+    queryCliente.prepare("SELECT idProfissionalRel FROM Cadastro WHERE idCadastro = :idCadastro");
+    queryCliente.bindValue(":idCadastro",ui->itemBoxCliente->getValue());
+    if (!queryCliente.exec() || !queryCliente.first()) {
+      qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
     }
     ui->comboBoxEndereco->setCurrentValue(queryCliente.value(0));
 

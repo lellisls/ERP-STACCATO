@@ -91,7 +91,7 @@ bool CadastroCliente::verifyFields() {
 //    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
 //                         QMessageBox::NoButton);
 //    ui->radioButtonCliente->setFocus();
-    //    return false;
+  //    return false;
 //    setData("incompleto", true);
 //  }
 
@@ -272,14 +272,12 @@ void CadastroCliente::updateMode() {
   //  ui->pushButtonNovoCad->show();
   ui->pushButtonRemover->show();
 }
-QString CadastroCliente::getTipoClienteFornecedor() const
-{
+QString CadastroCliente::getTipoClienteFornecedor() const {
   return tipoClienteFornecedor;
 }
 
-void CadastroCliente::setTipoClienteFornecedor(const QString & value)
-{
-  if(value == "FORNECEDOR"){
+void CadastroCliente::setTipoClienteFornecedor(const QString & value) {
+  if(value == "FORNECEDOR") {
     ui->groupBoxMaisInfo->hide();
   }
   tipoClienteFornecedor = value;

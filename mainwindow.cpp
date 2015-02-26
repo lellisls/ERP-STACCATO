@@ -298,7 +298,7 @@ void MainWindow::initializeTables() {
   if (!modelRecebimentosForn->select()) {
     qDebug() << "Failed to populate TableRecebimentosFornecedor";
   }
-  modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR' OR tipo = 'AMBOS'"); // filter to fornecedor only
+  modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR'"); // filter to fornecedor only
 
   ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
   setupTable(ui->tableRecebimentosFornecedor);

@@ -433,14 +433,6 @@ void CadastroCliente::reject() {
   QDialog::reject();
 }
 
-//void CadastroCliente::on_groupBoxCobranca_toggled(bool checked) {
-////  ui->widgetEnd_2->setEnabled(checked);
-//}
-
-//void CadastroCliente::on_groupBoxEntrega_toggled(bool checked) {
-////  ui->widgetEnd_3->setEnabled(checked);
-//}
-
 void CadastroCliente::on_pushButtonCancelar_clicked() {
   cancel();
 }
@@ -458,8 +450,9 @@ void CadastroCliente::on_groupBoxPJuridica_toggled(bool arg1) {
 }
 
 void CadastroCliente::on_pushButtonBuscar_clicked() {
-  SearchDialog *sdCliente = SearchDialog::cliente(this);
 
+  SearchDialog *sdCliente = SearchDialog::cliente(this);
+  sdCliente->setFilter("clienteFornecedor = '" + tipoClienteFornecedor + "'");
   sdCliente->show();
   connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::changeItem);
 }

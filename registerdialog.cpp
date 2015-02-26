@@ -43,11 +43,11 @@ bool RegisterDialog::viewRegister(QModelIndex idx) {
 
 bool RegisterDialog::verifyFields(QList<QLineEdit *> list) {
   foreach (QLineEdit *line, list) {
-    if (line->styleSheet() == requiredStyle()) {
+//    if (line->styleSheet() == requiredStyle()) {
       if (!verifyRequiredField(line)) {
         return false;
       }
-    }
+//    }
   }
   return true;
 }
@@ -98,9 +98,9 @@ void RegisterDialog::changeItem(QVariant value, QString text) {
 }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
-  if (line->styleSheet() != requiredStyle()) {
-    return true;
-  }
+//  if (line->styleSheet() != requiredStyle()) {
+//    return true;
+//  }
   //  if(line->parent()->isWindowType() && line->parent()->objectName() != objectName() ) {
   //    return true;
   //  }

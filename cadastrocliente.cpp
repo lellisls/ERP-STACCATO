@@ -5,15 +5,25 @@
 #include "cadastrocliente.h"
 #include "ui_cadastrocliente.h"
 #include "searchdialog.h"
+#include "cepcompleter.h"
 
 CadastroCliente::CadastroCliente(QWidget *parent)
   : RegisterDialog("Cadastro", "idCadastro", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
-  ui->widgetEnd_1->setupUi(ui->lineEditRG, ui->lineEditTel_Res);
-  ui->widgetEnd_2->setupUi(ui->groupBoxCobranca, ui->groupBoxEntrega);
-  ui->widgetEnd_3->setupUi(ui->groupBoxEntrega, ui->comboBoxCliente);
-
+//  ui->widgetEnd_1->setupUi(ui->lineEditRG, ui->lineEditTel_Res);
+//  ui->widgetEnd_2->setupUi(ui->groupBoxCobranca, ui->groupBoxEntrega);
+//  ui->widgetEnd_3->setupUi(ui->groupBoxEntrega, ui->comboBoxCliente);
+  ui->lineEditCEP->setInputMask("99999-999;_");
+  ui->lineEditUF->setInputMask(">AA;_");
+  ui->pushButtonMostrarInativos->hide();
+  modelEnd.setTable("Endereco");
+  ui->tableView->setModel(&modelEnd);
+  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelEnd.setFilter("idEndereco in (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = '" + data(primaryKey).toString() + "'");
+  modelEnd.select();
+  mapperEnd.setModel(&modelEnd);
   setupUi();
+  setTipoClienteFornecedor("CLIENTE");
 
   setupMapper();
   newRegister();
@@ -95,10 +105,12 @@ bool CadastroCliente::verifyFields() {
 //    setData("incompleto", true);
 //  }
 
-  if (!ui->widgetEnd_1->verifyFields(true)) {
-    //    return false;
+  if(modelEnd.rowCount() == 0) {
     setData("incompleto", true);
   }
+//  if (!ui->widgetEnd_1->verifyFields(true)) {
+//    //    return false;
+//  }
 
   foreach (QLineEdit *line, ui->groupBoxContatos->findChildren<QLineEdit *>()) {
     if (!verifyRequiredField(line, true)) {
@@ -114,15 +126,15 @@ bool CadastroCliente::verifyFields() {
     }
   }
 
-  if (!ui->widgetEnd_2->verifyFields(true)) {
-    //    return false;
-    setData("incompleto", true);
-  }
+//  if (!ui->widgetEnd_2->verifyFields(true)) {
+//    //    return false;
+//    setData("incompleto", true);
+//  }
 
-  if (!ui->widgetEnd_3->verifyFields(true)) {
-    //    return false;
-    setData("incompleto", true);
-  }
+//  if (!ui->widgetEnd_3->verifyFields(true)) {
+//    //    return false;
+//    setData("incompleto", true);
+//  }
 
   foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
     if (box->styleSheet() == requiredStyle()) {
@@ -142,32 +154,32 @@ bool CadastroCliente::verifyFields() {
 
 bool CadastroCliente::savingProcedures(int row) {
 
-  if(!ui->widgetEnd_1->isEmpty()) {
-    if (!ui->widgetEnd_1->cadastrar()) {
-      return false;
-    }
-  }
-  if(!ui->widgetEnd_2->isEmpty()) {
-    if (!ui->widgetEnd_2->cadastrar()) {
-      return false;
-    }
-  }
-  if(!ui->widgetEnd_3->isEmpty()) {
-    if (!ui->widgetEnd_3->cadastrar()) {
-      return false;
-    }
-  }
-  if(!ui->widgetEnd_1->isEmpty()) {
-    int idEnd = ui->widgetEnd_1->getId();
-    int idEnd2 = idEnd, idEnd3 = idEnd;
-    if (ui->widgetEnd_2->isEnabled())
-      idEnd2 = ui->widgetEnd_2->getId();
-    if (ui->widgetEnd_3->isEnabled())
-      idEnd3 = ui->widgetEnd_3->getId();
-    setData(row, "idEnderecoFaturamento", idEnd);
-    setData(row, "idEnderecoCobranca", idEnd2);
-    setData(row, "idEnderecoEntrega", idEnd3);
-  }
+//  if(!ui->widgetEnd_1->isEmpty()) {
+//    if (!ui->widgetEnd_1->cadastrar()) {
+//      return false;
+//    }
+//  }
+//  if(!ui->widgetEnd_2->isEmpty()) {
+//    if (!ui->widgetEnd_2->cadastrar()) {
+//      return false;
+//    }
+//  }
+//  if(!ui->widgetEnd_3->isEmpty()) {
+//    if (!ui->widgetEnd_3->cadastrar()) {
+//      return false;
+//    }
+//  }
+//  if(!ui->widgetEnd_1->isEmpty()) {
+//    int idEnd = ui->widgetEnd_1->getId();
+//    int idEnd2 = idEnd, idEnd3 = idEnd;
+//    if (ui->widgetEnd_2->isEnabled())
+//      idEnd2 = ui->widgetEnd_2->getId();
+//    if (ui->widgetEnd_3->isEnabled())
+//      idEnd3 = ui->widgetEnd_3->getId();
+//    setData(row, "idEnderecoFaturamento", idEnd);
+//    setData(row, "idEnderecoCobranca", idEnd2);
+//    setData(row, "idEnderecoEntrega", idEnd3);
+//  }
 
   setData(row, "idEnderecoFaturamento", 1);
 
@@ -226,13 +238,15 @@ bool CadastroCliente::savingProcedures(int row) {
 
 void CadastroCliente::clearFields() {
   RegisterDialog::clearFields();
-  ui->groupBoxCobranca->setChecked(false);
-  ui->groupBoxEntrega->setChecked(false);
-  foreach (WidgetEndereco *w, this->findChildren<WidgetEndereco *>()) {
-    w->clearFields();
-    w->setEnabled(false);
-  }
-  ui->widgetEnd_1->setEnabled(true);
+  ui->radioButtonPF->setChecked(true);
+//  ui->groupBoxCobranca->setChecked(false);
+//  ui->groupBoxEntrega->setChecked(false);
+//  foreach (WidgetEndereco *w, this->findChildren<WidgetEndereco *>()) {
+//    w->clearFields();
+//    w->setEnabled(false);
+//  }
+//  ui->widgetEnd_1->setEnabled(true);
+  novoEnd();
   foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
     box->clear();
   }
@@ -257,6 +271,15 @@ void CadastroCliente::setupMapper() {
   addMapping(ui->comboBoxCliente, "idCadastroRel", "currentValue");
   addMapping(ui->comboBoxProfissional, "idProfissionalRel", "currentValue");
   addMapping(ui->comboBoxVendedor, "idUsuarioRel", "currentValue");
+
+  mapperEnd.addMapping(ui->lineEditDescricao, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditEndereco, modelEnd.fieldIndex("logradouro"));
+  mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
 void CadastroCliente::registerMode() {
@@ -277,10 +300,14 @@ QString CadastroCliente::getTipoClienteFornecedor() const {
 }
 
 void CadastroCliente::setTipoClienteFornecedor(const QString & value) {
-  if(value == "FORNECEDOR") {
-    ui->groupBoxMaisInfo->hide();
+  bool isForn = (value == "FORNECEDOR");
+  ui->groupBoxMaisInfo->setHidden(isForn);
+  ui->groupBoxPFPJ->setHidden(isForn);
+  if(isForn){
+    ui->radioButtonPJ->setChecked(true);
   }
   tipoClienteFornecedor = value;
+  adjustSize();
 }
 
 
@@ -300,25 +327,35 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   updateMode();
   model.select();
   mapper.setCurrentModelIndex(idx);
-  int idEndFaturamento = data("idEnderecoFaturamento").toInt();
-  int idEndCobranca = data("idEnderecoCobranca").toInt();
-  int idEndEntrega = data("idEnderecoEntrega").toInt();
-  ui->widgetEnd_1->viewCadastro(idEndFaturamento);
-  qDebug() << idEndFaturamento << ", " << idEndCobranca << ", " << idEndEntrega;
-  if (idEndFaturamento != idEndCobranca) {
-    ui->groupBoxCobranca->setChecked(true);
-    ui->widgetEnd_2->setEnabled(true);
-    ui->widgetEnd_2->viewCadastro(idEndCobranca);
-  } else {
-    ui->groupBoxCobranca->setChecked(false);
+
+
+  modelEnd.setFilter("idEndereco in (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = '" + data(primaryKey).toString() + "')");
+  if( !modelEnd.select() ){
+    qDebug() << modelEnd.lastError();
   }
-  if (idEndFaturamento != idEndEntrega) {
-    ui->groupBoxEntrega->setChecked(true);
-    ui->widgetEnd_3->setEnabled(true);
-    ui->widgetEnd_3->viewCadastro(idEndEntrega);
-  } else {
-    ui->groupBoxEntrega->setChecked(false);
-  }
+
+
+  tipoPFPJ = data("pfpj").toString();
+  setTipoClienteFornecedor(data("clienteFornecedor").toString());
+//  int idEndFaturamento = data("idEnderecoFaturamento").toInt();
+//  int idEndCobranca = data("idEnderecoCobranca").toInt();
+//  int idEndEntrega = data("idEnderecoEntrega").toInt();
+//  ui->widgetEnd_1->viewCadastro(idEndFaturamento);
+//  qDebug() << idEndFaturamento << ", " << idEndCobranca << ", " << idEndEntrega;
+//  if (idEndFaturamento != idEndCobranca) {
+//    ui->groupBoxCobranca->setChecked(true);
+//    ui->widgetEnd_2->setEnabled(true);
+//    ui->widgetEnd_2->viewCadastro(idEndCobranca);
+//  } else {
+//    ui->groupBoxCobranca->setChecked(false);
+//  }
+//  if (idEndFaturamento != idEndEntrega) {
+//    ui->groupBoxEntrega->setChecked(true);
+//    ui->widgetEnd_3->setEnabled(true);
+//    ui->widgetEnd_3->viewCadastro(idEndEntrega);
+//  } else {
+//    ui->groupBoxEntrega->setChecked(false);
+//  }
   ui->groupBoxPJuridica->setChecked(!data("razaoSocial").toString().isEmpty());
   int idCadastro = data("idCadastro").toInt();
   QString str = "SELECT idCadastro, nome, razaoSocial FROM Cadastro WHERE idCadastroRel = '" +
@@ -337,6 +374,8 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
 //  } else {
 //    ui->radioButtonAmbos->setChecked(true);
 //  }
+  show();
+  adjustSize();
   return true;
 }
 
@@ -365,19 +404,21 @@ void CadastroCliente::disableEditor() {
 }
 
 void CadastroCliente::show() {
-  if (tipoPFPJ == "PF") {
-    ui->groupBoxPJuridica->hide();
-    QWidget::show();
-    adjustSize();
-    return;
-  }
+//  if (tipoPFPJ == "PF") {
+////    ui->groupBoxPJuridica->hide();
+//    QWidget::show();
+//    adjustSize();
+//    return;
+//  }
   if (tipoPFPJ == "PJ") {
-    QWidget::show();
-    adjustSize();
-    return;
+    ui->radioButtonPJ->setChecked(true);
+  } else {
+    tipoPFPJ == "PF";
   }
-  escolherTipo = new CadastrarCliente(this);
-  escolherTipo->show();
+//  escolherTipo = new CadastrarCliente(this);
+//  escolherTipo->show();
+  adjustSize();
+  QWidget::show();
 }
 
 void CadastroCliente::close() {
@@ -398,13 +439,13 @@ void CadastroCliente::reject() {
   QDialog::reject();
 }
 
-void CadastroCliente::on_groupBoxCobranca_toggled(bool checked) {
-  ui->widgetEnd_2->setEnabled(checked);
-}
+//void CadastroCliente::on_groupBoxCobranca_toggled(bool checked) {
+////  ui->widgetEnd_2->setEnabled(checked);
+//}
 
-void CadastroCliente::on_groupBoxEntrega_toggled(bool checked) {
-  ui->widgetEnd_3->setEnabled(checked);
-}
+//void CadastroCliente::on_groupBoxEntrega_toggled(bool checked) {
+////  ui->widgetEnd_3->setEnabled(checked);
+//}
 
 void CadastroCliente::on_pushButtonCancelar_clicked() {
   cancel();
@@ -571,4 +612,110 @@ void CadastroCliente::validaCPF(QString text) {
       return;
     }
   }
+}
+
+bool CadastroCliente::atualizarEnd() {
+  if(!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro, ui->lineEditBairro, ui->lineEditCidade, ui->lineEditUF}))
+    return false;
+  if (!ui->lineEditCEP->isValid()) {
+    ui->lineEditCEP->setFocus();
+    QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+  int row = mapperEnd.currentIndex();
+  if( row == -1) {
+    row = modelEnd.rowCount();
+    if(!modelEnd.insertRow(row)) {
+      QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
+                           QMessageBox::NoButton);
+      return false;
+    }
+  }
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("descricao")), ui->lineEditDescricao->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("logradouro")), ui->lineEditEndereco->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("numero")), ui->lineEditNro->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("complemento")), ui->lineEditComp->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text());
+  modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("uf")), ui->lineEditUF->text());
+  return true;
+}
+
+void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
+  atualizarEnd();
+}
+
+void CadastroCliente::on_pushButtonAtualizarEnd_clicked() {
+  atualizarEnd();
+}
+
+void CadastroCliente::on_pushButtonMostrarInativos_clicked(bool checked) {
+  Q_UNUSED(checked)
+  //TODO Fazer filtro para endereços desativados
+}
+
+void CadastroCliente::on_lineEditCEP_textChanged(const QString &cep) {
+  if (!ui->lineEditCEP->isValid()) {
+    return;
+  }
+  CepCompleter cc;
+  if(cc.buscaCEP(cep)) {
+    ui->lineEditUF->setText(cc.getUf());
+    ui->lineEditCidade->setText(cc.getCidade());
+    ui->lineEditEndereco->setText(cc.getEndereco());
+    ui->lineEditBairro->setText(cc.getBairro());
+  } else {
+    QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
+  }
+}
+
+void CadastroCliente::clearEnd() {
+  ui->lineEditBairro->clear();
+  ui->lineEditCEP->clear();
+  ui->lineEditCidade->clear();
+  ui->lineEditComp->clear();
+  ui->lineEditDescricao->clear();
+  ui->lineEditEndereco->clear();
+  ui->lineEditNro->clear();
+  ui->lineEditUF->clear();
+}
+
+void CadastroCliente::novoEnd() {
+  ui->pushButtonAtualizarEnd->hide();
+  ui->pushButtonAdicionarEnd->show();
+  ui->tableView->clearSelection();
+  mapper.setCurrentIndex(-1);
+  clearEnd();
+}
+
+void CadastroCliente::on_pushButtonNovoEnd_clicked() {
+  novoEnd();
+}
+
+void CadastroCliente::on_tableView_clicked(const QModelIndex &index) {
+  if(modelEnd.isDirty()) {
+    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
+                       QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Sim");
+    msgBox.setButtonText(QMessageBox::No, "Não");
+    if (msgBox.exec() == QMessageBox::Yes) {
+      if(!atualizarEnd()) {
+        return;
+      }
+    }
+  }
+  ui->pushButtonAtualizarEnd->show();
+  ui->pushButtonAdicionarEnd->hide();
+  mapperEnd.setCurrentModelIndex(index);
+}
+
+void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
+  ui->groupBoxPJuridica->setDisabled(checked);
+  if(checked){
+    tipoPFPJ = "PF";
+  }else{
+    tipoPFPJ = "PJ";
+  }
+  adjustSize();
 }

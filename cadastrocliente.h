@@ -2,7 +2,7 @@
 #define CADASTROCLIENTE_H
 
 #include "registerdialog.h"
-#include "cadastrarcliente.h"
+//#include "cadastrarcliente.h"
 
 namespace Ui {
   class CadastroCliente;
@@ -29,17 +29,32 @@ private slots:
   void on_pushButtonAtualizar_clicked();
   void on_pushButtonCadastrar_clicked();
   void on_pushButtonCancelar_clicked();
-  void on_groupBoxCobranca_toggled(bool checked);
-  void on_groupBoxEntrega_toggled(bool checked);
+//  void on_groupBoxCobranca_toggled(bool checked);
+//  void on_groupBoxEntrega_toggled(bool checked);
   void on_pushButtonNovoCad_clicked();
   void on_pushButtonRemover_clicked();
   void on_groupBoxPJuridica_toggled(bool arg1);
-  void on_pushButtonBuscar_clicked();
 
   // methods derived from RegisterDialog
   void on_lineEditCPF_textEdited(const QString &);
 
   void on_lineEditCNPJ_textEdited(const QString &);
+
+  void on_pushButtonAdicionarEnd_clicked();
+
+  void on_pushButtonAtualizarEnd_clicked();
+
+  void on_pushButtonMostrarInativos_clicked(bool checked);
+
+  void on_lineEditCEP_textChanged(const QString &cep);
+
+  void on_pushButtonNovoEnd_clicked();
+
+  void on_tableView_clicked(const QModelIndex &index);
+
+  void on_pushButtonBuscar_clicked();
+
+  void on_radioButtonPF_toggled(bool checked);
 
   public:
   /*!
@@ -54,7 +69,10 @@ private slots:
   QString getTipoClienteFornecedor() const;
   void setTipoClienteFornecedor(const QString & value);
 
-  private:
+  void clearEnd();
+private:
+  bool atualizarEnd();
+  void novoEnd();
 
   /*!
   * \brief Função padrão para verificar campos obrigatórios
@@ -85,13 +103,16 @@ private slots:
 private:
   //attributes
   Ui::CadastroCliente *ui;
-  CadastrarCliente *escolherTipo;
+//  CadastrarCliente *escolherTipo;
   QString tipoPFPJ;
   QString tipoClienteFornecedor;
   //
   void validaCNPJ(QString text);
   void validaCPF(QString text);
   bool verifyRequiredField(QLineEdit *line, bool silent = false);
+
+  QSqlTableModel modelEnd;
+  QDataWidgetMapper mapperEnd;
 };
 
 #endif // CADASTROCLIENTE_H

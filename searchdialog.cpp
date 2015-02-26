@@ -257,7 +257,7 @@ SearchDialog *SearchDialog::produto(QWidget * parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget * parent) {
   SearchDialog *sdFornecedor = new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome", "nomeFantasia", "razaoSocial"},
-      "tipo = 'FORNECEDOR' OR tipo = 'AMBOS'", parent);
+      "clienteFornecedor = 'FORNECEDOR'", parent);
   sdFornecedor->hideColumns({"idCadastro", "rg", "cpf", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel", "nextel", "email", "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto"});
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));

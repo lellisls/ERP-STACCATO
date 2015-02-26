@@ -414,25 +414,19 @@ void Orcamento::calcPrecoGlobalTotal() {
     // Distr.
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
+  double frete = ui->doubleSpinBoxFrete->value();
   if (ui->checkBoxCalculaFrete->isChecked()) {
-    double frete = ui->doubleSpinBoxTotalFrete->value() * (porcFrete / 100);
+    frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
     if (frete < minimoFrete) {
       frete = minimoFrete;
     }
-
-    ui->doubleSpinBoxFrete->setValue(frete);
-    ui->doubleSpinBoxTotal->setValue(bruto);
-    ui->doubleSpinBoxTotalFrete->setValue(bruto+frete);
-    ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
-    ui->doubleSpinBoxFinal->setValue(subTotal + frete);
   }
 
-//  double frete = ui->doubleSpinBoxFrete->value();
-////  totalGlobal = subTotal + frete;
-//  ui->doubleSpinBoxTotal->setValue(totalSemDesconto);
-//  ui->doubleSpinBoxTotalFrete->setValue(totalSemDesconto + frete);
-//  ui->doubleSpinBoxDescontoRS->setValue((totalSemDesconto) - subTotal);
-//  ui->doubleSpinBoxFinal->setValue(subTotal);
+  ui->doubleSpinBoxFrete->setValue(frete);
+  ui->doubleSpinBoxTotal->setValue(bruto);
+  ui->doubleSpinBoxTotalFrete->setValue(bruto+frete);
+  ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
+  ui->doubleSpinBoxFinal->setValue(subTotal + frete);
 }
 
 void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(double) {
@@ -829,7 +823,7 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
 
     ui->comboBoxEndereco->clear();
     ui->comboBoxEndereco->addItem("Escolha uma opção!");
-    ui->comboBoxEndereco->addItem("Nenhum",1);
+    ui->comboBoxEndereco->addItem("Não há", 1);
     while (queryEndereco.next()) {
       QString descricao = queryEndereco.value("descricao").toString();
       QString cep = queryEndereco.value("CEP").toString();

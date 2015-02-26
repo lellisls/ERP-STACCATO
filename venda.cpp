@@ -398,6 +398,7 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text)
 
 bool Venda::savingProcedures(int row)
 {
+
 }
 
 void Venda::registerMode()

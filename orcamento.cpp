@@ -769,6 +769,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   qDebug() << "changed: " << text;
 
   if (ui->itemBoxProduto->text().isEmpty()) {
+    ui->doubleSpinBoxCaixas->setDisabled(true);
     ui->doubleSpinBoxQte->setDisabled(true);
     ui->doubleSpinBoxDesconto->setDisabled(true);
     ui->doubleSpinBoxQte->setSingleStep(1.0);
@@ -797,6 +798,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->lineEditEstoque->setValue(query.value("estoque").toInt());
   ui->lineEditFornecedor->setText(query.value("fornecedor").toString());
 
+  ui->doubleSpinBoxCaixas->setEnabled(true);
   ui->doubleSpinBoxQte->setEnabled(true);
   ui->doubleSpinBoxCaixas->setEnabled(true);
   ui->doubleSpinBoxDesconto->setEnabled(true);

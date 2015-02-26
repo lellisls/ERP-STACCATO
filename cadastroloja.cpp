@@ -127,6 +127,7 @@ void CadastroLoja::on_pushButtonCancelar_clicked() {
 
 void CadastroLoja::on_pushButtonBuscar_clicked() {
   SearchDialog *sdLoja = SearchDialog::loja(this);
+  connect(sdLoja,&SearchDialog::itemSelected,this,&CadastroLoja::changeItem);
   sdLoja->show();
 }
 

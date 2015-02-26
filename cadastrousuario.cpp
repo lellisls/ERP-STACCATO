@@ -133,5 +133,6 @@ void CadastroUsuario::on_cancelarButton_clicked() {
 
 void CadastroUsuario::on_pushButtonBuscar_clicked() {
   SearchDialog *sdUsuario = SearchDialog::usuario(this);
+  connect(sdUsuario,&SearchDialog::itemSelected,this,&CadastroUsuario::changeItem);
   sdUsuario->show();
 }

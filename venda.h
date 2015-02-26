@@ -37,6 +37,8 @@ class Venda : public RegisterDialog {
     void on_comboBoxPgt2_currentTextChanged(const QString &text);
     void on_comboBoxPgt3_currentTextChanged(const QString &text);
 
+    void on_pushButtonVoltar_clicked();
+
   signals:
     void finished();
 

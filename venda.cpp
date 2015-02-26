@@ -163,10 +163,9 @@ void Venda::setupMapper() {}
 void Venda::updateId() {}
 
 void Venda::on_pushButtonCancelar_clicked() {
-  Orcamento *orc = new Orcamento(parentWidget());
-//  orc->updateRegister(idOrcamento);
-  orc->viewRegisterById(idOrcamento);
-  qDebug() << "idOrcamento: " << idOrcamento;
+//  Orcamento *orc = new Orcamento(parentWidget());
+//  orc->viewRegisterById(idOrcamento);
+//  qDebug() << "idOrcamento: " << idOrcamento;
   close();
 }
 
@@ -423,4 +422,12 @@ bool Venda::viewRegister(QModelIndex index)
 
   calcPrecoGlobalTotal();
   return true;
+}
+
+void Venda::on_pushButtonVoltar_clicked()
+{
+  Orcamento *orc = new Orcamento(parentWidget());
+  orc->viewRegisterById(idOrcamento);
+//  qDebug() << "idOrcamento: " << idOrcamento;
+  close();
 }

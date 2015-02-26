@@ -168,6 +168,7 @@ void MainWindow::on_actionCriarOrcamento_triggered() {
   Orcamento *orcamento = new Orcamento(this);
   connect(orcamento, &Orcamento::finished, this, &MainWindow::updateTables);
 }
+
 QString MainWindow::getPort() const {
   return port;
 }
@@ -430,6 +431,8 @@ void MainWindow::on_actionAtualizar_tabelas_triggered() {
 void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
   Venda *vendas = new Venda(this); //TODO: make Venda a RegisterDialog
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
+  vendas->viewRegisterById(
+    modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 //  vendas->viewVenda(
 //        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))).toString());
 }
@@ -593,6 +596,7 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   CadastroCliente *cad = new CadastroCliente(this);
   cad->setTipo("PJ");
   cad->setTipoClienteFornecedor("FORNECEDOR");
+  cad->setWindowTitle("Cadastrar fornecedor");
   cad->show();
   cad->adjustSize();
 

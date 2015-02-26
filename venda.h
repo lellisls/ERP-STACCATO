@@ -6,11 +6,13 @@
 #include <QSqlRelationalTableModel>
 #include <QSqlTableModel>
 
+#include "registerdialog.h"
+
 namespace Ui {
   class Venda;
 }
 
-class Venda : public QDialog {
+class Venda : public RegisterDialog {
     Q_OBJECT
 
   public:
@@ -55,6 +57,16 @@ class Venda : public QDialog {
     void fillComboBoxCliente();
     void setupMapper();
     void updateId();
+
+    // RegisterDialog interface
+  protected:
+    virtual bool savingProcedures(int row);
+    virtual void registerMode();
+    virtual void updateMode();
+
+    // RegisterDialog interface
+  public:
+    virtual bool viewRegister(QModelIndex index);
 };
 
 #endif // VENDA_H

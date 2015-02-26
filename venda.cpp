@@ -15,7 +15,7 @@
 #include "ui_venda.h"
 #include "venda.h"
 
-Venda::Venda(QWidget *parent) : QDialog(parent), ui(new Ui::Venda) {
+Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
   modelItem.setTable("Venda_has_Produto");
   //  modelItem.setRelation(modelItem.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
@@ -394,4 +394,33 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text)
   modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("parcela")), ui->comboBoxPgt1Parc->currentIndex() + 1);
     modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value());
   modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
+}
+
+
+bool Venda::savingProcedures(int row)
+{
+}
+
+void Venda::registerMode()
+{
+}
+
+void Venda::updateMode()
+{
+}
+
+
+bool Venda::viewRegister(QModelIndex index)
+{
+  if (!RegisterDialog::viewRegister(index)) {
+    return false;
+  }
+  QString idVenda = data(primaryKey).toString();
+  qDebug() << "idVenda: " << idVenda;
+  modelItem.setFilter("idVenda = '" + idVenda + "'");
+  modelItem.select();
+//  novoItem();
+
+  calcPrecoGlobalTotal();
+  return true;
 }

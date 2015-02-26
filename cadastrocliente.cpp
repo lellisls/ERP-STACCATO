@@ -19,7 +19,7 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   modelEnd.setTable("Endereco");
   ui->tableView->setModel(&modelEnd);
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setFilter("idEndereco in (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = '" + data(primaryKey).toString() + "'");
+  modelEnd.setFilter("idEndereco in (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = '" + data(primaryKey).toString() + "')");
   modelEnd.select();
   mapperEnd.setModel(&modelEnd);
   setupUi();
@@ -39,8 +39,7 @@ void CadastroCliente::setupUi() {
   ui->lineEditEmail->setPlaceholderText("usuario@email.com");
   ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
   ui->comboBoxCliente->addItem("Escolha uma opção!");
-  QSqlQuery query(
-    "SELECT idCadastro, nome, razaoSocial FROM Cadastro WHERE tipo = 'CLIENTE' or tipo = 'AMBOS';");
+  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '"  + data(primaryKey).toString() + "'" );
   while (query.next()) {
     QString str = query.value(1).toString() + " - " + query.value(2).toString();
     ui->comboBoxCliente->addItem(str, query.value(0));
@@ -210,6 +209,7 @@ bool CadastroCliente::savingProcedures(int row) {
   if(modelEnd.isDirty()) {
     if(!modelEnd.submitAll()) {
       qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
+      qDebug() << "QUERY : " << modelEnd.query().lastQuery();
       return false;
     }
   }
@@ -634,7 +634,7 @@ bool CadastroCliente::atualizarEnd() {
     modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text());
   if(!ui->lineEditUF->text().isEmpty())
     modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("uf")), ui->lineEditUF->text());
-  if(!modelEnd.data(modelEnd.index(row,modelEnd.fieldIndex("valid"))).isValid()){
+  if(!modelEnd.data(modelEnd.index(row,modelEnd.fieldIndex("valid"))).isValid()) {
     modelEnd.setData(modelEnd.index(row,modelEnd.fieldIndex("valid")), true);
   }
   return true;

@@ -395,7 +395,7 @@ void Orcamento::on_comboBoxVendedor_currentIndexChanged(int) {
 void Orcamento::calcPrecoGlobalTotal() {
   subTotal = 0.0;
   subTotalItens = 0.0;
-  double bruto;
+  double bruto = 0.0;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem   = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();

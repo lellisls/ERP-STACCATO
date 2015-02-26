@@ -37,7 +37,7 @@ class WidgetEndereco : public QWidget {
     // attributes
     Ui::WidgetEndereco *ui;
     int id;
-    bool used;
+    bool ativo;
     // methods
     QString buscaUF(QString cep);
     bool inRange(QString cep, int st, int end);

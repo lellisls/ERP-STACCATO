@@ -1,12 +1,12 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
-
+#include "cepcompleter.h"
 #include "widgetendereco.h"
 #include "ui_widgetendereco.h"
 
 WidgetEndereco::WidgetEndereco(QWidget *parent)
-  : QWidget(parent), ui(new Ui::WidgetEndereco), id(-1), used(false) {
+  : QWidget(parent), ui(new Ui::WidgetEndereco), id(-1), ativo(false) {
   ui->setupUi(this);
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
@@ -56,7 +56,7 @@ void WidgetEndereco::novoCadastro() {
 
 void WidgetEndereco::clearFields() {
   id = -1;
-  used = false;
+  ativo = false;
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -126,7 +126,7 @@ bool WidgetEndereco::viewCadastro(int id) {
   ui->lineEditBairro->setText(qry.value("bairro").toString());
   ui->lineEditCidade->setText(qry.value("cidade").toString());
   ui->lineEditUF->setText(qry.value("uf").toString());
-  used = qry.value("used").toBool();
+  ativo = qry.value("ativo").toBool();
   return true;
 }
 
@@ -150,78 +150,6 @@ void WidgetEndereco::setupUi(QWidget *first, QWidget *last) {
   QWidget::setTabOrder(ui->lineEditUF, last);
 }
 
-bool WidgetEndereco::inRange(QString cep, int st, int end) {
-  QStringList valueList = cep.split(QChar('-'));
-  if (valueList.size() != 2)
-    return false;
-  int vl = valueList.at(0).toInt();
-  return (vl >= st && vl <= end);
-}
-
-QString WidgetEndereco::buscaUF(QString cep) {
-  if (inRange(cep, 01000, 19999))
-    return "sp";
-  if (inRange(cep, 69900, 69999))
-    return "ac";
-  if (inRange(cep, 57000, 57999))
-    return "al";
-  if (inRange(cep, 69000, 69299))
-    return "am";
-  if (inRange(cep, 69400, 69899))
-    return "am";
-  if (inRange(cep, 68900, 68999))
-    return "ap";
-  if (inRange(cep, 40000, 48999))
-    return "ba";
-  if (inRange(cep, 60000, 63999))
-    return "ce";
-  if (inRange(cep, 70000, 72799))
-    return "df";
-  if (inRange(cep, 73000, 73699))
-    return "df";
-  if (inRange(cep, 29000, 29999))
-    return "es";
-  if (inRange(cep, 72800, 72999))
-    return "go";
-  if (inRange(cep, 73700, 76799))
-    return "go";
-  if (inRange(cep, 65000, 65999))
-    return "ma";
-  if (inRange(cep, 30000, 39999))
-    return "mg";
-  if (inRange(cep, 79000, 79999))
-    return "ms";
-  if (inRange(cep, 78000, 78899))
-    return "mt";
-  if (inRange(cep, 66000, 68899))
-    return "pa";
-  if (inRange(cep, 58000, 58999))
-    return "pb";
-  if (inRange(cep, 50000, 56999))
-    return "pe";
-  if (inRange(cep, 64000, 64999))
-    return "pi";
-  if (inRange(cep, 80000, 87999))
-    return "pr";
-  if (inRange(cep, 20000, 28999))
-    return "rj";
-  if (inRange(cep, 59000, 59999))
-    return "rn";
-  if (inRange(cep, 76800, 76999))
-    return "ro";
-  if (inRange(cep, 69300, 69399))
-    return "rr";
-  if (inRange(cep, 90000, 99999))
-    return "rs";
-  if (inRange(cep, 88000, 89999))
-    return "sc";
-  if (inRange(cep, 49000, 49999))
-    return "se";
-  if (inRange(cep, 77000, 77999))
-    return "to";
-  return QString();
-}
-
 QString WidgetEndereco::requiredStyle() {
   return (QString("background-color: rgb(255, 255, 127);"));
 }
@@ -230,21 +158,13 @@ void WidgetEndereco::on_lineEditCEP_textEdited(const QString &cep) {
   if (!ui->lineEditCEP->isValid()) {
     return;
   }
-  QString UF = buscaUF(cep);
-  if (UF.isEmpty())
-    return;
-  ui->lineEditUF->setText(UF.toUpper());
-  QSqlQuery query;
-  if (!query.exec("SELECT * FROM cep." + UF + " WHERE cep = '" + cep + "' LIMIT 1")) {
-    qDebug() << "Erro buscando pelo cep: " << query.lastError();
-    qDebug() << "Query: " << query.lastQuery();
-  }
-  if (query.size() != 0 and query.next()) {
-    ui->lineEditCidade->setText(query.value("cidade").toString());
-    QString endereco = query.value("tp_logradouro").toString() + " " + query.value("logradouro").toString();
-    ui->lineEditEndereco->setText(endereco);
-    ui->lineEditBairro->setText(query.value("bairro").toString());
-  } else {
+  CepCompleter cc;
+  if(cc.buscaCEP(cep)){
+    ui->lineEditUF->setText(cc.getUf());
+    ui->lineEditCidade->setText(cc.getCidade());
+    ui->lineEditEndereco->setText(cc.getEndereco());
+    ui->lineEditBairro->setText(cc.getBairro());
+  }else{
     QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
   }
 }

@@ -46,7 +46,8 @@ SOURCES += backgroundproxymodel.cpp \
     apagaorcamento.cpp \
     registerdialog.cpp \
     loginconfig.cpp \
-    cadastrarcliente.cpp
+    cadastrarcliente.cpp \
+    cepcompleter.cpp
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \
@@ -83,7 +84,8 @@ HEADERS  += backgroundproxymodel.h \
     apagaorcamento.h \
     registerdialog.h \
     loginconfig.h \
-    cadastrarcliente.h
+    cadastrarcliente.h \
+    cepcompleter.h
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \

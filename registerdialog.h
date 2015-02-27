@@ -50,7 +50,7 @@ public:
 
 public slots:
   virtual void show();
-  virtual void close();
+  virtual void cancel();
   virtual void accept();
   virtual void reject();
   virtual void changeItem(QVariant value, QString text);
@@ -91,11 +91,6 @@ protected:
   * \brief Remover item atual
   */
   virtual void remove();
-  /*!
-  * \brief Operações padrão para cancelar/fechar a janela.
-  * \return
-  */
-  virtual bool cancel();
   /*!
   * \brief Procedimento padrão para salvar informações no BD.
   * \return

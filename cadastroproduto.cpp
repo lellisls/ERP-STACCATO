@@ -200,7 +200,7 @@ void CadastroProduto::on_pushButtonRemover_clicked() {
 }
 
 void CadastroProduto::on_pushButtonCancelar_clicked() {
-  close();
+  cancel();
 }
 
 void CadastroProduto::on_pushButtonBuscar_clicked() {

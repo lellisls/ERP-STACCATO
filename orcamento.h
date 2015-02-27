@@ -121,7 +121,7 @@ private:
   void fillComboBoxes();
   void adicionarItem();
   void atualizarItem();
-  void calcPrecoGlobalTotal();
+  void calcPrecoGlobalTotal(bool ajusteTotal = -1);
   void calcPrecoItemTotal();
   void novoItem();
   void updateId();

@@ -95,7 +95,7 @@ void ItemBox::changeItem(QVariant value, QString text) {
   setValue(value);
 //  setText(text);
   if(registerDialog) {
-    registerDialog->close();
+    registerDialog->cancel();
   }
   if(searchDialog) {
     searchDialog->close();

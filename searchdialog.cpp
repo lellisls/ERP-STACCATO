@@ -183,7 +183,7 @@ SearchDialog *SearchDialog::cliente(QWidget * parent) {
 //  columns.push_back("idUsuarioRel");
 //  columns.push_back("idCadastroRel");
 //  columns.push_back("idProfissionalRel");
-  sdCliente->hideColumns({"idCadastro", "rg", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel"});
+  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel"});
   sdCliente->setPrimaryKey("idCadastro");
   sdCliente->setTextKeys({"nomeFantasia","nome"});
 
@@ -200,6 +200,7 @@ SearchDialog *SearchDialog::cliente(QWidget * parent) {
   headerData.push_back(QPair<QString, QString>("idNextel", "id Nextel"));
   headerData.push_back(QPair<QString, QString>("nextel", "Nextel"));
   headerData.push_back(QPair<QString, QString>("email", "E-mail"));
+  headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
   sdCliente->setHeaderData(headerData);
 
   return sdCliente;

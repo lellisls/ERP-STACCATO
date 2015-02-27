@@ -150,7 +150,42 @@ QString Venda::requiredStyle() {
   return QString();
 }
 
-void Venda::calcPrecoGlobalTotal() {}
+void Venda::calcPrecoGlobalTotal() {
+  double subTotal = 0.0;
+  double subTotalItens = 0.0;
+  double bruto = 0.0;
+  for (int row = 0; row < modelItem.rowCount(); ++row) {
+    double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
+    double qteItem   = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
+    double descItem  = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
+    double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
+    double parcialItem = qteItem * prcUnItem;
+    bruto += parcialItem;
+    double parcialItemDesc = parcialItem * (1.0 - descItem);
+    double totalItem = parcialItemDesc * (1.0 - descGlobal);
+    subTotal += totalItem;
+    subTotalItens += parcialItemDesc;
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), parcialItem); // Pr. Parcial
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")),
+                      parcialItemDesc); // Pr. Parcial Desc.
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal); // Desconto
+    // Distr.
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
+  }
+  double frete = ui->doubleSpinBoxFrete->value();
+//  if (ui->checkBoxCalculaFrete->isChecked()) {
+//    frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
+//    if (frete < minimoFrete) {
+//      frete = minimoFrete;
+//    }
+//  }
+
+  ui->doubleSpinBoxFrete->setValue(frete);
+  ui->doubleSpinBoxTotal->setValue(bruto);
+  ui->doubleSpinBoxTotalFrete->setValue(bruto+frete);
+  ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
+  ui->doubleSpinBoxFinal->setValue(subTotal + frete);
+}
 
 void Venda::calcPrecoItemTotal() {}
 
@@ -166,7 +201,7 @@ void Venda::on_pushButtonCancelar_clicked() {
 //  Orcamento *orc = new Orcamento(parentWidget());
 //  orc->viewRegisterById(idOrcamento);
 //  qDebug() << "idOrcamento: " << idOrcamento;
-  close();
+  cancel();
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
@@ -253,7 +288,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     qDebug() << "something went wrong";
   }
 
-  close();
+  cancel();
 }
 
 void Venda::on_pushButtonNFe_clicked() {
@@ -430,5 +465,5 @@ void Venda::on_pushButtonVoltar_clicked()
   Orcamento *orc = new Orcamento(parentWidget());
   orc->viewRegisterById(idOrcamento);
 //  qDebug() << "idOrcamento: " << idOrcamento;
-  close();
+  cancel();
 }

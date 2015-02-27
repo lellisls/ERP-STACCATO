@@ -743,6 +743,9 @@
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total do orçamento é o total sem o frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -751,6 +754,9 @@
               </property>
               <property name="correctionMode">
                <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -793,21 +799,6 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="checkBoxCalculaFrete">
-              <property name="font">
-               <font>
-                <pointsize>10</pointsize>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cálculo automático do frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Frete</string>
-              </property>
-             </widget>
-            </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_26">
               <property name="text">
@@ -819,6 +810,18 @@
              <widget class="QDoubleSpinBox" name="doubleSpinBoxFrete">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor do frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -872,6 +875,9 @@
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total do orçamento é o total sem o frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -880,6 +886,12 @@
               </property>
               <property name="correctionMode">
                <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
+              </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>false</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -970,6 +982,9 @@
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total do orçamento é o total sem o frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -979,11 +994,21 @@
               <property name="correctionMode">
                <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
               </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
+              </property>
               <property name="prefix">
                <string>R$ </string>
               </property>
               <property name="maximum">
                <double>9999999.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_27">
+              <property name="text">
+               <string>Frete</string>
               </property>
              </widget>
             </item>

@@ -44,10 +44,10 @@ Orcamento::Orcamento(QWidget *parent)
   modelItem.setHeaderData(modelItem.fieldIndex("qte"), Qt::Horizontal, "Qte.");
   modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
   modelItem.setHeaderData(modelItem.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Caixa");
-  modelItem.setHeaderData(modelItem.fieldIndex("parcial"), Qt::Horizontal, "R$");
-  modelItem.setHeaderData(modelItem.fieldIndex("desconto"), Qt::Horizontal, "Desconto");
-  modelItem.setHeaderData(modelItem.fieldIndex("parcialDesc"), Qt::Horizontal, "R$ + Desc.");
-  modelItem.setHeaderData(modelItem.fieldIndex("total"), Qt::Horizontal, "Preço");
+  modelItem.setHeaderData(modelItem.fieldIndex("parcial"), Qt::Horizontal, "Subtotal");
+  modelItem.setHeaderData(modelItem.fieldIndex("desconto"), Qt::Horizontal, "Desc. %");
+  modelItem.setHeaderData(modelItem.fieldIndex("parcialDesc"), Qt::Horizontal, "Total");
+//  modelItem.setHeaderData(modelItem.fieldIndex("total"), Qt::Horizontal, "Preço");
 
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelItem.setFilter("idOrcamento = '" + ui->lineEditOrcamento->text() + "'");
@@ -58,7 +58,9 @@ Orcamento::Orcamento(QWidget *parent)
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("idOrcamento"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("item"), true);
+  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("unCaixa"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("descGlobal"), true);
+  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("total"), true);
 
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
@@ -269,7 +271,7 @@ bool Orcamento::verifyFields() {
   }
 
   if (ui->comboBoxProfissional->currentData().isNull()) {
-    ui->comboBoxVendedor->setFocus();
+    ui->comboBoxProfissional->setFocus();
     QMessageBox::warning(this, "Atenção!", "Profissional inválido.", QMessageBox::Ok, QMessageBox::NoButton);
     return false;
   }
@@ -392,7 +394,7 @@ void Orcamento::on_comboBoxVendedor_currentIndexChanged(int) {
   updateId();
 }
 
-void Orcamento::calcPrecoGlobalTotal() {
+void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
   subTotalItens = 0.0;
   double bruto = 0.0;
@@ -415,7 +417,7 @@ void Orcamento::calcPrecoGlobalTotal() {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
   double frete = ui->doubleSpinBoxFrete->value();
-  if (ui->checkBoxCalculaFrete->isChecked()) {
+  if ( !ajusteTotal ) {
     frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
     if (frete < minimoFrete) {
       frete = minimoFrete;
@@ -423,10 +425,11 @@ void Orcamento::calcPrecoGlobalTotal() {
   }
 
   ui->doubleSpinBoxFrete->setValue(frete);
-  ui->doubleSpinBoxTotal->setValue(bruto);
-  ui->doubleSpinBoxTotalFrete->setValue(bruto+frete);
+  ui->doubleSpinBoxTotal->setValue(subTotalItens);
+  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
   ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
+  ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);
 }
 
 void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(double) {
@@ -451,13 +454,13 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
     double dif = subTotalItens - new_subtotal;
     descGlobal = qMax((dif / subTotalItens) * 100.0, 0.0);
   }
-  bool calcFreteChecked = ui->checkBoxCalculaFrete->isChecked();
-  ui->checkBoxCalculaFrete->setChecked(false);
+//  bool calcFreteChecked = ui->checkBoxCalculaFrete->isChecked();
+//  ui->checkBoxCalculaFrete->setChecked(false);
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal);
 
   calcPrecoItemTotal();
   calcPrecoGlobalTotal();
-  ui->checkBoxCalculaFrete->setChecked(calcFreteChecked);
+//  ui->checkBoxCalculaFrete->setChecked(calcFreteChecked);
   //  ui->doubleSpinBoxTotal->setValue(new_total);
 }
 
@@ -724,7 +727,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
 
   Venda *venda = new Venda(parentWidget());
   venda->fecharOrcamento(ui->lineEditOrcamento->text());
-  close();
+  cancel();
 }
 
 void Orcamento::reject() {
@@ -737,12 +740,25 @@ void Orcamento::on_checkBoxCalculaFrete_clicked() {
 }
 
 void Orcamento::on_doubleSpinBoxFrete_editingFinished() {
-  ui->checkBoxCalculaFrete->setChecked(false);
+//  ui->checkBoxCalculaFrete->setChecked(false);
   calcPrecoGlobalTotal();
 }
 
 void Orcamento::on_pushButtonCancelar_clicked() {
-  cancel();
+  //TODO verificar
+  if(model.isDirty() || modelItem.isDirty()){
+    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
+                       QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Sim");
+    msgBox.setButtonText(QMessageBox::No, "Não");
+
+    if (msgBox.exec() == QMessageBox::Yes) {
+      if (save()) {
+        cancel();
+      }
+    }
+  }
+//  cancel();
 }
 
 void Orcamento::on_pushButtonCancelarItem_clicked() {

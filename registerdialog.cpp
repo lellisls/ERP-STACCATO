@@ -14,6 +14,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela!", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }
+  connect(this,SIGNAL(finished(int)),this,SLOT(cancel()));
 }
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
@@ -79,8 +80,12 @@ void RegisterDialog::show() {
   QDialog::show();
 }
 
-void RegisterDialog::close() {
-  QDialog::close();
+void RegisterDialog::cancel() {
+  if (confirmationMessage()) {
+    close();
+  }else{
+    show();
+  }
 }
 
 void RegisterDialog::accept() {
@@ -155,14 +160,6 @@ bool RegisterDialog::newRegister() {
     table->clearSelection();
   }
   return true;
-}
-
-bool RegisterDialog::cancel() {
-  if (confirmationMessage()) {
-    close();
-    return true;
-  }
-  return false;
 }
 
 bool RegisterDialog::save() {

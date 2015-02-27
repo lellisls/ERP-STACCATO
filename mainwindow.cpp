@@ -35,10 +35,10 @@ MainWindow::MainWindow(QWidget *parent)
   ui->setupUi(this);
   setWindowTitle("ERP Staccato");
 
-  //  LoginDialog *dialog = new LoginDialog(this);
-  //  if (dialog->exec() == QDialog::Rejected) {
-  //    exit(1);
-  //  }
+//    LoginDialog *dialog = new LoginDialog(this);
+//    if (dialog->exec() == QDialog::Rejected) {
+//      exit(1);
+//    }
 
   if (!dbConnect()) {
     QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,

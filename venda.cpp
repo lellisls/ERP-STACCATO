@@ -73,7 +73,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->comboBoxPgt2->insertItems(0, list);
   ui->comboBoxPgt3->insertItems(0, list);
 
-  //  ui->tableVenda->resizeColumnsToContents();
+  ui->tableVenda->resizeColumnsToContents();
   ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
   //  ui->tableVenda->setItemDelegateForColumn(11, );
 

@@ -450,7 +450,6 @@ void CadastroCliente::on_groupBoxPJuridica_toggled(bool arg1) {
 }
 
 void CadastroCliente::on_pushButtonBuscar_clicked() {
-
   SearchDialog *sdCliente = SearchDialog::cliente(this);
   sdCliente->setFilter("clienteFornecedor = '" + tipoClienteFornecedor + "'");
   sdCliente->show();

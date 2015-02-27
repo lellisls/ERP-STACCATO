@@ -21,9 +21,6 @@ public:
   explicit Orcamento(QWidget *parent = 0);
   ~Orcamento();
 
-public slots:
-  void reject();
-
 private slots:
   void on_checkBoxCalculaFrete_clicked();
   //    void on_comboBoxCliente_currentIndexChanged(int);
@@ -121,7 +118,7 @@ private:
   void fillComboBoxes();
   void adicionarItem();
   void atualizarItem();
-  void calcPrecoGlobalTotal(bool ajusteTotal = -1);
+  void calcPrecoGlobalTotal(bool ajusteTotal = false);
   void calcPrecoItemTotal();
   void novoItem();
   void updateId();

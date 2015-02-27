@@ -173,12 +173,12 @@ void Venda::calcPrecoGlobalTotal() {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
   double frete = ui->doubleSpinBoxFrete->value();
-//  if (ui->checkBoxCalculaFrete->isChecked()) {
-//    frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
-//    if (frete < minimoFrete) {
-//      frete = minimoFrete;
-//    }
-//  }
+  //  if (ui->checkBoxCalculaFrete->isChecked()) {
+  //    frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
+  //    if (frete < minimoFrete) {
+  //      frete = minimoFrete;
+  //    }
+  //  }
 
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(bruto);
@@ -198,9 +198,9 @@ void Venda::setupMapper() {}
 void Venda::updateId() {}
 
 void Venda::on_pushButtonCancelar_clicked() {
-//  Orcamento *orc = new Orcamento(parentWidget());
-//  orc->viewRegisterById(idOrcamento);
-//  qDebug() << "idOrcamento: " << idOrcamento;
+  //  Orcamento *orc = new Orcamento(parentWidget());
+  //  orc->viewRegisterById(idOrcamento);
+  //  qDebug() << "idOrcamento: " << idOrcamento;
   cancel();
 }
 
@@ -225,14 +225,18 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  if(!qry.exec("UPDATE Venda SET data = '"+ QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +"'"))
+  if(!qry.exec("UPDATE Venda SET data = '"+ QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +"'")){
+    qDebug() << "Error setting date on sale: " << qry.lastError();
+    qry.exec("ROLLBACK");
+    return;
+  }
 
-    if (!modelItem.submitAll()) {
-      qDebug() << "Error submitting itemModel" << modelItem.lastError();
-      //    qDebug() << "query: " << modelItem.query().lastQuery();
-      qry.exec("ROLLBACK");
-      return;
-    }
+  if (!modelItem.submitAll()) {
+    qDebug() << "Error submitting itemModel" << modelItem.lastError();
+    //    qDebug() << "query: " << modelItem.query().lastQuery();
+    qry.exec("ROLLBACK");
+    return;
+  }
 
   QSqlQuery qryEstoque("SELECT produto.descricao, produto.estoque, venda_has_produto.idVenda FROM "
                        "venda_has_produto INNER JOIN produto ON produto.idProduto = "
@@ -240,6 +244,8 @@ void Venda::on_pushButtonFecharPedido_clicked() {
                        idOrcamento + "';");
   if (!qryEstoque.exec()) {
     qDebug() << qryEstoque.lastError();
+    qry.exec("ROLLBACK");
+    return;
   }
   if (qryEstoque.size() > 0) {
     if (!qry.exec(
@@ -264,17 +270,20 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   if (!qry.exec("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error deleting items from Orcamento_has_Produto: " << qry.lastError();
     qry.exec("ROLLBACK");
+    return;
   }
 
   if (!qry.exec("DELETE FROM orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error deleting row from Orcamento: " << qry.lastError();
     qry.exec("ROLLBACK");
+    return;
   }
 
   if (!qry.exec("INSERT INTO contaareceber (dataEmissao, idVenda) VALUES ('" +
                 QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento + "')")) {
     qDebug() << "Error inserting contaareceber: " << qry.lastError();
     qry.exec("ROLLBACK");
+    return;
   }
 
   if (qry.exec("COMMIT")) {
@@ -288,7 +297,8 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     qDebug() << "something went wrong";
   }
 
-  cancel();
+  close();
+  //  cancel();
 }
 
 void Venda::on_pushButtonNFe_clicked() {
@@ -349,7 +359,7 @@ void Venda::on_doubleSpinBoxPgt1_editingFinished() {
     ui->doubleSpinBoxPgt3->setMaximum(pgt3 + restante);
   }
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
-//  ui->doubleSpinBoxRestante->setValue(restante);
+  //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
 void Venda::on_doubleSpinBoxPgt2_editingFinished() {
@@ -365,7 +375,7 @@ void Venda::on_doubleSpinBoxPgt2_editingFinished() {
   }
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
   ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
-//  ui->doubleSpinBoxRestante->setValue(restante);
+  //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
 void Venda::on_doubleSpinBoxPgt3_editingFinished() {
@@ -374,7 +384,7 @@ void Venda::on_doubleSpinBoxPgt3_editingFinished() {
   double pgt3 = ui->doubleSpinBoxPgt3->value();
   double total = ui->doubleSpinBoxTotal->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
-//  ui->doubleSpinBoxRestante->setValue(restante);
+  //  ui->doubleSpinBoxRestante->setValue(restante);
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
   ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
 }
@@ -392,7 +402,7 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text)
 
   modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("tipo")), text);
   modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("parcela")), ui->comboBoxPgt1Parc->currentIndex() + 1);
-    modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value());
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value());
   modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }
 
@@ -426,7 +436,7 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text)
 
   modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("tipo")), text);
   modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("parcela")), ui->comboBoxPgt1Parc->currentIndex() + 1);
-    modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value());
+  modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value());
   modelFluxoCaixa.setData(modelFluxoCaixa.index(2, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }
 
@@ -454,7 +464,7 @@ bool Venda::viewRegister(QModelIndex index)
   qDebug() << "idVenda: " << idVenda;
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
-//  novoItem();
+  //  novoItem();
 
   calcPrecoGlobalTotal();
   return true;
@@ -464,6 +474,6 @@ void Venda::on_pushButtonVoltar_clicked()
 {
   Orcamento *orc = new Orcamento(parentWidget());
   orc->viewRegisterById(idOrcamento);
-//  qDebug() << "idOrcamento: " << idOrcamento;
+  //  qDebug() << "idOrcamento: " << idOrcamento;
   cancel();
 }

@@ -730,11 +730,6 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
   cancel();
 }
 
-void Orcamento::reject() {
-  emit finished();
-  QDialog::reject();
-}
-
 void Orcamento::on_checkBoxCalculaFrete_clicked() {
   calcPrecoGlobalTotal();
 }

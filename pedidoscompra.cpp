@@ -42,6 +42,7 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("produto"), Qt::Horizontal, "Produto");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("obs"), Qt::Horizontal, "Obs.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("caixas"), Qt::Horizontal, "Cx.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("qte"), Qt::Horizontal, "Qte.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("un"), Qt::Horizontal, "Un.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Cx.");
@@ -76,7 +77,7 @@ void PedidosCompra::viewPedido(QString idPedido) {
 
   for (int row = 0; row < modelItemPedidos.rowCount(); ++row) {
     ui->tablePedidos->openPersistentEditor(
-      modelItemPedidos.index(row, modelItemPedidos.fieldIndex("status")));
+      modelItemPedidos.index(row, modelItemPedidos.fieldIndex("qte")));
   }
 }
 

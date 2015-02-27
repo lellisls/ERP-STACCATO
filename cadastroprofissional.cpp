@@ -85,7 +85,7 @@ void CadastroProfissional::clearFields() {
 }
 
 void CadastroProfissional::on_pushButtonCancelar_clicked() {
-  cancel();
+  close();
 }
 
 void CadastroProfissional::on_pushButtonBuscar_clicked() {

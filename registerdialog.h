@@ -49,10 +49,6 @@ public:
   void setTextKeys(const QStringList &value);
 
 public slots:
-  virtual void show();
-  virtual void cancel();
-  virtual void accept();
-  virtual void reject();
   virtual void changeItem(QVariant value, QString text);
 
 signals:
@@ -227,6 +223,10 @@ private:
   * \brief Tabela da interface gráfica.
   */
   QAbstractItemView *table;
+
+  // QWidget interface
+  protected:
+  void closeEvent(QCloseEvent *event);
 };
 
 #endif // REGISTERDIALOG_H

@@ -128,7 +128,7 @@ void CadastroUsuario::on_removerButton_clicked() {
 }
 
 void CadastroUsuario::on_cancelarButton_clicked() {
-  cancel();
+  close();
 }
 
 void CadastroUsuario::on_pushButtonBuscar_clicked() {

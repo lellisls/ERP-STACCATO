@@ -727,7 +727,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
 
   Venda *venda = new Venda(parentWidget());
   venda->fecharOrcamento(ui->lineEditOrcamento->text());
-  cancel();
+  close();
 }
 
 void Orcamento::on_checkBoxCalculaFrete_clicked() {
@@ -740,20 +740,7 @@ void Orcamento::on_doubleSpinBoxFrete_editingFinished() {
 }
 
 void Orcamento::on_pushButtonCancelar_clicked() {
-  //TODO verificar
-  if(model.isDirty() || modelItem.isDirty()){
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
-                       QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
-
-    if (msgBox.exec() == QMessageBox::Yes) {
-      if (save()) {
-        cancel();
-      }
-    }
-  }
-//  cancel();
+  close();
 }
 
 void Orcamento::on_pushButtonCancelarItem_clicked() {

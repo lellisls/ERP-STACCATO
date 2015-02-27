@@ -122,7 +122,7 @@ void CadastroLoja::on_pushButtonRemover_clicked() {
 }
 
 void CadastroLoja::on_pushButtonCancelar_clicked() {
-  cancel();
+  close();
 }
 
 void CadastroLoja::on_pushButtonBuscar_clicked() {

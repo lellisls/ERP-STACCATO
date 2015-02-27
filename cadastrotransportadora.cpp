@@ -103,7 +103,7 @@ void CadastroTransportadora::on_pushButtonRemover_clicked() {
 }
 
 void CadastroTransportadora::on_pushButtonCancelar_clicked() {
-  cancel();
+  close();
 }
 
 void CadastroTransportadora::on_pushButtonBuscar_clicked() {

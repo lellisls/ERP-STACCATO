@@ -415,7 +415,7 @@ void CadastroCliente::show() {
   QWidget::show();
 }
 
-void CadastroCliente::cancel() {
+void CadastroCliente::close() {
   qDebug() << "close!";
   tipoPFPJ = QString();
   QDialog::close();
@@ -434,7 +434,7 @@ void CadastroCliente::reject() {
 }
 
 void CadastroCliente::on_pushButtonCancelar_clicked() {
-  cancel();
+  close();
 }
 
 void CadastroCliente::on_pushButtonRemover_clicked() {

@@ -20,7 +20,7 @@ public slots:
   void enableEditor();
   void disableEditor();
   void show();
-  void cancel();
+  void close();
   void accept();
   void reject();
 

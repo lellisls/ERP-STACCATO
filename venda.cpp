@@ -201,7 +201,7 @@ void Venda::on_pushButtonCancelar_clicked() {
   //  Orcamento *orc = new Orcamento(parentWidget());
   //  orc->viewRegisterById(idOrcamento);
   //  qDebug() << "idOrcamento: " << idOrcamento;
-  cancel();
+  close();
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
@@ -475,5 +475,5 @@ void Venda::on_pushButtonVoltar_clicked()
   Orcamento *orc = new Orcamento(parentWidget());
   orc->viewRegisterById(idOrcamento);
   //  qDebug() << "idOrcamento: " << idOrcamento;
-  cancel();
+  close();
 }

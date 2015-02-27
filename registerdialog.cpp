@@ -1,5 +1,5 @@
 #include "registerdialog.h"
-
+#include <QCloseEvent>
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
   setWindowModality(Qt::WindowModal);
@@ -14,7 +14,6 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela!", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }
-  connect(this,SIGNAL(finished(int)),this,SLOT(cancel()));
 }
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
@@ -45,9 +44,9 @@ bool RegisterDialog::viewRegister(QModelIndex idx) {
 bool RegisterDialog::verifyFields(QList<QLineEdit *> list) {
   foreach (QLineEdit *line, list) {
 //    if (line->styleSheet() == requiredStyle()) {
-      if (!verifyRequiredField(line)) {
-        return false;
-      }
+    if (!verifyRequiredField(line)) {
+      return false;
+    }
 //    }
   }
   return true;
@@ -68,32 +67,20 @@ void RegisterDialog::sendUpdateMessage() {
   emit registerUpdated(data(primaryKey),text);
 }
 
+void RegisterDialog::closeEvent(QCloseEvent * event) {
+  if (!confirmationMessage()) {
+    event->ignore();
+  }else{
+    QDialog::close();
+  }
+}
+
 QStringList RegisterDialog::getTextKeys() const {
   return textKeys;
 }
 
 void RegisterDialog::setTextKeys(const QStringList & value) {
   textKeys = value;
-}
-
-void RegisterDialog::show() {
-  QDialog::show();
-}
-
-void RegisterDialog::cancel() {
-  if (confirmationMessage()) {
-    close();
-  }else{
-    show();
-  }
-}
-
-void RegisterDialog::accept() {
-  QDialog::accept();
-}
-
-void RegisterDialog::reject() {
-  QDialog::reject();
 }
 
 void RegisterDialog::changeItem(QVariant value, QString text) {
@@ -123,12 +110,15 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
+  mapper.submit();
+  qDebug() << "confirmationMessage";
   if (model.isDirty()) {
+    qDebug() << "DIRTY";
     QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
                        QMessageBox::Yes | QMessageBox::No);
+    msgBox.setWindowModality(Qt::WindowModal);
     msgBox.setButtonText(QMessageBox::Yes, "Sim");
     msgBox.setButtonText(QMessageBox::No, "Não");
-
     if (msgBox.exec() == QMessageBox::Yes) {
       if (!save()) {
         return false;

@@ -20,9 +20,9 @@ public slots:
   void enableEditor();
   void disableEditor();
   void show();
-  void close();
-  void accept();
-  void reject();
+//  void close();
+//  void accept();
+//  void reject();
 
 private slots:
   void changeItem(QVariant value, QString text);

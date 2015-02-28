@@ -41,8 +41,10 @@ void CadastroCliente::setupUi() {
   ui->comboBoxCliente->addItem("Escolha uma opção!");
   QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '"  + data(primaryKey).toString() + "'" );
   while (query.next()) {
-    QString str = query.value(1).toString() + " - " + query.value(2).toString();
-    ui->comboBoxCliente->addItem(str, query.value(0));
+    if(data(primaryKey).isValid() && data(primaryKey) == query.value(0)){
+      QString str = query.value(1).toString() + " - " + query.value(2).toString();
+      ui->comboBoxCliente->addItem(str, query.value(0));
+    }
   }
   ui->comboBoxProfissional->addItem("Escolha uma opção!");
   QSqlQuery queryProf("SELECT idProfissional, nome, tipo FROM Profissional;");
@@ -375,7 +377,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
 
 void CadastroCliente::on_pushButtonCadastrar_clicked() {
   if(save()) {
-    accept();
+//    accept();
   } else {
     qDebug() << "Erro :(";
   }
@@ -383,7 +385,7 @@ void CadastroCliente::on_pushButtonCadastrar_clicked() {
 
 void CadastroCliente::on_pushButtonAtualizar_clicked() {
   if(save()) {
-    accept();
+//    accept();
   }
 }
 
@@ -415,23 +417,23 @@ void CadastroCliente::show() {
   QWidget::show();
 }
 
-void CadastroCliente::close() {
-  qDebug() << "close!";
-  tipoPFPJ = QString();
-  QDialog::close();
-}
+//void CadastroCliente::close() {
+//  qDebug() << "close!";
+//  tipoPFPJ = QString();
+//  QDialog::close();
+//}
 
-void CadastroCliente::accept() {
-  qDebug() << "accept";
-  tipoPFPJ = QString();
-  QDialog::accept();
-}
+//void CadastroCliente::accept() {
+//  qDebug() << "accept";
+//  tipoPFPJ = QString();
+//  QDialog::accept();
+//}
 
-void CadastroCliente::reject() {
-  qDebug() << "reject";
-  tipoPFPJ = QString();
-  QDialog::reject();
-}
+//void CadastroCliente::reject() {
+//  qDebug() << "reject";
+//  tipoPFPJ = QString();
+//  QDialog::reject();
+//}
 
 void CadastroCliente::on_pushButtonCancelar_clicked() {
   close();

@@ -425,13 +425,22 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     subTotal = b * (1.0 - descGlobal);
     frete = subTotal * f;
     qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
-    if( frete < m ){
+    if( frete < m ) {
       frete = m;
       descGlobal = 1.0 + (m - F)/b;
       subTotal = b * (1.0 - descGlobal);
       qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
     }
   }
+
+  for (int row = 0; row < modelItem.rowCount(); ++row) {
+    double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0); // Desconto
+    // Distr.
+    double totalItem = stItem * ( 1 - descGlobal );
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
+  }
+
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);

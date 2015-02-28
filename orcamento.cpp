@@ -26,8 +26,6 @@
 
 Orcamento::Orcamento(QWidget *parent)
   : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
-  QTime time;
-  time.start();
   ui->setupUi(this);
 
   ui->tableProdutos->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -76,21 +74,20 @@ Orcamento::Orcamento(QWidget *parent)
   if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
     qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
   }
-  qDebug() << "qry: " << qryFrete.lastQuery();
+//  qDebug() << "qry: " << qryFrete.lastQuery();
   if (qryFrete.next()) {
     minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
     porcFrete = qryFrete.value("porcentagemFrete").toDouble();
   }
 
-  qDebug() << "minimoFrete: " << minimoFrete;
-  qDebug() << "%frete: " << porcFrete;
+//  qDebug() << "minimoFrete: " << minimoFrete;
+//  qDebug() << "%frete: " << porcFrete;
 
   fillComboBoxes();
 
   setupMapper();
   newRegister();
   show();
-  qDebug() << "time: " << time.elapsed();
 }
 
 Orcamento::~Orcamento() {
@@ -255,7 +252,7 @@ void Orcamento::updateId() {
 }
 
 bool Orcamento::verifyFields() {
-  // TODO : VErifyFields Orçamento
+  // TODO : VerifyFields Orçamento
   //  if(!RegisterDialog::verifyFields())
   //    return false;
   if (ui->itemBoxCliente->text().isEmpty()) {
@@ -302,9 +299,6 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "data", ui->dateTimeEdit->dateTime());
   setData(row, "total", ui->doubleSpinBoxFinal->value());
   setData(row, "desconto", ui->doubleSpinBoxDescontoGlobal->value());
-  //  modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("desconto",
-  //                   ui->doubleSpinBoxDescontoGlobal->value());
-  // TODO: setando desconto duas vezes?
 
   setData(row, "frete", ui->doubleSpinBoxFrete->value());
 
@@ -351,15 +345,11 @@ void Orcamento::on_pushButtonRemoverItem_clicked() {
 }
 
 void Orcamento::calcPrecoItemTotal() {
-  //  if (ui->comboBoxProduto->currentData().isNull()) {
-  //    return;
-  //  }
   if (ui->itemBoxProduto->text().isEmpty()) {
     return;
   }
 
   double qte = ui->doubleSpinBoxQte->value();
-  //  double qteCx = ui->doubleSpinBoxQte->singleStep();
   double prcUn = ui->lineEditPrecoUn->getValue();
   double desc = ui->doubleSpinBoxDesconto->value() / 100.0;
   double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
@@ -728,10 +718,6 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
   Venda *venda = new Venda(parentWidget());
   venda->fecharOrcamento(ui->lineEditOrcamento->text());
   close();
-}
-
-void Orcamento::on_checkBoxCalculaFrete_clicked() {
-  calcPrecoGlobalTotal();
 }
 
 void Orcamento::on_doubleSpinBoxFrete_editingFinished() {

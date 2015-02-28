@@ -77,7 +77,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
   //  ui->tableVenda->setItemDelegateForColumn(11, );
 
-  ui->pushButtonNFe->hide();
+//  ui->pushButtonNFe->hide();
 
   show();
 }
@@ -303,7 +303,8 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 
 void Venda::on_pushButtonNFe_clicked() {
   NFe nota(idOrcamento, this);
-  qDebug() << nota.XML();
+//  qDebug() << "xml: " << nota.XML();
+  qDebug() << "txt: " << nota.TXT();
 }
 
 void Venda::viewVenda(QString idVenda) {
@@ -461,7 +462,8 @@ bool Venda::viewRegister(QModelIndex index)
     return false;
   }
   QString idVenda = data(primaryKey).toString();
-  qDebug() << "idVenda: " << idVenda;
+  idOrcamento = idVenda;
+//  qDebug() << "idVenda: " << idVenda;
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
   //  novoItem();

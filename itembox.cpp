@@ -74,7 +74,7 @@ QVariant ItemBox::getValue() const {
 }
 
 void ItemBox::setValue(const QVariant &value) {
-  qDebug() << "Set value : " << value;
+//  qDebug() << "Set value : " << value;
   this->value = value;
   if(value.isNull()) {
     setText("");

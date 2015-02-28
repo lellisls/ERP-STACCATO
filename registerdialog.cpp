@@ -29,7 +29,7 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
 }
 
 bool RegisterDialog::viewRegister(QModelIndex idx) {
-  qDebug() << idx.row() << " == " << mapper.currentIndex();
+//  qDebug() << idx.row() << " == " << mapper.currentIndex();
   if (!confirmationMessage()) {
     return false;
   }
@@ -110,7 +110,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  qDebug() << "confirmationMessage";
+//  qDebug() << "confirmationMessage";
   if (model.isDirty()) {
     qDebug() << "DIRTY";
     QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",

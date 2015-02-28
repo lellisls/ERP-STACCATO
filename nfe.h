@@ -12,10 +12,11 @@ class NFe : public QObject {
     ~NFe();
     bool assinaXML();
     bool XML();
-    int calculaDigitoVerificador(QString chave);
+    bool TXT();
+    QString calculaDigitoVerificador(QString chave);
     QString getArquivo() const;
     QString getChaveAcesso() const;
-    void writeXML(QString chave, int cDV);
+    QString criarChaveAcesso();
 
   private:
     // attributes
@@ -27,6 +28,8 @@ class NFe : public QObject {
     QVariant getFromVenda(QString column);
     QVariant getFromLoja(QString column);
     QVariant getFromItemModel(int row, QString column);
+    void writeXML(QString chave, int cDV);
+    void writeTXT(QString chave);
 };
 
 #endif // NFE_H

@@ -111,7 +111,6 @@ private:
   QSqlRelationalTableModel modelItem;
   QDataWidgetMapper mapperItem;
   double subTotal, subTotalItens;
-  int currentRow;
   double minimoFrete, porcFrete;
 
   void removeItem();

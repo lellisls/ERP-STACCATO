@@ -41,7 +41,7 @@ private slots:
   void on_pushButtonRemoverItem_clicked();
   void on_tableProdutos_clicked(const QModelIndex &index);
   void print(QPrinter *printer);
-  void on_doubleSpinBoxCaixas_valueChanged(double arg1);
+  void on_doubleSpinBoxCaixas_valueChanged(double caixas);
   void on_pushButtonApagarOrc_clicked();
   void on_itemBoxProduto_textChanged(const QString &text);
   void on_itemBoxCliente_textChanged(const QString &text);
@@ -101,8 +101,7 @@ private:
   Ui::Orcamento *ui;
   QSqlRelationalTableModel modelItem;
   QDataWidgetMapper mapperItem;
-  double subTotal, totalGlobal, subTotalItens;
-  int currentRow;
+  double subTotal, subTotalItens;
   double minimoFrete, porcFrete;
 
   void removeItem();

@@ -253,8 +253,8 @@ void NFe::writeTXT(QString chave){
 }
 
 void NFe::writeXML(QString chave, int cDV) {
-  QFile file(idVenda + ".xml");
-  qDebug() << QDir::current().absoluteFilePath(idVenda + ".xml");
+  QFile file(idVenda + "-nfe.xml");
+  qDebug() << QDir::current().absoluteFilePath(idVenda + "-nfe.xml");
   file.open(QFile::WriteOnly);
   QFileInfo fileInfo(file);
   arquivo = fileInfo.absoluteFilePath().replace("/", "\\\\");
@@ -475,7 +475,7 @@ QString NFe::calculaDigitoVerificador(QString chave) {
 bool NFe::assinaXML() {
   QProcess process(this);
   QStringList args;
-  args << "nfephp/assinaxml.php" << idVenda + ".xml";
+  args << "nfephp/assinaxml.php" << idVenda + "-nfe.xml";
   process.start("nfephp", args);
   if (!process.waitForStarted()) {
     return false;

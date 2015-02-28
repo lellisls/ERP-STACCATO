@@ -150,9 +150,9 @@ QString Venda::requiredStyle() {
   return QString();
 }
 
-void Venda::calcPrecoGlobalTotal() {
-  double subTotal = 0.0;
-  double subTotalItens = 0.0;
+void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
+  subTotal = 0.0;
+  subTotalItens = 0.0;
   double bruto = 0.0;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
@@ -173,18 +173,20 @@ void Venda::calcPrecoGlobalTotal() {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
   double frete = ui->doubleSpinBoxFrete->value();
-  //  if (ui->checkBoxCalculaFrete->isChecked()) {
-  //    frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
-  //    if (frete < minimoFrete) {
-  //      frete = minimoFrete;
-  //    }
-  //  }
+//  if ( !ajusteTotal ) {
+//    frete = subTotal * (porcFrete / 100);
+//    if (frete < minimoFrete) {
+//      frete = minimoFrete;
+//    }
+//  }
 
   ui->doubleSpinBoxFrete->setValue(frete);
-  ui->doubleSpinBoxTotal->setValue(bruto);
-  ui->doubleSpinBoxTotalFrete->setValue(bruto+frete);
-  ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
+  ui->doubleSpinBoxTotal->setValue(subTotalItens);
+  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
+  ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
+  ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);
+  double descontoFinal = bruto - subTotal;
 }
 
 void Venda::calcPrecoItemTotal() {}
@@ -225,7 +227,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  if(!qry.exec("UPDATE Venda SET data = '"+ QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +"'")){
+  if(!qry.exec("UPDATE Venda SET data = '"+ QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +"'")) {
     qDebug() << "Error setting date on sale: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -355,7 +357,7 @@ void Venda::on_doubleSpinBoxPgt1_editingFinished() {
     ui->doubleSpinBoxPgt3->setValue(restante);
     ui->doubleSpinBoxPgt2->setMaximum(pgt2);
     restante = 0;
-  }else{
+  } else {
     ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
     ui->doubleSpinBoxPgt3->setMaximum(pgt3 + restante);
   }
@@ -390,14 +392,13 @@ void Venda::on_doubleSpinBoxPgt3_editingFinished() {
   ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
 }
 
-void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text)
-{
-  if(text == "Escolha uma opção!"){
+void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
+  if(text == "Escolha uma opção!") {
     return;
   }
-  if(text == "Cartão de crédito" or text == "Cheque"){
+  if(text == "Cartão de crédito" or text == "Cheque") {
     ui->comboBoxPgt1Parc->setEnabled(true);
-  }else{
+  } else {
     ui->comboBoxPgt1Parc->setDisabled(true);
   }
 
@@ -407,14 +408,13 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text)
   modelFluxoCaixa.setData(modelFluxoCaixa.index(0, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }
 
-void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text)
-{
-  if(text == "Escolha uma opção!"){
+void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text) {
+  if(text == "Escolha uma opção!") {
     return;
   }
-  if(text == "Cartão de crédito" or text == "Cheque"){
+  if(text == "Cartão de crédito" or text == "Cheque") {
     ui->comboBoxPgt2Parc->setEnabled(true);
-  }else{
+  } else {
     ui->comboBoxPgt2Parc->setDisabled(true);
   }
 
@@ -424,14 +424,13 @@ void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text)
   modelFluxoCaixa.setData(modelFluxoCaixa.index(1, modelFluxoCaixa.fieldIndex("data")), QDateTime::currentDateTime());
 }
 
-void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text)
-{
-  if(text == "Escolha uma opção!"){
+void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
+  if(text == "Escolha uma opção!") {
     return;
   }
-  if(text == "Cartão de crédito" or text == "Cheque"){
+  if(text == "Cartão de crédito" or text == "Cheque") {
     ui->comboBoxPgt3Parc->setEnabled(true);
-  }else{
+  } else {
     ui->comboBoxPgt3Parc->setDisabled(true);
   }
 
@@ -442,22 +441,18 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text)
 }
 
 
-bool Venda::savingProcedures(int row)
-{
+bool Venda::savingProcedures(int row) {
 
 }
 
-void Venda::registerMode()
-{
+void Venda::registerMode() {
 }
 
-void Venda::updateMode()
-{
+void Venda::updateMode() {
 }
 
 
-bool Venda::viewRegister(QModelIndex index)
-{
+bool Venda::viewRegister(QModelIndex index) {
   if (!RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -472,8 +467,7 @@ bool Venda::viewRegister(QModelIndex index)
   return true;
 }
 
-void Venda::on_pushButtonVoltar_clicked()
-{
+void Venda::on_pushButtonVoltar_clicked() {
   Orcamento *orc = new Orcamento(parentWidget());
   orc->viewRegisterById(idOrcamento);
   //  qDebug() << "idOrcamento: " << idOrcamento;

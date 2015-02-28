@@ -110,7 +110,6 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  mapper.submit();
   qDebug() << "confirmationMessage";
   if (model.isDirty()) {
     qDebug() << "DIRTY";

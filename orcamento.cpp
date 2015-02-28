@@ -742,8 +742,8 @@ void Orcamento::on_doubleSpinBoxTotal_valueChanged(double) {
   calcPrecoGlobalTotal();
 }
 
-void Orcamento::on_doubleSpinBoxCaixas_valueChanged(double arg1) {
-  double qte = arg1 * ui->doubleSpinBoxQte->singleStep();
+void Orcamento::on_doubleSpinBoxCaixas_valueChanged(double caixas) {
+  double qte = caixas * ui->doubleSpinBoxQte->singleStep();
   ui->doubleSpinBoxQte->setValue(qte);
   calcPrecoItemTotal();
 }

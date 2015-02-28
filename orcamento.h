@@ -46,7 +46,7 @@ private slots:
   void on_pushButtonRemoverItem_clicked();
   void on_tableProdutos_clicked(const QModelIndex &index);
   void print(QPrinter *printer);
-  void on_doubleSpinBoxCaixas_valueChanged(double arg1);
+  void on_doubleSpinBoxCaixas_valueChanged(double caixas);
   //    void on_pushButtonBuscarCliente_clicked();
 
   void on_pushButtonApagarOrc_clicked();

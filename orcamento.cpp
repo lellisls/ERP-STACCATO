@@ -417,35 +417,27 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   double frete = qMax(subTotal * porcFrete/100.0, minimoFrete);
   if(ajusteTotal) {
     const double F = ui->doubleSpinBoxFinal->value();
-//    descGlobal = 1.0 - (novoTotal/(subTotalItens * ( 1.0 + porcFrete/100.0) ));
-    qDebug() << porcFrete;
+//    qDebug() << porcFrete;
     const double b = subTotalItens;
     const double f = porcFrete/100.0;
     const double m = minimoFrete;
-//    descGlobal  = 1.0 - (F/( (f+1) * b ));
-    subTotal = b /( f + 1.0 );
+    descGlobal = 1.0 - (F/(b * ( 1.0 + f) ));
+    subTotal = b * (1.0 - descGlobal);
     frete = subTotal * f;
-    qDebug() << "ANTES : subTotal = " << subTotal << ", frete" << frete;
-    if( (subTotal + frete) != F ){
-
-//      descGlobal = 1.0 - ( F - m )/b;
-      subTotal = F - m;
-      frete = subTotal * f;
-
-      qDebug() << "DEPOIS : subTotal = " << subTotal << ", frete" << frete;
+    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
+    if( frete < m ){
+      frete = m;
+      descGlobal = 1.0 + (m - F)/b;
+      subTotal = b * (1.0 - descGlobal);
+      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
     }
   }
-//   solve d from F = b(1-d) + (( f * b(1-d) )  + m + abs(( f * b(1-d) )  - m) ) /2
-
-//  qDebug () << "subTotalItens = " << subTotalItens << ", subTotal = " << subTotal << ", descGlobal = " << descGlobal;
-//  qDebug() << "minimoFrete = " << minimoFrete;
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
   ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
   ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
-//  ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);
 }
 
 void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(double) {
@@ -782,14 +774,14 @@ void Orcamento::on_pushButtonApagarOrc_clicked() {
 
 void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   qDebug() << "changed: " << text;
+  ui->doubleSpinBoxQte->setValue(0.0);
+  ui->doubleSpinBoxCaixas->setValue(0.0);
 
   if (ui->itemBoxProduto->text().isEmpty()) {
     ui->doubleSpinBoxCaixas->setDisabled(true);
     ui->doubleSpinBoxQte->setDisabled(true);
     ui->doubleSpinBoxDesconto->setDisabled(true);
     ui->doubleSpinBoxQte->setSingleStep(1.0);
-    ui->doubleSpinBoxQte->setValue(0.0);
-    ui->doubleSpinBoxCaixas->setValue(0.0);
     ui->lineEditFornecedor->clear();
     ui->lineEditPrecoTotal->clear();
     ui->lineEditPrecoUn->clear();

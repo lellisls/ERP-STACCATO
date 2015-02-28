@@ -57,7 +57,7 @@ QString NFe::criarChaveAcesso()
   vetorChave.push_back("123456789"); // número nf-e
   vetorChave.push_back("1");         // tpEmis - forma de emissão
   vetorChave.push_back("76543210");  // código númerico
-//  qDebug() << "chave: " << vetorChave;
+  //  qDebug() << "chave: " << vetorChave;
 
   QStringList listChave = vetorChave.toList();
   QString chave = listChave.join("");
@@ -68,14 +68,14 @@ QString NFe::criarChaveAcesso()
 bool NFe::XML() {
   QString chave = criarChaveAcesso();
 
-//  int cDV = calculaDigitoVerificador(chave);
+  //  int cDV = calculaDigitoVerificador(chave);
 
   chave += calculaDigitoVerificador(chave);
-//  qDebug() << "cDV: " << cDV;
-//  qDebug() << "chave: " << chave;
+  //  qDebug() << "cDV: " << cDV;
+  //  qDebug() << "chave: " << chave;
 
   //  if (cDV != -1) {
-//  writeXML(chave, cDV);
+  //  writeXML(chave, cDV);
   //  }
 
   return true;
@@ -84,11 +84,11 @@ bool NFe::XML() {
 bool NFe::TXT(){
   QString chave = criarChaveAcesso();
 
-//  int cDV = calculaDigitoVerificador(chave);
+  //  int cDV = calculaDigitoVerificador(chave);
 
   chave += calculaDigitoVerificador(chave);
-//  qDebug() << "cDV: " << cDV;
-//  qDebug() << "chave: " << chave;
+  //  qDebug() << "cDV: " << cDV;
+  //  qDebug() << "chave: " << chave;
 
   //  if (cDV != -1) {
   writeTXT(chave);
@@ -128,11 +128,10 @@ void NFe::writeTXT(QString chave){
   stream << "Tipo = 1" << endl;
   stream << "FormaPag = 0" << endl;
 
-//  qDebug() << endl;
   qDebug() << "[Emitente]";
   stream << "[Emitente]" << endl;
   stream << "CNPJ = " + clearStr(getFromLoja("cnpj").toString()) << endl;
-//  stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
+  //  stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
   stream << "IE = 110042490114" << endl;
   stream << "Razao = " + getFromLoja("razaoSocial").toString() << endl;
   stream << "Fantasia = " + getFromLoja("nomeFantasia").toString() << endl;
@@ -140,7 +139,9 @@ void NFe::writeTXT(QString chave){
 
   QString idEndLoja = getFromLoja("idEndereco").toString();
   QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '"+ idEndLoja +"'");
-  endLoja.exec();
+  if( !endLoja.exec() ) {
+    qDebug() << "End. loja failed! : " << endLoja.lastError();
+  }
   endLoja.first();
 
   stream << "CEP = " + clearStr(endLoja.value("CEP").toString()) << endl;
@@ -148,33 +149,27 @@ void NFe::writeTXT(QString chave){
   stream << "Numero = " + endLoja.value("numero").toString() << endl;
   stream << "Complemento = " + endLoja.value("complemento").toString() << endl;
   stream << "Bairro = " + endLoja.value("bairro").toString() << endl;
-
-  QSqlQuery codCid("SELECT codigo FROM municipios_ibge WHERE municipio = '"+ endLoja.value("cidade").toString() +"'");
-  codCid.exec();
-  codCid.first();
-
-//  stream << "CidadeCod = " + codCid.value("codigo").toString() << endl;
   stream << "Cidade = " + endLoja.value("cidade").toString() << endl;
   stream << "UF = " + endLoja.value("uf").toString() << endl;
 
-//  qDebug() << endl;
   qDebug() << "[Destinatario]";
   stream << "[Destinatario]" << endl;
 
   QString idCliente = getFromVenda("idCadastroCliente").toString();
-  QSqlQuery cliente("SELECT * FROM cadastro LEFT JOIN cadastro_has_endereco ON cadastro.idCadastro = cadastro_has_endereco.idCadastro LEFT JOIN endereco ON cadastro_has_endereco.idEndereco = endereco.idEndereco WHERE cadastro.idCadastro = '"+ idCliente +"'");
-  cliente.exec();
+  QSqlQuery cliente("SELECT * FROM Cadastro LEFT JOIN Cadastro_has_Endereco ON Cadastro.idCadastro = Cadastro_has_Endereco.idCadastro LEFT JOIN Endereco ON Cadastro_has_Endereco.idEndereco = Endereco.idEndereco WHERE Cadastro.idCadastro = '"+ idCliente +"'");
+  if( !cliente.exec() ){
+    qDebug() << "Cliente query failed! : " << cliente.lastError();
+  }
   cliente.first();
 
   if(cliente.value("pfpj").toString() == "PF"){
     stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
   } else{
-  stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
-  stream << "IE = 110042490114" << endl;
-//  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
-//  stream << "IE = ISENTO" << endl;
+    stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
+    stream << "IE = 110042490114" << endl;
+    //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
+    //  stream << "IE = ISENTO" << endl;
   }
-//  stream << "ISUF = " << endl;
   stream << "NomeRazao = " + cliente.value("razaoSocial").toString() << endl;
   stream << "Fone = " + cliente.value("tel").toString() << endl;
   stream << "CEP = " + cliente.value("CEP").toString() << endl;
@@ -182,16 +177,9 @@ void NFe::writeTXT(QString chave){
   stream << "Numero = " + cliente.value("numero").toString() << endl;
   stream << "Complemento = " + cliente.value("complemento").toString() << endl;
   stream << "Bairro = " + cliente.value("bairro").toString() << endl;
-
-  QSqlQuery codCid2("SELECT codigo FROM municipios_ibge WHERE municipio = '"+ cliente.value("cidade").toString() +"'");
-  codCid2.exec();
-  codCid2.first();
-
-//  stream << "CidadeCod = " + codCid2.value("codigo").toString() << endl;
   stream << "Cidade = " + cliente.value("cidade").toString() << endl;
   stream << "UF = " + cliente.value("uf").toString() << endl;
 
-//  qDebug() << endl;
   qDebug() << "[Produto]";
   double total = 0;
   double icmsTotal = 0;
@@ -201,49 +189,37 @@ void NFe::writeTXT(QString chave){
     prod.exec();
     prod.first();
     QString number = QString("%1").arg(row + 1, 3, 10, QChar('0'));
-  stream << "[Produto" + number + "]" << endl;
-//  stream << "CFOP = " + prod.value("cfop").toString() << endl;
-  stream << "CFOP = 5105" << endl;
-  stream << "NCM = 40169100" << endl;
-  stream << "Codigo = " + prod.value("codBarras").toString() << endl;
-  stream << "Descricao = " + prod.value("descricao").toString() << endl;
-  stream << "Unidade = " + prod.value("un").toString() << endl;
-  stream << "Quantidade = " + getFromItemModel(row, "qte").toString() << endl;
+    stream << "[Produto" + number + "]" << endl;
+    //  stream << "CFOP = " + prod.value("cfop").toString() << endl;
+    stream << "CFOP = 5105" << endl;
+    stream << "NCM = 40169100" << endl;
+    stream << "Codigo = " + prod.value("codBarras").toString() << endl;
+    stream << "Descricao = " + prod.value("descricao").toString() << endl;
+    stream << "Unidade = " + prod.value("un").toString() << endl;
+    stream << "Quantidade = " + getFromItemModel(row, "qte").toString() << endl;
 
-  double preco = prod.value("precoVenda").toDouble();
-   double rounded_number=static_cast<double>(static_cast<int>(preco*100+0.5))/100.0;
-  stream << "ValorUnitario = " + QString::number(rounded_number) << endl;
-//  stream << "ValorUnitario = " + prod.value("precoVenda").toString() << endl;
+    double preco = prod.value("precoVenda").toDouble();
+    double rounded_number=static_cast<double>(static_cast<int>(preco*100+0.5))/100.0;
+    stream << "ValorUnitario = " + QString::number(rounded_number) << endl;
+    stream << "ValorTotal = " + getFromItemModel(row, "parcial").toString() << endl;
+    total += getFromItemModel(row, "parcial").toDouble();
 
-  stream << "ValorTotal = " + getFromItemModel(row, "parcial").toString() << endl;
-  total += getFromItemModel(row, "parcial").toDouble();
+    stream << "[ICMS" + number + "]" << endl;
+    stream << "CST = 00" << endl;
+    stream << "ValorBase = " + getFromItemModel(row, "parcial").toString() << endl;
+    stream << "Aliquota = 18.00" << endl;
 
-//  qDebug() << "Quantidade: " << getFromItemModel(row, "qte").toDouble();
-//  qDebug() << "Unitário: " << getFromItemModel(row, "precoVenda").toDouble();
-//  qDebug() << "Total: " << getFromItemModel(row, "total").toDouble();
-
-  stream << "[ICMS" + number + "]" << endl;
-  stream << "CST = 00" << endl;
-//  stream << "ValorBase = 1000" << endl;
-  stream << "ValorBase = " + getFromItemModel(row, "parcial").toString() << endl;
-  stream << "Aliquota = 18.00" << endl;
-//  stream << "Valor = 180" << endl;
-  double icms = getFromItemModel(row, "parcial").toDouble() * 0.18;
-  icmsTotal += icms;
-  stream << "Valor = " + QString::number(icms) << endl;
+    double icms = getFromItemModel(row, "parcial").toDouble() * 0.18;
+    icmsTotal += icms;
+    stream << "Valor = " + QString::number(icms) << endl;
 
   }
 
-//  qDebug() << endl;
   qDebug() << "[Total]";
   stream << "[Total]" << endl;
-//  stream << "BaseICMS = 1000" << endl;
   stream << "BaseICMS = " + QString::number(total) << endl;
-//  stream << "ValorICMS = 180" << endl;
   stream << "ValorICMS = " + QString::number(icmsTotal) << endl;
-//  stream << "ValorProduto = 1000" << endl;
   stream << "ValorProduto = " + QString::number(total) << endl;
-//  stream << "ValorNota = 1000" << endl;
   stream << "ValorNota = " + QString::number(total) << endl;
 
   stream << "\"), [1]";
@@ -452,8 +428,8 @@ QString NFe::calculaDigitoVerificador(QString chave) {
   QVector<int> multiplicadores = {4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7,
                                   6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
   int soma = 0;
-//  qDebug() << "codigo size: " << codigo.size();
-//  qDebug() << "chave size: " << chave2.size();
+  //  qDebug() << "codigo size: " << codigo.size();
+  //  qDebug() << "chave size: " << chave2.size();
   for (int i = 0; i < 43; ++i) {
     soma += chave2.at(i) * multiplicadores.at(i);
   }
@@ -466,8 +442,8 @@ QString NFe::calculaDigitoVerificador(QString chave) {
     cDV = 11 - resto;
   }
 
-//  qDebug() << "soma: " << soma;
-//  qDebug() << "resto: " << resto;
+  //  qDebug() << "soma: " << soma;
+  //  qDebug() << "resto: " << resto;
 
   return QString::number(cDV);
 }

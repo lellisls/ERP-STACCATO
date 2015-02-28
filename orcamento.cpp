@@ -141,11 +141,11 @@ void Orcamento::fillComboBoxes() {
     QString str = queryVend.value(0).toString() + " - " + queryVend.value(1).toString();
     ui->comboBoxVendedor->addItem(str, queryVend.value(0));
   }
-  if (!ui->comboBoxVendedor->setCurrentValue(UserSession::getId())) {
-    ui->comboBoxVendedor->setEnabled(true);
-  } else {
-    ui->comboBoxVendedor->setDisabled(true);
-  }
+//  if (!ui->comboBoxVendedor->setCurrentValue(UserSession::getId())) {
+//    ui->comboBoxVendedor->setEnabled(true);
+//  } else {
+//    ui->comboBoxVendedor->setDisabled(true);
+//  }
 }
 
 void Orcamento::novoItem() {
@@ -193,9 +193,9 @@ void Orcamento::registerMode() {
 
   ui->pushButtonImprimir->setEnabled(false);
   ui->pushButtonFecharPedido->setEnabled(true);
-  ui->itemBoxCliente->setEnabled(true);
-  ui->comboBoxProfissional->setEnabled(true);
-  ui->comboBoxVendedor->setEnabled(true);
+//  ui->itemBoxCliente->setEnabled(true);
+//  ui->comboBoxProfissional->setEnabled(true);
+//  ui->comboBoxVendedor->setEnabled(true);
 }
 
 void Orcamento::updateMode() {
@@ -204,9 +204,9 @@ void Orcamento::updateMode() {
 
   ui->pushButtonImprimir->setEnabled(true);
   ui->pushButtonFecharPedido->setEnabled(true);
-  ui->itemBoxCliente->setDisabled(true);
-  ui->comboBoxProfissional->setDisabled(true);
-  ui->comboBoxVendedor->setDisabled(true);
+//  ui->itemBoxCliente->setDisabled(true);
+//  ui->comboBoxProfissional->setDisabled(true);
+//  ui->comboBoxVendedor->setDisabled(true);
 }
 
 bool Orcamento::newRegister() {
@@ -255,7 +255,6 @@ void Orcamento::updateId() {
 }
 
 bool Orcamento::verifyFields() {
-  // TODO : VErifyFields Orçamento
   //  if(!RegisterDialog::verifyFields())
   //    return false;
   if (ui->itemBoxCliente->text().isEmpty()) {
@@ -362,12 +361,12 @@ void Orcamento::calcPrecoItemTotal() {
   //  double qteCx = ui->doubleSpinBoxQte->singleStep();
   double prcUn = ui->lineEditPrecoUn->getValue();
   double desc = ui->doubleSpinBoxDesconto->value() / 100.0;
-  double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
-  double parcial = qte * prcUn;
-  double parcialDesc = parcial * (1.0 - desc);
-  double total = parcialDesc * (1.0 - descGlobal);
+//  double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
+  double itemBruto = qte * prcUn;
+  double subTotalItem = itemBruto * (1.0 - desc);
+//  double total = parcialDesc * (1.0 - descGlobal);
 
-  ui->lineEditPrecoTotal->setValue(total);
+  ui->lineEditPrecoTotal->setValue(subTotalItem);
 }
 
 void Orcamento::on_doubleSpinBoxDesconto_valueChanged(double) {
@@ -397,39 +396,56 @@ void Orcamento::on_comboBoxVendedor_currentIndexChanged(int) {
 void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
   subTotalItens = 0.0;
-  double bruto = 0.0;
+//  double bruto = 0.0;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem   = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
     double descItem  = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
-    double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
-    double parcialItem = qteItem * prcUnItem;
-    bruto += parcialItem;
-    double parcialItemDesc = parcialItem * (1.0 - descItem);
-    double totalItem = parcialItemDesc * (1.0 - descGlobal);
-    subTotal += totalItem;
-    subTotalItens += parcialItemDesc;
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), parcialItem); // Pr. Parcial
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")),
-                      parcialItemDesc); // Pr. Parcial Desc.
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal); // Desconto
+    double itemBruto = qteItem * prcUnItem;
+    double stItem = itemBruto * (1.0 - descItem);
+    subTotalItens += stItem;
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto); // Pr. Parcial
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
+//    double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
+//    double totalItem = parcialItemDesc * (1.0 - descGlobal);
+//    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal); // Desconto
     // Distr.
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
+//    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
-  double frete = ui->doubleSpinBoxFrete->value();
-  if ( !ajusteTotal ) {
-    frete = ui->doubleSpinBoxTotal->value() * (porcFrete / 100);
-    if (frete < minimoFrete) {
-      frete = minimoFrete;
+  double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
+  subTotal = subTotalItens * (1.0-descGlobal);
+  double frete = qMax(subTotal * porcFrete/100.0, minimoFrete);
+  if(ajusteTotal) {
+    const double F = ui->doubleSpinBoxFinal->value();
+//    descGlobal = 1.0 - (novoTotal/(subTotalItens * ( 1.0 + porcFrete/100.0) ));
+    qDebug() << porcFrete;
+    const double b = subTotalItens;
+    const double f = porcFrete/100.0;
+    const double m = minimoFrete;
+//    descGlobal  = 1.0 - (F/( (f+1) * b ));
+    subTotal = b /( f + 1.0 );
+    frete = subTotal * f;
+    qDebug() << "ANTES : subTotal = " << subTotal << ", frete" << frete;
+    if( (subTotal + frete) != F ){
+
+//      descGlobal = 1.0 - ( F - m )/b;
+      subTotal = F - m;
+      frete = subTotal * f;
+
+      qDebug() << "DEPOIS : subTotal = " << subTotal << ", frete" << frete;
     }
   }
+//   solve d from F = b(1-d) + (( f * b(1-d) )  + m + abs(( f * b(1-d) )  - m) ) /2
 
+//  qDebug () << "subTotalItens = " << subTotalItens << ", subTotal = " << subTotal << ", descGlobal = " << descGlobal;
+//  qDebug() << "minimoFrete = " << minimoFrete;
+  ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
   ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
-  ui->doubleSpinBoxDescontoRS->setValue(bruto - subTotal);
+  ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
-  ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);
+//  ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);
 }
 
 void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(double) {
@@ -446,20 +462,20 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
   double new_total = ui->doubleSpinBoxFinal->value();
   double frete = ui->doubleSpinBoxFrete->value();
   double new_subtotal = new_total - frete;
-  double descGlobal = 0.0;
+//  double descGlobal = 0.0;
 
   qDebug() << "New total = " << new_total << ", frete = " << frete << ", new sub. = " << new_subtotal
            << ", subTotalItens = " << subTotalItens;
-  if (new_subtotal < subTotalItens) {
-    double dif = subTotalItens - new_subtotal;
-    descGlobal = qMax((dif / subTotalItens) * 100.0, 0.0);
+  if (new_subtotal >= subTotalItens) {
+    ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
+    calcPrecoGlobalTotal();
+  } else {
+    calcPrecoGlobalTotal(true);
   }
+//    descGlobal = qMax((dif / subTotalItens) * 100.0, 0.0);
 //  bool calcFreteChecked = ui->checkBoxCalculaFrete->isChecked();
 //  ui->checkBoxCalculaFrete->setChecked(false);
-  ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal);
 
-  calcPrecoItemTotal();
-  calcPrecoGlobalTotal();
 //  ui->checkBoxCalculaFrete->setChecked(calcFreteChecked);
   //  ui->doubleSpinBoxTotal->setValue(new_total);
 }
@@ -583,6 +599,7 @@ void Orcamento::print(QPrinter *printer) {
 }
 
 void Orcamento::adicionarItem() {
+  calcPrecoItemTotal();
   //  if (ui->comboBoxProduto->currentData().isNull()) {
   //    QMessageBox::warning(this, "Atenção!", "Item inválido!", QMessageBox::Ok, QMessageBox::NoButton);
   //    return;
@@ -630,8 +647,8 @@ void Orcamento::adicionarItem() {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("un")), ui->lineEditUn->text()); // Un
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("desconto")),
                     ui->doubleSpinBoxDesconto->value()); // Desconto
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")),
-                    ui->doubleSpinBoxDescontoGlobal->value()); // Desconto global
+//  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")),
+//                    ui->doubleSpinBoxDescontoGlobal->value()); // Desconto global
 
   calcPrecoGlobalTotal();
 

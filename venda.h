@@ -48,12 +48,13 @@ class Venda : public RegisterDialog {
     QSqlTableModel modelVenda;
     QSqlRelationalTableModel modelItem, modelFluxoCaixa;
     QString idOrcamento;
+    double subTotal, subTotalItens;
     // methods
     bool cadastrar();
     bool verifyFields();
     bool verifyRequiredField(QLineEdit *line);
     QString requiredStyle();
-    void calcPrecoGlobalTotal();
+    void calcPrecoGlobalTotal(bool ajusteTotal = false);
     void calcPrecoItemTotal();
     void clearFields();
     void fillComboBoxCliente();

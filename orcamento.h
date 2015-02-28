@@ -110,7 +110,7 @@ private:
   Ui::Orcamento *ui;
   QSqlRelationalTableModel modelItem;
   QDataWidgetMapper mapperItem;
-  double subTotal, totalGlobal, subTotalItens;
+  double subTotal, subTotalItens;
   int currentRow;
   double minimoFrete, porcFrete;
 

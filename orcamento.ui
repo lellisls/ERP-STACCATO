@@ -674,7 +674,7 @@
           <item row="1" column="9">
            <widget class="QLabel" name="labelPrecoTotal">
             <property name="text">
-             <string>Preço final</string>
+             <string>Total</string>
             </property>
            </widget>
           </item>

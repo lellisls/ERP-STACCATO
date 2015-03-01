@@ -35,21 +35,23 @@ MainWindow::MainWindow(QWidget *parent)
   ui->setupUi(this);
   setWindowTitle("ERP Staccato");
 
-//    LoginDialog *dialog = new LoginDialog(this);
-//    if (dialog->exec() == QDialog::Rejected) {
-//      exit(1);
-//    }
+  readSettings();
 
-  if (!dbConnect()) {
-    QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,
-                          QMessageBox::NoButton);
-    exit(1);
-  } else if (!UserSession::login(
-               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
-    //                 bloco!
-    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
-    exit(1);
-  }
+    LoginDialog *dialog = new LoginDialog(this);
+    if (dialog->exec() == QDialog::Rejected) {
+      exit(1);
+    }
+
+//  if (!dbConnect()) {
+//    QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,
+//                          QMessageBox::NoButton);
+//    exit(1);
+//  } else if (!UserSession::login(
+//               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
+//    //                 bloco!
+//    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+//    exit(1);
+//  }
 
   modelOrcamento = new QSqlTableModel(this);
   modelVendas = new QSqlRelationalTableModel(this);
@@ -599,12 +601,20 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   cad->setWindowTitle("Cadastrar fornecedor");
   cad->show();
   cad->adjustSize();
+}
 
-  //  if(CadastroCliente *cad = qobject_cast<CadastroCliente *>(parentWidget())) {
-  //    qDebug() << "cast ok!";
-  //    cad->setTipo("PJ");
-  //    cad->setTipoClienteFornecedor("CLIENTE");
-  //    cad->show();
-  //    close();
-  //  }
+void MainWindow::readSettings()
+{
+  QSettings settings("ERP", "Staccato");
+  settings.beginGroup("Login");
+  if(!settings.contains("hostname")){
+    settings.setValue("hostname", QString("localhost"));
+    settings.setValue("username", QString("test"));
+    settings.setValue("password", QString("1234"));
+    settings.setValue("port", QString("3306"));
+  }
+  hostname = settings.value("hostname").toString();
+  username = settings.value("username").toString();
+  password = settings.value("password").toString();
+  port = settings.value("port").toString();
 }

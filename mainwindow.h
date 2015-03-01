@@ -35,6 +35,8 @@ class MainWindow : public QMainWindow {
     QString getPort() const;
     void setPort(const QString & value);
 
+    void readSettings();
+
   public slots:
     void showError(const QSqlError &err);
     void updateTables();

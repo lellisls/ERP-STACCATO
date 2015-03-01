@@ -45,8 +45,7 @@ QVariant NFe::getFromItemModel(int row, QString column) {
   return (modelItem.data(modelItem.index(row, modelItem.fieldIndex(column))));
 }
 
-QString NFe::criarChaveAcesso()
-{
+QString NFe::criarChaveAcesso() {
   QVector<QString> vetorChave;
   vetorChave.push_back("35");                                  // cUF - código da UF
   vetorChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
@@ -81,7 +80,7 @@ bool NFe::XML() {
   return true;
 }
 
-bool NFe::TXT(){
+bool NFe::TXT() {
   QString chave = criarChaveAcesso();
 
   //  int cDV = calculaDigitoVerificador(chave);
@@ -99,7 +98,7 @@ bool NFe::TXT(){
 
 NFe::~NFe() {}
 
-void NFe::writeTXT(QString chave){
+void NFe::writeTXT(QString chave) {
   QFile file(idVenda + ".txt");
   qDebug() << QDir::current().absoluteFilePath(idVenda + ".txt");
   file.open(QFile::WriteOnly);
@@ -124,7 +123,7 @@ void NFe::writeTXT(QString chave){
   stream << "Codigo = " + chaveAcesso.mid(25, 3) << endl;
   stream << "Numero = " + chaveAcesso.mid(28, 9) << endl;
   stream << "Emissao = " + QDate::currentDate().toString("dd/MM/yyyy") << endl;
-  stream << "Saida = " + QDate::currentDate().toString("dd/MM/yyyy")  << endl;
+  stream << "Saida = " + QDate::currentDate().toString("dd/MM/yyyy") << endl;
   stream << "Tipo = 1" << endl;
   stream << "FormaPag = 0" << endl;
 
@@ -138,8 +137,8 @@ void NFe::writeTXT(QString chave){
   stream << "Fone = " + getFromLoja("tel").toString() << endl;
 
   QString idEndLoja = getFromLoja("idEndereco").toString();
-  QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '"+ idEndLoja +"'");
-  if( !endLoja.exec() ) {
+  QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '" + idEndLoja + "'");
+  if (!endLoja.exec()) {
     qDebug() << "End. loja failed! : " << endLoja.lastError();
   }
   endLoja.first();
@@ -156,15 +155,18 @@ void NFe::writeTXT(QString chave){
   stream << "[Destinatario]" << endl;
 
   QString idCliente = getFromVenda("idCadastroCliente").toString();
-  QSqlQuery cliente("SELECT * FROM Cadastro LEFT JOIN Cadastro_has_Endereco ON Cadastro.idCadastro = Cadastro_has_Endereco.idCadastro LEFT JOIN Endereco ON Cadastro_has_Endereco.idEndereco = Endereco.idEndereco WHERE Cadastro.idCadastro = '"+ idCliente +"'");
-  if( !cliente.exec() ){
+  QSqlQuery cliente("SELECT * FROM Cadastro LEFT JOIN Cadastro_has_Endereco ON Cadastro.idCadastro = "
+                    "Cadastro_has_Endereco.idCadastro LEFT JOIN Endereco ON Cadastro_has_Endereco.idEndereco "
+                    "= Endereco.idEndereco WHERE Cadastro.idCadastro = '" +
+                    idCliente + "'");
+  if (!cliente.exec()) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
   }
   cliente.first();
 
-  if(cliente.value("pfpj").toString() == "PF"){
+  if (cliente.value("pfpj").toString() == "PF") {
     stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
-  } else{
+  } else {
     stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
     stream << "IE = 110042490114" << endl;
     //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
@@ -199,7 +201,7 @@ void NFe::writeTXT(QString chave){
     stream << "Quantidade = " + getFromItemModel(row, "qte").toString() << endl;
 
     double preco = prod.value("precoVenda").toDouble();
-    double rounded_number=static_cast<double>(static_cast<int>(preco*100+0.5))/100.0;
+    double rounded_number = static_cast<double>(static_cast<int>(preco * 100 + 0.5)) / 100.0;
     stream << "ValorUnitario = " + QString::number(rounded_number) << endl;
     stream << "ValorTotal = " + getFromItemModel(row, "parcial").toString() << endl;
     total += getFromItemModel(row, "parcial").toDouble();
@@ -212,7 +214,6 @@ void NFe::writeTXT(QString chave){
     double icms = getFromItemModel(row, "parcial").toDouble() * 0.18;
     icmsTotal += icms;
     stream << "Valor = " + QString::number(icms) << endl;
-
   }
 
   qDebug() << "[Total]";
@@ -426,7 +427,8 @@ QString NFe::calculaDigitoVerificador(QString chave) {
   }
 
   QVector<int> multiplicadores = {4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7,
-                                  6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+                                  6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2
+                                 };
   int soma = 0;
   //  qDebug() << "codigo size: " << codigo.size();
   //  qDebug() << "chave size: " << chave2.size();
@@ -465,6 +467,10 @@ bool NFe::assinaXML() {
   return true;
 }
 
-QString NFe::getArquivo() const { return arquivo; }
+QString NFe::getArquivo() const {
+  return arquivo;
+}
 
-QString NFe::getChaveAcesso() const { return chaveAcesso; }
+QString NFe::getChaveAcesso() const {
+  return chaveAcesso;
+}

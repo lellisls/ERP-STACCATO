@@ -37,21 +37,21 @@ MainWindow::MainWindow(QWidget *parent)
 
   readSettings();
 
-    LoginDialog *dialog = new LoginDialog(this);
-    if (dialog->exec() == QDialog::Rejected) {
-      exit(1);
-    }
+//    LoginDialog *dialog = new LoginDialog(this);
+//    if (dialog->exec() == QDialog::Rejected) {
+//      exit(1);
+//    }
 
-//  if (!dbConnect()) {
-//    QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,
-//                          QMessageBox::NoButton);
-//    exit(1);
-//  } else if (!UserSession::login(
-//               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
-//    //                 bloco!
-//    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
-//    exit(1);
-//  }
+  if (!dbConnect()) {
+    QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,
+                          QMessageBox::NoButton);
+    exit(1);
+  } else if (!UserSession::login(
+               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
+    //                 bloco!
+    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    exit(1);
+  }
 
   modelOrcamento = new QSqlTableModel(this);
   modelVendas = new QSqlRelationalTableModel(this);
@@ -574,25 +574,39 @@ void MainWindow::on_pushButtonCriarOrc_clicked() {
 }
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  modelOrcamento->setFilter("Código LIKE '%" + text + "%'");
+  modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
 
   //  SELECT * FROM MyTable WHERE (Column1 LIKE '%keyword1%' OR Column2 LIKE
   //  '%keyword1%') AND (Column1 LIKE '%keyword2%' OR Column2 LIKE '%keyword2%');
 }
 
-void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
+  modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
+}
 
-void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
+  modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+}
 
-void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {
+  modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+}
 
-void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
+  modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+}
 
-void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
+  modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+}
 
-void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {
+  modelRecebimentosForn->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+}
 
-void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {}
+void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
+  modelNFe->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+}
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
   CadastroCliente *cad = new CadastroCliente(this);

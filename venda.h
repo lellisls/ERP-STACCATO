@@ -20,13 +20,13 @@ class Venda : public RegisterDialog {
     ~Venda();
     void fecharOrcamento(const QString &idOrcamento);
     void viewVenda(QString idVenda);
-
     void updateValues();
-    private slots:
+
+  private slots:
     void on_doubleSpinBoxPgt1_valueChanged(double);
     void on_doubleSpinBoxPgt2_valueChanged(double);
     void on_doubleSpinBoxPgt3_valueChanged(double);
-//    void on_doubleSpinBoxRestante_valueChanged(double value);
+    //    void on_doubleSpinBoxRestante_valueChanged(double value);
     void on_pushButtonCancelar_clicked();
     void on_pushButtonFecharPedido_clicked();
     void on_pushButtonNFe_clicked();
@@ -36,8 +36,10 @@ class Venda : public RegisterDialog {
     void on_comboBoxPgt1_currentTextChanged(const QString &text);
     void on_comboBoxPgt2_currentTextChanged(const QString &text);
     void on_comboBoxPgt3_currentTextChanged(const QString &text);
-
     void on_pushButtonVoltar_clicked();
+    void on_comboBoxPgt1Parc_currentTextChanged(const QString &text);
+    void on_comboBoxPgt2Parc_currentTextChanged(const QString &text);
+    void on_comboBoxPgt3Parc_currentTextChanged(const QString &text);
 
   signals:
     void finished();
@@ -60,16 +62,16 @@ class Venda : public RegisterDialog {
     void fillComboBoxCliente();
     void setupMapper();
     void updateId();
-
-    // RegisterDialog interface
-  protected:
-    virtual bool savingProcedures(int row);
-    virtual void registerMode();
-    virtual void updateMode();
+    void montarFluxoCaixa();
 
     // RegisterDialog interface
   public:
     virtual bool viewRegister(QModelIndex index);
+
+  protected:
+    virtual bool savingProcedures(int row);
+    virtual void registerMode();
+    virtual void updateMode();
 };
 
 #endif // VENDA_H

@@ -74,14 +74,10 @@ Orcamento::Orcamento(QWidget *parent)
   if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
     qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
   }
-//  qDebug() << "qry: " << qryFrete.lastQuery();
   if (qryFrete.next()) {
     minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
     porcFrete = qryFrete.value("porcentagemFrete").toDouble();
   }
-
-//  qDebug() << "minimoFrete: " << minimoFrete;
-//  qDebug() << "%frete: " << porcFrete;
 
   fillComboBoxes();
 
@@ -122,12 +118,12 @@ void Orcamento::fillComboBoxes() {
   queryProf.exec();
   while (queryProf.next()) {
     QString str;
-    if(queryProf.value(2).toString().isEmpty()) {
-      str = queryProf.value(1).toString();
+    if(queryProf.value("tipo").toString().isEmpty()) {
+      str = queryProf.value("nome").toString();
     } else {
-      str = queryProf.value(1).toString() + " [" + queryProf.value(2).toString() + "] ";
+      str = queryProf.value("nome").toString() + " [" + queryProf.value("tipo").toString() + "] ";
     }
-    ui->comboBoxProfissional->addItem(str, queryProf.value(0));
+    ui->comboBoxProfissional->addItem(str, queryProf.value("idProfissional"));
   }
   ui->comboBoxVendedor->clear();
   ui->comboBoxVendedor->addItem("Escolha uma opção!");
@@ -135,9 +131,10 @@ void Orcamento::fillComboBoxes() {
   QSqlQuery queryVend("SELECT idUsuario, nome FROM Usuario");
   queryVend.exec();
   while (queryVend.next()) {
-    QString str = queryVend.value(0).toString() + " - " + queryVend.value(1).toString();
-    ui->comboBoxVendedor->addItem(str, queryVend.value(0));
+    QString str = queryVend.value("idUsuario").toString() + " - " + queryVend.value("nome").toString();
+    ui->comboBoxVendedor->addItem(str, queryVend.value("idUsuario"));
   }
+  ui->comboBoxVendedor->setCurrentValue(UserSession::getId());
 //  if (!ui->comboBoxVendedor->setCurrentValue(UserSession::getId())) {
 //    ui->comboBoxVendedor->setEnabled(true);
 //  } else {

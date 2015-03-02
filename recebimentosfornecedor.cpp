@@ -35,18 +35,18 @@ void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
     }
 
     // gerar NFe
-    NFe nota(idPedido, this);
-    qDebug() << nota.XML();
-    qDebug() << "arquivo: " << nota.getArquivo();
-    if(!qry.exec("SET @xml = LOAD_FILE('"+ nota.getArquivo() +"')")){
-      qDebug() << "Erro ao ler arquivo xml: " << qry.lastError();
-      qDebug() << "qry: " << qry.lastQuery();
-    }
+//    NFe nota(idPedido, this);
+//    qDebug() << nota.TXT();
+//    qDebug() << "arquivo: " << nota.getArquivo();
+//    if(!qry.exec("SET @xml = LOAD_FILE('"+ nota.getArquivo() +"')")){
+//      qDebug() << "Erro ao ler arquivo xml: " << qry.lastError();
+//      qDebug() << "qry: " << qry.lastQuery();
+//    }
 
-    if(!qry.exec("INSERT INTO nfe (NFe, idVenda, idLoja, chaveAcesso) VALUES (@xml, '"+ idPedido +"', 1, '"+ nota.getChaveAcesso() +"')")){
-      qDebug() << "Erro ao inserir NFe na tabela: " << qry.lastError();
-      qDebug() << "qry: " << qry.lastQuery();
-    }
+//    if(!qry.exec("INSERT INTO nfe (NFe, idVenda, idLoja, chaveAcesso) VALUES (@xml, '"+ idPedido +"', 1, '"+ nota.getChaveAcesso() +"')")){
+//      qDebug() << "Erro ao inserir NFe na tabela: " << qry.lastError();
+//      qDebug() << "qry: " << qry.lastQuery();
+//    }
 
   } else {
     QSqlQuery qry;

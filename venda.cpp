@@ -541,3 +541,5 @@ void Venda::on_comboBoxPgt3Parc_currentTextChanged(const QString &text)
 
   montarFluxoCaixa();
 }
+
+//TODO: colocar campos de data nos pagamentos para indicar a data do pagamento? (cheque, cartão etc)

@@ -10,8 +10,6 @@ class NFe : public QObject {
   public:
     explicit NFe(QString idVenda, QObject *parent = 0);
     ~NFe();
-    bool assinaXML();
-    bool XML();
     bool TXT();
     QString calculaDigitoVerificador(QString chave);
     QString getArquivo() const;
@@ -28,7 +26,6 @@ class NFe : public QObject {
     QVariant getFromVenda(QString column);
     QVariant getFromLoja(QString column);
     QVariant getFromItemModel(int row, QString column);
-    void writeXML(QString chave, int cDV);
     void writeTXT(QString chave);
 };
 

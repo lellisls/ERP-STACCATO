@@ -14,6 +14,7 @@
 #include "orcamento.h"
 #include "ui_venda.h"
 #include "venda.h"
+#include "usersession.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -208,8 +209,8 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 
   qry.exec("START TRANSACTION");
 
-  if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCadastroCliente, idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status FROM orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
-    qDebug() << "Error inserting into Venda " << qry.lastError();
+  if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCadastroCliente, idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+    qDebug() << "Error inserting into Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
@@ -226,16 +227,20 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
+  if(!modelFluxoCaixa.submitAll()){
+    qDebug() << "Error submitting modelFluxoCaixa: " << modelFluxoCaixa.lastError();
+  }
+
   if (!modelItem.submitAll()) {
-    qDebug() << "Error submitting itemModel" << modelItem.lastError();
+    qDebug() << "Error submitting modelItem: " << modelItem.lastError();
     //    qDebug() << "query: " << modelItem.query().lastQuery();
     qry.exec("ROLLBACK");
     return;
   }
 
-  QSqlQuery qryEstoque("SELECT produto.descricao, produto.estoque, venda_has_produto.idVenda FROM "
-                       "venda_has_produto INNER JOIN produto ON produto.idProduto = "
-                       "venda_has_produto.idProduto WHERE estoque = 0 AND venda_has_produto.idVenda = '" +
+  QSqlQuery qryEstoque("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM "
+                       "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+                       "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
                        idOrcamento + "';");
   if (!qryEstoque.exec()) {
     qDebug() << qryEstoque.lastError();
@@ -244,17 +249,17 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   }
   if (qryEstoque.size() > 0) {
     if (!qry.exec(
-          "INSERT INTO pedidofornecedor (idPedido, idLoja, idUsuario, idCadastroCliente, "
+          "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCadastroCliente, "
           "idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status) SELECT * "
-          "FROM venda WHERE idVenda = '" +
+          "FROM Venda WHERE idVenda = '" +
           idOrcamento + "'")) {
       qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
       qry.exec("ROLLBACK");
       return;
     }
-    if (!qry.exec("INSERT INTO pedidofornecedor_has_produto SELECT venda_has_produto.* FROM "
-                  "venda_has_produto INNER JOIN produto ON produto.idProduto = "
-                  "venda_has_produto.idProduto WHERE estoque = 0 AND venda_has_produto.idVenda = '" +
+    if (!qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
+                  "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+                  "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
                   idOrcamento + "';")) {
       qDebug() << "Erro na inserção dos produtos em pedidofornecedor_has_produto: " << qry.lastError();
       qry.exec("ROLLBACK");
@@ -268,13 +273,13 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  if (!qry.exec("DELETE FROM orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+  if (!qry.exec("DELETE FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error deleting row from Orcamento: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
-  if (!qry.exec("INSERT INTO contaareceber (dataEmissao, idVenda) VALUES ('" +
+  if (!qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
                 QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento + "')")) {
     qDebug() << "Error inserting contaareceber: " << qry.lastError();
     qry.exec("ROLLBACK");
@@ -447,6 +452,7 @@ bool Venda::viewRegister(QModelIndex index) {
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
   //  novoItem();
+  ui->pushButtonFecharPedido->hide();
   ui->pushButtonVoltar->hide();
 
   calcPrecoGlobalTotal();
@@ -469,6 +475,9 @@ void Venda::montarFluxoCaixa()
   if(ui->comboBoxPgt1->currentText() != "Escolha uma opção!"){
     for(int i = 0, z = parcelas1 - 1; i < parcelas1; ++i, --z){
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
+//      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idPagamento")), );
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "1. " + ui->comboBoxPgt1->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas1 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value() / parcelas1);
@@ -481,6 +490,8 @@ void Venda::montarFluxoCaixa()
     int parcelas2 = ui->comboBoxPgt2Parc->currentIndex() + 1;
     for(int i = 0, z = parcelas2 - 1; i < parcelas2; ++i, --z){
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "2. " + ui->comboBoxPgt2->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas2 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt2->value() / parcelas2);
@@ -493,6 +504,8 @@ void Venda::montarFluxoCaixa()
     int parcelas3 = ui->comboBoxPgt3Parc->currentIndex() + 1;
     for(int i = 0, z = parcelas3 - 1; i < parcelas3; ++i, --z){
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "3. " + ui->comboBoxPgt3->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas3 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value() / parcelas3);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>926</width>
-    <height>723</height>
+    <width>928</width>
+    <height>796</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,6 +99,12 @@
           </item>
           <item row="0" column="2">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="maximum">
              <double>999999.989999999990687</double>
             </property>
@@ -208,6 +214,12 @@
           </item>
           <item row="0" column="2">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="maximum">
              <double>999999.989999999990687</double>
             </property>
@@ -234,6 +246,12 @@
           </item>
           <item row="0" column="2">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="maximum">
              <double>999999.989999999990687</double>
             </property>
@@ -634,7 +652,6 @@
        </item>
       </layout>
       <zorder>tableVenda</zorder>
-      <zorder>tableVenda</zorder>
       <zorder>groupBox_3</zorder>
       <zorder>groupBox</zorder>
       <zorder>groupBox_2</zorder>
@@ -692,6 +709,9 @@
       <widget class="QPushButton" name="pushButtonVoltar">
        <property name="text">
         <string>Voltar</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

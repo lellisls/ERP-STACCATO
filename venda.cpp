@@ -451,9 +451,13 @@ bool Venda::viewRegister(QModelIndex index) {
   //  qDebug() << "idVenda: " << idVenda;
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
+  modelFluxoCaixa.setFilter("idVenda = '"+ idVenda +"'");
+  modelFluxoCaixa.select();
   //  novoItem();
   ui->pushButtonFecharPedido->hide();
   ui->pushButtonVoltar->hide();
+
+  ui->tableFluxoCaixa->resizeColumnsToContents();
 
   calcPrecoGlobalTotal();
   return true;
@@ -477,7 +481,7 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
-//      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idPagamento")), );
+      //      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idPagamento")), );
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "1. " + ui->comboBoxPgt1->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas1 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value() / parcelas1);

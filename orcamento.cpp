@@ -522,7 +522,8 @@ QString Orcamento::getItensHtml() {
 void Orcamento::print(QPrinter *printer) {
   QWebPage *page = new QWebPage(this);
   QWebFrame *frame = page->mainFrame();
-  QFile file(":/orcamento.html");
+  QDir dir(QApplication::applicationDirPath());
+  QFile file( dir.absoluteFilePath("orcamento.html") );
   QString html;
   if (file.open(QFile::ReadOnly)) {
     QByteArray data = file.readAll();
@@ -538,7 +539,8 @@ void Orcamento::print(QPrinter *printer) {
   queryLoja.first();
 
   //  html.replace("LOGO", "");
-  html.replace("LOGO", QDir::home().absoluteFilePath("logo.png"));
+  html.replace("LOGO", QUrl::fromLocalFile(dir.absoluteFilePath("logo.png")).toString());
+//  html.replace("LOGO", QDir::home().absoluteFilePath("logo.png"));
 
   html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
   html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
@@ -574,8 +576,7 @@ void Orcamento::print(QPrinter *printer) {
   qDebug() << html;
   //  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
-
-  QFile outputFile(QDir::home().absoluteFilePath("orc.html"));
+  QFile outputFile(dir.absoluteFilePath("orc.html"));
   if (outputFile.open(QIODevice::WriteOnly)) {
     QTextStream out(&outputFile);
     out << html;

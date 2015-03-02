@@ -232,28 +232,15 @@ void Orcamento::updateId() {
   if (queryIdExists.size() != 0) {
     return;
   }
-  str =
-      "SELECT sigla FROM Usuario WHERE idUsuario = '" + ui->comboBoxVendedor->currentData().toString() + "';";
-  QSqlQuery queryUsuario(str);
-  QString siglaUser = "AAA";
-  if (queryUsuario.first()) {
-    siglaUser = queryUsuario.value(0).toString();
-  }
-  //  QString id = UserSession::getSiglaLoja() + "-" + siglaUser + "-" +
-  //  QDate::currentDate().toString("yyMMdd") + "-";
-  //  QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
-  QString id = UserSession::getSiglaLoja() + "-" + siglaUser + "-" +
-               QString("%1").arg(QDate::currentDate().toString("yyMM").toInt(), 3, 16, QChar('0')).toUpper();
+  QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
   str = "SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id + "%'";
   str += "UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%'";
   QSqlQuery query(str);
   int last = 0;
   while (query.next()) {
-    QString subStr = query.value("idOrcamento").toString().mid(id.size());
-    bool ok;
-    last = std::max(subStr.toInt(&ok, 16), last);
+    last = query.value("idOrcamento").toString().mid(id.size()).toInt();
   }
-  id += QString("%1").arg(last + 1, 3, 16, QChar('0')).toUpper();
+  id += QString("%1").arg(last + 1, 4, 10,QChar('0')); //QString("%1").arg(last + 1, 3, 16, QChar('0')).toUpper();
   ui->lineEditOrcamento->setText(id);
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex(primaryKey)), id);

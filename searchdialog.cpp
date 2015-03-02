@@ -78,7 +78,6 @@ void SearchDialog::show() {
 }
 
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {
-
   Q_UNUSED(index)
   sendUpdateMessage();
   ui->lineEditBusca->clear();

@@ -10,17 +10,13 @@
 CadastroCliente::CadastroCliente(QWidget *parent)
   : RegisterDialog("Cadastro", "idCadastro", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
-  //  ui->widgetEnd_1->setupUi(ui->lineEditRG, ui->lineEditTel_Res);
-  //  ui->widgetEnd_2->setupUi(ui->groupBoxCobranca, ui->groupBoxEntrega);
-  //  ui->widgetEnd_3->setupUi(ui->groupBoxEntrega, ui->comboBoxCliente);
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
   ui->pushButtonMostrarInativos->hide();
   modelEnd.setTable("Endereco");
   ui->tableView->setModel(&modelEnd);
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setFilter("idEndereco in (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = '" +
-                     data(primaryKey).toString() + "')");
+  modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
   modelEnd.select();
   mapperEnd.setModel(&modelEnd);
   setupUi();
@@ -40,9 +36,9 @@ void CadastroCliente::setupUi() {
   ui->lineEditEmail->setPlaceholderText("usuario@email.com");
   ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
   ui->comboBoxCliente->addItem("Escolha uma opção!");
-  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro WHERE clienteFornecedor = 'CLIENTE' "
-                  "AND idCadastro != '" +
-                  data(primaryKey).toString() + "'");
+  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro " 
+		  "WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '"  
+		  + data(primaryKey).toString() + "'" );
   while (query.next()) {
     if (data(primaryKey).isValid() && data(primaryKey) == query.value(0)) {
       QString str = query.value(1).toString() + " - " + query.value(2).toString();
@@ -61,7 +57,6 @@ void CadastroCliente::setupUi() {
     QString str = queryVend.value(0).toString() + " - " + queryVend.value(1).toString();
     ui->comboBoxVendedor->addItem(str, queryVend.value(0));
   }
-  //  ui->radioButtonCliente->setChecked(true);
 }
 
 CadastroCliente::~CadastroCliente() {
@@ -151,7 +146,7 @@ bool CadastroCliente::verifyFields() {
         setData("incompleto", true);
       }
     }
-  }
+ } 
 
   setData("clienteFornecedor", tipoClienteFornecedor);
   return true;
@@ -212,31 +207,40 @@ bool CadastroCliente::savingProcedures(int row) {
   }
 //  qDebug() << "PK = " << data(row, primaryKey);
   int idCad = data(row, primaryKey).toInt();
-
-  if (modelEnd.isDirty()) {
-    if (!modelEnd.submitAll()) {
-      qDebug() << objectName() << " : " << __LINE__
-               << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-      qDebug() << "QUERY : " << modelEnd.query().lastQuery();
-      return false;
-    }
+  if( !data(row,primaryKey).isValid()) {
+    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
+    qryLastId.exec();
+    qryLastId.first();
+    idCad = qryLastId.value("lastId").toInt();
   }
+  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
-  for (int end = 0; end < modelEnd.rowCount(); ++end) {
-    int idEnd = modelEnd.data(modelEnd.index(end, modelEnd.fieldIndex("idEndereco"))).toInt();
-    QSqlQuery qry;
-    qry.prepare("INSERT IGNORE INTO Cadastro_has_Endereco (idCadastro, idEndereco)  VALUES( :idCadastro, "
-                ":idEndereco );");
-    qry.bindValue(":idCadastro", idCad);
-    qry.bindValue(":idEndereco", idEnd);
-    if (!qry.exec()) {
-      qDebug() << objectName() << " : " << __LINE__
-               << " : Error insert into Cadastro_has_Endereco : " << qry.lastError();
-      qDebug() << "QUERY : " << qry.lastQuery();
-      qDebug() << "Bound values : " << idCad << ", " << idEnd;
-      return false;
-    }
+
+  qDebug() << "ID Cadastro = " << idCad;
+  for( int end = 0; end < modelEnd.rowCount( ); ++ end) {
+    modelEnd.setData(modelEnd.index(end,modelEnd.fieldIndex(primaryKey)),idCad);
   }
+  if(!modelEnd.submitAll()) {
+    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
+    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    return false;
+  }
+  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
+//  }
+
+//  for( int end = 0; end < modelEnd.rowCount( ); ++ end) {
+//    int idEnd = modelEnd.data(modelEnd.index(end,modelEnd.fieldIndex("idEndereco"))).toInt();
+//    QSqlQuery qry;
+//    qry.prepare("INSERT IGNORE INTO Cadastro_has_Endereco (idCadastro, idEndereco) VALUES( :idCadastro, :idEndereco );");
+//    qry.bindValue(":idCadastro", idCad);
+//    qry.bindValue(":idEndereco", idEnd);
+//    if(!qry.exec()) {
+//      qDebug() <<  objectName() << " : " << __LINE__ << " : Error insert into Cadastro_has_Endereco : " << qry.lastError();
+//      return false;
+//    }
+//    qDebug() << "QUERY : " << qry.lastQuery();
+//    qDebug() << "Bound values : " << idCad << ", " << idEnd;
+//  }
   return true;
 }
 
@@ -331,9 +335,9 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   model.select();
   mapper.setCurrentModelIndex(idx);
 
-  modelEnd.setFilter("idEndereco in (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = '" +
-                     data(primaryKey).toString() + "')");
-  if (!modelEnd.select()) {
+
+  modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
+  if( !modelEnd.select() ) {
     qDebug() << modelEnd.lastError();
   }
 

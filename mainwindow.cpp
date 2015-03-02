@@ -441,10 +441,10 @@ void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
   if (UserSession::getTipo() == "VENDEDOR") {
-    modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'Cancelado' AND idUsuario = " +
+    modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO' AND idUsuario = " +
                               QString::number(UserSession::getId()) + "");
   } else {
-    modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'Cancelado'");
+    modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO'");
   }
 }
 

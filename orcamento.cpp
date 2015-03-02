@@ -233,8 +233,9 @@ void Orcamento::updateId() {
   if (queryUsuario.first()) {
     siglaUser = queryUsuario.value(0).toString();
   }
-  QString id =
-    UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QDate::currentDate().toString("yyMMdd") + "-";
+//  QString id = UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QDate::currentDate().toString("yyMMdd") + "-";
+//  QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
+    QString id = UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QString("%1").arg(QDate::currentDate().toString("yyMM").toInt(), 3, 16, QChar('0')).toUpper();
   str = "SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id + "%'";
   str += "UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%'";
   QSqlQuery query(str);
@@ -244,8 +245,11 @@ void Orcamento::updateId() {
     bool ok;
     last = std::max(subStr.toInt(&ok, 16), last);
   }
-  id += QString("%1").arg(last + 1, 3, 16, QChar('0'));
+  id += QString("%1").arg(last + 1, 3, 16, QChar('0')).toUpper();
   ui->lineEditOrcamento->setText(id);
+  for (int row = 0; row < modelItem.rowCount(); ++row) {
+    modelItem.setData(modelItem.index(row,modelItem.fieldIndex(primaryKey)),id);
+  }
 }
 
 bool Orcamento::verifyFields() {
@@ -298,7 +302,6 @@ bool Orcamento::savingProcedures(int row) {
 
   setData(row, "frete", ui->doubleSpinBoxFrete->value());
 
-  QSqlQuery("START TRANSACTION").exec();
   if (!model.submitAll() && model.lastError().number() != 1062) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
@@ -308,7 +311,7 @@ bool Orcamento::savingProcedures(int row) {
   }
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
-    modelItem.setData(model.index(row, modelItem.fieldIndex("idOrcamento")), idOrcamento);
+    modelItem.setData(model.index(row, modelItem.fieldIndex(primaryKey)), idOrcamento);
     modelItem.setData(model.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
   }
 
@@ -535,7 +538,7 @@ void Orcamento::print(QPrinter *printer) {
   queryLoja.first();
 
   //  html.replace("LOGO", "");
-  html.replace("LOGO", QUrl::fromLocalFile(QDir::home().filePath("logo.png")).toString());
+  html.replace("LOGO", QDir::home().absoluteFilePath("logo.png"));
 
   html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
   html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
@@ -789,7 +792,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   if (!text.isEmpty()) {
     QSqlQuery queryEndereco;
-    queryEndereco.prepare("SELECT * FROM Endereco WHERE idEndereco IN (SELECT idEndereco FROM Cadastro_has_Endereco WHERE idCadastro = :idCadastro)");
+    queryEndereco.prepare("SELECT * FROM Endereco WHERE idCadastro = :idCadastro");
     queryEndereco.bindValue(":idCadastro",ui->itemBoxCliente->getValue());
     if (!queryEndereco.exec()) {
       qDebug() << "Erro ao buscar endereços " << queryEndereco.lastError();

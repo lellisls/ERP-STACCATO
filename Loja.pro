@@ -120,6 +120,7 @@ RESOURCES += \
     resources.qrc
 
 install_it.path = $$OUT_PWD
-install_it.files = $$PWD/libmysql.dll
-
+install_it.files = $$PWD/libmysql.dll \
+                   $$PWD/logo.png \
+                   $$PWD/orcamento.html
 INSTALLS += install_it

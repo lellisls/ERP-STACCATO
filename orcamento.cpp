@@ -233,8 +233,9 @@ void Orcamento::updateId() {
   if (queryUsuario.first()) {
     siglaUser = queryUsuario.value(0).toString();
   }
-  QString id =
-    UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QDate::currentDate().toString("yyMMdd") + "-";
+//  QString id = UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QDate::currentDate().toString("yyMMdd") + "-";
+//  QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
+    QString id = UserSession::getSiglaLoja() + "-" + siglaUser + "-" + QString("%1").arg(QDate::currentDate().toString("yyMM").toInt(), 3, 16, QChar('0')).toUpper();
   str = "SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id + "%'";
   str += "UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%'";
   QSqlQuery query(str);

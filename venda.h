@@ -40,6 +40,9 @@ class Venda : public RegisterDialog {
     void on_comboBoxPgt1Parc_currentTextChanged(const QString &text);
     void on_comboBoxPgt2Parc_currentTextChanged(const QString &text);
     void on_comboBoxPgt3Parc_currentTextChanged(const QString &text);
+    void on_dateEditPgt1_dateChanged(const QDate &date);
+    void on_dateEditPgt2_dateChanged(const QDate &date);
+    void on_dateEditPgt3_dateChanged(const QDate &date);
 
   signals:
     void finished();
@@ -68,6 +71,9 @@ class Venda : public RegisterDialog {
   public:
     virtual bool viewRegister(QModelIndex index);
 
+    void calculoSpinBox1();
+    void calculoSpinBox2();
+    void calculoSpinBox3();
   protected:
     virtual bool savingProcedures(int row);
     virtual void registerMode();

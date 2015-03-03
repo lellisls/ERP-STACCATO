@@ -15,6 +15,7 @@
 #include "ui_venda.h"
 #include "venda.h"
 #include "usersession.h"
+#include "cadastrocliente.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -71,6 +72,10 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
 
   //  ui->pushButtonNFe->hide();
 
+  ui->dateEditPgt1->setDate(QDate::currentDate());
+  ui->dateEditPgt2->setDate(QDate::currentDate());
+  ui->dateEditPgt3->setDate(QDate::currentDate());
+
   show();
 }
 
@@ -123,6 +128,8 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   //  ui->doubleSpinBoxRestante->setValue(
   //    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   //  ui->doubleSpinBoxPgt1->setMaximum( ui->doubleSpinBoxRestante->value());
+
+  modelFluxoCaixa.setFilter("idVenda = '" + idOrcamento + "'");
 }
 
 bool Venda::cadastrar() {
@@ -201,11 +208,49 @@ void Venda::on_pushButtonCancelar_clicked() {
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
+  if(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() < ui->doubleSpinBoxTotal->value()){
+    QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
+    return;
+  }
+
+  if(ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!"){
+    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 1.");
+    return;
+  }
+  if(ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!"){
+    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 2.");
+    return;
+  }
+  if(ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!"){
+    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
+    return;
+  }
+
   //TODO: verificar se cadastro do cliente está incompleto
+  QSqlQuery qryCadastro;
+  int idCadastro = 0;
+  if(!qryCadastro.exec("SELECT idCadastroCliente FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "';")){
+    qDebug() << "Erro buscando idCadastro em Venda: " << qryCadastro.lastError();
+    return;
+  }
+  qryCadastro.next();
+  qDebug() << "cadastro size: " << qryCadastro.size();
+  idCadastro = qryCadastro.value("idCadastroCliente").toInt();
+  if(!qryCadastro.exec("SELECT incompleto FROM Venda LEFT JOIN Cadastro ON Venda.idCadastroCliente = Cadastro.idCadastro WHERE idCadastro = "+ QString::number(idCadastro) +" AND incompleto = 1;")){
+    qDebug() << "Erro verificando se cadastro está completo: " << qryCadastro.lastError();
+    return;
+  }
+  if(qryCadastro.next()){
+    //terminar cadastro
+    QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
+    RegisterDialog *cadCliente = new CadastroCliente(this);
+    cadCliente->viewRegisterById(idCadastro);
+    return;
+  }
 
   QSqlQuery qry;
 
-  qDebug() << "id: " << idOrcamento;
+//  qDebug() << "id: " << idOrcamento;
 
   qry.exec("START TRANSACTION");
 
@@ -320,22 +365,23 @@ void Venda::viewVenda(QString idVenda) {
 }
 
 void Venda::on_doubleSpinBoxPgt1_valueChanged(double) {
-
+  montarFluxoCaixa();
 }
 
 void Venda::on_doubleSpinBoxPgt2_valueChanged(double) {
-
+  montarFluxoCaixa();
 }
 
 void Venda::on_doubleSpinBoxPgt3_valueChanged(double) {
-
+  montarFluxoCaixa();
 }
 
 //void Venda::on_doubleSpinBoxRestante_valueChanged(double value) {
 //  Q_UNUSED(value);
 //}
 
-void Venda::on_doubleSpinBoxPgt1_editingFinished() {
+void Venda::calculoSpinBox1()
+{
   double pgt1 = ui->doubleSpinBoxPgt1->value();
   double pgt2 = ui->doubleSpinBoxPgt2->value();
   double pgt3 = ui->doubleSpinBoxPgt3->value();
@@ -363,7 +409,12 @@ void Venda::on_doubleSpinBoxPgt1_editingFinished() {
   //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
-void Venda::on_doubleSpinBoxPgt2_editingFinished() {
+void Venda::on_doubleSpinBoxPgt1_editingFinished() {
+  calculoSpinBox1();
+}
+
+void Venda::calculoSpinBox2()
+{
   double pgt1 = ui->doubleSpinBoxPgt1->value();
   double pgt2 = ui->doubleSpinBoxPgt2->value();
   double pgt3 = ui->doubleSpinBoxPgt3->value();
@@ -379,7 +430,12 @@ void Venda::on_doubleSpinBoxPgt2_editingFinished() {
   //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
-void Venda::on_doubleSpinBoxPgt3_editingFinished() {
+void Venda::on_doubleSpinBoxPgt2_editingFinished() {
+  calculoSpinBox2();
+}
+
+void Venda::calculoSpinBox3()
+{
   double pgt1 = ui->doubleSpinBoxPgt1->value();
   double pgt2 = ui->doubleSpinBoxPgt2->value();
   double pgt3 = ui->doubleSpinBoxPgt3->value();
@@ -390,6 +446,10 @@ void Venda::on_doubleSpinBoxPgt3_editingFinished() {
   ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
 }
 
+void Venda::on_doubleSpinBoxPgt3_editingFinished() {
+  calculoSpinBox3();
+}
+
 void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
   if(text == "Escolha uma opção!") {
     return;
@@ -398,6 +458,12 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
     ui->comboBoxPgt1Parc->setEnabled(true);
   } else {
     ui->comboBoxPgt1Parc->setDisabled(true);
+  }
+
+  if(text == "Cheque"){
+    ui->dateEditPgt1->setEnabled(true);
+  } else{
+    ui->dateEditPgt1->setDisabled(true);
   }
 
   montarFluxoCaixa();
@@ -413,6 +479,12 @@ void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text) {
     ui->comboBoxPgt2Parc->setDisabled(true);
   }
 
+  if(text == "Cheque"){
+    ui->dateEditPgt2->setEnabled(true);
+  } else{
+    ui->dateEditPgt2->setDisabled(true);
+  }
+
   montarFluxoCaixa();
 }
 
@@ -424,6 +496,12 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
     ui->comboBoxPgt3Parc->setEnabled(true);
   } else {
     ui->comboBoxPgt3Parc->setDisabled(true);
+  }
+
+  if(text == "Cheque"){
+    ui->dateEditPgt3->setEnabled(true);
+  } else{
+    ui->dateEditPgt3->setDisabled(true);
   }
 
   montarFluxoCaixa();
@@ -448,7 +526,7 @@ bool Venda::viewRegister(QModelIndex index) {
   }
   QString idVenda = data(primaryKey).toString();
   idOrcamento = idVenda;
-  //  qDebug() << "idVenda: " << idVenda;
+//  qDebug() << "idVenda: " << idVenda;
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
   modelFluxoCaixa.setFilter("idVenda = '"+ idVenda +"'");
@@ -485,9 +563,12 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "1. " + ui->comboBoxPgt1->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas1 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value() / parcelas1);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), QDate::currentDate().addMonths(i));
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), ui->dateEditPgt1->date().addMonths(i));
+//                              QDate::currentDate().addMonths(i));
       ++row;
     }
+  } else{
+
   }
 
   if(ui->comboBoxPgt2->currentText() != "Escolha uma opção!"){
@@ -499,7 +580,8 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "2. " + ui->comboBoxPgt2->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas2 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt2->value() / parcelas2);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), QDate::currentDate().addMonths(i));
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), ui->dateEditPgt2->date().addMonths(i));
+//                              QDate::currentDate().addMonths(i));
       ++row;
     }
   }
@@ -513,7 +595,8 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")), "3. " + ui->comboBoxPgt3->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas3 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value() / parcelas3);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), QDate::currentDate().addMonths(i));
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), ui->dateEditPgt3->date().addMonths(i));
+//                              QDate::currentDate().addMonths(i));
       ++row;
     }
   }
@@ -543,3 +626,18 @@ void Venda::on_comboBoxPgt3Parc_currentTextChanged(const QString &text)
 }
 
 //TODO: colocar campos de data nos pagamentos para indicar a data do pagamento? (cheque, cartão etc)
+
+void Venda::on_dateEditPgt1_dateChanged(const QDate &)
+{
+    montarFluxoCaixa();
+}
+
+void Venda::on_dateEditPgt2_dateChanged(const QDate &)
+{
+    montarFluxoCaixa();
+}
+
+void Venda::on_dateEditPgt3_dateChanged(const QDate &)
+{
+    montarFluxoCaixa();
+}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1004</width>
-    <height>557</height>
+    <width>992</width>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,220 @@
        <string>Venda</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_8">
-       <item row="1" column="0" colspan="2">
+       <item row="0" column="0" rowspan="3">
+        <widget class="QTableView" name="tableVenda">
+         <property name="minimumSize">
+          <size>
+           <width>500</width>
+           <height>300</height>
+          </size>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QTableView" name="tableFluxoCaixa">
+         <property name="minimumSize">
+          <size>
+           <width>350</width>
+           <height>0</height>
+          </size>
+         </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Pgt. 1</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QComboBox" name="comboBoxPgt1">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="comboBoxPgt1Parc">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>1x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>3x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>6x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>7x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>8x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>9x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>10x</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximum">
+             <double>999999.989999999990687</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QDateEdit" name="dateEditPgt1"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="1" rowspan="2">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Pgt. 2</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximum">
+             <double>999999.989999999990687</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="comboBoxPgt2Parc">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>1x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>3x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>6x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>7x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>8x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>9x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>10x</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QComboBox" name="comboBoxPgt2">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QDateEdit" name="dateEditPgt2"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0" rowspan="3">
         <widget class="QGroupBox" name="groupBox_3">
          <property name="title">
           <string>Totais</string>
@@ -338,344 +551,128 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QTableView" name="tableVenda">
-         <property name="minimumSize">
-          <size>
-           <width>500</width>
-           <height>300</height>
-          </size>
+       <item row="4" column="1">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Pgt. 3</string>
          </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <attribute name="horizontalHeaderStretchLastSection">
-          <bool>true</bool>
-         </attribute>
-        </widget>
-       </item>
-       <item row="0" column="2" rowspan="2">
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_9">
-          <item row="4" column="0">
-           <widget class="QGroupBox" name="groupBox_5">
-            <property name="title">
-             <string/>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <layout class="QGridLayout" name="gridLayout">
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <double>999999.989999999990687</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="labelRestante">
-               <property name="text">
-                <string>Total</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
+            <property name="maximum">
+             <double>999999.989999999990687</double>
+            </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QGroupBox" name="groupBox_2">
-            <property name="title">
-             <string>Pgt. 2</string>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="comboBoxPgt3Parc">
+            <property name="enabled">
+             <bool>false</bool>
             </property>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="0" column="0">
-              <widget class="QComboBox" name="comboBoxPgt2">
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QComboBox" name="comboBoxPgt2Parc">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <item>
-                <property name="text">
-                 <string>1x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>2x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>3x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>4x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>5x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>6x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>7x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>8x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>9x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>10x</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximum">
-                <double>999999.989999999990687</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QGroupBox" name="groupBox_4">
-            <property name="title">
-             <string>Pgt. 3</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="0">
-              <widget class="QComboBox" name="comboBoxPgt3">
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <double>999999.989999999990687</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QComboBox" name="comboBoxPgt3Parc">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <item>
-                <property name="text">
-                 <string>1x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>2x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>3x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>4x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>5x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>6x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>7x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>8x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>9x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>10x</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QGroupBox" name="groupBox">
-            <property name="title">
-             <string>Pgt. 1</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <widget class="QComboBox" name="comboBoxPgt1">
-               <property name="minimumSize">
-                <size>
-                 <width>120</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QComboBox" name="comboBoxPgt1Parc">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <item>
-                <property name="text">
-                 <string>1x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>2x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>3x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>4x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>5x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>6x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>7x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>8x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>9x</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>10x</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximum">
-                <double>999999.989999999990687</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <item>
+             <property name="text">
+              <string>1x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>3x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>6x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>7x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>8x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>9x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>10x</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QTableView" name="tableFluxoCaixa">
+           <widget class="QComboBox" name="comboBoxPgt3">
             <property name="minimumSize">
              <size>
-              <width>350</width>
+              <width>120</width>
               <height>0</height>
              </size>
             </property>
-            <attribute name="horizontalHeaderStretchLastSection">
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QDateEdit" name="dateEditPgt3"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
+            <property name="readOnly">
              <bool>true</bool>
-            </attribute>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
+            <property name="maximum">
+             <double>999999.989999999990687</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelRestante">
+            <property name="text">
+             <string>Total</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -684,7 +681,6 @@
       </layout>
       <zorder>tableVenda</zorder>
       <zorder>groupBox_3</zorder>
-      <zorder>frame</zorder>
      </widget>
     </widget>
    </item>

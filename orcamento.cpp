@@ -15,7 +15,6 @@
 #include <QDir>
 
 #include "cadastrocliente.h"
-#include "cadastrarcliente.h"
 #include "mainwindow.h"
 #include "orcamento.h"
 #include "ui_orcamento.h"
@@ -740,6 +739,7 @@ void Orcamento::on_pushButtonApagarOrc_clicked() {
 }
 
 void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
+  Q_UNUSED(text);
 //  qDebug() << "changed: " << text;
   ui->doubleSpinBoxQte->setValue(0.0);
   ui->doubleSpinBoxCaixas->setValue(0.0);

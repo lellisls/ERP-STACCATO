@@ -8,7 +8,6 @@
 
 #include "backgroundproxymodel.h"
 #include "cadastrocliente.h"
-#include "cadastrarcliente.h"
 #include "cadastroloja.h"
 #include "cadastroproduto.h"
 #include "cadastroprofissional.h"
@@ -632,3 +631,5 @@ void MainWindow::readSettings() {
   password = settings.value("password").toString();
   port = settings.value("port").toString();
 }
+
+//TODO: fix buscas like

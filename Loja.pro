@@ -47,7 +47,6 @@ SOURCES += backgroundproxymodel.cpp \
     registerdialog.cpp \
     loginconfig.cpp \
     cepcompleter.cpp
-#    cadastrarcliente.cpp \
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \
@@ -85,7 +84,6 @@ HEADERS  += backgroundproxymodel.h \
     registerdialog.h \
     loginconfig.h \
     cepcompleter.h
-#    cadastrarcliente.h \
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \
@@ -107,9 +105,7 @@ FORMS += cadastrocliente.ui \
     widgetendereco.ui \
     searchdialog.ui \
     apagaorcamento.ui \
-    loginconfig.ui \
-#    cadastrarcliente.ui
-
+    loginconfig.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0 -Wall

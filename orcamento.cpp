@@ -71,7 +71,7 @@ Orcamento::Orcamento(QWidget *parent)
   ui->itemBoxCliente->setRegisterDialog(cadCliente);
 
   connect(sdCliente, &SearchDialog::itemSelected, this, &Orcamento::fillComboBoxes);
-  connect(sdProd, &SearchDialog::itemSelected, this, &Orcamento::fillComboBoxes);
+//  connect(sdProd, &SearchDialog::itemSelected, this, &Orcamento::fillComboBoxes);
   connect(cadCliente, &RegisterDialog::registerUpdated, this, &Orcamento::fillComboBoxes);
 
   QSqlQuery qryFrete;
@@ -116,7 +116,7 @@ bool Orcamento::viewRegister(QModelIndex index) {
 }
 
 void Orcamento::fillComboBoxes() {
-  qDebug() << "Filling comboboxes";
+//  qDebug() << "Filling comboboxes";
   ui->comboBoxProfissional->clear();
   ui->comboBoxProfissional->addItem("Escolha uma opção!");
   QSqlQuery queryProf("SELECT idProfissional, nome, tipo FROM Profissional;");
@@ -285,7 +285,8 @@ bool Orcamento::savingProcedures(int row) {
   if (model.data(model.index(row, model.fieldIndex("idOrcamento"))).toString() != idOrcamento)
     setData(row, "idOrcamento", idOrcamento);
   setData(row, "idLoja", UserSession::getLoja());
-  qDebug() << ui->itemBoxCliente->getValue();
+//  qDebug() << "idLoja: " << UserSession::getLoja();
+//  qDebug() << ui->itemBoxCliente->getValue();
   setData(row, "idCadastroCliente", ui->itemBoxCliente->getValue());
   setData(row, "idEnderecoEntrega", ui->comboBoxEndereco->currentData()); // get user from userSession
   setData(row, "idUsuario", ui->comboBoxVendedor->currentData());         // get user from userSession
@@ -404,12 +405,12 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     descGlobal = 1.0 - (F / (b * (1.0 + f)));
     subTotal = b * (1.0 - descGlobal);
     frete = subTotal * f;
-    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
+//    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
     if (frete < m) {
       frete = m;
       descGlobal = 1.0 + (m - F) / b;
       subTotal = b * (1.0 - descGlobal);
-      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
+//      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
     }
   }
 
@@ -446,8 +447,8 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
   double new_subtotal = new_total - frete;
   //  double descGlobal = 0.0;
 
-  qDebug() << "New total = " << new_total << ", frete = " << frete << ", new sub. = " << new_subtotal
-           << ", subTotalItens = " << subTotalItens;
+//  qDebug() << "New total = " << new_total << ", frete = " << frete << ", new sub. = " << new_subtotal
+//           << ", subTotalItens = " << subTotalItens;
   if (new_subtotal >= subTotalItens) {
     ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
     calcPrecoGlobalTotal();
@@ -570,7 +571,7 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("TOTAL", ui->doubleSpinBoxFinal->text());
 
   frame->setHtml(html);
-  qDebug() << html;
+//  qDebug() << html;
   //  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
   QFile outputFile(dir.absoluteFilePath("orc.html"));
@@ -739,7 +740,7 @@ void Orcamento::on_pushButtonApagarOrc_clicked() {
 }
 
 void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
-  qDebug() << "changed: " << text;
+//  qDebug() << "changed: " << text;
   ui->doubleSpinBoxQte->setValue(0.0);
   ui->doubleSpinBoxCaixas->setValue(0.0);
 
@@ -760,7 +761,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   QSqlQuery query;
   query.prepare("SELECT * FROM Produto WHERE idProduto = :idx");
   query.bindValue(":idx", ui->itemBoxProduto->getValue().toInt());
-  qDebug() << "value: " << ui->itemBoxProduto->getValue().toInt();
+//  qDebug() << "value: " << ui->itemBoxProduto->getValue().toInt();
   if (!query.exec()) {
     qDebug() << "Erro na busca do produto: " << query.lastError();
   }

@@ -5,13 +5,18 @@
 #include "usersession.h"
 
 QSqlQuery *UserSession::query = nullptr;
-int UserSession::loja = 1;
 
-int UserSession::getLoja() { return loja; }
+int UserSession::getLoja() {
+  return (query->value("idLoja").toInt());
+}
 
-int UserSession::getId() { return (query->value("idUsuario").toInt()); }
+int UserSession::getId() {
+  return (query->value("idUsuario").toInt());
+}
 
-QString UserSession::getNome() { return (query->value("nome").toString()); }
+QString UserSession::getNome() {
+  return (query->value("nome").toString());
+}
 
 bool UserSession::login(QString user, QString password) {
   initialize();
@@ -25,14 +30,26 @@ bool UserSession::login(QString user, QString password) {
   return query->first();
 }
 
-void UserSession::logout() { query->clear(); }
+void UserSession::logout() {
+  query->clear();
+}
 
-QString UserSession::getTipo() { return (query->value("tipo").toString()); }
+void UserSession::free() {
+  if(query)
+    delete query;
+  query = nullptr;
+}
 
-QString UserSession::getSigla() { return (query->value("sigla").toString()); }
+QString UserSession::getTipo() {
+  return (query->value("tipo").toString());
+}
+
+QString UserSession::getSigla() {
+  return (query->value("sigla").toString());
+}
 
 QString UserSession::getSiglaLoja() {
-  QString str = "SELECT sigla FROM Loja WHERE idLoja = '" + QString::number(UserSession::loja) + "';";
+  QString str = "SELECT sigla FROM Loja WHERE idLoja = '" + QString::number(getLoja()) + "';";
   QSqlQuery queryLoja(str);
   if (!queryLoja.exec(str)) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();

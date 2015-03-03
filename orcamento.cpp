@@ -133,7 +133,7 @@ void Orcamento::fillComboBoxes() {
   ui->comboBoxVendedor->clear();
   ui->comboBoxVendedor->addItem("Escolha uma opção!");
   //  QSqlQuery queryVend("SELECT idUsuario, nome FROM Usuario WHERE tipo = 'VENDEDOR';");
-  QSqlQuery queryVend("SELECT idUsuario, nome FROM Usuario");
+  QSqlQuery queryVend("SELECT idUsuario, nome FROM Usuario WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'");
   queryVend.exec();
   while (queryVend.next()) {
     QString str = queryVend.value("idUsuario").toString() + " - " + queryVend.value("nome").toString();

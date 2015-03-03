@@ -16,11 +16,11 @@ class UserSession {
     static QString getSiglaLoja();
     static QString getTipo();
     static void logout();
+    static void free();
 
   private:
     // attributes
     static QSqlQuery *query;
-    static int loja;
     // methods
     UserSession();
 };

@@ -141,6 +141,7 @@ bool MainWindow::dbConnect() {
 
 MainWindow::~MainWindow() {
   delete ui;
+  UserSession::free();
 }
 
 void MainWindow::setupTable(QTableView *table) {
@@ -617,11 +618,10 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   cad->adjustSize();
 }
 
-void MainWindow::readSettings()
-{
+void MainWindow::readSettings() {
   QSettings settings("ERP", "Staccato");
   settings.beginGroup("Login");
-  if(!settings.contains("hostname")){
+  if(!settings.contains("hostname")) {
     settings.setValue("hostname", QString("localhost"));
     settings.setValue("username", QString("test"));
     settings.setValue("password", QString("1234"));

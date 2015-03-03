@@ -80,7 +80,7 @@ void ItemBox::setValue(const QVariant &value) {
     setText("");
   } else if( searchDialog ) {
     setText(searchDialog->getText(value));
-    qDebug() << "Text = " << text();
+//    qDebug() << "Text = " << text();
   }
 }
 
@@ -90,7 +90,7 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
 }
 
 void ItemBox::changeItem(QVariant value, QString text) {
-  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " << text;
+//  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " << text;
 
   setValue(value);
 //  setText(text);
@@ -100,5 +100,5 @@ void ItemBox::changeItem(QVariant value, QString text) {
   if(searchDialog) {
     searchDialog->close();
   }
-  qDebug() << "Value changed: " << value << ", " << text;
+//  qDebug() << "Value changed: " << value << ", " << text;
 }

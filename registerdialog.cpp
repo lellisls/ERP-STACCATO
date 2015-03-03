@@ -84,7 +84,7 @@ void RegisterDialog::setTextKeys(const QStringList & value) {
 }
 
 void RegisterDialog::changeItem(QVariant value, QString text) {
-  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " << text;
+//  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " << text;
   Q_UNUSED(text)
   viewRegisterById(value);
 }
@@ -112,7 +112,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 bool RegisterDialog::confirmationMessage() {
 //  qDebug() << "confirmationMessage";
   if (model.isDirty()) {
-    qDebug() << "DIRTY";
+//    qDebug() << "DIRTY";
     QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
                        QMessageBox::Yes | QMessageBox::No);
     msgBox.setWindowModality(Qt::WindowModal);
@@ -145,14 +145,14 @@ bool RegisterDialog::newRegister() {
   registerMode();
   model.select();
   if (table) {
-    qDebug() << "Clearing table selection";
+//    qDebug() << "Clearing table selection";
     table->clearSelection();
   }
   return true;
 }
 
 bool RegisterDialog::save() {
-  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
+//  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
   if (!verifyFields()) {
     return false;
   }
@@ -191,9 +191,9 @@ void RegisterDialog::remove() {
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
   if(msgBox.exec() == QMessageBox::Yes) {
-    qDebug() << "Yes!";
+//    qDebug() << "Yes!";
     if (model.removeRow(mapper.currentIndex()) && model.submitAll()) {
-      qDebug() << "REMOVING " << mapper.currentIndex();
+//      qDebug() << "REMOVING " << mapper.currentIndex();
       model.select();
       newRegister();
     } else {

@@ -23,12 +23,12 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setStretchLastSection(true);
 
-  textKeys.append( indexes.front() );
+  textKeys.append(indexes.front());
   primaryKey = indexes.front();
-//  RegisterDialog * reg = dynamic_cast<RegisterDialog * >(parent);
-//  if(reg != nullptr) {
-//    connect(this, &SearchDialog::itemSelected, reg, &RegisterDialog::changeItem);
-//  }
+  //  RegisterDialog * reg = dynamic_cast<RegisterDialog * >(parent);
+  //  if(reg != nullptr) {
+  //    connect(this, &SearchDialog::itemSelected, reg, &RegisterDialog::changeItem);
+  //  }
 }
 
 SearchDialog::~SearchDialog() {
@@ -49,7 +49,7 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
     if (!filter.isEmpty()) {
       searchFilter.append(" AND (" + filter + ")");
     }
-    qDebug() << "FILTER: " << searchFilter;
+    //    qDebug() << "FILTER: " << searchFilter;
     model.setFilter(searchFilter);
   }
   model.select();
@@ -60,10 +60,10 @@ void SearchDialog::sendUpdateMessage() {
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
   QString text;
   foreach (QString key, textKeys) {
-    if(!key.isEmpty()) {
+    if (!key.isEmpty()) {
       QVariant val = model.data(model.index(index.row(), model.fieldIndex(key)));
-      if(val.isValid()) {
-        if(!text.isEmpty())
+      if (val.isValid()) {
+        if (!text.isEmpty())
           text.append(" - ");
         text.append(val.toString());
       }
@@ -116,7 +116,7 @@ QStringList SearchDialog::getTextKeys() const {
   return textKeys;
 }
 
-void SearchDialog::setTextKeys(const QStringList & value) {
+void SearchDialog::setTextKeys(const QStringList &value) {
   textKeys = value;
 }
 
@@ -128,63 +128,56 @@ void SearchDialog::setPrimaryKey(const QString &value) {
   primaryKey = value;
 }
 
-
 QString SearchDialog::getText(QVariant idx) {
   QString qryTxt;
   foreach (QString key, textKeys) {
-    if(!qryTxt.isEmpty()) {
+    if (!qryTxt.isEmpty()) {
       qryTxt += ", ";
     }
     qryTxt += key;
   }
-  qryTxt = "SELECT " + qryTxt +  " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + idx.toString() + "';";
+  qryTxt = "SELECT " + qryTxt + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" +
+           idx.toString() + "';";
   QSqlQuery qry(qryTxt);
   qry.exec();
-  if(qry.first()) {
+  if (qry.first()) {
     QString res;
     foreach (QString key, textKeys) {
       QVariant val = qry.value(key);
-      if(val.isValid()) {
-        if(!res.isEmpty()) {
+      if (val.isValid()) {
+        if (!res.isEmpty()) {
           res += " - ";
         }
         res += val.toString();
       }
     }
-    return(res);
+    return (res);
   }
   qDebug() << objectName() << " : " << __LINE__ << " : " << qry.lastError();
-  return( QString() );
+  return (QString());
 }
 
-void SearchDialog::setHeaderData(QVector<QPair<QString, QString> > headerData) {
+void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
   QPair<QString, QString> pair;
   foreach (pair, headerData) {
     model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second);
   }
 }
 
-SearchDialog *SearchDialog::cliente(QWidget * parent) {
-//  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia, "cpf"},
-//      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
-  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido", "razaoSocial", "nomeFantasia", "cpf"},
-      "clienteFornecedor = 'CLIENTE'", parent);
+SearchDialog *SearchDialog::cliente(QWidget *parent) {
+  //  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido",
+  //  "razaoSocial", "nomeFantasia, "cpf"},
+  //      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
+  SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cadastro",
+  {"nome", "apelido", "razaoSocial", "nomeFantasia", "cpf"},
+                                             "clienteFornecedor = 'CLIENTE'", parent);
 
-//  QStringList columns;
-//  columns.push_back("idCadastro");
-//  columns.push_back("rg");
-//  columns.push_back("cpf");
-//  columns.push_back("cnpj");
-//  columns.push_back("inscEstadual");
-//  columns.push_back("idEnderecoFaturamento");
-//  columns.push_back("idEnderecoCobranca");
-//  columns.push_back("idEnderecoEntrega");
-//  columns.push_back("idUsuarioRel");
-//  columns.push_back("idCadastroRel");
-//  columns.push_back("idProfissionalRel");
-  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel"});
+  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "cnpj", "inscEstadual",
+                          "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel",
+                          "idCadastroRel", "idProfissionalRel"
+                         });
   sdCliente->setPrimaryKey("idCadastro");
-  sdCliente->setTextKeys({"nomeFantasia","nome"});
+  sdCliente->setTextKeys({"nomeFantasia", "nome"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
@@ -205,10 +198,9 @@ SearchDialog *SearchDialog::cliente(QWidget * parent) {
   return sdCliente;
 }
 
-SearchDialog *SearchDialog::loja(QWidget * parent) {
+SearchDialog *SearchDialog::loja(QWidget *parent) {
   SearchDialog *sdLoja =
-    new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"},
-                     "", parent);
+      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
 
@@ -231,11 +223,12 @@ SearchDialog *SearchDialog::loja(QWidget * parent) {
   return sdLoja;
 }
 
-SearchDialog *SearchDialog::produto(QWidget * parent) {
+SearchDialog *SearchDialog::produto(QWidget *parent) {
   SearchDialog *sdProd = new SearchDialog("Buscar Produto", "Produto",
   {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
-  sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo", "ipi", "markup",
-                       "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial", "qtdPallet", "st"
+  sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo",
+                       "ipi", "markup", "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes",
+                       "codBarras", "codIndustrial", "qtdPallet", "st"
                       });
   QVector<QPair<QString, QString>> headerDataProduto;
   headerDataProduto.push_back(QPair<QString, QString>("fornecedor", "Fornecedor"));
@@ -255,10 +248,15 @@ SearchDialog *SearchDialog::produto(QWidget * parent) {
   return sdProd;
 }
 
-SearchDialog *SearchDialog::fornecedor(QWidget * parent) {
-  SearchDialog *sdFornecedor = new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome", "nomeFantasia", "razaoSocial"},
-      "clienteFornecedor = 'FORNECEDOR'", parent);
-  sdFornecedor->hideColumns({"idCadastro", "rg", "cpf", "cnpj", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel", "nextel", "email", "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto"});
+SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
+  SearchDialog *sdFornecedor =
+      new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome", "nomeFantasia", "razaoSocial"},
+                       "clienteFornecedor = 'FORNECEDOR'", parent);
+  sdFornecedor->hideColumns({"idCadastro", "rg", "cpf", "cnpj", "inscEstadual", "idEnderecoFaturamento",
+                             "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel",
+                             "nextel", "email", "idUsuarioRel", "idCadastroRel", "idProfissionalRel",
+                             "incompleto"
+                            });
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
   headerData.push_back(QPair<QString, QString>("nome", "Nome"));
@@ -271,10 +269,9 @@ SearchDialog *SearchDialog::fornecedor(QWidget * parent) {
   return sdFornecedor;
 }
 
-SearchDialog *SearchDialog::transportadora(QWidget * parent) {
+SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   SearchDialog *sdTransportadora =
-    new SearchDialog("Buscar Transportadora", "Transportadora", {"razaoSocial, nomeFantasia"},
-                     "", parent);
+      new SearchDialog("Buscar Transportadora", "Transportadora", {"razaoSocial, nomeFantasia"}, "", parent);
   sdTransportadora->setPrimaryKey("idTransportadora");
   sdTransportadora->setTextKeys({"nomeFantasia"});
 
@@ -295,10 +292,8 @@ SearchDialog *SearchDialog::transportadora(QWidget * parent) {
   return (sdTransportadora);
 }
 
-SearchDialog *SearchDialog::usuario(QWidget * parent) {
-  SearchDialog *sdUsuario =
-    new SearchDialog("Buscar Usuário", "Usuario", {"nome, tipo"},
-                     "", parent);
+SearchDialog *SearchDialog::usuario(QWidget *parent) {
+  SearchDialog *sdUsuario = new SearchDialog("Buscar Usuário", "Usuario", {"nome, tipo"}, "", parent);
   sdUsuario->setPrimaryKey("idUsuario");
   sdUsuario->setTextKeys({"nome"});
 
@@ -314,13 +309,12 @@ SearchDialog *SearchDialog::usuario(QWidget * parent) {
   headerData.push_back(QPair<QString, QString>("nome", "Nome"));
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
-  return( sdUsuario );
+  return (sdUsuario);
 }
 
-SearchDialog *SearchDialog::profissional(QWidget * parent) {
+SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-    new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"},
-                     "", parent);
+      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"idxFT"});
 
@@ -339,7 +333,5 @@ SearchDialog *SearchDialog::profissional(QWidget * parent) {
   headerData.push_back(QPair<QString, QString>("cp", "CP"));
   sdProfissional->setHeaderData(headerData);
 
-  return(sdProfissional);
+  return (sdProfissional);
 }
-
-

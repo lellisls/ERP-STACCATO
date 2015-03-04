@@ -136,7 +136,7 @@ bool Venda::cadastrar() {
   return true;
 }
 
-bool Venda::verifyFields() {
+bool Venda::verifyFields(int row) {
   return true;
 }
 

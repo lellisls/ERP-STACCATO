@@ -42,7 +42,7 @@ void CadastroUsuario::setupTableWidget() {
   }
 }
 
-bool CadastroUsuario::verifyFields() {
+bool CadastroUsuario::verifyFields(int row) {
   if(!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd}))
     return false;
   if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {

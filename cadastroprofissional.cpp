@@ -39,7 +39,7 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroProfissional::verifyFields() {
+bool CadastroProfissional::verifyFields(int row) {
   if(!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditNome, ui->lineEditTel})) {
     return false;
   }

@@ -81,7 +81,7 @@ void CadastroProduto::registerMode() {
   ui->pushButtonRemover->hide();
 }
 
-bool CadastroProduto::verifyFields() {
+bool CadastroProduto::verifyFields(int row) {
   // TODO : VerifyFields Produto
   if(!RegisterDialog::verifyFields({ui->lineEditDescricao,ui->lineEditUn, ui->lineEditNCM, ui->lineEditCusto, ui->lineEditVenda}))
     return false;

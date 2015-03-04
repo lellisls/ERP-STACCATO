@@ -37,7 +37,7 @@ private:
    * \brief Função padrão para verificar campos obrigatórios
    * \return
    */
-  virtual bool verifyFields();
+  virtual bool verifyFields(int row);
   /*!
   * \brief Onde ocorre o model.setData(), baseada nas informações da view.
   */

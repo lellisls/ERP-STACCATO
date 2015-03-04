@@ -246,7 +246,7 @@ void Orcamento::updateId() {
   }
 }
 
-bool Orcamento::verifyFields() {
+bool Orcamento::verifyFields(int row) {
   //  if(!RegisterDialog::verifyFields())
   //    return false;
   if (ui->itemBoxCliente->text().isEmpty()) {

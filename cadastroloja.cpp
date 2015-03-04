@@ -45,7 +45,7 @@ void CadastroLoja::clearFields() {
   }
 }
 
-bool CadastroLoja::verifyFields() {
+bool CadastroLoja::verifyFields(int row) {
   if(!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial, ui->lineEditNomeFantasia, ui->lineEditSIGLA, ui->lineEditCNPJ, ui->lineEditInscEstadual, ui->lineEditTel}))
     return false;
   if (ui->widgetEnd->isEnabled() && !ui->widgetEnd->verifyFields()) {

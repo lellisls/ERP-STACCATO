@@ -56,7 +56,7 @@ class Venda : public RegisterDialog {
     double subTotal, subTotalItens;
     // methods
     bool cadastrar();
-    bool verifyFields();
+    bool verifyFields(int row);
     bool verifyRequiredField(QLineEdit *line);
     QString requiredStyle();
     void calcPrecoGlobalTotal(bool ajusteTotal = false);
@@ -74,6 +74,7 @@ class Venda : public RegisterDialog {
     void calculoSpinBox1();
     void calculoSpinBox2();
     void calculoSpinBox3();
+
   protected:
     virtual bool savingProcedures(int row);
     virtual void registerMode();

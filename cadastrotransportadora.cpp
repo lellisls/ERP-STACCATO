@@ -30,7 +30,7 @@ void CadastroTransportadora::clearFields() {
   RegisterDialog::clearFields();
 }
 
-bool CadastroTransportadora::verifyFields() {
+bool CadastroTransportadora::verifyFields(int row) {
   //  if(!RegisterDialog::verifyFields({ui}))
   if (ui->widgetEnd->isEnabled() && !ui->widgetEnd->verifyFields()) {
     return false;

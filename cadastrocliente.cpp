@@ -746,3 +746,11 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
   }
   adjustSize();
 }
+
+void CadastroCliente::on_pushButtonRemoverEnd_clicked()
+{
+    modelEnd.removeRow(mapperEnd.currentIndex());
+    if(!modelEnd.submitAll()){
+      qDebug() << "Erro apagando endereço: " << modelEnd.lastError();
+    }
+}

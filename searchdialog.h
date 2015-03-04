@@ -46,6 +46,12 @@ signals:
     void on_pushButtonSelecionar_clicked();
     void on_pushButtonCancelar_clicked();
 
+    void on_comboBox_currentTextChanged(const QString &arg1);
+
+    void on_checkBox_stateChanged(int arg1);
+
+    void on_checkBox_2_stateChanged(int arg1);
+
   private:
     Ui::SearchDialog *ui;
     QDataWidgetMapper mapper;

@@ -14,13 +14,37 @@
    <string>Buscar produto</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2">
-    <widget class="QPushButton" name="pushButtonSelecionar">
+   <item row="1" column="1">
+    <widget class="QComboBox" name="comboBox">
+     <item>
+      <property name="text">
+       <string>Interactive</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Fixed</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Stretch</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ResizeToContents</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QPushButton" name="pushButtonCancelar">
      <property name="text">
-      <string>Selecionar</string>
+      <string>Cancelar</string>
      </property>
-     <property name="default">
-      <bool>true</bool>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -47,17 +71,24 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QPushButton" name="pushButtonCancelar">
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pushButtonSelecionar">
      <property name="text">
-      <string>Cancelar</string>
+      <string>Selecionar</string>
      </property>
-     <property name="autoDefault">
-      <bool>false</bool>
+     <property name="default">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="1" column="1" rowspan="2">
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="checkBox">
+     <property name="text">
+      <string>Stretch Last Section</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1" rowspan="2">
     <widget class="QTableView" name="tableBusca">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clique duas vezes sobre a linha para selecionar&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -76,6 +107,13 @@
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="checkBox_2">
+     <property name="text">
+      <string>Resize To Contents</string>
      </property>
     </widget>
    </item>

@@ -4,6 +4,7 @@
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
   setWindowModality(Qt::WindowModal);
+  setWindowFlags(Qt::Window);
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);

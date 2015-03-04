@@ -10,6 +10,7 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   ui->setupUi(this);
   setWindowTitle(title);
   setWindowModality(Qt::WindowModal);
+  setWindowFlags(Qt::Window);
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);

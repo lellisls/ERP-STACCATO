@@ -26,7 +26,7 @@ class NFe : public QObject {
     QVariant getFromVenda(QString column);
     QVariant getFromLoja(QString column);
     QVariant getFromItemModel(int row, QString column);
-    void writeTXT(QString chave);
+    bool writeTXT(QString chave);
 };
 
 #endif // NFE_H

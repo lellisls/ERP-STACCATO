@@ -349,7 +349,12 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 void Venda::on_pushButtonNFe_clicked() {
   NFe nota(idOrcamento, this);
   //  qDebug() << "xml: " << nota.XML();
-  qDebug() << "txt: " << nota.TXT();
+  if(nota.TXT()){
+    QMessageBox::information(this, "Aviso!", "NFe gerada com sucesso!");
+  } else{
+    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro, NFe não foi gerada.");
+  }
+//  qDebug() << "txt: " << nota.TXT();
 }
 
 void Venda::viewVenda(QString idVenda) {

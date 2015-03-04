@@ -139,10 +139,11 @@ void NFe::writeTXT(QString chave) {
   stream << "[Destinatario]" << endl;
 
   QString idCliente = getFromVenda("idCadastroCliente").toString();
-  QSqlQuery cliente("SELECT * FROM Cadastro LEFT JOIN Cadastro_has_Endereco ON Cadastro.idCadastro = "
-                    "Cadastro_has_Endereco.idCadastro LEFT JOIN Endereco ON Cadastro_has_Endereco.idEndereco "
-                    "= Endereco.idEndereco WHERE Cadastro.idCadastro = '" +
-                    idCliente + "'");
+  qDebug() << "idCliente: " << idCliente;
+  QSqlQuery cliente("SELECT * FROM Cadastro LEFT JOIN Endereco ON Cadastro.idCadastro = Endereco.idCadastro "
+                    "WHERE Endereco.idCadastro = " +
+                    idCliente + "");
+
   if (!cliente.exec()) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
   }

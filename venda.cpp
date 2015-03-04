@@ -70,7 +70,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
   //  ui->tableVenda->setItemDelegateForColumn(11, );
 
-  //  ui->pushButtonNFe->hide();
+  ui->pushButtonNFe->hide();
 
   ui->dateEditPgt1->setDate(QDate::currentDate());
   ui->dateEditPgt2->setDate(QDate::currentDate());
@@ -532,6 +532,7 @@ bool Venda::viewRegister(QModelIndex index) {
   modelFluxoCaixa.setFilter("idVenda = '"+ idVenda +"'");
   modelFluxoCaixa.select();
   //  novoItem();
+  ui->pushButtonNFe->show();
   ui->pushButtonFecharPedido->hide();
   ui->pushButtonVoltar->hide();
 

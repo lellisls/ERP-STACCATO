@@ -720,7 +720,7 @@ void CadastroCliente::on_pushButtonNovoEnd_clicked() {
   novoEnd();
 }
 
-void CadastroCliente::on_tableView_clicked(const QModelIndex &index) {
+void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
   if (modelEnd.isDirty()) {
     QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
                        QMessageBox::Yes | QMessageBox::No);

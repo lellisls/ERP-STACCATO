@@ -43,7 +43,7 @@ private slots:
   void on_pushButtonMostrarInativos_clicked(bool checked);
   void on_lineEditCEP_textChanged(const QString &cep);
   void on_pushButtonNovoEnd_clicked();
-  void on_tableView_clicked(const QModelIndex &index);
+  void on_tableEndereco_clicked(const QModelIndex &index);
   void on_pushButtonBuscar_clicked();
   void on_radioButtonPF_toggled(bool checked);
 

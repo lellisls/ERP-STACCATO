@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1170</width>
-    <height>606</height>
+    <width>1173</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -436,6 +436,19 @@
               </property>
               <property name="text">
                <string>Remover</string>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonLimparSelecao">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Remover item selecionado&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Limpar seleção</string>
               </property>
               <property name="autoDefault">
                <bool>false</bool>

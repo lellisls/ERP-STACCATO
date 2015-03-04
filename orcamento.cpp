@@ -844,3 +844,9 @@ void Orcamento::successMessage() {
   QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!", QMessageBox::Ok,
                            QMessageBox::NoButton);
 }
+
+void Orcamento::on_pushButtonLimparSelecao_clicked()
+{
+    ui->tableProdutos->clearSelection();
+    novoItem();
+}

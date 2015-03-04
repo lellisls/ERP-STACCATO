@@ -49,6 +49,8 @@ class Orcamento : public RegisterDialog {
     void on_itemBoxProduto_textChanged(const QString &text);
     void on_itemBoxCliente_textChanged(const QString &text);
 
+    void on_pushButtonLimparSelecao_clicked();
+
   signals:
     void finished();
 

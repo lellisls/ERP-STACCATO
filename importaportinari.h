@@ -7,7 +7,7 @@ class ImportaPortinari {
   public:
     ImportaPortinari();
     ~ImportaPortinari();
-    QString importar(QString file, int idFornecedor);
+    QString importar(QString file);
 };
 
 #endif // IMPORTAPORTINARI_H

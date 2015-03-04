@@ -6,17 +6,11 @@
 #include "importaapavisa.h"
 #include "cadastrocliente.h"
 
-ImportaApavisa::ImportaApavisa()
-{
+ImportaApavisa::ImportaApavisa() {}
 
-}
+ImportaApavisa::~ImportaApavisa() {}
 
-ImportaApavisa::~ImportaApavisa()
-{
-
-}
-
-QString ImportaApavisa::importar(QString file, int idFornecedor){
+QString ImportaApavisa::importar(QString file) {
   QString texto;
 
   QSqlDatabase db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
@@ -31,6 +25,32 @@ QString ImportaApavisa::importar(QString file, int idFornecedor){
     while (query.next()) {
       QString column0 = query.value(21).toString(); // fornecedor - string
       if ((!column0.isEmpty()) and (column0 != "Marca")) {
+        int idFornecedor = 0;
+
+        QSqlQuery queryFornecedor;
+        if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+          qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+        }
+        qDebug() << "size: " << queryFornecedor.size();
+        if (queryFornecedor.next()) {
+          idFornecedor = queryFornecedor.value("idCadastro").toInt();
+        } else {
+          QSqlQuery cadastrar;
+          if (!cadastrar.exec(
+                "INSERT INTO Cadastro (pfpj, clienteFornecedor, nome) VALUES ('PJ', 'FORNECEDOR', '" +
+                column0 + "')")) {
+            qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
+          }
+        }
+        if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+          qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+        }
+        qDebug() << "size: " << queryFornecedor.size();
+        if (queryFornecedor.next()) {
+          idFornecedor = queryFornecedor.value("idCadastro").toInt();
+        }
+        qDebug() << "id: " << idFornecedor;
+
         QString column1 = query.value(22).toString();  // codigo - int
         QString column2 = query.value(23).toString();  // colecao - string
         QString column3 = query.value(26).toString();  // formato com. - string
@@ -67,12 +87,13 @@ QString ImportaApavisa::importar(QString file, int idFornecedor){
         //        qDebug() << "codigo: " << column20;
 
         QSqlQuery qry;
-        qry.prepare("INSERT INTO mydb.Produto "
-                    "(idFornecedor, fornecedor, colecao, formComercial, descricao, codComercial, "
-                    "pccx, m2cx, qtdPallet, un, ncm, "
-                    "precoVenda, custo, markup, ui) VALUES (:idFornecedor, :fornecedor, :colecao, :formComercial, "
-                    ":descricao, :codComercial, :pccx, :m2cx, :qtdPallet, :un, :ncm, :precoVenda, :custo, "
-                    ":markup, :ui)");
+        qry.prepare(
+              "INSERT INTO mydb.Produto "
+              "(idFornecedor, fornecedor, colecao, formComercial, descricao, codComercial, "
+              "pccx, m2cx, qtdPallet, un, ncm, "
+              "precoVenda, custo, markup, ui) VALUES (:idFornecedor, :fornecedor, :colecao, :formComercial, "
+              ":descricao, :codComercial, :pccx, :m2cx, :qtdPallet, :un, :ncm, :precoVenda, :custo, "
+              ":markup, :ui)");
         qry.bindValue(":idFornecedor", idFornecedor);
         qry.bindValue(":fornecedor", column0);
         qry.bindValue(":colecao", column2);
@@ -108,11 +129,11 @@ QString ImportaApavisa::importar(QString file, int idFornecedor){
     query.finish();
 
     texto = "Produtos importados: " + QString::number(imported) + "\nProdutos duplicados: " +
-                    QString::number(duplicate);
-//    QMessageBox::information(this, "Aviso", texto, QMessageBox::Ok);
+            QString::number(duplicate);
+    //    QMessageBox::information(this, "Aviso", texto, QMessageBox::Ok);
 
   } else {
-//    QMessageBox::information(this, "Aviso", "Importação falhou!", QMessageBox::Ok);
+    //    QMessageBox::information(this, "Aviso", "Importação falhou!", QMessageBox::Ok);
     texto = "Importação falhou!";
     qDebug() << "db failed :(";
     qDebug() << db.lastError();

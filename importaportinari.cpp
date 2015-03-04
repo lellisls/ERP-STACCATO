@@ -10,7 +10,7 @@ ImportaPortinari::ImportaPortinari() {}
 
 ImportaPortinari::~ImportaPortinari() {}
 
-QString ImportaPortinari::importar(QString file, int idFornecedor) {
+QString ImportaPortinari::importar(QString file) {
   QString texto;
 
   QSqlQuery("BEGIN TRANSACTION").exec();
@@ -24,10 +24,35 @@ QString ImportaPortinari::importar(QString file, int idFornecedor) {
 
     QSqlQuery query("SELECT * FROM [" + QString("Base Portinari$]"), db); // Select range, place A1:B5 after $
 
-    while (query.next()) {
+        while (query.next()) {
       QString column0 = query.value(0).toString(); // fornecedor - string
 
       if ((!column0.isEmpty()) and (column0 != "MARCA")) {
+        int idFornecedor = 0;
+
+        QSqlQuery queryFornecedor;
+        if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+          qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+        }
+        qDebug() << "size: " << queryFornecedor.size();
+        if (queryFornecedor.next()) {
+          idFornecedor = queryFornecedor.value("idCadastro").toInt();
+        } else {
+          QSqlQuery cadastrar;
+          if (!cadastrar.exec("INSERT INTO Cadastro (pfpj, clienteFornecedor, nome) VALUES ('PJ', 'FORNECEDOR', '" + column0 +
+                              "')")) {
+            qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
+          }
+        }
+        if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+          qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+        }
+        qDebug() << "size: " << queryFornecedor.size();
+        if (queryFornecedor.next()) {
+          idFornecedor = queryFornecedor.value("idCadastro").toInt();
+        }
+        qDebug() << "id: " << idFornecedor;
+
         QString column1 = query.value(1).toString();   // lancamento - string
         QString column2 = query.value(2).toString();   // colecao - string
         QString column3 = query.value(3).toString();   // tipo2 - string
@@ -72,12 +97,13 @@ QString ImportaPortinari::importar(QString file, int idFornecedor) {
         //        qDebug() << "---------------";
 
         QSqlQuery qry;
-        qry.prepare("INSERT INTO mydb.Produto "
-                    "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
-                    "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
-                    "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
-                    ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
-                    ":ncm, :codBarras, :precoVenda, :custo, :markup)");
+        qry.prepare(
+              "INSERT INTO mydb.Produto "
+              "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
+              "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
+              "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
+              ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
+              ":ncm, :codBarras, :precoVenda, :custo, :markup)");
         qry.bindValue(":idFornecedor", idFornecedor);
         qry.bindValue(":fornecedor", column0);
         qry.bindValue(":colecao", column2);
@@ -121,10 +147,10 @@ QString ImportaPortinari::importar(QString file, int idFornecedor) {
 
     texto = "Produtos importados: " + QString::number(imported) + "\nProdutos duplicados: " +
             QString::number(duplicate);
-//    QMessageBox::information(this, "Aviso", texto, QMessageBox::Ok);
+    //    QMessageBox::information(this, "Aviso", texto, QMessageBox::Ok);
 
   } else {
-//    QMessageBox::information(this, "Aviso", "Importação falhou!", QMessageBox::Ok);
+    //    QMessageBox::information(this, "Aviso", "Importação falhou!", QMessageBox::Ok);
     texto = "Importação falhou!";
     qDebug() << "db failed :(";
     qDebug() << db.lastError();

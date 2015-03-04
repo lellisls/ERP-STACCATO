@@ -8,7 +8,7 @@ class ImportaApavisa
   public:
     ImportaApavisa();
     ~ImportaApavisa();
-    QString importar(QString file, int idFornecedor);
+    QString importar(QString file);
 };
 
 #endif // IMPORTAAPAVISA_H

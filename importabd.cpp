@@ -29,38 +29,12 @@ void ImportaBD::mostraResultado() {
 }
 
 void ImportaBD::on_pushButtonPortinari_clicked() {
-  int idFornecedor = 0;
-
-  QSqlQuery queryFornecedor("SELECT * FROM Cadastro WHERE nome = 'Portinari'");
-  if(!queryFornecedor.exec()){
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  qDebug() << "size: " << queryFornecedor.size();
-  if(queryFornecedor.next()){
-  idFornecedor = queryFornecedor.value("idCadastro").toInt();
-  } else{
-    CadastroCliente *cad = new CadastroCliente();
-    cad->setTipo("PJ");
-    if(cad->exec() != QDialog::Accepted){
-      qDebug() << "Sem cadastro para realizar importação!";
-      return;
-    }
-  }
-  if(!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = 'Portinari'")){
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  qDebug() << "size: " << queryFornecedor.size();
-  if(queryFornecedor.next()){
-  idFornecedor = queryFornecedor.value("idCadastro").toInt();
-  }
-  qDebug() << "id: " << idFornecedor;
-
   QString file = QFileDialog::getOpenFileName(this, "Importar", QDir::currentPath(), tr("Excel (*.xls)"));
   if(file.isEmpty()){
     return;
   }
 
-  QFuture<QString> future = QtConcurrent::run(&this->portinari, &ImportaPortinari::importar, file, idFornecedor);
+  QFuture<QString> future = QtConcurrent::run(&this->portinari, &ImportaPortinari::importar, file);
   futureWatcher.setFuture(future);
 
   progressDialog->setMinimum(0);
@@ -69,39 +43,13 @@ void ImportaBD::on_pushButtonPortinari_clicked() {
   progressDialog->exec();
 }
 
-void ImportaBD::on_pushButtonApavisa_clicked() {
-  int idFornecedor = 0;
-  
-  QSqlQuery queryFornecedor("SELECT * FROM Cadastro WHERE nome = 'Apavisa'");
-  if(!queryFornecedor.exec()){
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  qDebug() << "size: " << queryFornecedor.size();
-  if(queryFornecedor.next()){
-  idFornecedor = queryFornecedor.value("idCadastro").toInt();
-  } else{
-    CadastroCliente *cad = new CadastroCliente();
-    cad->setTipo("PJ");
-    if(cad->exec() != QDialog::Accepted){
-      qDebug() << "Sem cadastro para realizar importação!";
-      return;
-    }
-  }
-  if(!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = 'Apavisa'")){
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  qDebug() << "size: " << queryFornecedor.size();
-  if(queryFornecedor.next()){
-  idFornecedor = queryFornecedor.value("idCadastro").toInt();
-  }
-  qDebug() << "id: " << idFornecedor;
-  
+void ImportaBD::on_pushButtonApavisa_clicked() {  
   QString file = QFileDialog::getOpenFileName(this, "Importar", QDir::currentPath(), tr("Excel (*.xls)"));
   if(file.isEmpty()){
     return;
   }
 
-  QFuture<QString> future = QtConcurrent::run(&this->apavisa, &ImportaApavisa::importar, file, idFornecedor);
+  QFuture<QString> future = QtConcurrent::run(&this->apavisa, &ImportaApavisa::importar, file);
   futureWatcher.setFuture(future);
 
   progressDialog->setMinimum(0);

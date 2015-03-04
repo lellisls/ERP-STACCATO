@@ -37,23 +37,14 @@ private slots:
 
   // methods derived from RegisterDialog
   void on_lineEditCPF_textEdited(const QString &);
-
   void on_lineEditCNPJ_textEdited(const QString &);
-
   void on_pushButtonAdicionarEnd_clicked();
-
   void on_pushButtonAtualizarEnd_clicked();
-
   void on_pushButtonMostrarInativos_clicked(bool checked);
-
   void on_lineEditCEP_textChanged(const QString &cep);
-
   void on_pushButtonNovoEnd_clicked();
-
   void on_tableView_clicked(const QModelIndex &index);
-
   void on_pushButtonBuscar_clicked();
-
   void on_radioButtonPF_toggled(bool checked);
 
   public:
@@ -78,7 +69,7 @@ private:
   * \brief Função padrão para verificar campos obrigatórios
   * \return
   */
-  virtual bool verifyFields();
+  virtual bool verifyFields(int row);
   /*!
   * \brief Onde ocorre o model.setData(), baseada nas informações da view.
   */

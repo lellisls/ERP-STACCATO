@@ -14,10 +14,23 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   ui->lineEditUF->setInputMask(">AA;_");
   ui->pushButtonMostrarInativos->hide();
   modelEnd.setTable("Endereco");
-  ui->tableView->setModel(&modelEnd);
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
   modelEnd.select();
+
+  ui->tableEndereco->setModel(&modelEnd);
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCadastro"));
+
   mapperEnd.setModel(&modelEnd);
   setupUi();
   setTipoClienteFornecedor("CLIENTE");
@@ -105,8 +118,8 @@ bool CadastroCliente::verifyFields(int row) {
       ok++;
     }
   }
-  qDebug() << "size: " << ui->groupBoxContatos->findChildren<QLineEdit *>().size();
-  qDebug() << "ok: " << ok;
+//  qDebug() << "size: " << ui->groupBoxContatos->findChildren<QLineEdit *>().size();
+//  qDebug() << "ok: " << ok;
 
   if(ok == ui->groupBoxContatos->findChildren<QLineEdit *>().size()){
     setData(row, "incompleto", false);
@@ -124,8 +137,8 @@ bool CadastroCliente::verifyFields(int row) {
     }
   }
 
-  qDebug() << "size: " << ui->groupBoxPJuridica->findChildren<QLineEdit *>().size();
-  qDebug() << "ok: " << ok;
+//  qDebug() << "size: " << ui->groupBoxPJuridica->findChildren<QLineEdit *>().size();
+//  qDebug() << "ok: " << ok;
 
   if(ok == ui->groupBoxPJuridica->findChildren<QLineEdit *>().size()){
     setData(row, "incompleto", false);
@@ -147,8 +160,8 @@ bool CadastroCliente::verifyFields(int row) {
     }
   }
 
-  qDebug() << "size: " << this->findChildren<QComboBox *>().size();
-  qDebug() << "ok: " << ok;
+//  qDebug() << "size: " << this->findChildren<QComboBox *>().size();
+//  qDebug() << "ok: " << ok;
 
   if(ok == this->findChildren<QComboBox *>().size()){
     setData(row, "incompleto", false);
@@ -156,7 +169,7 @@ bool CadastroCliente::verifyFields(int row) {
     setData(row, "incompleto", true);
   }
 
-  qDebug() << "incompleto? " << model.data(model.index(row, model.fieldIndex("incompleto"))).toString();
+//  qDebug() << "incompleto? " << model.data(model.index(row, model.fieldIndex("incompleto"))).toString();
   setData(row, "clienteFornecedor", tipoClienteFornecedor);
   return true;
 }
@@ -698,7 +711,7 @@ void CadastroCliente::clearEnd() {
 void CadastroCliente::novoEnd() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
-  ui->tableView->clearSelection();
+  ui->tableEndereco->clearSelection();
   mapper.setCurrentIndex(-1);
   clearEnd();
 }

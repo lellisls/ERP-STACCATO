@@ -174,7 +174,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
 
   sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "cnpj", "inscEstadual",
                           "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel",
-                          "idCadastroRel", "idProfissionalRel"
+                          "idCadastroRel", "idProfissionalRel", "incompleto"
                          });
   sdCliente->setPrimaryKey("idCadastro");
   sdCliente->setTextKeys({"nomeFantasia", "nome"});

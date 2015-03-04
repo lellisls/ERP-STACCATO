@@ -36,9 +36,9 @@ void CadastroCliente::setupUi() {
   ui->lineEditEmail->setPlaceholderText("usuario@email.com");
   ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
   ui->comboBoxCliente->addItem("Escolha uma opção!");
-  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro " 
-		  "WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '"  
-		  + data(primaryKey).toString() + "'" );
+  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro "
+                  "WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '"
+                  + data(primaryKey).toString() + "'" );
   while (query.next()) {
     if (data(primaryKey).isValid() && data(primaryKey) == query.value(0)) {
       QString str = query.value(1).toString() + " - " + query.value(2).toString();
@@ -86,69 +86,78 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
   return true;
 }
 
-bool CadastroCliente::verifyFields() {
+bool CadastroCliente::verifyFields(int row) {
   if (!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditCPF}))
     return false;
 
-  //  QString tipo;
-  //  if (ui->radioButtonCliente->isChecked()) {
-  //    tipo = "CLIENTE";
-  //  } else if (ui->radioButtonForn->isChecked()) {
-  //    tipo = "FORNECEDOR";
-  //  } else if (ui->radioButtonAmbos->isChecked()) {
-  //    tipo = "AMBOS";
-  //  } else {
-  //    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
-  //                         QMessageBox::NoButton);
-  //    ui->radioButtonCliente->setFocus();
-  //    return false;
-  //    setData("incompleto", true);
-  //  }
-
   if (modelEnd.rowCount() == 0) {
-    setData("incompleto", true);
+    setData(row, "incompleto", true);
+    qDebug() << "Faltou endereço!";
+  } else{
+    setData(row, "incompleto", false);
   }
-  //  if (!ui->widgetEnd_1->verifyFields(true)) {
-  //    //    return false;
-  //  }
 
+  int ok = 0;
   foreach (QLineEdit *line, ui->groupBoxContatos->findChildren<QLineEdit *>()) {
     if (!verifyRequiredField(line, true)) {
-      //      return false;
-      setData("incompleto", true);
+      qDebug() << "Faltou " << line->objectName();
+    } else{
+      ok++;
     }
   }
+  qDebug() << "size: " << ui->groupBoxContatos->findChildren<QLineEdit *>().size();
+  qDebug() << "ok: " << ok;
 
+  if(ok == ui->groupBoxContatos->findChildren<QLineEdit *>().size()){
+    setData(row, "incompleto", false);
+  } else{
+    setData(row, "incompleto", true);
+  }
+
+  ok = 0;
   foreach (QLineEdit *line, ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
     if (!verifyRequiredField(line, true)) {
       //      return false;
-      setData("incompleto", true);
+      qDebug() << "Faltou " << line->objectName();
+    } else{
+      ok++;
     }
   }
 
-  //  if (!ui->widgetEnd_2->verifyFields(true)) {
-  //    //    return false;
-  //    setData("incompleto", true);
-  //  }
+  qDebug() << "size: " << ui->groupBoxPJuridica->findChildren<QLineEdit *>().size();
+  qDebug() << "ok: " << ok;
 
-  //  if (!ui->widgetEnd_3->verifyFields(true)) {
-  //    //    return false;
-  //    setData("incompleto", true);
-  //  }
+  if(ok == ui->groupBoxPJuridica->findChildren<QLineEdit *>().size()){
+    setData(row, "incompleto", false);
+  } else{
+    setData(row, "incompleto", true);
+  }
 
+  ok = 0;
   foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
     if (box->styleSheet() == requiredStyle()) {
       if (box->currentText().isEmpty()) {
         box->setFocus();
         QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
                              QMessageBox::NoButton);
-        //        return false;
-        setData("incompleto", true);
+        qDebug() << "Faltou " << box->objectName();
+      } else{
+        ok++;
       }
     }
- } 
+  }
 
-  setData("clienteFornecedor", tipoClienteFornecedor);
+  qDebug() << "size: " << this->findChildren<QComboBox *>().size();
+  qDebug() << "ok: " << ok;
+
+  if(ok == this->findChildren<QComboBox *>().size()){
+    setData(row, "incompleto", false);
+  } else{
+    setData(row, "incompleto", true);
+  }
+
+  qDebug() << "incompleto? " << model.data(model.index(row, model.fieldIndex("incompleto"))).toString();
+  setData(row, "clienteFornecedor", tipoClienteFornecedor);
   return true;
 }
 
@@ -205,7 +214,7 @@ bool CadastroCliente::savingProcedures(int row) {
              << " : Error on model.submitAll() : " << modelEnd.lastError();
     return false;
   }
-//  qDebug() << "PK = " << data(row, primaryKey);
+  //  qDebug() << "PK = " << data(row, primaryKey);
   int idCad = data(row, primaryKey).toInt();
   if( !data(row,primaryKey).isValid()) {
     QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
@@ -226,21 +235,21 @@ bool CadastroCliente::savingProcedures(int row) {
     return false;
   }
   qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
-//  }
+  //  }
 
-//  for( int end = 0; end < modelEnd.rowCount( ); ++ end) {
-//    int idEnd = modelEnd.data(modelEnd.index(end,modelEnd.fieldIndex("idEndereco"))).toInt();
-//    QSqlQuery qry;
-//    qry.prepare("INSERT IGNORE INTO Cadastro_has_Endereco (idCadastro, idEndereco) VALUES( :idCadastro, :idEndereco );");
-//    qry.bindValue(":idCadastro", idCad);
-//    qry.bindValue(":idEndereco", idEnd);
-//    if(!qry.exec()) {
-//      qDebug() <<  objectName() << " : " << __LINE__ << " : Error insert into Cadastro_has_Endereco : " << qry.lastError();
-//      return false;
-//    }
-//    qDebug() << "QUERY : " << qry.lastQuery();
-//    qDebug() << "Bound values : " << idCad << ", " << idEnd;
-//  }
+  //  for( int end = 0; end < modelEnd.rowCount( ); ++ end) {
+  //    int idEnd = modelEnd.data(modelEnd.index(end,modelEnd.fieldIndex("idEndereco"))).toInt();
+  //    QSqlQuery qry;
+  //    qry.prepare("INSERT IGNORE INTO Cadastro_has_Endereco (idCadastro, idEndereco) VALUES( :idCadastro, :idEndereco );");
+  //    qry.bindValue(":idCadastro", idCad);
+  //    qry.bindValue(":idEndereco", idEnd);
+  //    if(!qry.exec()) {
+  //      qDebug() <<  objectName() << " : " << __LINE__ << " : Error insert into Cadastro_has_Endereco : " << qry.lastError();
+  //      return false;
+  //    }
+  //    qDebug() << "QUERY : " << qry.lastQuery();
+  //    qDebug() << "Bound values : " << idCad << ", " << idEnd;
+  //  }
   return true;
 }
 

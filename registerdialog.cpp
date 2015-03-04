@@ -1,5 +1,6 @@
 #include "registerdialog.h"
 #include <QCloseEvent>
+
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
   setWindowModality(Qt::WindowModal);
@@ -153,13 +154,13 @@ bool RegisterDialog::newRegister() {
 
 bool RegisterDialog::save() {
 //  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
-  if (!verifyFields()) {
-    return false;
-  }
   int row = mapper.currentIndex();
   if (row == -1) {
     row = model.rowCount();
     model.insertRow(row);
+  }
+  if (!verifyFields(row)) {
+    return false;
   }
   QSqlQuery("START TRANSACTION").exec();
   if (!savingProcedures(row)) {

@@ -36,10 +36,10 @@ MainWindow::MainWindow(QWidget *parent)
 
   readSettings();
 
-//    LoginDialog *dialog = new LoginDialog(this);
-//    if (dialog->exec() == QDialog::Rejected) {
-//      exit(1);
-//    }
+  //    LoginDialog *dialog = new LoginDialog(this);
+  //    if (dialog->exec() == QDialog::Rejected) {
+  //      exit(1);
+  //    }
 
   if (!dbConnect()) {
     QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,
@@ -84,7 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
   }
-  //  (new CadastroProduto(this))->show();
 }
 
 bool MainWindow::dbConnect() {
@@ -148,17 +147,6 @@ void MainWindow::setupTable(QTableView *table) {
   table->resizeColumnsToContents();
 
   table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-  //    int width = (table->model()->columnCount() - 1) + table->verticalHeader()->width();
-  //    for(int column = 0; column < table->model()->columnCount(); column++) {
-  //      width += table->columnWidth(column);
-  //    }
-  //    if(width < 0) {
-  //      width = 0;
-  //    }
-  //    table->setMinimumWidth(width);
-  //  table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  //  table->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void MainWindow::showError(const QSqlError &err) {
@@ -406,19 +394,19 @@ void MainWindow::on_tableOrcamentos_doubleClicked(const QModelIndex &index) {
   connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
   //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
   orc->viewRegisterById(
-    modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+        modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
 void MainWindow::on_tableContasPagar_doubleClicked(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
-    modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableContasReceber_doubleClicked(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(modelCAReceber->data(modelCAReceber->index(
-      index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+                                           index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tablePedidosCompra_doubleClicked(const QModelIndex &index) {
@@ -431,12 +419,10 @@ void MainWindow::on_actionAtualizar_tabelas_triggered() {
 }
 
 void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
-  Venda *vendas = new Venda(this); //TODO: make Venda a RegisterDialog
+  Venda *vendas = new Venda(this);
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
   vendas->viewRegisterById(
-    modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
-//  vendas->viewVenda(
-//        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))).toString());
+        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -552,17 +538,15 @@ void MainWindow::on_radioButtonContaReceberPendente_clicked() {
 void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-    modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
-                                  "idPedido"))).toString());
-
-  Q_UNUSED(index);
+        modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
+                                                                   "idPedido"))).toString());
 }
 
 void MainWindow::on_tableEntregasCliente_doubleClicked(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-    modelEntregasCliente->data(modelEntregasCliente->index(
-                                 index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
+        modelEntregasCliente->data(modelEntregasCliente->index(
+                                     index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableNFE_doubleClicked(const QModelIndex &index) {
@@ -574,38 +558,67 @@ void MainWindow::on_pushButtonCriarOrc_clicked() {
 }
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
-
-  //  SELECT * FROM MyTable WHERE (Column1 LIKE '%keyword1%' OR Column2 LIKE
-  //  '%keyword1%') AND (Column1 LIKE '%keyword2%' OR Column2 LIKE '%keyword2%');
+  if(text.isEmpty()){
+    modelOrcamento->setFilter("");
+  } else{
+    modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
-  modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelVendas->setFilter("");
+  } else{
+    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
-  modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelCAPagar->setFilter("");
+  } else{
+    modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {
-  modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelCAReceber->setFilter("");
+  } else{
+    modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
-  modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelEntregasCliente->setFilter("");
+  } else{
+    modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
-  modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelPedCompra->setFilter("");
+  } else{
+    modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {
-  modelRecebimentosForn->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelRecebimentosForn->setFilter("");
+  } else{
+    modelRecebimentosForn->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
-  modelNFe->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()){
+    modelNFe->setFilter("");
+  } else{
+    modelNFe->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
@@ -631,5 +644,3 @@ void MainWindow::readSettings() {
   password = settings.value("password").toString();
   port = settings.value("port").toString();
 }
-
-//TODO: fix buscas like

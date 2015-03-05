@@ -9,6 +9,7 @@ class ImportaApavisa
     ImportaApavisa();
     ~ImportaApavisa();
     QString importar(QString file);
+    int buscarCadastrarFornecedor(QString column0);
 };
 
 #endif // IMPORTAAPAVISA_H

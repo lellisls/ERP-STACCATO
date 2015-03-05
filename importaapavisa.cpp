@@ -10,6 +10,36 @@ ImportaApavisa::ImportaApavisa() {}
 
 ImportaApavisa::~ImportaApavisa() {}
 
+int ImportaApavisa::buscarCadastrarFornecedor(QString column0)
+{
+  int idFornecedor = 0;
+
+  QSqlQuery queryFornecedor;
+  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+  }
+  qDebug() << "size: " << queryFornecedor.size();
+  if (queryFornecedor.next()) {
+    idFornecedor = queryFornecedor.value("idCadastro").toInt();
+  } else {
+    QSqlQuery cadastrar;
+    if (!cadastrar.exec(
+          "INSERT INTO Cadastro (pfpj, clienteFornecedor, nome) VALUES ('PJ', 'FORNECEDOR', '" +
+          column0 + "')")) {
+      qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
+    }
+  }
+  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+  }
+  qDebug() << "size: " << queryFornecedor.size();
+  if (queryFornecedor.next()) {
+    idFornecedor = queryFornecedor.value("idCadastro").toInt();
+  }
+
+  return idFornecedor;
+}
+
 QString ImportaApavisa::importar(QString file) {
   QString texto;
 
@@ -25,30 +55,7 @@ QString ImportaApavisa::importar(QString file) {
     while (query.next()) {
       QString column0 = query.value(21).toString(); // fornecedor - string
       if ((!column0.isEmpty()) and (column0 != "Marca")) {
-        int idFornecedor = 0;
-
-        QSqlQuery queryFornecedor;
-        if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
-          qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-        }
-        qDebug() << "size: " << queryFornecedor.size();
-        if (queryFornecedor.next()) {
-          idFornecedor = queryFornecedor.value("idCadastro").toInt();
-        } else {
-          QSqlQuery cadastrar;
-          if (!cadastrar.exec(
-                "INSERT INTO Cadastro (pfpj, clienteFornecedor, nome) VALUES ('PJ', 'FORNECEDOR', '" +
-                column0 + "')")) {
-            qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
-          }
-        }
-        if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
-          qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-        }
-        qDebug() << "size: " << queryFornecedor.size();
-        if (queryFornecedor.next()) {
-          idFornecedor = queryFornecedor.value("idCadastro").toInt();
-        }
+        int idFornecedor = buscarCadastrarFornecedor(column0);
         qDebug() << "id: " << idFornecedor;
 
         QString column1 = query.value(22).toString();  // codigo - int

@@ -294,7 +294,6 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "data", ui->dateTimeEdit->dateTime());
   setData(row, "total", ui->doubleSpinBoxFinal->value());
   setData(row, "desconto", ui->doubleSpinBoxDescontoGlobal->value());
-
   setData(row, "frete", ui->doubleSpinBoxFrete->value());
 
   if (!model.submitAll() && model.lastError().number() != 1062) {

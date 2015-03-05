@@ -8,6 +8,7 @@ class ImportaPortinari {
     ImportaPortinari();
     ~ImportaPortinari();
     QString importar(QString file);
+    int buscarCadastrarFornecedor(QString column0);
 };
 
 #endif // IMPORTAPORTINARI_H

@@ -167,27 +167,32 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
 }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
-  //  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome", "apelido",
+  //  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome_razao", "apelido",
   //  "razaoSocial", "nomeFantasia, "cpf"},
   //      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
   SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cadastro",
-  {"nome", "apelido", "razaoSocial", "nomeFantasia", "cpf"},
+  {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
                                              "clienteFornecedor = 'CLIENTE'", parent);
 
-  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "cnpj", "inscEstadual",
+  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "inscEstadual",
                           "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel",
                           "idCadastroRel", "idProfissionalRel", "incompleto"
                          });
   sdCliente->setPrimaryKey("idCadastro");
-  sdCliente->setTextKeys({"nomeFantasia", "nome"});
+  sdCliente->setTextKeys({"nomeFantasia", "nome_razao"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("nome", "Nome"));
+  headerData.push_back(QPair<QString, QString>("nome_razao", "Cliente"));
   headerData.push_back(QPair<QString, QString>("apelido", "Apelido"));
   headerData.push_back(QPair<QString, QString>("cpf", "CPF"));
+  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
+  headerData.push_back(QPair<QString, QString>("contatoNome", "Nome - Contato"));
+  headerData.push_back(QPair<QString, QString>("contatoCPF", "CPF - Contato"));
+  headerData.push_back(QPair<QString, QString>("contatoApelido", "Apelido - Contato"));
+  headerData.push_back(QPair<QString, QString>("contatoRG", "RG - Contato"));
   headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
-  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));
+  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Fantasia/Apelido"));
   headerData.push_back(QPair<QString, QString>("tel", "Tel."));
   headerData.push_back(QPair<QString, QString>("telCel", "Tel. Cel."));
   headerData.push_back(QPair<QString, QString>("telCom", "Tel. Com."));
@@ -252,7 +257,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor =
-      new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome", "nomeFantasia", "razaoSocial"},
+      new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
                        "clienteFornecedor = 'FORNECEDOR'", parent);
   sdFornecedor->hideColumns({"idCadastro", "rg", "cpf", "cnpj", "inscEstadual", "idEnderecoFaturamento",
                              "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel",
@@ -261,7 +266,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
                             });
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("nome", "Nome"));
+  headerData.push_back(QPair<QString, QString>("nome_razao", "Nome"));
   headerData.push_back(QPair<QString, QString>("apelido", "Apelido"));
   headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
   headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));

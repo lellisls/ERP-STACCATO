@@ -157,6 +157,8 @@ bool CadastroCliente::verifyFields(int row) {
       } else{
         ok++;
       }
+    } else{
+      ok++;
     }
   }
 

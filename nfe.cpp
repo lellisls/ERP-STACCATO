@@ -75,10 +75,12 @@ bool NFe::TXT() {
 NFe::~NFe() {}
 
 bool NFe::writeTXT(QString chave) {
-  QFile file(idVenda + ".txt");
-  qDebug() << QDir::current().absoluteFilePath(idVenda + ".txt");
+  //  QFile file(idVenda + ".txt");
+  QFile file("C:/ACBrNFeMonitor/ENTNFE.TXT/" + idVenda + ".txt");
+  //  qDebug() << QDir::current().absoluteFilePath(idVenda + ".txt");
   file.open(QFile::WriteOnly);
   QFileInfo fileInfo(file);
+  qDebug() << "path: " << fileInfo.absoluteFilePath();
   arquivo = fileInfo.absoluteFilePath().replace("/", "\\\\");
 
   chaveAcesso = "NFe" + chave;
@@ -163,10 +165,10 @@ bool NFe::writeTXT(QString chave) {
   }
   stream << "Numero = " + endLoja.value("numero").toString() << endl;
 
-  if(endLoja.value("complemento").toString().isEmpty()){
-    qDebug() << "complemento vazio";
-    return false;
-  }
+  //  if(endLoja.value("complemento").toString().isEmpty()){
+  //    qDebug() << "complemento vazio";
+  //    return false;
+  //  }
   stream << "Complemento = " + endLoja.value("complemento").toString() << endl;
 
   if(endLoja.value("bairro").toString().isEmpty()){
@@ -196,86 +198,93 @@ bool NFe::writeTXT(QString chave) {
     return false;
   }
 
-  QSqlQuery cliente("SELECT * FROM Cadastro LEFT JOIN Endereco ON Cadastro.idCadastro = Endereco.idCadastro "
-                    "WHERE Endereco.idCadastro = " +
-                    idCliente + "");
+  QSqlQuery cliente;
 
-  if (!cliente.exec()) {
+  if (!cliente.exec("SELECT * FROM Cadastro LEFT JOIN Endereco ON Cadastro.idCadastro = Endereco.idCadastro "
+                    "WHERE Endereco.idCadastro = " +
+                    idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
     return false;
   }
-  cliente.first();
+  qDebug() << "cliente size: " << cliente.size();
+  if(cliente.next()){
+    qDebug() << "Cliente next";
 
-  if (cliente.value("pfpj").toString() == "PF") {
-    if(clearStr(cliente.value("cpf").toString()).isEmpty()){
-      qDebug() << "cpf vazio";
+    if (cliente.value("pfpj").toString() == "PF") {
+      if(clearStr(cliente.value("cpf").toString()).isEmpty()){
+        qDebug() << "cpf vazio";
+        return false;
+      }
+      stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
+    }
+    if(cliente.value("pfpj").toString() == "PJ"){
+      if(clearStr(cliente.value("cnpj").toString()).isEmpty()){
+        qDebug() << "cnpj dest vazio";
+        return false;
+      }
+      stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
+
+      stream << "IE = 110042490114" << endl;
+      //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
+      //  stream << "IE = ISENTO" << endl;
+
+      if(cliente.value("razaoSocial").toString().isEmpty()){
+        qDebug() << "razaoSocial vazio";
+        return false;
+      }
+      stream << "NomeRazao = " + cliente.value("razaoSocial").toString() << endl;
+    }
+
+    if(cliente.value("tel").toString().isEmpty()){
+      qDebug() << "tel vazio";
       return false;
     }
-    stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
-  } else {
-    if(clearStr(cliente.value("cnpj").toString()).isEmpty()){
-      qDebug() << "cnpj dest vazio";
+    stream << "Fone = " + cliente.value("tel").toString() << endl;
+
+    if(cliente.value("CEP").toString().isEmpty()){
+      qDebug() << "CEP vazio";
       return false;
     }
-    stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
+    stream << "CEP = " + cliente.value("CEP").toString() << endl;
 
-    stream << "IE = 110042490114" << endl;
-    //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
-    //  stream << "IE = ISENTO" << endl;
-  }
-  if(cliente.value("razaoSocial").toString().isEmpty()){
-    qDebug() << "razaoSocial vazio";
-    return false;
-  }
-  stream << "NomeRazao = " + cliente.value("razaoSocial").toString() << endl;
+    if(cliente.value("logradouro").toString().isEmpty()){
+      qDebug() << "logradouro vazio";
+      return false;
+    }
+    stream << "Logradouro = " + cliente.value("logradouro").toString() << endl;
 
-  if(cliente.value("tel").toString().isEmpty()){
-    qDebug() << "tel vazio";
-    return false;
-  }
-  stream << "Fone = " + cliente.value("tel").toString() << endl;
+    if(cliente.value("numero").toString().isEmpty()){
+      qDebug() << "numero vazio";
+      return false;
+    }
+    stream << "Numero = " + cliente.value("numero").toString() << endl;
 
-  if(cliente.value("CEP").toString().isEmpty()){
-    qDebug() << "CEP vazio";
-    return false;
-  }
-  stream << "CEP = " + cliente.value("CEP").toString() << endl;
+//    if(cliente.value("complemento").toString().isEmpty()){
+//      qDebug() << "complemento vazio";
+//      return false;
+//    }
+    stream << "Complemento = " + cliente.value("complemento").toString() << endl;
 
-  if(cliente.value("logradouro").toString().isEmpty()){
-    qDebug() << "logradouro vazio";
-    return false;
-  }
-  stream << "Logradouro = " + cliente.value("logradouro").toString() << endl;
+    if(cliente.value("bairro").toString().isEmpty()){
+      qDebug() << "bairro vazio";
+      return false;
+    }
+    stream << "Bairro = " + cliente.value("bairro").toString() << endl;
 
-  if(cliente.value("numero").toString().isEmpty()){
-    qDebug() << "numero vazio";
-    return false;
-  }
-  stream << "Numero = " + cliente.value("numero").toString() << endl;
+    if(cliente.value("cidade").toString().isEmpty()){
+      qDebug() << "cidade vazio";
+      return false;
+    }
+    stream << "Cidade = " + cliente.value("cidade").toString() << endl;
 
-  if(cliente.value("complemento").toString().isEmpty()){
-    qDebug() << "complemento vazio";
-    return false;
+    if(cliente.value("uf").toString().isEmpty()){
+      qDebug() << "uf vazio";
+      return false;
+    }
+    stream << "UF = " + cliente.value("uf").toString() << endl;
+  } else{
+    qDebug() << "Erro buscando endereço do destinatário: " << cliente.lastError();
   }
-  stream << "Complemento = " + cliente.value("complemento").toString() << endl;
-
-  if(cliente.value("bairro").toString().isEmpty()){
-    qDebug() << "bairro vazio";
-    return false;
-  }
-  stream << "Bairro = " + cliente.value("bairro").toString() << endl;
-
-  if(cliente.value("cidade").toString().isEmpty()){
-    qDebug() << "cidade vazio";
-    return false;
-  }
-  stream << "Cidade = " + cliente.value("cidade").toString() << endl;
-
-  if(cliente.value("uf").toString().isEmpty()){
-    qDebug() << "uf vazio";
-    return false;
-  }
-  stream << "UF = " + cliente.value("uf").toString() << endl;
 
   qDebug() << "[Produto]";
   double total = 0;

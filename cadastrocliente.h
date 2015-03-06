@@ -47,8 +47,6 @@ private slots:
   void on_pushButtonBuscar_clicked();
   void on_radioButtonPF_toggled(bool checked);
 
-  void on_pushButtonRemoverEnd_clicked();
-
   public:
   /*!
    * \brief Utilizada para selecionar um item a partir de um QModelIndex.

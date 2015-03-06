@@ -465,7 +465,7 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
     ui->comboBoxPgt1Parc->setDisabled(true);
   }
 
-  if(text == "Cheque"){
+  if(text == "Cheque" or text == "Boleto"){
     ui->dateEditPgt1->setEnabled(true);
   } else{
     ui->dateEditPgt1->setDisabled(true);

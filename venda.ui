@@ -74,6 +74,12 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <item>
              <property name="text">
               <string>1x</string>
@@ -168,6 +174,12 @@
            <widget class="QComboBox" name="comboBoxPgt2Parc">
             <property name="enabled">
              <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
             <item>
              <property name="text">
@@ -581,6 +593,12 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <item>
              <property name="text">
               <string>1x</string>
@@ -656,6 +674,13 @@
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="1">
+           <widget class="QLabel" name="labelRestante">
+            <property name="text">
+             <string>Total</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
             <property name="readOnly">
              <bool>true</bool>
@@ -663,22 +688,36 @@
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
             </property>
+            <property name="prefix">
+             <string>R$ </string>
+            </property>
             <property name="maximum">
              <double>999999.989999999990687</double>
             </property>
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QLabel" name="labelRestante">
-            <property name="text">
-             <string>Total</string>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
        </item>
       </layout>
+      <zorder>tableFluxoCaixa</zorder>
+      <zorder>groupBox</zorder>
+      <zorder>groupBox_2</zorder>
+      <zorder>groupBox_4</zorder>
+      <zorder>groupBox_5</zorder>
       <zorder>tableVenda</zorder>
       <zorder>groupBox_3</zorder>
      </widget>

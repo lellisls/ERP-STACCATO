@@ -19,8 +19,7 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   ui->tableBusca->setModel(&model);
   ui->lineEditBusca->setFocus();
 
-//  ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-  ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+  ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setStretchLastSection(true);
@@ -336,44 +335,4 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   sdProfissional->setHeaderData(headerData);
 
   return (sdProfissional);
-}
-
-void SearchDialog::on_comboBox_currentTextChanged(const QString &arg1)
-{
-    if(arg1 == "Interactive"){
-      qDebug() << "Interactive";
-      ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    }
-    if(arg1 == "Fixed"){
-      qDebug() << "Fixed";
-      ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    }
-    if(arg1 == "Stretch"){
-      qDebug() << "Stretch";
-      ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    }
-    if(arg1 == "ResizeToContents"){
-      qDebug() << "ResizeToContents";
-      ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    }
-}
-
-void SearchDialog::on_checkBox_stateChanged(int arg1)
-{
-  qDebug() << "arg1: " << arg1;
-    if(arg1 == 2){
-      qDebug() << "checked";
-      ui->tableBusca->horizontalHeader()->setStretchLastSection(true);
-    }
-    if(arg1 == 0){
-      qDebug() << "unchecked";
-      ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-    }
-}
-
-void SearchDialog::on_checkBox_2_stateChanged(int arg1)
-{
-    if(arg1 == 2){
-      ui->tableBusca->resizeColumnsToContents();
-    }
 }

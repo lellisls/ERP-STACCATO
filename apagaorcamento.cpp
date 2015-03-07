@@ -4,6 +4,7 @@
 
 #include "apagaorcamento.h"
 #include "ui_apagaorcamento.h"
+#include "mainwindow.h"
 
 ApagaOrcamento::ApagaOrcamento(QWidget *parent) :
   QDialog(parent),
@@ -38,6 +39,14 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked()
   modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("motivoCancelamento")), ui->lineEditMotivo->text());
   if(!modelOrc.submitAll()){
     qDebug() << "Erro cancelando orçamento: " << modelOrc.lastError();
+  }
+
+  if(MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())){
+    qDebug() << "cast ok";
+    window->updateTables();
+  } else{
+    qDebug() << "cast not ok";
+    qDebug() << "object: " << parentWidget()->parentWidget()->objectName();
   }
 
   close();

@@ -15,7 +15,6 @@ doc/html
 
 /.qmake.cache
 /.qmake.stash
-*.pro.user
 *.pro.user.*
 *.moc
 moc_*.cpp

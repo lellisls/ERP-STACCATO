@@ -12,7 +12,7 @@ class CadastroCliente : public RegisterDialog  {
   Q_OBJECT
 
 public:
-  explicit CadastroCliente(QWidget *parent = 0);
+  explicit CadastroCliente(bool closeBeforeUpdate = false, QWidget *parent = 0);
   ~CadastroCliente();
   void setupUi();
 
@@ -97,6 +97,7 @@ private:
 //  CadastrarCliente *escolherTipo;
   QString tipoPFPJ;
   QString tipoClienteFornecedor;
+  bool closeBeforeUpdate;
   //
   void validaCNPJ(QString text);
   void validaCPF(QString text);

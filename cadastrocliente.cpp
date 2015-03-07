@@ -7,8 +7,10 @@
 #include "searchdialog.h"
 #include "cepcompleter.h"
 
-CadastroCliente::CadastroCliente(QWidget *parent)
-  : RegisterDialog("Cadastro", "idCadastro", parent), ui(new Ui::CadastroCliente) {
+CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget * parent)
+  : RegisterDialog("Cadastro", "idCadastro", parent),
+    ui(new Ui::CadastroCliente),
+    closeBeforeUpdate(closeBeforeUpdate) {
   ui->setupUi(this);
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
@@ -78,7 +80,9 @@ void CadastroCliente::setupUi() {
   }
 }
 
-CadastroCliente::~CadastroCliente() { delete ui; }
+CadastroCliente::~CadastroCliente() {
+  delete ui;
+}
 
 bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
   if (line->styleSheet() != requiredStyle()) {
@@ -87,9 +91,9 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
 //  if(!line->isEnabled()){
 //    return true;
 //  }
-    if (!line->isVisible()) {
-      return true;
-    }
+  if (!line->isVisible()) {
+    return true;
+  }
   //  if(line->parent()->isWindowType() && line->parent()->objectName() != objectName() ) {
   //    return true;
   //  }
@@ -199,7 +203,7 @@ bool CadastroCliente::savingProcedures(int row) {
   if (!ui->lineEditContatoNome->text().isEmpty()) {
     setData(row, "contatoNome", ui->lineEditContatoNome->text());
   }
-  if (!ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()){
+  if (!ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoCPF", ui->lineEditContatoCPF->text());
   }
   if (!ui->lineEditContatoApelido->text().isEmpty()) {
@@ -293,7 +297,9 @@ void CadastroCliente::clearFields() {
   //  }
   //  ui->widgetEnd_1->setEnabled(true);
   novoEnd();
-  foreach (QComboBox *box, this->findChildren<QComboBox *>()) { box->clear(); }
+  foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
+    box->clear();
+  }
   setupUi();
 }
 
@@ -343,7 +349,9 @@ void CadastroCliente::updateMode() {
   //  ui->pushButtonNovoCad->show();
   ui->pushButtonRemover->show();
 }
-QString CadastroCliente::getTipoClienteFornecedor() const { return tipoClienteFornecedor; }
+QString CadastroCliente::getTipoClienteFornecedor() const {
+  return tipoClienteFornecedor;
+}
 
 void CadastroCliente::setTipoClienteFornecedor(const QString &value) {
   bool isForn = (value == "FORNECEDOR");
@@ -356,9 +364,13 @@ void CadastroCliente::setTipoClienteFornecedor(const QString &value) {
   adjustSize();
 }
 
-QString CadastroCliente::getTipo() const { return tipoPFPJ; }
+QString CadastroCliente::getTipo() const {
+  return tipoPFPJ;
+}
 
-void CadastroCliente::setTipo(const QString &value) { tipoPFPJ = value; }
+void CadastroCliente::setTipo(const QString &value) {
+  tipoPFPJ = value;
+}
 
 bool CadastroCliente::viewRegister(QModelIndex idx) {
   if (!confirmationMessage()) {
@@ -402,7 +414,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   QSqlQuery query(str);
   while (query.next()) {
     QString line =
-        query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
+      query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
     ui->textEditClientes->insertPlainText(line);
   }
   //  QString tipo = data("tipo").toString();
@@ -420,14 +432,16 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
 
 void CadastroCliente::on_pushButtonCadastrar_clicked() {
   if (save()) {
-    //    accept();
-  } else {
-    qDebug() << "Erro :(";
+    if(closeBeforeUpdate)
+      accept();
   }
 }
 
 void CadastroCliente::on_pushButtonAtualizar_clicked() {
-  save();
+  if(save()){
+    if(closeBeforeUpdate)
+      accept();
+  }
 }
 
 void CadastroCliente::enableEditor() {
@@ -476,13 +490,21 @@ void CadastroCliente::show() {
 //  QDialog::reject();
 //}
 
-void CadastroCliente::on_pushButtonCancelar_clicked() { close(); }
+void CadastroCliente::on_pushButtonCancelar_clicked() {
+  close();
+}
 
-void CadastroCliente::on_pushButtonRemover_clicked() { remove(); }
+void CadastroCliente::on_pushButtonRemover_clicked() {
+  remove();
+}
 
-void CadastroCliente::on_pushButtonNovoCad_clicked() { newRegister(); }
+void CadastroCliente::on_pushButtonNovoCad_clicked() {
+  newRegister();
+}
 
-void CadastroCliente::on_groupBoxPJuridica_toggled(bool arg1) { ui->widgetPJ->setEnabled(arg1); }
+void CadastroCliente::on_groupBoxPJuridica_toggled(bool arg1) {
+  ui->widgetPJ->setEnabled(arg1);
+}
 
 void CadastroCliente::on_pushButtonBuscar_clicked() {
   SearchDialog *sdCliente = SearchDialog::cliente(this);
@@ -630,8 +652,9 @@ void CadastroCliente::validaCPF(QString text) {
 
 bool CadastroCliente::atualizarEnd() {
   if (!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditCEP, ui->lineEditEndereco,
-                                    ui->lineEditNro, ui->lineEditBairro, ui->lineEditCidade,
-                                    ui->lineEditUF}))
+                                     ui->lineEditNro, ui->lineEditBairro, ui->lineEditCidade,
+                                     ui->lineEditUF
+                                    }))
     return false;
   if (!ui->lineEditCEP->isValid()) {
     ui->lineEditCEP->setFocus();
@@ -669,9 +692,13 @@ bool CadastroCliente::atualizarEnd() {
   return true;
 }
 
-void CadastroCliente::on_pushButtonAdicionarEnd_clicked() { atualizarEnd(); }
+void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
+  atualizarEnd();
+}
 
-void CadastroCliente::on_pushButtonAtualizarEnd_clicked() { atualizarEnd(); }
+void CadastroCliente::on_pushButtonAtualizarEnd_clicked() {
+  atualizarEnd();
+}
 
 void CadastroCliente::on_pushButtonMostrarInativos_clicked(bool checked) {
   Q_UNUSED(checked)
@@ -712,7 +739,9 @@ void CadastroCliente::novoEnd() {
   clearEnd();
 }
 
-void CadastroCliente::on_pushButtonNovoEnd_clicked() { novoEnd(); }
+void CadastroCliente::on_pushButtonNovoEnd_clicked() {
+  novoEnd();
+}
 
 void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
   if (modelEnd.isDirty()) {
@@ -735,20 +764,20 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
   //  ui->groupBoxPJuridica->setDisabled(checked);
   if (checked) {
     tipoPFPJ = "PF";
-        ui->lineEditCNPJ->hide();
-        ui->labelCNPJ->hide();
-        ui->lineEditCPF->show();
-        ui->labelCPF->show();
-        ui->lineEditInscEstadual->hide();
-        ui->labelInscricaoEstadual->hide();
+    ui->lineEditCNPJ->hide();
+    ui->labelCNPJ->hide();
+    ui->lineEditCPF->show();
+    ui->labelCPF->show();
+    ui->lineEditInscEstadual->hide();
+    ui->labelInscricaoEstadual->hide();
   } else {
     tipoPFPJ = "PJ";
-        ui->lineEditCNPJ->show();
-        ui->labelCNPJ->show();
-        ui->lineEditCPF->hide();
-        ui->labelCPF->hide();
-        ui->lineEditInscEstadual->show();
-        ui->labelInscricaoEstadual->show();
+    ui->lineEditCNPJ->show();
+    ui->labelCNPJ->show();
+    ui->lineEditCPF->hide();
+    ui->labelCPF->hide();
+    ui->lineEditInscEstadual->show();
+    ui->labelInscricaoEstadual->show();
   }
   adjustSize();
 }

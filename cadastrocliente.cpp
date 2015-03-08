@@ -6,6 +6,7 @@
 #include "ui_cadastrocliente.h"
 #include "searchdialog.h"
 #include "cepcompleter.h"
+#include "cadastroprofissional.h"
 
 CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget * parent)
   : RegisterDialog("Cadastro", "idCadastro", parent),
@@ -37,6 +38,15 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget * parent)
   setupUi();
   setTipoClienteFornecedor("CLIENTE");
 
+  //TODO Filtrar pra não aparecer o próprio cadastro na lista.
+  SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
+  ui->itemBoxCliente->setSearchDialog(sdCliente);
+  SearchDialog *sdProfissional = SearchDialog::profissional(this);
+  ui->itemBoxProfissional->setSearchDialog(sdProfissional);
+  RegisterDialog * regProfissional = new CadastroProfissional(this);
+  ui->itemBoxProfissional->setRegisterDialog(regProfissional);
+  SearchDialog * sdVendedor = SearchDialog::usuario(this);
+  ui->itemBoxVendedor->setSearchDialog(sdVendedor);
   setupMapper();
   newRegister();
 }
@@ -53,31 +63,31 @@ void CadastroCliente::setupUi() {
   ui->lineEditCPF->setPlaceholderText("999.999.999-99");
   ui->lineEditEmail->setPlaceholderText("usuario@email.com");
   ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
-  ui->comboBoxCliente->addItem("Escolha uma opção!");
+//  ui->comboBoxCliente->addItem("Escolha uma opção!");
 
-  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro "
-                  "WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '" +
-                  data(primaryKey).toString() + "'");
-  while (query.next()) {
-    if (data(primaryKey).isValid() && data(primaryKey) == query.value(0)) {
-      QString str = query.value(1).toString() + " - " + query.value(2).toString();
-      ui->comboBoxCliente->addItem(str, query.value(0));
-    }
-  }
+//  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro "
+//                  "WHERE clienteFornecedor = 'CLIENTE' AND idCadastro != '" +
+//                  data(primaryKey).toString() + "'");
+//  while (query.next()) {
+//    if (data(primaryKey).isValid() && data(primaryKey) == query.value(0)) {
+//      QString str = query.value(1).toString() + " - " + query.value(2).toString();
+//      ui->comboBoxCliente->addItem(str, query.value(0));
+//    }
+//  }
 
-  ui->comboBoxProfissional->addItem("Escolha uma opção!");
-  QSqlQuery queryProf("SELECT idProfissional, nome, tipo FROM Profissional;");
-  while (queryProf.next()) {
-    QString str = queryProf.value(1).toString() + " [" + queryProf.value(2).toString() + "] ";
-    ui->comboBoxProfissional->addItem(str, queryProf.value(0));
-  }
+//  ui->comboBoxProfissional->addItem("Escolha uma opção!");
+//  QSqlQuery queryProf("SELECT idProfissional, nome, tipo FROM Profissional;");
+//  while (queryProf.next()) {
+//    QString str = queryProf.value(1).toString() + " [" + queryProf.value(2).toString() + "] ";
+//    ui->comboBoxProfissional->addItem(str, queryProf.value(0));
+//  }
 
-  ui->comboBoxVendedor->addItem("Escolha uma opção!");
-  QSqlQuery queryVend("SELECT idUsuario, nome FROM Usuario;");
-  while (queryVend.next()) {
-    QString str = queryVend.value(0).toString() + " - " + queryVend.value(1).toString();
-    ui->comboBoxVendedor->addItem(str, queryVend.value(0));
-  }
+//  ui->comboBoxVendedor->addItem("Escolha uma opção!");
+//  QSqlQuery queryVend("SELECT idUsuario, nome FROM Usuario;");
+//  while (queryVend.next()) {
+//    QString str = queryVend.value(0).toString() + " - " + queryVend.value(1).toString();
+//    ui->comboBoxVendedor->addItem(str, queryVend.value(0));
+//  }
 }
 
 CadastroCliente::~CadastroCliente() {
@@ -161,29 +171,29 @@ bool CadastroCliente::verifyFields(int row) {
   }
 
   ok = 0;
-  foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
-    if (box->styleSheet() == requiredStyle()) {
-      if (box->currentText().isEmpty()) {
-        box->setFocus();
-        QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
-                             QMessageBox::NoButton);
-        qDebug() << "Faltou " << box->objectName();
-      } else {
-        ok++;
-      }
-    } else{
-      ok++;
-    }
-  }
+//  foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
+//    if (box->styleSheet() == requiredStyle()) {
+//      if (box->currentText().isEmpty()) {
+//        box->setFocus();
+//        QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
+//                             QMessageBox::NoButton);
+//        qDebug() << "Faltou " << box->objectName();
+//      } else {
+//        ok++;
+//      }
+//    } else{
+//      ok++;
+//    }
+//  }
 
   //  qDebug() << "size: " << this->findChildren<QComboBox *>().size();
   //  qDebug() << "ok: " << ok;
 
-  if (ok == this->findChildren<QComboBox *>().size()) {
-    setData(row, "incompleto", false);
-  } else {
-    setData(row, "incompleto", true);
-  }
+//  if (ok == this->findChildren<QComboBox *>().size()) {
+//    setData(row, "incompleto", false);
+//  } else {
+//    setData(row, "incompleto", true);
+//  }
 
   //  qDebug() << "incompleto? " << model.data(model.index(row, model.fieldIndex("incompleto"))).toString();
   setData(row, "clienteFornecedor", tipoClienteFornecedor);
@@ -235,9 +245,9 @@ bool CadastroCliente::savingProcedures(int row) {
   if (!ui->lineEditEmail->text().isEmpty()) {
     setData(row, "email", ui->lineEditEmail->text());
   }
-  setData(row, "idCadastroRel", ui->comboBoxCliente->getCurrentValue());
-  setData(row, "idProfissionalRel", ui->comboBoxProfissional->getCurrentValue());
-  setData(row, "idUsuarioRel", ui->comboBoxVendedor->getCurrentValue());
+  setData(row, "idCadastroRel", ui->itemBoxCliente->getValue());
+  setData(row, "idProfissionalRel", ui->itemBoxProfissional->getValue());
+  setData(row, "idUsuarioRel", ui->itemBoxVendedor->getValue());
 
   setData(row, "clienteFornecedor", tipoClienteFornecedor);
   setData(row, "pfpj", tipoPFPJ);
@@ -299,7 +309,7 @@ void CadastroCliente::clearFields() {
   //  }
   //  ui->widgetEnd_1->setEnabled(true);
   novoEnd();
-  foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
+  foreach (ItemBox *box, this->findChildren<ItemBox *>()) {
     box->clear();
   }
   setupUi();
@@ -324,9 +334,9 @@ void CadastroCliente::setupMapper() {
   addMapping(ui->lineEditContatoCPF, "contatoCPF");
   addMapping(ui->lineEditContatoApelido, "contatoApelido");
   addMapping(ui->lineEditContatoRG, "contatoRG");
-  addMapping(ui->comboBoxCliente, "idCadastroRel", "currentValue");
-  addMapping(ui->comboBoxProfissional, "idProfissionalRel", "currentValue");
-  addMapping(ui->comboBoxVendedor, "idUsuarioRel", "currentValue");
+  addMapping(ui->itemBoxCliente, "idCadastroRel", "value");
+  addMapping(ui->itemBoxProfissional, "idProfissionalRel", "value");
+  addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
 
   mapperEnd.addMapping(ui->lineEditDescricao, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
@@ -440,7 +450,7 @@ void CadastroCliente::on_pushButtonCadastrar_clicked() {
 }
 
 void CadastroCliente::on_pushButtonAtualizar_clicked() {
-  if(save()){
+  if(save()) {
     if(closeBeforeUpdate)
       accept();
   }

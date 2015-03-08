@@ -58,7 +58,7 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 
 void SearchDialog::sendUpdateMessage() {
   QModelIndex index = model.index(0,0);
-  if(!ui->tableBusca->selectionModel()->selection().indexes().isEmpty()){
+  if(!ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
     index = ui->tableBusca->selectionModel()->selection().indexes().front();
   }
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
@@ -174,7 +174,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
   //      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
   SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cadastro",
   {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-                                             "clienteFornecedor = 'CLIENTE'", parent);
+  "clienteFornecedor = 'CLIENTE'", parent);
 
   sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "inscEstadual",
                           "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel",
@@ -209,7 +209,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
 
 SearchDialog *SearchDialog::loja(QWidget *parent) {
   SearchDialog *sdLoja =
-      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
+    new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
 
@@ -259,8 +259,8 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor =
-      new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-                       "clienteFornecedor = 'FORNECEDOR'", parent);
+    new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
+                     "clienteFornecedor = 'FORNECEDOR'", parent);
   sdFornecedor->hideColumns({"idCadastro", "rg", "cpf", "cnpj", "inscEstadual", "idEnderecoFaturamento",
                              "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel",
                              "nextel", "email", "idUsuarioRel", "idCadastroRel", "idProfissionalRel",
@@ -280,7 +280,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   SearchDialog *sdTransportadora =
-      new SearchDialog("Buscar Transportadora", "Transportadora", {"razaoSocial, nomeFantasia"}, "", parent);
+    new SearchDialog("Buscar Transportadora", "Transportadora", {"razaoSocial, nomeFantasia"}, "", parent);
   sdTransportadora->setPrimaryKey("idTransportadora");
   sdTransportadora->setTextKeys({"nomeFantasia"});
 
@@ -323,7 +323,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
 
 SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
+    new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome"});
 

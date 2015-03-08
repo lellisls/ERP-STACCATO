@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1344</width>
-    <height>581</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -514,7 +514,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="2">
+                 <item row="6" column="1">
                   <widget class="QCheckBox" name="checkBox_4">
                    <property name="enabled">
                     <bool>false</bool>
@@ -531,9 +531,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0" colspan="3">
-                  <widget class="ComboBox" name="comboBoxCliente"/>
-                 </item>
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_42">
                    <property name="text">
@@ -541,18 +538,21 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="0" colspan="3">
+                 <item row="7" column="0" colspan="2">
                   <widget class="QLineEdit" name="lineEditSegmento">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="0" colspan="3">
-                  <widget class="ComboBox" name="comboBoxVendedor"/>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxCliente"/>
                  </item>
-                 <item row="3" column="0" colspan="3">
-                  <widget class="ComboBox" name="comboBoxProfissional"/>
+                 <item row="5" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxVendedor"/>
+                 </item>
+                 <item row="3" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxProfissional"/>
                  </item>
                 </layout>
                </item>
@@ -873,9 +873,9 @@
    <header>lineedittel.h</header>
   </customwidget>
   <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>combobox.h</header>
+   <class>ItemBox</class>
+   <extends>QLineEdit</extends>
+   <header>itembox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -896,9 +896,6 @@
   <tabstop>lineEditIdNextel</tabstop>
   <tabstop>lineEditNextel</tabstop>
   <tabstop>lineEditEmail</tabstop>
-  <tabstop>comboBoxCliente</tabstop>
-  <tabstop>comboBoxProfissional</tabstop>
-  <tabstop>comboBoxVendedor</tabstop>
   <tabstop>lineEditSegmento</tabstop>
   <tabstop>checkBox_4</tabstop>
   <tabstop>textEditClientes</tabstop>

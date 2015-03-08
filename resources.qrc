@@ -7,5 +7,6 @@
         <file>plus.png</file>
         <file>icone-pessoa-fisica.png</file>
         <file>icone-pessoa-juridica.png</file>
+        <file>qt_portuguese.qm</file>
     </qresource>
 </RCC>

@@ -120,3 +120,6 @@ install_it.files = $$PWD/libmysql.dll \
                    $$PWD/logo.png \
                    $$PWD/orcamento.html
 INSTALLS += install_it
+
+DISTFILES += \
+    qt_portuguese.ts

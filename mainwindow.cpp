@@ -36,19 +36,21 @@ MainWindow::MainWindow(QWidget *parent)
 
   readSettings();
 
+#ifdef QT_DEBUG
+  if (!dbConnect()) {
+    exit(1);
+  } else if (!UserSession::login(
+               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
+    //                 bloco!
+    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    exit(1);
+  }
+#else
   LoginDialog *dialog = new LoginDialog(this);
   if (dialog->exec() == QDialog::Rejected) {
     exit(1);
   }
-
-  //  if (!dbConnect()) {
-  //    exit(1);
-//  } else if (!UserSession::login(
-//               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
-//    //                 bloco!
-//    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
-//    exit(1);
-//  }
+#endif
 
   modelOrcamento = new QSqlTableModel(this);
   modelVendas = new QSqlRelationalTableModel(this);

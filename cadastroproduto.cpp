@@ -16,9 +16,9 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
 
-  ui->lineEditPcCx->setValidator(new QIntValidator(0, 9999, this));
+//  ui->lineEditPcCx->setValidator(new QIntValidator(0, 9999, this));
   //  ui->lineEditComissao->setValidator(new QDoubleValidator(0.0,100.0,2,this));
-  ui->lineEditEstoque->setValidator(new QIntValidator(0, 9999, this));
+//  ui->lineEditEstoque->setValidator(new QIntValidator(0, 9999, this));
 
   ui->comboBoxOrigem->addItem("0 - Nacional", 0);
   ui->comboBoxOrigem->addItem("1 - Imp. Direta", 1);
@@ -82,10 +82,21 @@ void CadastroProduto::registerMode() {
 }
 
 bool CadastroProduto::verifyFields(int row) {
+  Q_UNUSED(row)
   // TODO : VerifyFields Produto
-  if(!RegisterDialog::verifyFields({ui->lineEditDescricao,ui->lineEditUn, ui->lineEditNCM, ui->lineEditCusto, ui->lineEditVenda}))
+  if(!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditNCM}))
     return false;
+  if(ui->doubleSpinBoxCusto->value() == 0){
+    ui->doubleSpinBoxCusto->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Custo inválido!", QMessageBox::Ok,
+                         QMessageBox::NoButton);
+  }
 
+  if(ui->doubleSpinBoxVenda->value() == 0){
+    ui->doubleSpinBoxVenda->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Preço inválido!", QMessageBox::Ok,
+                         QMessageBox::NoButton);
+  }
   if (ui->itemBoxFornecedor->getValue().isNull()) {
     ui->itemBoxFornecedor->setFocus();
     QMessageBox::warning(this, "Atenção!", "Você não preencheu um item obrigatório!", QMessageBox::Ok,
@@ -107,7 +118,7 @@ void CadastroProduto::setupMapper() {
   // Não funciona do jeito que eu quero!!
   mapper.setModel(&model);
   addMapping(ui->lineEditDescricao, "descricao");
-  addMapping(ui->lineEditUn, "un");
+  addMapping(ui->comboBoxUn, "un");
   // addMapping(ui->lineEditRetBold,"retBold");
   addMapping(ui->lineEditColecao, "colecao");
   // addMapping(ui->lineEditTipo,"tipo");
@@ -118,16 +129,17 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->lineEditNCM, "ncm");
   // addMapping(ui->lineEditCPOF,"cpof");
   addMapping(ui->lineEditICMS, "icms");
-  addMapping(ui->lineEditPcCx, "pccx");
   // Double
-  addMapping(ui->lineEditM2Cx, "m2cx", "value");
-  addMapping(ui->lineEditQtePallet, "qtdPallet", "value");
-  addMapping(ui->lineEditCusto, "custo", "value");
-  addMapping(ui->lineEditIPI, "ipi", "value");
-  addMapping(ui->lineEditST, "st", "value");
-  addMapping(ui->lineEditMarkup, "markup", "value");
-  addMapping(ui->lineEditVenda, "precoVenda", "value");
-  addMapping(ui->lineEditComissao, "comissao", "value");
+  addMapping(ui->doubleSpinBoxPcCx, "pccx");
+  addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
+  addMapping(ui->doubleSpinBoxQtePallet, "qtdPallet", "value");
+  addMapping(ui->doubleSpinBoxCusto, "custo", "value");
+  addMapping(ui->doubleSpinBoxIPI, "ipi", "value");
+  addMapping(ui->doubleSpinBoxST, "st", "value");
+  addMapping(ui->doubleSpinBoxMarkup, "markup", "value");
+  addMapping(ui->doubleSpinBoxVenda, "precoVenda", "value");
+  addMapping(ui->doubleSpinBoxComissao, "comissao", "value");
+  addMapping(ui->doubleSpinBoxEstoque, "estoque");
 
   // textEdit
   addMapping(ui->textEditObserv, "observacoes", "plainText");
@@ -136,7 +148,6 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->comboBoxOrigem, "origem", "currentData");
   addMapping(ui->radioButtonDesc, "descontinuado");
   addMapping(ui->radioButtonLote, "temLote");
-  addMapping(ui->lineEditEstoque, "estoque");
 }
 
 bool CadastroProduto::savingProcedures(int row) {
@@ -149,7 +160,7 @@ bool CadastroProduto::savingProcedures(int row) {
   setData(row, "sitTrib", ui->comboBoxSitTrib->currentText());
 
   setData(row, "descricao", ui->lineEditDescricao->text() );
-  setData(row, "un", ui->lineEditUn->text() );
+  setData(row, "un", ui->comboBoxUn->currentText());
   setData(row, "colecao", ui->lineEditColecao->text() );
   setData(row, "formComercial", ui->lineEditFormComer->text() );
   setData(row, "codComercial", ui->lineEditCodComer->text() );
@@ -157,22 +168,23 @@ bool CadastroProduto::savingProcedures(int row) {
   setData(row, "codBarras", ui->lineEditCodBarras->text() );
   setData(row, "ncm", ui->lineEditNCM->text() );
   setData(row, "icms", ui->lineEditICMS->text() );
-  setData(row, "pccx", ui->lineEditPcCx->text() );
-  setData(row, "m2cx", ui->lineEditM2Cx->getValue() );
-  setData(row, "qtdPallet", ui->lineEditQtePallet->getValue() );
-  setData(row, "custo", ui->lineEditCusto->getValue() );
-  setData(row, "ipi", ui->lineEditIPI->getValue() );
-  setData(row, "st", ui->lineEditST->getValue() );
-  setData(row, "markup", ui->lineEditMarkup->getValue() );
-  setData(row, "precoVenda", ui->lineEditVenda->getValue() );
-  setData(row, "comissao", ui->lineEditComissao->getValue() );
+  //double
+  setData(row, "pccx", ui->doubleSpinBoxPcCx->value() );
+  setData(row, "m2cx", ui->doubleSpinBoxM2Cx->value() );
+  setData(row, "qtdPallet", ui->doubleSpinBoxQtePallet->value() );
+  setData(row, "custo", ui->doubleSpinBoxCusto->value() );
+  setData(row, "ipi", ui->doubleSpinBoxIPI->value() );
+  setData(row, "st", ui->doubleSpinBoxST->value() );
+  setData(row, "markup", ui->doubleSpinBoxMarkup->value() );
+  setData(row, "precoVenda", ui->doubleSpinBoxVenda->value() );
+  setData(row, "comissao", ui->doubleSpinBoxComissao->value() );
+  setData(row, "estoque", ui->doubleSpinBoxEstoque->value());
 
   setData(row, "obsercacoes", ui->textEditObserv->toPlainText());
   setData(row, "situacaoTributaria", ui->comboBoxSitTrib->currentText());
   setData(row, "origem", ui->comboBoxOrigem->currentData());
   setData(row, "descontinuado", ui->radioButtonDesc->isChecked());
   setData(row, "temLote", ui->radioButtonLote->isChecked());
-  setData(row, "estoque", ui->lineEditEstoque->text());
 
   return true;
 }

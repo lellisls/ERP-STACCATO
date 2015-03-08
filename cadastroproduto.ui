@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1069</width>
-    <height>613</height>
+    <width>994</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -135,9 +135,6 @@
                  <property name="text">
                   <string>Un</string>
                  </property>
-                 <property name="buddy">
-                  <cstring>lineEditUn</cstring>
-                 </property>
                 </widget>
                </item>
                <item row="3" column="0">
@@ -174,31 +171,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="lineEditUn">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidade de produtos &lt;span style=&quot; font-weight:600;&quot;&gt;em estoque.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="whatsThis">
-                  <string/>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 255, 127);</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="0">
                 <widget class="QLabel" name="label_2">
                  <property name="sizePolicy">
@@ -221,12 +193,36 @@
                  </property>
                 </widget>
                </item>
+               <item row="3" column="1">
+                <widget class="QComboBox" name="comboBoxUn">
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>pc</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>m2</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
               </layout>
              </item>
              <item>
               <layout class="QGridLayout" name="gridLayout_7">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_5">
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxM2Cx">
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLabel" name="label_9">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -240,14 +236,11 @@
                   </size>
                  </property>
                  <property name="text">
-                  <string>Coleção</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditColecao</cstring>
+                  <string>Pç/Cx</string>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="3">
+               <item row="0" column="5">
                 <widget class="QLabel" name="label_7">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -269,51 +262,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="4">
-                <widget class="QLabel" name="label_10">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Código comercial</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditCodComer</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_8">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;M&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;/Cx&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditM2Cx</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="5">
+               <item row="1" column="7">
                 <widget class="QLineEdit" name="lineEditCodInd">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -332,150 +281,6 @@
                    <width>16777215</width>
                    <height>16777215</height>
                   </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QLineEdit" name="lineEditPcCx">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Peças por caixa&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3">
-                <widget class="QLineEdit" name="lineEditFormComer">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>110</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="LineEditDecimal" name="lineEditM2Cx">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;M² por Caixa&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="4">
-                <widget class="QLineEdit" name="lineEditCodComer">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>105</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QLabel" name="label_9">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Pç/Cx</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditPcCx</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="5">
-                <widget class="QLabel" name="label_6">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Código industrial</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditCodInd</cstring>
                  </property>
                 </widget>
                </item>
@@ -513,6 +318,142 @@
                  </property>
                 </widget>
                </item>
+               <item row="0" column="6">
+                <widget class="QLabel" name="label_10">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Código comercial</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>lineEditCodComer</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="5">
+                <widget class="QLineEdit" name="lineEditFormComer">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>110</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="6">
+                <widget class="QLineEdit" name="lineEditCodComer">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>105</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_8">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;M&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;/Cx&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="7">
+                <widget class="QLabel" name="label_6">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Código industrial</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>lineEditCodInd</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Coleção</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>lineEditColecao</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxPcCx">
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
@@ -526,138 +467,13 @@
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
               <layout class="QGridLayout" name="gridLayout_11">
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_17">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item row="2" column="0">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxCusto">
+                 <property name="prefix">
+                  <string>R$ </string>
                  </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Custo (R$)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditCusto</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="label_18">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>IPI (%)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditIPI</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QLabel" name="label_19">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>ST (%)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditST</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3">
-                <widget class="QLabel" name="label_20">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Markup (%)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditMarkup</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="3">
-                <widget class="LineEditDecimal" name="lineEditMarkup">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="5">
-                <widget class="QLineEdit" name="lineEditEstoque">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
                  </property>
                 </widget>
                </item>
@@ -679,148 +495,14 @@
                   </size>
                  </property>
                  <property name="text">
-                  <string>Venda (R$)</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditVenda</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="LineEditDecimal" name="lineEditST">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="4">
-                <widget class="LineEditDecimal" name="lineEditVenda">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>100</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="5">
-                <widget class="QLabel" name="label">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Estoque</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditEstoque</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="LineEditDecimal" name="lineEditIPI">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="LineEditDecimal" name="lineEditCusto">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 255, 127);</string>
+                  <string>Venda</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0" colspan="6">
                 <layout class="QGridLayout" name="gridLayout_8">
-                 <item row="0" column="5">
-                  <widget class="QLabel" name="label_15">
+                 <item row="0" column="4">
+                  <widget class="QLabel" name="label_30">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -834,77 +516,24 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Tributação ICMS</string>
+                    <string>Origem merc.</string>
                    </property>
                    <property name="buddy">
-                    <cstring>comboBoxSitTrib</cstring>
+                    <cstring>comboBoxOrigem</cstring>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="4">
-                  <widget class="ComboBox" name="comboBoxOrigem">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                 <item row="2" column="6">
+                  <widget class="QDoubleSpinBox" name="doubleSpinBoxQtePallet">
+                   <property name="suffix">
+                    <string/>
                    </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>84</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif'; font-weight:600;&quot;&gt;TABELA A - ORIGEM DA MERCADORIA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;0 - Nacional &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;1  - Estrangeira - Importação direta &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;2 - Estrangeira - Adquirida no mercado interno &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">background-color: rgb(255, 255, 127);</string>
+                   <property name="maximum">
+                    <double>9999999999.000000000000000</double>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="6">
-                  <widget class="LineEditDecimal" name="lineEditQtePallet">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="layoutDirection">
-                    <enum>Qt::LeftToRight</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="3">
-                  <widget class="QLineEdit" name="lineEditICMS">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="5">
+                 <item row="2" column="5">
                   <widget class="QComboBox" name="comboBoxSitTrib">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -987,8 +616,8 @@
                    </item>
                   </widget>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="label_13">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_11">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -1002,10 +631,10 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>NCM</string>
+                    <string>Código de barras</string>
                    </property>
                    <property name="buddy">
-                    <cstring>lineEditNCM</cstring>
+                    <cstring>lineEditCodBarras</cstring>
                    </property>
                   </widget>
                  </item>
@@ -1031,6 +660,28 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="0" column="2">
+                  <widget class="QLabel" name="label_13">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>NCM</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>lineEditNCM</cstring>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="0" column="6">
                   <widget class="QLabel" name="label_16">
                    <property name="sizePolicy">
@@ -1048,12 +699,72 @@
                    <property name="text">
                     <string>Qte. pallet</string>
                    </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="5">
+                  <widget class="QLabel" name="label_15">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Tributação ICMS</string>
+                   </property>
                    <property name="buddy">
-                    <cstring>lineEditQtePallet</cstring>
+                    <cstring>comboBoxSitTrib</cstring>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="2">
+                 <item row="2" column="3">
+                  <widget class="QLineEdit" name="lineEditICMS">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLineEdit" name="lineEditCodBarras">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
                   <widget class="QLineEdit" name="lineEditNCM">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1084,13 +795,19 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="4">
-                  <widget class="QLabel" name="label_30">
+                 <item row="2" column="4">
+                  <widget class="ComboBox" name="comboBoxOrigem">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>84</width>
+                     <height>0</height>
+                    </size>
                    </property>
                    <property name="maximumSize">
                     <size>
@@ -1098,11 +815,21 @@
                      <height>16777215</height>
                     </size>
                    </property>
-                   <property name="text">
-                    <string>Origem merc.</string>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif'; font-weight:600;&quot;&gt;TABELA A - ORIGEM DA MERCADORIA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;0 - Nacional &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;1  - Estrangeira - Importação direta &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;2 - Estrangeira - Adquirida no mercado interno &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="buddy">
-                    <cstring>comboBoxOrigem</cstring>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: rgb(255, 255, 127);</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="7">
+                  <widget class="QDoubleSpinBox" name="doubleSpinBoxComissao">
+                   <property name="suffix">
+                    <string> %</string>
+                   </property>
+                   <property name="maximum">
+                    <double>9999999999.000000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -1123,78 +850,157 @@
                    <property name="text">
                     <string>Comissão</string>
                    </property>
-                   <property name="buddy">
-                    <cstring>lineEditComissao</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="7">
-                  <widget class="LineEditDecimal" name="lineEditComissao">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="layoutDirection">
-                    <enum>Qt::RightToLeft</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLineEdit" name="lineEditCodBarras">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="clearButtonEnabled">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_11">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Código de barras</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>lineEditCodBarras</cstring>
-                   </property>
                   </widget>
                  </item>
                 </layout>
+               </item>
+               <item row="2" column="5">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxEstoque">
+                 <property name="suffix">
+                  <string/>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="label_19">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>ST</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLabel" name="label_20">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Markup</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="label_18">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>IPI</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxMarkup">
+                 <property name="suffix">
+                  <string> %</string>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxIPI">
+                 <property name="suffix">
+                  <string> %</string>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="5">
+                <widget class="QLabel" name="label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Estoque</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_17">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Custo</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxST">
+                 <property name="suffix">
+                  <string> %</string>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="4">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxVenda">
+                 <property name="prefix">
+                  <string>R$ </string>
+                 </property>
+                 <property name="suffix">
+                  <string/>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -1230,6 +1036,16 @@
                <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_2">
+               <item row="1" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxComissaoPromo">
+                 <property name="prefix">
+                  <string>R$ </string>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="1">
                 <widget class="QLabel" name="label_23">
                  <property name="sizePolicy">
@@ -1247,8 +1063,27 @@
                  <property name="text">
                   <string>Qte.</string>
                  </property>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <widget class="QLabel" name="label_26">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Término</string>
+                 </property>
                  <property name="buddy">
-                  <cstring>lineEditPromoQte</cstring>
+                  <cstring>dateEditPromoFim</cstring>
                  </property>
                 </widget>
                </item>
@@ -1268,9 +1103,6 @@
                  </property>
                  <property name="text">
                   <string>Comissão</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditPromoComissao</cstring>
                  </property>
                 </widget>
                </item>
@@ -1313,46 +1145,25 @@
                  <property name="text">
                   <string>Valor (R$)</string>
                  </property>
-                 <property name="buddy">
-                  <cstring>lineEditPromoValor</cstring>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxValorPromo">
+                 <property name="prefix">
+                  <string>R$ </string>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="5">
-                <widget class="QLabel" name="label_26">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxQtePromo">
+                 <property name="prefix">
+                  <string>R$ </string>
                  </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Término</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>dateEditPromoFim</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QLineEdit" name="lineEditPromoComissao">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
                  </property>
                 </widget>
                </item>
@@ -1385,22 +1196,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEditPromoQte">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="4">
                 <widget class="QDateEdit" name="dateEditPromoInicio">
                  <property name="sizePolicy">
@@ -1427,22 +1222,6 @@
                  </property>
                  <property name="calendarPopup">
                   <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="LineEditDecimal" name="lineEditPromoValor">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
                  </property>
                 </widget>
                </item>
@@ -1727,6 +1506,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -1748,6 +1533,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
        </property>
        <property name="maximumSize">
         <size>
@@ -1876,11 +1667,6 @@
    <header>combobox.h</header>
   </customwidget>
   <customwidget>
-   <class>LineEditDecimal</class>
-   <extends>QLineEdit</extends>
-   <header>lineeditdecimal.h</header>
-  </customwidget>
-  <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
    <header>itembox.h</header>
@@ -1889,11 +1675,11 @@
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>lineEditDescricao</tabstop>
-  <tabstop>lineEditUn</tabstop>
+  <tabstop>comboBoxUn</tabstop>
   <tabstop>itemBoxFornecedor</tabstop>
   <tabstop>lineEditColecao</tabstop>
-  <tabstop>lineEditM2Cx</tabstop>
-  <tabstop>lineEditPcCx</tabstop>
+  <tabstop>doubleSpinBoxM2Cx</tabstop>
+  <tabstop>doubleSpinBoxPcCx</tabstop>
   <tabstop>lineEditFormComer</tabstop>
   <tabstop>lineEditCodComer</tabstop>
   <tabstop>lineEditCodInd</tabstop>
@@ -1902,18 +1688,18 @@
   <tabstop>lineEditICMS</tabstop>
   <tabstop>comboBoxOrigem</tabstop>
   <tabstop>comboBoxSitTrib</tabstop>
-  <tabstop>lineEditQtePallet</tabstop>
-  <tabstop>lineEditComissao</tabstop>
-  <tabstop>lineEditCusto</tabstop>
-  <tabstop>lineEditIPI</tabstop>
-  <tabstop>lineEditST</tabstop>
-  <tabstop>lineEditMarkup</tabstop>
-  <tabstop>lineEditVenda</tabstop>
-  <tabstop>lineEditEstoque</tabstop>
+  <tabstop>doubleSpinBoxQtePallet</tabstop>
+  <tabstop>doubleSpinBoxComissao</tabstop>
+  <tabstop>doubleSpinBoxCusto</tabstop>
+  <tabstop>doubleSpinBoxIPI</tabstop>
+  <tabstop>doubleSpinBoxST</tabstop>
+  <tabstop>doubleSpinBoxMarkup</tabstop>
+  <tabstop>doubleSpinBoxVenda</tabstop>
+  <tabstop>doubleSpinBoxEstoque</tabstop>
   <tabstop>groupBox</tabstop>
-  <tabstop>lineEditPromoValor</tabstop>
-  <tabstop>lineEditPromoQte</tabstop>
-  <tabstop>lineEditPromoComissao</tabstop>
+  <tabstop>doubleSpinBoxValorPromo</tabstop>
+  <tabstop>doubleSpinBoxQtePromo</tabstop>
+  <tabstop>doubleSpinBoxComissaoPromo</tabstop>
   <tabstop>dateEditPromoInicio</tabstop>
   <tabstop>dateEditPromoFim</tabstop>
   <tabstop>radioButtonDesc</tabstop>

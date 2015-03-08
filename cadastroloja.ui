@@ -107,7 +107,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -462,6 +462,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>lineEditDescricao</tabstop>
   <tabstop>lineEditRazaoSocial</tabstop>
   <tabstop>lineEditSIGLA</tabstop>
@@ -475,7 +476,11 @@
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>doubleSpinBoxValorMinimoFrete</tabstop>
+  <tabstop>doubleSpinBoxPorcFrete</tabstop>
+  <tabstop>tableAlcadas</tabstop>
+  <tabstop>lineEditServidor</tabstop>
+  <tabstop>lineEditPorta</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>

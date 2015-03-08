@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>992</width>
-    <height>524</height>
+    <width>1024</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Vendas</string>
+  </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0">

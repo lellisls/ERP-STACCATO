@@ -16,6 +16,9 @@
   <property name="windowTitle">
    <string>Cadastro de Transportadora</string>
   </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="1" rowspan="2">
     <layout class="QVBoxLayout" name="verticalLayout_3">

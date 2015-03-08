@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Buscar produto</string>
   </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="2">
     <widget class="QPushButton" name="pushButtonSelecionar">

@@ -132,9 +132,9 @@ bool RegisterDialog::confirmationMessage() {
     msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
     msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard| QMessageBox::Cancel);
     msgBox.setWindowModality(Qt::WindowModal);
-//    msgBox.setButtonText(QMessageBox::Save, "Salvar");
-//    msgBox.setButtonText(QMessageBox::Discard, "Descartar");
-//    msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+    msgBox.setButtonText(QMessageBox::Save, "Salvar");
+    msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
+    msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
     msgBox.setDefaultButton(QMessageBox::Save);
     int ret = msgBox.exec();
     if ( ret == QMessageBox::Yes) {

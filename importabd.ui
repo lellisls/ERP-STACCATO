@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>123</width>
+    <width>136</width>
     <height>89</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Importação</string>
+  </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">

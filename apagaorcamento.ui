@@ -10,11 +10,14 @@
     <x>0</x>
     <y>0</y>
     <width>195</width>
-    <height>69</height>
+    <height>70</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Apagar orçamento</string>
+  </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">

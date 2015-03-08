@@ -22,6 +22,9 @@
   <property name="windowTitle">
    <string>Cadastro de Produtos</string>
   </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout_14">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">

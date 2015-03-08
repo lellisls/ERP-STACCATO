@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QTranslator>
-
+#include <QLibraryInfo>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
@@ -9,7 +9,8 @@ int main(int argc, char *argv[]) {
   app.setApplicationName("Staccato");
 
   QTranslator qtTranslator;
-  qtTranslator.load("qt_" + QLocale::system().name());
+  qtTranslator.load("qt_" + QLocale::system().name(),
+                    QLibraryInfo::location(QLibraryInfo::TranslationsPath));
   app.installTranslator(&qtTranslator);
   MainWindow window;
   window.showMaximized();

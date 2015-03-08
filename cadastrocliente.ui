@@ -16,6 +16,9 @@
   <property name="windowTitle">
    <string>Cadastro de Clientes</string>
   </property>
+  <property name="locale">
+   <locale language="Portuguese" country="Brazil"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout_14">
    <item row="0" column="1">
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -863,6 +866,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ItemBox</class>
+   <extends>QLineEdit</extends>
+   <header>itembox.h</header>
+  </customwidget>
+  <customwidget>
    <class>LineEditCEP</class>
    <extends>QLineEdit</extends>
    <header>lineeditcep.h</header>
@@ -871,11 +879,6 @@
    <class>LineEditTel</class>
    <extends>QLineEdit</extends>
    <header>lineedittel.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ItemBox</class>
-   <extends>QLineEdit</extends>
-   <header>itembox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

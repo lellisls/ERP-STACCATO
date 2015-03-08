@@ -212,7 +212,6 @@ bool Orcamento::newRegister() {
   if (!RegisterDialog::newRegister()) {
     return false;
   }
-  updateId();
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
   ui->spinBoxValidade->setValue(7);
   novoItem();
@@ -247,6 +246,7 @@ void Orcamento::updateId() {
 }
 
 bool Orcamento::verifyFields(int row) {
+  Q_UNUSED(row)
   //  if(!RegisterDialog::verifyFields())
   //    return false;
   if (ui->itemBoxCliente->text().isEmpty()) {
@@ -374,7 +374,7 @@ void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
 }
 
 void Orcamento::on_comboBoxVendedor_currentIndexChanged(int) {
-  updateId();
+//  updateId();
 }
 
 void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {

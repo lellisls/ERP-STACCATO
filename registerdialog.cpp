@@ -126,15 +126,23 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 
 bool RegisterDialog::confirmationMessage() {
   if(model.isDirty()) {
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
-                       QMessageBox::Yes | QMessageBox::No);
+    QMessageBox msgBox;
+    msgBox.setLocale(QLocale::Portuguese);
+    msgBox.setText("<strong>O cadastro foi alterado!</strong>");
+    msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard| QMessageBox::Cancel);
     msgBox.setWindowModality(Qt::WindowModal);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
-    if (msgBox.exec() == QMessageBox::Yes) {
+//    msgBox.setButtonText(QMessageBox::Save, "Salvar");
+//    msgBox.setButtonText(QMessageBox::Discard, "Descartar");
+//    msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+    if ( ret == QMessageBox::Yes) {
       if (!save()) {
         return false;
       }
+    }else if( ret == QMessageBox::Cancel){
+      return false;
     }
     return true;
   }

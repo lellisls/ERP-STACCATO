@@ -36,21 +36,19 @@ MainWindow::MainWindow(QWidget *parent)
 
   readSettings();
 
-//    LoginDialog *dialog = new LoginDialog(this);
-//    if (dialog->exec() == QDialog::Rejected) {
-//      exit(1);
-//    }
-
-  if (!dbConnect()) {
-    QMessageBox::critical(this, "Atenção!", "Erro ao criar ou acessar banco de dados!", QMessageBox::Ok,
-                          QMessageBox::NoButton);
-    exit(1);
-  } else if (!UserSession::login(
-               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
-    //                 bloco!
-    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+  LoginDialog *dialog = new LoginDialog(this);
+  if (dialog->exec() == QDialog::Rejected) {
     exit(1);
   }
+
+//  if (!dbConnect()) {
+//    exit(1);
+//  } else if (!UserSession::login(
+//               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
+//    //                 bloco!
+//    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+//    exit(1);
+//  }
 
   modelOrcamento = new QSqlTableModel(this);
   modelVendas = new QSqlRelationalTableModel(this);
@@ -96,6 +94,7 @@ bool MainWindow::dbConnect() {
 
   qDebug() << "Connecting to database";
 
+  QSqlDatabase::removeDatabase("QMYSQL");
   QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
   //  qDebug() << "hostname: " << hostname;
   //  qDebug() << "username: " << username;
@@ -132,7 +131,23 @@ bool MainWindow::dbConnect() {
       return false;
     }
   } else {
-    showError(db.lastError());
+    switch (db.lastError().number()) {
+    case 1045:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o usuário e senha do banco de dados estão corretos.");
+      break;
+    case 2002:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o servidor está ligado, e acessível pela rede.");
+      break;
+    case 2003:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o servidor está ligado, e acessível pela rede.");
+      break;
+    case 2005:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o IP do servidor foi escrito corretamente.");
+      break;
+    default:
+      showError(db.lastError());
+      break;
+    }
     return false;
   }
   return false;

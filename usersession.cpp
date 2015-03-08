@@ -61,6 +61,10 @@ QString UserSession::getSiglaLoja() {
 }
 
 QSqlQuery *UserSession::initialize() {
+  if(query){
+    query->finish();
+    delete query;
+  }
   query = new QSqlQuery();
   return query;
 }

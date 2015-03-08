@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1069</width>
-    <height>558</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1887,8 +1887,10 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>lineEditDescricao</tabstop>
   <tabstop>lineEditUn</tabstop>
+  <tabstop>itemBoxFornecedor</tabstop>
   <tabstop>lineEditColecao</tabstop>
   <tabstop>lineEditM2Cx</tabstop>
   <tabstop>lineEditPcCx</tabstop>
@@ -1901,6 +1903,13 @@
   <tabstop>comboBoxOrigem</tabstop>
   <tabstop>comboBoxSitTrib</tabstop>
   <tabstop>lineEditQtePallet</tabstop>
+  <tabstop>lineEditComissao</tabstop>
+  <tabstop>lineEditCusto</tabstop>
+  <tabstop>lineEditIPI</tabstop>
+  <tabstop>lineEditST</tabstop>
+  <tabstop>lineEditMarkup</tabstop>
+  <tabstop>lineEditVenda</tabstop>
+  <tabstop>lineEditEstoque</tabstop>
   <tabstop>groupBox</tabstop>
   <tabstop>lineEditPromoValor</tabstop>
   <tabstop>lineEditPromoQte</tabstop>
@@ -1913,9 +1922,11 @@
   <tabstop>radioButton_9</tabstop>
   <tabstop>radioButton_10</tabstop>
   <tabstop>radioButton_11</tabstop>
+  <tabstop>textEditObserv</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
+  <tabstop>pushButtonBuscar</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
  </tabstops>

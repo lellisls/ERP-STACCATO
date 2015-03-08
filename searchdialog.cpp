@@ -57,10 +57,10 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 }
 
 void SearchDialog::sendUpdateMessage() {
-  if(ui->tableBusca->selectionModel()->selection().indexes().isEmpty()){
-    return;
+  QModelIndex index = model.index(0,0);
+  if(!ui->tableBusca->selectionModel()->selection().indexes().isEmpty()){
+    index = ui->tableBusca->selectionModel()->selection().indexes().front();
   }
-  QModelIndex index = ui->tableBusca->selectionModel()->selection().indexes().front();
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
   QString text;
   foreach (QString key, textKeys) {

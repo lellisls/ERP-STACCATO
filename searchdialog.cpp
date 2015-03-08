@@ -57,6 +57,9 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 }
 
 void SearchDialog::sendUpdateMessage() {
+  if(ui->tableBusca->selectionModel()->selection().indexes().isEmpty()){
+    return;
+  }
   QModelIndex index = ui->tableBusca->selectionModel()->selection().indexes().front();
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
   QString text;
@@ -322,7 +325,7 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
       new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
   sdProfissional->setPrimaryKey("idProfissional");
-  sdProfissional->setTextKeys({"idxFT"});
+  sdProfissional->setTextKeys({"nome"});
 
   QStringList columns;
   columns.push_back("idProfissional");

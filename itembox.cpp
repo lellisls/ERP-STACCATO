@@ -94,10 +94,10 @@ void ItemBox::changeItem(QVariant value, QString text) {
 
   setValue(value);
 //  setText(text);
-  if(registerDialog) {
+  if(registerDialog && registerDialog->isVisible()) {
     registerDialog->close();
   }
-  if(searchDialog) {
+  if(searchDialog && searchDialog->isVisible()) {
     searchDialog->close();
   }
 //  qDebug() << "Value changed: " << value << ", " << text;

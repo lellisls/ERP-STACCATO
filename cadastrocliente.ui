@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1344</width>
-    <height>625</height>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -113,7 +113,7 @@
             <item row="0" column="1">
              <widget class="QGroupBox" name="groupBoxPJuridica">
               <property name="title">
-               <string>Info. Pessoa Jurídica</string>
+               <string>Cliente</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -126,40 +126,43 @@
                 <widget class="QWidget" name="widgetPJ" native="true">
                  <layout class="QGridLayout" name="gridLayout_13">
                   <item row="0" column="0">
-                   <widget class="QLabel" name="label_38">
+                   <widget class="QLabel" name="labelCliente">
                     <property name="text">
-                     <string>Razão Social</string>
+                     <string>Nome/Razão Social</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
                    <widget class="QLabel" name="label_54">
                     <property name="text">
-                     <string>Nome Fantasia</string>
+                     <string>Apelido/Nome Fantasia</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QLabel" name="label_39">
+                  <item row="0" column="3">
+                   <widget class="QLabel" name="labelCNPJ">
                     <property name="text">
                      <string>CNPJ</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="3">
-                   <widget class="QLabel" name="label_53">
+                  <item row="0" column="4">
+                   <widget class="QLabel" name="labelInscricaoEstadual">
                     <property name="text">
                      <string>Insc. Estadual</string>
                     </property>
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QLineEdit" name="lineEditRazaoSocial">
+                   <widget class="QLineEdit" name="lineEditCliente">
                     <property name="minimumSize">
                      <size>
                       <width>120</width>
                       <height>0</height>
                      </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 127);</string>
                     </property>
                    </widget>
                   </item>
@@ -173,8 +176,27 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="2">
+                  <item row="1" column="3">
                    <widget class="QLineEdit" name="lineEditCNPJ">
+                    <property name="minimumSize">
+                     <size>
+                      <width>100</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>135</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 127);</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="4">
+                   <widget class="QLineEdit" name="lineEditInscEstadual">
                     <property name="minimumSize">
                      <size>
                       <width>100</width>
@@ -189,8 +211,8 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="3">
-                   <widget class="QLineEdit" name="lineEditInscEstadual">
+                  <item row="1" column="2">
+                   <widget class="QLineEdit" name="lineEditCPF">
                     <property name="minimumSize">
                      <size>
                       <width>100</width>
@@ -199,9 +221,19 @@
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>135</width>
+                      <width>16777215</width>
                       <height>16777215</height>
                      </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 127);</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="labelCPF">
+                    <property name="text">
+                     <string>CPF</string>
                     </property>
                    </widget>
                   </item>
@@ -237,11 +269,11 @@
             <item row="1" column="0" colspan="2">
              <widget class="QGroupBox" name="groupBoxDadosPessoais">
               <property name="title">
-               <string>Dados Pessoais</string>
+               <string>Contato</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_2">
                <item row="0" column="2">
-                <widget class="QLabel" name="labelCPF">
+                <widget class="QLabel" name="labelCPFContato">
                  <property name="text">
                   <string>CPF</string>
                  </property>
@@ -255,7 +287,7 @@
                 </widget>
                </item>
                <item row="1" column="2">
-                <widget class="QLineEdit" name="lineEditCPF">
+                <widget class="QLineEdit" name="lineEditContatoCPF">
                  <property name="minimumSize">
                   <size>
                    <width>100</width>
@@ -267,9 +299,6 @@
                    <width>16777215</width>
                    <height>16777215</height>
                   </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 255, 127);</string>
                  </property>
                 </widget>
                </item>
@@ -288,7 +317,7 @@
                 </widget>
                </item>
                <item row="1" column="4">
-                <widget class="QLineEdit" name="lineEditApelido">
+                <widget class="QLineEdit" name="lineEditContatoApelido">
                  <property name="minimumSize">
                   <size>
                    <width>100</width>
@@ -304,7 +333,7 @@
                 </widget>
                </item>
                <item row="1" column="5">
-                <widget class="QLineEdit" name="lineEditRG">
+                <widget class="QLineEdit" name="lineEditContatoRG">
                  <property name="minimumSize">
                   <size>
                    <width>70</width>
@@ -320,7 +349,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEditNome">
+                <widget class="QLineEdit" name="lineEditContatoNome">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
@@ -330,20 +359,17 @@
                  <property name="toolTip">
                   <string/>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 255, 127);</string>
-                 </property>
                 </widget>
                </item>
               </layout>
-              <zorder>labelCPF</zorder>
-              <zorder>lineEditCPF</zorder>
+              <zorder>labelCPFContato</zorder>
+              <zorder>lineEditContatoCPF</zorder>
               <zorder>labelApelido</zorder>
-              <zorder>lineEditApelido</zorder>
+              <zorder>lineEditContatoApelido</zorder>
               <zorder>label_1</zorder>
-              <zorder>lineEditRG</zorder>
+              <zorder>lineEditContatoRG</zorder>
               <zorder>labelNome</zorder>
-              <zorder>lineEditNome</zorder>
+              <zorder>lineEditContatoNome</zorder>
              </widget>
             </item>
             <item row="2" column="0" colspan="2">
@@ -853,14 +879,17 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>lineEditRazaoSocial</tabstop>
+  <tabstop>radioButtonPF</tabstop>
+  <tabstop>radioButtonPJ</tabstop>
+  <tabstop>lineEditCliente</tabstop>
   <tabstop>lineEditNomeFantasia</tabstop>
+  <tabstop>lineEditCPF</tabstop>
   <tabstop>lineEditCNPJ</tabstop>
   <tabstop>lineEditInscEstadual</tabstop>
-  <tabstop>lineEditNome</tabstop>
-  <tabstop>lineEditCPF</tabstop>
-  <tabstop>lineEditApelido</tabstop>
-  <tabstop>lineEditRG</tabstop>
+  <tabstop>lineEditContatoNome</tabstop>
+  <tabstop>lineEditContatoCPF</tabstop>
+  <tabstop>lineEditContatoApelido</tabstop>
+  <tabstop>lineEditContatoRG</tabstop>
   <tabstop>lineEditTel_Res</tabstop>
   <tabstop>lineEditTel_Cel</tabstop>
   <tabstop>lineEditTel_Com</tabstop>
@@ -879,6 +908,19 @@
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
+  <tabstop>tableEndereco</tabstop>
+  <tabstop>lineEditDescricao</tabstop>
+  <tabstop>lineEditCEP</tabstop>
+  <tabstop>lineEditEndereco</tabstop>
+  <tabstop>lineEditNro</tabstop>
+  <tabstop>lineEditComp</tabstop>
+  <tabstop>lineEditBairro</tabstop>
+  <tabstop>lineEditCidade</tabstop>
+  <tabstop>lineEditUF</tabstop>
+  <tabstop>pushButtonAdicionarEnd</tabstop>
+  <tabstop>pushButtonAtualizarEnd</tabstop>
+  <tabstop>pushButtonNovoEnd</tabstop>
+  <tabstop>pushButtonMostrarInativos</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>

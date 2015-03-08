@@ -41,8 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     exit(1);
   }
 
-//  if (!dbConnect()) {
-//    exit(1);
+  //  if (!dbConnect()) {
+  //    exit(1);
 //  } else if (!UserSession::login(
 //               "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
 //    //                 bloco!
@@ -82,7 +82,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
   }
-  //  (new CadastroProduto(this))->show();
 }
 
 bool MainWindow::dbConnect() {
@@ -163,17 +162,6 @@ void MainWindow::setupTable(QTableView *table) {
   table->resizeColumnsToContents();
 
   table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-  //    int width = (table->model()->columnCount() - 1) + table->verticalHeader()->width();
-  //    for(int column = 0; column < table->model()->columnCount(); column++) {
-  //      width += table->columnWidth(column);
-  //    }
-  //    if(width < 0) {
-  //      width = 0;
-  //    }
-  //    table->setMinimumWidth(width);
-  //  table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  //  table->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void MainWindow::showError(const QSqlError &err) {
@@ -259,7 +247,7 @@ void MainWindow::initializeTables() {
   modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"),
                            QSqlRelation("Usuario", "idUsuario", "nome"));
   modelVendas->setRelation(modelVendas->fieldIndex("idCadastroCliente"),
-                           QSqlRelation("Cadastro", "idCadastro", "nome"));
+                           QSqlRelation("Cadastro", "idCadastro", "nome_razao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idEnderecoEntrega"),
                            QSqlRelation("Endereco", "idEndereco", "logradouro"));
   modelVendas->setRelation(modelVendas->fieldIndex("idProfissional"),
@@ -330,7 +318,7 @@ void MainWindow::initializeTables() {
                               QSqlRelation("Usuario", "idUsuario", "nome"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCadastroCliente"),
-                              QSqlRelation("Cadastro", "idCadastro", "nome"));
+                              QSqlRelation("Cadastro", "idCadastro", "nome_razao"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCadastroCliente"), Qt::Horizontal, "Cliente");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
                               QSqlRelation("Endereco", "idEndereco", "logradouro"));
@@ -446,12 +434,10 @@ void MainWindow::on_actionAtualizar_tabelas_triggered() {
 }
 
 void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
-  Venda *vendas = new Venda(this); //TODO: make Venda a RegisterDialog
+  Venda *vendas = new Venda(this);
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
   vendas->viewRegisterById(
     modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
-//  vendas->viewVenda(
-//        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -569,8 +555,6 @@ void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex 
   recebimentos->viewRecebimento(
     modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
                                   "idPedido"))).toString());
-
-  Q_UNUSED(index);
 }
 
 void MainWindow::on_tableEntregasCliente_doubleClicked(const QModelIndex &index) {
@@ -589,38 +573,67 @@ void MainWindow::on_pushButtonCriarOrc_clicked() {
 }
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
-
-  //  SELECT * FROM MyTable WHERE (Column1 LIKE '%keyword1%' OR Column2 LIKE
-  //  '%keyword1%') AND (Column1 LIKE '%keyword2%' OR Column2 LIKE '%keyword2%');
+  if(text.isEmpty()) {
+    modelOrcamento->setFilter("");
+  } else {
+    modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
-  modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelVendas->setFilter("");
+  } else {
+    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
-  modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelCAPagar->setFilter("");
+  } else {
+    modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {
-  modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelCAReceber->setFilter("");
+  } else {
+    modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
-  modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelEntregasCliente->setFilter("");
+  } else {
+    modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
-  modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelPedCompra->setFilter("");
+  } else {
+    modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {
-  modelRecebimentosForn->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelRecebimentosForn->setFilter("");
+  } else {
+    modelRecebimentosForn->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
-  modelNFe->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  if(text.isEmpty()) {
+    modelNFe->setFilter("");
+  } else {
+    modelNFe->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  }
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
@@ -646,5 +659,3 @@ void MainWindow::readSettings() {
   password = settings.value("password").toString();
   port = settings.value("port").toString();
 }
-
-//TODO: fix buscas like

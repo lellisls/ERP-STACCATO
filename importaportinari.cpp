@@ -15,7 +15,7 @@ int ImportaPortinari::buscarCadastrarFornecedor(QString column0) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
-  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome_razao = '" + column0 + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   //  qDebug() << "size: " << queryFornecedor.size();
@@ -23,12 +23,12 @@ int ImportaPortinari::buscarCadastrarFornecedor(QString column0) {
     idFornecedor = queryFornecedor.value("idCadastro").toInt();
   } else {
     QSqlQuery cadastrar;
-    if (!cadastrar.exec("INSERT INTO Cadastro (pfpj, clienteFornecedor, nome) VALUES ('PJ', 'FORNECEDOR', '" +
+    if (!cadastrar.exec("INSERT INTO Cadastro (pfpj, clienteFornecedor, nome_razao) VALUES ('PJ', 'FORNECEDOR', '" +
                         column0 + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
     }
   }
-  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome = '" + column0 + "'")) {
+  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome_razao = '" + column0 + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   //  qDebug() << "size: " << queryFornecedor.size();

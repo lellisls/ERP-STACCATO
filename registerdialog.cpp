@@ -2,7 +2,7 @@
 #include <QCloseEvent>
 
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
-  : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr), modified(false) {
+  : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
   setWindowModality(Qt::WindowModal);
   setWindowFlags(Qt::Window);
 
@@ -10,10 +10,10 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   mapper.setModel(&model);
-  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
+//  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
   if (!model.select()) {
     qDebug() << "Failed to populate " + table;
-    QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela!", QMessageBox::Ok,
+    QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }
 }
@@ -22,7 +22,7 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
   model.select();
   QModelIndexList idxList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
   if (idxList.isEmpty()) {
-    QMessageBox::warning(this, "Atenção!", "Item não encontrado!", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
     newRegister();
     return false;
   }
@@ -35,7 +35,6 @@ bool RegisterDialog::viewRegister(QModelIndex idx) {
   if (!confirmationMessage()) {
     return false;
   }
-  modified = true;
   clearFields();
   updateMode();
   if (table) {
@@ -82,10 +81,10 @@ void RegisterDialog::closeEvent(QCloseEvent *event) {
 }
 
 void RegisterDialog::keyPressEvent(QKeyEvent * event) {
-  if(event->key() == Qt::Key_Escape){
+  if(event->key() == Qt::Key_Escape) {
     event->accept();
     close();
-  }else{
+  } else {
     QDialog::keyPressEvent(event);
   }
 }
@@ -126,7 +125,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if(model.isDirty() || modified) {
+  if(model.isDirty()) {
     QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
                        QMessageBox::Yes | QMessageBox::No);
     msgBox.setWindowModality(Qt::WindowModal);
@@ -156,28 +155,33 @@ bool RegisterDialog::newRegister() {
   if (!confirmationMessage()) {
     return false;
   }
-  modified = true;
-  clearFields();
-  registerMode();
-  model.select();
   if (table) {
-    //    qDebug() << "Clearing table selection";
     table->clearSelection();
   }
+  registerMode();
+  model.select();
+  int row = model.rowCount();
+  model.insertRow(row);
+  mapper.toLast();
+  clearFields();
+
+//  QSqlQuery maxId("SELECT MAX(" + primaryKey + ") FROM " + model.tableName());
+//  maxId.first();
+//  id = maxId.value(primaryKey) + 1;
+//  setData(row,primaryKey,id);
   return true;
 }
 
 bool RegisterDialog::save() {
-  //  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
+  QSqlQuery("SET SESSION ISOLATION LEVEL SETRIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
   int row = mapper.currentIndex();
-  if (row == -1) {
-    row = model.rowCount();
-    model.insertRow(row);
-  }
+  QVariant id = data(row,primaryKey);
   if (!verifyFields(row)) {
+    QSqlQuery("ROLLBACK").exec();
     return false;
   }
-  QSqlQuery("START TRANSACTION").exec();
   if (!savingProcedures(row)) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
@@ -191,7 +195,7 @@ bool RegisterDialog::save() {
   }
   QSqlQuery("COMMIT").exec();
   successMessage();
-  viewRegister(model.index(row, 0));
+  viewRegister(model.index(row,0));
   sendUpdateMessage();
   return true;
 }

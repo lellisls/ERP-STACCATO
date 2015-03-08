@@ -223,7 +223,6 @@ private:
   * \brief Tabela da interface gráfica.
   */
   QAbstractItemView *table;
-  bool modified;
   // QWidget interface
   protected:
   void closeEvent(QCloseEvent *event);

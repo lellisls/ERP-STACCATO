@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>127</height>
+    <height>128</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,6 +110,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEditHostname</tabstop>
+  <tabstop>lineEditPort</tabstop>
+  <tabstop>lineEditUsername</tabstop>
+  <tabstop>lineEditPassword</tabstop>
+  <tabstop>pushButtonSalvar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -76,6 +76,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->labelRecebimentosFornecedor->hide();
     ui->tableNFE->hide();
     ui->labelNFE->hide();
+    ui->tabWidget->setTabEnabled(2,false);
+    ui->tabWidget->setTabEnabled(3,false);
+    ui->tabWidget->setTabEnabled(4,false);
+    ui->tabWidget->setTabEnabled(5,false);
     ui->tablePedidosCompra->hide();
     ui->labelPedidosCompra->hide();
     ui->actionCadastrarUsuario->setVisible(false);

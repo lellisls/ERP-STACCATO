@@ -223,10 +223,14 @@ private:
   * \brief Tabela da interface gráfica.
   */
   QAbstractItemView *table;
-
+  bool modified;
   // QWidget interface
   protected:
   void closeEvent(QCloseEvent *event);
+
+  // QWidget interface
+  protected:
+  void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // REGISTERDIALOG_H

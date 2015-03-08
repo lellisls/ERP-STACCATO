@@ -2,7 +2,7 @@
 #include <QCloseEvent>
 
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
-  : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
+  : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr), modified(false) {
   setWindowModality(Qt::WindowModal);
   setWindowFlags(Qt::Window);
 
@@ -35,6 +35,7 @@ bool RegisterDialog::viewRegister(QModelIndex idx) {
   if (!confirmationMessage()) {
     return false;
   }
+  modified = true;
   clearFields();
   updateMode();
   if (table) {
@@ -74,7 +75,18 @@ void RegisterDialog::closeEvent(QCloseEvent *event) {
   if (!confirmationMessage()) {
     event->ignore();
   } else {
-    QDialog::close();
+    event->accept();
+    QDialog::closeEvent(event);
+    close();
+  }
+}
+
+void RegisterDialog::keyPressEvent(QKeyEvent * event) {
+  if(event->key() == Qt::Key_Escape){
+    event->accept();
+    close();
+  }else{
+    QDialog::keyPressEvent(event);
   }
 }
 
@@ -114,9 +126,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  //  qDebug() << "confirmationMessage";
-  if (model.isDirty()) {
-    //    qDebug() << "DIRTY";
+  if(model.isDirty() || modified) {
     QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
                        QMessageBox::Yes | QMessageBox::No);
     msgBox.setWindowModality(Qt::WindowModal);
@@ -127,6 +137,7 @@ bool RegisterDialog::confirmationMessage() {
         return false;
       }
     }
+    return true;
   }
   return true;
 }
@@ -145,6 +156,7 @@ bool RegisterDialog::newRegister() {
   if (!confirmationMessage()) {
     return false;
   }
+  modified = true;
   clearFields();
   registerMode();
   model.select();

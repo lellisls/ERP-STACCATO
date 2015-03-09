@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1076</width>
-    <height>496</height>
+    <width>1273</width>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -819,25 +819,45 @@
     </item>
    </layout>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionCriarOrcamento"/>
-   <addaction name="actionCadastrarProdutos"/>
-   <addaction name="actionCadastrarCliente"/>
-   <addaction name="actionCadastrarFornecedor"/>
-   <addaction name="actionCadastrarUsuario"/>
-   <addaction name="actionCadastrarProfissional"/>
-   <addaction name="actionGerenciar_Lojas"/>
-   <addaction name="actionGerenciar_Transportadoras"/>
-   <addaction name="actionAtualizar_tabelas"/>
-   <addaction name="actionImportarTabelaFornecedor"/>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1273</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuOp_es">
+    <property name="title">
+     <string>Opções</string>
+    </property>
+    <addaction name="actionImportarTabelaFornecedor"/>
+    <addaction name="actionAtualizar_tabelas"/>
+   </widget>
+   <widget class="QMenu" name="menuAdministra_o">
+    <property name="title">
+     <string>Administração</string>
+    </property>
+    <addaction name="actionCadastrarProfissional"/>
+    <addaction name="actionGerenciar_Lojas"/>
+    <addaction name="actionGerenciar_Transportadoras"/>
+    <addaction name="actionCadastrarUsuario"/>
+    <addaction name="actionCadastrarFornecedor"/>
+    <addaction name="actionCadastrarProdutos"/>
+   </widget>
+   <widget class="QMenu" name="menuVenda">
+    <property name="title">
+     <string>Venda</string>
+    </property>
+    <addaction name="actionCriarOrcamento"/>
+    <addaction name="actionCadastrarCliente"/>
+   </widget>
+   <addaction name="menuVenda"/>
+   <addaction name="menuAdministra_o"/>
+   <addaction name="menuOp_es"/>
+  </widget>
   <action name="actionCriarOrcamento">
    <property name="text">
     <string>Criar orçamento</string>

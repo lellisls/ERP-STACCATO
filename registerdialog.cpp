@@ -1,5 +1,6 @@
-#include "registerdialog.h"
 #include <QCloseEvent>
+
+#include "registerdialog.h"
 
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
@@ -10,7 +11,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   mapper.setModel(&model);
-//  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
+  //  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
   if (!model.select()) {
     qDebug() << "Failed to populate " + table;
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
@@ -80,8 +81,8 @@ void RegisterDialog::closeEvent(QCloseEvent *event) {
   }
 }
 
-void RegisterDialog::keyPressEvent(QKeyEvent * event) {
-  if(event->key() == Qt::Key_Escape) {
+void RegisterDialog::keyPressEvent(QKeyEvent *event) {
+  if (event->key() == Qt::Key_Escape) {
     event->accept();
     close();
   } else {
@@ -125,23 +126,24 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if(model.isDirty()) {
+  if (model.isDirty()) {
     QMessageBox msgBox;
+    msgBox.setParent(this);
     msgBox.setLocale(QLocale::Portuguese);
     msgBox.setText("<strong>O cadastro foi alterado!</strong>");
     msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
-    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard| QMessageBox::Cancel);
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     msgBox.setWindowModality(Qt::WindowModal);
     msgBox.setButtonText(QMessageBox::Save, "Salvar");
     msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
     msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
     msgBox.setDefaultButton(QMessageBox::Save);
     int ret = msgBox.exec();
-    if ( ret == QMessageBox::Yes) {
+    if (ret == QMessageBox::Yes) {
       if (!save()) {
         return false;
       }
-    }else if( ret == QMessageBox::Cancel){
+    } else if (ret == QMessageBox::Cancel) {
       return false;
     }
     return true;
@@ -173,10 +175,10 @@ bool RegisterDialog::newRegister() {
   mapper.toLast();
   clearFields();
 
-//  QSqlQuery maxId("SELECT MAX(" + primaryKey + ") FROM " + model.tableName());
-//  maxId.first();
-//  id = maxId.value(primaryKey) + 1;
-//  setData(row,primaryKey,id);
+  //  QSqlQuery maxId("SELECT MAX(" + primaryKey + ") FROM " + model.tableName());
+  //  maxId.first();
+  //  id = maxId.value(primaryKey) + 1;
+  //  setData(row,primaryKey,id);
   return true;
 }
 
@@ -185,7 +187,7 @@ bool RegisterDialog::save() {
   QSqlQuery("START TRANSACTION").exec();
   qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
   int row = mapper.currentIndex();
-  QVariant id = data(row,primaryKey);
+  QVariant id = data(row, primaryKey);
   if (!verifyFields(row)) {
     QSqlQuery("ROLLBACK").exec();
     return false;
@@ -203,7 +205,7 @@ bool RegisterDialog::save() {
   }
   QSqlQuery("COMMIT").exec();
   successMessage();
-  viewRegister(model.index(row,0));
+  viewRegister(model.index(row, 0));
   sendUpdateMessage();
   return true;
 }

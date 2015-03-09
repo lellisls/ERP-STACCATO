@@ -272,7 +272,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="QGroupBox" name="groupBoxDadosPessoais">
               <property name="title">
-               <string>Contato</string>
+               <string>Representante</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_2">
                <item row="0" column="2">

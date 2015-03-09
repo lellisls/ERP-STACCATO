@@ -210,6 +210,12 @@ bool NFe::writeTXT(QString chave) {
   if(cliente.next()){
     qDebug() << "Cliente next";
 
+    if(cliente.value("nome_razao").toString().isEmpty()){
+      qDebug() << "nome_razao vazio";
+      return false;
+    }
+    stream << "NomeRazao = " + cliente.value("nome_razao").toString() << endl;
+
     if (cliente.value("pfpj").toString() == "PF") {
       if(clearStr(cliente.value("cpf").toString()).isEmpty()){
         qDebug() << "cpf vazio";
@@ -227,12 +233,6 @@ bool NFe::writeTXT(QString chave) {
       stream << "IE = 110042490114" << endl;
       //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
       //  stream << "IE = ISENTO" << endl;
-
-      if(cliente.value("razaoSocial").toString().isEmpty()){
-        qDebug() << "razaoSocial vazio";
-        return false;
-      }
-      stream << "NomeRazao = " + cliente.value("razaoSocial").toString() << endl;
     }
 
     if(cliente.value("tel").toString().isEmpty()){

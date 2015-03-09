@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>623</width>
-    <height>269</height>
+    <height>280</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,21 +145,33 @@
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
              <layout class="QGridLayout" name="gridLayout_4">
-              <item row="0" column="2">
-               <widget class="QLabel" name="labelCP">
-                <property name="text">
-                 <string>CP:</string>
-                </property>
-               </widget>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="lineEditNomeBancario"/>
               </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="labelBanco">
+               <widget class="QLabel" name="labelBanco_2">
                 <property name="text">
-                 <string>Banco:</string>
+                 <string>Nome:</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lineEditBanco"/>
+              </item>
+              <item row="4" column="1">
+               <widget class="QLineEdit" name="lineEditCC"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="lineEditAgencia"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="labelCC">
+                <property name="text">
+                 <string>CC:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
                <widget class="QLabel" name="labelAgencia">
                 <property name="text">
                  <string>Agência:</string>
@@ -167,23 +179,21 @@
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="labelCC">
+               <widget class="QLabel" name="labelBanco">
                 <property name="text">
-                 <string>CC:</string>
+                 <string>Banco:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelBanco_3">
+                <property name="text">
+                 <string>CPF:</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEditAgencia"/>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEditCC"/>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="lineEditBanco"/>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLineEdit" name="lineEditCP"/>
+               <widget class="QLineEdit" name="lineEditCPFBancario"/>
               </item>
              </layout>
             </item>
@@ -296,7 +306,6 @@
   <tabstop>lineEditBanco</tabstop>
   <tabstop>lineEditAgencia</tabstop>
   <tabstop>lineEditCC</tabstop>
-  <tabstop>lineEditCP</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>

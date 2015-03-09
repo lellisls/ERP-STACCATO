@@ -24,7 +24,8 @@ void CadastroProfissional::setupMapper() {
   mapper.addMapping(ui->lineEditBanco, model.fieldIndex("banco"));
   mapper.addMapping(ui->lineEditAgencia, model.fieldIndex("agencia"));
   mapper.addMapping(ui->lineEditCC, model.fieldIndex("cc"));
-  mapper.addMapping(ui->lineEditCP, model.fieldIndex("cp"));
+  mapper.addMapping(ui->lineEditNomeBancario, model.fieldIndex("nomeBanco"));
+  mapper.addMapping(ui->lineEditCPFBancario, model.fieldIndex("cpfBanco"));
 }
 
 void CadastroProfissional::registerMode() {
@@ -55,7 +56,8 @@ bool CadastroProfissional::savingProcedures( int row ) {
   setData(row, "banco", ui->lineEditBanco->text());
   setData(row, "agencia", ui->lineEditAgencia->text());
   setData(row, "cc", ui->lineEditCC->text());
-  setData(row, "cp", ui->lineEditCP->text());
+  setData(row, "nomeBanco", ui->lineEditNomeBancario->text());
+  setData(row, "cpfBanco", ui->lineEditCPFBancario->text());
   return true;
 }
 

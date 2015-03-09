@@ -9,6 +9,7 @@
 #include <QTableWidgetItem>
 
 #include "registerdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
   class Orcamento;
@@ -21,11 +22,7 @@ class Orcamento : public RegisterDialog {
     explicit Orcamento(QWidget *parent = 0);
     ~Orcamento();
 
-  public slots:
-    void fillComboBoxes();
-
   private slots:
-    void on_comboBoxVendedor_currentIndexChanged(int);
     void on_doubleSpinBoxDesconto_valueChanged(double);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(double);
     void on_doubleSpinBoxFrete_editingFinished();
@@ -48,7 +45,6 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonApagarOrc_clicked();
     void on_itemBoxProduto_textChanged(const QString &text);
     void on_itemBoxCliente_textChanged(const QString &text);
-
     void on_pushButtonLimparSelecao_clicked();
 
   signals:
@@ -63,7 +59,6 @@ class Orcamento : public RegisterDialog {
    */
     virtual bool viewRegister(QModelIndex idx);
 
-    void refillComboBoxes();
   private:
 
     /*!
@@ -109,6 +104,8 @@ class Orcamento : public RegisterDialog {
     QDataWidgetMapper mapperItem;
     double subTotal, subTotalItens;
     double minimoFrete, porcFrete;
+    SearchDialog *sdCliente, *sdProd, *sdVendedor, *sdProfissional, *sdEndereco;
+    RegisterDialog *cadCliente;
 
     void removeItem();
     void adicionarItem();

@@ -195,17 +195,7 @@
              </widget>
             </item>
             <item>
-             <widget class="ComboBox" name="comboBoxProfissional">
-              <property name="minimumSize">
-               <size>
-                <width>250</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Profissional relacionado, podendo receber comissão.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-             </widget>
+             <widget class="ItemBox" name="itemBoxProfissional"/>
             </item>
            </layout>
           </item>
@@ -257,17 +247,27 @@
              </widget>
             </item>
             <item>
-             <widget class="ComboBox" name="comboBoxVendedor">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>0</height>
-               </size>
+             <widget class="ItemBox" name="itemBoxVendedor"/>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="labelEndereco">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;A seleção de vendedor é automática!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Apenas gerentes e administradores podem alterar.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <property name="text">
+               <string>Endereço de entrega</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <widget class="ItemBox" name="itemBoxEndereco"/>
             </item>
            </layout>
           </item>
@@ -331,30 +331,6 @@
           </item>
           <item row="1" column="2">
            <widget class="ItemBox" name="itemBoxCliente"/>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLabel" name="labelEndereco">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Endereço de entrega</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="ComboBox" name="comboBoxEndereco">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Endereço da entrega dos produtos.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </item>
          </layout>
         </widget>
@@ -1041,28 +1017,21 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>combobox.h</header>
+   <class>ItemBox</class>
+   <extends>QLineEdit</extends>
+   <header>itembox.h</header>
   </customwidget>
   <customwidget>
    <class>LineEditDecimal</class>
    <extends>QLineEdit</extends>
    <header>lineeditdecimal.h</header>
   </customwidget>
-  <customwidget>
-   <class>ItemBox</class>
-   <extends>QLineEdit</extends>
-   <header>itembox.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>lineEditOrcamento</tabstop>
   <tabstop>dateTimeEdit</tabstop>
-  <tabstop>comboBoxVendedor</tabstop>
   <tabstop>spinBoxValidade</tabstop>
-  <tabstop>comboBoxProfissional</tabstop>
   <tabstop>itemBoxProduto</tabstop>
   <tabstop>lineEditFornecedor</tabstop>
   <tabstop>lineEditEstoque</tabstop>

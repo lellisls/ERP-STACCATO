@@ -11,13 +11,11 @@ int main(int argc, char *argv[]) {
   QTranslator qtTranslator;
   if(!qtTranslator.load("qt_" + QLocale::system().name(),
                     QLibraryInfo::location(QLibraryInfo::TranslationsPath)) ){
-    qDebug() << "qt_" + QLocale::system().name();
   }
   app.installTranslator(&qtTranslator);
   QTranslator pt;
   if(!pt.load(":/qt_portuguese.qm")){
     qDebug() << "Error loading qt_portuguese.ts";
-
   }
   app.installTranslator(&pt);
   MainWindow window;

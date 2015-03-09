@@ -15,7 +15,8 @@ class SearchDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent = 0);
+    explicit SearchDialog(QString title, QString table, QStringList indexes, QString filter,
+                          QWidget *parent = 0);
     ~SearchDialog();
     QString getFilter() const;
     void setFilter(const QString &value);
@@ -27,17 +28,20 @@ class SearchDialog : public QDialog {
     QString getText(QVariant idx);
     void setHeaderData(QVector<QPair<QString, QString>> headerData);
 
-    //Factory Methods
-    static SearchDialog * cliente(QWidget * parent);
-    static SearchDialog * loja(QWidget * parent);
-    static SearchDialog * produto(QWidget * parent);
-    static SearchDialog * fornecedor(QWidget * parent);
-    static SearchDialog * transportadora(QWidget * parent);
-    static SearchDialog * usuario(QWidget * parent);
-    static SearchDialog * profissional(QWidget * parent);
+    // Factory Methods
+    static SearchDialog *cliente(QWidget *parent);
+    static SearchDialog *loja(QWidget *parent);
+    static SearchDialog *produto(QWidget *parent);
+    static SearchDialog *fornecedor(QWidget *parent);
+    static SearchDialog *transportadora(QWidget *parent);
+    static SearchDialog *usuario(QWidget *parent);
+    static SearchDialog *profissional(QWidget *parent);
+    static SearchDialog *endereco(QWidget *parent);
+    static SearchDialog *vendedor(QWidget *parent);
     void sendUpdateMessage();
     void show();
-signals:
+
+  signals:
     void itemSelected(QVariant value, QString text);
 
   private slots:

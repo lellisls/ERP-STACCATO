@@ -17,12 +17,12 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   setFilter(filter);
   model.select();
   ui->tableBusca->setModel(&model);
-  ui->lineEditBusca->setFocus();
-
   ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setStretchLastSection(true);
+
+  ui->lineEditBusca->setFocus();
 
   textKeys.append(indexes.front());
   primaryKey = indexes.front();
@@ -57,8 +57,8 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 }
 
 void SearchDialog::sendUpdateMessage() {
-  QModelIndex index = model.index(0,0);
-  if(!ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
+  QModelIndex index = model.index(0, 0);
+  if (!ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
     index = ui->tableBusca->selectionModel()->selection().indexes().front();
   }
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
@@ -96,6 +96,7 @@ void SearchDialog::setFilter(const QString &value) {
   filter = value;
   model.setFilter(filter);
   model.select();
+  ui->tableBusca->resizeColumnsToContents();
   //  qDebug() << model.lastError();
 }
 
@@ -169,19 +170,17 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
 }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
-  //  SearchDialog * sdCliente = new SearchDialog("Buscar Cliente", "Cadastro", {"nome_razao", "apelido",
-  //  "razaoSocial", "nomeFantasia, "cpf"},
-  //      "tipo = 'CLIENTE' OR tipo = 'AMBOS'", parent);
-  SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cadastro",
-  {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-  "clienteFornecedor = 'CLIENTE'", parent);
+  SearchDialog *sdCliente =
+      new SearchDialog("Buscar Cliente", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
+                       "clienteFornecedor = 'CLIENTE'", parent); // OR tipo = 'AMBOS'
 
-  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "inscEstadual",
-                          "idEnderecoFaturamento", "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel",
-                          "idCadastroRel", "idProfissionalRel", "incompleto"
-                         });
   sdCliente->setPrimaryKey("idCadastro");
   sdCliente->setTextKeys({"nomeFantasia", "nome_razao"});
+
+  sdCliente->hideColumns({"idCadastro", "clienteFornecedor", "rg", "inscEstadual", "idEnderecoFaturamento",
+                          "idEnderecoCobranca", "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel",
+                          "idProfissionalRel", "incompleto"
+                         });
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
@@ -204,20 +203,21 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
   sdCliente->setHeaderData(headerData);
 
+  sdCliente->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdCliente->ui->tableBusca->resizeColumnsToContents();
+  sdCliente->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
   return sdCliente;
 }
 
 SearchDialog *SearchDialog::loja(QWidget *parent) {
   SearchDialog *sdLoja =
-    new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
+      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
+
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
 
-  QStringList columns;
-  columns.push_back("idLoja");
-  columns.push_back("idEndereco");
-  columns.push_back("codUF");
-  sdLoja->hideColumns(columns);
+  sdLoja->hideColumns({"idLoja", "idEndereco", "codUF"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
@@ -229,43 +229,60 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
   sdLoja->setHeaderData(headerData);
 
+  sdLoja->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdLoja->ui->tableBusca->resizeColumnsToContents();
+  sdLoja->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
   return sdLoja;
 }
 
 SearchDialog *SearchDialog::produto(QWidget *parent) {
   SearchDialog *sdProd = new SearchDialog("Buscar Produto", "Produto",
   {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
+
+  sdProd->setPrimaryKey("idProduto");
+  sdProd->setTextKeys({"descricao"});
+
   sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo",
                        "ipi", "markup", "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes",
                        "codBarras", "codIndustrial", "qtdPallet", "st"
                       });
-  QVector<QPair<QString, QString>> headerDataProduto;
-  headerDataProduto.push_back(QPair<QString, QString>("fornecedor", "Fornecedor"));
-  headerDataProduto.push_back(QPair<QString, QString>("descricao", "Descrição"));
-  headerDataProduto.push_back(QPair<QString, QString>("estoque", "Estoque"));
-  headerDataProduto.push_back(QPair<QString, QString>("un", "Un."));
-  headerDataProduto.push_back(QPair<QString, QString>("colecao", "Coleção"));
-  headerDataProduto.push_back(QPair<QString, QString>("tipo", "Tipo"));
-  headerDataProduto.push_back(QPair<QString, QString>("m2cx", "M2/Cx."));
-  headerDataProduto.push_back(QPair<QString, QString>("pccx", "Pç./Cx."));
-  headerDataProduto.push_back(QPair<QString, QString>("formComercial", "Form. Com."));
-  headerDataProduto.push_back(QPair<QString, QString>("codComercial", "Cód. Com."));
-  headerDataProduto.push_back(QPair<QString, QString>("precoVenda", "R$"));
-  sdProd->setHeaderData(headerDataProduto);
-  sdProd->setPrimaryKey("idProduto");
-  sdProd->setTextKeys({"descricao"});
+
+  QVector<QPair<QString, QString>> headerData;
+  headerData.push_back(QPair<QString, QString>("fornecedor", "Fornecedor"));
+  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
+  headerData.push_back(QPair<QString, QString>("estoque", "Estoque"));
+  headerData.push_back(QPair<QString, QString>("un", "Un."));
+  headerData.push_back(QPair<QString, QString>("colecao", "Coleção"));
+  headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
+  headerData.push_back(QPair<QString, QString>("m2cx", "M2/Cx."));
+  headerData.push_back(QPair<QString, QString>("pccx", "Pç./Cx."));
+  headerData.push_back(QPair<QString, QString>("formComercial", "Form. Com."));
+  headerData.push_back(QPair<QString, QString>("codComercial", "Cód. Com."));
+  headerData.push_back(QPair<QString, QString>("precoVenda", "R$"));
+  sdProd->setHeaderData(headerData);
+
+  sdProd->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdProd->ui->tableBusca->resizeColumnsToContents();
+  sdProd->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
   return sdProd;
 }
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor =
-    new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-                     "clienteFornecedor = 'FORNECEDOR'", parent);
+      new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
+                       "clienteFornecedor = 'FORNECEDOR'", parent);
+
+  sdFornecedor->setPrimaryKey("idCadastro");
+  sdFornecedor->setTextKeys({"nomeFantasia"});
+
   sdFornecedor->hideColumns({"idCadastro", "rg", "cpf", "cnpj", "inscEstadual", "idEnderecoFaturamento",
                              "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel",
                              "nextel", "email", "idUsuarioRel", "idCadastroRel", "idProfissionalRel",
                              "incompleto"
                             });
+
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
   headerData.push_back(QPair<QString, QString>("nome_razao", "Nome"));
@@ -273,21 +290,22 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
   headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));
   sdFornecedor->setHeaderData(headerData);
-  sdFornecedor->setPrimaryKey("idCadastro");
-  sdFornecedor->setTextKeys({"nomeFantasia"});
+
+  sdFornecedor->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdFornecedor->ui->tableBusca->resizeColumnsToContents();
+  sdFornecedor->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
   return sdFornecedor;
 }
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
-  SearchDialog *sdTransportadora =
-    new SearchDialog("Buscar Transportadora", "Transportadora", {"razaoSocial, nomeFantasia"}, "", parent);
+  SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "Transportadora",
+  {"razaoSocial", "nomeFantasia"}, "", parent);
+
   sdTransportadora->setPrimaryKey("idTransportadora");
   sdTransportadora->setTextKeys({"nomeFantasia"});
 
-  QStringList columns;
-  columns.push_back("idTransportadora");
-  columns.push_back("idEndereco");
-  sdTransportadora->hideColumns(columns);
+  sdTransportadora->hideColumns({"idTransportadora", "idEndereco"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
@@ -298,38 +316,91 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("antt", "ANTT"));
   headerData.push_back(QPair<QString, QString>("tel", "Tel."));
   sdTransportadora->setHeaderData(headerData);
+
+  sdTransportadora->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdTransportadora->ui->tableBusca->resizeColumnsToContents();
+  sdTransportadora->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
   return (sdTransportadora);
 }
 
 SearchDialog *SearchDialog::usuario(QWidget *parent) {
   SearchDialog *sdUsuario = new SearchDialog("Buscar Usuário", "Usuario", {"nome, tipo"}, "", parent);
+
   sdUsuario->setPrimaryKey("idUsuario");
   sdUsuario->setTextKeys({"nome"});
 
-  QStringList columns;
-  columns.push_back("idUsuario");
-  columns.push_back("user");
-  columns.push_back("passwd");
-  sdUsuario->hideColumns(columns);
+  sdUsuario->hideColumns({"idUsuario, user, passwd"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("idLoja", "Loja"));
-  headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
+  headerData.push_back(QPair<QString, QString>("tipo", "Função"));
   headerData.push_back(QPair<QString, QString>("nome", "Nome"));
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
+
+  sdUsuario->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdUsuario->ui->tableBusca->resizeColumnsToContents();
+  sdUsuario->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
   return (sdUsuario);
+}
+
+SearchDialog *SearchDialog::vendedor(QWidget *parent) {
+  SearchDialog *sdVendedor = new SearchDialog("Buscar Vendedor", "Usuario", {"nome, tipo"}, "", parent);
+
+  sdVendedor->setPrimaryKey("idUsuario");
+  sdVendedor->setTextKeys({"nome"});
+
+  sdVendedor->hideColumns({"idUsuario", "idLoja", "user", "passwd"});
+
+  QVector<QPair<QString, QString>> headerData;
+  headerData.push_back(QPair<QString, QString>("tipo", "Função"));
+  headerData.push_back(QPair<QString, QString>("nome", "Nome"));
+  headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
+  sdVendedor->setHeaderData(headerData);
+
+  sdVendedor->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdVendedor->ui->tableBusca->resizeColumnsToContents();
+  sdVendedor->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+  return (sdVendedor);
+}
+
+SearchDialog *SearchDialog::endereco(QWidget *parent) {
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Endereco", {""}, "idCadastro = 0", parent);
+
+  sdEndereco->setPrimaryKey("idEndereco");
+  sdEndereco->setTextKeys({"descricao"});
+
+  sdEndereco->hideColumns({"idEndereco", "idCadastro", "ativo"});
+
+  QVector<QPair<QString, QString>> headerData;
+  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
+  headerData.push_back(QPair<QString, QString>("cep", "CEP"));
+  headerData.push_back(QPair<QString, QString>("logradouro", "Log."));
+  headerData.push_back(QPair<QString, QString>("numero", "Número"));
+  headerData.push_back(QPair<QString, QString>("complemento", "Comp."));
+  headerData.push_back(QPair<QString, QString>("bairro", "Bairro"));
+  headerData.push_back(QPair<QString, QString>("cidade", "Cidade"));
+  headerData.push_back(QPair<QString, QString>("uf", "UF"));
+  sdEndereco->setHeaderData(headerData);
+
+  sdEndereco->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdEndereco->ui->tableBusca->resizeColumnsToContents();
+  sdEndereco->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+  return sdEndereco;
 }
 
 SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-    new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
+      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
+
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome"});
 
-  QStringList columns;
-  columns.push_back("idProfissional");
-  sdProfissional->hideColumns(columns);
+  sdProfissional->hideColumns({"idProfissional"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("nome", "Nome"));
@@ -338,9 +409,14 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("email", "E-mail"));
   headerData.push_back(QPair<QString, QString>("banco", "Banco"));
   headerData.push_back(QPair<QString, QString>("agencia", "Agência"));
-  headerData.push_back(QPair<QString, QString>("cc", "CC"));
-  headerData.push_back(QPair<QString, QString>("cp", "CP"));
+  headerData.push_back(QPair<QString, QString>("cc", "C/C"));
+  headerData.push_back(QPair<QString, QString>("nomeBanco", "Nome titular"));
+  headerData.push_back(QPair<QString, QString>("cpfBanco", "CPF titular"));
   sdProfissional->setHeaderData(headerData);
 
-  return (sdProfissional);
+  sdProfissional->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdProfissional->ui->tableBusca->resizeColumnsToContents();
+  sdProfissional->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+  return sdProfissional;
 }

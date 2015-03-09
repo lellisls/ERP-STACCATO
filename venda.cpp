@@ -104,7 +104,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   }
   ui->tableVenda->resizeColumnsToContents();
 
-  QSqlQuery qry("SELECT * FROM orcamento WHERE idOrcamento = '" + idOrcamento + "'");
+  QSqlQuery qry("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'");
   if (!qry.exec()) {
     qDebug() << "Erro buscando orcamento: " << qry.lastError();
   }

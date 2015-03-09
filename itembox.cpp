@@ -51,7 +51,7 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
 
 void ItemBox::search() {
   if (searchDialog) {
-    searchDialog->show();
+    searchDialog->showMaximized();
   }
 }
 

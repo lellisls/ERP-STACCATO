@@ -88,7 +88,8 @@ Orcamento::Orcamento(QWidget *parent)
 
   setupMapper();
   newRegister();
-  show();
+//  show();
+  showMaximized();
 }
 
 Orcamento::~Orcamento() {

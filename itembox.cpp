@@ -69,6 +69,14 @@ void ItemBox::setRegisterDialog(RegisterDialog *value) {
   connect(value, &RegisterDialog::registerUpdated, this, &ItemBox::changeItem);
 }
 
+SearchDialog *ItemBox::getSearchDialog() {
+  return searchDialog;
+}
+
+RegisterDialog *ItemBox::getRegisterDialog() {
+  return registerDialog;
+}
+
 QVariant ItemBox::getValue() const {
   return value;
 }
@@ -90,6 +98,7 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
 }
 
 void ItemBox::changeItem(QVariant value, QString text) {
+  Q_UNUSED(text)
 //  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " << text;
 
   setValue(value);

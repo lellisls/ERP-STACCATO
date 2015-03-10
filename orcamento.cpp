@@ -59,22 +59,22 @@ Orcamento::Orcamento(QWidget *parent)
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("descGlobal"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("total"), true);
 
-  sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
+  SearchDialog * sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
 
-  sdProd = SearchDialog::produto(ui->itemBoxProduto);
+  SearchDialog * sdProd = SearchDialog::produto(ui->itemBoxProduto);
   ui->itemBoxProduto->setSearchDialog(sdProd);
 
-  cadCliente = new CadastroCliente(this);
+  RegisterDialog * cadCliente = new CadastroCliente(this);
   ui->itemBoxCliente->setRegisterDialog(cadCliente);
 
-  sdVendedor = SearchDialog::vendedor(ui->itemBoxVendedor);
+  SearchDialog * sdVendedor = SearchDialog::vendedor(ui->itemBoxVendedor);
   ui->itemBoxVendedor->setSearchDialog(sdVendedor);
 
-  sdProfissional = SearchDialog::profissional(ui->itemBoxProfissional);
+  SearchDialog * sdProfissional = SearchDialog::profissional(ui->itemBoxProfissional);
   ui->itemBoxProfissional->setSearchDialog(sdProfissional);
 
-  sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+  SearchDialog * sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
 
   QSqlQuery qryFrete;
@@ -609,6 +609,10 @@ void Orcamento::on_pushButtonAtualizarOrcamento_clicked() {
 }
 
 void Orcamento::on_pushButtonFecharPedido_clicked() {
+  if (!save(true)) {
+    return;
+  }
+
   QDateTime time = ui->dateTimeEdit->dateTime();
   if (!time.isValid()) {
     qDebug() << "Invalid time!";
@@ -635,17 +639,13 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
     cadCliente->viewRegisterById(idCadastro);
-    sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
-    ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+//    sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+//    ui->itemBoxEndereco->setSearchDialog(sdEndereco);
     return;
   }
   if (ui->itemBoxEndereco->text().isEmpty()) {
     qDebug() << "deve ter endereço";
     QMessageBox::warning(this, "Aviso!", "Deve escolher um endereço.");
-    return;
-  }
-
-  if (!save()) {
     return;
   }
 
@@ -735,11 +735,12 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
   qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
-  sdEndereco->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
+  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
                         " AND ativo = 1");
 }
 
 void Orcamento::successMessage() {
+  qDebug() << "teste";
   QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!", QMessageBox::Ok,
                            QMessageBox::NoButton);
 }

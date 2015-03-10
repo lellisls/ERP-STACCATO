@@ -15,6 +15,8 @@ class ItemBox : public QLineEdit {
     virtual void resizeEvent(QResizeEvent *event);
     void setSearchDialog(SearchDialog *value);
     void setRegisterDialog(RegisterDialog *value);
+    SearchDialog *getSearchDialog();
+    RegisterDialog *getRegisterDialog();
     QVariant getValue() const;
     void setValue(const QVariant &value);
 

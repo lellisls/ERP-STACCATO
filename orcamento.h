@@ -104,8 +104,6 @@ class Orcamento : public RegisterDialog {
     QDataWidgetMapper mapperItem;
     double subTotal, subTotalItens;
     double minimoFrete, porcFrete;
-    SearchDialog *sdCliente, *sdProd, *sdVendedor, *sdProfissional, *sdEndereco;
-    RegisterDialog *cadCliente;
 
     void removeItem();
     void adicionarItem();

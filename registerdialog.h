@@ -91,7 +91,7 @@ protected:
   * \brief Procedimento padrão para salvar informações no BD.
   * \return
   */
-  virtual bool save();
+  virtual bool save(bool silent = false);
   /*!
   * \brief Chama verifyRequiredField() sobre cada elemento da lista.
   * \param list Lista de QLineEdits a serem verificados.

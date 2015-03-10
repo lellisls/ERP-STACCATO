@@ -157,6 +157,7 @@ void Orcamento::registerMode() {
 
   ui->pushButtonImprimir->setEnabled(false);
   ui->pushButtonFecharPedido->setEnabled(true);
+  ui->itemBoxEndereco->setEnabled(false);
 }
 
 void Orcamento::updateMode() {
@@ -165,6 +166,7 @@ void Orcamento::updateMode() {
 
   ui->pushButtonImprimir->setEnabled(true);
   ui->pushButtonFecharPedido->setEnabled(true);
+  ui->itemBoxEndereco->setVisible(true);
 }
 
 bool Orcamento::newRegister() {
@@ -283,6 +285,8 @@ bool Orcamento::savingProcedures(int row) {
 
 void Orcamento::clearFields() {
   RegisterDialog::clearFields();
+  ui->itemBoxVendedor->setValue(UserSession::getId());
+  ui->itemBoxEndereco->setEnabled(false);
 }
 
 void Orcamento::on_pushButtonRemoverItem_clicked() {
@@ -329,7 +333,7 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
     double descItem =
-        modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
+      modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     double itemBruto = qteItem * prcUnItem;
     double stItem = itemBruto * (1.0 - descItem);
     subTotalItens += stItem;
@@ -422,10 +426,10 @@ QString Orcamento::getItensHtml() {
     itens += "  <td>" + modelItem.data(modelItem.index(row, modelItem.fieldIndex("obs"))).toString() +
              "</td>"; // Obs
     itens +=
-        "  <td>" +
-        locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble(),
-                        'f', 2) +
-        "</td>"; // Prc. Un
+      "  <td>" +
+      locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble(),
+                      'f', 2) +
+      "</td>"; // Prc. Un
     itens += "  <td>" +
              locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble(),
                              'f', 2) +
@@ -441,10 +445,10 @@ QString Orcamento::getItensHtml() {
                modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble(), 'f', 2) +
              "</td>"; // Desconto
     itens +=
-        "  <td>" +
-        locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("descGlobal"))).toDouble(),
-                        'f', 2) +
-        "</td>"; // Desconto Disr.
+      "  <td>" +
+      locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("descGlobal"))).toDouble(),
+                      'f', 2) +
+      "</td>"; // Desconto Disr.
     itens += "  <td>" +
              locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("total"))).toDouble(),
                              'f', 2) +
@@ -736,7 +740,15 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
   qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
   ui->itemBoxEndereco->getSearchDialog()->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
-                        " AND ativo = 1");
+      " AND ativo = 1");
+  QSqlQuery queryCliente;
+  queryCliente.prepare("SELECT idProfissionalRel FROM Cadastro WHERE idCadastro = :idCadastro");
+  queryCliente.bindValue(":idCadastro", ui->itemBoxCliente->getValue());
+  if (!queryCliente.exec() || !queryCliente.first()) {
+    qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
+  }
+  ui->itemBoxProfissional->setValue(queryCliente.value("idProfissionalRel"));
+  ui->itemBoxEndereco->setEnabled(true);
 }
 
 void Orcamento::successMessage() {

@@ -6,7 +6,7 @@
 #include <QDebug>
 #include "registerdialog.h"
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
-  : QDialog(parent), ui(new Ui::SearchDialog), indexes(indexes) {
+  : QDialog(parent), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
   setWindowTitle(title);
   setWindowModality(Qt::WindowModal);
@@ -24,12 +24,16 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
 
   ui->lineEditBusca->setFocus();
 
-  textKeys.append(indexes.front());
-  primaryKey = indexes.front();
-  //  RegisterDialog * reg = dynamic_cast<RegisterDialog * >(parent);
-  //  if(reg != nullptr) {
-  //    connect(this, &SearchDialog::itemSelected, reg, &RegisterDialog::changeItem);
-  //  }
+  if(indexes.isEmpty()){
+    ui->lineEditBusca->hide();
+    ui->labelBusca->hide();
+    ui->tableBusca->setFocus();
+  }else{
+    this->indexes = indexes;
+    textKeys.append(indexes.front());
+    primaryKey = indexes.front();
+    ui->lineEditBusca->setFocus();
+  }
 }
 
 SearchDialog::~SearchDialog() {
@@ -373,17 +377,17 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::endereco(QWidget *parent) {
-  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Endereco", {""}, "idCadastro = 0", parent);
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Endereco", {}, "idCadastro = 0", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
-  sdEndereco->setTextKeys({"descricao"});
+  sdEndereco->setTextKeys({"descricao","logradouro", "numero", "bairro", "cidade", "uf"});
 
   sdEndereco->hideColumns({"idEndereco", "idCadastro", "ativo"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
   headerData.push_back(QPair<QString, QString>("cep", "CEP"));
-  headerData.push_back(QPair<QString, QString>("logradouro", "Log."));
+  headerData.push_back(QPair<QString, QString>("logradouro", "End."));
   headerData.push_back(QPair<QString, QString>("numero", "Número"));
   headerData.push_back(QPair<QString, QString>("complemento", "Comp."));
   headerData.push_back(QPair<QString, QString>("bairro", "Bairro"));

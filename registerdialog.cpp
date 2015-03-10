@@ -175,10 +175,6 @@ bool RegisterDialog::newRegister() {
   mapper.toLast();
   clearFields();
 
-  //  QSqlQuery maxId("SELECT MAX(" + primaryKey + ") FROM " + model.tableName());
-  //  maxId.first();
-  //  id = maxId.value(primaryKey) + 1;
-  //  setData(row,primaryKey,id);
   return true;
 }
 

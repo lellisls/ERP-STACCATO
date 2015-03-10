@@ -564,12 +564,12 @@
                  <item>
                   <widget class="QLabel" name="label_40">
                    <property name="text">
-                    <string>Clientes vinculados ao cliente</string>
+                    <string>Observações</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QTextEdit" name="textEditClientes">
+                  <widget class="QTextEdit" name="textEditObservacoes">
                    <property name="textInteractionFlags">
                     <set>Qt::NoTextInteraction</set>
                    </property>
@@ -901,7 +901,7 @@
   <tabstop>lineEditEmail</tabstop>
   <tabstop>lineEditSegmento</tabstop>
   <tabstop>checkBox_4</tabstop>
-  <tabstop>textEditClientes</tabstop>
+  <tabstop>textEditObservacoes</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>

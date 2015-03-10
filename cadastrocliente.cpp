@@ -129,6 +129,7 @@ bool CadastroCliente::verifyFields(int row) {
 
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
+    return true;
     qDebug() << "Faltou endereço!";
   } else {
     setData(row, "incompleto", false);
@@ -149,6 +150,7 @@ bool CadastroCliente::verifyFields(int row) {
     setData(row, "incompleto", false);
   } else {
     setData(row, "incompleto", true);
+    return true;
   }
 
   ok = 0;
@@ -168,6 +170,7 @@ bool CadastroCliente::verifyFields(int row) {
     setData(row, "incompleto", false);
   } else {
     setData(row, "incompleto", true);
+    return true;
   }
 
   ok = 0;
@@ -196,7 +199,7 @@ bool CadastroCliente::verifyFields(int row) {
 //  }
 
   //  qDebug() << "incompleto? " << model.data(model.index(row, model.fieldIndex("incompleto"))).toString();
-  setData(row, "clienteFornecedor", tipoClienteFornecedor);
+//  setData(row, "clienteFornecedor", tipoClienteFornecedor);
   return true;
 }
 

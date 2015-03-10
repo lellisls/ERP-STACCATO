@@ -96,7 +96,9 @@ class MainWindow : public QMainWindow {
 
     void on_actionCadastrarFornecedor_triggered();
 
-  private:
+    void on_actionRestaurar_BD_triggered();
+
+private:
     // attributes
     Ui::MainWindow *ui;
     int orcRows = 0;

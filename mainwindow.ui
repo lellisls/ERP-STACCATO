@@ -841,6 +841,7 @@
     </property>
     <addaction name="actionImportarTabelaFornecedor"/>
     <addaction name="actionAtualizar_tabelas"/>
+    <addaction name="actionRestaurar_BD"/>
    </widget>
    <widget class="QMenu" name="menuAdministra_o">
     <property name="title">

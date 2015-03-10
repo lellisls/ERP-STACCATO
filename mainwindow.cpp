@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tablePedidosCompra->hide();
     ui->labelPedidosCompra->hide();
     ui->actionCadastrarUsuario->setVisible(false);
-    ui->actionRestaurar_BD->setVisible(false);
+//    ui->actionRestaurar_BD->setVisible(false);
 
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
@@ -177,7 +177,7 @@ void MainWindow::setupTable(QTableView *table) {
 
 void MainWindow::showError(const QSqlError &err) {
   qDebug() << err;
-  QMessageBox::critical(this, "Unable to initialize Database", "Error initializing database: " + err.text());
+  QMessageBox::critical(this, "Erro", "Erro inicializando o banco de dados: " + err.text());
 }
 
 void MainWindow::on_actionCriarOrcamento_triggered() {
@@ -669,4 +669,14 @@ void MainWindow::readSettings() {
   username = settings.value("username").toString();
   password = settings.value("password").toString();
   port = settings.value("port").toString();
+}
+
+void MainWindow::on_actionRestaurar_BD_triggered()
+{
+    QSqlError err = initDb();
+    if (err.type() != QSqlError::NoError) {
+      showError(err);
+    } else{
+        QMessageBox::information(this, "Aviso!", "Banco de dados inicializado com sucesso.");
+    }
 }

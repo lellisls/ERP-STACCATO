@@ -167,6 +167,7 @@ void Orcamento::updateMode() {
   ui->pushButtonImprimir->setEnabled(true);
   ui->pushButtonFecharPedido->setEnabled(true);
   ui->itemBoxEndereco->setVisible(true);
+  ui->spinBoxValidade->setEnabled(false);
 }
 
 bool Orcamento::newRegister() {

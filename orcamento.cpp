@@ -739,7 +739,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
-  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
+//  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
   ui->itemBoxEndereco->getSearchDialog()->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
       " AND ativo = 1");
   QSqlQuery queryCliente;
@@ -750,6 +750,7 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   }
   ui->itemBoxProfissional->setValue(queryCliente.value("idProfissionalRel"));
   ui->itemBoxEndereco->setEnabled(true);
+  ui->itemBoxEndereco->clear();
 }
 
 void Orcamento::successMessage() {

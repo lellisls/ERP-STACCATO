@@ -81,8 +81,7 @@ void SearchDialog::show() {
   QDialog::show();
 }
 
-void SearchDialog::showMaximized()
-{
+void SearchDialog::showMaximized() {
   model.select();
   QDialog::showMaximized();
 }
@@ -177,8 +176,8 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
   SearchDialog *sdCliente =
-      new SearchDialog("Buscar Cliente", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-                       "clienteFornecedor = 'CLIENTE'", parent); // OR tipo = 'AMBOS'
+    new SearchDialog("Buscar Cliente", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
+                     "clienteFornecedor = 'CLIENTE'", parent); // OR tipo = 'AMBOS'
 
   sdCliente->setPrimaryKey("idCadastro");
   sdCliente->setTextKeys({"nomeFantasia", "nome_razao"});
@@ -218,7 +217,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
 
 SearchDialog *SearchDialog::loja(QWidget *parent) {
   SearchDialog *sdLoja =
-      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
+    new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "", parent);
 
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
@@ -277,8 +276,8 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor =
-      new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-                       "clienteFornecedor = 'FORNECEDOR'", parent);
+    new SearchDialog("Buscar Fornecedor", "Cadastro", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
+                     "clienteFornecedor = 'FORNECEDOR'", parent);
 
   sdFornecedor->setPrimaryKey("idCadastro");
   sdFornecedor->setTextKeys({"nomeFantasia"});
@@ -401,7 +400,7 @@ SearchDialog *SearchDialog::endereco(QWidget *parent) {
 
 SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
+    new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "", parent);
 
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome"});

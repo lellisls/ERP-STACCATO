@@ -2,10 +2,7 @@
 #include <QMouseEvent>
 #include <QDebug>
 
-ItemBox::ItemBox(QWidget *parent) :
-  QLineEdit(parent),
-  searchDialog(nullptr),
-  registerDialog(nullptr) {
+ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), searchDialog(nullptr), registerDialog(nullptr) {
   setReadOnly(true);
 
   searchButton = new QPushButton(this);
@@ -33,13 +30,13 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
   QSize size = searchButton->minimumSizeHint();
   int x = rect().right();
   int y = (rect().height() - size.height()) / 2.0;
-  if(searchDialog) {
+  if (searchDialog) {
     x -= size.width();
     searchButton->setGeometry(QRect(QPoint(x, y), size));
   } else {
     searchButton->hide();
   }
-  if(registerDialog) {
+  if (registerDialog) {
     x -= size.width();
     plusButton->setGeometry(QRect(QPoint(x, y), size));
   } else {
@@ -57,8 +54,8 @@ void ItemBox::search() {
 }
 
 void ItemBox::edit() {
-  if(registerDialog) {
-    if(!value.isNull()) {
+  if (registerDialog) {
+    if (!value.isNull()) {
       registerDialog->viewRegisterById(value);
     }
     registerDialog->show();
@@ -83,13 +80,13 @@ QVariant ItemBox::getValue() const {
 }
 
 void ItemBox::setValue(const QVariant &value) {
-//  qDebug() << "Set value : " << value;
+  //  qDebug() << "Set value : " << value;
   this->value = value;
-  if(value.isNull()) {
+  if (value.isNull()) {
     setText("");
-  } else if( searchDialog ) {
+  } else if (searchDialog) {
     setText(searchDialog->getText(value));
-//    qDebug() << "Text = " << text();
+    //    qDebug() << "Text = " << text();
   }
 }
 
@@ -100,20 +97,21 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
 
 void ItemBox::changeItem(QVariant value, QString text) {
   Q_UNUSED(text)
-//  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " << text;
+  //  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " <<
+  //  text;
 
   setValue(value);
-//  setText(text);
-  if(registerDialog && registerDialog->isVisible()) {
+  //  setText(text);
+  if (registerDialog && registerDialog->isVisible()) {
     registerDialog->close();
   }
-  if(searchDialog && searchDialog->isVisible()) {
+  if (searchDialog && searchDialog->isVisible()) {
     searchDialog->close();
   }
-//  qDebug() << "Value changed: " << value << ", " << text;
+  //  qDebug() << "Value changed: " << value << ", " << text;
 }
 
-
-void ItemBox::mouseDoubleClickEvent(QMouseEvent * event) {
+void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {
+  Q_UNUSED(event);
   search();
 }

@@ -192,7 +192,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
-  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
+//  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
   ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
   ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);

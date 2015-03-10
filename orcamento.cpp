@@ -635,7 +635,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
   if (qryCadastro.next()) {
-    qDebug() << "terminar cadastro";
+//    qDebug() << "terminar cadastro";
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
     cadCliente->viewRegisterById(idCadastro);
@@ -644,7 +644,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
   if (ui->itemBoxEndereco->text().isEmpty()) {
-    qDebug() << "deve ter endereço";
+//    qDebug() << "deve ter endereço";
     QMessageBox::warning(this, "Aviso!", "Deve escolher um endereço.");
     return;
   }
@@ -734,7 +734,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
-  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
+//  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
   ui->itemBoxEndereco->getSearchDialog()->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
                         " AND ativo = 1");
 }

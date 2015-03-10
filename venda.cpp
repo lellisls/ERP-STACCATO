@@ -117,7 +117,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   }
 
   sdEndereco->setFilter("idCadastro = " + qry.value("idCadastroCliente").toString() + " AND ativo = 1");
-  qDebug() << "idCliente: " << qry.value("idCadastroCliente").toString();
+//  qDebug() << "idCliente: " << qry.value("idCadastroCliente").toString();
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
 

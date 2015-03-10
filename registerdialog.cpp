@@ -183,7 +183,7 @@ bool RegisterDialog::newRegister() {
 }
 
 bool RegisterDialog::save() {
-  QSqlQuery("SET SESSION ISOLATION LEVEL SETRIALIZABLE").exec();
+  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
   qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
   int row = mapper.currentIndex();

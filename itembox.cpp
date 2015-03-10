@@ -1,4 +1,5 @@
 #include "itembox.h"
+#include <QMouseEvent>
 #include <QDebug>
 
 ItemBox::ItemBox(QWidget *parent) :
@@ -110,4 +111,9 @@ void ItemBox::changeItem(QVariant value, QString text) {
     searchDialog->close();
   }
 //  qDebug() << "Value changed: " << value << ", " << text;
+}
+
+
+void ItemBox::mouseDoubleClickEvent(QMouseEvent * event) {
+  search();
 }

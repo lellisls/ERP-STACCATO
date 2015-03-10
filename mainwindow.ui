@@ -904,22 +904,22 @@
   </action>
   <action name="actionRestaurar_BD">
    <property name="text">
-    <string>Restaurar BD</string>
+    <string>Reinicializar banco de dados</string>
    </property>
   </action>
   <action name="actionGerenciar_Transportadoras">
    <property name="text">
-    <string>Gerenciar Transportadoras</string>
+    <string>Gerenciar transportadoras</string>
    </property>
   </action>
   <action name="actionGerenciar_Lojas">
    <property name="text">
-    <string>Gerenciar Lojas</string>
+    <string>Gerenciar lojas</string>
    </property>
   </action>
   <action name="actionImportarTabelaFornecedor">
    <property name="text">
-    <string>Importar Tabela Fornecedor</string>
+    <string>Importar tabela fornecedor</string>
    </property>
    <property name="toolTip">
     <string>Importar tabela fornecedor</string>

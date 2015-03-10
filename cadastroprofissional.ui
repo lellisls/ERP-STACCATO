@@ -167,7 +167,7 @@
               <item row="4" column="0">
                <widget class="QLabel" name="labelCC">
                 <property name="text">
-                 <string>CC:</string>
+                 <string>C/C:</string>
                 </property>
                </widget>
               </item>

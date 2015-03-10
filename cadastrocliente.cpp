@@ -215,9 +215,9 @@ bool CadastroCliente::savingProcedures(int row) {
     qryLastId.first();
     idCad = qryLastId.value("lastId").toInt();
   }
-  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
+//  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
-  qDebug() << "ID Cadastro = " << idCad;
+//  qDebug() << "ID Cadastro = " << idCad;
   for (int end = 0; end < modelEnd.rowCount(); ++end) {
     modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCad);
   }
@@ -227,7 +227,7 @@ bool CadastroCliente::savingProcedures(int row) {
     qDebug() << "QUERY : " << modelEnd.query().lastQuery();
     return false;
   }
-  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
+//  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
   return true;
 }

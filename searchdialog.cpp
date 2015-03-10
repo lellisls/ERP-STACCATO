@@ -236,6 +236,8 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("inscEstadual", "Insc. Est."));
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
+  headerData.push_back(QPair<QString, QString>("porcentagemFrete", "% Frete"));
+  headerData.push_back(QPair<QString, QString>("valorMinimoFrete", "R$ Mínimo Frete"));
   sdLoja->setHeaderData(headerData);
 
   sdLoja->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
@@ -330,7 +332,7 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   sdTransportadora->ui->tableBusca->resizeColumnsToContents();
   sdTransportadora->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
-  return (sdTransportadora);
+  return sdTransportadora;
 }
 
 SearchDialog *SearchDialog::usuario(QWidget *parent) {
@@ -339,7 +341,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   sdUsuario->setPrimaryKey("idUsuario");
   sdUsuario->setTextKeys({"nome"});
 
-  sdUsuario->hideColumns({"idUsuario, user, passwd"});
+  sdUsuario->hideColumns({"idUsuario", "user", "passwd"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("idLoja", "Loja"));
@@ -348,11 +350,13 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
 
+  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "nomeFantasia"));
+
   sdUsuario->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
   sdUsuario->ui->tableBusca->resizeColumnsToContents();
   sdUsuario->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
-  return (sdUsuario);
+  return sdUsuario;
 }
 
 SearchDialog *SearchDialog::vendedor(QWidget *parent) {
@@ -373,7 +377,7 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
   sdVendedor->ui->tableBusca->resizeColumnsToContents();
   sdVendedor->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
-  return (sdVendedor);
+  return sdVendedor;
 }
 
 SearchDialog *SearchDialog::endereco(QWidget *parent) {
@@ -419,8 +423,8 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("banco", "Banco"));
   headerData.push_back(QPair<QString, QString>("agencia", "Agência"));
   headerData.push_back(QPair<QString, QString>("cc", "C/C"));
-  headerData.push_back(QPair<QString, QString>("nomeBanco", "Nome titular"));
-  headerData.push_back(QPair<QString, QString>("cpfBanco", "CPF titular"));
+  headerData.push_back(QPair<QString, QString>("nomeBanco", "Nome Titular"));
+  headerData.push_back(QPair<QString, QString>("cpfBanco", "CPF Titular"));
   sdProfissional->setHeaderData(headerData);
 
   sdProfissional->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);

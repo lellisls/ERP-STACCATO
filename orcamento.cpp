@@ -375,7 +375,7 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
-  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens + frete);
+//  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens + frete);
   ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
 }
@@ -507,7 +507,7 @@ void Orcamento::print(QPrinter *printer) {
   QString itens = getItensHtml();
   html.replace("ITENS", itens);
 
-  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
+//  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
   html.replace("DESCONTO", ui->doubleSpinBoxDescontoGlobal->text());
   html.replace("FRETE", ui->doubleSpinBoxFrete->text());
   html.replace("TOTAL", ui->doubleSpinBoxFinal->text());
@@ -640,7 +640,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
   if (qryCadastro.next()) {
-    qDebug() << "terminar cadastro";
+//    qDebug() << "terminar cadastro";
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
     cadCliente->viewRegisterById(idCadastro);
@@ -649,7 +649,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
   if (ui->itemBoxEndereco->text().isEmpty()) {
-    qDebug() << "deve ter endereço";
+//    qDebug() << "deve ter endereço";
     QMessageBox::warning(this, "Aviso!", "Deve escolher um endereço.");
     return;
   }

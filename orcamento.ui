@@ -790,7 +790,7 @@
                <string> %</string>
               </property>
               <property name="decimals">
-               <number>2</number>
+               <number>4</number>
               </property>
               <property name="maximum">
                <double>99.000000000000000</double>

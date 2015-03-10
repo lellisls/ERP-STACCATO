@@ -68,13 +68,15 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
 
   ui->tableVenda->resizeColumnsToContents();
   ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
-  //  ui->tableVenda->setItemDelegateForColumn(11, );
 
   ui->pushButtonNFe->hide();
 
   ui->dateEditPgt1->setDate(QDate::currentDate());
   ui->dateEditPgt2->setDate(QDate::currentDate());
   ui->dateEditPgt3->setDate(QDate::currentDate());
+
+  sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
 
 //  show();
   showMaximized();
@@ -113,6 +115,11 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   if (!qry.first()) {
     qDebug() << "Erro selecionando primeiro resultado: " << qry.lastError();
   }
+
+  sdEndereco->setFilter("idCadastro = " + qry.value("idCadastroCliente").toString() + " AND ativo = 1");
+  qDebug() << "idCliente: " << qry.value("idCadastroCliente").toString();
+
+  ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
 
   int row = modelVenda.rowCount();
   modelVenda.insertRow(row);
@@ -202,9 +209,6 @@ void Venda::setupMapper() {}
 void Venda::updateId() {}
 
 void Venda::on_pushButtonCancelar_clicked() {
-  //  Orcamento *orc = new Orcamento(parentWidget());
-  //  orc->viewRegisterById(idOrcamento);
-  //  qDebug() << "idOrcamento: " << idOrcamento;
   close();
 }
 
@@ -224,28 +228,6 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   }
   if(ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!"){
     QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
-    return;
-  }
-
-  //TODO: verificar se cadastro do cliente está incompleto
-  QSqlQuery qryCadastro;
-  int idCadastro = 0;
-  if(!qryCadastro.exec("SELECT idCadastroCliente FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "';")){
-    qDebug() << "Erro buscando idCadastro em Venda: " << qryCadastro.lastError();
-    return;
-  }
-  qryCadastro.next();
-  qDebug() << "cadastro size: " << qryCadastro.size();
-  idCadastro = qryCadastro.value("idCadastroCliente").toInt();
-  if(!qryCadastro.exec("SELECT incompleto FROM Venda LEFT JOIN Cadastro ON Venda.idCadastroCliente = Cadastro.idCadastro WHERE idCadastro = "+ QString::number(idCadastro) +" AND incompleto = 1;")){
-    qDebug() << "Erro verificando se cadastro está completo: " << qryCadastro.lastError();
-    return;
-  }
-  if(qryCadastro.next()){
-    //terminar cadastro
-    QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
-    RegisterDialog *cadCliente = new CadastroCliente(this);
-    cadCliente->viewRegisterById(idCadastro);
     return;
   }
 

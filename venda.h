@@ -7,6 +7,7 @@
 #include <QSqlTableModel>
 
 #include "registerdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
   class Venda;
@@ -54,6 +55,7 @@ class Venda : public RegisterDialog {
     QSqlRelationalTableModel modelItem, modelFluxoCaixa;
     QString idOrcamento;
     double subTotal, subTotalItens;
+    SearchDialog *sdEndereco;
     // methods
     bool cadastrar();
     bool verifyFields(int row);

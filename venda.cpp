@@ -76,7 +76,8 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->dateEditPgt2->setDate(QDate::currentDate());
   ui->dateEditPgt3->setDate(QDate::currentDate());
 
-  show();
+//  show();
+  showMaximized();
 }
 
 Venda::~Venda() {

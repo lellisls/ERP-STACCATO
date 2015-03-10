@@ -41,6 +41,7 @@ void CadastroProfissional::updateMode() {
 }
 
 bool CadastroProfissional::verifyFields(int row) {
+  Q_UNUSED(row);
   if(!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditNome, ui->lineEditTel})) {
     return false;
   }

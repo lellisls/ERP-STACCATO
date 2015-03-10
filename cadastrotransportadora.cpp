@@ -31,6 +31,7 @@ void CadastroTransportadora::clearFields() {
 }
 
 bool CadastroTransportadora::verifyFields(int row) {
+  Q_UNUSED(row);
   //  if(!RegisterDialog::verifyFields({ui}))
   if (ui->widgetEnd->isEnabled() && !ui->widgetEnd->verifyFields()) {
     return false;

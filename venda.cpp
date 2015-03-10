@@ -78,7 +78,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
 
-//  show();
+  //  show();
   showMaximized();
 }
 
@@ -145,6 +145,7 @@ bool Venda::cadastrar() {
 }
 
 bool Venda::verifyFields(int row) {
+  Q_UNUSED(row);
   return true;
 }
 
@@ -233,7 +234,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 
   QSqlQuery qry;
 
-//  qDebug() << "id: " << idOrcamento;
+  //  qDebug() << "id: " << idOrcamento;
 
   qry.exec("START TRANSACTION");
 
@@ -337,7 +338,7 @@ void Venda::on_pushButtonNFe_clicked() {
   } else{
     QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro, NFe não foi gerada.");
   }
-//  qDebug() << "txt: " << nota.TXT();
+  //  qDebug() << "txt: " << nota.TXT();
 }
 
 void Venda::viewVenda(QString idVenda) {
@@ -514,7 +515,7 @@ bool Venda::viewRegister(QModelIndex index) {
   }
   QString idVenda = data(primaryKey).toString();
   idOrcamento = idVenda;
-//  qDebug() << "idVenda: " << idVenda;
+  //  qDebug() << "idVenda: " << idVenda;
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
   modelFluxoCaixa.setFilter("idVenda = '"+ idVenda +"'");
@@ -553,7 +554,7 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas1 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt1->value() / parcelas1);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), ui->dateEditPgt1->date().addMonths(i));
-//                              QDate::currentDate().addMonths(i));
+      //                              QDate::currentDate().addMonths(i));
       ++row;
     }
   } else{
@@ -570,7 +571,7 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas2 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt2->value() / parcelas2);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), ui->dateEditPgt2->date().addMonths(i));
-//                              QDate::currentDate().addMonths(i));
+      //                              QDate::currentDate().addMonths(i));
       ++row;
     }
   }
@@ -585,7 +586,7 @@ void Venda::montarFluxoCaixa()
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas3 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), ui->doubleSpinBoxPgt3->value() / parcelas3);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")), ui->dateEditPgt3->date().addMonths(i));
-//                              QDate::currentDate().addMonths(i));
+      //                              QDate::currentDate().addMonths(i));
       ++row;
     }
   }
@@ -618,15 +619,15 @@ void Venda::on_comboBoxPgt3Parc_currentTextChanged(const QString &text)
 
 void Venda::on_dateEditPgt1_dateChanged(const QDate &)
 {
-    montarFluxoCaixa();
+  montarFluxoCaixa();
 }
 
 void Venda::on_dateEditPgt2_dateChanged(const QDate &)
 {
-    montarFluxoCaixa();
+  montarFluxoCaixa();
 }
 
 void Venda::on_dateEditPgt3_dateChanged(const QDate &)
 {
-    montarFluxoCaixa();
+  montarFluxoCaixa();
 }

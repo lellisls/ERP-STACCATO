@@ -191,5 +191,6 @@ void PedidosCompra::updateTables() {
 }
 
 void PedidosCompra::on_radioButtonVenda_toggled(bool checked) {
+    Q_UNUSED(checked);
 //  modelPedidos
 }

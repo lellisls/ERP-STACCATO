@@ -88,7 +88,7 @@ Orcamento::Orcamento(QWidget *parent)
 
   setupMapper();
   newRegister();
-//  show();
+  //  show();
   showMaximized();
 }
 
@@ -183,21 +183,19 @@ void Orcamento::removeItem() {
 }
 
 void Orcamento::updateId() {
-  QString str = "SELECT * FROM Orcamento WHERE idOrcamento = '" + ui->lineEditOrcamento->text() + "';";
-  QSqlQuery queryIdExists(str);
+  QSqlQuery queryIdExists("SELECT * FROM Orcamento WHERE idOrcamento = '" + ui->lineEditOrcamento->text() +
+                          "'");
   queryIdExists.exec();
   if (queryIdExists.size() != 0) {
     return;
   }
   QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
-  str = "SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id + "%'";
-  str += "UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%'";
-  QSqlQuery query(str);
-  int last = 0;
-  while (query.next()) {
-    last = query.value("idOrcamento").toString().mid(id.size()).toInt();
-  }
-  id += QString("%1").arg(last + 1, 4, 10,QChar('0')); //QString("%1").arg(last + 1, 3, 16, QChar('0')).toUpper();
+  QSqlQuery query("SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id +
+                  "%' UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%' ORDER BY idOrcamento ASC");
+  query.last();
+  int last = query.value("idOrcamento").toString().mid(id.size()).toInt();
+  id += QString("%1")
+        .arg(last + 1, 4, 10, QChar('0')); // QString("%1").arg(last + 1, 3, 16, QChar('0')).toUpper();
   ui->lineEditOrcamento->setText(id);
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex(primaryKey)), id);
@@ -213,7 +211,7 @@ bool Orcamento::verifyFields(int row) {
     return false;
   }
 
-  if(ui->itemBoxVendedor->text().isEmpty()){
+  if (ui->itemBoxVendedor->text().isEmpty()) {
     ui->itemBoxVendedor->setFocus();
     QMessageBox::warning(this, "Atenção!", "Vendedor inválido.", QMessageBox::Ok, QMessageBox::NoButton);
     return false;
@@ -238,7 +236,7 @@ bool Orcamento::savingProcedures(int row) {
   updateId();
   QLocale locale(QLocale::Portuguese);
   QString idOrcamento = ui->lineEditOrcamento->text();
-  if (model.data(model.index(row, model.fieldIndex("idOrcamento"))).toString() != idOrcamento){
+  if (model.data(model.index(row, model.fieldIndex("idOrcamento"))).toString() != idOrcamento) {
     setData(row, "idOrcamento", idOrcamento);
   }
   setData(row, "idLoja", UserSession::getLoja());
@@ -349,12 +347,14 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     descGlobal = 1.0 - (F / (b * (1.0 + f)));
     subTotal = b * (1.0 - descGlobal);
     frete = subTotal * f;
-    //    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
+    //    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" <<
+    //    frete;
     if (frete < m) {
       frete = m;
       descGlobal = 1.0 + (m - F) / b;
       subTotal = b * (1.0 - descGlobal);
-      //      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" << frete;
+      //      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" <<
+      //      frete;
     }
   }
 
@@ -624,11 +624,13 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
 
   int idCadastro = ui->itemBoxCliente->getValue().toInt();
   QSqlQuery qryCadastro;
-  if(!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cadastro ON Orcamento.idCadastroCliente = Cadastro.idCadastro WHERE idCadastro = " + QString::number(idCadastro) + " AND incompleto = 1")){
+  if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cadastro ON Orcamento.idCadastroCliente "
+                        "= Cadastro.idCadastro WHERE idCadastro = " +
+                        QString::number(idCadastro) + " AND incompleto = 1")) {
     qDebug() << "Erro verificando se cadastro está completo: " << qryCadastro.lastError();
     return;
   }
-  if(qryCadastro.next()){
+  if (qryCadastro.next()) {
     qDebug() << "terminar cadastro";
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
@@ -637,7 +639,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     ui->itemBoxEndereco->setSearchDialog(sdEndereco);
     return;
   }
-  if(ui->itemBoxEndereco->text().isEmpty()){
+  if (ui->itemBoxEndereco->text().isEmpty()) {
     qDebug() << "deve ter endereço";
     QMessageBox::warning(this, "Aviso!", "Deve escolher um endereço.");
     return;
@@ -733,7 +735,8 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
   qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
-  sdEndereco->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) + " AND ativo = 1");
+  sdEndereco->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
+                        " AND ativo = 1");
 }
 
 void Orcamento::successMessage() {
@@ -741,8 +744,7 @@ void Orcamento::successMessage() {
                            QMessageBox::NoButton);
 }
 
-void Orcamento::on_pushButtonLimparSelecao_clicked()
-{
+void Orcamento::on_pushButtonLimparSelecao_clicked() {
   ui->tableProdutos->clearSelection();
   novoItem();
 }

@@ -609,10 +609,6 @@ void Orcamento::on_pushButtonAtualizarOrcamento_clicked() {
 }
 
 void Orcamento::on_pushButtonFecharPedido_clicked() {
-  if (!save()) {
-    return;
-  }
-
   QDateTime time = ui->dateTimeEdit->dateTime();
   if (!time.isValid()) {
     qDebug() << "Invalid time!";
@@ -623,6 +619,31 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
   } else {
     //    qDebug() << "older";
     QMessageBox::warning(this, "Aviso!", "Orçamento vencido!", QMessageBox::Ok);
+    return;
+  }
+
+  int idCadastro = ui->itemBoxCliente->getValue().toInt();
+  QSqlQuery qryCadastro;
+  if(!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cadastro ON Orcamento.idCadastroCliente = Cadastro.idCadastro WHERE idCadastro = " + QString::number(idCadastro) + " AND incompleto = 1")){
+    qDebug() << "Erro verificando se cadastro está completo: " << qryCadastro.lastError();
+    return;
+  }
+  if(qryCadastro.next()){
+    qDebug() << "terminar cadastro";
+    QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
+    RegisterDialog *cadCliente = new CadastroCliente(this);
+    cadCliente->viewRegisterById(idCadastro);
+    sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+    ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+    return;
+  }
+  if(ui->itemBoxEndereco->text().isEmpty()){
+    qDebug() << "deve ter endereço";
+    QMessageBox::warning(this, "Aviso!", "Deve escolher um endereço.");
+    return;
+  }
+
+  if (!save()) {
     return;
   }
 

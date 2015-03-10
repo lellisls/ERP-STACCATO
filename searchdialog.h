@@ -40,6 +40,7 @@ class SearchDialog : public QDialog {
     static SearchDialog *vendedor(QWidget *parent);
     void sendUpdateMessage();
     void show();
+    void showMaximized();
 
   signals:
     void itemSelected(QVariant value, QString text);

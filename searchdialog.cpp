@@ -81,6 +81,12 @@ void SearchDialog::show() {
   QDialog::show();
 }
 
+void SearchDialog::showMaximized()
+{
+  model.select();
+  QDialog::showMaximized();
+}
+
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {
   Q_UNUSED(index)
   sendUpdateMessage();

@@ -575,7 +575,7 @@
              <enum>QAbstractItemView::SelectRows</enum>
             </property>
             <attribute name="horizontalHeaderStretchLastSection">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
            </widget>
           </item>
@@ -969,6 +969,20 @@
               </property>
               <property name="text">
                <string>=</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_27">
+              <property name="text">
+               <string>Subtotal, valor com desconto, desconto final em reais, frete, valor final</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_28">
+              <property name="text">
+               <string>frete varia conforme o subtotal bruto</string>
               </property>
              </widget>
             </item>

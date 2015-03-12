@@ -103,7 +103,6 @@ class Orcamento : public RegisterDialog {
     QSqlRelationalTableModel modelItem;
     QDataWidgetMapper mapperItem;
     double subTotal, subTotalItens;
-    double minimoFrete, porcFrete;
 
     void removeItem();
     void adicionarItem();

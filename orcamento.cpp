@@ -59,6 +59,8 @@ Orcamento::Orcamento(QWidget *parent)
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("descGlobal"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("total"), true);
 
+  ui->tableProdutos->horizontalHeader()->setStretchLastSection(false);
+
   SearchDialog * sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
 
@@ -76,15 +78,6 @@ Orcamento::Orcamento(QWidget *parent)
 
   SearchDialog * sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
-
-  QSqlQuery qryFrete;
-  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
-    qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
-  }
-  if (qryFrete.next()) {
-    minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
-    porcFrete = qryFrete.value("porcentagemFrete").toDouble();
-  }
 
   setupMapper();
   newRegister();
@@ -250,6 +243,7 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "validade", ui->spinBoxValidade->value());
   setData(row, "data", ui->dateTimeEdit->dateTime());
   setData(row, "total", ui->doubleSpinBoxFinal->value());
+  qDebug() << "desconto global: " << ui->doubleSpinBoxDescontoGlobal->value();
   setData(row, "desconto", ui->doubleSpinBoxDescontoGlobal->value());
   setData(row, "frete", ui->doubleSpinBoxFrete->value());
 
@@ -330,6 +324,17 @@ void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
 void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
   subTotalItens = 0.0;
+  double minimoFrete = 0, porcFrete = 0;
+
+  QSqlQuery qryFrete;
+  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
+    qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
+  }
+  if (qryFrete.next()) {
+    minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
+    porcFrete = qryFrete.value("porcentagemFrete").toDouble();
+  }
+
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();

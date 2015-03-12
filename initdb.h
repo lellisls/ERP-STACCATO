@@ -37,7 +37,7 @@ bool loadScript(const QString &filename) {
       }
     }
   }
-  if (QSqlError().number() != QSqlError::NoError) {
+  if (QSqlError().type() != QSqlError::NoError) {
     qDebug() << "Ocorreu algum erro: " << QSqlError();
     return false;
   }

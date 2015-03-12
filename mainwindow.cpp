@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tablePedidosCompra->hide();
     ui->labelPedidosCompra->hide();
     ui->actionCadastrarUsuario->setVisible(false);
-//    ui->actionRestaurar_BD->setVisible(false);
+    //    ui->actionRestaurar_BD->setVisible(false);
 
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
@@ -125,11 +125,15 @@ bool MainWindow::dbConnect() {
       //                            QMessageBox::NoButton);
       //      close();
       qDebug() << "mydb schema not found!";
-      QSqlError err = initDb(); // Para desativar criação do bd comentar aqui
-      if (err.type() != QSqlError::NoError) {
-        showError(err);
+      if(!initDb()){
+        qDebug() << "initDb Error";
         return false;
       }
+      //      QSqlError err = initDb(); // Para desativar criação do bd comentar aqui
+      //      if (err.type() != QSqlError::NoError) {
+      //        showError(err);
+      //        return false;
+      //      }
     }
     db.close();
     db.setDatabaseName("mydb");
@@ -420,19 +424,19 @@ void MainWindow::on_tableOrcamentos_doubleClicked(const QModelIndex &index) {
   connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
   //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
   orc->viewRegisterById(
-    modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+        modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
 void MainWindow::on_tableContasPagar_doubleClicked(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
-    modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableContasReceber_doubleClicked(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(modelCAReceber->data(modelCAReceber->index(
-      index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+                                           index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tablePedidosCompra_doubleClicked(const QModelIndex &index) {
@@ -448,7 +452,7 @@ void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
   vendas->viewRegisterById(
-    modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
+        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -564,15 +568,15 @@ void MainWindow::on_radioButtonContaReceberPendente_clicked() {
 void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-    modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
-                                  "idPedido"))).toString());
+        modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
+                                                                   "idPedido"))).toString());
 }
 
 void MainWindow::on_tableEntregasCliente_doubleClicked(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-    modelEntregasCliente->data(modelEntregasCliente->index(
-                                 index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
+        modelEntregasCliente->data(modelEntregasCliente->index(
+                                     index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableNFE_doubleClicked(const QModelIndex &index) {
@@ -673,10 +677,10 @@ void MainWindow::readSettings() {
 
 void MainWindow::on_actionRestaurar_BD_triggered()
 {
-    QSqlError err = initDb();
-    if (err.type() != QSqlError::NoError) {
-      showError(err);
-    } else{
-        QMessageBox::information(this, "Aviso!", "Banco de dados inicializado com sucesso.");
-    }
+  if(!initDb()){
+    qDebug() << "initDb Error";
+  } else{
+    QMessageBox::information(this, "Aviso!", "Banco de dados inicializado com sucesso.");
+    updateTables();
+  }
 }

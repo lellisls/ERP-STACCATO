@@ -6,12 +6,12 @@
 #include <QtSql>
 #include <QMessageBox>
 
-QSqlError loadScript(const QString &filename) {
+bool loadScript(const QString &filename) {
   qDebug() << "LOADING " << filename;
   QFile file(filename);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qDebug() << "Could not open script!";
-    return QSqlError();
+    qDebug() << "sql error: " << QSqlError();
+    return false;
   }
 
   QTextStream stream(&file);
@@ -24,7 +24,6 @@ QSqlError loadScript(const QString &filename) {
       script += line + "\n";
     }
   }
-  //  qDebug() << script;
 
   QSqlQuery query;
   QStringList queryes = script.split(QChar(';'));
@@ -34,29 +33,34 @@ QSqlError loadScript(const QString &filename) {
       if (!query.exec(queryString)) {
         qDebug() << "Query: " << queryString;
         qDebug() << "ERROR: " << query.lastError().text();
-        return query.lastError();
+        return false;
       }
     }
   }
-  return QSqlError();
+  if (QSqlError().number() != QSqlError::NoError) {
+    qDebug() << "Ocorreu algum erro: " << QSqlError();
+    return false;
+  }
+  return true;
 }
 
-inline QSqlError initDb() {
+inline bool initDb() {
   qDebug() << "Initializing mydb: ";
   qDebug() << qApp->applicationDirPath() + "/initdb.sql";
-  QSqlError error = loadScript(qApp->applicationDirPath() + "/initdb.sql");
-  if (error.type() != QSqlError::NoError) {
-    return error;
+  qDebug() << "LOADING initdb.sql";
+  if(!loadScript(qApp->applicationDirPath() + "/initdb.sql")){
+    QMessageBox::warning(0, "Aviso!", "Não carregou o script do BD.");
+    return false;
   }
   QSqlQuery query;
-  if (!query.exec("SELECT * FROM cep . sp LIMIT 1")) {
+  if (!query.exec("SELECT * FROM cep.sp LIMIT 1")) {
     qDebug() << "LOADING cep.sql";
-    error = loadScript(qApp->applicationDirPath() + "/cep.sql");
-    if (error.type() != QSqlError::NoError) {
-      return error;
+    if(!loadScript(qApp->applicationDirPath() + "/cep.sql")){
+      QMessageBox::warning(0, "Aviso!", "Não carregou o script do cep.");
+      return false;
     }
   }
-  return (QSqlDatabase::database().lastError());
+  return true;
 }
 
 #endif // INITDB_H

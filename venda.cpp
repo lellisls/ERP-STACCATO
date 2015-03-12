@@ -130,7 +130,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->doubleSpinBoxPgt1->setValue(modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   ui->doubleSpinBoxPgt1->setMaximum(ui->doubleSpinBoxPgt1->value());
 
-  ui->doubleSpinBoxTotal->setValue(modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
+  ui->doubleSpinBoxTotalPag->setValue(modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   //  ui->doubleSpinBoxTotal->setValue(
   //    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   //  ui->doubleSpinBoxRestante->setValue(
@@ -138,6 +138,8 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   //  ui->doubleSpinBoxPgt1->setMaximum( ui->doubleSpinBoxRestante->value());
 
   modelFluxoCaixa.setFilter("idVenda = '" + idOrcamento + "'");
+
+  calcPrecoGlobalTotal();
 }
 
 bool Venda::cadastrar() {
@@ -159,47 +161,69 @@ QString Venda::requiredStyle() {
 }
 
 void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
-  Q_UNUSED(ajusteTotal);
-
   subTotal = 0.0;
   subTotalItens = 0.0;
-  double bruto = 0.0;
+  double minimoFrete = 0, porcFrete = 0;
+
+  QSqlQuery qryFrete;
+  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
+    qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
+  }
+  if (qryFrete.next()) {
+    minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
+    porcFrete = qryFrete.value("porcentagemFrete").toDouble();
+  }
+
+  qDebug() << "modelItem count: " << modelItem.rowCount();
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    double qteItem   = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
-    double descItem  = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
-    double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
-    double parcialItem = qteItem * prcUnItem;
-    bruto += parcialItem;
-    double parcialItemDesc = parcialItem * (1.0 - descItem);
-    double totalItem = parcialItemDesc * (1.0 - descGlobal);
-    subTotal += totalItem;
-    subTotalItens += parcialItemDesc;
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), parcialItem); // Pr. Parcial
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")),
-                      parcialItemDesc); // Pr. Parcial Desc.
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal); // Desconto
+    double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
+    double descItem =
+        modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
+    double itemBruto = qteItem * prcUnItem;
+    double stItem = itemBruto * (1.0 - descItem);
+    subTotalItens += stItem;
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);  // Pr. Parcial
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
+  }
+  double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
+  subTotal = subTotalItens * (1.0 - descGlobal);
+  double frete = qMax(subTotal * porcFrete / 100.0, minimoFrete);
+  if (ajusteTotal) {
+    const double F = ui->doubleSpinBoxFinal->value();
+    const double b = subTotalItens;
+    const double f = porcFrete / 100.0;
+    const double m = minimoFrete;
+    descGlobal = 1.0 - (F / (b * (1.0 + f)));
+    subTotal = b * (1.0 - descGlobal);
+    frete = subTotal * f;
+    //    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" <<
+    //    frete;
+    if (frete < m) {
+      frete = m;
+      descGlobal = 1.0 + (m - F) / b;
+      subTotal = b * (1.0 - descGlobal);
+      //      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" <<
+      //      frete;
+    }
+  }
+
+  for (int row = 0; row < modelItem.rowCount(); ++row) {
+    double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")),
+                      descGlobal * 100.0); // Desconto
     // Distr.
+    double totalItem = stItem * (1 - descGlobal);
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
-  double frete = ui->doubleSpinBoxFrete->value();
-  //  if ( !ajusteTotal ) {
-  //    frete = subTotal * (porcFrete / 100);
-  //    if (frete < minimoFrete) {
-  //      frete = minimoFrete;
-  //    }
-  //  }
 
+  ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
   ui->doubleSpinBoxFrete->setValue(frete);
-  ui->doubleSpinBoxTotal->setValue(subTotalItens);
-//  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens+frete);
+  ui->doubleSpinBoxTotalPag->setValue(subTotalItens);
+//  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens + frete);
   ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
-  ui->doubleSpinBoxFinal->setMaximum(subTotalItens+frete);
-  //  double descontoFinal = bruto - subTotal;
 }
-
-void Venda::calcPrecoItemTotal() {}
 
 void Venda::clearFields() {
   idOrcamento = QString();
@@ -214,7 +238,7 @@ void Venda::on_pushButtonCancelar_clicked() {
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
-  if(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() < ui->doubleSpinBoxTotal->value()){
+  if(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() < ui->doubleSpinBoxTotalPag->value()){
     QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
     return;
   }
@@ -374,7 +398,7 @@ void Venda::calculoSpinBox1()
   double pgt1 = ui->doubleSpinBoxPgt1->value();
   double pgt2 = ui->doubleSpinBoxPgt2->value();
   double pgt3 = ui->doubleSpinBoxPgt3->value();
-  double total = ui->doubleSpinBoxTotal->value();
+  double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt2->setValue(pgt2 + restante);
   ui->doubleSpinBoxPgt1->setMaximum(pgt1);
@@ -407,7 +431,7 @@ void Venda::calculoSpinBox2()
   double pgt1 = ui->doubleSpinBoxPgt1->value();
   double pgt2 = ui->doubleSpinBoxPgt2->value();
   double pgt3 = ui->doubleSpinBoxPgt3->value();
-  double total = ui->doubleSpinBoxTotal->value();
+  double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   if(pgt3 == 0.0) {
     ui->doubleSpinBoxPgt3->setMaximum(restante);
@@ -428,7 +452,7 @@ void Venda::calculoSpinBox3()
   double pgt1 = ui->doubleSpinBoxPgt1->value();
   double pgt2 = ui->doubleSpinBoxPgt2->value();
   double pgt3 = ui->doubleSpinBoxPgt3->value();
-  double total = ui->doubleSpinBoxTotal->value();
+  double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   //  ui->doubleSpinBoxRestante->setValue(restante);
   ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);

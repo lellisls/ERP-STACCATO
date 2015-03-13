@@ -7,6 +7,7 @@
 
 #include "importaportinari.h"
 #include "importaapavisa.h"
+#include "importaexport.h"
 
 namespace Ui {
   class ImportaBD;
@@ -25,6 +26,7 @@ class ImportaBD : public QDialog {
   private slots:
     void on_pushButtonApavisa_clicked();
     void on_pushButtonPortinari_clicked();
+    void on_pushButtonExport_clicked();
 
   private:
     //attributes
@@ -33,6 +35,7 @@ class ImportaBD : public QDialog {
     QProgressDialog *progressDialog;
     ImportaPortinari portinari;
     ImportaApavisa apavisa;
+    ImportaExport importaExport;
 
 };
 

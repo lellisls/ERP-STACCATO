@@ -57,3 +57,19 @@ void ImportaBD::on_pushButtonApavisa_clicked() {
   progressDialog->setWindowModality(Qt::WindowModal);
   progressDialog->exec();
 }
+
+void ImportaBD::on_pushButtonExport_clicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, "Importar", QDir::currentPath(), tr("Excel (*.xlsx)"));
+    if(file.isEmpty()){
+      return;
+    }
+
+    QFuture<QString> future = QtConcurrent::run(&this->importaExport, &ImportaExport::importar, file);
+    futureWatcher.setFuture(future);
+
+    progressDialog->setMinimum(0);
+    progressDialog->setMaximum(0);
+    progressDialog->setWindowModality(Qt::WindowModal);
+    progressDialog->exec();
+}

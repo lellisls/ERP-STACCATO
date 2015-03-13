@@ -12,6 +12,7 @@
 #include "cadastroproduto.h"
 #include "cadastroprofissional.h"
 #include "cadastrotransportadora.h"
+#include "cadastrofornecedor.h"
 #include "cadastrousuario.h"
 #include "contasapagar.h"
 #include "contasareceber.h"
@@ -262,7 +263,7 @@ void MainWindow::initializeTables() {
   modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"),
                            QSqlRelation("Usuario", "idUsuario", "nome"));
   modelVendas->setRelation(modelVendas->fieldIndex("idCadastroCliente"),
-                           QSqlRelation("Cadastro", "idCadastro", "nome_razao"));
+                           QSqlRelation("Cliente", "idCliente", "nome_razao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idEnderecoEntrega"),
                            QSqlRelation("Endereco", "idEndereco", "logradouro"));
   modelVendas->setRelation(modelVendas->fieldIndex("idProfissional"),
@@ -333,7 +334,7 @@ void MainWindow::initializeTables() {
                               QSqlRelation("Usuario", "idUsuario", "nome"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCadastroCliente"),
-                              QSqlRelation("Cadastro", "idCadastro", "nome_razao"));
+                              QSqlRelation("Cliente", "idCliente", "nome_razao"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCadastroCliente"), Qt::Horizontal, "Cliente");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
                               QSqlRelation("Endereco", "idEndereco", "logradouro"));
@@ -652,9 +653,7 @@ void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
-  CadastroCliente *cad = new CadastroCliente(this);
-  cad->setTipo("PJ");
-  cad->setTipoClienteFornecedor("FORNECEDOR");
+  CadastroFornecedor *cad = new CadastroFornecedor(this);
   cad->setWindowTitle("Cadastrar fornecedor");
   cad->show();
   cad->adjustSize();
@@ -673,6 +672,7 @@ void MainWindow::readSettings() {
   username = settings.value("username").toString();
   password = settings.value("password").toString();
   port = settings.value("port").toString();
+  settings.endGroup();
 }
 
 void MainWindow::on_actionRestaurar_BD_triggered()

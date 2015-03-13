@@ -200,7 +200,7 @@ bool NFe::writeTXT(QString chave) {
 
   QSqlQuery cliente;
 
-  if (!cliente.exec("SELECT * FROM Cadastro LEFT JOIN Endereco ON Cadastro.idCadastro = Endereco.idCadastro "
+  if (!cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCadastro "
                     "WHERE Endereco.idCadastro = " +
                     idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();

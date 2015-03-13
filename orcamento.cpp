@@ -636,19 +636,19 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  int idCadastro = ui->itemBoxCliente->getValue().toInt();
+  int idCliente = ui->itemBoxCliente->getValue().toInt();
   QSqlQuery qryCadastro;
-  if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cadastro ON Orcamento.idCadastroCliente "
-                        "= Cadastro.idCadastro WHERE idCadastro = " +
-                        QString::number(idCadastro) + " AND incompleto = 1")) {
-    qDebug() << "Erro verificando se cadastro está completo: " << qryCadastro.lastError();
+  if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCadastroCliente "
+                        "= Cliente.idCliente WHERE idCliente = " +
+                        QString::number(idCliente) + " AND incompleto = 1")) {
+    qDebug() << "Erro verificando se cadastro do cliente está completo: " << qryCadastro.lastError();
     return;
   }
   if (qryCadastro.next()) {
-//    qDebug() << "terminar cadastro";
+//    qDebug() << "terminar cadastro do cliente";
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
-    cadCliente->viewRegisterById(idCadastro);
+    cadCliente->viewRegisterById(idCliente);
 //    sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
 //    ui->itemBoxEndereco->setSearchDialog(sdEndereco);
     return;
@@ -748,8 +748,8 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   ui->itemBoxEndereco->getSearchDialog()->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
       " AND ativo = 1");
   QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT idProfissionalRel FROM Cadastro WHERE idCadastro = :idCadastro");
-  queryCliente.bindValue(":idCadastro", ui->itemBoxCliente->getValue());
+  queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", ui->itemBoxCliente->getValue());
   if (!queryCliente.exec() || !queryCliente.first()) {
     qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
   }

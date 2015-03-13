@@ -15,25 +15,25 @@ int ImportaPortinari::buscarCadastrarFornecedor(QString column0) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
-  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome_razao = '" + column0 + "'")) {
+  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + column0 + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   //  qDebug() << "size: " << queryFornecedor.size();
+
   if (queryFornecedor.next()) {
-    idFornecedor = queryFornecedor.value("idCadastro").toInt();
+    idFornecedor = queryFornecedor.value("idFornecedor").toInt();
   } else {
     QSqlQuery cadastrar;
-    if (!cadastrar.exec("INSERT INTO Cadastro (pfpj, clienteFornecedor, nome_razao) VALUES ('PJ', 'FORNECEDOR', '" +
-                        column0 + "')")) {
+    if (!cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + column0 + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
     }
   }
-  if (!queryFornecedor.exec("SELECT * FROM Cadastro WHERE nome_razao = '" + column0 + "'")) {
+  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + column0 + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   //  qDebug() << "size: " << queryFornecedor.size();
   if (queryFornecedor.next()) {
-    idFornecedor = queryFornecedor.value("idCadastro").toInt();
+    idFornecedor = queryFornecedor.value("idFornecedor").toInt();
   }
 
   return idFornecedor;
@@ -45,7 +45,7 @@ QString ImportaPortinari::importar(QString file) {
   QSqlQuery("BEGIN TRANSACTION").exec();
 
   QSqlDatabase db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
-  db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls)};DBQ=" + file);
+  db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + file);
 
   if (db.open()) {
     int imported = 0;
@@ -119,7 +119,8 @@ QString ImportaPortinari::importar(QString file) {
             qDebug() << "Erro inserindo em Preço: " << produto.lastError();
             qDebug() << "qry: " << produto.lastQuery();
           }
-          if (!produto.exec("UPDATE Produto SET precoVenda = " + column26 + " WHERE idProduto = " + QString::number(idProduto) + "")) {
+          if (!produto.exec("UPDATE Produto SET precoVenda = " + column26 + " WHERE idProduto = " +
+                            QString::number(idProduto) + "")) {
             qDebug() << "idProduto: " << idProduto;
             qDebug() << "Erro atualizando preço de produto: " << produto.lastError();
             qDebug() << "qry upd: " << produto.lastQuery();

@@ -48,7 +48,7 @@ CadastroProduto::~CadastroProduto() {
 // void CadastroProduto::updateComboboxFornecedor() {
 //  ui->comboBoxFornecedor->clear();
 //  ui->comboBoxFornecedor->addItem("Selecione um fornecedor!");
-//  QSqlQuery query("SELECT idCadastro, razaoSocial FROM Cadastro WHERE tipo ='FORNECEDOR' or tipo =
+//  QSqlQuery query("SELECT idCliente, razaoSocial FROM Cliente WHERE tipo ='FORNECEDOR' or tipo =
 //  'AMBOS'");
 //  if (query.exec()) {
 //    while (query.next()) {

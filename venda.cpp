@@ -116,7 +116,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     qDebug() << "Erro selecionando primeiro resultado: " << qry.lastError();
   }
 
-  sdEndereco->setFilter("idCadastro = " + qry.value("idCadastroCliente").toString() + " AND ativo = 1");
+  sdEndereco->setFilter("idCadastro = " + qry.value("idCliente").toString() + " AND ativo = 1");
 //  qDebug() << "idCliente: " << qry.value("idCadastroCliente").toString();
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));

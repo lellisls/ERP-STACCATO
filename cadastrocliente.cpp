@@ -9,7 +9,7 @@
 #include "cadastroprofissional.h"
 
 CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
-  : RegisterDialog("Cadastro", "idCadastro", parent), ui(new Ui::CadastroCliente),
+  : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente),
     closeBeforeUpdate(closeBeforeUpdate) {
   ui->setupUi(this);
   ui->lineEditCEP->setInputMask("99999-999;_");
@@ -35,9 +35,9 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
 
   mapperEnd.setModel(&modelEnd);
   setupUi();
-  setTipoClienteFornecedor("CLIENTE");
+//  setTipoClienteFornecedor("CLIENTE");
 
-  // TODO Filtrar pra não aparecer o próprio cadastro na lista.
+  // TODO: Filtrar pra não aparecer o próprio cliente na lista.
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
   SearchDialog *sdProfissional = SearchDialog::profissional(this);
@@ -199,7 +199,7 @@ bool CadastroCliente::savingProcedures(int row) {
   setData(row, "idProfissionalRel", ui->itemBoxProfissional->getValue());
   setData(row, "idUsuarioRel", ui->itemBoxVendedor->getValue());
 
-  setData(row, "clienteFornecedor", tipoClienteFornecedor);
+//  setData(row, "clienteFornecedor", tipoClienteFornecedor);
   setData(row, "pfpj", tipoPFPJ);
 
   if (!model.submitAll()) {
@@ -208,18 +208,18 @@ bool CadastroCliente::savingProcedures(int row) {
     return false;
   }
   //  qDebug() << "PK = " << data(row, primaryKey);
-  int idCad = data(row, primaryKey).toInt();
+  int idCliente = data(row, primaryKey).toInt();
   if (!data(row, primaryKey).isValid()) {
     QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
     qryLastId.exec();
     qryLastId.first();
-    idCad = qryLastId.value("lastId").toInt();
+    idCliente = qryLastId.value("lastId").toInt();
   }
 //  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
-//  qDebug() << "ID Cadastro = " << idCad;
+//  qDebug() << "ID Cliente = " << idCliente;
   for (int end = 0; end < modelEnd.rowCount(); ++end) {
-    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCad);
+    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
   }
   if (!modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__
@@ -288,6 +288,7 @@ void CadastroCliente::updateMode() {
   //  ui->pushButtonNovoCad->show();
   ui->pushButtonRemover->show();
 }
+
 QString CadastroCliente::getTipoClienteFornecedor() const {
   return tipoClienteFornecedor;
 }
@@ -325,11 +326,11 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
     qDebug() << modelEnd.lastError();
   }
 
-  tipoPFPJ = data("pfpj").toString();
-  setTipoClienteFornecedor(data("clienteFornecedor").toString());
-  ui->groupBoxPJuridica->setChecked(!data("razaoSocial").toString().isEmpty());
-  int idCadastro = data("idCadastro").toInt();
-  QSqlQuery query("SELECT idCadastro, nome, razaoSocial FROM Cadastro WHERE idCadastroRel = '" +
+//  tipoPFPJ = data("pfpj").toString();
+//  setTipoClienteFornecedor(data("clienteFornecedor").toString());
+  ui->groupBoxPJuridica->setChecked(!data("razaoSocial").toString().isEmpty()); //TODO: change to pfpj
+  int idCadastro = data("idCliente").toInt();
+  QSqlQuery query("SELECT idCliente, nome, razaoSocial FROM Cliente WHERE idCadastroRel = '" +
                   QString::number(idCadastro) + "';");
   while (query.next()) {
     QString line =
@@ -371,7 +372,7 @@ void CadastroCliente::show() {
     ui->radioButtonPJ->setChecked(true);
   } else {
     tipoPFPJ == "PF";
-  }
+  } //TODO: should be "if(tipo == PF) radioPF->setchecked"?
   adjustSize();
   QWidget::show();
 }
@@ -394,7 +395,7 @@ void CadastroCliente::on_groupBoxPJuridica_toggled(bool arg1) {
 
 void CadastroCliente::on_pushButtonBuscar_clicked() {
   SearchDialog *sdCliente = SearchDialog::cliente(this);
-  sdCliente->setFilter("clienteFornecedor = '" + tipoClienteFornecedor + "'");
+//  sdCliente->setFilter("clienteFornecedor = '" + tipoClienteFornecedor + "'");
   sdCliente->show();
   connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::changeItem);
 }

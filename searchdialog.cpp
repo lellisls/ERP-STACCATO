@@ -383,12 +383,12 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::endereco(QWidget *parent) {
-  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Endereco", {}, "idCadastro = 0", parent);
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Endereco", {}, "idCliente = 0", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao","logradouro", "numero", "bairro", "cidade", "uf"});
 
-  sdEndereco->hideColumns({"idEndereco", "idCadastro", "ativo"});
+  sdEndereco->hideColumns({"idEndereco", "idCliente", "ativo"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));

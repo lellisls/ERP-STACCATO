@@ -192,7 +192,7 @@ bool NFe::writeTXT(QString chave) {
   qDebug() << "[Destinatario]";
   stream << "[Destinatario]" << endl;
 
-  QString idCliente = getFromVenda("idCadastroCliente").toString();
+  QString idCliente = getFromVenda("idCliente").toString();
   if(idCliente.isEmpty()){
     qDebug() << "idCliente vazio";
     return false;
@@ -200,8 +200,8 @@ bool NFe::writeTXT(QString chave) {
 
   QSqlQuery cliente;
 
-  if (!cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCadastro "
-                    "WHERE Endereco.idCadastro = " +
+  if (!cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
+                    "WHERE Endereco.idCliente = " +
                     idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
     return false;

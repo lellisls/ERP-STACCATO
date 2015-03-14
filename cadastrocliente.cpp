@@ -25,17 +25,16 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
   modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
+  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
   modelEnd.select();
 
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCadastro"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
 
   mapperEnd.setModel(&modelEnd);
   setupUi();
-//  setTipoClienteFornecedor("CLIENTE");
 
   // TODO: Filtrar pra não aparecer o próprio cliente na lista.
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
@@ -199,7 +198,6 @@ bool CadastroCliente::savingProcedures(int row) {
   setData(row, "idProfissionalRel", ui->itemBoxProfissional->getValue());
   setData(row, "idUsuarioRel", ui->itemBoxVendedor->getValue());
 
-//  setData(row, "clienteFornecedor", tipoClienteFornecedor);
   setData(row, "pfpj", tipoPFPJ);
 
   if (!model.submitAll()) {
@@ -321,7 +319,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   model.select();
   mapper.setCurrentModelIndex(idx);
 
-  modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
+  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
   if (!modelEnd.select()) {
     qDebug() << modelEnd.lastError();
   }
@@ -329,9 +327,9 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
 //  tipoPFPJ = data("pfpj").toString();
 //  setTipoClienteFornecedor(data("clienteFornecedor").toString());
   ui->groupBoxPJuridica->setChecked(!data("razaoSocial").toString().isEmpty()); //TODO: change to pfpj
-  int idCadastro = data("idCliente").toInt();
+  int idCliente = data("idCliente").toInt();
   QSqlQuery query("SELECT idCliente, nome, razaoSocial FROM Cliente WHERE idCadastroRel = '" +
-                  QString::number(idCadastro) + "';");
+                  QString::number(idCliente) + "';");
   while (query.next()) {
     QString line =
         query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
@@ -580,7 +578,11 @@ bool CadastroCliente::atualizarEnd() {
 }
 
 void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
-  atualizarEnd();
+  if(atualizarEnd()){
+    qDebug() << "cadastrou endereço!";
+  } else{
+    qDebug() << "não cadastrou endereço :(";
+  }
 }
 
 void CadastroCliente::on_pushButtonAtualizarEnd_clicked() {

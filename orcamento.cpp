@@ -121,7 +121,7 @@ void Orcamento::setupMapper() {
   mapper.setModel(&model);
 
   addMapping(ui->lineEditOrcamento, "idOrcamento");
-  addMapping(ui->itemBoxCliente, "idCadastroCliente", "value");
+  addMapping(ui->itemBoxCliente, "idCliente", "value");
   addMapping(ui->itemBoxProfissional, "idProfissional", "value");
   addMapping(ui->itemBoxVendedor, "idUsuario", "value");
   addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
@@ -236,7 +236,7 @@ bool Orcamento::savingProcedures(int row) {
     setData(row, "idOrcamento", idOrcamento);
   }
   setData(row, "idLoja", UserSession::getLoja());
-  setData(row, "idCadastroCliente", ui->itemBoxCliente->getValue());
+  setData(row, "idCliente", ui->itemBoxCliente->getValue());
   setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->getValue());
   setData(row, "idUsuario", ui->itemBoxVendedor->getValue());
   setData(row, "idProfissional", ui->itemBoxProfissional->getValue());
@@ -638,8 +638,8 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
 
   int idCliente = ui->itemBoxCliente->getValue().toInt();
   QSqlQuery qryCadastro;
-  if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCadastroCliente "
-                        "= Cliente.idCliente WHERE idCliente = " +
+  if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente "
+                        "= Cliente.idCliente WHERE Cliente.idCliente = " +
                         QString::number(idCliente) + " AND incompleto = 1")) {
     qDebug() << "Erro verificando se cadastro do cliente está completo: " << qryCadastro.lastError();
     return;
@@ -745,7 +745,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
 //  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
-  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCadastro = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
+  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
       " AND ativo = 1");
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");

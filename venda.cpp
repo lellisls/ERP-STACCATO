@@ -116,8 +116,8 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     qDebug() << "Erro selecionando primeiro resultado: " << qry.lastError();
   }
 
-  sdEndereco->setFilter("idCadastro = " + qry.value("idCliente").toString() + " AND ativo = 1");
-//  qDebug() << "idCliente: " << qry.value("idCadastroCliente").toString();
+  sdEndereco->setFilter("idCliente = " + qry.value("idCliente").toString() + " AND ativo = 1");
+//  qDebug() << "idCliente: " << qry.value("idCliente").toString();
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
 
@@ -262,7 +262,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 
   qry.exec("START TRANSACTION");
 
-  if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCadastroCliente, idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+  if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error inserting into Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -302,7 +302,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   }
   if (qryEstoque.size() > 0) {
     if (!qry.exec(
-          "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCadastroCliente, "
+          "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
           "idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status) SELECT * "
           "FROM Venda WHERE idVenda = '" +
           idOrcamento + "'")) {

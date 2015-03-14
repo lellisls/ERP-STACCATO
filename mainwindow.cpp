@@ -262,7 +262,7 @@ void MainWindow::initializeTables() {
   modelVendas->setRelation(modelVendas->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"),
                            QSqlRelation("Usuario", "idUsuario", "nome"));
-  modelVendas->setRelation(modelVendas->fieldIndex("idCadastroCliente"),
+  modelVendas->setRelation(modelVendas->fieldIndex("idCliente"),
                            QSqlRelation("Cliente", "idCliente", "nome_razao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idEnderecoEntrega"),
                            QSqlRelation("Endereco", "idEndereco", "logradouro"));
@@ -270,7 +270,7 @@ void MainWindow::initializeTables() {
                            QSqlRelation("Profissional", "idProfissional", "nome"));
   modelVendas->setHeaderData(modelVendas->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
-  modelVendas->setHeaderData(modelVendas->fieldIndex("idCadastroCliente"), Qt::Horizontal, "Cliente");
+  modelVendas->setHeaderData(modelVendas->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idProfissional"), Qt::Horizontal, "Profissional");
   modelVendas->setHeaderData(modelVendas->fieldIndex("data"), Qt::Horizontal, "Data");
@@ -333,9 +333,9 @@ void MainWindow::initializeTables() {
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"),
                               QSqlRelation("Usuario", "idUsuario", "nome"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCadastroCliente"),
+  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCliente"),
                               QSqlRelation("Cliente", "idCliente", "nome_razao"));
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCadastroCliente"), Qt::Horizontal, "Cliente");
+  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
                               QSqlRelation("Endereco", "idEndereco", "logradouro"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");

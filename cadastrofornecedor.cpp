@@ -24,13 +24,13 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent) 
   modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
   modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
+  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
   modelEnd.select();
 
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCadastro"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
 
   mapperEnd.setModel(&modelEnd);
   setupUi();
@@ -86,7 +86,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex idx)
   mapper.setCurrentModelIndex(idx);
 
   qDebug() << "filtro endereco: " << data(primaryKey).toString();
-  modelEnd.setFilter("idCadastro = '" + data(primaryKey).toString() + "'");
+  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
   if (!modelEnd.select()) {
     qDebug() << modelEnd.lastError();
   }

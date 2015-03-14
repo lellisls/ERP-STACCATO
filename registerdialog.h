@@ -54,10 +54,10 @@ public slots:
 signals:
   /*!
   * \brief Sinal enviado ao atualizar um campo, normalmente utilizada pela ItemBox.
-  * \param idCadastro Id do cadastro atualizado/cadastrado.
+  * \param idCliente Id do cadastro atualizado/cadastrado.
   * \param text Descrição do item, utilizada para representá-lo em um ItemBox, por exemplo.
   */
-  void registerUpdated(QVariant idCadastro, QString text);
+  void registerUpdated(QVariant idCliente, QString text);
 
 protected:
   /*!

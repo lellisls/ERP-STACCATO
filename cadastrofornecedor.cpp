@@ -218,7 +218,7 @@ bool CadastroFornecedor::savingProcedures(int row) {
 
   if (!model.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__
-             << " : Error on model.submitAll() : " << modelEnd.lastError();
+             << " : Error on model.submitAll() : " << model.lastError();
     return false;
   }
   //  qDebug() << "PK = " << data(row, primaryKey);

@@ -1074,7 +1074,11 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>lineEditOrcamento</tabstop>
   <tabstop>dateTimeEdit</tabstop>
+  <tabstop>itemBoxCliente</tabstop>
+  <tabstop>itemBoxVendedor</tabstop>
   <tabstop>spinBoxValidade</tabstop>
+  <tabstop>itemBoxProfissional</tabstop>
+  <tabstop>itemBoxEndereco</tabstop>
   <tabstop>itemBoxProduto</tabstop>
   <tabstop>lineEditFornecedor</tabstop>
   <tabstop>lineEditEstoque</tabstop>
@@ -1089,6 +1093,14 @@
   <tabstop>pushButtonAdicionarItem</tabstop>
   <tabstop>pushButtonCancelarItem</tabstop>
   <tabstop>pushButtonRemoverItem</tabstop>
+  <tabstop>pushButtonLimparSelecao</tabstop>
+  <tabstop>doubleSpinBoxSubTotalBruto</tabstop>
+  <tabstop>doubleSpinBoxTotal</tabstop>
+  <tabstop>checkBoxFreteManual</tabstop>
+  <tabstop>doubleSpinBoxFrete</tabstop>
+  <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
+  <tabstop>doubleSpinBoxDescontoRS</tabstop>
+  <tabstop>doubleSpinBoxFinal</tabstop>
   <tabstop>pushButtonFecharPedido</tabstop>
   <tabstop>pushButtonCadastrarOrcamento</tabstop>
   <tabstop>pushButtonAtualizarOrcamento</tabstop>

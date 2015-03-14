@@ -13,28 +13,29 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent) 
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
   ui->pushButtonMostrarInativos->hide();
-  modelEnd.setTable("Endereco");
-  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
-  modelEnd.select();
-
-  ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
-
   //FIXME : ARRUMAR RELAÇÃO DO CADASTRO DE ENDEREÇO COM FORNECEDOR
   ui->tabWidget->setTabEnabled(1,false);
+//  modelEnd.setTable("Endereco");
+//  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
+//  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
+//  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
+//  modelEnd.select();
 
-  mapperEnd.setModel(&modelEnd);
+//  ui->tableEndereco->setModel(&modelEnd);
+//  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
+//  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
+//  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
+
+
+//  mapperEnd.setModel(&modelEnd);
+
   setupUi();
 
   setupMapper();
@@ -165,6 +166,15 @@ bool CadastroFornecedor::verifyFields(int row) {
 }
 
 bool CadastroFornecedor::savingProcedures(int row) {
+  if(data(primaryKey).isNull()){
+    QSqlQuery queryKey( "SELECT MAX(" + primaryKey + ") FROM " + model.tableName() );
+    double key;
+    if(queryKey.first()){
+      key = qMax(queryKey.value(0).toInt() + 1, 1000);
+      setData(row, primaryKey, key);
+    }
+  }
+
   if (!ui->lineEditFornecedor->text().isEmpty()) {
     setData(row, "razaoSocial", ui->lineEditFornecedor->text());
   }
@@ -212,25 +222,25 @@ bool CadastroFornecedor::savingProcedures(int row) {
     return false;
   }
   //  qDebug() << "PK = " << data(row, primaryKey);
-  int idCliente = data(row, primaryKey).toInt();
-  if (!data(row, primaryKey).isValid()) {
-    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
-    qryLastId.exec();
-    qryLastId.first();
-    idCliente = qryLastId.value("lastId").toInt();
-  }
+//  int idCliente = data(row, primaryKey).toInt();
+//  if (!data(row, primaryKey).isValid()) {
+//    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
+//    qryLastId.exec();
+//    qryLastId.first();
+//    idCliente = qryLastId.value("lastId").toInt();
+//  }
 //  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
 //  qDebug() << "ID Cliente = " << idCliente;
-  for (int end = 0; end < modelEnd.rowCount(); ++end) {
-    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
-  }
-  if (!modelEnd.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__
-             << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
-    return false;
-  }
+//  for (int end = 0; end < modelEnd.rowCount(); ++end) {
+//    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
+//  }
+//  if (!modelEnd.submitAll()) {
+//    qDebug() << objectName() << " : " << __LINE__
+//             << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
+//    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+//    return false;
+//  }
 //  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
   return true;

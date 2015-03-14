@@ -3,7 +3,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-#include "cadastrocliente.h"
+#include "cadastrofornecedor.h"
 #include "cadastroproduto.h"
 #include "ui_cadastroproduto.h"
 #include "usersession.h"
@@ -31,13 +31,10 @@ CadastroProduto::CadastroProduto(QWidget *parent)
     ui->pushButtonRemover->setDisabled(true);
   }
 
-//  SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   ui->itemBoxFornecedor->setSearchDialog(sdFornecedor);
 
-//  CadastroCliente *cadFornecedor = new CadastroCliente(this);
-  CadastroCliente *cadFornecedor = new CadastroCliente(this);
-  cadFornecedor->setTipo("PJ");
+  CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 }
 

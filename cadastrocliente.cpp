@@ -332,7 +332,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
                   QString::number(idCliente) + "';");
   while (query.next()) {
     QString line =
-        query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
+      query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
     ui->textEditObservacoes->insertPlainText(line);
   }
 
@@ -537,9 +537,9 @@ void CadastroCliente::validaCPF(QString text) {
 
 bool CadastroCliente::atualizarEnd() {
   if (!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditCEP, ui->lineEditEndereco,
-                                    ui->lineEditNro, ui->lineEditBairro, ui->lineEditCidade,
-                                    ui->lineEditUF
-}))
+                                     ui->lineEditNro, ui->lineEditBairro, ui->lineEditCidade,
+                                     ui->lineEditUF
+                                    }))
     return false;
   if (!ui->lineEditCEP->isValid()) {
     ui->lineEditCEP->setFocus();
@@ -578,9 +578,9 @@ bool CadastroCliente::atualizarEnd() {
 }
 
 void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
-  if(atualizarEnd()){
+  if(atualizarEnd()) {
     qDebug() << "cadastrou endereço!";
-  } else{
+  } else {
     qDebug() << "não cadastrou endereço :(";
   }
 }
@@ -669,4 +669,9 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
     ui->labelInscricaoEstadual->show();
   }
   adjustSize();
+}
+
+void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &) {
+  QString text = ui->lineEditContatoCPF->text().remove(".").remove("-");
+  validaCPF(text);
 }

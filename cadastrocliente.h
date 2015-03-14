@@ -46,6 +46,8 @@ class CadastroCliente : public RegisterDialog {
     void on_pushButtonBuscar_clicked();
     void on_radioButtonPF_toggled(bool checked);
 
+    void on_lineEditContatoCPF_textEdited(const QString &);
+
   public:
     /*!
   * \brief Utilizada para selecionar um item a partir de um QModelIndex.

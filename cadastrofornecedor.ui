@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1344</width>
-    <height>323</height>
+    <height>359</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -724,6 +724,42 @@
    <header>lineedittel.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>lineEditFornecedor</tabstop>
+  <tabstop>lineEditNomeFantasia</tabstop>
+  <tabstop>lineEditCNPJ</tabstop>
+  <tabstop>lineEditInscEstadual</tabstop>
+  <tabstop>lineEditContatoNome</tabstop>
+  <tabstop>lineEditContatoCPF</tabstop>
+  <tabstop>lineEditContatoApelido</tabstop>
+  <tabstop>lineEditContatoRG</tabstop>
+  <tabstop>lineEditTel_Res</tabstop>
+  <tabstop>lineEditTel_Cel</tabstop>
+  <tabstop>lineEditTel_Com</tabstop>
+  <tabstop>lineEditIdNextel</tabstop>
+  <tabstop>lineEditNextel</tabstop>
+  <tabstop>lineEditEmail</tabstop>
+  <tabstop>lineEditDescricao</tabstop>
+  <tabstop>lineEditCEP</tabstop>
+  <tabstop>lineEditEndereco</tabstop>
+  <tabstop>lineEditNro</tabstop>
+  <tabstop>lineEditComp</tabstop>
+  <tabstop>lineEditBairro</tabstop>
+  <tabstop>lineEditCidade</tabstop>
+  <tabstop>lineEditUF</tabstop>
+  <tabstop>pushButtonAdicionarEnd</tabstop>
+  <tabstop>pushButtonAtualizarEnd</tabstop>
+  <tabstop>pushButtonNovoEnd</tabstop>
+  <tabstop>pushButtonMostrarInativos</tabstop>
+  <tabstop>pushButtonCadastrar</tabstop>
+  <tabstop>pushButtonAtualizar</tabstop>
+  <tabstop>pushButtonBuscar</tabstop>
+  <tabstop>pushButtonNovoCad</tabstop>
+  <tabstop>pushButtonRemover</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+  <tabstop>tableEndereco</tabstop>
+ </tabstops>
  <resources>
   <include location="resources.qrc"/>
  </resources>

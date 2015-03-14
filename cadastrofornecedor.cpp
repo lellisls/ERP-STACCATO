@@ -8,8 +8,7 @@
 
 CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent) :
   RegisterDialog("Fornecedor", "idFornecedor", parent),
-  ui(new Ui::CadastroFornecedor), closeBeforeUpdate(closeBeforeUpdate)
-{
+  ui(new Ui::CadastroFornecedor), closeBeforeUpdate(closeBeforeUpdate) {
   ui->setupUi(this);
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
@@ -32,6 +31,9 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent) 
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
 
+  //FIXME : ARRUMAR RELAÇÃO DO CADASTRO DE ENDEREÇO COM FORNECEDOR
+  ui->tabWidget->setTabEnabled(1,false);
+
   mapperEnd.setModel(&modelEnd);
   setupUi();
 
@@ -39,13 +41,11 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent) 
   newRegister();
 }
 
-CadastroFornecedor::~CadastroFornecedor()
-{
+CadastroFornecedor::~CadastroFornecedor() {
   delete ui;
 }
 
-void CadastroFornecedor::setupUi()
-{
+void CadastroFornecedor::setupUi() {
   ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
@@ -57,26 +57,22 @@ void CadastroFornecedor::setupUi()
   ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
 }
 
-void CadastroFornecedor::enableEditor()
-{
+void CadastroFornecedor::enableEditor() {
   ui->frame->setEnabled(true);
   ui->frame_2->setEnabled(true);
 }
 
-void CadastroFornecedor::disableEditor()
-{
+void CadastroFornecedor::disableEditor() {
   ui->frame->setEnabled(false);
   ui->frame_2->setEnabled(false);
 }
 
-void CadastroFornecedor::show()
-{
+void CadastroFornecedor::show() {
   adjustSize();
   QWidget::show();
 }
 
-bool CadastroFornecedor::viewRegister(QModelIndex idx)
-{
+bool CadastroFornecedor::viewRegister(QModelIndex idx) {
   if (!confirmationMessage()) {
     return false;
   }
@@ -96,8 +92,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex idx)
   return true;
 }
 
-void CadastroFornecedor::clearEnd()
-{
+void CadastroFornecedor::clearEnd() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -108,8 +103,7 @@ void CadastroFornecedor::clearEnd()
   ui->lineEditUF->clear();
 }
 
-void CadastroFornecedor::novoEnd()
-{
+void CadastroFornecedor::novoEnd() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
   ui->tableEndereco->clearSelection();
@@ -117,8 +111,7 @@ void CadastroFornecedor::novoEnd()
   clearEnd();
 }
 
-bool CadastroFornecedor::verifyFields(int row)
-{
+bool CadastroFornecedor::verifyFields(int row) {
   //  if (!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditCPF}))
   //    return false;
 
@@ -171,8 +164,7 @@ bool CadastroFornecedor::verifyFields(int row)
   return true;
 }
 
-bool CadastroFornecedor::savingProcedures(int row)
-{
+bool CadastroFornecedor::savingProcedures(int row) {
   if (!ui->lineEditFornecedor->text().isEmpty()) {
     setData(row, "razaoSocial", ui->lineEditFornecedor->text());
   }
@@ -244,15 +236,13 @@ bool CadastroFornecedor::savingProcedures(int row)
   return true;
 }
 
-void CadastroFornecedor::clearFields()
-{
+void CadastroFornecedor::clearFields() {
   RegisterDialog::clearFields();
   novoEnd();
   setupUi();
 }
 
-void CadastroFornecedor::setupMapper()
-{
+void CadastroFornecedor::setupMapper() {
   addMapping(ui->lineEditFornecedor, "razaoSocial");
   addMapping(ui->lineEditContatoNome, "contatoNome");
   addMapping(ui->lineEditContatoApelido, "contatoApelido");
@@ -281,24 +271,21 @@ void CadastroFornecedor::setupMapper()
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
-void CadastroFornecedor::registerMode()
-{
+void CadastroFornecedor::registerMode() {
   ui->pushButtonCadastrar->show();
   ui->pushButtonAtualizar->hide();
   //  ui->pushButtonNovoCad->show();
   ui->pushButtonRemover->hide();
 }
 
-void CadastroFornecedor::updateMode()
-{
+void CadastroFornecedor::updateMode() {
   ui->pushButtonCadastrar->hide();
   ui->pushButtonAtualizar->show();
   //  ui->pushButtonNovoCad->show();
   ui->pushButtonRemover->show();
 }
 
-bool CadastroFornecedor::verifyRequiredField(QLineEdit * line, bool silent)
-{
+bool CadastroFornecedor::verifyRequiredField(QLineEdit * line, bool silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
   }
@@ -327,40 +314,34 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit * line, bool silent)
   return true;
 }
 
-void CadastroFornecedor::on_pushButtonCadastrar_clicked()
-{
+void CadastroFornecedor::on_pushButtonCadastrar_clicked() {
   if (save()) {
     if (closeBeforeUpdate)
       accept();
   }
 }
 
-void CadastroFornecedor::on_pushButtonAtualizar_clicked()
-{
+void CadastroFornecedor::on_pushButtonAtualizar_clicked() {
   if (save()) {
     if (closeBeforeUpdate)
       accept();
   }
 }
 
-void CadastroFornecedor::on_pushButtonBuscar_clicked()
-{
+void CadastroFornecedor::on_pushButtonBuscar_clicked() {
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   sdFornecedor->show();
   connect(sdFornecedor, &SearchDialog::itemSelected, this, &CadastroFornecedor::changeItem);
 }
 
-void CadastroFornecedor::on_pushButtonNovoCad_clicked()
-{
-    newRegister();
+void CadastroFornecedor::on_pushButtonNovoCad_clicked() {
+  newRegister();
 }
 
-void CadastroFornecedor::on_pushButtonRemover_clicked()
-{
-    remove();
+void CadastroFornecedor::on_pushButtonRemover_clicked() {
+  remove();
 }
 
-void CadastroFornecedor::on_pushButtonCancelar_clicked()
-{
- close();
+void CadastroFornecedor::on_pushButtonCancelar_clicked() {
+  close();
 }

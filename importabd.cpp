@@ -64,6 +64,8 @@ void ImportaBD::on_pushButtonExport_clicked()
     if(file.isEmpty()){
       return;
     }
+    //TODO: perguntar ao usuario a validade
+    //TODO: QInputDialog
 
     QFuture<QString> future = QtConcurrent::run(&this->importaExport, &ImportaExport::importar, file);
     futureWatcher.setFuture(future);

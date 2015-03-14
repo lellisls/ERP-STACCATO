@@ -40,7 +40,7 @@ QString ImportaExport::importar(QString file) {
     }
 
     // Lê produtos do excel
-    QSqlQuery queryProd("SElECT * FROM [" + QString("BASE$]"), db);
+    QSqlQuery queryProd("SELECT * FROM [" + QString("BASE$]"), db);
     while (queryProd.next()) {
       QString descricao = queryProd.value(0).toString();
       QString idFabricante = queryProd.value(1).toString();

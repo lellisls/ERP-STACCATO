@@ -404,8 +404,6 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
   double frete = ui->doubleSpinBoxFrete->value();
   double new_subtotal = new_total - frete;
 
-  //  qDebug() << "New total = " << new_total << ", frete = " << frete << ", new sub. = " << new_subtotal
-  //           << ", subTotalItens = " << subTotalItens;
   if (new_subtotal >= subTotalItens) {
     ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
     calcPrecoGlobalTotal();

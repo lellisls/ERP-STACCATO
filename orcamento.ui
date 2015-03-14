@@ -753,40 +753,6 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="7">
-             <widget class="QDoubleSpinBox" name="doubleSpinBoxFrete">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor do frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="frame">
-               <bool>false</bool>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-              <property name="correctionMode">
-               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-              </property>
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-              <property name="prefix">
-               <string>R$ </string>
-              </property>
-              <property name="suffix">
-               <string/>
-              </property>
-              <property name="decimals">
-               <number>2</number>
-              </property>
-              <property name="maximum">
-               <double>9999999.000000000000000</double>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="7">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
               <property name="toolTip">
@@ -1047,6 +1013,34 @@
               </property>
              </widget>
             </item>
+            <item row="3" column="7">
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxFrete">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wrapping">
+               <bool>false</bool>
+              </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="prefix">
+               <string>R$ </string>
+              </property>
+              <property name="maximum">
+               <double>9999999.000000000000000</double>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -1097,7 +1091,6 @@
   <tabstop>doubleSpinBoxSubTotalBruto</tabstop>
   <tabstop>doubleSpinBoxTotal</tabstop>
   <tabstop>checkBoxFreteManual</tabstop>
-  <tabstop>doubleSpinBoxFrete</tabstop>
   <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
   <tabstop>doubleSpinBoxDescontoRS</tabstop>
   <tabstop>doubleSpinBoxFinal</tabstop>

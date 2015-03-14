@@ -285,6 +285,128 @@ void CadastroFornecedor::updateMode() {
   ui->pushButtonRemover->show();
 }
 
+void CadastroFornecedor::validaCNPJ(QString text) {
+  if (text.size() == 14) {
+
+    int digito1;
+    int digito2;
+
+    QString sub = text.left(12);
+
+    QVector<int> sub2;
+    for (int i = 0; i < sub.size(); ++i) {
+      sub2.push_back(sub.at(i).digitValue());
+    }
+
+    QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
+    int soma = 0;
+    for (int i = 0; i < 12; ++i) {
+      soma += sub2.at(i) * multiplicadores.at(i);
+    }
+
+    int resto = soma % 11;
+
+    if (resto < 2) {
+      digito1 = 0;
+    } else {
+      digito1 = 11 - resto;
+    }
+
+    sub2.push_back(digito1);
+
+    QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+    soma = 0;
+
+    for (int i = 0; i < 13; ++i) {
+      soma += sub2.at(i) * multiplicadores2.at(i);
+    }
+
+    resto = soma % 11;
+
+    if (resto < 2) {
+      digito2 = 0;
+    } else {
+      digito2 = 11 - resto;
+    }
+
+    if (digito1 == text.at(12).digitValue() and digito2 == text.at(13).digitValue()) {
+      qDebug() << "Válido!";
+    } else {
+      QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
+      return;
+    }
+  }
+}
+
+void CadastroFornecedor::validaCPF(QString text) {
+  if (text.size() == 11) {
+    if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
+        text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or
+        text == "88888888888" or text == "99999999999") {
+      QMessageBox::warning(this, "Aviso!", "CPF inválido!");
+      return;
+    }
+
+    int digito1;
+    int digito2;
+
+    QString sub = text.left(9);
+    //    qDebug() << "sub: " << sub;
+
+    QVector<int> sub2;
+    for (int i = 0; i < sub.size(); ++i) {
+      sub2.push_back(sub.at(i).digitValue());
+    }
+    //    qDebug() << "sub2: " << sub2;
+
+    QVector<int> multiplicadores = {10, 9, 8, 7, 6, 5, 4, 3, 2};
+
+    int soma = 0;
+    for (int i = 0; i < 9; ++i) {
+      soma += sub2.at(i) * multiplicadores.at(i);
+      //      qDebug() << "sub[i]: " << sub2.at(i);
+    }
+    //    qDebug() << "soma: " << soma;
+
+    int resto = soma % 11;
+
+    if (resto < 2) {
+      digito1 = 0;
+    } else {
+      digito1 = 11 - resto;
+    }
+    //    qDebug() << "digito1: " << digito1;
+    sub2.push_back(digito1);
+
+    QVector<int> multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
+    soma = 0;
+
+    for (int i = 0; i < 10; ++i) {
+      soma += sub2.at(i) * multiplicadores2.at(i);
+      //      qDebug() << "sub2[i]: " << sub2.at(i);
+    }
+
+    resto = soma % 11;
+
+    if (resto < 2) {
+      digito2 = 0;
+    } else {
+      digito2 = 11 - resto;
+    }
+    //    qDebug() << "digito2: " << digito2;
+    //    qDebug() << "at(9): " << teste.at(9);
+    //    qDebug() << "at(10): " << teste.at(10);
+
+    if (digito1 == text.at(9).digitValue() and digito2 == text.at(10).digitValue()) {
+      //      qDebug() << "Válido!";
+    } else {
+      QMessageBox::warning(this, "Aviso!", "CPF inválido!");
+      return;
+    }
+  }
+}
+
 bool CadastroFornecedor::verifyRequiredField(QLineEdit * line, bool silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
@@ -344,4 +466,14 @@ void CadastroFornecedor::on_pushButtonRemover_clicked() {
 
 void CadastroFornecedor::on_pushButtonCancelar_clicked() {
   close();
+}
+
+void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &) {
+  QString text = ui->lineEditCNPJ->text().remove(".").remove("/").remove("-");
+  validaCNPJ(text);
+}
+
+void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &) {
+  QString text = ui->lineEditContatoCPF->text().remove(".").remove("-");
+  validaCPF(text);
 }

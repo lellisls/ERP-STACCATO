@@ -29,6 +29,10 @@ class CadastroFornecedor : public RegisterDialog
     void on_pushButtonRemover_clicked();
     void on_pushButtonCancelar_clicked();
 
+    void on_lineEditCNPJ_textEdited(const QString &);
+
+    void on_lineEditContatoCPF_textEdited(const QString &);
+
   public:
     virtual bool viewRegister(QModelIndex idx);
     void clearEnd();

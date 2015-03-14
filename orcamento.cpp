@@ -359,6 +359,7 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
   if(ui->checkBoxFreteManual->isChecked()) {
     frete = ui->doubleSpinBoxFrete->value();
+    qDebug() << "novo frete: " << frete;
   }
   double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
   subTotal = subTotalItens * (1.0 - descGlobal);
@@ -380,12 +381,11 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     double totalItem = stItem * (1 - descGlobal);
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
   }
-
+  ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
+  ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
-//  ui->doubleSpinBoxTotalFrete->setValue(subTotalItens + frete);
-  ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
 }
 
@@ -779,5 +779,12 @@ void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
     return;
   }
   ui->doubleSpinBoxFrete->setFrame(checked);
-  ui->doubleSpinBoxFinal->setReadOnly(!checked);
+  ui->doubleSpinBoxFrete->setReadOnly(!checked);
+  if(checked){
+    ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
+  }else{
+    ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::NoButtons);
+  }
+  calcPrecoGlobalTotal();
+//  ui->doubleSpinBoxFrete->setInputMethodHints();
 }

@@ -719,7 +719,41 @@
           </item>
           <item row="1" column="1">
            <layout class="QGridLayout" name="gridLayout">
-            <item row="2" column="7">
+            <item row="1" column="4">
+             <widget class="QLabel" name="labelDescontoRS_2">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>SubTotal Liq.</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_26">
+              <property name="text">
+               <string>Desconto</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QCheckBox" name="checkBoxFreteManual">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aperte para habilitar a edição manual do frete.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Frete manual</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="7">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxFrete">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor do frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -732,6 +766,9 @@
               </property>
               <property name="buttonSymbols">
                <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
               </property>
               <property name="keyboardTracking">
                <bool>false</bool>
@@ -750,10 +787,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="7">
+            <item row="1" column="7">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total do orçamento é o total sem o frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total liq. do orçamento é o subtotal dos itens com desconto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="frame">
                <bool>false</bool>
@@ -781,10 +818,10 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="2">
+            <item row="4" column="2">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxDescontoGlobal">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto global sobree a venda&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="suffix">
                <string> %</string>
@@ -797,7 +834,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="6">
+            <item row="5" column="6">
              <widget class="QLabel" name="label_4">
               <property name="font">
                <font>
@@ -811,10 +848,10 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="7">
+            <item row="4" column="7">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxDescontoRS">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total do orçamento é o total sem o frete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor do desconto em Reais&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="frame">
                <bool>false</bool>
@@ -839,16 +876,16 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="7">
+            <item row="5" column="7">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxFinal">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wrapping">
                <bool>false</bool>
               </property>
               <property name="correctionMode">
-               <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -858,7 +895,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="6">
+            <item row="4" column="6">
              <widget class="QLabel" name="label_11">
               <property name="font">
                <font>
@@ -872,15 +909,8 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_26">
-              <property name="text">
-               <string>Desconto</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="labelDescontoRS_2">
+            <item row="5" column="4">
+             <widget class="QLabel" name="label_15">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
@@ -896,24 +926,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="4">
-             <widget class="QLabel" name="label_15">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Final</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="6">
+            <item row="1" column="6">
              <widget class="QLabel" name="label_5">
               <property name="font">
                <font>
@@ -927,7 +940,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="4">
+            <item row="4" column="4">
              <widget class="QLabel" name="labelDescontoRS">
               <property name="font">
                <font>
@@ -941,7 +954,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="4">
+            <item row="3" column="4">
              <widget class="QLabel" name="label_16">
               <property name="font">
                <font>
@@ -958,7 +971,7 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="6">
+            <item row="3" column="6">
              <widget class="QLabel" name="label_3">
               <property name="font">
                <font>
@@ -972,10 +985,65 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
-             <widget class="QCheckBox" name="checkBoxFreteManual">
+            <item row="0" column="4">
+             <widget class="QLabel" name="labelDescontoRS_3">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
-               <string>Frete manual</string>
+               <string>Subtotal Bruto</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="6">
+             <widget class="QLabel" name="label_6">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>=</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="7">
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxSubTotalBruto">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total bruto é o total do valor dos itens, &lt;span style=&quot; font-weight:600;&quot;&gt;sem nenhum desconto&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
+              </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="prefix">
+               <string>R$ </string>
+              </property>
+              <property name="maximum">
+               <double>9999999.000000000000000</double>
               </property>
              </widget>
             </item>

@@ -83,6 +83,14 @@ Orcamento::Orcamento(QWidget *parent)
   newRegister();
   //  show();
   showMaximized();
+
+  if(UserSession::getTipo() == "ADMINISTRADOR") {
+    ui->dateTimeEdit->setReadOnly(false);
+    ui->dateTimeEdit->setCalendarPopup(true);
+    ui->checkBoxFreteManual->show();
+  }else{
+    ui->checkBoxFreteManual->hide();
+  }
 }
 
 Orcamento::~Orcamento() {
@@ -324,6 +332,7 @@ void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
 void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
   subTotalItens = 0.0;
+  double subTotalBruto = 0.0;
   double minimoFrete = 0, porcFrete = 0;
 
   QSqlQuery qryFrete;
@@ -341,30 +350,25 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     double descItem =
       modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     double itemBruto = qteItem * prcUnItem;
+    subTotalBruto += itemBruto;
     double stItem = itemBruto * (1.0 - descItem);
     subTotalItens += stItem;
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);  // Pr. Parcial
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
   }
+  double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
+  if(ui->checkBoxFreteManual->isChecked()) {
+    frete = ui->doubleSpinBoxFrete->value();
+  }
   double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
   subTotal = subTotalItens * (1.0 - descGlobal);
-  double frete = qMax(subTotal * porcFrete / 100.0, minimoFrete);
   if (ajusteTotal) {
-    const double F = ui->doubleSpinBoxFinal->value();
-    const double b = subTotalItens;
-    const double f = porcFrete / 100.0;
-    const double m = minimoFrete;
-    descGlobal = 1.0 - (F / (b * (1.0 + f)));
-    subTotal = b * (1.0 - descGlobal);
-    frete = subTotal * f;
-    //    qDebug() << "ANTES : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" <<
-    //    frete;
-    if (frete < m) {
-      frete = m;
-      descGlobal = 1.0 + (m - F) / b;
-      subTotal = b * (1.0 - descGlobal);
-      //      qDebug() << "DEPOIS : descGLobal = " << descGlobal << "subTotal = " << subTotal << ", frete" <<
-      //      frete;
+    const double Final = ui->doubleSpinBoxFinal->value();
+    subTotal = Final - frete;
+    if(subTotalItens == 0.0) {
+      descGlobal = 0;
+    } else {
+      descGlobal = 1 - (subTotal / subTotalItens);
     }
   }
 
@@ -767,4 +771,13 @@ void Orcamento::successMessage() {
 void Orcamento::on_pushButtonLimparSelecao_clicked() {
   ui->tableProdutos->clearSelection();
   novoItem();
+}
+
+void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
+  if(checked == true && UserSession::getTipo() != "ADMINISTRADOR") {
+    ui->checkBoxFreteManual->setChecked(false);
+    return;
+  }
+  ui->doubleSpinBoxFrete->setFrame(checked);
+  ui->doubleSpinBoxFinal->setReadOnly(!checked);
 }

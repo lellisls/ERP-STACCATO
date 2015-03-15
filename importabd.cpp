@@ -25,6 +25,10 @@ ImportaBD::ImportaBD(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaBD) {
   connect(&importaExport, &ImportaExport::progressRangeChanged, this, &ImportaBD::updateProgressRange);
   connect(&importaExport, &ImportaExport::progressValueChanged, this, &ImportaBD::updateProgressValue);
   connect(&importaExport, &ImportaExport::progressTextChanged, this, &ImportaBD::updateProgressText);
+  connect(progressDialog, &QProgressDialog::canceled, &portinari, &ImportaPortinari::cancel);
+  connect(&portinari, &ImportaPortinari::progressRangeChanged, this, &ImportaBD::updateProgressRange);
+  connect(&portinari, &ImportaPortinari::progressValueChanged, this, &ImportaBD::updateProgressValue);
+  connect(&portinari, &ImportaPortinari::progressTextChanged, this, &ImportaBD::updateProgressText);
   show();
 }
 

@@ -135,7 +135,7 @@ QString ImportaExport::importar(QString file) {
 
       QSqlQuery qryInsert;
       qryInsert.prepare(
-        "INSERT INTO mydb.Produto (idFornecedor, fornecedor, colecao, tipo, formComercial, "
+        "INSERT INTO Produto (idFornecedor, fornecedor, colecao, tipo, formComercial, "
         "descricao, codComercial, pccx, m2cx, un, ncm, precoVenda, custo, markup) VALUES "
         "(:idFornecedor, :fornecedor, :colecao, :tipo, :formComercial, :descricao, :codComercial, "
         ":pccx, :m2cx, :un, :ncm, :precoVenda, :custo, :markup)");

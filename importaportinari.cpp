@@ -7,6 +7,10 @@
 #include "importaportinari.h"
 #include "cadastrocliente.h"
 
+void ImportaPortinari::cancel() {
+  canceled = true;
+}
+
 ImportaPortinari::ImportaPortinari() {}
 
 ImportaPortinari::~ImportaPortinari() {}
@@ -42,19 +46,37 @@ int ImportaPortinari::buscarCadastrarFornecedor(QString column0) {
 QString ImportaPortinari::importar(QString file) {
   QString texto;
 
-  QSqlQuery("BEGIN TRANSACTION").exec();
+
+  QSqlQuery("SET AUTOCOMMIT=0").exec();
+  QSqlQuery("START TRANSACTION").exec();
 
   QSqlDatabase db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
   db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + file);
+  emit progressTextChanged("Conectando...");
+  emit progressRangeChanged(0);
 
   if (db.open()) {
+    emit progressTextChanged("Importando...");
+
     int imported = 0;
     int notChanged = 0;
     int updated = 0;
+    QSqlQuery querySz("SELECT COUNT(*) FROM [Base Portinari$]", db);
+    querySz.first();
+    qDebug() << "SIZE: " << querySz.value(0);
+    emit progressRangeChanged(querySz.value(0).toInt());
 
     QSqlQuery query("SELECT * FROM [Base Portinari$]", db); // Select range, place A1:B5 after $
-
+    int current = 0;
     while (query.next()) {
+      emit progressValueChanged(current++);
+
+      if(canceled){
+        emit progressFinished();
+        return("Operação cancelada!");
+        QSqlQuery("ROLLBACK").exec();
+      }
+
       QString column0 = query.value(0).toString(); // fornecedor - string
 
       if ((!column0.isEmpty()) and (column0 != "MARCA")) {
@@ -137,12 +159,12 @@ QString ImportaPortinari::importar(QString file) {
 
         QSqlQuery qry;
         qry.prepare(
-              "INSERT INTO mydb.Produto "
-              "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
-              "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
-              "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
-              ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
-              ":ncm, :codBarras, :precoVenda, :custo, :markup)");
+          "INSERT INTO mydb.Produto "
+          "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
+          "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
+          "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
+          ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
+          ":ncm, :codBarras, :precoVenda, :custo, :markup)");
         qry.bindValue(":idFornecedor", idFornecedor);
         qry.bindValue(":fornecedor", column0);
         qry.bindValue(":colecao", column2);

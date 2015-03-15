@@ -52,7 +52,7 @@ QString ImportaPortinari::importar(QString file) {
     int notChanged = 0;
     int updated = 0;
 
-    QSqlQuery query("SELECT * FROM [" + QString("Base Portinari$]"), db); // Select range, place A1:B5 after $
+    QSqlQuery query("SELECT * FROM [Base Portinari$]", db); // Select range, place A1:B5 after $
 
     while (query.next()) {
       QString column0 = query.value(0).toString(); // fornecedor - string
@@ -137,12 +137,12 @@ QString ImportaPortinari::importar(QString file) {
 
         QSqlQuery qry;
         qry.prepare(
-            "INSERT INTO mydb.Produto "
-            "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
-            "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
-            "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
-            ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
-            ":ncm, :codBarras, :precoVenda, :custo, :markup)");
+              "INSERT INTO mydb.Produto "
+              "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
+              "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
+              "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
+              ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
+              ":ncm, :codBarras, :precoVenda, :custo, :markup)");
         qry.bindValue(":idFornecedor", idFornecedor);
         qry.bindValue(":fornecedor", column0);
         qry.bindValue(":colecao", column2);

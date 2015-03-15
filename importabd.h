@@ -22,6 +22,9 @@ class ImportaBD : public QDialog {
 
   public slots:
     void mostraResultado();
+    void updateProgressRange(int max);
+    void updateProgressValue(int val);
+    void updateProgressText(QString str);
 
   private slots:
     void on_pushButtonApavisa_clicked();
@@ -29,14 +32,13 @@ class ImportaBD : public QDialog {
     void on_pushButtonExport_clicked();
 
   private:
-    //attributes
+    // attributes
     Ui::ImportaBD *ui;
     QFutureWatcher<QString> futureWatcher;
     QProgressDialog *progressDialog;
     ImportaPortinari portinari;
     ImportaApavisa apavisa;
     ImportaExport importaExport;
-
 };
 
 #endif // IMPORTABD_H

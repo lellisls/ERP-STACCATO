@@ -10,8 +10,7 @@ ImportaApavisa::ImportaApavisa() {}
 
 ImportaApavisa::~ImportaApavisa() {}
 
-int ImportaApavisa::buscarCadastrarFornecedor(QString column0)
-{
+int ImportaApavisa::buscarCadastrarFornecedor(QString column0) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
@@ -23,9 +22,7 @@ int ImportaApavisa::buscarCadastrarFornecedor(QString column0)
     idFornecedor = queryFornecedor.value("idFornecedor").toInt();
   } else {
     QSqlQuery cadastrar;
-    if (!cadastrar.exec(
-          "INSERT INTO Fornecedor (nome) VALUES (" +
-          column0 + "')")) {
+    if (!cadastrar.exec("INSERT INTO Fornecedor (nome) VALUES (" + column0 + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
     }
   }
@@ -50,7 +47,7 @@ QString ImportaApavisa::importar(QString file) {
     int imported = 0;
     int duplicate = 0;
 
-    QSqlQuery query("SELECT * FROM [" + QString("Base Apavisa$]"), db); // Select range, place A1:B5 after $
+    QSqlQuery query("SELECT * FROM [Base Apavisa$]", db); // Select range, place A1:B5 after $
 
     while (query.next()) {
       QString column0 = query.value(21).toString(); // fornecedor - string

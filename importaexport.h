@@ -19,8 +19,8 @@ public slots:
 public:
   ImportaExport();
   ~ImportaExport();
-  QString importar(QString file);
-  int buscarCadastrarFornecedor(QString id, QString fornecedor);
+  QString importar(QString file, int validade);
+  int buscarCadastrarFornecedor(QString fornecedor);
   int getSize(QString file);
   bool canceled;
 };

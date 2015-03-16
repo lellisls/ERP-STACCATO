@@ -16,13 +16,13 @@ ImportaExport::ImportaExport() {}
 
 ImportaExport::~ImportaExport() {}
 
-QString ImportaExport::importar(QString file) {
+QString ImportaExport::importar(QString file, int validade) {
   canceled = false;
   QTime time;
   time.start();
   QLocale locale(QLocale::Portuguese);
   QString texto;
-  QMap<int, QString> map;
+  QMap<QString, int> map;
   emit progressTextChanged("Conectando...");
   emit progressRangeChanged(0);
 
@@ -39,35 +39,33 @@ QString ImportaExport::importar(QString file) {
     int updated = 0;
 
     // Cadastra fornecedores
-    QSqlQuery queryForn("SELECT * FROM [DE_PARA$]", db);
+    QSqlQuery queryForn("SELECT * FROM [BASE$]", db);
 
     while (queryForn.next()) {
-      QString id = queryForn.value(0).toString();
-      if (!id.isEmpty()) {
-        QString nome = queryForn.value(1).toString();
-        //        qDebug() << "id: " << id << " - " << nome;
-        buscarCadastrarFornecedor(id, nome);
-        //        qDebug() << "id to int: " << id.toInt();
-        map.insert(id.toInt(), nome);
+      QString fornecedor = queryForn.value(1).toString();
+      if (!fornecedor.isEmpty()) {
+        int id = buscarCadastrarFornecedor(fornecedor);
+        //        qDebug() << "id: " << id << " - " << fornecedor;
+        map.insert(fornecedor, id);
       }
     }
 
     // Lê produtos do excel
     QSqlQuery queryProdSz("SELECT COUNT(*) FROM [BASE$]", db);
     queryProdSz.first();
-    qDebug() << "SIZE: " << queryProdSz.value(0);
+    //    qDebug() << "SIZE: " << queryProdSz.value(0);
     emit progressRangeChanged(queryProdSz.value(0).toInt());
     QSqlQuery queryProd("SELECT * FROM [BASE$]", db);
     int current = 0;
     while (queryProd.next()) {
       emit progressValueChanged(current++);
-      if(canceled){
+      if (canceled) {
         emit progressFinished();
-        return("Operação cancelada!");
+        return ("Operação cancelada!");
         QSqlQuery("ROLLBACK").exec();
       }
       QString descricao = queryProd.value(0).toString();
-      QString idFabricante = queryProd.value(1).toString();
+      QString fabricante = queryProd.value(1).toString();
       QString colecao = queryProd.value(2).toString();
       QString tipo = queryProd.value(3).toString();
       QString formatoCom = queryProd.value(4).toString();
@@ -97,24 +95,29 @@ QString ImportaExport::importar(QString file) {
 
       // Verifica se produto já se encontra no BD
       QSqlQuery produto;
-      if (!produto.exec("SELECT * FROM Produto WHERE idFornecedor = " + idFabricante +
-                        " AND codComercial = '" + codCom + "'")) {
+      if (!produto.exec("SELECT * FROM Produto WHERE fornecedor = '" + fabricante + "' AND codComercial = '" +
+                        codCom + "'")) {
         qDebug() << "Erro buscando produto: " << produto.lastError();
       }
 
       if (produto.next()) {
         QString idProduto = produto.value("idProduto").toString();
 
-        // if price is equal just continue (maybe extend validity)
+        // Se o preço for igual extender a validade
         if (produto.value("precoVenda").toString() == venda) {
+          if (!produto.exec("UPDATE Produto_has_Preco SET validadeFim = '" +
+                            QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") +
+                            "' WHERE idProduto = " + produto.value("idProduto").toString() + "")) {
+            qDebug() << "Erro atualizando validade do preço: " << produto.lastError();
+          }
           notChanged++;
           continue;
         }
         // Guarda novo preço do produto e altera sua validade
         if (!produto.exec(
-              "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-              idProduto + ", '" + venda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
-              QDate::currentDate().addMonths(1).toString("yyyy-MM-dd") + "')")) {
+                "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
+                idProduto + ", '" + venda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
+                QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
           qDebug() << "Erro inserindo em Preço: " << produto.lastError();
           qDebug() << "qry: " << produto.lastQuery();
         }
@@ -124,8 +127,8 @@ QString ImportaExport::importar(QString file) {
           qDebug() << "qry: " << produto.lastQuery();
         }
         if (!produto.exec("UPDATE Produto SET validade = '" +
-                          QDate::currentDate().addMonths(1).toString("yyyy-MM-dd") + "' WHERE idProduto = " +
-                          idProduto + "")) {
+                          QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") +
+                          "' WHERE idProduto = " + idProduto + "")) {
           qDebug() << "Erro atualizando validade do produto: " << produto.lastError();
         }
 
@@ -135,12 +138,12 @@ QString ImportaExport::importar(QString file) {
 
       QSqlQuery qryInsert;
       qryInsert.prepare(
-        "INSERT INTO Produto (idFornecedor, fornecedor, colecao, tipo, formComercial, "
-        "descricao, codComercial, pccx, m2cx, un, ncm, precoVenda, custo, markup) VALUES "
-        "(:idFornecedor, :fornecedor, :colecao, :tipo, :formComercial, :descricao, :codComercial, "
-        ":pccx, :m2cx, :un, :ncm, :precoVenda, :custo, :markup)");
-      qryInsert.bindValue(":idFornecedor", idFabricante);
-      qryInsert.bindValue(":fornecedor", map.value(idFabricante.toInt()));
+          "INSERT INTO Produto (idFornecedor, fornecedor, colecao, tipo, formComercial, "
+          "descricao, codComercial, pccx, m2cx, un, ncm, precoVenda, custo, markup) VALUES "
+          "(:idFornecedor, :fornecedor, :colecao, :tipo, :formComercial, :descricao, :codComercial, "
+          ":pccx, :m2cx, :un, :ncm, :precoVenda, :custo, :markup)");
+      qryInsert.bindValue(":idFornecedor", map.value(fabricante));
+      qryInsert.bindValue(":fornecedor", fabricante);
       qryInsert.bindValue(":colecao", colecao);
       qryInsert.bindValue(":tipo", tipo);
       qryInsert.bindValue(":formComercial", formatoCom);
@@ -158,29 +161,21 @@ QString ImportaExport::importar(QString file) {
         qDebug() << "Erro inserindo produto no BD: " << qryInsert.lastError();
         qDebug() << "pccx: " << pecasCaixa << "(" << locale.toDouble(pecasCaixa);
         qDebug() << "m2cx: " << metrosCaixa << "(" << locale.toDouble(metrosCaixa);
-        qDebug() << "fornecedor: " << map.value(idFabricante.toInt());
+        qDebug() << "idfornecedor: " << map.value(fabricante);
         qDebug() << "codComercial: " << codCom;
       }
       if (qryInsert.lastError().nativeErrorCode() == "") {
         imported++;
       }
 
-      QSqlQuery produto2;
-      if (!produto2.exec("SELECT * FROM Produto WHERE idFornecedor = " + idFabricante +
-                         " AND codComercial = '" + codCom + "'")) {
-        qDebug() << "Erro buscando produto: " << produto2.lastError();
-      }
+      QString idProduto = qryInsert.lastInsertId().toString();
+      //      qDebug() << "idProduto: " << idProduto;
 
-      if (produto2.next()) {
-        QString idProduto = produto2.value("idProduto").toString();
-
-        if (!produto2.exec(
+      if (!qryInsert.exec(
               "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-              idProduto + ", '" + venda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
-              QDate::currentDate().addMonths(1).toString("yyyy-MM-dd") + "')")) {
-          qDebug() << "Erro inserindo em Preço: " << produto2.lastError();
-          qDebug() << "qry: " << produto2.lastQuery();
-        }
+              idProduto + ", " + venda + ", '" + QDate::currentDate().toString("yyyy-MM-dd") + "', '" +
+              QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+        qDebug() << "Erro inserindo em Preço: " << qryInsert.lastError();
       }
     }
 
@@ -200,7 +195,7 @@ QString ImportaExport::importar(QString file) {
   return texto;
 }
 
-int ImportaExport::buscarCadastrarFornecedor(QString id, QString fornecedor) {
+int ImportaExport::buscarCadastrarFornecedor(QString fornecedor) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
@@ -208,19 +203,14 @@ int ImportaExport::buscarCadastrarFornecedor(QString id, QString fornecedor) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   if (queryFornecedor.next()) {
-    idFornecedor = queryFornecedor.value("idFornecedor").toInt();
+    return queryFornecedor.value("idFornecedor").toInt();
   } else {
     QSqlQuery cadastrar;
-    if (!cadastrar.exec("INSERT INTO Fornecedor (idFornecedor, razaoSocial) VALUES (" + id + ", '" +
-                        fornecedor + "')")) {
+    if (!cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
+    } else {
+      return cadastrar.lastInsertId().toInt();
     }
-  }
-  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  if (queryFornecedor.next()) {
-    idFornecedor = queryFornecedor.value("idFornecedor").toInt();
   }
 
   return idFornecedor;

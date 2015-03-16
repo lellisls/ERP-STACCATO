@@ -79,9 +79,9 @@ void ImportaBD::on_pushButtonExport_clicked() {
   if (file.isEmpty()) {
     return;
   }
-  // TODO: perguntar ao usuario a validade
-  // TODO: QInputDialog
-  QFuture<QString> future = QtConcurrent::run(&importaExport, &ImportaExport::importar, file);
+  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
+
+  QFuture<QString> future = QtConcurrent::run(&importaExport, &ImportaExport::importar, file, validade);
   futureWatcher.setFuture(future);
   progressDialog->exec();
 }

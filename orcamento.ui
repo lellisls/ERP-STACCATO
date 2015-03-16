@@ -961,7 +961,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Subtotal Bruto</string>
+               <string>SubTotal Bruto</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

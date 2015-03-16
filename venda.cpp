@@ -467,6 +467,7 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
   if(text == "Escolha uma opção!") {
     return;
   }
+
   if(text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") {
     ui->comboBoxPgt1Parc->setEnabled(true);
   } else {
@@ -486,13 +487,14 @@ void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text) {
   if(text == "Escolha uma opção!") {
     return;
   }
+
   if(text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") {
     ui->comboBoxPgt2Parc->setEnabled(true);
   } else {
     ui->comboBoxPgt2Parc->setDisabled(true);
   }
 
-  if(text == "Cheque"){
+  if(text == "Cheque" or text == "Boleto"){
     ui->dateEditPgt2->setEnabled(true);
   } else{
     ui->dateEditPgt2->setDisabled(true);
@@ -505,13 +507,14 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
   if(text == "Escolha uma opção!") {
     return;
   }
+
   if(text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") {
     ui->comboBoxPgt3Parc->setEnabled(true);
   } else {
     ui->comboBoxPgt3Parc->setDisabled(true);
   }
 
-  if(text == "Cheque"){
+  if(text == "Cheque" or text == "Boleto"){
     ui->dateEditPgt3->setEnabled(true);
   } else{
     ui->dateEditPgt3->setDisabled(true);

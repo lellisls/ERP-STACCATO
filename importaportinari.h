@@ -8,10 +8,10 @@ class ImportaPortinari  : public QObject {
   Q_OBJECT
 
 signals:
-  void progressRangeChanged(int max);
-  void progressValueChanged(int val);
-  void progressTextChanged(QString str);
-  void progressFinished();
+  progressRangeChanged(int max);
+  progressValueChanged(int val);
+  progressTextChanged(QString str);
+  progressFinished();
 
 public slots:
   void cancel();

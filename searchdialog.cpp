@@ -286,7 +286,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
                        "", parent);
 
   sdFornecedor->setPrimaryKey("idFornecedor");
-  sdFornecedor->setTextKeys({"nomeFantasia"});
+  sdFornecedor->setTextKeys({"nomeFantasia","razaoSocial"});
 
   sdFornecedor->hideColumns({"idFornecedor", "inscEstadual", "idEnderecoFaturamento",
                              "idEnderecoCobranca", "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel",

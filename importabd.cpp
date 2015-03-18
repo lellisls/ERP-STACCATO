@@ -57,8 +57,9 @@ void ImportaBD::on_pushButtonPortinari_clicked() {
   if (file.isEmpty()) {
     return;
   }
+  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
 
-  QFuture<QString> future = QtConcurrent::run(&this->portinari, &ImportaPortinari::importar, file);
+  QFuture<QString> future = QtConcurrent::run(&this->portinari, &ImportaPortinari::importar, file, validade);
   futureWatcher.setFuture(future);
   progressDialog->exec();
 }
@@ -68,8 +69,9 @@ void ImportaBD::on_pushButtonApavisa_clicked() {
   if (file.isEmpty()) {
     return;
   }
+  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
 
-  QFuture<QString> future = QtConcurrent::run(&this->apavisa, &ImportaApavisa::importar, file);
+  QFuture<QString> future = QtConcurrent::run(&this->apavisa, &ImportaApavisa::importar, file, validade);
   futureWatcher.setFuture(future);
   progressDialog->exec();
 }

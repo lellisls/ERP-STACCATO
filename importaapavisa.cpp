@@ -2,93 +2,135 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QDate>
 
 #include "importaapavisa.h"
 #include "cadastrocliente.h"
+
+void ImportaApavisa::cancel()
+{
+  canceled = true;
+}
 
 ImportaApavisa::ImportaApavisa() {}
 
 ImportaApavisa::~ImportaApavisa() {}
 
-int ImportaApavisa::buscarCadastrarFornecedor(QString column0) {
-  int idFornecedor = 0;
-
-  QSqlQuery queryFornecedor;
-  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE nome = '" + column0 + "'")) {
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  qDebug() << "size: " << queryFornecedor.size();
-  if (queryFornecedor.next()) {
-    idFornecedor = queryFornecedor.value("idFornecedor").toInt();
-  } else {
-    QSqlQuery cadastrar;
-    if (!cadastrar.exec("INSERT INTO Fornecedor (nome) VALUES (" + column0 + "')")) {
-      qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
-    }
-  }
-  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE nome = '" + column0 + "'")) {
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
-  }
-  qDebug() << "size: " << queryFornecedor.size();
-  if (queryFornecedor.next()) {
-    idFornecedor = queryFornecedor.value("idFornecedor").toInt();
-  }
-
-  return idFornecedor;
-}
-
-QString ImportaApavisa::importar(QString file) {
+QString ImportaApavisa::importar(QString file, int validade) {
+  canceled = false;
+  QLocale locale(QLocale::Portuguese);
   QString texto;
+  QMap<QString, int> map;
+
+  emit progressTextChanged("Conectando...");
+  emit progressRangeChanged(0);
+
+  QSqlQuery("SET AUTOCOMMIT=0").exec();
+  QSqlQuery("START TRANSACTION").exec();
 
   QSqlDatabase db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
-  db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls)};DBQ=" + file);
+  db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + file);
 
   if (db.open()) {
     int imported = 0;
-    int duplicate = 0;
+    int notChanged = 0;
+    int updated = 0;
 
-    QSqlQuery query("SELECT * FROM [Base Apavisa$]", db); // Select range, place A1:B5 after $
+    // Cadastra fornecedores
+    QSqlQuery queryForn("SELECT * FROM [Base Apavisa$]", db);
 
-    while (query.next()) {
-      QString column0 = query.value(21).toString(); // fornecedor - string
-      if ((!column0.isEmpty()) and (column0 != "Marca")) {
-        int idFornecedor = buscarCadastrarFornecedor(column0);
-        qDebug() << "id: " << idFornecedor;
+    while (queryForn.next()) {
+      QString fornecedor = queryForn.value(21).toString();
+      if (!fornecedor.isEmpty() and (fornecedor != "Marca")) {
+        int id = buscarCadastrarFornecedor(fornecedor);
+//        qDebug() << "id: " << id << " - " << fornecedor;
+        map.insert(fornecedor, id);
+      }
+    }
 
-        QString column1 = query.value(22).toString();  // codigo - int
-        QString column2 = query.value(23).toString();  // colecao - string
-        QString column3 = query.value(26).toString();  // formato com. - string
-        QString column4 = query.value(28).toString();  // formato fabr - string
-        QString column5 = query.value(30).toString();  // descricao - string
-        QString column6 = query.value(32).toString();  // pccx - int
-        QString column7 = query.value(33).toString();  // m2cx - double
-        QString column8 = query.value(34).toString();  // cx_pallet - int
-        QString column9 = query.value(35).toString();  // m2_pallet - double
-        QString column10 = query.value(36).toString(); // kg_cx - double
-        QString column11 = query.value(37).toString(); // m2_pc - double
-        QString column12 = query.value(38).toString(); // kg_pallet - int
-        QString column13 = query.value(39).toString(); // g-tarifa - string
-        QString column14 = query.value(40).toString(); // preco_m2 - double
-        QString column15 = query.value(41).toString(); // preco_pc - double
-        QString column16 = query.value(42).toString(); // ncm - int
-        QString column17 = query.value(43).toString(); // custo liquido - double
-        QString column18 = query.value(44).toString(); // unidade - string
-        QString column19 = query.value(45).toString(); // preco - double
+    // Lê produtos do excel
+    QSqlQuery querySz("SELECT COUNT(*) FROM [BASE Apavisa$]", db);
+    querySz.first();
+    qDebug() << "SIZE: " << querySz.value(0);
+    emit progressRangeChanged(querySz.value(0).toInt());
 
-        //        qDebug() << column0 << " " << column1 << " " << column2 << " " << column3 << " " << column4
-        //        << " "
-        //                 << column5 << " " << column6 << " " << column7;
-        //        qDebug() << "---------------";
-        //        qDebug() << "marca: " << column0;
+    QSqlQuery queryProd("SELECT * FROM [BASE Apavisa$]", db);
+    int current = 0;
+    while(queryProd.next()){
+      emit progressValueChanged(current++);
+
+      if(canceled){
+        emit progressFinished();
+        return ("Operação cancelada!");
+        QSqlQuery("ROLLBACK").exec();
+      }
+
+      QString fornecedor = queryProd.value(21).toString();
+
+      if(!fornecedor.isEmpty() and (fornecedor != "Marca")){
+
+        QString codigo = queryProd.value(22).toString();
+        QString colecao = queryProd.value(23).toString();
+        QString formCom = queryProd.value(26).toString();
+        QString formFab = queryProd.value(28).toString();
+        QString descricao = queryProd.value(30).toString();
+        QString pcCx = queryProd.value(32).toString();
+        QString m2Cx = queryProd.value(33).toString();
+        QString cxPallet = queryProd.value(34).toString();
+        QString m2Pallet = queryProd.value(35).toString();
+        QString kgCx = queryProd.value(36).toString();
+        QString m2Pc = queryProd.value(37).toString();
+        QString kgPallet = queryProd.value(38).toString();
+        QString gTarifa = queryProd.value(39).toString();
+        QString precoM2 = queryProd.value(40).toString();
+        QString precoPc = queryProd.value(41).toString();
+        QString ncm = queryProd.value(42).toString();
+        QString custo = queryProd.value(43).toString();
+        QString unidade = queryProd.value(44).toString();
+        QString venda = queryProd.value(45).toString();
+
+        // Consistência dos dados
 
         QString column20 = "0";
-        if (column0 == "Apavisa") {
+        if (fornecedor == "Apavisa") {
           column20 = "5";
         }
-        if (column0 == "Aparici") {
+        if (fornecedor == "Aparici") {
           column20 = "42";
         }
-        //        qDebug() << "codigo: " << column20;
+
+        // Verifica se produto já se encontra no BD
+        QSqlQuery produto;
+        if(!produto.exec("SELECT * FROM Produto WHERE fornecedor = '"+fornecedor+"' AND codComercial = '"+codigo+"'")){
+          qDebug() << "Erro buscando produto: " << produto.lastError();
+        }
+
+        if(produto.next()){
+          QString idProduto = produto.value("idProduto").toString();
+
+          // Se o preço for igual extender a validade
+          if(produto.value("precoVenda").toString() == venda){
+            if(!produto.exec("UPDATE Produto_has_Preco SET validadeFim = '"+QDate::currentDate().addDays(validade).toString("yyyy-MM-dd")+"' WHERE idProduto = " + produto.value("idProduto").toString() + "")){
+              qDebug() << "Erro atualizando validade do preço: " << produto.lastError();
+            }
+            notChanged++;
+            continue;
+          }
+
+          // Guarda novo preço do produto e altera sua validade
+          if(!produto.exec(
+               "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES ("+idProduto+", "+venda+", '"+QDate::currentDate().toString("yyyy-MM-dd")+"', '"+QDate::currentDate().addDays(validade).toString("yyyy-MM-dd")+"')")){
+            qDebug() << "Erro inserindo em Preço: " << produto.lastError();
+            qDebug() << "qry: " << produto.lastQuery();
+          }
+          if(!produto.exec("UPDATE Produto SET precoVenda = "+venda+" WHERE idProduto = "+idProduto+"")){
+            qDebug() << "Erro atualizando preço de produto: " << produto.lastError();
+            qDebug() << "qry upd: " << produto.lastQuery();
+          }
+
+          updated++;
+          continue;
+        }
 
         QSqlQuery qry;
         qry.prepare(
@@ -98,46 +140,36 @@ QString ImportaApavisa::importar(QString file) {
               "precoVenda, custo, markup, ui) VALUES (:idFornecedor, :fornecedor, :colecao, :formComercial, "
               ":descricao, :codComercial, :pccx, :m2cx, :qtdPallet, :un, :ncm, :precoVenda, :custo, "
               ":markup, :ui)");
-        qry.bindValue(":idFornecedor", idFornecedor);
-        qry.bindValue(":fornecedor", column0);
-        qry.bindValue(":colecao", column2);
-        qry.bindValue(":formComercial", column3);
-        qry.bindValue(":descricao", column5);
-        qry.bindValue(":codComercial", column1);
-        qry.bindValue(":pccx", column6);
-        qry.bindValue(":m2cx", column7);
-        qry.bindValue(":qtdPallet", column9);
-        qry.bindValue(":un", column18);
-        qry.bindValue(":ncm", column16);
-        qry.bindValue(":precoVenda", column19);
-        qry.bindValue(":custo", column17);
+        qry.bindValue(":idFornecedor", map.value(fornecedor));
+        qry.bindValue(":fornecedor", fornecedor);
+        qry.bindValue(":colecao", colecao);
+        qry.bindValue(":formComercial", formCom);
+        qry.bindValue(":descricao", descricao);
+        qry.bindValue(":codComercial", codigo);
+        qry.bindValue(":pccx", pcCx);
+        qry.bindValue(":m2cx", m2Cx);
+        qry.bindValue(":qtdPallet", m2Pallet);
+        qry.bindValue(":un", unidade);
+        qry.bindValue(":ncm", ncm);
+        qry.bindValue(":precoVenda", venda);
+        qry.bindValue(":custo", custo);
         qry.bindValue(":markup", 95);
         qry.bindValue(":ui", column20);
 
         if (!qry.exec()) {
           qDebug() << "error? " << qry.lastError();
-          //          qDebug() << "qry: " << qry.lastQuery();
-        }
-        //                qDebug() << "qry: " << qry.lastQuery();
-        //        qDebug() << "error? " << qry.lastError();
-        if (qry.lastError().nativeErrorCode() == "1062") {
-          duplicate++;
         }
         if (qry.lastError().nativeErrorCode() == "") {
           imported++;
         }
-        qry.finish();
       }
     }
 
-    query.finish();
+    QSqlQuery("COMMIT").exec();
 
-    texto = "Produtos importados: " + QString::number(imported) + "\nProdutos duplicados: " +
-            QString::number(duplicate);
-    //    QMessageBox::information(this, "Aviso", texto, QMessageBox::Ok);
-
+    texto = "Produtos importados: " + QString::number(imported) + "\nProdutos atualizados: " +
+            QString::number(updated) + "\nNão modificados: " + QString::number(notChanged);
   } else {
-    //    QMessageBox::information(this, "Aviso", "Importação falhou!", QMessageBox::Ok);
     texto = "Importação falhou!";
     qDebug() << "db failed :(";
     qDebug() << db.lastError();
@@ -146,4 +178,25 @@ QString ImportaApavisa::importar(QString file) {
   QSqlDatabase::removeDatabase(db.connectionName());
 
   return texto;
+}
+
+int ImportaApavisa::buscarCadastrarFornecedor(QString fornecedor) {
+  int idFornecedor = 0;
+
+  QSqlQuery queryFornecedor;
+  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
+    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+  }
+  if (queryFornecedor.next()) {
+    return queryFornecedor.value("idFornecedor").toInt();
+  } else {
+    QSqlQuery cadastrar;
+    if (!cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
+      qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
+    } else{
+      return cadastrar.lastInsertId().toInt();
+    }
+  }
+
+  return idFornecedor;
 }

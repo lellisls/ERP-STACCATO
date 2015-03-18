@@ -23,6 +23,7 @@ QString ImportaExport::importar(QString file, int validade) {
   QLocale locale(QLocale::Portuguese);
   QString texto;
   QMap<QString, int> map;
+
   emit progressTextChanged("Conectando...");
   emit progressRangeChanged(0);
 
@@ -34,9 +35,11 @@ QString ImportaExport::importar(QString file, int validade) {
 
   if (db.open()) {
     emit progressTextChanged("Importando...");
+
     int imported = 0;
     int notChanged = 0;
     int updated = 0;
+    int notImported = 0;
 
     // Cadastra fornecedores
     QSqlQuery queryForn("SELECT * FROM [BASE$]", db);
@@ -55,10 +58,12 @@ QString ImportaExport::importar(QString file, int validade) {
     queryProdSz.first();
     //    qDebug() << "SIZE: " << queryProdSz.value(0);
     emit progressRangeChanged(queryProdSz.value(0).toInt());
+
     QSqlQuery queryProd("SELECT * FROM [BASE$]", db);
     int current = 0;
     while (queryProd.next()) {
       emit progressValueChanged(current++);
+
       if (canceled) {
         emit progressFinished();
         return ("Operação cancelada!");
@@ -81,6 +86,7 @@ QString ImportaExport::importar(QString file, int validade) {
 
       // Consistência dos dados
       if (descricao.isEmpty()) {
+        notImported++;
         continue;
       }
       if (metrosCaixa == "N/A") {
@@ -90,6 +96,11 @@ QString ImportaExport::importar(QString file, int validade) {
         pecasCaixa = "1";
       }
       if (codCom.isEmpty()) {
+        notImported++;
+        continue;
+      }
+      if(venda.toDouble() == 0.0){
+        notImported++;
         continue;
       }
 
@@ -113,11 +124,12 @@ QString ImportaExport::importar(QString file, int validade) {
           notChanged++;
           continue;
         }
+
         // Guarda novo preço do produto e altera sua validade
         if (!produto.exec(
-                "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-                idProduto + ", '" + venda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
-                QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+              "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
+              idProduto + ", '" + venda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
+              QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
           qDebug() << "Erro inserindo em Preço: " << produto.lastError();
           qDebug() << "qry: " << produto.lastQuery();
         }
@@ -138,10 +150,10 @@ QString ImportaExport::importar(QString file, int validade) {
 
       QSqlQuery qryInsert;
       qryInsert.prepare(
-          "INSERT INTO Produto (idFornecedor, fornecedor, colecao, tipo, formComercial, "
-          "descricao, codComercial, pccx, m2cx, un, ncm, precoVenda, custo, markup) VALUES "
-          "(:idFornecedor, :fornecedor, :colecao, :tipo, :formComercial, :descricao, :codComercial, "
-          ":pccx, :m2cx, :un, :ncm, :precoVenda, :custo, :markup)");
+            "INSERT INTO Produto (idFornecedor, fornecedor, colecao, tipo, formComercial, "
+            "descricao, codComercial, pccx, m2cx, un, ncm, precoVenda, custo, markup) VALUES "
+            "(:idFornecedor, :fornecedor, :colecao, :tipo, :formComercial, :descricao, :codComercial, "
+            ":pccx, :m2cx, :un, :ncm, :precoVenda, :custo, :markup)");
       qryInsert.bindValue(":idFornecedor", map.value(fabricante));
       qryInsert.bindValue(":fornecedor", fabricante);
       qryInsert.bindValue(":colecao", colecao);
@@ -172,9 +184,9 @@ QString ImportaExport::importar(QString file, int validade) {
       //      qDebug() << "idProduto: " << idProduto;
 
       if (!qryInsert.exec(
-              "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-              idProduto + ", " + venda + ", '" + QDate::currentDate().toString("yyyy-MM-dd") + "', '" +
-              QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+            "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
+            idProduto + ", " + venda + ", '" + QDate::currentDate().toString("yyyy-MM-dd") + "', '" +
+            QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
         qDebug() << "Erro inserindo em Preço: " << qryInsert.lastError();
       }
     }
@@ -182,7 +194,7 @@ QString ImportaExport::importar(QString file, int validade) {
     QSqlQuery("COMMIT").exec();
 
     texto = "Produtos importados: " + QString::number(imported) + "\nProdutos atualizados: " +
-            QString::number(updated) + "\nNão modificados: " + QString::number(notChanged);
+            QString::number(updated) + "\nNão modificados: " + QString::number(notChanged) + "\nNão importados: " + QString::number(notImported);
   } else {
     texto = "Importação falhou!";
     qDebug() << "db failed :(";

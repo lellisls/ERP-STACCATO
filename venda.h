@@ -62,6 +62,7 @@ class Venda : public RegisterDialog {
     bool verifyRequiredField(QLineEdit *line);
     QString requiredStyle();
     void calcPrecoGlobalTotal(bool ajusteTotal = false);
+    void fillTotals();
 //    void calcPrecoItemTotal();
     void clearFields();
     void fillComboBoxCliente();

@@ -134,7 +134,7 @@ void Orcamento::setupMapper() {
   addMapping(ui->itemBoxVendedor, "idUsuario", "value");
   addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
   addMapping(ui->spinBoxValidade, "validade");
-  addMapping(ui->doubleSpinBoxDescontoGlobal, "desconto");
+  addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
   addMapping(ui->doubleSpinBoxFrete, "frete");
   addMapping(ui->doubleSpinBoxFinal, "total");
   addMapping(ui->dateTimeEdit, "data");
@@ -250,10 +250,14 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "idProfissional", ui->itemBoxProfissional->getValue());
   setData(row, "validade", ui->spinBoxValidade->value());
   setData(row, "data", ui->dateTimeEdit->dateTime());
-  setData(row, "total", ui->doubleSpinBoxFinal->value());
-  qDebug() << "desconto global: " << ui->doubleSpinBoxDescontoGlobal->value();
-  setData(row, "desconto", ui->doubleSpinBoxDescontoGlobal->value());
+  setData(row, "subTotalBru", ui->doubleSpinBoxSubTotalBruto->value());
+  setData(row, "subTotalLiq", ui->doubleSpinBoxTotal->value());
   setData(row, "frete", ui->doubleSpinBoxFrete->value());
+  setData(row, "descontoPorc", ui->doubleSpinBoxDescontoGlobal->value());
+  setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value());
+  setData(row, "total", ui->doubleSpinBoxFinal->value());
+
+  qDebug() << "desconto global: " << ui->doubleSpinBoxDescontoGlobal->value();
 
   if (!model.submitAll() && model.lastError().number() != 1062) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,

@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
     qDebug() << "Error loading qt_portuguese.ts";
   }
   app.installTranslator(&pt);
+
   MainWindow window;
   window.showMaximized();
   return app.exec();

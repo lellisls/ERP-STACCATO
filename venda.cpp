@@ -60,8 +60,9 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("status"), true);
 
-  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro",
-                   "Boleto"};
+  QStringList list {"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro",
+                    "Boleto"
+                   };
 
   ui->comboBoxPgt1->insertItems(0, list);
   ui->comboBoxPgt2->insertItems(0, list);
@@ -85,6 +86,24 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
 
 Venda::~Venda() {
   delete ui;
+}
+
+void Venda::resetarPagamentos() {
+  ui->doubleSpinBoxTotalPag->setValue(ui->doubleSpinBoxFinal->value());
+  ui->doubleSpinBoxPgt1->setMaximum(ui->doubleSpinBoxFinal->value());
+  ui->doubleSpinBoxPgt1->setValue(ui->doubleSpinBoxFinal->value());
+  ui->doubleSpinBoxPgt2->setValue(0);
+  ui->doubleSpinBoxPgt3->setValue(0);
+  ui->doubleSpinBoxPgt2->setMaximum(0);
+  ui->doubleSpinBoxPgt3->setMaximum(0);
+  ui->comboBoxPgt1->setCurrentIndex(0);
+  ui->comboBoxPgt2->setCurrentIndex(0);
+  ui->comboBoxPgt3->setCurrentIndex(0);
+
+  ui->comboBoxPgt1Parc->setCurrentIndex(0);
+  ui->comboBoxPgt2Parc->setCurrentIndex(0);
+  ui->comboBoxPgt3Parc->setCurrentIndex(0);
+  montarFluxoCaixa();
 }
 
 void Venda::fecharOrcamento(const QString &idOrcamento) {
@@ -127,13 +146,9 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   for (int field = 0; field < modelVenda.columnCount(); field++) {
     modelVenda.setData(modelVenda.index(row, field), qry.value(field));
   }
+  fillTotals();
 
-  ui->doubleSpinBoxPgt1->setValue(
-    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
-  ui->doubleSpinBoxPgt1->setMaximum(ui->doubleSpinBoxPgt1->value());
-
-  ui->doubleSpinBoxTotalPag->setValue(
-    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
+  resetarPagamentos();
   //  ui->doubleSpinBoxTotal->setValue(
   //    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   //  ui->doubleSpinBoxRestante->setValue(
@@ -144,7 +159,6 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
   //  calcPrecoGlobalTotal();
   qDebug() << "idOrcamento: " << idOrcamento;
-  fillTotals();
 }
 
 bool Venda::cadastrar() {
@@ -180,7 +194,6 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     porcFrete = qryFrete.value("porcentagemFrete").toDouble();
   }
 
-  qDebug() << "itens count: " << modelItem.rowCount();
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
@@ -194,7 +207,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
   }
   double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
-  if (ui->checkBoxFreteManual->isChecked()) {
+  if(ui->checkBoxFreteManual->isChecked()) {
     frete = ui->doubleSpinBoxFrete->value();
     qDebug() << "novo frete: " << frete;
   }
@@ -203,7 +216,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   if (ajusteTotal) {
     const double Final = ui->doubleSpinBoxFinal->value();
     subTotal = Final - frete;
-    if (subTotalItens == 0.0) {
+    if(subTotalItens == 0.0) {
       descGlobal = 0;
     } else {
       descGlobal = 1 - (subTotal / subTotalItens);
@@ -402,15 +415,15 @@ void Venda::viewVenda(QString idVenda) {
 }
 
 void Venda::on_doubleSpinBoxPgt1_valueChanged(double) {
-  montarFluxoCaixa();
+//  montarFluxoCaixa();
 }
 
 void Venda::on_doubleSpinBoxPgt2_valueChanged(double) {
-  montarFluxoCaixa();
+//  montarFluxoCaixa();
 }
 
 void Venda::on_doubleSpinBoxPgt3_valueChanged(double) {
-  montarFluxoCaixa();
+//  montarFluxoCaixa();
 }
 
 // void Venda::on_doubleSpinBoxRestante_valueChanged(double value) {
@@ -447,6 +460,7 @@ void Venda::calculoSpinBox1() {
 
 void Venda::on_doubleSpinBoxPgt1_editingFinished() {
   calculoSpinBox1();
+  montarFluxoCaixa();
 }
 
 void Venda::calculoSpinBox2() {
@@ -467,6 +481,7 @@ void Venda::calculoSpinBox2() {
 
 void Venda::on_doubleSpinBoxPgt2_editingFinished() {
   calculoSpinBox2();
+  montarFluxoCaixa();
 }
 
 void Venda::calculoSpinBox3() {
@@ -482,6 +497,7 @@ void Venda::calculoSpinBox3() {
 
 void Venda::on_doubleSpinBoxPgt3_editingFinished() {
   calculoSpinBox3();
+  montarFluxoCaixa();
 }
 
 void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
@@ -545,7 +561,7 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
 }
 
 bool Venda::savingProcedures(int row) {
-  Q_UNUSED(row);
+  montarFluxoCaixa();
   return true;
 }
 
@@ -557,6 +573,7 @@ bool Venda::viewRegister(QModelIndex index) {
   if (!RegisterDialog::viewRegister(index)) {
     return false;
   }
+
   QString idVenda = data(primaryKey).toString();
   idOrcamento = idVenda;
   //  qDebug() << "idVenda: " << idVenda;
@@ -682,4 +699,8 @@ void Venda::on_dateEditPgt2_dateChanged(const QDate &) {
 
 void Venda::on_dateEditPgt3_dateChanged(const QDate &) {
   montarFluxoCaixa();
+}
+
+void Venda::on_pushButton_clicked() {
+  resetarPagamentos();
 }

@@ -45,6 +45,8 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
 
+    void on_pushButton_clicked();
+
   signals:
     void finished();
 
@@ -78,6 +80,7 @@ class Venda : public RegisterDialog {
     void calculoSpinBox2();
     void calculoSpinBox3();
 
+    void resetarPagamentos();
   protected:
     virtual bool savingProcedures(int row);
     virtual void registerMode();

@@ -8,10 +8,10 @@ class ImportaExport : public QObject {
     Q_OBJECT
 
   signals:
-    progressRangeChanged(int max);
-    progressValueChanged(int val);
-    progressTextChanged(QString str);
-    progressFinished();
+    void progressRangeChanged(int max);
+    void progressValueChanged(int val);
+    void progressTextChanged(QString str);
+    void progressFinished();
 
   public slots:
     void cancel();

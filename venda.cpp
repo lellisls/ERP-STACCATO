@@ -284,7 +284,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   qry.exec("START TRANSACTION");
 
   if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
-                "idProfissional, data, total, desconto, frete, validade, status FROM Orcamento WHERE "
+                "idProfissional, data, total, descontoPorc, frete, validade, status FROM Orcamento WHERE "
                 "idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error inserting into Venda: " << qry.lastError();
     qry.exec("ROLLBACK");

@@ -45,7 +45,6 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt3_dateChanged(const QDate &date);
     void on_doubleSpinBoxFinal_editingFinished();
     void on_doubleSpinBoxDescontoGlobal_valueChanged(double);
-
     void on_pushButton_clicked();
 
     void on_checkBoxFreteManual_clicked(bool checked);

@@ -1091,6 +1091,7 @@
   <tabstop>doubleSpinBoxSubTotalBruto</tabstop>
   <tabstop>doubleSpinBoxTotal</tabstop>
   <tabstop>checkBoxFreteManual</tabstop>
+  <tabstop>doubleSpinBoxFrete</tabstop>
   <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
   <tabstop>doubleSpinBoxDescontoRS</tabstop>
   <tabstop>doubleSpinBoxFinal</tabstop>

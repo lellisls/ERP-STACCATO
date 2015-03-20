@@ -181,7 +181,7 @@ QString Venda::requiredStyle() {
 
 void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
-  subTotalItens = 0.0;
+  double subTotalItens = 0.0;
   double subTotalBruto = 0.0;
   double minimoFrete = 0, porcFrete = 0;
 
@@ -237,6 +237,8 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
+  resetarPagamentos();
+  montarFluxoCaixa();
 }
 
 void Venda::fillTotals() {
@@ -437,24 +439,17 @@ void Venda::calculoSpinBox1() {
   double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt2->setValue(pgt2 + restante);
-  ui->doubleSpinBoxPgt1->setMaximum(pgt1);
-  ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
-  ui->doubleSpinBoxPgt3->setMaximum(pgt3);
-  if (pgt2 == 0.0) {
-    ui->doubleSpinBoxPgt2->setMaximum(restante);
-    ui->doubleSpinBoxPgt2->setValue(restante);
+  if (pgt2 == 0.0 || pgt3 >= 0.0) {
+    ui->doubleSpinBoxPgt2->setMaximum(restante + pgt2);
+    ui->doubleSpinBoxPgt2->setValue(restante + pgt2);
     ui->doubleSpinBoxPgt3->setMaximum(pgt3);
     restante = 0;
   } else if (pgt3 == 0.0) {
-    ui->doubleSpinBoxPgt3->setMaximum(restante);
-    ui->doubleSpinBoxPgt3->setValue(restante);
+    ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
+    ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
     ui->doubleSpinBoxPgt2->setMaximum(pgt2);
     restante = 0;
-  } else {
-    ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
-    ui->doubleSpinBoxPgt3->setMaximum(pgt3 + restante);
   }
-  ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
   //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
@@ -469,13 +464,8 @@ void Venda::calculoSpinBox2() {
   double pgt3 = ui->doubleSpinBoxPgt3->value();
   double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
-  if (pgt3 == 0.0) {
-    ui->doubleSpinBoxPgt3->setMaximum(restante);
-    ui->doubleSpinBoxPgt3->setValue(restante);
-    restante = 0;
-  }
-  ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
-  ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
+  ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
+  ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
   //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
@@ -485,14 +475,14 @@ void Venda::on_doubleSpinBoxPgt2_editingFinished() {
 }
 
 void Venda::calculoSpinBox3() {
-  double pgt1 = ui->doubleSpinBoxPgt1->value();
-  double pgt2 = ui->doubleSpinBoxPgt2->value();
-  double pgt3 = ui->doubleSpinBoxPgt3->value();
-  double total = ui->doubleSpinBoxTotalPag->value();
-  double restante = total - (pgt1 + pgt2 + pgt3);
-  //  ui->doubleSpinBoxRestante->setValue(restante);
-  ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
-  ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
+//  double pgt1 = ui->doubleSpinBoxPgt1->value();
+//  double pgt2 = ui->doubleSpinBoxPgt2->value();
+//  double pgt3 = ui->doubleSpinBoxPgt3->value();
+//  double total = ui->doubleSpinBoxTotalPag->value();
+//  double restante = total - (pgt1 + pgt2 + pgt3);
+//  //  ui->doubleSpinBoxRestante->setValue(restante);
+//  ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
+//  ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
 }
 
 void Venda::on_doubleSpinBoxPgt3_editingFinished() {
@@ -703,4 +693,41 @@ void Venda::on_dateEditPgt3_dateChanged(const QDate &) {
 
 void Venda::on_pushButton_clicked() {
   resetarPagamentos();
+}
+
+void Venda::on_doubleSpinBoxFinal_editingFinished() {
+  if (modelItem.rowCount() == 0 || ui->doubleSpinBoxTotal->value() == 0) {
+    calcPrecoGlobalTotal();
+    return;
+  }
+
+  double new_total = ui->doubleSpinBoxFinal->value();
+  double frete = ui->doubleSpinBoxFrete->value();
+  double new_subtotal = new_total - frete;
+
+  if (new_subtotal >= ui->doubleSpinBoxTotal->value()) {
+    ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
+    calcPrecoGlobalTotal();
+  } else {
+    calcPrecoGlobalTotal(true);
+  }
+}
+
+void Venda::on_checkBoxFreteManual_clicked(bool checked) {
+  if(checked == true && UserSession::getTipo() != "ADMINISTRADOR") {
+    ui->checkBoxFreteManual->setChecked(false);
+    return;
+  }
+  ui->doubleSpinBoxFrete->setFrame(checked);
+  ui->doubleSpinBoxFrete->setReadOnly(!checked);
+  if(checked) {
+    ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
+  } else {
+    ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::NoButtons);
+  }
+  calcPrecoGlobalTotal();
+}
+
+void Venda::on_doubleSpinBoxFrete_editingFinished() {
+  calcPrecoGlobalTotal();
 }

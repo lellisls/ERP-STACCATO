@@ -47,6 +47,12 @@ class Venda : public RegisterDialog {
 
     void on_pushButton_clicked();
 
+    void on_doubleSpinBoxFinal_editingFinished();
+
+    void on_checkBoxFreteManual_clicked(bool checked);
+
+    void on_doubleSpinBoxFrete_editingFinished();
+
   signals:
     void finished();
 
@@ -56,7 +62,7 @@ class Venda : public RegisterDialog {
     QSqlTableModel modelVenda;
     QSqlRelationalTableModel modelItem, modelFluxoCaixa;
     QString idOrcamento;
-    double subTotal, subTotalItens;
+    double subTotal;
     SearchDialog *sdEndereco;
     // methods
     bool cadastrar();

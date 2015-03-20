@@ -998,6 +998,38 @@
    <header>itembox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tableVenda</tabstop>
+  <tabstop>itemBoxEndereco</tabstop>
+  <tabstop>doubleSpinBoxSubTotalBruto</tabstop>
+  <tabstop>doubleSpinBoxTotal</tabstop>
+  <tabstop>checkBoxFreteManual</tabstop>
+  <tabstop>doubleSpinBoxFrete</tabstop>
+  <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
+  <tabstop>doubleSpinBoxDescontoRS</tabstop>
+  <tabstop>doubleSpinBoxFinal</tabstop>
+  <tabstop>comboBoxPgt1</tabstop>
+  <tabstop>comboBoxPgt1Parc</tabstop>
+  <tabstop>doubleSpinBoxPgt1</tabstop>
+  <tabstop>dateEditPgt1</tabstop>
+  <tabstop>comboBoxPgt2</tabstop>
+  <tabstop>comboBoxPgt2Parc</tabstop>
+  <tabstop>doubleSpinBoxPgt2</tabstop>
+  <tabstop>dateEditPgt2</tabstop>
+  <tabstop>comboBoxPgt3</tabstop>
+  <tabstop>comboBoxPgt3Parc</tabstop>
+  <tabstop>doubleSpinBoxPgt3</tabstop>
+  <tabstop>dateEditPgt3</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>doubleSpinBoxTotalPag</tabstop>
+  <tabstop>pushButtonFecharPedido</tabstop>
+  <tabstop>pushButtonNFe</tabstop>
+  <tabstop>pushButtonImprimir</tabstop>
+  <tabstop>pushButtonVoltar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>tableFluxoCaixa</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

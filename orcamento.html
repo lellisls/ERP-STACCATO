@@ -1,177 +1,258 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
-<head>
-    <meta charset="utf-8">
-    <title>Orçamento</title>
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Orçamento ORCAMENTO</title>
+    
     <style type="text/css">
-        .form_caja {
-            padding-top: 8px;
-            padding-bottom: 15px;
-            margin: 0 auto 20px auto;
-            background-color: #446bb3;
-            border-radius: 15px;
-            -moz-border-radius: 15px;
-            -webkit-border-radius: 15px;
-            color: #446bb3;
-            padding: 10px;
-        }
-
-        .form_caja thead {
-            background-color: #446bb3;
-            color: #fff;
-            padding: 4px;
-            line-height: 30px;
-        }
-
-        .form_caja tbody tr:nth-child(even) {
-            background: #CCC;
-            text-align: center;
-        }
-
-        .form_caja tbody tr:nth-child(odd) {
-            background: #FFF;
-            text-align: center;
-        }
-
-        th,
-        td {
-            //border: 1px solid black;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
-            font-style: normal;
-            font-variant: normal;
-            font-weight: 400;
-            line-height: 20px;
-        }
-
-        h1 {
-            font-size: 30px;
-            font-weight: 600;
-            line-height: 26.3999996185303px;
-        }
-
-        h2 {
-            font-size: 18px;
-            font-weight: 500;
-            line-height: 15.3999996185303px;
-        }
-
-        h3 {
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 15.3999996185303px;
-        }
-
-        p {
-            //text-align: right;
-            margin: 0;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 20px;
-        }
-
-        blockquote {
-            font-size: 21px;
-            font-weight: 400;
-            line-height: 30px;
-        }
-
-        pre {
-            font-size: 13px;
-            font-weight: 400;
-            line-height: 18.5714282989502px;
-        }
+      body,div,table,thead,tbody,tfoot,tr,th,td,p {
+      font-family:"Calibri";
+      font-size:x-small
+      }
+      td {
+      border: 1px solid #000;
+      padding: 3px;
+      }
+      table{
+      border: 2px solid #000;
+      }
     </style>
-</head>
 
-<body>
-    <center>
-        <!-- <h1>Orçamento</h1> -->
-    </center>
-    <table cellpadding="10" width="100%">
-        <tr>
-            <td><img height="75px" src="LOGO">
-            </td>
-            <td>
-
-                <!-- <h2>NOME FANTASIA</h2> -->
-                <p>RAZAO SOCIAL</p>
-                <p>LOGRADOURO, NUMERO - BAIRRO - CIDADE - UF</p>
-                <p>Tel: TELEFONE</p>
-            </td>
-            <td>
-                <center>
-                    <div>
-                        <h2><strong>ORÇAMENTO</strong></h2>
-                        <p><strong>Nº: IDORCAMENTO</strong>
-                        </p>
-                        <p><strong>EMISSÃO: DATA</strong>
-                        </p>
-                        <p><strong>STATUS</strong>
-                        </p>
-                    </div>
-                </center>
-            </td>
-        </tr>
+  </head>
+  <body>
+    <table cellspacing="0" border="0">
+      <tr>
+	<td style="border-bottom= 0px;" colspan=2 rowspan=7 align="center" valign=middle >
+	  <img src="teste_html_fe7ee655.jpg" height=35% >
+	  <p>Av. Andrômeda, 900 - Alphaville</p>
+	  <p>Barueri - SP - CEP: 06473-000</p>
+	  <p>Tel: (11) 4191-9816 / 4208-3136</p>
+	</td>
+	<td align="left" valign=bottom >
+	  Orçamento:
+	</td>
+	<td colspan=4 align="center" valign=bottom >
+	  #ORCAMENTO
+	</td>
+	<td align="center" valign=bottom>
+	  Pedido: 
+	</td>
+	<td colspan=3 align="center" valign=bottom>
+	  #PEDIDO
+	</td>
+	<td align="right" valign=bottom>
+	  Data:
+	</td>
+	<td colspan=2 align="center" valign=bottom >
+	  #DATA
+	</td>
+      </tr>
+      <tr>
+	<td align="left" valign=bottom>
+	  Cliente:
+	</td>
+	<td colspan=8 align="left" valign=bottom>
+	  #NOME
+	</td>
+	<td align="right" valign=bottom>
+	  CPF/CNPJ:
+	</td>
+	<td colspan=2 align="center" valign=bottom>
+	  #CPFCNPJ
+	</td>
+      </tr>
+      <tr>
+	<td align="left" valign=bottom>
+	  E-mail:
+	</td>
+	<td colspan=5 align="left" valign=bottom>
+	  #EMAILCLIENTE
+	</td>
+	<td align="center" valign=bottom>
+	  Tel: 
+	</td>
+	<td align="center" colspan = "2" valign=bottom>
+	  #TEL01
+	</td>
+	<td align="right" valign=bottom>
+	  Tel:  
+	</td>
+	<td colspan=2 align="center" valign=bottom>
+	  #TEL02
+	</td>
+      </tr>
+      <tr>
+	<td align="left" valign=bottom>
+	  End. Fiscal:
+	</td>
+	<td colspan=8 align="left" valign=bottom>
+	  #ENDFISCAL
+	</td>
+	<td align="right" valign=bottom>
+	  CEP:
+	</td>
+	<td colspan=2 align="center" valign=bottom>
+	  #CEPFISCAL
+	</td>
+      </tr>
+      <tr>
+	<td align="left" valign=bottom>
+	  End. Entrega:
+	</td>
+	<td colspan=8 align="left" valign=bottom>
+	  #ENDENTREGA
+	</td>
+	<td align="right" valign=bottom>
+	  CEP:
+	</td>
+	<td colspan=2 align="center" valign=bottom>
+	  #CEPENTREGA
+	</td>
+      </tr>
+      <tr>
+	<td align="left" valign=bottom>
+	  Profissional:
+	</td>
+	<td colspan=3 align="left" valign=bottom>
+	  #NOMEPRO
+	</td>
+	<td align="right" valign=bottom>
+	  Tel :
+	</td>
+	<td colspan=2 align="center" valign=bottom>
+	  #TELPRO
+	</td>
+	<td align="right" valign=bottom>
+	  E-mail:    
+	</td>
+	<td colspan=4 align="left" valign=bottom>
+	  <a href="mailto:#EMAILPRO">
+	    #EMAILPRO
+	  </a>
+	</td>
+      </tr>
+      <tr>
+	<td align="left" valign=bottom>
+	  Vendedor:
+	</td>
+	<td align="left" valign=bottom>
+	  #NOMEVEND
+	</td>
+	<td align="left" valign=bottom>
+	  Email:
+	</td>
+	<td colspan=4 align="left" valign=bottom>
+	  <a href="mailto:#EMAILVEND">
+	    #EMAILVEND
+	  </a>
+	</td>
+	<td align="right" valign=bottom>
+	  Estoque:  
+	</td>
+	<td colspan=2 align="center" valign=bottom>
+	  #ESTOQUE
+	</td>
+	<td align="right" valign=bottom>
+	  Data:
+	</td>
+	<td align="center" valign=bottom>
+	  #DATAESTOQUE
+	</td>
+      </tr>
+      <tr>
+	<!-- Barra cinza -->
+	<td colspan=14 height="6" align="center" valign=bottom bgcolor="#F2F2F2">
+	  <br>
+	</td>
+      </tr>
+      <tr>
+	<td height="20" align="center" valign=middle>
+	  Marca
+	</td>
+	<td align="center" valign=middle>
+	  Código
+	</td>
+	<td colspan=5 align="center" valign=middle>
+	  Nome do produto
+	</td>
+	<td colspan=3 align="center" valign=middle>
+	  Ambiente
+	</td>
+	<td align="center" valign=middle>
+	  Preço-R$
+	</td>
+	<td align="center" valign=middle>
+	  Quant
+	</td>
+	<td align="center" valign=middle>
+	  Unid
+	</td>
+	<td align="center" valign=middle>
+	  Total
+	</td>
+      </tr>
+      <!-- #ITENS -->
+      <tr>
+	<td height="20" align="left" valign=bottom>
+	  Prazo de entrega:
+	</td>
+	<td colspan=10 align="left" valign=bottom>
+	  #PRAZOENTREGA
+	</td>
+	<td colspan=2 align="right" valign=bottom>
+	  Soma:
+	</td>
+	<td align="right" valign=bottom>
+	  #SOMA
+	</td>
+      </tr>
+      <tr>
+	<td height="20" align="left" valign=bottom >
+	  Forma de pagamento:
+	</td>
+	<td colspan=10 align="left" valign=bottom >
+	  #FORMAPAGAMENTO
+	</td>
+	<td colspan=2 align="right" valign=bottom >
+	  Desconto:
+	</td>
+	<td align="right" valign=bottom>
+	  #DESCONTOGLOBAL
+	</td>
+      </tr>
+      <tr>
+	<td colspan=11 height="20" align="left" valign=bottom >
+	  Obs:  A previsão de entrega dos materiais começa a contar a partir da data do pagamento do sinal.
+	</td>
+	<td colspan=2 align="right" valign=bottom >
+	  Total:
+	</td>
+	<td align="right" valign=bottom >
+	  #TOTALDESC
+	</td>
+      </tr>
+      <tr>
+	<td colspan=11 rowspan=2 height="40" align="left" valign=bottom >
+	  Assinatura do cliente: ____________________________________________________________________________   Visto Vendedor: _________________________________________
+	</td>
+	<td colspan=2 align="right" valign=bottom >
+	  Frete:
+	</td>
+	<td align="right" valign=bottom >
+	  #FRETE
+	</td>
+      </tr>
+      <tr>
+	<td align="right" colspan="2" valign=bottom >
+	  Total Final
+	</td>
+	<td align="right" valign=bottom >
+	  #TOTALFINAL
+	</td>
+      </tr>
     </table>
-    <table width="100%" cellpadding="10">
-        <tr>
-            <th>Vendedor</th>
-            <th>Cliente</th>
-        </tr>
-        <tr>
-            <td>
-                <center>VENDEDOR</center>
-            </td>
-            <td>
-                <center>CLIENTE</center>
-            </td>
-        </tr>
-    </table>
-    <div class="form_caja">
-        <table width="100%" cellpadding="5">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Produto</th>
-                    <th>Obs.</th>
-                    <th>Pr. Un</th>
-                    <th>Qte</th>
-                    <th>Un</th>
-                    <th>Pr. Parcial</th>
-                    <th>Desconto (%)</th>
-                    <th>Desc. Distr</th>
-                    <th>Preço final</th>
-                </tr>
-            </thead>
-            <tbody>
-                ITENS
-            </tbody>
-        </table>
-        <table width="100%" cellpadding="10">
-            <thead>
-                <tr>
-                    <td width="30%"></td>
-                    <td>
-                        <p><strong>Desc.: </strong>DESCONTO%</p>
-                    </td>
-                    <td>
-                        <p><strong>Frete: R$ </strong>FRETE</p>
-                    </td>
-                    <td>
-                        <p><strong>Subtotal: R$ </strong>SUBTOTAL</p>
-                    </td>
-                    <td>
-                        <p><strong>Total: R$ </strong>TOTAL</p>
-                    </td>
-                </tr>
-            </thead>
-        </table>
-    </div>
-</body>
+  </body>
 
 </html>

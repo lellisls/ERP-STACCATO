@@ -113,6 +113,7 @@ class Orcamento : public RegisterDialog {
     void calcPrecoItemTotal();
     void novoItem();
     void updateId();
+    QString itemData(int row, QString key);
 };
 
 #endif // ORCAMENTO_H

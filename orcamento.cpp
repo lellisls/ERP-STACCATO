@@ -426,46 +426,31 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   preview.exec();
 }
 
+QString Orcamento::itemData(int row, QString key) {
+  return modelItem.data(modelItem.index(row, modelItem.fieldIndex(key))).toString();
+}
+
 QString Orcamento::getItensHtml() {
   QLocale locale(QLocale::Portuguese);
-  QString itens;
+  QDir dir(QApplication::applicationDirPath());
+  QFile file(dir.absoluteFilePath("itens.html"));
+  QString html;
+  if (file.open(QFile::ReadOnly)) {
+    QByteArray data = file.readAll();
+    QTextCodec *codec = Qt::codecForHtml(data);
+    html = codec->toUnicode(data);
+    file.close();
+  }
+  QString itens = html;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
-    itens += "<tr>";
-    itens += "  <td>" + modelItem.data(modelItem.index(row, modelItem.fieldIndex("item"))).toString() +
-             "</td>"; // item
-    itens += "  <td>" + modelItem.data(modelItem.index(row, modelItem.fieldIndex("produto"))).toString() +
-             "</td>"; // Produto
-    itens += "  <td>" + modelItem.data(modelItem.index(row, modelItem.fieldIndex("obs"))).toString() +
-             "</td>"; // Obs
-    itens +=
-      "  <td>" +
-      locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble(),
-                      'f', 2) +
-      "</td>"; // Prc. Un
-    itens += "  <td>" +
-             locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble(),
-                             'f', 2) +
-             "</td>"; // Qte
-    itens += "  <td>" + modelItem.data(modelItem.index(row, modelItem.fieldIndex("un"))).toString() +
-             "</td>"; // Un
-    itens += "  <td>" +
-             locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcial"))).toDouble(),
-                             'f', 2) +
-             "</td>"; // Pr. Parcial
-    itens += "  <td>" +
-             locale.toString(
-               modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble(), 'f', 2) +
-             "</td>"; // Desconto
-    itens +=
-      "  <td>" +
-      locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("descGlobal"))).toDouble(),
-                      'f', 2) +
-      "</td>"; // Desconto Disr.
-    itens += "  <td>" +
-             locale.toString(modelItem.data(modelItem.index(row, modelItem.fieldIndex("total"))).toDouble(),
-                             'f', 2) +
-             "</td>"; // Total
-    itens += "</tr>";
+    itens.replace("#MARCA",itemData(row,"fornecedor"));
+    itens.replace("#CODIGO",itemData(row,"idProduto"));
+    itens.replace("#DESCRICAO",itemData(row,"produto"));
+    itens.replace("#AMBIENTE",itemData(row,"obs"));
+    itens.replace("#PRECOUN",itemData(row,"prcUnitario"));
+    itens.replace("#QTE",locale.toString(itemData(row,"qte").toDouble()));
+    itens.replace("#UN",itemData(row,"un"));
+    itens.replace("#TOTAL", locale.toString(itemData(row,"total").toDouble()));
   }
   return itens;
 }
@@ -490,7 +475,7 @@ void Orcamento::print(QPrinter *printer) {
   queryLoja.first();
 
   //  html.replace("LOGO", "");
-  html.replace("LOGO", QUrl::fromLocalFile(dir.absoluteFilePath("logo.png")).toString());
+  html.replace("#LOGO", QUrl::fromLocalFile(dir.absoluteFilePath("logo.png")).toString());
   //  html.replace("LOGO", QDir::home().absoluteFilePath("logo.png"));
 
   html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
@@ -516,7 +501,7 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("DATA", ui->dateTimeEdit->text());
 
   QString itens = getItensHtml();
-  html.replace("ITENS", itens);
+  html.replace("<!-- #ITENS -->", itens);
 
 //  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
   html.replace("DESCONTO", ui->doubleSpinBoxDescontoGlobal->text());

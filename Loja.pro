@@ -123,7 +123,8 @@ RESOURCES += \
 install_it.path = $$OUT_PWD
 install_it.files = $$PWD/libmysql.dll \
                    $$PWD/logo.png \
-                   $$PWD/orcamento.html
+                   $$PWD/orcamento.html \
+                   $$PWD/itens.html
 INSTALLS += install_it
 
 DISTFILES += \

@@ -50,6 +50,8 @@ class SearchDialog : public QDialog {
     void on_tableBusca_doubleClicked(const QModelIndex &index);
     void on_pushButtonSelecionar_clicked();
     void on_pushButtonCancelar_clicked();
+    void on_radioButtonProdAtivos_clicked();
+    void on_radioButtonProdDesc_clicked();
 
   private:
     Ui::SearchDialog *ui;

@@ -34,6 +34,8 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
     primaryKey = indexes.front();
     ui->lineEditBusca->setFocus();
   }
+
+  ui->groupBoxFiltrosProduto->hide();
 }
 
 SearchDialog::~SearchDialog() {
@@ -256,7 +258,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo",
                        "ipi", "markup", "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes",
-                       "codBarras", "codIndustrial", "qtdPallet", "st"
+                       "codBarras", "codIndustrial", "qtdPallet", "st", "validade", "expirado"
                       });
 
   QVector<QPair<QString, QString>> headerData;
@@ -276,6 +278,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
   sdProd->ui->tableBusca->resizeColumnsToContents();
   sdProd->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+  sdProd->ui->groupBoxFiltrosProduto->show();
 
   return sdProd;
 }
@@ -434,4 +437,14 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   sdProfissional->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
   return sdProfissional;
+}
+
+void SearchDialog::on_radioButtonProdAtivos_clicked()
+{
+  model.setFilter("expirado = 0");
+}
+
+void SearchDialog::on_radioButtonProdDesc_clicked()
+{
+  model.setFilter("expirado = 1");
 }

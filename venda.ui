@@ -896,6 +896,9 @@
                  <property name="text">
                   <string>Limpar pagamentos</string>
                  </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
                 </widget>
                </item>
               </layout>

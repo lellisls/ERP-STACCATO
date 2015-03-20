@@ -64,10 +64,10 @@ MainWindow::MainWindow(QWidget *parent)
 
   initializeTables();
 
-  ui->tabWidget->setTabEnabled(2, false);
-  ui->tabWidget->setTabEnabled(3, false);
-  ui->tabWidget->setTabEnabled(4, false);
-  ui->tabWidget->setTabEnabled(5, false);
+//  ui->tabWidget->setTabEnabled(2, false);
+//  ui->tabWidget->setTabEnabled(3, false);
+//  ui->tabWidget->setTabEnabled(4, false);
+//  ui->tabWidget->setTabEnabled(5, false);
 
   setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipo());
 

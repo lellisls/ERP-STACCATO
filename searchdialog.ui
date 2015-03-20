@@ -82,6 +82,29 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBoxFiltrosProduto">
+     <property name="title">
+      <string>Filtro Produto:</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButtonProdAtivos">
+        <property name="text">
+         <string>Ativos</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButtonProdDesc">
+        <property name="text">
+         <string>Descontinuados</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

@@ -4,7 +4,6 @@
 #include <QSqlQuery>
 
 class Endereco {
-  explicit Endereco(int idEndereco);
   QString m_descricao;
   QString m_cep;
   QString m_logradouro;
@@ -17,6 +16,7 @@ class Endereco {
   int m_idEndereco;
 
 public:
+  explicit Endereco(int idEndereco);
   int idEndereco() const;
   QString logradouro() const;
   QString bairro() const;
@@ -33,6 +33,9 @@ public:
   void setUf(const QString & uf);
   bool ativo() const;
   void setAtivo(bool ativo);
+  QString umaLinha();
+  QString linhaUm();
+  QString linhaDois();
 };
 
 #endif // ENDERECO_HPP
@@ -57,6 +60,18 @@ Endereco::Endereco(int idEndereco) : m_idEndereco(-1) {
 
 bool Endereco::ativo() const {
   return m_ativo;
+}
+
+QString Endereco::linhaUm() {
+  return( m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro);
+}
+
+QString Endereco::linhaDois() {
+  return(m_cidade + " - " + m_uf + " - CEP: " + m_cep );
+}
+
+QString Endereco::umaLinha() {
+  return(linhaUm() + " - " + m_cidade + " - " + m_uf);
 }
 
 QString Endereco::uf() const {

@@ -87,7 +87,8 @@ HEADERS  += backgroundproxymodel.h \
     loginconfig.h \
     cepcompleter.h \
     importaexport.h \
-    cadastrofornecedor.h
+    cadastrofornecedor.h \
+    endereco.hpp
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \

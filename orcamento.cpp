@@ -22,6 +22,7 @@
 #include "venda.h"
 #include "searchdialog.h"
 #include "apagaorcamento.h"
+#include "endereco.hpp"
 
 Orcamento::Orcamento(QWidget *parent)
   : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
@@ -474,43 +475,58 @@ void Orcamento::print(QPrinter *printer) {
   }
   queryLoja.first();
 
-  //  html.replace("LOGO", "");
-  html.replace("#LOGO", QUrl::fromLocalFile(dir.absoluteFilePath("logo.png")).toString());
-  //  html.replace("LOGO", QDir::home().absoluteFilePath("logo.png"));
-
+  //Loja
+  html.replace("#LOGO", QUrl::fromLocalFile(dir.absoluteFilePath("logo.jpg")).toString());
   html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
   html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
-  html.replace("TELEFONE", queryLoja.value("tel").toString());
+  html.replace("#TELLOJA", queryLoja.value("tel").toString());
 
-  str = "SELECT * FROM Endereco WHERE idEndereco='" + queryLoja.value("idEndereco").toString() + "';";
-  QSqlQuery queryEnd(str);
-  if (!queryEnd.exec(str)) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryEnd.lastError();
+  Endereco endLoja( queryLoja.value("idEndereco").toInt());
+  //End. Loja
+  html.replace("#ENDLOJA01",endLoja.linhaUm());
+  html.replace("#ENDLOJA02",endLoja.linhaDois());
+//  html.replace("TELLOJA",end);
+  //Orcamento
+  html.replace("#ORCAMENTO", ui->lineEditOrcamento->text());
+  html.replace("#DATA", ui->dateTimeEdit->text());
+
+  //Cliente
+  str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->getValue().toString() + "';";
+  QSqlQuery queryCliente(str);
+  if (!queryCliente.exec()) {
+    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryCliente.lastError();
   }
-  queryEnd.first();
+  queryCliente.first();
+  html.replace("#NOME", ui->itemBoxCliente->text());
+  if(queryCliente.value("pfpj")=="PF"){
+    html.replace("#CPFCNPJ", queryCliente.value("cpf").toString());
+  }else{
+    html.replace("#CPFCNPJ", queryCliente.value("cnpj").toString());
+  }
+  html.replace("#EMAILCLIENTE",queryCliente.value("email").toString());
+  html.replace("#TEL01",queryCliente.value("tel").toString());
+  html.replace("#TEL02",queryCliente.value("cel").toString());
 
-  html.replace("LOGRADOURO", queryEnd.value("logradouro").toString());
-  html.replace("NUMERO", queryEnd.value("numero").toString());
-  html.replace("BAIRRO", queryEnd.value("bairro").toString());
-  html.replace("CIDADE", queryEnd.value("cidade").toString());
-  html.replace("UF", queryEnd.value("uf").toString());
+  //End. Cliente
+  Endereco endFiscal(data("idEnderecoEntrega").toInt());
+  html.replace("#ENDENTREGA",endFiscal.umaLinha());
+  html.replace("#CEPENTREGA",endFiscal.cep());
+  //Vendedor
+  html.replace("#NOMEVEND", ui->itemBoxVendedor->text());
 
-  html.replace("IDORCAMENTO", ui->lineEditOrcamento->text());
-  html.replace("VENDEDOR", ui->itemBoxVendedor->text());
-  html.replace("CLIENTE", ui->itemBoxCliente->text());
-  html.replace("DATA", ui->dateTimeEdit->text());
-
+  //Itens
   QString itens = getItensHtml();
   html.replace("<!-- #ITENS -->", itens);
 
+  //Totais
 //  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
-  html.replace("DESCONTO", ui->doubleSpinBoxDescontoGlobal->text());
-  html.replace("FRETE", ui->doubleSpinBoxFrete->text());
-  html.replace("TOTAL", ui->doubleSpinBoxFinal->text());
+  html.replace("#DESCONTOGLOBAL", ui->doubleSpinBoxDescontoGlobal->text());
+  html.replace("#FRETE", ui->doubleSpinBoxFrete->text());
+  html.replace("#TOTALDESC", ui->doubleSpinBoxTotal->text());
+  html.replace("#TOTALFINAL", ui->doubleSpinBoxFinal->text());
 
   frame->setHtml(html);
-  //  qDebug() << html;
-  //  frame->setTextSizeMultiplier(1.2);
+//  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
   QFile outputFile(dir.absoluteFilePath("orc.html"));
   if (outputFile.open(QIODevice::WriteOnly)) {

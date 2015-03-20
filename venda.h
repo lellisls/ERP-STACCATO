@@ -27,7 +27,6 @@ class Venda : public RegisterDialog {
     void on_doubleSpinBoxPgt1_valueChanged(double);
     void on_doubleSpinBoxPgt2_valueChanged(double);
     void on_doubleSpinBoxPgt3_valueChanged(double);
-    //    void on_doubleSpinBoxRestante_valueChanged(double value);
     void on_pushButtonCancelar_clicked();
     void on_pushButtonFecharPedido_clicked();
     void on_pushButtonNFe_clicked();
@@ -44,6 +43,8 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt1_dateChanged(const QDate &date);
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
+    void on_doubleSpinBoxFinal_editingFinished();
+    void on_doubleSpinBoxDescontoGlobal_valueChanged(double);
 
   signals:
     void finished();

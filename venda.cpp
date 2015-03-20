@@ -129,11 +129,11 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   }
 
   ui->doubleSpinBoxPgt1->setValue(
-    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
+        modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   ui->doubleSpinBoxPgt1->setMaximum(ui->doubleSpinBoxPgt1->value());
 
   ui->doubleSpinBoxTotalPag->setValue(
-    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
+        modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   //  ui->doubleSpinBoxTotal->setValue(
   //    modelVenda.data(modelVenda.index(row, modelVenda.fieldIndex("total"))).toDouble());
   //  ui->doubleSpinBoxRestante->setValue(
@@ -185,7 +185,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
     double descItem =
-      modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
+        modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     double itemBruto = qteItem * prcUnItem;
     subTotalBruto += itemBruto;
     double stItem = itemBruto * (1.0 - descItem);
@@ -284,32 +284,33 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   qry.exec("START TRANSACTION");
 
   if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
-                "idProfissional, data, total, descontoPorc, frete, validade, status FROM Orcamento WHERE "
+                "idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status FROM Orcamento WHERE "
                 "idOrcamento = '" + idOrcamento + "'")) {
-    qDebug() << "Error inserting into Venda: " << qry.lastError();
+    qDebug() << "Erro inserindo em Venda: " << qry.lastError();
+    qDebug() << "qry: " << qry.lastQuery();
     qry.exec("ROLLBACK");
     return;
   }
 
   if (!qry.exec("UPDATE Venda SET status = 'ABERTO' WHERE idVenda = '" + idOrcamento + "'")) {
-    qDebug() << "Error updating status from Venda: " << qry.lastError();
+    qDebug() << "Erro atualizando status de Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
   if (!qry.exec("UPDATE Venda SET data = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +
                 "'")) {
-    qDebug() << "Error setting date on sale: " << qry.lastError();
+    qDebug() << "Erro setando data em Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
   if (!modelFluxoCaixa.submitAll()) {
-    qDebug() << "Error submitting modelFluxoCaixa: " << modelFluxoCaixa.lastError();
+    qDebug() << "Erro submetendo fluxoCaixa: " << modelFluxoCaixa.lastError();
   }
 
   if (!modelItem.submitAll()) {
-    qDebug() << "Error submitting modelItem: " << modelItem.lastError();
+    qDebug() << "Erro submetendo modelItem: " << modelItem.lastError();
     //    qDebug() << "query: " << modelItem.query().lastQuery();
     qry.exec("ROLLBACK");
     return;
@@ -327,7 +328,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   if (qryEstoque.size() > 0) {
     if (!qry.exec(
           "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-          "idEnderecoEntrega, idProfissional, data, total, desconto, frete, validade, status) SELECT * "
+          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status) SELECT * "
           "FROM Venda WHERE idVenda = '" +
           idOrcamento + "'")) {
       qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
@@ -682,4 +683,28 @@ void Venda::on_dateEditPgt2_dateChanged(const QDate &) {
 
 void Venda::on_dateEditPgt3_dateChanged(const QDate &) {
   montarFluxoCaixa();
+}
+
+void Venda::on_doubleSpinBoxFinal_editingFinished()
+{
+  if (modelItem.rowCount() == 0 || subTotalItens == 0) {
+    calcPrecoGlobalTotal();
+    return;
+  }
+
+  double new_total = ui->doubleSpinBoxFinal->value();
+  double frete = ui->doubleSpinBoxFrete->value();
+  double new_subtotal = new_total - frete;
+
+  if (new_subtotal >= subTotalItens) {
+    ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
+    calcPrecoGlobalTotal();
+  } else {
+    calcPrecoGlobalTotal(true);
+  }
+}
+
+void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double)
+{
+  calcPrecoGlobalTotal();
 }

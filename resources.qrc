@@ -8,5 +8,7 @@
         <file>icone-pessoa-fisica.png</file>
         <file>icone-pessoa-juridica.png</file>
         <file>qt_portuguese.qm</file>
+        <file>logo.svg</file>
+        <file>logo.jpg</file>
     </qresource>
 </RCC>

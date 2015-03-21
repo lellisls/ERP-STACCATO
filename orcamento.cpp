@@ -89,7 +89,7 @@ Orcamento::Orcamento(QWidget *parent)
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->checkBoxFreteManual->show();
-  }else{
+  } else {
     ui->checkBoxFreteManual->hide();
   }
 }
@@ -444,14 +444,14 @@ QString Orcamento::getItensHtml() {
   }
   QString itens = html;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
-    itens.replace("#MARCA",itemData(row,"fornecedor"));
-    itens.replace("#CODIGO",itemData(row,"idProduto"));
-    itens.replace("#DESCRICAO",itemData(row,"produto"));
-    itens.replace("#AMBIENTE",itemData(row,"obs"));
-    itens.replace("#PRECOUN",itemData(row,"prcUnitario"));
-    itens.replace("#QTE",locale.toString(itemData(row,"qte").toDouble()));
-    itens.replace("#UN",itemData(row,"un"));
-    itens.replace("#TOTAL", locale.toString(itemData(row,"total").toDouble()));
+    itens.replace("#MARCA#",itemData(row,"fornecedor"));
+    itens.replace("#CODIGO#",itemData(row,"idProduto"));
+    itens.replace("#DESCRICAO#",itemData(row,"produto"));
+    itens.replace("#AMBIENTE#",itemData(row,"obs"));
+    itens.replace("#PRECOUN#",itemData(row,"prcUnitario"));
+    itens.replace("#QTE#",locale.toString(itemData(row,"qte").toDouble()));
+    itens.replace("#UN#",itemData(row,"un"));
+    itens.replace("#TOTAL#", locale.toString(itemData(row,"total").toDouble()));
   }
   return itens;
 }
@@ -476,19 +476,19 @@ void Orcamento::print(QPrinter *printer) {
   queryLoja.first();
 
   //Loja
-  html.replace("#LOGO", QUrl::fromLocalFile(dir.absoluteFilePath("logo.jpg")).toString());
-  html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
-  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
-  html.replace("#TELLOJA", queryLoja.value("tel").toString());
+  html.replace("#LOGO#", QUrl::fromLocalFile(dir.absoluteFilePath("logo.jpg")).toString());
+//  html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
+//  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
+  html.replace("#TELLOJA#", queryLoja.value("tel").toString());
 
   Endereco endLoja( queryLoja.value("idEndereco").toInt());
   //End. Loja
-  html.replace("#ENDLOJA01",endLoja.linhaUm());
-  html.replace("#ENDLOJA02",endLoja.linhaDois());
+  html.replace("#ENDLOJA01#",endLoja.linhaUm());
+  html.replace("#ENDLOJA02#",endLoja.linhaDois());
 //  html.replace("TELLOJA",end);
   //Orcamento
-  html.replace("#ORCAMENTO", ui->lineEditOrcamento->text());
-  html.replace("#DATA", ui->dateTimeEdit->text());
+  html.replace("#ORCAMENTO#", ui->lineEditOrcamento->text());
+  html.replace("#DATA#", ui->dateTimeEdit->text());
 
   //Cliente
   str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->getValue().toString() + "';";
@@ -497,34 +497,50 @@ void Orcamento::print(QPrinter *printer) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryCliente.lastError();
   }
   queryCliente.first();
-  html.replace("#NOME", ui->itemBoxCliente->text());
-  if(queryCliente.value("pfpj")=="PF"){
-    html.replace("#CPFCNPJ", queryCliente.value("cpf").toString());
-  }else{
-    html.replace("#CPFCNPJ", queryCliente.value("cnpj").toString());
+  html.replace("#NOME#", ui->itemBoxCliente->text());
+  if(queryCliente.value("pfpj")=="PF") {
+    html.replace("#CPFCNPJ#", queryCliente.value("cpf").toString());
+  } else {
+    html.replace("#CPFCNPJ#", queryCliente.value("cnpj").toString());
   }
-  html.replace("#EMAILCLIENTE",queryCliente.value("email").toString());
-  html.replace("#TEL01",queryCliente.value("tel").toString());
-  html.replace("#TEL02",queryCliente.value("cel").toString());
+  html.replace("#EMAILCLIENTE#",queryCliente.value("email").toString());
+  html.replace("#TEL01#",queryCliente.value("tel").toString());
+  html.replace("#TEL02#",queryCliente.value("cel").toString());
 
   //End. Cliente
-  Endereco endFiscal(data("idEnderecoEntrega").toInt());
-  html.replace("#ENDENTREGA",endFiscal.umaLinha());
-  html.replace("#CEPENTREGA",endFiscal.cep());
+  Endereco endEntrega(data("idEnderecoEntrega").toInt());
+  html.replace("#ENDENTREGA#",endEntrega.umaLinha());
+  html.replace("#CEPENTREGA#",endEntrega.cep());
+
+  //Profissional
+  str = "SELECT * FROM Profissional WHERE idProfissional='"+ ui->itemBoxProfissional->getValue().toString() + "'";
+  QSqlQuery queryProf;
+  if(!queryProf.exec(str)){
+    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryProf.lastError();
+  }
+  queryProf.first();
+  html.replace("#NOMEPRO#", ui->itemBoxProfissional->text());
+  html.replace("#TELPRO#", queryProf.value("tel").toString());
+  html.replace("#EMAILPRO#", queryProf.value("email").toString());
+
   //Vendedor
-  html.replace("#NOMEVEND", ui->itemBoxVendedor->text());
+  html.replace("#NOMEVEND#", ui->itemBoxVendedor->text());
 
   //Itens
   QString itens = getItensHtml();
-  html.replace("<!-- #ITENS -->", itens);
+  html.replace("<!-- #ITENS# -->", itens);
 
   //Totais
 //  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
-  html.replace("#DESCONTOGLOBAL", ui->doubleSpinBoxDescontoGlobal->text());
-  html.replace("#FRETE", ui->doubleSpinBoxFrete->text());
-  html.replace("#TOTALDESC", ui->doubleSpinBoxTotal->text());
-  html.replace("#TOTALFINAL", ui->doubleSpinBoxFinal->text());
+  html.replace("#SUBTOTALBRUTO#", ui->doubleSpinBoxSubTotalBruto->text());
+  html.replace("#SUBTOTALLIQ#", ui->doubleSpinBoxTotal->text());
+  html.replace("#DESCONTORS#", ui->doubleSpinBoxDescontoRS->text());
+  html.replace("#FRETE#", ui->doubleSpinBoxFrete->text());
+  html.replace("#TOTALFINAL#", ui->doubleSpinBoxFinal->text());
 
+  //Prazos
+  html.replace("#PRAZOENTREGA#","A definir");
+  html.replace("#FORMAPAGAMENTO#","A definir");
   frame->setHtml(html);
 //  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
@@ -783,9 +799,9 @@ void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
   }
   ui->doubleSpinBoxFrete->setFrame(checked);
   ui->doubleSpinBoxFrete->setReadOnly(!checked);
-  if(checked){
+  if(checked) {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
-  }else{
+  } else {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::NoButtons);
   }
   calcPrecoGlobalTotal();

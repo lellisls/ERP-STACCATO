@@ -659,6 +659,12 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
+  if(ui->itemBoxEndereco->text().isEmpty()){
+    QMessageBox::warning(this, "Aviso!", "Deve selecionar endereço!", QMessageBox::Ok);
+    ui->itemBoxEndereco->setFocus();
+    return;
+  }
+
   int idCliente = ui->itemBoxCliente->getValue().toInt();
   QSqlQuery qryCadastro;
   if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente "

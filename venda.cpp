@@ -235,22 +235,31 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 }
 
 void Venda::fillTotals() {
-  QSqlQuery queryOrc;
-  if (!queryOrc.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
-    qDebug() << "Erro buscando orçamento: " << queryOrc.lastError();
-    qDebug() << "query: " << queryOrc.lastQuery();
+  QSqlQuery query;
+  if (!query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+    qDebug() << "Erro buscando orçamento: " << query.lastError();
+    qDebug() << "query: " << query.lastQuery();
   }
 
-  if (!queryOrc.first()) {
-    qDebug() << "Não achou orçamento: " << queryOrc.size();
+  if (!query.first()) {
+    qDebug() << "Não achou orçamento: " << query.size();
+    qDebug() << "query: " << query.lastQuery();
+
+    if(!query.exec("SELECT * FROM Venda WHERE idVenda = '"+idOrcamento+"'")){
+      qDebug() << "Erro buscando venda: " << query.lastError();
+    }
+    if(!query.first()){
+      qDebug() << "Não achou venda: " << query.size();
+      qDebug() << "query: " << query.lastQuery();
+    }
   }
 
-  ui->doubleSpinBoxSubTotalBruto->setValue(queryOrc.value("subTotalBru").toDouble());
-  ui->doubleSpinBoxTotal->setValue(queryOrc.value("subTotalLiq").toDouble());
-  ui->doubleSpinBoxFrete->setValue(queryOrc.value("frete").toDouble());
-  ui->doubleSpinBoxDescontoGlobal->setValue(queryOrc.value("descontoPorc").toDouble());
-  ui->doubleSpinBoxDescontoRS->setValue(queryOrc.value("descontoReais").toDouble());
-  ui->doubleSpinBoxFinal->setValue(queryOrc.value("total").toDouble());
+  ui->doubleSpinBoxSubTotalBruto->setValue(query.value("subTotalBru").toDouble());
+  ui->doubleSpinBoxTotal->setValue(query.value("subTotalLiq").toDouble());
+  ui->doubleSpinBoxFrete->setValue(query.value("frete").toDouble());
+  ui->doubleSpinBoxDescontoGlobal->setValue(query.value("descontoPorc").toDouble());
+  ui->doubleSpinBoxDescontoRS->setValue(query.value("descontoReais").toDouble());
+  ui->doubleSpinBoxFinal->setValue(query.value("total").toDouble());
 }
 
 void Venda::clearFields() {
@@ -259,8 +268,11 @@ void Venda::clearFields() {
 
 void Venda::setupMapper() {
   addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
-  addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
+  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
+  addMapping(ui->doubleSpinBoxTotal, "subTotalLiq");
   addMapping(ui->doubleSpinBoxFrete, "frete");
+  addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
+  addMapping(ui->doubleSpinBoxDescontoRS, "descontoReais");
   addMapping(ui->doubleSpinBoxFinal, "total");
 }
 

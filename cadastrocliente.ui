@@ -101,7 +101,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -645,41 +645,6 @@
              <string/>
             </property>
             <layout class="QGridLayout" name="gridLayout_22">
-             <item row="0" column="0">
-              <widget class="QLabel" name="labelDescricao">
-               <property name="text">
-                <string>Descricao</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="labelCEP">
-               <property name="text">
-                <string>CEP</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="labelEndereco">
-               <property name="text">
-                <string>Logradouro</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QLabel" name="labelNro">
-               <property name="text">
-                <string>Nro.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QLabel" name="labelComp">
-               <property name="text">
-                <string>Complemento</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="5">
               <widget class="QLabel" name="labelBairro">
                <property name="text">
@@ -698,16 +663,6 @@
               <widget class="QLabel" name="labelUF">
                <property name="text">
                 <string>UF</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLineEdit" name="lineEditDescricao">
-               <property name="minimumSize">
-                <size>
-                 <width>150</width>
-                 <height>0</height>
-                </size>
                </property>
               </widget>
              </item>
@@ -817,6 +772,66 @@
                </property>
               </widget>
              </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelDescricao">
+               <property name="text">
+                <string>Descricao</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="labelCEP">
+               <property name="text">
+                <string>CEP</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="labelEndereco">
+               <property name="text">
+                <string>Logradouro</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="labelNro">
+               <property name="text">
+                <string>Nro.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="labelComp">
+               <property name="text">
+                <string>Complemento</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QComboBox" name="comboBoxTipoEnd">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Principal</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Faturamento</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Entrega</string>
+                </property>
+               </item>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -922,7 +937,6 @@
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
   <tabstop>tableEndereco</tabstop>
-  <tabstop>lineEditDescricao</tabstop>
   <tabstop>lineEditCEP</tabstop>
   <tabstop>lineEditEndereco</tabstop>
   <tabstop>lineEditNro</tabstop>

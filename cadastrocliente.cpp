@@ -263,7 +263,8 @@ void CadastroCliente::setupMapper() {
   addMapping(ui->itemBoxProfissional, "idProfissionalRel", "value");
   addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
 
-  mapperEnd.addMapping(ui->lineEditDescricao, modelEnd.fieldIndex("descricao"));
+//  mapperEnd.addMapping(ui->lineEditDescricao, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
   mapperEnd.addMapping(ui->lineEditEndereco, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
@@ -536,7 +537,7 @@ void CadastroCliente::validaCPF(QString text) {
 }
 
 bool CadastroCliente::atualizarEnd() {
-  if (!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditCEP, ui->lineEditEndereco,
+  if (!RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco,
                                      ui->lineEditNro, ui->lineEditBairro, ui->lineEditCidade,
                                      ui->lineEditUF
                                     }))
@@ -555,8 +556,9 @@ bool CadastroCliente::atualizarEnd() {
       return false;
     }
   }
-  if (!ui->lineEditDescricao->text().isEmpty())
-    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->lineEditDescricao->text());
+//  if (!ui->lineEditDescricao->text().isEmpty())
+//    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->lineEditDescricao->text());
+  modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText());
   if (!ui->lineEditCEP->text().isEmpty())
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text());
   if (!ui->lineEditEndereco->text().isEmpty())
@@ -614,7 +616,7 @@ void CadastroCliente::clearEnd() {
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
   ui->lineEditComp->clear();
-  ui->lineEditDescricao->clear();
+//  ui->lineEditDescricao->clear();
   ui->lineEditEndereco->clear();
   ui->lineEditNro->clear();
   ui->lineEditUF->clear();

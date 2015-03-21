@@ -505,7 +505,7 @@ void Orcamento::print(QPrinter *printer) {
   }
   html.replace("#EMAILCLIENTE#",queryCliente.value("email").toString());
   html.replace("#TEL01#",queryCliente.value("tel").toString());
-  html.replace("#TEL02#",queryCliente.value("cel").toString());
+  html.replace("#TEL02#",queryCliente.value("telCel").toString());
 
   //End. Cliente
   Endereco endEntrega(data("idEnderecoEntrega").toInt());

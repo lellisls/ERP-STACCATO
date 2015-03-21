@@ -24,7 +24,9 @@ class PedidosCompra : public QDialog {
 
     void on_radioButtonVenda_toggled(bool checked);
 
-private:
+    void on_pushButtonNFe_clicked();
+
+  private:
     // attributes
     Ui::PedidosCompra *ui;
     QSqlRelationalTableModel modelItemPedidos, modelPedidos;

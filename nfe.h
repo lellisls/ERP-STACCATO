@@ -11,6 +11,7 @@ class NFe : public QObject {
     explicit NFe(QString idVenda, QObject *parent = 0);
     ~NFe();
     bool TXT();
+    bool TXT_Pedido(QList<int> rows);
     QString calculaDigitoVerificador(QString chave);
     QString getArquivo() const;
     QString getChaveAcesso() const;
@@ -27,6 +28,7 @@ class NFe : public QObject {
     QVariant getFromLoja(QString column);
     QVariant getFromItemModel(int row, QString column);
     bool writeTXT(QString chave);
+    bool writeTXT_Pedido(QString chave, QList<int> rows);
 };
 
 #endif // NFE_H

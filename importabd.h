@@ -5,8 +5,6 @@
 #include <QFutureWatcher>
 #include <QProgressDialog>
 
-#include "importaportinari.h"
-#include "importaapavisa.h"
 #include "importaexport.h"
 
 namespace Ui {
@@ -27,8 +25,6 @@ class ImportaBD : public QDialog {
     void updateProgressText(QString str);
 
   private slots:
-    void on_pushButtonApavisa_clicked();
-    void on_pushButtonPortinari_clicked();
     void on_pushButtonExport_clicked();
 
   private:
@@ -36,8 +32,6 @@ class ImportaBD : public QDialog {
     Ui::ImportaBD *ui;
     QFutureWatcher<QString> futureWatcher;
     QProgressDialog *progressDialog;
-    ImportaPortinari portinari;
-    ImportaApavisa apavisa;
     ImportaExport importaExport;
 };
 

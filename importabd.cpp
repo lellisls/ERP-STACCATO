@@ -25,11 +25,17 @@ ImportaBD::ImportaBD(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaBD) {
   connect(&importaExport, &ImportaExport::progressRangeChanged, this, &ImportaBD::updateProgressRange);
   connect(&importaExport, &ImportaExport::progressValueChanged, this, &ImportaBD::updateProgressValue);
   connect(&importaExport, &ImportaExport::progressTextChanged, this, &ImportaBD::updateProgressText);
-  connect(progressDialog, &QProgressDialog::canceled, &portinari, &ImportaPortinari::cancel);
-  connect(&portinari, &ImportaPortinari::progressRangeChanged, this, &ImportaBD::updateProgressRange);
-  connect(&portinari, &ImportaPortinari::progressValueChanged, this, &ImportaBD::updateProgressValue);
-  connect(&portinari, &ImportaPortinari::progressTextChanged, this, &ImportaBD::updateProgressText);
-  show();
+//  show();
+
+  QString file = QFileDialog::getOpenFileName(this, "Importar tabela genérica", QDir::currentPath(), tr("Excel (*.xlsx)"));
+  if (file.isEmpty()) {
+    return;
+  }
+  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
+
+  QFuture<QString> future = QtConcurrent::run(&importaExport, &ImportaExport::importar, file, validade);
+  futureWatcher.setFuture(future);
+  progressDialog->exec();
 }
 
 ImportaBD::~ImportaBD() {
@@ -52,38 +58,14 @@ void ImportaBD::updateProgressText(QString str) {
   progressDialog->setLabelText(str);
 }
 
-void ImportaBD::on_pushButtonPortinari_clicked() {
-  QString file = QFileDialog::getOpenFileName(this, "Importar tabela da Portinari", QDir::currentPath(), tr("Excel (*.xls)"));
-  if (file.isEmpty()) {
-    return;
-  }
-  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
-
-  QFuture<QString> future = QtConcurrent::run(&this->portinari, &ImportaPortinari::importar, file, validade);
-  futureWatcher.setFuture(future);
-  progressDialog->exec();
-}
-
-void ImportaBD::on_pushButtonApavisa_clicked() {
-  QString file = QFileDialog::getOpenFileName(this, "Importar tabela da Apavisa", QDir::currentPath(), tr("Excel (*.xls)"));
-  if (file.isEmpty()) {
-    return;
-  }
-  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
-
-  QFuture<QString> future = QtConcurrent::run(&this->apavisa, &ImportaApavisa::importar, file, validade);
-  futureWatcher.setFuture(future);
-  progressDialog->exec();
-}
-
 void ImportaBD::on_pushButtonExport_clicked() {
-  QString file = QFileDialog::getOpenFileName(this, "Importar tabela genérica", QDir::currentPath(), tr("Excel (*.xlsx)"));
-  if (file.isEmpty()) {
-    return;
-  }
-  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
+//  QString file = QFileDialog::getOpenFileName(this, "Importar tabela genérica", QDir::currentPath(), tr("Excel (*.xlsx)"));
+//  if (file.isEmpty()) {
+//    return;
+//  }
+//  int validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
 
-  QFuture<QString> future = QtConcurrent::run(&importaExport, &ImportaExport::importar, file, validade);
-  futureWatcher.setFuture(future);
-  progressDialog->exec();
+//  QFuture<QString> future = QtConcurrent::run(&importaExport, &ImportaExport::importar, file, validade);
+//  futureWatcher.setFuture(future);
+//  progressDialog->exec();
 }

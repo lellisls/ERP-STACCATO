@@ -7,8 +7,7 @@
 #include "importaapavisa.h"
 #include "cadastrocliente.h"
 
-void ImportaApavisa::cancel()
-{
+void ImportaApavisa::cancel() {
   canceled = true;
 }
 
@@ -56,10 +55,10 @@ QString ImportaApavisa::importar(QString file, int validade) {
 
     QSqlQuery queryProd("SELECT * FROM [BASE Apavisa$]", db);
     int current = 0;
-    while(queryProd.next()){
+    while(queryProd.next()) {
       emit progressValueChanged(current++);
 
-      if(canceled){
+      if(canceled) {
         emit progressFinished();
         return ("Operação cancelada!");
         QSqlQuery("ROLLBACK").exec();
@@ -67,7 +66,7 @@ QString ImportaApavisa::importar(QString file, int validade) {
 
       QString fornecedor = queryProd.value(21).toString();
 
-      if(!fornecedor.isEmpty() and (fornecedor != "Marca")){
+      if(!fornecedor.isEmpty() and (fornecedor != "Marca")) {
 
         QString codigo = queryProd.value(22).toString();
         QString colecao = queryProd.value(23).toString();
@@ -101,16 +100,16 @@ QString ImportaApavisa::importar(QString file, int validade) {
 
         // Verifica se produto já se encontra no BD
         QSqlQuery produto;
-        if(!produto.exec("SELECT * FROM Produto WHERE fornecedor = '"+fornecedor+"' AND codComercial = '"+codigo+"'")){
+        if(!produto.exec("SELECT * FROM Produto WHERE fornecedor = '"+fornecedor+"' AND codComercial = '"+codigo+"'")) {
           qDebug() << "Erro buscando produto: " << produto.lastError();
         }
 
-        if(produto.next()){
+        if(produto.next()) {
           QString idProduto = produto.value("idProduto").toString();
 
           // Se o preço for igual extender a validade
-          if(produto.value("precoVenda").toString() == venda){
-            if(!produto.exec("UPDATE Produto_has_Preco SET validadeFim = '"+QDate::currentDate().addDays(validade).toString("yyyy-MM-dd")+"' WHERE idProduto = " + produto.value("idProduto").toString() + "")){
+          if(produto.value("precoVenda").toString() == venda) {
+            if(!produto.exec("UPDATE Produto_has_Preco SET validadeFim = '"+QDate::currentDate().addDays(validade).toString("yyyy-MM-dd")+"' WHERE idProduto = " + produto.value("idProduto").toString() + "")) {
               qDebug() << "Erro atualizando validade do preço: " << produto.lastError();
             }
             notChanged++;
@@ -119,11 +118,11 @@ QString ImportaApavisa::importar(QString file, int validade) {
 
           // Guarda novo preço do produto e altera sua validade
           if(!produto.exec(
-               "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES ("+idProduto+", "+venda+", '"+QDate::currentDate().toString("yyyy-MM-dd")+"', '"+QDate::currentDate().addDays(validade).toString("yyyy-MM-dd")+"')")){
+                "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES ("+idProduto+", "+venda+", '"+QDate::currentDate().toString("yyyy-MM-dd")+"', '"+QDate::currentDate().addDays(validade).toString("yyyy-MM-dd")+"')")) {
             qDebug() << "Erro inserindo em Preço: " << produto.lastError();
             qDebug() << "qry: " << produto.lastQuery();
           }
-          if(!produto.exec("UPDATE Produto SET precoVenda = "+venda+" WHERE idProduto = "+idProduto+"")){
+          if(!produto.exec("UPDATE Produto SET precoVenda = "+venda+" WHERE idProduto = "+idProduto+"")) {
             qDebug() << "Erro atualizando preço de produto: " << produto.lastError();
             qDebug() << "qry upd: " << produto.lastQuery();
           }
@@ -134,12 +133,12 @@ QString ImportaApavisa::importar(QString file, int validade) {
 
         QSqlQuery qry;
         qry.prepare(
-              "INSERT INTO mydb.Produto "
-              "(idFornecedor, fornecedor, colecao, formComercial, descricao, codComercial, "
-              "pccx, m2cx, qtdPallet, un, ncm, "
-              "precoVenda, custo, markup, ui) VALUES (:idFornecedor, :fornecedor, :colecao, :formComercial, "
-              ":descricao, :codComercial, :pccx, :m2cx, :qtdPallet, :un, :ncm, :precoVenda, :custo, "
-              ":markup, :ui)");
+          "INSERT INTO mydb.Produto "
+          "(idFornecedor, fornecedor, colecao, formComercial, descricao, codComercial, "
+          "pccx, m2cx, qtdPallet, un, ncm, "
+          "precoVenda, custo, markup, ui) VALUES (:idFornecedor, :fornecedor, :colecao, :formComercial, "
+          ":descricao, :codComercial, :pccx, :m2cx, :qtdPallet, :un, :ncm, :precoVenda, :custo, "
+          ":markup, :ui)");
         qry.bindValue(":idFornecedor", map.value(fornecedor));
         qry.bindValue(":fornecedor", fornecedor);
         qry.bindValue(":colecao", colecao);
@@ -193,7 +192,7 @@ int ImportaApavisa::buscarCadastrarFornecedor(QString fornecedor) {
     QSqlQuery cadastrar;
     if (!cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
-    } else{
+    } else {
       return cadastrar.lastInsertId().toInt();
     }
   }

@@ -14,31 +14,31 @@ namespace Ui {
 }
 
 class ImportaBD : public QDialog {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-  explicit ImportaBD(QWidget *parent = 0);
-  ~ImportaBD();
+  public:
+    explicit ImportaBD(QWidget *parent = 0);
+    ~ImportaBD();
 
-public slots:
-  void mostraResultado();
-  void updateProgressRange(int max);
-  void updateProgressValue(int val);
-  void updateProgressText(QString str);
+  public slots:
+    void mostraResultado();
+    void updateProgressRange(int max);
+    void updateProgressValue(int val);
+    void updateProgressText(QString str);
 
-private slots:
-  void on_pushButtonApavisa_clicked();
-  void on_pushButtonPortinari_clicked();
-  void on_pushButtonExport_clicked();
+  private slots:
+    void on_pushButtonApavisa_clicked();
+    void on_pushButtonPortinari_clicked();
+    void on_pushButtonExport_clicked();
 
-private:
-  // attributes
-  Ui::ImportaBD *ui;
-  QFutureWatcher<QString> futureWatcher;
-  QProgressDialog *progressDialog;
-  ImportaPortinari portinari;
-  ImportaApavisa apavisa;
-  ImportaExport importaExport;
+  private:
+    // attributes
+    Ui::ImportaBD *ui;
+    QFutureWatcher<QString> futureWatcher;
+    QProgressDialog *progressDialog;
+    ImportaPortinari portinari;
+    ImportaApavisa apavisa;
+    ImportaExport importaExport;
 };
 
 #endif // IMPORTABD_H

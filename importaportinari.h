@@ -5,25 +5,25 @@
 #include <QString>
 
 class ImportaPortinari : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-signals:
-  void progressRangeChanged(int max);
-  void progressValueChanged(int val);
-  void progressTextChanged(QString str);
-  void progressFinished();
+  signals:
+    void progressRangeChanged(int max);
+    void progressValueChanged(int val);
+    void progressTextChanged(QString str);
+    void progressFinished();
 
-public slots:
-  void cancel();
+  public slots:
+    void cancel();
 
-public:
-  ImportaPortinari();
-  ~ImportaPortinari();
-  QString importar(QString file, int validade);
-  int buscarCadastrarFornecedor(QString fornecedor);
+  public:
+    ImportaPortinari();
+    ~ImportaPortinari();
+    QString importar(QString file, int validade);
+    int buscarCadastrarFornecedor(QString fornecedor);
 
-private:
-  bool canceled;
+  private:
+    bool canceled;
 };
 
 #endif // IMPORTAPORTINARI_H

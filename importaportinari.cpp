@@ -154,12 +154,12 @@ QString ImportaPortinari::importar(QString file, int validade) {
 
         QSqlQuery qry;
         qry.prepare(
-          "INSERT INTO mydb.Produto "
-          "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
-          "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
-          "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
-          ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
-          ":ncm, :codBarras, :precoVenda, :custo, :markup)");
+              "INSERT INTO mydb.Produto "
+              "(idFornecedor, fornecedor, colecao, tipo, formComercial, descricao, codComercial, "
+              "UI, pccx, m2cx, ipi, qtdPallet, un, ncm, "
+              "codBarras, precoVenda, custo, markup) VALUES (:idFornecedor, :fornecedor, :colecao, :tipo, "
+              ":formComercial, :descricao, :codComercial, :UI, :pccx, :m2cx, :ipi, :qtdPallet, :un, "
+              ":ncm, :codBarras, :precoVenda, :custo, :markup)");
         qry.bindValue(":idFornecedor", map.value(fornecedor));
         qry.bindValue(":fornecedor", fornecedor);
         qry.bindValue(":colecao", colecao);

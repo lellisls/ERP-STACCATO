@@ -101,7 +101,7 @@ bool NFe::writeTXT(QString chave) {
 
   QTextStream stream(&file);
 
-  stream << "NFe.CriarNFe(\"" << endl;
+  stream << "NFe.CriarEnviarNFe(\"" << endl;
 
   qDebug() << "[Identificacao]";
   stream << "[Identificacao]" << endl;
@@ -398,7 +398,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
 
   QTextStream stream(&file);
 
-  stream << "NFe.CriarNFe(\"" << endl;
+  stream << "NFe.CriarEnviarNFe(\"" << endl;
 
   qDebug() << "[Identificacao]";
   stream << "[Identificacao]" << endl;

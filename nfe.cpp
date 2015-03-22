@@ -671,7 +671,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
   stream << "ValorProduto = " + QString::number(total) << endl;
   stream << "ValorNota = " + QString::number(total) << endl;
 
-  stream << "\"), [1]";
+  stream << "\"), 1, [1]";
 
   stream.flush();
   file.close();

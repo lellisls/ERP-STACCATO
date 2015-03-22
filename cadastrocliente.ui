@@ -101,7 +101,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -894,6 +894,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>LineEditTel</class>
+   <extends>QLineEdit</extends>
+   <header>lineedittel.h</header>
+  </customwidget>
+  <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
    <header>itembox.h</header>
@@ -902,11 +907,6 @@
    <class>LineEditCEP</class>
    <extends>QLineEdit</extends>
    <header>lineeditcep.h</header>
-  </customwidget>
-  <customwidget>
-   <class>LineEditTel</class>
-   <extends>QLineEdit</extends>
-   <header>lineedittel.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

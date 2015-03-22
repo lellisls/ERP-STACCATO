@@ -23,9 +23,7 @@ SOURCES += backgroundproxymodel.cpp \
     contasapagar.cpp \
     contasareceber.cpp \
     entregascliente.cpp \
-    importaapavisa.cpp \
     importabd.cpp \
-    importaportinari.cpp \
     lineeditcep.cpp \
     lineeditdecimal.cpp \
     lineedittel.cpp \
@@ -62,9 +60,7 @@ HEADERS  += backgroundproxymodel.h \
     contasapagar.h \
     contasareceber.h \
     entregascliente.h \
-    importaapavisa.h \
     importabd.h \
-    importaportinari.h \
     initdb.h \
     lineeditcep.h \
     lineeditdecimal.h \

@@ -5,11 +5,14 @@
 
 #include "comboboxdelegate.h"
 #include "mainwindow.h"
+#include "nfe.h"
 #include "pedidoscompra.h"
 #include "ui_pedidoscompra.h"
 
 PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::PedidosCompra) {
   ui->setupUi(this);
+
+  setWindowFlags(Qt::Window);
 
   modelItemPedidos.setTable("pedidofornecedor_has_produto");
   modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -193,4 +196,16 @@ void PedidosCompra::updateTables() {
 void PedidosCompra::on_radioButtonVenda_toggled(bool checked) {
     Q_UNUSED(checked);
 //  modelPedidos
+}
+
+void PedidosCompra::on_pushButtonNFe_clicked()
+{
+    QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
+    QList<int> rows;
+    foreach (QModelIndex idx, list) {
+      rows.append(idx.row());
+    }
+    NFe nfe(idPedido);
+    nfe.TXT_Pedido(rows);
+    qDebug() << rows;
 }

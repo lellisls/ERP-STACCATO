@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QtCore>
+#include <QInputDialog>
 
 #include "nfe.h"
 #include "usersession.h"
@@ -72,6 +73,15 @@ bool NFe::TXT() {
   return writeTXT(chave);
 }
 
+bool NFe::TXT_Pedido(QList<int> rows)
+{
+  QString chave = criarChaveAcesso();
+
+  chave += calculaDigitoVerificador(chave);
+
+  return writeTXT_Pedido(chave, rows);
+}
+
 NFe::~NFe() {}
 
 bool NFe::writeTXT(QString chave) {
@@ -91,7 +101,7 @@ bool NFe::writeTXT(QString chave) {
 
   QTextStream stream(&file);
 
-  stream << "NFe.CriarNFe(\"" << endl;
+  stream << "NFe.CriarEnviarNFe(\"" << endl;
 
   qDebug() << "[Identificacao]";
   stream << "[Identificacao]" << endl;
@@ -301,8 +311,10 @@ bool NFe::writeTXT(QString chave) {
     QString number = QString("%1").arg(row + 1, 3, 10, QChar('0')); //padding row with zeros
     stream << "[Produto" + number + "]" << endl;
     //  stream << "CFOP = " + prod.value("cfop").toString() << endl;
-    stream << "CFOP = 5105" << endl; //TODO: fix CFOP
-    stream << "NCM = 40169100" << endl; //TODO: fix NCM
+    QString cfop = QInputDialog::getText(0, "CFOP", "Insira o CFOP (4 digítos): ");
+    stream << "CFOP = " + cfop << endl;
+    QString ncm = QInputDialog::getText(0, "NCM", "Insira o NCM (8 dígitos): ");
+    stream << "NCM = " + ncm << endl;
 
     if(prod.value("codBarras").toString().isEmpty()){
       qDebug() << "codBarras vazio";
@@ -368,6 +380,304 @@ bool NFe::writeTXT(QString chave) {
   return true;
 }
 
+bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
+{
+  //  QFile file(idVenda + ".txt");
+  QFile file("C:/ACBrNFeMonitor/ENTNFE.TXT/" + idVenda + ".txt");
+  //  qDebug() << QDir::current().absoluteFilePath(idVenda + ".txt");
+  file.open(QFile::WriteOnly);
+  QFileInfo fileInfo(file);
+  qDebug() << "path: " << fileInfo.absoluteFilePath();
+  arquivo = fileInfo.absoluteFilePath().replace("/", "\\\\");
+
+  chaveAcesso = "NFe" + chave;
+  //  qDebug() << chaveAcesso;
+  //  qDebug() << chaveAcesso.mid(38, 8);
+  //  qDebug() << chaveAcesso.mid(25, 3);
+  //  qDebug() << chaveAcesso.mid(28, 9);
+
+  QTextStream stream(&file);
+
+  stream << "NFe.CriarEnviarNFe(\"" << endl;
+
+  qDebug() << "[Identificacao]";
+  stream << "[Identificacao]" << endl;
+  stream << "NaturezaOperacao = 5405-VENDA PROD/SERV D.ESTADO" << endl;
+  stream << "Modelo = 55" << endl;
+  stream << "Serie = " + chaveAcesso.mid(25, 3) << endl;
+  stream << "Codigo = " + chaveAcesso.mid(25, 3) << endl;
+  stream << "Numero = " + chaveAcesso.mid(28, 9) << endl;
+  stream << "Emissao = " + QDate::currentDate().toString("dd/MM/yyyy") << endl;
+  stream << "Saida = " + QDate::currentDate().toString("dd/MM/yyyy") << endl;
+  stream << "Tipo = 1" << endl;
+  stream << "FormaPag = 0" << endl;
+
+  qDebug() << "[Emitente]";
+  stream << "[Emitente]" << endl;
+
+  if(clearStr(getFromLoja("cnpj").toString()).isEmpty()){
+    qDebug() << "cnpj vazio";
+    return false;
+  }
+  stream << "CNPJ = " + clearStr(getFromLoja("cnpj").toString()) << endl;
+
+  //  stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
+  stream << "IE = 110042490114" << endl; //TODO: fix inscricao estadual emitente
+
+  if(getFromLoja("razaoSocial").toString().isEmpty()){
+    qDebug() << "razaoSocial vazio";
+    return false;
+  }
+  stream << "Razao = " + getFromLoja("razaoSocial").toString() << endl;
+
+  if(getFromLoja("nomeFantasia").toString().isEmpty()){
+    qDebug() << "nomeFantasia vazio";
+    return false;
+  }
+  stream << "Fantasia = " + getFromLoja("nomeFantasia").toString() << endl;
+
+  if(getFromLoja("tel").toString().isEmpty()){
+    qDebug() << "tel vazio";
+    return false;
+  }
+  stream << "Fone = " + getFromLoja("tel").toString() << endl;
+
+  QString idEndLoja = getFromLoja("idEndereco").toString();
+  if(idEndLoja.isEmpty()){
+    qDebug() << "idEndereco Loja vazio";
+    return false;
+  }
+  QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '" + idEndLoja + "'");
+  if (!endLoja.exec()) {
+    qDebug() << "End. loja failed! : " << endLoja.lastError();
+    return false;
+  }
+  endLoja.first();
+
+  if(clearStr(endLoja.value("CEP").toString()).isEmpty()){
+    qDebug() << "CEP vazio";
+    return false;
+  }
+  stream << "CEP = " + clearStr(endLoja.value("CEP").toString()) << endl;
+
+  if(endLoja.value("logradouro").toString().isEmpty()){
+    qDebug() << "logradouro vazio";
+    return false;
+  }
+  stream << "Logradouro = " + endLoja.value("logradouro").toString() << endl;
+
+  if(endLoja.value("numero").toString().isEmpty()){
+    qDebug() << "numero vazio";
+    return false;
+  }
+  stream << "Numero = " + endLoja.value("numero").toString() << endl;
+
+  //  if(endLoja.value("complemento").toString().isEmpty()){
+  //    qDebug() << "complemento vazio";
+  //    return false;
+  //  }
+  stream << "Complemento = " + endLoja.value("complemento").toString() << endl;
+
+  if(endLoja.value("bairro").toString().isEmpty()){
+    qDebug() << "bairro vazio";
+    return false;
+  }
+  stream << "Bairro = " + endLoja.value("bairro").toString() << endl;
+
+  if(endLoja.value("cidade").toString().isEmpty()){
+    qDebug() << "cidade vazio";
+    return false;
+  }
+  stream << "Cidade = " + endLoja.value("cidade").toString() << endl;
+
+  if(endLoja.value("uf").toString().isEmpty()){
+    qDebug() << "uf vazio";
+    return false;
+  }
+  stream << "UF = " + endLoja.value("uf").toString() << endl;
+
+  qDebug() << "[Destinatario]";
+  stream << "[Destinatario]" << endl;
+
+  QString idCliente = getFromVenda("idCliente").toString();
+  if(idCliente.isEmpty()){
+    qDebug() << "idCliente vazio";
+    return false;
+  }
+
+  QSqlQuery cliente;
+
+  if (!cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
+                    "WHERE Endereco.idCliente = " +
+                    idCliente + "")) {
+    qDebug() << "Cliente query failed! : " << cliente.lastError();
+    return false;
+  }
+  qDebug() << "cliente size: " << cliente.size();
+  if(cliente.next()){
+    qDebug() << "Cliente next";
+
+    if(cliente.value("nome_razao").toString().isEmpty()){
+      qDebug() << "nome_razao vazio";
+      return false;
+    }
+    stream << "NomeRazao = " + cliente.value("nome_razao").toString() << endl;
+
+    if (cliente.value("pfpj").toString() == "PF") {
+      if(clearStr(cliente.value("cpf").toString()).isEmpty()){
+        qDebug() << "cpf vazio";
+        return false;
+      }
+      stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
+    }
+    if(cliente.value("pfpj").toString() == "PJ"){
+      if(clearStr(cliente.value("cnpj").toString()).isEmpty()){
+        qDebug() << "cnpj dest vazio";
+        return false;
+      }
+      stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
+
+      stream << "IE = 110042490114" << endl;
+      //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
+      //  stream << "IE = ISENTO" << endl;
+    }
+
+    if(cliente.value("tel").toString().isEmpty()){
+      qDebug() << "tel vazio";
+      return false;
+    }
+    stream << "Fone = " + cliente.value("tel").toString() << endl;
+
+    if(cliente.value("CEP").toString().isEmpty()){
+      qDebug() << "CEP vazio";
+      return false;
+    }
+    stream << "CEP = " + cliente.value("CEP").toString() << endl;
+
+    if(cliente.value("logradouro").toString().isEmpty()){
+      qDebug() << "logradouro vazio";
+      return false;
+    }
+    stream << "Logradouro = " + cliente.value("logradouro").toString() << endl;
+
+    if(cliente.value("numero").toString().isEmpty()){
+      qDebug() << "numero vazio";
+      return false;
+    }
+    stream << "Numero = " + cliente.value("numero").toString() << endl;
+
+//    if(cliente.value("complemento").toString().isEmpty()){
+//      qDebug() << "complemento vazio";
+//      return false;
+//    }
+    stream << "Complemento = " + cliente.value("complemento").toString() << endl;
+
+    if(cliente.value("bairro").toString().isEmpty()){
+      qDebug() << "bairro vazio";
+      return false;
+    }
+    stream << "Bairro = " + cliente.value("bairro").toString() << endl;
+
+    if(cliente.value("cidade").toString().isEmpty()){
+      qDebug() << "cidade vazio";
+      return false;
+    }
+    stream << "Cidade = " + cliente.value("cidade").toString() << endl;
+
+    if(cliente.value("uf").toString().isEmpty()){
+      qDebug() << "uf vazio";
+      return false;
+    }
+    stream << "UF = " + cliente.value("uf").toString() << endl;
+  } else{
+    qDebug() << "Erro buscando endereço do destinatário: " << cliente.lastError();
+  }
+
+  qDebug() << "[Produto]";
+  double total = 0;
+  double icmsTotal = 0;
+  int i = 0;
+  foreach(int row, rows){
+    QSqlQuery prod("SELECT * FROM Produto WHERE idProduto = '" +
+                   getFromItemModel(row, "idProduto").toString() + "'");
+    if(!prod.exec()){
+      qDebug() << "Erro buscando produtos: " << prod.lastError();
+      return false;
+    }
+
+    prod.first();
+    QString number = QString("%1").arg(++i, 3, 10, QChar('0')); //padding row with zeros
+    stream << "[Produto" + number + "]" << endl;
+    //  stream << "CFOP = " + prod.value("cfop").toString() << endl;
+    QString cfop = QInputDialog::getText(0, "CFOP", "Insira o CFOP (4 digítos): ");
+    stream << "CFOP = " + cfop << endl;
+    QString ncm = QInputDialog::getText(0, "NCM", "Insira o NCM (8 dígitos): ");
+    stream << "NCM = " + ncm << endl;
+
+    if(prod.value("codBarras").toString().isEmpty()){
+      qDebug() << "codBarras vazio";
+      return false;
+    }
+    stream << "Codigo = " + prod.value("codBarras").toString() << endl;
+
+    if(prod.value("descricao").toString().isEmpty()){
+      qDebug() << "descricao vazio";
+      return false;
+    }
+    stream << "Descricao = " + prod.value("descricao").toString() << endl;
+
+    if(prod.value("un").toString().isEmpty()){
+      qDebug() << "un vazio";
+      return false;
+    }
+    stream << "Unidade = " + prod.value("un").toString() << endl;
+
+    if(getFromItemModel(row, "qte").toString().isEmpty()){
+      qDebug() << "qte vazio";
+      return false;
+    }
+    stream << "Quantidade = " + getFromItemModel(row, "qte").toString() << endl;
+
+    if(prod.value("precoVenda").toDouble() == 0){
+      qDebug() << "precoVenda = 0";
+      return false;
+    }
+    double preco = prod.value("precoVenda").toDouble();
+    double rounded_number = static_cast<double>(static_cast<int>(preco * 100 + 0.5)) / 100.0;
+    stream << "ValorUnitario = " + QString::number(rounded_number) << endl;
+
+    if(getFromItemModel(row, "parcial").toString().isEmpty()){
+      qDebug() << "parcial vazio";
+      return false;
+    }
+    stream << "ValorTotal = " + getFromItemModel(row, "parcial").toString() << endl;
+
+    total += getFromItemModel(row, "parcial").toDouble();
+
+    stream << "[ICMS" + number + "]" << endl;
+    stream << "CST = 00" << endl;
+    stream << "ValorBase = " + getFromItemModel(row, "parcial").toString() << endl;
+    stream << "Aliquota = 18.00" << endl;
+
+    double icms = getFromItemModel(row, "parcial").toDouble() * 0.18;
+    icmsTotal += icms;
+    stream << "Valor = " + QString::number(icms) << endl;
+  }
+
+  qDebug() << "[Total]";
+  stream << "[Total]" << endl;
+  stream << "BaseICMS = " + QString::number(total) << endl;
+  stream << "ValorICMS = " + QString::number(icmsTotal) << endl;
+  stream << "ValorProduto = " + QString::number(total) << endl;
+  stream << "ValorNota = " + QString::number(total) << endl;
+
+  stream << "\"), 1, [1]";
+
+  stream.flush();
+  file.close();
+  return true;
+}
+
 QString NFe::calculaDigitoVerificador(QString chave) {
   if (chave.size() != 43) {
     qDebug() << "Erro na chave!";
@@ -401,6 +711,7 @@ QString NFe::calculaDigitoVerificador(QString chave) {
   //  qDebug() << "resto: " << resto;
 
   return QString::number(cDV);
+
 }
 
 QString NFe::getArquivo() const {

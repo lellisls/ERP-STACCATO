@@ -19,7 +19,7 @@ class ImportaExport : public QObject {
   public:
     ImportaExport();
     ~ImportaExport();
-    QString importar(QString file, int validade);
+    QString importar(QString file, int validadeInt);
     int buscarCadastrarFornecedor(QString fornecedor);
 
   private:

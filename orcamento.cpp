@@ -418,10 +418,15 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
 }
 
 void Orcamento::on_pushButtonImprimir_clicked() {
-  QPrinter printer(QPrinter::HighResolution);
+  QPrinter printer;
   printer.setPageMargins(QMargins(30, 60, 30, 20));
+  printer.setFullPage(true);
+  printer.setResolution(300);
+  printer.setOrientation(QPrinter::Portrait);
+  printer.setPaperSize(QPrinter::A4);
   QPrintPreviewDialog preview(&printer, this, Qt::Window);
   preview.setModal(true);
+  preview.setWindowTitle("Impressão de Orçamento");
   connect(&preview, &QPrintPreviewDialog::paintRequested, this, &Orcamento::print);
   preview.showMaximized();
   preview.exec();
@@ -459,8 +464,8 @@ QString Orcamento::getItensHtml() {
 void Orcamento::print(QPrinter *printer) {
   QWebPage *page = new QWebPage(this);
   QWebFrame *frame = page->mainFrame();
-  QDir dir(QApplication::applicationDirPath());
-  QFile file(dir.absoluteFilePath("orcamento.html"));
+  QDir appDir(QApplication::applicationDirPath());
+  QFile file(appDir.absoluteFilePath("orcamento.html"));
   QString html;
   if (file.open(QFile::ReadOnly)) {
     QByteArray data = file.readAll();
@@ -476,7 +481,8 @@ void Orcamento::print(QPrinter *printer) {
   queryLoja.first();
 
   //Loja
-  html.replace("#LOGO#", QUrl::fromLocalFile(dir.absoluteFilePath("logo.jpg")).toString());
+  html.replace("#LOGO#", QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString());
+  qDebug() << QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString();
 //  html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
 //  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
   html.replace("#TELLOJA#", queryLoja.value("tel").toString());
@@ -525,7 +531,7 @@ void Orcamento::print(QPrinter *printer) {
 
   //Vendedor
   html.replace("#NOMEVEND#", ui->itemBoxVendedor->text());
-
+  html.replace("#EMAILVEND#", "");
   //Itens
   QString itens = getItensHtml();
   html.replace("<!-- #ITENS# -->", itens);
@@ -544,7 +550,7 @@ void Orcamento::print(QPrinter *printer) {
   frame->setHtml(html);
 //  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
-  QFile outputFile(dir.absoluteFilePath("orc.html"));
+  QFile outputFile(appDir.absoluteFilePath("orc.html"));
   if (outputFile.open(QIODevice::WriteOnly)) {
     QTextStream out(&outputFile);
     out << html;

@@ -46,7 +46,8 @@ SOURCES += backgroundproxymodel.cpp \
     loginconfig.cpp \
     cepcompleter.cpp \
     importaexport.cpp \
-    cadastrofornecedor.cpp
+    cadastrofornecedor.cpp \
+    cadastrarnfe.cpp
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \
@@ -84,7 +85,8 @@ HEADERS  += backgroundproxymodel.h \
     cepcompleter.h \
     importaexport.h \
     cadastrofornecedor.h \
-    endereco.hpp
+    endereco.hpp \
+    cadastrarnfe.h
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \
@@ -107,7 +109,8 @@ FORMS += cadastrocliente.ui \
     searchdialog.ui \
     apagaorcamento.ui \
     loginconfig.ui \
-    cadastrofornecedor.ui
+    cadastrofornecedor.ui \
+    cadastrarnfe.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0 -Wall

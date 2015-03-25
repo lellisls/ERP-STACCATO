@@ -16,6 +16,7 @@
 #include "venda.h"
 #include "usersession.h"
 #include "cadastrocliente.h"
+#include "cadastrarnfe.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -405,13 +406,15 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 }
 
 void Venda::on_pushButtonNFe_clicked() {
-  NFe nota(idOrcamento, this);
-  //  qDebug() << "xml: " << nota.XML();
-  if (nota.TXT()) {
-    QMessageBox::information(this, "Aviso!", "NFe gerada com sucesso!");
-  } else {
-    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro, NFe não foi gerada.");
-  }
+  CadastrarNFE * cadNfe = new CadastrarNFE(this);
+  cadNfe->show();
+//  NFe nota(idOrcamento, this);
+//  //  qDebug() << "xml: " << nota.XML();
+//  if (nota.TXT()) {
+//    QMessageBox::information(this, "Aviso!", "NFe gerada com sucesso!");
+//  } else {
+//    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro, NFe não foi gerada.");
+//  }
   //  qDebug() << "txt: " << nota.TXT();
 }
 

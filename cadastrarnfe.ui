@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>CadastrarNFE</class>
  <widget class="QDialog" name="CadastrarNFE">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Nota Fiscal Eletrônica</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
@@ -91,16 +94,6 @@
        </property>
        <property name="text">
         <string>Gerar NFe</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonVoltar">
-       <property name="text">
-        <string>Voltar</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>

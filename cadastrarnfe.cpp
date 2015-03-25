@@ -19,6 +19,8 @@ CadastrarNFE::CadastrarNFE(QWidget *parent) :
   modelItem.select();
   ui->tableView->setModel(&modelItem);
 
+
+  ui->tableView->setColumnHidden(model.fieldIndex("idNFe"),true);
 }
 
 CadastrarNFE::~CadastrarNFE() {

@@ -2,6 +2,8 @@
 
 #include "registerdialog.h"
 
+#include <QShortcut>
+
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
   setWindowModality(Qt::WindowModal);
@@ -17,6 +19,10 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }
+  QShortcut * shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q),this);
+  connect(shortcut,&QShortcut::activated,this,&QWidget::close);
+  shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S),this);
+  connect(shortcut,&QShortcut::activated,this,&RegisterDialog::saveSlot);
 }
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
@@ -24,7 +30,7 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
   QModelIndexList idxList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
   if (idxList.isEmpty()) {
     QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
-    newRegister();
+    close();
     return false;
   }
   viewRegister(idxList.first());
@@ -103,6 +109,10 @@ void RegisterDialog::changeItem(QVariant value, QString text) {
   //  text;
   Q_UNUSED(text)
   viewRegisterById(value);
+}
+
+void RegisterDialog::saveSlot() {
+  save();
 }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
@@ -200,7 +210,7 @@ bool RegisterDialog::save(bool silent) {
     return false;
   }
   QSqlQuery("COMMIT").exec();
-  if(!silent){
+  if(!silent) {
     successMessage();
   }
   viewRegister(model.index(row, 0));

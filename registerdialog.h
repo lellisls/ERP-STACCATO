@@ -50,7 +50,7 @@ public:
 
 public slots:
   virtual void changeItem(QVariant value, QString text);
-
+  void saveSlot();
 signals:
   /*!
   * \brief Sinal enviado ao atualizar um campo, normalmente utilizada pela ItemBox.

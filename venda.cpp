@@ -192,7 +192,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
     double descItem =
-        modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
+      modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     double itemBruto = qteItem * prcUnItem;
     subTotalBruto += itemBruto;
     double stItem = itemBruto * (1.0 - descItem);
@@ -246,10 +246,10 @@ void Venda::fillTotals() {
     qDebug() << "Não achou orçamento: " << query.size();
     qDebug() << "query: " << query.lastQuery();
 
-    if(!query.exec("SELECT * FROM Venda WHERE idVenda = '"+idOrcamento+"'")){
+    if(!query.exec("SELECT * FROM Venda WHERE idVenda = '"+idOrcamento+"'")) {
       qDebug() << "Erro buscando venda: " << query.lastError();
     }
-    if(!query.first()){
+    if(!query.first()) {
       qDebug() << "Não achou venda: " << query.size();
       qDebug() << "query: " << query.lastQuery();
     }
@@ -284,23 +284,25 @@ void Venda::on_pushButtonCancelar_clicked() {
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
-  if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
-      ui->doubleSpinBoxTotalPag->value()) {
-    QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
-    return;
-  }
+  if(!ui->frame_2->isHidden()) {
+    if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
+        ui->doubleSpinBoxTotalPag->value()) {
+      QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
+      return;
+    }
 
-  if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
-    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 1.");
-    return;
-  }
-  if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
-    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 2.");
-    return;
-  }
-  if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
-    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
-    return;
+    if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
+      QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 1.");
+      return;
+    }
+    if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
+      QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 2.");
+      return;
+    }
+    if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
+      QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
+      return;
+    }
   }
 
   QSqlQuery qry;
@@ -308,6 +310,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   //  qDebug() << "id: " << idOrcamento;
 
   qry.exec("START TRANSACTION");
+  qry.exec("SET AUTOCOMMIT = 0");
 
   if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
                 "idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status FROM Orcamento WHERE "
@@ -408,7 +411,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 void Venda::on_pushButtonNFe_clicked() {
   CadastrarNFE * cadNfe = new CadastrarNFE(this);
   QList<int> lista;
-  for(int item = 0; item < modelItem.rowCount(); ++item){
+  for(int item = 0; item < modelItem.rowCount(); ++item) {
     lista.append(modelItem.data(modelItem.index(item,modelItem.fieldIndex(primaryKey))).toInt());
   }
   cadNfe->gerarNFe(idOrcamento,lista);
@@ -575,9 +578,33 @@ bool Venda::savingProcedures(int row) {
   return true;
 }
 
-void Venda::registerMode() {}
+void Venda::registerMode() {
+  ui->frame_2->show();
+  ui->pushButtonNFe->hide();
+  ui->pushButtonFecharPedido->show();
+  ui->pushButtonVoltar->show();
+  ui->doubleSpinBoxDescontoGlobal->setReadOnly(false);
+  ui->doubleSpinBoxDescontoGlobal->setFrame(true);
+  ui->doubleSpinBoxDescontoGlobal->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
+  ui->doubleSpinBoxFinal->setReadOnly(false);
+  ui->doubleSpinBoxFinal->setFrame(true);
+  ui->doubleSpinBoxFinal->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
+  ui->checkBoxFreteManual->show();
+}
 
-void Venda::updateMode() {}
+void Venda::updateMode() {
+  ui->frame_2->hide();
+  ui->pushButtonNFe->show();
+  ui->pushButtonFecharPedido->hide();
+  ui->pushButtonVoltar->hide();
+  ui->doubleSpinBoxDescontoGlobal->setReadOnly(true);
+  ui->doubleSpinBoxDescontoGlobal->setFrame(false);
+  ui->doubleSpinBoxDescontoGlobal->setButtonSymbols(QDoubleSpinBox::NoButtons);
+  ui->doubleSpinBoxFinal->setReadOnly(true);
+  ui->doubleSpinBoxFinal->setFrame(false);
+  ui->doubleSpinBoxFinal->setButtonSymbols(QDoubleSpinBox::NoButtons);
+  ui->checkBoxFreteManual->hide();
+}
 
 bool Venda::viewRegister(QModelIndex index) {
   if (!RegisterDialog::viewRegister(index)) {
@@ -592,9 +619,6 @@ bool Venda::viewRegister(QModelIndex index) {
   modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
   modelFluxoCaixa.select();
   //  novoItem();
-  ui->pushButtonNFe->show();
-  ui->pushButtonFecharPedido->hide();
-  ui->pushButtonVoltar->hide();
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
   fillTotals();
@@ -610,6 +634,9 @@ void Venda::on_pushButtonVoltar_clicked() {
 }
 
 void Venda::montarFluxoCaixa() {
+  if(ui->frame_2->isHidden()) {
+    return;
+  }
   modelFluxoCaixa.removeRows(0, modelFluxoCaixa.rowCount());
 
   int parcelas1 = ui->comboBoxPgt1Parc->currentIndex() + 1;

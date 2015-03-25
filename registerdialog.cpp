@@ -15,7 +15,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
   mapper.setModel(&model);
   //  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
   if (!model.select()) {
-    qDebug() << "Failed to populate " + table;
+    qDebug() << objectName() << "Failed to populate " + table;
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }

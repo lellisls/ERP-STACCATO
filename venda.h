@@ -61,7 +61,6 @@ class Venda : public RegisterDialog {
     QSqlRelationalTableModel modelItem, modelFluxoCaixa;
     QString idOrcamento;
     double subTotal;
-    SearchDialog *sdEndereco;
     // methods
     bool cadastrar();
     bool verifyFields(int row);

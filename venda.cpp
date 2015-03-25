@@ -78,9 +78,12 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->dateEditPgt2->setDate(QDate::currentDate());
   ui->dateEditPgt3->setDate(QDate::currentDate());
 
-  sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
-  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+  SearchDialog *sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
 
+  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+  SearchDialog::endereco(ui->itemBoxEndereco);
+
+  ui->itemBoxEnderecoFat->setSearchDialog(sdEndereco);
   //  show();
   showMaximized();
 }
@@ -137,7 +140,8 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     qDebug() << "Erro selecionando primeiro resultado: " << qry.lastError();
   }
 
-  sdEndereco->setFilter("idCliente = " + qry.value("idCliente").toString() + " AND ativo = 1");
+  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() + " AND ativo = 1");
+  ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() + " AND ativo = 1");
   //  qDebug() << "idCliente: " << qry.value("idCliente").toString();
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));

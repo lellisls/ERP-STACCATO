@@ -47,19 +47,17 @@ QVariant NFe::getFromItemModel(int row, QString column) {
 }
 
 QString NFe::criarChaveAcesso() {
-  QVector<QString> vetorChave;
-  vetorChave.push_back("35");                                  // cUF - código da UF
-  vetorChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
+  QStringList listChave;
+  listChave.push_back("35");                                  // cUF - código da UF
+  listChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
   QString cnpj = clearStr(getFromLoja("cnpj").toString());
-  vetorChave.push_back(cnpj);        // CNPJ
-  vetorChave.push_back("55");        // modelo
-  vetorChave.push_back("001");       // série
-  vetorChave.push_back("123456789"); // número nf-e
-  vetorChave.push_back("1");         // tpEmis - forma de emissão
-  vetorChave.push_back("76543210");  // código númerico
+  listChave.push_back(cnpj);        // CNPJ
+  listChave.push_back("55");        // modelo
+  listChave.push_back("001");       // série
+  listChave.push_back("123456789"); // número nf-e
+  listChave.push_back("1");         // tpEmis - forma de emissão
+  listChave.push_back("76543210");  // código númerico
   //  qDebug() << "chave: " << vetorChave;
-
-  QStringList listChave = vetorChave.toList();
   QString chave = listChave.join("");
 
   return chave;
@@ -124,8 +122,7 @@ bool NFe::writeTXT(QString chave) {
   }
   stream << "CNPJ = " + clearStr(getFromLoja("cnpj").toString()) << endl;
 
-  //  stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
-  stream << "IE = 110042490114" << endl; //TODO: fix inscricao estadual emitente
+  stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
 
   if(getFromLoja("razaoSocial").toString().isEmpty()){
     qDebug() << "razaoSocial vazio";
@@ -232,6 +229,8 @@ bool NFe::writeTXT(QString chave) {
         return false;
       }
       stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
+
+      stream << "indIEDest = 9" << endl;
     }
     if(cliente.value("pfpj").toString() == "PJ"){
       if(clearStr(cliente.value("cnpj").toString()).isEmpty()){
@@ -239,10 +238,10 @@ bool NFe::writeTXT(QString chave) {
         return false;
       }
       stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
-
-      stream << "IE = 110042490114" << endl;
-      //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
-      //  stream << "IE = ISENTO" << endl;
+      stream << "IE = " + clearStr(cliente.value("inscEstadual").toString()) << endl;
+      if(cliente.value("inscEstadual").toString() == "ISENTO") {
+          stream << "indIEDest = 2" << endl;
+      }
     }
 
     if(cliente.value("tel").toString().isEmpty()){
@@ -255,7 +254,7 @@ bool NFe::writeTXT(QString chave) {
       qDebug() << "CEP vazio";
       return false;
     }
-    stream << "CEP = " + cliente.value("CEP").toString() << endl;
+    stream << "CEP = " + clearStr(cliente.value("CEP").toString()) << endl;
 
     if(cliente.value("logradouro").toString().isEmpty()){
       qDebug() << "logradouro vazio";
@@ -269,10 +268,10 @@ bool NFe::writeTXT(QString chave) {
     }
     stream << "Numero = " + cliente.value("numero").toString() << endl;
 
-//    if(cliente.value("complemento").toString().isEmpty()){
-//      qDebug() << "complemento vazio";
-//      return false;
-//    }
+    //    if(cliente.value("complemento").toString().isEmpty()){
+    //      qDebug() << "complemento vazio";
+    //      return false;
+    //    }
     stream << "Complemento = " + cliente.value("complemento").toString() << endl;
 
     if(cliente.value("bairro").toString().isEmpty()){
@@ -311,10 +310,15 @@ bool NFe::writeTXT(QString chave) {
     QString number = QString("%1").arg(row + 1, 3, 10, QChar('0')); //padding row with zeros
     stream << "[Produto" + number + "]" << endl;
     //  stream << "CFOP = " + prod.value("cfop").toString() << endl;
-    QString cfop = QInputDialog::getText(0, "CFOP", "Insira o CFOP (4 digítos): ");
+    QString cfop = QInputDialog::getText(0, "CFOP", "Insira o CFOP (4 digítos):<br>O CFOP de entrada era '" + prod.value("cfop").toString()+ "'");
     stream << "CFOP = " + cfop << endl;
-    QString ncm = QInputDialog::getText(0, "NCM", "Insira o NCM (8 dígitos): ");
-    stream << "NCM = " + ncm << endl;
+
+
+    //QString ncm = QInputDialog::getText(0, "NCM", "Insira o NCM (8 dígitos): ");
+    //stream << "NCM = " + ncm << endl;
+
+    stream << "NCM = " + clearStr(prod.value("ncm").toString()) << endl;
+    qDebug() << "NCM = " << clearStr(prod.value("ncm").toString());
 
     if(prod.value("codBarras").toString().isEmpty()){
       qDebug() << "codBarras vazio";
@@ -356,10 +360,19 @@ bool NFe::writeTXT(QString chave) {
 
     total += getFromItemModel(row, "parcial").toDouble();
 
+    //    if(cfop.endsWith("405")){
+    //      stream << "[ICMS" + number + "]" << endl;
+    //      stream << "CST = 60";
+    //      stream << "ValorBase = 0";
+    //      stream << "Aliquota = 0";
+    //    }else{
     stream << "[ICMS" + number + "]" << endl;
-    stream << "CST = 00" << endl;
+    stream << "CST = 650" << endl;
     stream << "ValorBase = " + getFromItemModel(row, "parcial").toString() << endl;
     stream << "Aliquota = 18.00" << endl;
+    //    }
+
+
 
     double icms = getFromItemModel(row, "parcial").toDouble() * 0.18;
     icmsTotal += icms;
@@ -420,9 +433,12 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
     return false;
   }
   stream << "CNPJ = " + clearStr(getFromLoja("cnpj").toString()) << endl;
-
-  //  stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
-  stream << "IE = 110042490114" << endl; //TODO: fix inscricao estadual emitente
+  if(clearStr(getFromLoja("inscEstadual").toString()).isEmpty()){
+    qDebug() << "inscEstadual vazia";
+    return false;
+  }
+  stream << "IE = " + clearStr(getFromLoja("inscEstadual").toString()) << endl;
+  //stream << "IE = 110042490114" << endl; //TODO: fix inscricao estadual emitente
 
   if(getFromLoja("razaoSocial").toString().isEmpty()){
     qDebug() << "razaoSocial vazio";
@@ -537,8 +553,8 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
       }
       stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
 
-      stream << "IE = 110042490114" << endl;
-      //  stream << "IE = " + cliente.value("inscEstadual").toString() << endl;
+      //      stream << "IE = 110042490114" << endl;
+      stream << "IE = " + clearStr(cliente.value("inscEstadual").toString()) << endl;
       //  stream << "IE = ISENTO" << endl;
     }
 
@@ -552,7 +568,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
       qDebug() << "CEP vazio";
       return false;
     }
-    stream << "CEP = " + cliente.value("CEP").toString() << endl;
+    stream << "CEP = " + clearStr(cliente.value("CEP").toString()) << endl;
 
     if(cliente.value("logradouro").toString().isEmpty()){
       qDebug() << "logradouro vazio";
@@ -566,10 +582,10 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
     }
     stream << "Numero = " + cliente.value("numero").toString() << endl;
 
-//    if(cliente.value("complemento").toString().isEmpty()){
-//      qDebug() << "complemento vazio";
-//      return false;
-//    }
+    //    if(cliente.value("complemento").toString().isEmpty()){
+    //      qDebug() << "complemento vazio";
+    //      return false;
+    //    }
     stream << "Complemento = " + cliente.value("complemento").toString() << endl;
 
     if(cliente.value("bairro").toString().isEmpty()){
@@ -618,7 +634,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
       qDebug() << "codBarras vazio";
       return false;
     }
-    stream << "Codigo = " + prod.value("codBarras").toString() << endl;
+    stream << "Codigo = " + clearStr(prod.value("codBarras").toString()) << endl;
 
     if(prod.value("descricao").toString().isEmpty()){
       qDebug() << "descricao vazio";

@@ -132,6 +132,9 @@ protected:
   * \param value Valor a ser atualizado.
   */
   inline void setData(const QString &key, QVariant value) {
+    if(model.fieldIndex(key) == -1){
+      qDebug() << "Key '" << key << "' not found on table '" << model.tableName() << "'";
+    }
     model.setData(model.index(mapper.currentIndex(), model.fieldIndex(key)), value);
   }
 
@@ -143,6 +146,9 @@ protected:
   * \param value Valor a ser atualizado.
   */
   inline void setData(int row, const QString &key, QVariant value) {
+    if(model.fieldIndex(key) == -1){
+      qDebug() << "Key '" << key << "' not found on table '" << model.tableName() << "'";
+    }
     model.setData(model.index(row, model.fieldIndex(key)), value);
   }
   /*!

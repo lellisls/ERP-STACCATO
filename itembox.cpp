@@ -2,45 +2,45 @@
 #include <QMouseEvent>
 #include <QDebug>
 
-ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), searchDialog(nullptr), registerDialog(nullptr) {
+ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), m_searchDialog(nullptr), m_registerDialog(nullptr) {
   setReadOnly(true);
 
-  searchButton = new QPushButton(this);
-  searchButton->setIcon(QIcon(":/search.png"));
-  searchButton->setAutoDefault(false);
-  searchButton->setFlat(true);
-  searchButton->setIconSize(QSize(14, 14));
+  m_searchButton = new QPushButton(this);
+  m_searchButton->setIcon(QIcon(":/search.png"));
+  m_searchButton->setAutoDefault(false);
+  m_searchButton->setFlat(true);
+  m_searchButton->setIconSize(QSize(14, 14));
 
-  plusButton = new QPushButton(this);
-  plusButton->setIcon(QIcon(":/plus.png"));
-  plusButton->setAutoDefault(false);
-  plusButton->setFlat(true);
-  plusButton->setIconSize(QSize(14, 14));
+  m_plusButton = new QPushButton(this);
+  m_plusButton->setIcon(QIcon(":/plus.png"));
+  m_plusButton->setAutoDefault(false);
+  m_plusButton->setFlat(true);
+  m_plusButton->setIconSize(QSize(14, 14));
 
   ensurePolished();
 
-  connect(searchButton, &QAbstractButton::clicked, this, &ItemBox::search);
-  connect(plusButton, &QAbstractButton::clicked, this, &ItemBox::edit);
+  connect(m_searchButton, &QAbstractButton::clicked, this, &ItemBox::search);
+  connect(m_plusButton, &QAbstractButton::clicked, this, &ItemBox::edit);
 }
 
 ItemBox::~ItemBox() {}
 
 void ItemBox::resizeEvent(QResizeEvent *event) {
   QLineEdit::resizeEvent(event);
-  QSize size = searchButton->minimumSizeHint();
+  QSize size = m_searchButton->minimumSizeHint();
   int x = rect().right();
   int y = (rect().height() - size.height()) / 2.0;
-  if (searchDialog) {
+  if (m_searchDialog) {
     x -= size.width();
-    searchButton->setGeometry(QRect(QPoint(x, y), size));
+    m_searchButton->setGeometry(QRect(QPoint(x, y), size));
   } else {
-    searchButton->hide();
+    m_searchButton->hide();
   }
-  if (registerDialog) {
+  if (m_registerDialog) {
     x -= size.width();
-    plusButton->setGeometry(QRect(QPoint(x, y), size));
+    m_plusButton->setGeometry(QRect(QPoint(x, y), size));
   } else {
-    plusButton->hide();
+    m_plusButton->hide();
   }
   int left, top, bottom;
   getTextMargins(&left, &top, 0, &bottom);
@@ -48,51 +48,51 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
 }
 
 void ItemBox::search() {
-  if (searchDialog) {
-    searchDialog->showMaximized();
+  if (m_searchDialog) {
+    m_searchDialog->showMaximized();
   }
 }
 
 void ItemBox::edit() {
-  if (registerDialog) {
-    if (!value.isNull()) {
-      registerDialog->viewRegisterById(value);
+  if (m_registerDialog) {
+    if (!m_value.isNull()) {
+      m_registerDialog->viewRegisterById(m_value);
     }
-    registerDialog->show();
+    m_registerDialog->show();
   }
 }
 
 void ItemBox::setRegisterDialog(RegisterDialog *value) {
-  registerDialog = value;
+  m_registerDialog = value;
   connect(value, &RegisterDialog::registerUpdated, this, &ItemBox::changeItem);
 }
 
-SearchDialog *ItemBox::getSearchDialog() {
-  return searchDialog;
+SearchDialog *ItemBox::searchDialog() {
+  return m_searchDialog;
 }
 
-RegisterDialog *ItemBox::getRegisterDialog() {
-  return registerDialog;
+RegisterDialog *ItemBox::registerDialog() {
+  return m_registerDialog;
 }
 
-QVariant ItemBox::getValue() const {
-  return value;
+QVariant ItemBox::value() const {
+  return m_value;
 }
 
 void ItemBox::setValue(const QVariant &value) {
   //  qDebug() << "Set value : " << value;
-  this->value = value;
+  this->m_value = value;
   if (value.isNull()) {
     setText("");
-  } else if (searchDialog) {
-    setText(searchDialog->getText(value));
+  } else if (m_searchDialog) {
+    setText(m_searchDialog->getText(value));
     //    qDebug() << "Text = " << text();
   }
 }
 
 void ItemBox::setSearchDialog(SearchDialog *value) {
-  searchDialog = value;
-  connect(searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);
+  m_searchDialog = value;
+  connect(m_searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);
 }
 
 void ItemBox::changeItem(QVariant value, QString text) {
@@ -102,11 +102,11 @@ void ItemBox::changeItem(QVariant value, QString text) {
 
   setValue(value);
   //  setText(text);
-  if (registerDialog && registerDialog->isVisible()) {
-    registerDialog->close();
+  if (m_registerDialog && m_registerDialog->isVisible()) {
+    m_registerDialog->close();
   }
-  if (searchDialog && searchDialog->isVisible()) {
-    searchDialog->close();
+  if (m_searchDialog && m_searchDialog->isVisible()) {
+    m_searchDialog->close();
   }
   //  qDebug() << "Value changed: " << value << ", " << text;
 }

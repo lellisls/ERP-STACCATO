@@ -3,6 +3,7 @@
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QShortcut>
 #include <QSqlTableModel>
 #include <QtSql>
 
@@ -52,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
     exit(1);
   }
 #endif
+  QShortcut * shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q),this);
+  connect(shortcut,&QShortcut::activated,this,&QWidget::close);
 
   modelOrcamento = new QSqlTableModel(this);
   modelVendas = new QSqlRelationalTableModel(this);
@@ -94,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
   }
+  on_tableVendas_doubleClicked(modelVendas->index(0,0));
 }
 
 bool MainWindow::dbConnect() {

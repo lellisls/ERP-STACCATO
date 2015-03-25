@@ -245,10 +245,10 @@ bool Orcamento::savingProcedures(int row) {
     setData(row, "idOrcamento", idOrcamento);
   }
   setData(row, "idLoja", UserSession::getLoja());
-  setData(row, "idCliente", ui->itemBoxCliente->getValue());
-  setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->getValue());
-  setData(row, "idUsuario", ui->itemBoxVendedor->getValue());
-  setData(row, "idProfissional", ui->itemBoxProfissional->getValue());
+  setData(row, "idCliente", ui->itemBoxCliente->value());
+  setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
+  setData(row, "idUsuario", ui->itemBoxVendedor->value());
+  setData(row, "idProfissional", ui->itemBoxProfissional->value());
   setData(row, "validade", ui->spinBoxValidade->value());
   setData(row, "data", ui->dateTimeEdit->dateTime());
   setData(row, "subTotalBru", ui->doubleSpinBoxSubTotalBruto->value());
@@ -497,7 +497,7 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("#DATA#", ui->dateTimeEdit->text());
 
   //Cliente
-  str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->getValue().toString() + "';";
+  str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->value().toString() + "';";
   QSqlQuery queryCliente(str);
   if (!queryCliente.exec()) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryCliente.lastError();
@@ -519,7 +519,7 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("#CEPENTREGA#",endEntrega.cep());
 
   //Profissional
-  str = "SELECT * FROM Profissional WHERE idProfissional='"+ ui->itemBoxProfissional->getValue().toString() + "'";
+  str = "SELECT * FROM Profissional WHERE idProfissional='"+ ui->itemBoxProfissional->value().toString() + "'";
   QSqlQuery queryProf;
   if(!queryProf.exec(str)){
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryProf.lastError();
@@ -577,7 +577,7 @@ void Orcamento::adicionarItem() {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idOrcamento")), ui->lineEditOrcamento->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idProduto")),
-                    ui->itemBoxProduto->getValue().toInt());
+                    ui->itemBoxProduto->value().toInt());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("item")), row); // Item
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("fornecedor")), ui->lineEditFornecedor->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("produto")), ui->itemBoxProduto->text());
@@ -610,7 +610,7 @@ void Orcamento::atualizarItem() {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idOrcamento")),
                     ui->lineEditOrcamento->text());                                                // Item
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja()); // Item
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idProduto")), ui->itemBoxProduto->getValue());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idProduto")), ui->itemBoxProduto->value());
 
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("item")), row); // Item
 
@@ -671,7 +671,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  int idCliente = ui->itemBoxCliente->getValue().toInt();
+  int idCliente = ui->itemBoxCliente->value().toInt();
   QSqlQuery qryCadastro;
   if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente "
                         "= Cliente.idCliente WHERE Cliente.idCliente = " +
@@ -749,7 +749,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 
   QSqlQuery query;
   query.prepare("SELECT * FROM Produto WHERE idProduto = :idx");
-  query.bindValue(":idx", ui->itemBoxProduto->getValue().toInt());
+  query.bindValue(":idx", ui->itemBoxProduto->value().toInt());
   //  qDebug() << "value: " << ui->itemBoxProduto->getValue().toInt();
   if (!query.exec()) {
     qDebug() << "Erro na busca do produto: " << query.lastError();
@@ -780,11 +780,11 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
 //  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
-  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->getValue().toInt()) +
+  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
       " AND ativo = 1");
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", ui->itemBoxCliente->getValue());
+  queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
   if (!queryCliente.exec() || !queryCliente.first()) {
     qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
   }

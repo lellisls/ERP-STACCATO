@@ -194,9 +194,9 @@ bool CadastroCliente::savingProcedures(int row) {
   if (!ui->lineEditEmail->text().isEmpty()) {
     setData(row, "email", ui->lineEditEmail->text());
   }
-  setData(row, "idCadastroRel", ui->itemBoxCliente->getValue());
-  setData(row, "idProfissionalRel", ui->itemBoxProfissional->getValue());
-  setData(row, "idUsuarioRel", ui->itemBoxVendedor->getValue());
+  setData(row, "idCadastroRel", ui->itemBoxCliente->value());
+  setData(row, "idProfissionalRel", ui->itemBoxProfissional->value());
+  setData(row, "idUsuarioRel", ui->itemBoxVendedor->value());
 
   setData(row, "pfpj", tipoPFPJ);
 

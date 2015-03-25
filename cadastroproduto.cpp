@@ -94,7 +94,7 @@ bool CadastroProduto::verifyFields(int row) {
     QMessageBox::warning(this, "Atenção!", "Preço inválido!", QMessageBox::Ok,
                          QMessageBox::NoButton);
   }
-  if (ui->itemBoxFornecedor->getValue().isNull()) {
+  if (ui->itemBoxFornecedor->value().isNull()) {
     ui->itemBoxFornecedor->setFocus();
     QMessageBox::warning(this, "Atenção!", "Você não preencheu um item obrigatório!", QMessageBox::Ok,
                          QMessageBox::NoButton);
@@ -149,7 +149,7 @@ void CadastroProduto::setupMapper() {
 
 bool CadastroProduto::savingProcedures(int row) {
   setData(row, "Fornecedor", ui->itemBoxFornecedor->text());
-  setData(row, "idFornecedor", ui->itemBoxFornecedor->getValue());
+  setData(row, "idFornecedor", ui->itemBoxFornecedor->value());
 
   setData(row, "temLote", ui->radioButtonLote->isChecked());
   setData(row, "descontinuado", ui->radioButtonDesc->isChecked());

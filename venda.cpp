@@ -407,7 +407,12 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 
 void Venda::on_pushButtonNFe_clicked() {
   CadastrarNFE * cadNfe = new CadastrarNFE(this);
-  cadNfe->show();
+  QList<int> lista;
+  for(int item = 0; item < modelItem.rowCount(); ++item){
+    lista.append(modelItem.data(modelItem.index(item,modelItem.fieldIndex(primaryKey))).toInt());
+  }
+  cadNfe->gerarNFe(idOrcamento,lista);
+  cadNfe->showMaximized();
 //  NFe nota(idOrcamento, this);
 //  //  qDebug() << "xml: " << nota.XML();
 //  if (nota.TXT()) {
@@ -593,6 +598,7 @@ bool Venda::viewRegister(QModelIndex index) {
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
   fillTotals();
+  on_pushButtonNFe_clicked();
   return true;
 }
 

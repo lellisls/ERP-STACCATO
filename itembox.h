@@ -13,26 +13,26 @@ public:
   ItemBox(QWidget *parent);
   ~ItemBox();
   virtual void resizeEvent(QResizeEvent *event);
-  void setSearchDialog(SearchDialog *value);
-  void setRegisterDialog(RegisterDialog *value);
-  SearchDialog *getSearchDialog();
-  RegisterDialog *getRegisterDialog();
-  QVariant getValue() const;
-  void setValue(const QVariant &value);
+  void setSearchDialog(SearchDialog *m_value);
+  void setRegisterDialog(RegisterDialog *m_value);
+  SearchDialog *searchDialog();
+  RegisterDialog *registerDialog();
+  QVariant value() const;
+  void setValue(const QVariant &m_value);
 
 public slots:
-  void changeItem(QVariant value, QString text);
+  void changeItem(QVariant m_value, QString text);
 
 protected slots:
   virtual void search();
   virtual void edit();
 
 protected:
-  Q_PROPERTY(QVariant value READ getValue WRITE setValue STORED false)
-  QPushButton *searchButton, *plusButton;
-  SearchDialog *searchDialog;
-  RegisterDialog *registerDialog;
-  QVariant value;
+  Q_PROPERTY(QVariant value READ value WRITE setValue STORED false)
+  QPushButton *m_searchButton, *m_plusButton;
+  SearchDialog *m_searchDialog;
+  RegisterDialog *m_registerDialog;
+  QVariant m_value;
 
   // QWidget interface
 protected:

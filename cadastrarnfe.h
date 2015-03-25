@@ -18,13 +18,22 @@ public:
 
   void gerarNFe(QString idVenda, QList<int> items );
 
-  void setItemData(int row, const QString & key, const QVariant &value);
+  void getItemData(int row, const QString & key, const QVariant &value);
+  QVariant getItemData(int row, const QString & key);
+
   private slots:
+
+  void updateImpostos();
+
   void on_pushButtonGerarNFE_clicked();
 
   void on_pushButtonCancelar_clicked();
 
-private:
+  void on_tableView_activated(const QModelIndex &index);
+
+  void on_tableView_pressed(const QModelIndex &index);
+
+  private:
   Ui::CadastrarNFE *ui;
   QSqlRelationalTableModel modelItem;
 

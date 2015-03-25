@@ -47,7 +47,8 @@ SOURCES += backgroundproxymodel.cpp \
     cepcompleter.cpp \
     importaexport.cpp \
     cadastrofornecedor.cpp \
-    cadastrarnfe.cpp
+    cadastrarnfe.cpp \
+    endereco.cpp
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \

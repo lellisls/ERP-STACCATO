@@ -133,7 +133,7 @@ protected:
   */
   inline void setData(const QString &key, QVariant value) {
     if(model.fieldIndex(key) == -1){
-      qDebug() << "Key '" << key << "' not found on table '" << model.tableName() << "'";
+      qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
     }
     model.setData(model.index(mapper.currentIndex(), model.fieldIndex(key)), value);
   }
@@ -147,7 +147,7 @@ protected:
   */
   inline void setData(int row, const QString &key, QVariant value) {
     if(model.fieldIndex(key) == -1){
-      qDebug() << "Key '" << key << "' not found on table '" << model.tableName() << "'";
+      qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
     }
     model.setData(model.index(row, model.fieldIndex(key)), value);
   }
@@ -158,6 +158,9 @@ protected:
   * \return
   */
   inline QVariant data(const QString &key) {
+    if (model.fieldIndex(key) == -1) {
+      qDebug() << objectName() << " : Key " << key << " not found on model!";
+    }
     return (model.data(model.index(mapper.currentIndex(), model.fieldIndex(key))));
   }
   /*!
@@ -168,6 +171,9 @@ protected:
   * \return
   */
   inline QVariant data(int row, const QString &key) {
+    if (model.fieldIndex(key) == -1) {
+      qDebug() << objectName() << " : Key " << key << " not found on model!";
+    }
     return (model.data(model.index(row, model.fieldIndex(key))));
   }
   /*!
@@ -177,6 +183,9 @@ protected:
   * \param key Nome da coluna mapeada.
   */
   inline void addMapping(QWidget *widget, const QString &key) {
+    if (model.fieldIndex(key) == -1) {
+      qDebug() << objectName() << " : Key " << key << " not found on model!";
+    }
     mapper.addMapping(widget, model.fieldIndex(key));
   }
   /*!

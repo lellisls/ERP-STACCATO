@@ -98,7 +98,9 @@ class MainWindow : public QMainWindow {
 
     void on_actionRestaurar_BD_triggered();
 
-private:
+    void on_actionImportaTeste_triggered();
+
+  private:
     // attributes
     Ui::MainWindow *ui;
     int orcRows = 0;

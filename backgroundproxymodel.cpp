@@ -1,5 +1,4 @@
 #include <QBrush>
-#include <QColor>
 #include <QDebug>
 
 #include "backgroundproxymodel.h"

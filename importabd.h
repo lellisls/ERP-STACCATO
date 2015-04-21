@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QFutureWatcher>
 #include <QProgressDialog>
+#include <QSqlRelationalTableModel>
 
 #include "importaexport.h"
 
@@ -25,7 +26,6 @@ class ImportaBD : public QDialog {
     void updateProgressText(QString str);
 
   private slots:
-    void on_pushButtonExport_clicked();
 
   private:
     // attributes
@@ -33,6 +33,7 @@ class ImportaBD : public QDialog {
     QFutureWatcher<QString> futureWatcher;
     QProgressDialog *progressDialog;
     ImportaExport importaExport;
+    QSqlRelationalTableModel model;
 };
 
 #endif // IMPORTABD_H

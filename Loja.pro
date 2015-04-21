@@ -48,7 +48,12 @@ SOURCES += backgroundproxymodel.cpp \
     importaexport.cpp \
     cadastrofornecedor.cpp \
     cadastrarnfe.cpp \
-    endereco.cpp
+    endereco.cpp \
+    importaexportdelegate.cpp \
+    importaexportproxy.cpp \
+    importateste.cpp \
+    importateste2.cpp \
+    editablesqlmodel.cpp
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \
@@ -87,7 +92,12 @@ HEADERS  += backgroundproxymodel.h \
     importaexport.h \
     cadastrofornecedor.h \
     endereco.hpp \
-    cadastrarnfe.h
+    cadastrarnfe.h \
+    importaexportdelegate.h \
+    importaexportproxy.h \
+    importateste.h \
+    importateste2.h \
+    editablesqlmodel.h
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \
@@ -111,7 +121,8 @@ FORMS += cadastrocliente.ui \
     apagaorcamento.ui \
     loginconfig.ui \
     cadastrofornecedor.ui \
-    cadastrarnfe.ui
+    cadastrarnfe.ui \
+    importateste.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0 -Wall
@@ -131,3 +142,30 @@ INSTALLS += install_it
 
 DISTFILES += \
     qt_portuguese.ts
+
+test {
+    message(Test build)
+    QT += testlib
+    TARGET = UnitTests
+
+    SOURCES -= main.cpp
+
+    HEADERS += test/testSuite1.h \
+        test/testSuite2.h
+
+    SOURCES += test/main.cpp \
+        test/testSuite1.cpp \
+        test/testSuite2.cpp
+} else {
+    message(Normal build)
+}
+
+CONFIG(debug, debug|release){
+message(Activating terminal)
+CONFIG += console
+}
+
+CONFIG(release, debug|release){
+message(Deactivating terminal)
+CONFIG -= console
+}

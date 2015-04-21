@@ -843,7 +843,7 @@
     <property name="title">
      <string>Opções</string>
     </property>
-    <addaction name="actionImportarTabelaFornecedor"/>
+    <addaction name="actionImportaTeste"/>
     <addaction name="actionAtualizar_tabelas"/>
     <addaction name="actionRestaurar_BD"/>
    </widget>
@@ -943,6 +943,11 @@
    </property>
    <property name="toolTip">
     <string>Cadastrar fornecedor</string>
+   </property>
+  </action>
+  <action name="actionImportaTeste">
+   <property name="text">
+    <string>Importa tabela fornecedor</string>
    </property>
   </action>
  </widget>

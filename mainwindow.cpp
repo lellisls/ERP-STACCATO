@@ -29,6 +29,7 @@
 #include "ui_mainwindow.h"
 #include "usersession.h"
 #include "venda.h"
+#include "importateste.h"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent), ui(new Ui::MainWindow), modelOrcamento(nullptr), modelCAPagar(nullptr),
@@ -97,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
   }
-  on_tableVendas_doubleClicked(modelVendas->index(0,0));
+//  on_tableVendas_doubleClicked(modelVendas->index(0,0));
 }
 
 bool MainWindow::dbConnect() {
@@ -130,7 +131,7 @@ bool MainWindow::dbConnect() {
       //                            QMessageBox::NoButton);
       //      close();
       qDebug() << "mydb schema not found!";
-      if(!initDb()){
+      if(!initDb()) {
         qDebug() << "initDb Error";
         return false;
       }
@@ -178,9 +179,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::setupTable(QTableView *table) {
-
   table->resizeColumnsToContents();
-
   table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 }
 
@@ -429,19 +428,19 @@ void MainWindow::on_tableOrcamentos_doubleClicked(const QModelIndex &index) {
   connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
   //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
   orc->viewRegisterById(
-        modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+    modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
 void MainWindow::on_tableContasPagar_doubleClicked(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
-        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+    modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableContasReceber_doubleClicked(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(modelCAReceber->data(modelCAReceber->index(
-                                           index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+      index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tablePedidosCompra_doubleClicked(const QModelIndex &index) {
@@ -457,7 +456,7 @@ void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
   vendas->viewRegisterById(
-        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
+    modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -573,15 +572,15 @@ void MainWindow::on_radioButtonContaReceberPendente_clicked() {
 void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-        modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
-                                                                   "idPedido"))).toString());
+    modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
+                                  "idPedido"))).toString());
 }
 
 void MainWindow::on_tableEntregasCliente_doubleClicked(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-        modelEntregasCliente->data(modelEntregasCliente->index(
-                                     index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
+    modelEntregasCliente->data(modelEntregasCliente->index(
+                                 index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableNFE_doubleClicked(const QModelIndex &index) {
@@ -679,12 +678,16 @@ void MainWindow::readSettings() {
   settings.endGroup();
 }
 
-void MainWindow::on_actionRestaurar_BD_triggered()
-{
-  if(!initDb()){
+void MainWindow::on_actionRestaurar_BD_triggered() {
+  if(!initDb()) {
     qDebug() << "initDb Error";
-  } else{
+  } else {
     QMessageBox::information(this, "Aviso!", "Banco de dados inicializado com sucesso.");
     updateTables();
   }
+}
+
+void MainWindow::on_actionImportaTeste_triggered() {
+  ImportaTeste *teste = new ImportaTeste(this);
+  teste->importar();
 }

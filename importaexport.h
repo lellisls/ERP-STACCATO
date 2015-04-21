@@ -7,6 +7,12 @@
 class ImportaExport : public QObject {
     Q_OBJECT
 
+  public:
+    explicit ImportaExport(QObject *parent = 0);
+    ~ImportaExport();
+    QString importar(QString file, int validade);
+    int buscarCadastrarFornecedor(QString fornecedor);
+
   signals:
     void progressRangeChanged(int max);
     void progressValueChanged(int val);
@@ -15,12 +21,6 @@ class ImportaExport : public QObject {
 
   public slots:
     void cancel();
-
-  public:
-    ImportaExport();
-    ~ImportaExport();
-    QString importar(QString file, int validade);
-    int buscarCadastrarFornecedor(QString fornecedor);
 
   private:
     bool canceled;

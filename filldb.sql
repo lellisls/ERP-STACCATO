@@ -2,7 +2,6 @@ START TRANSACTION;
 SET AUTOCOMMIT = 0;
 INSERT INTO `mydb`.`Fornecedor` VALUES (1, 'Portinari Revestimentos', 'Portinari', '000.000.000/000-00', '000.000.000.000', 'Leandro da Silva', '123.456.123-10', 'Leandro', '11.111.111-6', '(11)0123-4567', '(11)0123-4567', '(11)0123-4567', NULL, NULL, 'teste@portinari.com.br', NULL, NULL, NULL, 0);
 INSERT INTO `mydb`.`Fornecedor` VALUES (2, 'Apavisa Revestimentos', 'Apavisa', '000.000.000/000-00', '000.000.000.000', 'Leandro da Silva', '123.456.123-10', 'Leandro', '11.111.111-6', '(11)0123-4567', '(11)0123-4567', '(11)0123-4567', NULL, NULL, 'teste@apavisa.com.br', NULL, NULL, NULL, 0);
-INSERT INTO `mydb`.`Produto`  VALUES (1, 1, 'Portinari', 'Meu produto', '10', 'pccx', 'Colecao 01', '1', '11', '11', '22', '1X1X1', '012345', '1', '11111111', '11111111', '1234', '0', '1234', '66', '10' , '10', '0', '0', '100', '20', 'Exemplo de produto', '0' , '0', '1', '1', '2018-10-10', '0');
-INSERT INTO `Venda` VALUES ('LJ01-150001',1,1,1,3,3,'2015-03-24 23:37:29',11000,11000,440,0,0,11440,7,'ABERTO',3);
-INSERT INTO `Venda_has_Produto` VALUES ('LJ01-150001',1,0,1,'Portinari','Meu produto','',100,10,110,'pccx',11,11000,0,11000,0,11000,'PENDENTE');
+SELECT * FROM mydb.Produto;
+ -- un, unUpd, colecao, colecaoUpd, tipo, tipoUpd, m2cx, m2cxUpd, pccx, pccxUpd, kgcx, kgcxUpd, formComercial, formComercialUpd, codComercial, codComercialUpd, codIndustrial, codIndustrialUpd, codBarras, codBarrasUpd, ncm, ncmUpd, cfop, cfopUpd, icms, icmsUpd, situacaoTributaria, situacaoTributariaUpd, qtdPallet, qtdPalletUpd, custo, custoUpd, ipi, ipiUpd, st, stUpd, precoVenda, precoVendaUpd, comissao, comissaoUpd, observacoes, observacoesUpd, origem, origemUpd, temLote, temLoteUpd, ui, uiUpd, validade, validadeUpd, expirado, expiradoUpd, descontinuado, descontinuadoUpd
 COMMIT;

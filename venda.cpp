@@ -309,6 +309,11 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     }
   }
 
+  if(!ui->itemBoxEnderecoFat->value().isValid()){
+    QMessageBox::warning(this, "Aviso!", "Deve selecionar um endereço de faturamento.");
+    return;
+  }
+
   QSqlQuery qry;
 
   //  qDebug() << "id: " << idOrcamento;
@@ -316,9 +321,57 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   qry.exec("START TRANSACTION");
   qry.exec("SET AUTOCOMMIT = 0");
 
-  if (!qry.exec("INSERT INTO Venda SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
-                "idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status FROM Orcamento WHERE "
-                "idOrcamento = '" + idOrcamento + "'")) {
+  QSqlQuery qryOrc;
+  if(!qryOrc.exec("SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status FROM Orcamento WHERE idOrcamento = '"+ idOrcamento +"'")){
+    qDebug() << "Erro lendo orçamento: " << qryOrc.lastError();
+    qry.exec("ROLLBACK");
+    return;
+  }
+  if(!qryOrc.first()){
+    qDebug() << "Não encontrou orçamento: " << qryOrc.size();
+  }
+
+//  qDebug() << "-------------------";
+//  qDebug() << "idOrcamento: " << qryOrc.value("idOrcamento");
+//  qDebug() << "idLoja: " << qryOrc.value("idLoja");
+//  qDebug() << "idUsuario: " << qryOrc.value("idUsuario");
+//  qDebug() << "idCliente: " << qryOrc.value("idCliente");
+//  qDebug() << "idEnderecoEntrega: " << qryOrc.value("idEnderecoEntrega");
+//  qDebug() << "idEnderecoFaturamento: " << ui->itemBoxEnderecoFat->value();
+//  qDebug() << "idProfissional: " << qryOrc.value("idProfissional");
+//  qDebug() << "data: " << qryOrc.value("data");
+//  qDebug() << "subTotalBru: " << qryOrc.value("subTotalBru");
+//  qDebug() << "subTotalLiq: " << qryOrc.value("subTotalLiq");
+//  qDebug() << "frete: " << qryOrc.value("frete");
+//  qDebug() << "descontoPorc: " << qryOrc.value("descontoPorc");
+//  qDebug() << "descontoReais: " << qryOrc.value("descontoReais");
+//  qDebug() << "total: " << qryOrc.value("total");
+//  qDebug() << "validade: " << qryOrc.value("validade");
+//  qDebug() << "status: " << qryOrc.value("status");
+
+  if(!qry.prepare("INSERT INTO Venda (idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status) VALUES (:idOrcamento, :idLoja, :idUsuario, :idCliente, :idEnderecoEntrega, :idEnderecoFaturamento, :idProfissional, :data, :subTotalBru, :subTotalLiq, :frete, :descontoPorc, :descontoReais, :total, :validade, :status)")){
+    qDebug() << "Erro preparando query insert venda: " << qry.lastError();
+    qry.exec("ROLLBACK");
+    return;
+  }
+  qry.bindValue(":idOrcamento", qryOrc.value("idOrcamento"));
+  qry.bindValue(":idLoja", qryOrc.value("idLoja"));
+  qry.bindValue(":idUsuario", qryOrc.value("idUsuario"));
+  qry.bindValue(":idCliente", qryOrc.value("idCliente"));
+  qry.bindValue(":idEnderecoEntrega", qryOrc.value("idEnderecoEntrega"));
+  qry.bindValue(":idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
+  qry.bindValue(":idProfissional", qryOrc.value("idProfissional"));
+  qry.bindValue(":data", qryOrc.value("data"));
+  qry.bindValue(":subTotalBru", qryOrc.value("subTotalBru"));
+  qry.bindValue(":subTotalLiq", qryOrc.value("subTotalLiq"));
+  qry.bindValue(":frete", qryOrc.value("frete"));
+  qry.bindValue(":descontoPorc", qryOrc.value("descontoPorc"));
+  qry.bindValue(":descontoReais", qryOrc.value("descontoReais"));
+  qry.bindValue(":total", qryOrc.value("total"));
+  qry.bindValue(":validade", qryOrc.value("validade"));
+  qry.bindValue(":status", qryOrc.value("status"));
+
+  if (!qry.exec()) {
     qDebug() << "Erro inserindo em Venda: " << qry.lastError();
     qDebug() << "qry: " << qry.lastQuery();
     qry.exec("ROLLBACK");
@@ -361,7 +414,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   if (qryEstoque.size() > 0) {
     if (!qry.exec(
           "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status) SELECT * "
+          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status "
           "FROM Venda WHERE idVenda = '" +
           idOrcamento + "'")) {
       qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();

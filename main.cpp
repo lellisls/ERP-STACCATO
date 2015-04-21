@@ -4,6 +4,8 @@
 #include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
+//  qSetMessagePattern("%{function}:%{file}:%{line} - %{message}");
+
   QApplication app(argc, argv);
   app.setOrganizationName("ERP");
   app.setApplicationName("Staccato");

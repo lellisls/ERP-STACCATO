@@ -149,8 +149,9 @@ bool RegisterDialog::confirmationMessage() {
     msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
     msgBox.setDefaultButton(QMessageBox::Save);
     int ret = msgBox.exec();
-    if (ret == QMessageBox::Yes) {
+    if (ret == QMessageBox::Save) {
       if (!save()) {
+        qDebug() << objectName() << " : " << " save failed!";
         return false;
       }
     } else if (ret == QMessageBox::Cancel) {

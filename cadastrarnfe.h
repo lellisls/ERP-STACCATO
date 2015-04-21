@@ -33,9 +33,13 @@ public:
 
   void on_tableView_pressed(const QModelIndex &index);
 
+
   private:
   Ui::CadastrarNFE *ui;
   QSqlRelationalTableModel modelItem;
+  void writeTXT();
+  void generateNFE(QTextStream &stream);
+  QString criarChaveAcesso();
 
   // RegisterDialog interface
 protected:

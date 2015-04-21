@@ -3,6 +3,8 @@
 #include "endereco.hpp"
 #include "ui_cadastrarnfe.h"
 
+#include <QFile>
+
 CadastrarNFE::CadastrarNFE(QWidget *parent) :
   RegisterDialog("NFe","idNFe",parent),
   ui(new Ui::CadastrarNFE) {
@@ -123,6 +125,7 @@ void CadastrarNFE::gerarNFe(QString idVenda, QList<int> items) {
 // RegisterDialog interface
 
 bool CadastrarNFE::verifyFields(int row) {
+  return true;
 }
 
 bool CadastrarNFE::savingProcedures(int row) {
@@ -156,4 +159,16 @@ void CadastrarNFE::on_tableView_activated(const QModelIndex &index) {
 
 void CadastrarNFE::on_tableView_pressed(const QModelIndex &index) {
   updateImpostos();
+}
+
+void CadastrarNFE::writeTXT() {
+
+}
+
+void CadastrarNFE::generateNFE(QTextStream & stream) {
+
+}
+
+QString CadastrarNFE::criarChaveAcesso() {
+
 }

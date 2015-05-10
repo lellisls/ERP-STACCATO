@@ -35,3 +35,4 @@ Makefile*
 !libmysql.dll
 *.bak
 *.user
+qrs/Thumbs.db

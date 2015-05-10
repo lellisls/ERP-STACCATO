@@ -130,7 +130,7 @@ QMAKE_CXXFLAGS += -std=c++11
 QMAKE_LFLAGS += -O3
 
 RESOURCES += \
-    resources.qrc
+    qrs/resources.qrc
 
 install_it.path = $$OUT_PWD
 install_it.files = $$PWD/libmysql.dll \

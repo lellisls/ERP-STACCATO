@@ -4,6 +4,7 @@
 #include <QString>
 
 class Endereco {
+
   public:
     explicit Endereco(int idEndereco);
     int idEndereco() const;

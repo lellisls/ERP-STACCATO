@@ -10,8 +10,7 @@ namespace Ui {
   class ApagaOrcamento;
 }
 
-class ApagaOrcamento : public QDialog
-{
+class ApagaOrcamento : public QDialog {
     Q_OBJECT
 
   public:

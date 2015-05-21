@@ -20,11 +20,9 @@ class PedidosCompra : public QDialog {
   private slots:
     void on_checkBox_toggled(bool checked);
     void on_pushButtonCancelar_clicked();
-    void on_pushButtonSalvar_clicked();
-
-    void on_radioButtonVenda_toggled(bool checked);
-
     void on_pushButtonNFe_clicked();
+    void on_pushButtonSalvar_clicked();
+    void on_radioButtonVenda_toggled(bool checked);
 
   private:
     // attributes

@@ -3,16 +3,14 @@
 
 #include <QSqlRelationalTableModel>
 
-class EditableSqlModel : public QSqlRelationalTableModel
-{
+class EditableSqlModel : public QSqlRelationalTableModel {
     Q_OBJECT
 
-public:
+  public:
     EditableSqlModel(QObject *parent = 0);
     ~EditableSqlModel();
 
     // QAbstractItemModel interface
-public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
 };
 

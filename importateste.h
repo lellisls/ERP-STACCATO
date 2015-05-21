@@ -19,10 +19,10 @@ class ImportaTeste : public QDialog {
   public:
     explicit ImportaTeste(QWidget *parent = 0);
     ~ImportaTeste();
-    int buscarCadastrarFornecedor(QString fornecedor);
     bool consistenciaDados();
     bool readFile();
     bool verificaTabela();
+    int buscarCadastrarFornecedor(QString fornecedor);
     void atualizaCamposProduto(QSqlQuery &produto, QString idProduto);
     void cadastraFornecedores(QSqlQuery &query);
     void cadastraProduto();

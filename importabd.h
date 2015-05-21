@@ -25,8 +25,6 @@ class ImportaBD : public QDialog {
     void updateProgressValue(int val);
     void updateProgressText(QString str);
 
-  private slots:
-
   private:
     // attributes
     Ui::ImportaBD *ui;

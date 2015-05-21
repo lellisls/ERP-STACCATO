@@ -21,7 +21,7 @@ class RecebimentosFornecedor : public QDialog {
     void on_pushButtonSalvar_clicked();
 
   private:
-    //attributes
+    // attributes
     Ui::RecebimentosFornecedor *ui;
     QSqlTableModel modelRecebimentos;
     QString idPedido;

@@ -7,8 +7,7 @@ namespace Ui {
   class LoginConfig;
 }
 
-class LoginConfig : public QDialog
-{
+class LoginConfig : public QDialog {
     Q_OBJECT
 
   public:

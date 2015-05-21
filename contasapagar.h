@@ -23,7 +23,7 @@ class ContasAPagar : public QDialog {
     void on_pushButtonSalvar_clicked();
 
   private:
-    //atributes
+    // atributes
     Ui::ContasAPagar *ui;
     QSqlRelationalTableModel modelItensContas, modelContas;
     QString idVenda;

@@ -22,9 +22,9 @@ class LoginDialog : public QDialog {
     void on_pushButtonConfig_clicked();
 
   private:
-    //attributes
+    // attributes
     Ui::LoginDialog *ui;
-    //methods
+    // methods
     void verify();
 };
 

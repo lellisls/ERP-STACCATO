@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QSqlQuery>
-//#include <QSqlTableModel>
 #include <QSqlRelationalTableModel>
 #include <QDataWidgetMapper>
 

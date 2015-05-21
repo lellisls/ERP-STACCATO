@@ -7,8 +7,7 @@ namespace Ui {
   class CadastroFornecedor;
 }
 
-class CadastroFornecedor : public RegisterDialog
-{
+class CadastroFornecedor : public RegisterDialog {
     Q_OBJECT
 
   public:
@@ -28,9 +27,7 @@ class CadastroFornecedor : public RegisterDialog
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonCancelar_clicked();
-
     void on_lineEditCNPJ_textEdited(const QString &);
-
     void on_lineEditContatoCPF_textEdited(const QString &);
 
   public:
@@ -38,6 +35,15 @@ class CadastroFornecedor : public RegisterDialog
     void clearEnd();
 
   private:
+    // attributes
+    Ui::CadastroFornecedor *ui;
+    bool closeBeforeUpdate;
+    QSqlTableModel modelEnd;
+    QDataWidgetMapper mapperEnd;
+    // methods
+    void validaCNPJ(QString text);
+    void validaCPF(QString text);
+    bool verifyRequiredField(QLineEdit *line, bool silent = false);
     bool atualizarEnd();
     void novoEnd();
     virtual bool verifyFields(int row);
@@ -46,17 +52,6 @@ class CadastroFornecedor : public RegisterDialog
     virtual void setupMapper();
     virtual void registerMode();
     virtual void updateMode();
-
-  private:
-    Ui::CadastroFornecedor *ui;
-    bool closeBeforeUpdate;
-
-    void validaCNPJ(QString text);
-    void validaCPF(QString text);
-    bool verifyRequiredField(QLineEdit *line, bool silent = false);
-
-    QSqlTableModel modelEnd;
-    QDataWidgetMapper mapperEnd;
 };
 
 #endif // CADASTROFORNECEDOR_H

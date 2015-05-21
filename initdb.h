@@ -48,14 +48,14 @@ inline bool initDb() {
   qDebug() << "Initializing mydb: ";
   qDebug() << qApp->applicationDirPath() + "/initdb.sql";
   qDebug() << "LOADING initdb.sql";
-  if(!loadScript(qApp->applicationDirPath() + "/initdb.sql")){
+  if (!loadScript(qApp->applicationDirPath() + "/initdb.sql")) {
     QMessageBox::warning(0, "Aviso!", "Não carregou o script do BD.");
     return false;
   }
   QSqlQuery query;
   if (!query.exec("SELECT * FROM cep.sp LIMIT 1")) {
     qDebug() << "LOADING cep.sql";
-    if(!loadScript(qApp->applicationDirPath() + "/cep.sql")){
+    if (!loadScript(qApp->applicationDirPath() + "/cep.sql")) {
       QMessageBox::warning(0, "Aviso!", "Não carregou o script do cep.");
       return false;
     }

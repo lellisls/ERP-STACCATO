@@ -20,7 +20,7 @@ class SendMail : public QDialog {
     void on_pushButtonEnviar_clicked();
 
   private:
-    //attributes
+    // attributes
     Ui::SendMail *ui;
 };
 

@@ -27,7 +27,7 @@ class WidgetEndereco : public QWidget {
     void remove(int id);
     void setId(int value);
     void setupMapper();
-    void setupUi(QWidget *first = nullptr, QWidget *last = nullptr);  
+    void setupUi(QWidget *first = nullptr, QWidget *last = nullptr);
     bool isEmpty();
 
   private slots:

@@ -23,9 +23,9 @@ DEALINGS IN THE SOFTWARE.*/
 #include <QFileInfo>
 #include <QString>
 #include <QTextStream>
-#include <QtNetwork/QAbstractSocket>
-#include <QtNetwork/QSslSocket>
-#include <QtWidgets/QMessageBox>
+#include <QAbstractSocket>
+#include <QSslSocket>
+#include <QMessageBox>
 
 class Smtp : public QObject {
     Q_OBJECT
@@ -48,7 +48,7 @@ class Smtp : public QObject {
     void stateChanged(QAbstractSocket::SocketState socketState);
 
   private:
-    //attributes
+    // attributes
     enum states { Tls, HandShake, Auth, User, Pass, Rcpt, Mail, Data, Init, Body, Quit, Close };
     int port;
     int state;

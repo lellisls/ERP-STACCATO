@@ -23,7 +23,7 @@ class ContasAReceber : public QDialog {
     void on_pushButtonCancelar_clicked();
 
   private:
-    //attributes
+    // attributes
     Ui::ContasAReceber *ui;
     QSqlTableModel modelContas, modelItensConta;
     QString idVenda;

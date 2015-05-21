@@ -3,15 +3,13 @@
 
 #include <QIdentityProxyModel>
 
-class ImportaExportProxy : public QIdentityProxyModel
-{
+class ImportaExportProxy : public QIdentityProxyModel {
   public:
     ImportaExportProxy(int column, QObject *parent = 0);
     ~ImportaExportProxy();
 
     // QAbstractItemModel interface
-  public:
-    QVariant data(const QModelIndex & proxyIndex, int role) const;
+    QVariant data(const QModelIndex &proxyIndex, int role) const;
 
   private:
     int column;

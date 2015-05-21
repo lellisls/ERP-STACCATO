@@ -2,6 +2,7 @@
 #include <QSqlError>
 #include <QtCore>
 #include <QInputDialog>
+#include <QMessageBox>
 
 #include "nfe.h"
 #include "usersession.h"
@@ -85,7 +86,11 @@ bool NFe::writeTXT(QString chave) {
   //  QFile file(idVenda + ".txt");
   QFile file("C:/ACBrNFeMonitor/ENTNFE.TXT/" + idVenda + ".txt");
   //  qDebug() << QDir::current().absoluteFilePath(idVenda + ".txt");
-  file.open(QFile::WriteOnly);
+  if (not file.open(QFile::WriteOnly)) {
+    QMessageBox::warning(0, "Aviso!", "Não foi possível criar a nota na pasta do ACBr, favor verificar se as "
+                                      "pastas estão corretamente configuradas.");
+    return false;
+  }
   QFileInfo fileInfo(file);
   qDebug() << "path: " << fileInfo.absoluteFilePath();
   arquivo = fileInfo.absoluteFilePath().replace("/", "\\\\");
@@ -370,8 +375,6 @@ bool NFe::writeTXT(QString chave) {
     stream << "ValorBase = " + getFromItemModel(row, "parcial").toString() << endl;
     stream << "Aliquota = 18.00" << endl;
     //    }
-
-
 
     double icms = getFromItemModel(row, "parcial").toDouble() * 0.18;
     icmsTotal += icms;
@@ -724,7 +727,6 @@ QString NFe::calculaDigitoVerificador(QString chave) {
   //  qDebug() << "resto: " << resto;
 
   return QString::number(cDV);
-
 }
 
 QString NFe::getArquivo() const { return arquivo; }

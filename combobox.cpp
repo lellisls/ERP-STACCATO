@@ -6,9 +6,7 @@ ComboBox::ComboBox(QWidget *parent) : QComboBox(parent) {}
 
 ComboBox::~ComboBox() {}
 
-QVariant ComboBox::getCurrentValue() const {
-  return (currentData());
-}
+QVariant ComboBox::getCurrentValue() const { return (currentData()); }
 
 bool ComboBox::setCurrentValue(QVariant value) {
   for (int idx = 0; idx < count(); ++idx) {

@@ -54,12 +54,12 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
   message.append(body);
   message.append("\n\n");
 
-  if (!files.isEmpty()) {
+  if (not files.isEmpty()) {
     qDebug() << "Files to be sent: " << files.size();
     foreach (QString filePath, files) {
       QFile file(filePath);
       if (file.exists()) {
-        if (!file.open(QIODevice::ReadOnly)) {
+        if (not file.open(QIODevice::ReadOnly)) {
           qDebug("Couldn't open the file");
           QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Couldn't open the file\n\n"));
           return;
@@ -84,7 +84,7 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
   rcpt = to;
   state = Init;
   socket->connectToHostEncrypted(host, port); //"smtp.gmail.com" and 465 for gmail TLS
-  if (!socket->waitForConnected(timeout)) {
+  if (not socket->waitForConnected(timeout)) {
     qDebug() << socket->errorString();
   }
 
@@ -145,7 +145,7 @@ void Smtp::readyRead() {
   }*/
   else if (state == HandShake and responseLine == "250") {
     socket->startClientEncryption();
-    if (!socket->waitForEncrypted(timeout)) {
+    if (not socket->waitForEncrypted(timeout)) {
       qDebug() << socket->errorString();
       state = Close;
     }

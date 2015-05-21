@@ -53,7 +53,7 @@ bool CadastroLoja::verifyFields(int row) {
 }
 
 bool CadastroLoja::savingProcedures(int row) {
-  if (!ui->widgetEnd->cadastrar()) {
+  if (not ui->widgetEnd->cadastrar()) {
     return false;
   }
   setData(row, "descricao", ui->lineEditDescricao->text());
@@ -94,12 +94,12 @@ void CadastroLoja::setupMapper() {
 }
 
 bool CadastroLoja::viewRegister(QModelIndex idx) {
-  if (!RegisterDialog::viewRegister(idx)) {
+  if (not RegisterDialog::viewRegister(idx)) {
     return false;
   }
   bool ok = false;
   int idEnd = data("idEndereco").toInt(&ok);
-  if (ok){
+  if (ok) {
     ui->widgetEnd->viewCadastro(idEnd);
   }
   return true;

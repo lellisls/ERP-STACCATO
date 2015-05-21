@@ -6,7 +6,7 @@
 #include <QDebug>
 #include "registerdialog.h"
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
-    : QDialog(parent), ui(new Ui::SearchDialog) {
+  : QDialog(parent), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
   setWindowTitle(title);
   setWindowModality(Qt::WindowModal);
@@ -51,7 +51,7 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
     model.setFilter(filter);
   } else {
     QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' in boolean mode)";
-    if (!filter.isEmpty()) {
+    if (not filter.isEmpty()) {
       searchFilter.append(" AND (" + filter + ")");
     }
     //    qDebug() << "FILTER: " << searchFilter;
@@ -62,16 +62,16 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 
 void SearchDialog::sendUpdateMessage() {
   QModelIndex index = model.index(0, 0);
-  if (!ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
+  if (not ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
     index = ui->tableBusca->selectionModel()->selection().indexes().front();
   }
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
   QString text;
   foreach (QString key, textKeys) {
-    if (!key.isEmpty()) {
+    if (not key.isEmpty()) {
       QVariant val = model.data(model.index(index.row(), model.fieldIndex(key)));
       if (val.isValid()) {
-        if (!text.isEmpty())
+        if (not text.isEmpty())
           text.append(" - ");
         text.append(val.toString());
       }
@@ -133,7 +133,7 @@ void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 QString SearchDialog::getText(QVariant idx) {
   QString qryTxt;
   foreach (QString key, textKeys) {
-    if (!qryTxt.isEmpty()) {
+    if (not qryTxt.isEmpty()) {
       qryTxt += ", ";
     }
     qryTxt += key;
@@ -147,7 +147,7 @@ QString SearchDialog::getText(QVariant idx) {
     foreach (QString key, textKeys) {
       QVariant val = qry.value(key);
       if (val.isValid()) {
-        if (!res.isEmpty()) {
+        if (not res.isEmpty()) {
           res += " - ";
         }
         res += val.toString();
@@ -168,7 +168,7 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
   SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cliente",
-                                             {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "", parent);
+  {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "", parent);
 
   sdCliente->setPrimaryKey("idCliente");
   sdCliente->setTextKeys({"nomeFantasia", "nome_razao"});
@@ -235,7 +235,7 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
 
 SearchDialog *SearchDialog::produto(QWidget *parent) {
   SearchDialog *sdProd = new SearchDialog("Buscar Produto", "Produto",
-                                          {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
+  {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
 
   sdProd->setPrimaryKey("idProduto");
   sdProd->setTextKeys({"descricao"});
@@ -272,7 +272,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor = new SearchDialog("Buscar Fornecedor", "Fornecedor",
-                                                {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "", parent);
+  {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "", parent);
 
   sdFornecedor->setPrimaryKey("idFornecedor");
   sdFornecedor->setTextKeys({"nomeFantasia", "razaoSocial"});
@@ -300,7 +300,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "Transportadora",
-                                                    {"razaoSocial", "nomeFantasia"}, "", parent);
+  {"razaoSocial", "nomeFantasia"}, "", parent);
 
   sdTransportadora->setPrimaryKey("idTransportadora");
   sdTransportadora->setTextKeys({"nomeFantasia"});

@@ -121,8 +121,8 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
        (line->text().size() < line->placeholderText().size() - 1))) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
-    QMessageBox::warning(this, "Atenção!",
-                         "Você não preencheu um campo obrigatório!", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
+                         QMessageBox::NoButton);
     line->setFocus();
     return false;
   }

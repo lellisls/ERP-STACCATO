@@ -2,23 +2,17 @@
 
 #include "lineeditcep.h"
 
-LineEditCEP::LineEditCEP(QWidget *parent) : QLineEdit(parent) {
-  setProperty("value", "");
-}
+LineEditCEP::LineEditCEP(QWidget *parent) : QLineEdit(parent) { setProperty("value", ""); }
 
-bool LineEditCEP::isValid() const {
-  return (text().size() == 9);
-}
+bool LineEditCEP::isValid() const { return (text().size() == 9); }
 
 LineEditCEP::~LineEditCEP() {}
 
 QString LineEditCEP::getValue() const {
-  if (!isValid()) {
+  if (not isValid()) {
     return QString();
   }
   return text();
 }
 
-void LineEditCEP::setValue(QString value) {
-  setText(value);
-}
+void LineEditCEP::setValue(QString value) { setText(value); }

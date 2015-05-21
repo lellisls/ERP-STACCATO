@@ -314,9 +314,9 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 
   QSqlQuery qryOrc;
   if (not qryOrc.exec("SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, "
-                   "data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, "
-                   "status FROM Orcamento WHERE idOrcamento = '" +
-                   idOrcamento + "'")) {
+                      "data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, "
+                      "status FROM Orcamento WHERE idOrcamento = '" +
+                      idOrcamento + "'")) {
     qDebug() << "Erro lendo orçamento: " << qryOrc.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -344,11 +344,11 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   //  qDebug() << "status: " << qryOrc.value("status");
 
   if (not qry.prepare("INSERT INTO Venda (idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
-                   "idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, "
-                   "descontoPorc, descontoReais, total, validade, status) VALUES (:idOrcamento, :idLoja, "
-                   ":idUsuario, :idCliente, :idEnderecoEntrega, :idEnderecoFaturamento, :idProfissional, "
-                   ":data, :subTotalBru, :subTotalLiq, :frete, :descontoPorc, :descontoReais, :total, "
-                   ":validade, :status)")) {
+                      "idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, "
+                      "descontoPorc, descontoReais, total, validade, status) VALUES (:idOrcamento, :idLoja, "
+                      ":idUsuario, :idCliente, :idEnderecoEntrega, :idEnderecoFaturamento, :idProfissional, "
+                      ":data, :subTotalBru, :subTotalLiq, :frete, :descontoPorc, :descontoReais, :total, "
+                      ":validade, :status)")) {
     qDebug() << "Erro preparando query insert venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -383,8 +383,8 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  if (not qry.exec("UPDATE Venda SET data = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +
-                "'")) {
+  if (not qry.exec("UPDATE Venda SET data = '" +
+                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "'")) {
     qDebug() << "Erro setando data em Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -411,21 +411,22 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
   if (qryEstoque.size() > 0) {
-    if (not qry.exec("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-                  "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
-                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-                  "descontoReais, total, validade, status "
-                  "FROM Venda WHERE idVenda = '" +
-                  idOrcamento + "'")) {
+    if (not qry.exec(
+          "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
+          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+          "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
+          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+          "descontoReais, total, validade, status "
+          "FROM Venda WHERE idVenda = '" +
+          idOrcamento + "'")) {
       qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
       qry.exec("ROLLBACK");
       return;
     }
     if (not qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
-                  "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-                  "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
-                  idOrcamento + "';")) {
+                     "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+                     "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
+                     idOrcamento + "';")) {
       qDebug() << "Erro na inserção dos produtos em pedidofornecedor_has_produto: " << qry.lastError();
       qry.exec("ROLLBACK");
       return;
@@ -445,7 +446,8 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   }
 
   if (not qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
-                QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento + "')")) {
+                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento +
+                   "')")) {
     qDebug() << "Error inserting contaareceber: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -663,7 +665,7 @@ void Venda::updateMode() {
 }
 
 bool Venda::viewRegister(QModelIndex index) {
-  if (!RegisterDialog::viewRegister(index)) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
 
@@ -813,7 +815,7 @@ void Venda::on_checkBoxFreteManual_clicked(bool checked) {
     return;
   }
   ui->doubleSpinBoxFrete->setFrame(checked);
-  ui->doubleSpinBoxFrete->setReadOnly(!checked);
+  ui->doubleSpinBoxFrete->setReadOnly(not checked);
   if (checked) {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
   } else {

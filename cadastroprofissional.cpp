@@ -2,18 +2,15 @@
 #include "ui_cadastroprofissional.h"
 #include "searchdialog.h"
 
-CadastroProfissional::CadastroProfissional(QWidget *parent) :
-  RegisterDialog("Profissional", "idProfissional", parent),
-  ui(new Ui::CadastroProfissional) {
+CadastroProfissional::CadastroProfissional(QWidget *parent)
+  : RegisterDialog("Profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
   setupMapper();
   newRegister();
 }
 
-CadastroProfissional::~CadastroProfissional() {
-  delete ui;
-}
+CadastroProfissional::~CadastroProfissional() { delete ui; }
 
 void CadastroProfissional::setupMapper() {
   mapper.addMapping(ui->lineEditNome, model.fieldIndex("nome"));
@@ -42,13 +39,13 @@ void CadastroProfissional::updateMode() {
 
 bool CadastroProfissional::verifyFields(int row) {
   Q_UNUSED(row);
-  if(!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditNome, ui->lineEditTel})) {
+  if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditNome, ui->lineEditTel})) {
     return false;
   }
   return true;
 }
 
-bool CadastroProfissional::savingProcedures( int row ) {
+bool CadastroProfissional::savingProcedures(int row) {
   setData(row, "nome", ui->lineEditNome->text());
   setData(row, "email", ui->lineEditEmail->text());
   setData(row, "tel", ui->lineEditTel->text());
@@ -62,21 +59,13 @@ bool CadastroProfissional::savingProcedures( int row ) {
   return true;
 }
 
-void CadastroProfissional::on_pushButtonCadastrar_clicked() {
-  save();
-}
+void CadastroProfissional::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroProfissional::on_pushButtonAtualizar_clicked() {
-  save();
-}
+void CadastroProfissional::on_pushButtonAtualizar_clicked() { save(); }
 
-void CadastroProfissional::on_pushButtonNovoCad_clicked() {
-  newRegister();
-}
+void CadastroProfissional::on_pushButtonNovoCad_clicked() { newRegister(); }
 
-void CadastroProfissional::on_pushButtonRemover_clicked() {
-  remove();
-}
+void CadastroProfissional::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroProfissional::clearFields() {
   ui->radioButtonAtivo->setChecked(true);
@@ -87,9 +76,7 @@ void CadastroProfissional::clearFields() {
   ui->comboBoxTipo->setCurrentIndex(0);
 }
 
-void CadastroProfissional::on_pushButtonCancelar_clicked() {
-  close();
-}
+void CadastroProfissional::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroProfissional::on_pushButtonBuscar_clicked() {
   SearchDialog *sdProfissional = SearchDialog::profissional(this);

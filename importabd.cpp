@@ -64,8 +64,6 @@ void ImportaBD::mostraResultado() {
 
 void ImportaBD::updateProgressRange(int max) { progressDialog->setMaximum(max); }
 
-void ImportaBD::updateProgressValue(int val) {
-  progressDialog->setValue(val);
-}
+void ImportaBD::updateProgressValue(int val) { progressDialog->setValue(val); }
 
 void ImportaBD::updateProgressText(QString str) { progressDialog->setLabelText(str); }

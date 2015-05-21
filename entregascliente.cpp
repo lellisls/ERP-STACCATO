@@ -12,7 +12,7 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
 
   modelEntregas.setTable("pedidotransportadora");
   modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  if (!modelEntregas.select()) {
+  if (not modelEntregas.select()) {
     qDebug() << "Failed to populate TableEntregas!" << modelEntregas.lastError();
   }
 
@@ -23,30 +23,28 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
   show();
 }
 
-EntregasCliente::~EntregasCliente() {
-  delete ui;
-}
+EntregasCliente::~EntregasCliente() { delete ui; }
 
 void EntregasCliente::on_pushButtonSalvar_clicked() {
 
   if (ui->checkBoxEntregue->isChecked()) {
     QSqlQuery qry;
-    if (!qry.exec("UPDATE pedidotransportadora SET status = 'ENTREGUE' WHERE idPedido = '" + idPedido +
-                  "' AND tipo = 'cliente'")) {
+    if (not qry.exec("UPDATE pedidotransportadora SET status = 'ENTREGUE' WHERE idPedido = '" + idPedido +
+                     "' AND tipo = 'cliente'")) {
       qDebug() << "Erro ao marcar como entregue: " << qry.lastError();
     }
 
-    if (!qry.exec("UPDATE venda SET status = 'FECHADO' WHERE idVenda = '" + idPedido + "'")) {
+    if (not qry.exec("UPDATE venda SET status = 'FECHADO' WHERE idVenda = '" + idPedido + "'")) {
       qDebug() << "Erro ao concluir a venda:" << qry.lastError();
     }
   } else {
     QSqlQuery qry;
-    if (!qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
-                  "' AND tipo = 'cliente'")) {
+    if (not qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
+                     "' AND tipo = 'cliente'")) {
       qDebug() << "Erro ao marcar como não entregue: " << qry.lastError();
     }
 
-    if(!qry.exec("UPDATE venda set status = 'ABERTO' WHERE idVenda = '"+ idPedido +"'")) {
+    if (not qry.exec("UPDATE venda set status = 'ABERTO' WHERE idVenda = '" + idPedido + "'")) {
       qDebug() << "Erro ao marcar venda como não concluída: " << qry.lastError();
     }
   }
@@ -58,9 +56,7 @@ void EntregasCliente::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void EntregasCliente::on_pushButtonCancelar_clicked() {
-  close();
-}
+void EntregasCliente::on_pushButtonCancelar_clicked() { close(); }
 
 void EntregasCliente::on_checkBoxEntregue_clicked() {}
 

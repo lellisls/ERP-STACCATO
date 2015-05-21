@@ -6,10 +6,7 @@
 #include "ui_apagaorcamento.h"
 #include "mainwindow.h"
 
-ApagaOrcamento::ApagaOrcamento(QWidget *parent) :
-  QDialog(parent),
-  ui(new Ui::ApagaOrcamento)
-{
+ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::ApagaOrcamento) {
   ui->setupUi(this);
 
   modelOrc.setTable("Orcamento");
@@ -22,41 +19,28 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) :
   show();
 }
 
-ApagaOrcamento::~ApagaOrcamento()
-{
-  delete ui;
-}
+ApagaOrcamento::~ApagaOrcamento() { delete ui; }
 
-void ApagaOrcamento::on_pushButtonSalvar_clicked()
-{
-  //submit model
-  if(ui->lineEditMotivo->text().isEmpty()){
+void ApagaOrcamento::on_pushButtonSalvar_clicked() {
+  if (ui->lineEditMotivo->text().isEmpty()) {
     QMessageBox::warning(this, "Aviso!", "Deve preencher o motivo");
     return;
   }
 
   modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("status")), "CANCELADO");
-  modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("motivoCancelamento")), ui->lineEditMotivo->text());
-  if(not modelOrc.submitAll()){
+  modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("motivoCancelamento")),
+                   ui->lineEditMotivo->text());
+  if (not modelOrc.submitAll()) {
     qDebug() << "Erro cancelando orçamento: " << modelOrc.lastError();
   }
 
-  if(MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())){
-    qDebug() << "cast ok";
+  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())) {
     window->updateTables();
-  } else{
-    qDebug() << "cast not ok";
-    qDebug() << "object: " << parentWidget()->parentWidget()->objectName();
   }
 
   close();
 }
 
-void ApagaOrcamento::on_pushButtonCancelar_clicked()
-{
-  close();
-}
+void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }
 
-void ApagaOrcamento::apagar(int index){
-  mapperOrc.setCurrentIndex(index);
-}
+void ApagaOrcamento::apagar(int index) { mapperOrc.setCurrentIndex(index); }

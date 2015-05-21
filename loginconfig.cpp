@@ -4,10 +4,7 @@
 #include "ui_loginconfig.h"
 #include "mainwindow.h"
 
-LoginConfig::LoginConfig(QWidget *parent) :
-  QDialog(parent),
-  ui(new Ui::LoginConfig)
-{
+LoginConfig::LoginConfig(QWidget *parent) : QDialog(parent), ui(new Ui::LoginConfig) {
   ui->setupUi(this);
 
   QSettings settings("ERP", "Staccato");
@@ -18,13 +15,9 @@ LoginConfig::LoginConfig(QWidget *parent) :
   ui->lineEditPort->setText(settings.value("port").toString());
 }
 
-LoginConfig::~LoginConfig()
-{
-  delete ui;
-}
+LoginConfig::~LoginConfig() { delete ui; }
 
-void LoginConfig::on_pushButtonSalvar_clicked()
-{
+void LoginConfig::on_pushButtonSalvar_clicked() {
   QSettings settings("ERP", "Staccato");
   settings.beginGroup("Login");
   settings.setValue("hostname", ui->lineEditHostname->text());
@@ -32,20 +25,17 @@ void LoginConfig::on_pushButtonSalvar_clicked()
   settings.setValue("password", ui->lineEditPassword->text());
   settings.setValue("port", ui->lineEditPort->text());
 
-    if(MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())){
-//      qDebug() << "cast ok!";
-      window->setHostname(ui->lineEditHostname->text());
-      window->setUsername(ui->lineEditUsername->text());
-      window->setPassword(ui->lineEditPassword->text());
-      window->setPort(ui->lineEditPort->text());
-      if(!window->dbConnect()){
-        return;
-      }
+  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())) {
+    //      qDebug() << "cast ok!";
+    window->setHostname(ui->lineEditHostname->text());
+    window->setUsername(ui->lineEditUsername->text());
+    window->setPassword(ui->lineEditPassword->text());
+    window->setPort(ui->lineEditPort->text());
+    if (not window->dbConnect()) {
+      return;
     }
-    close();
+  }
+  close();
 }
 
-void LoginConfig::on_pushButtonCancelar_clicked()
-{
-    close();
-}
+void LoginConfig::on_pushButtonCancelar_clicked() { close(); }

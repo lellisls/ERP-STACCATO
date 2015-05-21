@@ -9,29 +9,19 @@ LineEditDecimal::LineEditDecimal(QWidget *parent) : QLineEdit(parent), bottom(0)
   setProperty("value", 0.0);
 }
 
-double LineEditDecimal::getValue() const {
-  return QLocale(QLocale::Portuguese).toDouble(text());
-}
+double LineEditDecimal::getValue() const { return QLocale(QLocale::Portuguese).toDouble(text()); }
 
 void LineEditDecimal::setValue(double value) {
   setText(QLocale(QLocale::Portuguese).toString(value, 'f', 2));
 }
 
-double LineEditDecimal::getBottom() const {
-  return bottom;
-}
+double LineEditDecimal::getBottom() const { return bottom; }
 
-void LineEditDecimal::setBottom(double value) {
-  bottom = value;
-}
+void LineEditDecimal::setBottom(double value) { bottom = value; }
 
-double LineEditDecimal::getTop() const {
-  return top;
-}
+double LineEditDecimal::getTop() const { return top; }
 
-void LineEditDecimal::setTop(double value) {
-  top = value;
-}
+void LineEditDecimal::setTop(double value) { top = value; }
 
 void LineEditDecimal::processDecimal(QString value) {
   QString nbr, res;

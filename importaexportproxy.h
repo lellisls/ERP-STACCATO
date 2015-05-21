@@ -4,6 +4,7 @@
 #include <QIdentityProxyModel>
 
 class ImportaExportProxy : public QIdentityProxyModel {
+
   public:
     ImportaExportProxy(int column, QObject *parent = 0);
     ~ImportaExportProxy();

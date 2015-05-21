@@ -71,7 +71,7 @@ void CadastroFornecedor::show() {
 }
 
 bool CadastroFornecedor::viewRegister(QModelIndex idx) {
-  if (!confirmationMessage()) {
+  if (not confirmationMessage()) {
     return false;
   }
   clearFields();
@@ -81,7 +81,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex idx) {
 
   qDebug() << "filtro endereco: " << data(primaryKey).toString();
   modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
-  if (!modelEnd.select()) {
+  if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
   }
 
@@ -110,7 +110,7 @@ void CadastroFornecedor::novoEnd() {
 }
 
 bool CadastroFornecedor::verifyFields(int row) {
-  //  if (!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditCPF}))
+  //  if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditCPF}))
   //    return false;
 
   if (modelEnd.rowCount() == 0) {
@@ -123,7 +123,7 @@ bool CadastroFornecedor::verifyFields(int row) {
 
   int ok = 0;
   foreach (QLineEdit *line, ui->groupBoxContatos->findChildren<QLineEdit *>()) {
-    if (!verifyRequiredField(line, true)) {
+    if (not verifyRequiredField(line, true)) {
       qDebug() << "Faltou " << line->objectName();
     } else {
       ok++;
@@ -141,7 +141,7 @@ bool CadastroFornecedor::verifyFields(int row) {
 
   ok = 0;
   foreach (QLineEdit *line, ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
-    if (!verifyRequiredField(line, true)) {
+    if (not verifyRequiredField(line, true)) {
       //      return false;
       qDebug() << "Faltou " << line->objectName();
     } else {
@@ -172,54 +172,54 @@ bool CadastroFornecedor::savingProcedures(int row) {
     }
   }
 
-  if (!ui->lineEditFornecedor->text().isEmpty()) {
+  if (not ui->lineEditFornecedor->text().isEmpty()) {
     setData(row, "razaoSocial", ui->lineEditFornecedor->text());
   }
-  if (!ui->lineEditNomeFantasia->text().isEmpty()) {
+  if (not ui->lineEditNomeFantasia->text().isEmpty()) {
     setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
   }
 
-  if (!ui->lineEditContatoNome->text().isEmpty()) {
+  if (not ui->lineEditContatoNome->text().isEmpty()) {
     setData(row, "contatoNome", ui->lineEditContatoNome->text());
   }
-  if (!ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
+  if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoCPF", ui->lineEditContatoCPF->text());
   }
-  if (!ui->lineEditContatoApelido->text().isEmpty()) {
+  if (not ui->lineEditContatoApelido->text().isEmpty()) {
     setData(row, "contatoApelido", ui->lineEditContatoApelido->text());
   }
-  if (!ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty()) {
+  if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoRG", ui->lineEditContatoRG->text());
   }
-  if (!ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty()) {
+  if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty()) {
     setData(row, "cnpj", ui->lineEditCNPJ->text());
   }
-  if (!ui->lineEditInscEstadual->text().isEmpty()) {
+  if (not ui->lineEditInscEstadual->text().isEmpty()) {
     setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
   }
-  if (!ui->lineEditTel_Res->text().isEmpty()) {
+  if (not ui->lineEditTel_Res->text().isEmpty()) {
     setData(row, "tel", ui->lineEditTel_Res->text());
   }
-  if (!ui->lineEditTel_Cel->text().isEmpty()) {
+  if (not ui->lineEditTel_Cel->text().isEmpty()) {
     setData(row, "telCel", ui->lineEditTel_Cel->text());
   }
-  if (!ui->lineEditTel_Com->text().isEmpty()) {
+  if (not ui->lineEditTel_Com->text().isEmpty()) {
     setData(row, "telCom", ui->lineEditTel_Com->text());
   }
-  if (!ui->lineEditNextel->text().isEmpty()) {
+  if (not ui->lineEditNextel->text().isEmpty()) {
     setData(row, "nextel", ui->lineEditNextel->text());
   }
-  if (!ui->lineEditEmail->text().isEmpty()) {
+  if (not ui->lineEditEmail->text().isEmpty()) {
     setData(row, "email", ui->lineEditEmail->text());
   }
 
-  if (!model.submitAll()) {
+  if (not model.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
     return false;
   }
   //  qDebug() << "PK = " << data(row, primaryKey);
   //  int idCliente = data(row, primaryKey).toInt();
-  //  if (!data(row, primaryKey).isValid()) {
+  //  if (not data(row, primaryKey).isValid()) {
   //    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
   //    qryLastId.exec();
   //    qryLastId.first();
@@ -231,7 +231,7 @@ bool CadastroFornecedor::savingProcedures(int row) {
   //  for (int end = 0; end < modelEnd.rowCount(); ++end) {
   //    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
   //  }
-  //  if (!modelEnd.submitAll()) {
+  //  if (not modelEnd.submitAll()) {
   //    qDebug() << objectName() << " : " << __LINE__
   //             << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
   //    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
@@ -420,7 +420,7 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
   //  if (not line->isEnabled()) {
   //    return true;
   //  }
-  if (!line->isVisible()) {
+  if (not line->isVisible()) {
     return true;
   }
   //  if (line->parent()->isWindowType() and line->parent()->objectName() != objectName()) {
@@ -431,7 +431,7 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
        (line->text().size() < line->placeholderText().size() - 1))) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
-    if (!silent) {
+    if (not silent) {
       QMessageBox::warning(dynamic_cast<QWidget *>(this), "Atenção!",
                            "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
                            QMessageBox::NoButton);

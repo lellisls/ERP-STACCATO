@@ -5,9 +5,8 @@
 #include "ui_cadastrousuario.h"
 #include "searchdialog.h"
 
-CadastroUsuario::CadastroUsuario(QWidget *parent) :
-  RegisterDialog("Usuario","idUsuario",parent),
-  ui(new Ui::CadastroUsuario) {
+CadastroUsuario::CadastroUsuario(QWidget *parent)
+  : RegisterDialog("Usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
   setupTableWidget();
 
@@ -20,9 +19,7 @@ CadastroUsuario::CadastroUsuario(QWidget *parent) :
   newRegister();
 }
 
-CadastroUsuario::~CadastroUsuario() {
-  delete ui;
-}
+CadastroUsuario::~CadastroUsuario() { delete ui; }
 
 void CadastroUsuario::setupTableWidget() {
   ui->tableWidget->resizeColumnsToContents();
@@ -44,7 +41,8 @@ void CadastroUsuario::setupTableWidget() {
 
 bool CadastroUsuario::verifyFields(int row) {
   Q_UNUSED(row);
-  if(!RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd}))
+  if (not RegisterDialog::verifyFields(
+  {ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd}))
     return false;
   if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
     ui->lineEditPasswd->setFocus();
@@ -54,9 +52,7 @@ bool CadastroUsuario::verifyFields(int row) {
   return true;
 }
 
-void CadastroUsuario::clearFields() {
-  RegisterDialog::clearFields();
-}
+void CadastroUsuario::clearFields() { RegisterDialog::clearFields(); }
 
 void CadastroUsuario::setupMapper() {
   mapper.setModel(&model);
@@ -96,7 +92,7 @@ bool CadastroUsuario::savingProcedures(int row) {
 }
 
 bool CadastroUsuario::viewRegister(QModelIndex idx) {
-  if(!RegisterDialog::viewRegister(idx)) {
+  if (not RegisterDialog::viewRegister(idx)) {
     return false;
   }
   ui->lineEditPasswd->setText("********");
@@ -106,34 +102,24 @@ bool CadastroUsuario::viewRegister(QModelIndex idx) {
 
 void CadastroUsuario::fillCombobox() {
   QSqlQuery query("SELECT * from Loja");
-  while(query.next()) {
-    ui->comboBoxLoja->addItem(query.value("descricao").toString(),query.value("idLoja"));
+  while (query.next()) {
+    ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
   ui->comboBoxLoja->setCurrentValue(UserSession::getLoja());
 }
 
-void CadastroUsuario::on_cadastrarButton_clicked() {
-  save();
-}
+void CadastroUsuario::on_cadastrarButton_clicked() { save(); }
 
-void CadastroUsuario::on_atualizarButton_clicked() {
-  save();
-}
+void CadastroUsuario::on_atualizarButton_clicked() { save(); }
 
-void CadastroUsuario::on_novoCadButton_clicked() {
-  newRegister();
-}
+void CadastroUsuario::on_novoCadButton_clicked() { newRegister(); }
 
-void CadastroUsuario::on_removerButton_clicked() {
-  remove();
-}
+void CadastroUsuario::on_removerButton_clicked() { remove(); }
 
-void CadastroUsuario::on_cancelarButton_clicked() {
-  close();
-}
+void CadastroUsuario::on_cancelarButton_clicked() { close(); }
 
 void CadastroUsuario::on_pushButtonBuscar_clicked() {
   SearchDialog *sdUsuario = SearchDialog::usuario(this);
-  connect(sdUsuario,&SearchDialog::itemSelected,this,&CadastroUsuario::changeItem);
+  connect(sdUsuario, &SearchDialog::itemSelected, this, &CadastroUsuario::changeItem);
   sdUsuario->show();
 }

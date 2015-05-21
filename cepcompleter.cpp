@@ -2,13 +2,9 @@
 #include <QVariant>
 #include <QDebug>
 #include <QSqlError>
-CepCompleter::CepCompleter() {
+CepCompleter::CepCompleter() {}
 
-}
-
-CepCompleter::~CepCompleter() {
-
-}
+CepCompleter::~CepCompleter() {}
 
 void CepCompleter::clearFields() {
   uf.clear();
@@ -23,17 +19,17 @@ bool CepCompleter::buscaCEP(QString cep) {
   if (uf.isEmpty())
     return false;
   QSqlQuery query;
-  if (!query.exec("SELECT * FROM cep." + uf.toLower() + " WHERE cep = '" + cep + "' LIMIT 1")) {
+  if (not query.exec("SELECT * FROM cep." + uf.toLower() + " WHERE cep = '" + cep + "' LIMIT 1")) {
     qDebug() << __FILE__ " : " << __LINE__ << " : Erro ao buscar cep: " << query.lastError();
     qDebug() << "Query: " << query.lastQuery();
     return false;
   }
-  if(!query.first()) {
+  if (not query.first()) {
     return false;
   }
   cidade = query.value("cidade").toString();
   endereco = query.value("tp_logradouro").toString() + " " + query.value("logradouro").toString();
-  bairro  = query.value("bairro").toString();
+  bairro = query.value("bairro").toString();
   return true;
 }
 
@@ -109,18 +105,10 @@ bool CepCompleter::inRange(QString cep, int st, int end) {
   return (vl >= st and vl <= end);
 }
 
-QString CepCompleter::getUf() const {
-  return uf;
-}
+QString CepCompleter::getUf() const { return uf; }
 
-QString CepCompleter::getBairro() const {
-  return bairro;
-}
+QString CepCompleter::getBairro() const { return bairro; }
 
-QString CepCompleter::getEndereco() const {
-  return endereco;
-}
+QString CepCompleter::getEndereco() const { return endereco; }
 
-QString CepCompleter::getCidade() const {
-  return cidade;
-}
+QString CepCompleter::getCidade() const { return cidade; }

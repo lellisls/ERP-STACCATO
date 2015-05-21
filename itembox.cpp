@@ -55,7 +55,7 @@ void ItemBox::search() {
 
 void ItemBox::edit() {
   if (m_registerDialog) {
-    if (!m_value.isNull()) {
+    if (not m_value.isNull()) {
       m_registerDialog->viewRegisterById(m_value);
     }
     m_registerDialog->show();
@@ -67,17 +67,11 @@ void ItemBox::setRegisterDialog(RegisterDialog *value) {
   connect(value, &RegisterDialog::registerUpdated, this, &ItemBox::changeItem);
 }
 
-SearchDialog *ItemBox::searchDialog() {
-  return m_searchDialog;
-}
+SearchDialog *ItemBox::searchDialog() { return m_searchDialog; }
 
-RegisterDialog *ItemBox::registerDialog() {
-  return m_registerDialog;
-}
+RegisterDialog *ItemBox::registerDialog() { return m_registerDialog; }
 
-QVariant ItemBox::value() const {
-  return m_value;
-}
+QVariant ItemBox::value() const { return m_value; }
 
 void ItemBox::setValue(const QVariant &value) {
   //  qDebug() << "Set value : " << value;

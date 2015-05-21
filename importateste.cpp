@@ -21,7 +21,7 @@ ImportaTeste::ImportaTeste(QWidget *parent) : QDialog(parent), ui(new Ui::Import
 ImportaTeste::~ImportaTeste() { delete ui; }
 
 void ImportaTeste::importar() {
-  if (!readFile()) {
+  if (not readFile()) {
     return;
   }
 
@@ -141,7 +141,7 @@ void ImportaTeste::setModelAndTable() {
 void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
   while (query.next()) {
     QString fornecedor = query.value(0).toString();
-    if (!fornecedor.isEmpty()) {
+    if (not fornecedor.isEmpty()) {
       int id = buscarCadastrarFornecedor(fornecedor);
       //      qDebug() << "id: " << id << " - " << fornecedor;
       fornecedores.insert(fornecedor, id);
@@ -215,7 +215,7 @@ void ImportaTeste::atualizaCamposProduto(QSqlQuery &produto, QString idProduto) 
                 QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
 
   for (int i = 0; i < fields.size(); ++i) {
-    if (!values.at(i).isEmpty() and produto.value(fields.at(i)).toString() != values.at(i)) {
+    if (not values.at(i).isEmpty() and produto.value(fields.at(i)).toString() != values.at(i)) {
       model.setData(model.index(index.row(), model.fieldIndex(fields.at(i))), values.at(i));
       model.setData(model.index(index.row(), model.fieldIndex(fields.at(i)) + 1), 2);
     } else {
@@ -225,7 +225,7 @@ void ImportaTeste::atualizaCamposProduto(QSqlQuery &produto, QString idProduto) 
 }
 
 void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto) {
-  if (!produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
+  if (not produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
     qDebug() << "Erro marcando produto atualizado como não expirado: " << produto.lastError();
   }
   QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto.toInt()).first();
@@ -234,11 +234,11 @@ void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto
 
 void ImportaTeste::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto) {
   if (produto.value(fields.at(fields.indexOf("precoVenda"))) != values.at(fields.indexOf("precoVenda"))) {
-    if (!produto.exec("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, "
-                      "validadeFim) VALUES (" +
-                      idProduto + ", '" + values.at(fields.indexOf("precoVenda")) + "', '" +
-                      QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
-                      QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+    if (not produto.exec("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, "
+                         "validadeFim) VALUES (" +
+                         idProduto + ", '" + values.at(fields.indexOf("precoVenda")) + "', '" +
+                         QDate::currentDate().toString("yyyy-MM-dd") + "',  '" +
+                         QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
       qDebug() << "Erro inserindo em Preço: " << produto.lastError();
       qDebug() << "qry: " << produto.lastQuery();
     }
@@ -246,8 +246,9 @@ void ImportaTeste::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto
 }
 
 void ImportaTeste::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
-  if (!produto.exec("SELECT * FROM Produto WHERE fornecedor = '" + values.at(fields.indexOf("fornecedor")) +
-                    "' AND codComercial = '" + values.at(fields.indexOf("codComercial")) + "'")) {
+  if (not produto.exec("SELECT * FROM Produto WHERE fornecedor = '" +
+                       values.at(fields.indexOf("fornecedor")) + "' AND codComercial = '" +
+                       values.at(fields.indexOf("codComercial")) + "'")) {
     qDebug() << "Erro buscando produto: " << produto.lastError();
   }
 }

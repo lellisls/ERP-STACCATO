@@ -13,7 +13,7 @@ RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent)
 
   modelRecebimentos.setTable("pedidotransportadora");
   modelRecebimentos.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  if (!modelRecebimentos.select()) {
+  if (not modelRecebimentos.select()) {
     qDebug() << "Failed to populate TableRecebimentos! " << modelRecebimentos.lastError();
   }
 
@@ -29,29 +29,30 @@ RecebimentosFornecedor::~RecebimentosFornecedor() { delete ui; }
 void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
   if (ui->checkBoxEntregue->isChecked()) {
     QSqlQuery qry;
-    if (!qry.exec("UPDATE pedidotransportadora SET status = 'RECEBIDO' WHERE idPedido = '" + idPedido +
-                  "' AND tipo = 'fornecedor'")) {
+    if (not qry.exec("UPDATE pedidotransportadora SET status = 'RECEBIDO' WHERE idPedido = '" + idPedido +
+                     "' AND tipo = 'fornecedor'")) {
       qDebug() << "Erro ao marcar como recebido: " << qry.lastError();
     }
 
     // gerar NFe
-//    NFe nota(idPedido, this);
-//    qDebug() << nota.TXT();
-//    qDebug() << "arquivo: " << nota.getArquivo();
-//    if(!qry.exec("SET @xml = LOAD_FILE('"+ nota.getArquivo() +"')")){
-//      qDebug() << "Erro ao ler arquivo xml: " << qry.lastError();
-//      qDebug() << "qry: " << qry.lastQuery();
-//    }
+    //    NFe nota(idPedido, this);
+    //    qDebug() << nota.TXT();
+    //    qDebug() << "arquivo: " << nota.getArquivo();
+    //    if(not qry.exec("SET @xml = LOAD_FILE('"+ nota.getArquivo() +"')")){
+    //      qDebug() << "Erro ao ler arquivo xml: " << qry.lastError();
+    //      qDebug() << "qry: " << qry.lastQuery();
+    //    }
 
-//    if(!qry.exec("INSERT INTO nfe (NFe, idVenda, idLoja, chaveAcesso) VALUES (@xml, '"+ idPedido +"', 1, '"+ nota.getChaveAcesso() +"')")){
-//      qDebug() << "Erro ao inserir NFe na tabela: " << qry.lastError();
-//      qDebug() << "qry: " << qry.lastQuery();
-//    }
+    //    if(not qry.exec("INSERT INTO nfe (NFe, idVenda, idLoja, chaveAcesso) VALUES (@xml, '"+ idPedido +"',
+    //    1, '"+ nota.getChaveAcesso() +"')")){
+    //      qDebug() << "Erro ao inserir NFe na tabela: " << qry.lastError();
+    //      qDebug() << "qry: " << qry.lastQuery();
+    //    }
 
   } else {
     QSqlQuery qry;
-    if (!qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
-                  "' AND tipo = 'fornecedor'")) {
+    if (not qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
+                     "' AND tipo = 'fornecedor'")) {
       qDebug() << "Erro ao marcar como não recebido: " << qry.lastError();
     }
   }

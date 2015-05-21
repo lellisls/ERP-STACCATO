@@ -4,7 +4,7 @@
 
 Endereco::Endereco(int idEndereco) : m_idEndereco(-1) {
   QSqlQuery qry("SELECT * FROM Endereco WHERE idEndereco = '" + QString::number(idEndereco) + "'");
-  if(!qry.exec() or !qry.first()) {
+  if (not qry.exec() or not qry.first()) {
     return;
   }
   m_idEndereco = idEndereco;
@@ -19,54 +19,30 @@ Endereco::Endereco(int idEndereco) : m_idEndereco(-1) {
   m_ativo = qry.value("ativo").toBool();
 }
 
-bool Endereco::ativo() const {
-  return m_ativo;
-}
+bool Endereco::ativo() const { return m_ativo; }
 
 QString Endereco::linhaUm() {
-  return( m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro);
+  return (m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro);
 }
 
-QString Endereco::linhaDois() {
-  return(m_cidade + " - " + m_uf + " - CEP: " + m_cep );
-}
+QString Endereco::linhaDois() { return (m_cidade + " - " + m_uf + " - CEP: " + m_cep); }
 
-QString Endereco::umaLinha() {
-  return(linhaUm() + " - " + m_cidade + " - " + m_uf);
-}
+QString Endereco::umaLinha() { return (linhaUm() + " - " + m_cidade + " - " + m_uf); }
 
-QString Endereco::uf() const {
-  return m_uf;
-}
+QString Endereco::uf() const { return m_uf; }
 
-QString Endereco::complemento() const {
-  return m_complemento;
-}
+QString Endereco::complemento() const { return m_complemento; }
 
-QString Endereco::numero() const {
-  return m_numero;
-}
-QString Endereco::cep() const {
-  return m_cep;
-}
+QString Endereco::numero() const { return m_numero; }
 
-QString Endereco::descricao() const {
-  return m_descricao;
-}
+QString Endereco::cep() const { return m_cep; }
 
-QString Endereco::cidade() const {
-  return m_cidade;
-}
+QString Endereco::descricao() const { return m_descricao; }
 
-QString Endereco::bairro() const {
-  return m_bairro;
-}
+QString Endereco::cidade() const { return m_cidade; }
 
-QString Endereco::logradouro() const {
-  return m_logradouro;
-}
+QString Endereco::bairro() const { return m_bairro; }
 
-int Endereco::idEndereco() const {
-  return m_idEndereco;
-}
+QString Endereco::logradouro() const { return m_logradouro; }
 
+int Endereco::idEndereco() const { return m_idEndereco; }

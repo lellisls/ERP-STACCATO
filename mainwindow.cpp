@@ -40,9 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
   readSettings();
 
 #ifdef QT_DEBUG
-  if (!dbConnect()) {
+  if (not dbConnect()) {
     exit(1);
-  } else if (!UserSession::login(
+  } else if (not UserSession::login(
                "admin", "1234")) { // Para desabilitar o login comente o bloco anterior e descomente este
     //                 bloco!
     QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 bool MainWindow::dbConnect() {
-  if (!QSqlDatabase::drivers().contains("QMYSQL")) {
+  if (not QSqlDatabase::drivers().contains("QMYSQL")) {
     QMessageBox::critical(this, "Não foi possível carregar o banco de dados.",
                           "Este aplicativo requer o driver QMYSQL.");
     exit(1);
@@ -117,12 +117,12 @@ bool MainWindow::dbConnect() {
       if (qry.value(0).toString() == "mydb")
         hasMydb = true;
     }
-    if (!hasMydb) {
+    if (not hasMydb) {
       //      QMessageBox::critical(this, "Atenção", "Banco de dados não encontrado!", QMessageBox::Ok,
       //                            QMessageBox::NoButton);
       //      close();
       qDebug() << "mydb schema not found.";
-      if (!initDb()) {
+      if (not initDb()) {
         qDebug() << "initDb Error";
         return false;
       }
@@ -221,7 +221,7 @@ void MainWindow::initializeTables() {
   modelOrcamento->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelOrcamento->setTable("ViewOrcamento");
   modelOrcamento->setSort(modelOrcamento->fieldIndex("Dias Restantes"), Qt::DescendingOrder);
-  if (!modelOrcamento->select()) {
+  if (not modelOrcamento->select()) {
     qDebug() << "Failed to populate TableOrcamento! " << modelOrcamento->lastError();
   }
 
@@ -257,7 +257,7 @@ void MainWindow::initializeTables() {
   modelVendas->setHeaderData(modelVendas->fieldIndex("frete"), Qt::Horizontal, "Frete");
   modelVendas->setHeaderData(modelVendas->fieldIndex("validade"), Qt::Horizontal, "Validade");
   modelVendas->setHeaderData(modelVendas->fieldIndex("status"), Qt::Horizontal, "Status");
-  if (!modelVendas->select()) {
+  if (not modelVendas->select()) {
     qDebug() << "Failed to populate TableVendas! " << modelVendas->lastError();
   }
 
@@ -270,7 +270,7 @@ void MainWindow::initializeTables() {
   modelCAPagar = new QSqlTableModel(this);
   modelCAPagar->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelCAPagar->setTable("ContaAPagar");
-  if (!modelCAPagar->select()) {
+  if (not modelCAPagar->select()) {
     qDebug() << "Failed to populate TableContasPagar! " << modelCAPagar->lastError();
   }
 
@@ -282,7 +282,7 @@ void MainWindow::initializeTables() {
   modelCAReceber = new QSqlTableModel(this);
   modelCAReceber->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelCAReceber->setTable("ContaAReceber");
-  if (!modelCAReceber->select()) {
+  if (not modelCAReceber->select()) {
     qDebug() << "Failed to populate TableContasReceber! " << modelCAReceber->lastError();
   }
 
@@ -294,7 +294,7 @@ void MainWindow::initializeTables() {
   modelEntregasCliente = new QSqlTableModel(this);
   modelEntregasCliente->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEntregasCliente->setTable("PedidoTransportadora");
-  if (!modelEntregasCliente->select()) {
+  if (not modelEntregasCliente->select()) {
     qDebug() << "Failed to populate TableEntregasCliente.";
   }
   modelEntregasCliente->setFilter("tipo = 'CLIENTE'"); // filter to clientes only
@@ -306,7 +306,7 @@ void MainWindow::initializeTables() {
   // Recebimentos fornecedor
   modelRecebimentosForn = new QSqlTableModel(this);
   modelRecebimentosForn->setTable("PedidoTransportadora");
-  if (!modelRecebimentosForn->select()) {
+  if (not modelRecebimentosForn->select()) {
     qDebug() << "Failed to populate TableRecebimentosFornecedor.";
   }
   modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR'"); // filter to fornecedor only
@@ -334,7 +334,7 @@ void MainWindow::initializeTables() {
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idProfissional"),
                               QSqlRelation("Profissional", "idProfissional", "nome"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idProfissional"), Qt::Horizontal, "Profissional");
-  if (!modelPedCompra->select()) {
+  if (not modelPedCompra->select()) {
     qDebug() << "Failed to populate TablePedidosCompra!" << modelPedCompra->lastError();
   }
 
@@ -346,13 +346,14 @@ void MainWindow::initializeTables() {
   modelNFe = new QSqlTableModel(this);
   modelNFe->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelNFe->setTable("NFe");
-  if (!modelNFe->select()) {
+  if (not modelNFe->select()) {
     qDebug() << "Failed to populate TableNFe. " << modelNFe->lastError();
   }
 
   ui->tableNFE->setModel(modelNFe);
   ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
-//  ui->tableNFE->hideColumn(modelNFe->fieldIndex("idVenda")); // TODO: como notas podem ser de parte da venda, devemos mostrar a venda relacionada (remover essa linha)
+  //  ui->tableNFE->hideColumn(modelNFe->fieldIndex("idVenda")); // TODO: como notas podem ser de parte da
+  //  venda, devemos mostrar a venda relacionada (remover essa linha)
   setupTable(ui->tableNFE);
 
   //  paintRows();
@@ -572,7 +573,7 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
 void MainWindow::readSettings() {
   QSettings settings("ERP", "Staccato");
   settings.beginGroup("Login");
-  if (!settings.contains("hostname")) {
+  if (not settings.contains("hostname")) {
     settings.setValue("hostname", QString("localhost"));
     settings.setValue("username", QString("test"));
     settings.setValue("password", QString("1234"));
@@ -586,7 +587,7 @@ void MainWindow::readSettings() {
 }
 
 void MainWindow::on_actionRestaurar_BD_triggered() {
-  if (!initDb()) {
+  if (not initDb()) {
     qDebug() << "initDb Error";
   } else {
     QMessageBox::information(this, "Aviso!", "Banco de dados inicializado com sucesso.");
@@ -599,16 +600,14 @@ void MainWindow::on_actionImportaTeste_triggered() {
   teste->importar();
 }
 
-void MainWindow::on_tableVendas_activated(const QModelIndex &index)
-{
+void MainWindow::on_tableVendas_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
   vendas->viewRegisterById(
         modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 }
 
-void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index)
-{
+void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
   Orcamento *orc = new Orcamento(this);
   connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
   //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
@@ -616,43 +615,35 @@ void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index)
         modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
-void MainWindow::on_tableContasPagar_activated(const QModelIndex &index)
-{
+void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
         modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
-void MainWindow::on_tableContasReceber_activated(const QModelIndex &index)
-{
+void MainWindow::on_tableContasReceber_activated(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(modelCAReceber->data(modelCAReceber->index(
                                            index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
-void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index)
-{
+void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
         modelEntregasCliente->data(modelEntregasCliente->index(
                                      index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
 }
 
-void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index)
-{
+void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
   PedidosCompra *pedidos = new PedidosCompra(this);
   pedidos->viewPedido(modelPedCompra->data(modelPedCompra->index(index.row(), 0)).toString());
 }
 
-void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index)
-{
+void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
         modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
                                                                    "idPedido"))).toString());
 }
 
-void MainWindow::on_tableNFE_activated(const QModelIndex &index)
-{
-    Q_UNUSED(index);
-}
+void MainWindow::on_tableNFE_activated(const QModelIndex &index) { Q_UNUSED(index); }

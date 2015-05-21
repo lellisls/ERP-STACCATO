@@ -44,7 +44,7 @@ QString ImportaExport::importar(QString file, int validade) {
 
     while (queryForn.next()) {
       QString fornecedor = queryForn.value(0).toString();
-      if (!fornecedor.isEmpty()) {
+      if (not fornecedor.isEmpty()) {
         int id = buscarCadastrarFornecedor(fornecedor);
         //        qDebug() << "id: " << id << " - " << fornecedor;
         map.insert(fornecedor, id);
@@ -71,7 +71,7 @@ QString ImportaExport::importar(QString file, int validade) {
     qDebug() << "query: " << query;
 
     QSqlQuery queryExp;
-    if (!queryExp.exec(query)) {
+    if (not queryExp.exec(query)) {
       qDebug() << "Erro em queryExp: " << queryExp.lastError();
     }
 
@@ -85,7 +85,7 @@ QString ImportaExport::importar(QString file, int validade) {
     int current = 0;
     while (queryProd.next()) {
       QString fornecedor = queryProd.value(0).toString();
-      if (!fornecedor.isEmpty()) {
+      if (not fornecedor.isEmpty()) {
         emit progressValueChanged(current++);
 
         if (canceled) {
@@ -133,8 +133,8 @@ QString ImportaExport::importar(QString file, int validade) {
 
         // Verifica se produto já se encontra no BD
         QSqlQuery produto, produtoUpd;
-        if (!produto.exec("SELECT * FROM Produto WHERE fornecedor = '" + fornecedor +
-                          "' AND codComercial = '" + codComercial + "'")) {
+        if (not produto.exec("SELECT * FROM Produto WHERE fornecedor = '" + fornecedor +
+                             "' AND codComercial = '" + codComercial + "'")) {
           qDebug() << "Erro buscando produto: " << produto.lastError();
         }
 
@@ -143,7 +143,7 @@ QString ImportaExport::importar(QString file, int validade) {
 
           //          // Se o preço for igual extender a validade
           //          if (produto.value("precoVenda").toString() == precoVenda) {
-          //            if (!produto.exec("UPDATE Produto_has_Preco SET validadeFim = '" +
+          //            if (not produto.exec("UPDATE Produto_has_Preco SET validadeFim = '" +
           //                              QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") +
           //                              "' WHERE idProduto = " + produto.value("idProduto").toString() +
           //                              "")) {
@@ -153,400 +153,417 @@ QString ImportaExport::importar(QString file, int validade) {
           //            continue;
           //          }
 
-          if (!fornecedor.isEmpty() and produto.value("fornecedor").toString() != fornecedor) {
+          if (not fornecedor.isEmpty() and produto.value("fornecedor").toString() != fornecedor) {
             if (produto.value("fornecedor").toString() != fornecedor) {
               qDebug() << "fornecedor diferente";
-              //            if (!produto.value("fornecedor").toString().isEmpty()) {
-              if (!produtoUpd.exec("UPDATE Produto SET fornecedor = " + fornecedor + " WHERE idProduto = " +
-                                   idProduto + "")) {
+              //            if (not produto.value("fornecedor").toString().isEmpty()) {
+              if (not produtoUpd.exec("UPDATE Produto SET fornecedor = " + fornecedor +
+                                      " WHERE idProduto = " + idProduto + "")) {
                 qDebug() << "Error on fornecedor: " << produtoUpd.lastError();
               }
-              if (!produtoUpd.exec("UPDATE Produto SET fornecedorUpd = 1 WHERE idProduto = " + idProduto +
-                                   "")) {
+              if (not produtoUpd.exec("UPDATE Produto SET fornecedorUpd = 1 WHERE idProduto = " + idProduto +
+                                      "")) {
                 qDebug() << "Error on fornecedorUpd1: " << produtoUpd.lastError();
               }
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET fornecedorUpd = 0 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET fornecedorUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on fornecedorUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!descricao.isEmpty() and produto.value("descricao").toString() != descricao) {
+          if (not descricao.isEmpty() and produto.value("descricao").toString() != descricao) {
             qDebug() << "descricao diferente: " << descricao << " | "
                      << produto.value("descricao").toString();
-            if (!produtoUpd.exec("UPDATE Produto SET descricao = '" + descricao + "' WHERE idProduto = " +
-                                 idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET descricao = '" + descricao + "' WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on descricao: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET descricaoUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET descricaoUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on descricaoUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET descricaoUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET descricaoUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on descricaoUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!estoque.isEmpty() and produto.value("estoque") != estoque) {
-            if (!produtoUpd.exec("UPDATE Produto SET estoque = " + estoque + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not estoque.isEmpty() and produto.value("estoque") != estoque) {
+            if (not produtoUpd.exec("UPDATE Produto SET estoque = " + estoque + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on estoque: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET estoqueUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET estoqueUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on estoqueUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET estoqueUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET estoqueUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on estoqueUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!un.isEmpty() and produto.value("un").toString() != un) {
-            if (!produtoUpd.exec("UPDATE Produto SET un = '" + un + "' WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not un.isEmpty() and produto.value("un").toString() != un) {
+            if (not produtoUpd.exec("UPDATE Produto SET un = '" + un + "' WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on unidade: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET unUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET unUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on unidadeUp1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET unUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET unUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on unidadeUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!colecao.isEmpty() and produto.value("colecao").toString() != colecao) {
-            if (!produtoUpd.exec("UPDATE Produto SET colecao = '" + colecao + "' WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not colecao.isEmpty() and produto.value("colecao").toString() != colecao) {
+            if (not produtoUpd.exec("UPDATE Produto SET colecao = '" + colecao + "' WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on colecao: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET colecaoUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET colecaoUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on colecaoUp1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET colecaoUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET colecaoUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on colecaoUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!m2cx.isEmpty() and produto.value("m2cx").toString() != m2cx) {
-            if (!produtoUpd.exec("UPDATE Produto SET m2cx = " + m2cx + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not m2cx.isEmpty() and produto.value("m2cx").toString() != m2cx) {
+            if (not produtoUpd.exec("UPDATE Produto SET m2cx = " + m2cx + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on m2cx: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET m2cxUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET m2cxUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on m2cxUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET m2cxUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET m2cxUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on m2cxUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!pccx.isEmpty() and produto.value("pccx").toString() != pccx) {
-            if (!produtoUpd.exec("UPDATE Produto SET pccx = " + pccx + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not pccx.isEmpty() and produto.value("pccx").toString() != pccx) {
+            if (not produtoUpd.exec("UPDATE Produto SET pccx = " + pccx + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on pccx: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET pccxUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET pccxUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on pccxUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET pccxUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET pccxUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on pccxUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!kgcx.isEmpty() and produto.value("kgcx").toString() != kgcx) {
-            if (!produtoUpd.exec("UPDATE Produto SET kgcx = " + kgcx + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not kgcx.isEmpty() and produto.value("kgcx").toString() != kgcx) {
+            if (not produtoUpd.exec("UPDATE Produto SET kgcx = " + kgcx + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on kgcx: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET kgcxUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET kgcxUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on kgcxUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET kgcxUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET kgcxUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on kgcxUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!formComercial.isEmpty() and produto.value("formComercial").toString() != formComercial) {
-            if (!produtoUpd.exec("UPDATE Produto SET formComercial = '" + formComercial +
-                                 "' WHERE idProduto = " + idProduto + "")) {
+          if (not formComercial.isEmpty() and produto.value("formComercial").toString() != formComercial) {
+            if (not produtoUpd.exec("UPDATE Produto SET formComercial = '" + formComercial +
+                                    "' WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on formComercial: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET formComercialUpd = 1 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET formComercialUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on formComercialUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET formComercialUpd = 0 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET formComercialUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on formComercialUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!codComercial.isEmpty() and produto.value("codComercial").toString() != codComercial) {
-            if (!produtoUpd.exec("UPDATE Produto SET codComercial = " + codComercial + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not codComercial.isEmpty() and produto.value("codComercial").toString() != codComercial) {
+            if (not produtoUpd.exec("UPDATE Produto SET codComercial = " + codComercial +
+                                    " WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on codCom: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET codComercialUpd = 1 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET codComercialUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on codComUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET codComercialUpd = 0 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET codComercialUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on codComUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!codBarras.isEmpty() and produto.value("codBarras").toString() != codBarras) {
-            if (!produtoUpd.exec("UPDATE Produto SET codBarras = " + codBarras + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not codBarras.isEmpty() and produto.value("codBarras").toString() != codBarras) {
+            if (not produtoUpd.exec("UPDATE Produto SET codBarras = " + codBarras + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on codBarras: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET codBarrasUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET codBarrasUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on codBarrasUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET codBarrasUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET codBarrasUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on codBarrasUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!ncm.isEmpty() and produto.value("ncm").toString() != ncm) {
-            if (!produtoUpd.exec("UPDATE Produto SET ncm = " + ncm + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not ncm.isEmpty() and produto.value("ncm").toString() != ncm) {
+            if (not produtoUpd.exec("UPDATE Produto SET ncm = " + ncm + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on ncm: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET ncmUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET ncmUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on ncmUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET ncmUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET ncmUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on ncmUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!icms.isEmpty() and produto.value("icms").toString() != icms) {
-            if (!produtoUpd.exec("UPDATE Produto SET icms = " + icms + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not icms.isEmpty() and produto.value("icms").toString() != icms) {
+            if (not produtoUpd.exec("UPDATE Produto SET icms = " + icms + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on icms: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET icmsUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET icmsUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on icmsUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET icmsUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET icmsUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on icmsUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!situacaoTributaria.isEmpty() and
+          if (not situacaoTributaria.isEmpty() and
               produto.value("situacaoTributaria").toString() != situacaoTributaria) {
-            if (!produtoUpd.exec("UPDATE Produto SET situacaoTributaria = " + situacaoTributaria +
-                                 " WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET situacaoTributaria = " + situacaoTributaria +
+                                    " WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on situacaoTributaria: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET situacaoTributariaUpd = 1 WHERE idProduto = " +
-                                 idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET situacaoTributariaUpd = 1 WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on situacaoTributariaUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET situacaoTributariaUpd = 0 WHERE idProduto = " +
-                                 idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET situacaoTributariaUpd = 0 WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on situacaoTributariaUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!qtdPallet.isEmpty() and produto.value("qtdPallet").toString() != qtdPallet) {
-            if (!produtoUpd.exec("UPDATE Produto SET qtdPallet = " + qtdPallet + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not qtdPallet.isEmpty() and produto.value("qtdPallet").toString() != qtdPallet) {
+            if (not produtoUpd.exec("UPDATE Produto SET qtdPallet = " + qtdPallet + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on qtdPallet: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET qtdPalletUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET qtdPalletUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on qtdPalletUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET qtdPalletUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET qtdPalletUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on qtdPalletUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!custo.isEmpty() and produto.value("custo").toString() != custo) {
-            if (!produtoUpd.exec("UPDATE Produto SET custo = " + custo + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not custo.isEmpty() and produto.value("custo").toString() != custo) {
+            if (not produtoUpd.exec("UPDATE Produto SET custo = " + custo + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on custo: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET custoUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET custoUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on custoUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET custoUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET custoUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on custoUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!ipi.isEmpty() and produto.value("ipi").toString() != ipi) {
-            if (!produtoUpd.exec("UPDATE Produto SET ipi = " + ipi + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not ipi.isEmpty() and produto.value("ipi").toString() != ipi) {
+            if (not produtoUpd.exec("UPDATE Produto SET ipi = " + ipi + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on ipi: " << produtoUpd.lastError();
               qDebug() << "qry: " << produtoUpd.lastQuery();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET ipiUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET ipiUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on ipiUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET ipiUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET ipiUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on ipiUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!st.isEmpty() and produto.value("st").toString() != st) {
-            if (!produtoUpd.exec("UPDATE Produto SET st = " + st + " WHERE idProduto = " + idProduto + "")) {
+          if (not st.isEmpty() and produto.value("st").toString() != st) {
+            if (not produtoUpd.exec("UPDATE Produto SET st = " + st + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on st: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET stUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET stUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on stUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET stUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET stUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on stUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!precoVenda.isEmpty() and produto.value("precoVenda").toString() != precoVenda) {
-            if (!produtoUpd.exec("UPDATE Produto SET precoVenda = " + precoVenda + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not precoVenda.isEmpty() and produto.value("precoVenda").toString() != precoVenda) {
+            if (not produtoUpd.exec("UPDATE Produto SET precoVenda = " + precoVenda + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on precoVenda: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET precoVendaUpd = 1 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET precoVendaUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on precoVendaUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET precoVendaUpd = 0 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET precoVendaUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on precoVendaUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!comissao.isEmpty() and produto.value("comissao").toString() != comissao) {
-            if (!produtoUpd.exec("UPDATE Produto SET comissao = " + comissao + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not comissao.isEmpty() and produto.value("comissao").toString() != comissao) {
+            if (not produtoUpd.exec("UPDATE Produto SET comissao = " + comissao + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on comissao: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET comissaoUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET comissaoUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on comissaoUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET comissaoUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET comissaoUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on comissaoUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!observacoes.isEmpty() and produto.value("observacoes").toString() != observacoes) {
-            if (!produtoUpd.exec("UPDATE Produto SET observacoes = " + observacoes + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not observacoes.isEmpty() and produto.value("observacoes").toString() != observacoes) {
+            if (not produtoUpd.exec("UPDATE Produto SET observacoes = " + observacoes +
+                                    " WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on observacoes: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET observacoesUpd = 1 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET observacoesUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on observacoesUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET observacoesUpd = 0 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET observacoesUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on observacoesUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!origem.isEmpty() and produto.value("origem").toString() != origem) {
-            if (!produtoUpd.exec("UPDATE Produto SET origem = " + origem + " WHERE idProduto = " + idProduto +
-                                 "")) {
+          if (not origem.isEmpty() and produto.value("origem").toString() != origem) {
+            if (not produtoUpd.exec("UPDATE Produto SET origem = " + origem + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on origem: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET origemUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET origemUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on origemUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET origemUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET origemUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on origemUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!descontinuado.isEmpty() and produto.value("descontinuado").toString() != descontinuado) {
-            if (!produtoUpd.exec("UPDATE Produto SET descontinuado = " + descontinuado +
-                                 " WHERE idProduto = " + idProduto + "")) {
+          if (not descontinuado.isEmpty() and produto.value("descontinuado").toString() != descontinuado) {
+            if (not produtoUpd.exec("UPDATE Produto SET descontinuado = " + descontinuado +
+                                    " WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on descontinuado: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET descontinuadoUpd = 1 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET descontinuadoUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on descontinuadoUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET descontinuadoUpd = 0 WHERE idProduto = " + idProduto +
-                                 "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET descontinuadoUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on descontinuadoUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!temLote.isEmpty() and produto.value("temLote").toString() != temLote) {
-            if (!produtoUpd.exec("UPDATE Produto SET temLote = " + temLote + " WHERE idProduto = " +
-                                 idProduto + "")) {
+          if (not temLote.isEmpty() and produto.value("temLote").toString() != temLote) {
+            if (not produtoUpd.exec("UPDATE Produto SET temLote = " + temLote + " WHERE idProduto = " +
+                                    idProduto + "")) {
               qDebug() << "Error on temLote: " << produtoUpd.lastError();
             }
-            if (!produtoUpd.exec("UPDATE Produto SET temLoteUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET temLoteUpd = 1 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on temLoteUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET temLoteUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET temLoteUpd = 0 WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on temLoteUpd0: " << produtoUpd.lastError();
             }
           }
 
-          if (!ui.isEmpty() and produto.value("ui").toString() != ui) {
-            if (!produtoUpd.exec("UPDATE Produto SET ui = " + ui + " WHERE idProduto = " + idProduto + "")) {
+          if (not ui.isEmpty() and produto.value("ui").toString() != ui) {
+            if (not produtoUpd.exec("UPDATE Produto SET ui = " + ui + " WHERE idProduto = " + idProduto +
+                                    "")) {
               qDebug() << "Error on ui: " << produtoUpd.lastError();
             }
 
-            if (!produtoUpd.exec("UPDATE Produto SET uiUpd = 1 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET uiUpd = 1 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on uiUpd1: " << produtoUpd.lastError();
             }
           } else {
-            if (!produtoUpd.exec("UPDATE Produto SET uiUpd = 0 WHERE idProduto = " + idProduto + "")) {
+            if (not produtoUpd.exec("UPDATE Produto SET uiUpd = 0 WHERE idProduto = " + idProduto + "")) {
               qDebug() << "Error on uiUpd0: " << produtoUpd.lastError();
             }
           }
 
           // Guarda novo preço do produto e altera sua validade
           if (precoVenda != produto.value("precoVenda").toString()) {
-            if (!produto.exec(
-                    "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-                    idProduto + ", '" + precoVenda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") +
-                    "',  '" + QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+            if (not produto.exec(
+                  "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
+                  idProduto + ", '" + precoVenda + "', '" + QDate::currentDate().toString("yyyy-MM-dd") +
+                  "',  '" + QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
               qDebug() << "Erro inserindo em Preço: " << produto.lastError();
               qDebug() << "qry: " << produto.lastQuery();
             }
           }
 
           // Marca como não expirado
-          if (!produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
+          if (not produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
             qDebug() << "Erro marcando produto atualizado como não expirado: " << produto.lastError();
           }
 
-          //          if (!produto.exec("UPDATE Produto SET precoVenda = " + precoVenda + " WHERE idProduto =
+          //          if (not produto.exec("UPDATE Produto SET precoVenda = " + precoVenda + " WHERE idProduto
+          //          =
           //          " +
           //                            idProduto + "")) {
           //            qDebug() << "Erro atualizando preço do produto: " << produto.lastError();
           //            qDebug() << "qry: " << produto.lastQuery();
           //          }
-          //          if (!produto.exec("UPDATE Produto SET validade = '" +
+          //          if (not produto.exec("UPDATE Produto SET validade = '" +
           //                            QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") +
           //                            "' WHERE idProduto = " + idProduto + "")) {
           //            qDebug() << "Erro atualizando validade do produto: " << produto.lastError();
@@ -558,24 +575,24 @@ QString ImportaExport::importar(QString file, int validade) {
 
         QSqlQuery qryInsert;
         qryInsert.prepare(
-            "INSERT INTO Produto (idFornecedor, idFornecedorUpd, fornecedor, fornecedorUpd, "
-            "descricao, descricaoUpd, estoque, estoqueUpd, un, unUpd, colecao, "
-            "colecaoUpd, m2cx, m2cxUpd, pccx, pccxUpd, kgcx, kgcxUpd, formComercial, "
-            "formComercialUpd, codComercial, codComercialUpd, codBarras, codBarrasUpd, ncm, "
-            "ncmUpd, icms, icmsUpd, situacaoTributaria, situacaoTributariaUpd, "
-            "qtdPallet, qtdPalletUpd, custo, custoUpd, ipi, ipiUpd, st, stUpd,"
-            " precoVenda, precoVendaUpd, comissao, comissaoUpd, observacoes, "
-            "observacoesUpd, origem, origemUpd, descontinuado, "
-            "descontinuadoUpd, temLote, temLoteUpd, ui, uiUpd, expirado"
-            ") VALUES "
-            "(:idFornecedor, :idFornecedorUpd, :fornecedor, :fornecedorUpd, :descricao, :descricaoUpd, "
-            ":estoque, :estoqueUpd, :unidade, :unidadeUpd, :colecao, "
-            ":colecaoUpd, :m2cx, :m2cxUpd, :pccx, :pccxUpd, :kgcx, :kgcxUpd, :formatoCom, :formatoComUpd, "
-            ":codCom, :codComUpd, :codBarras, :codBarrasUpd, :ncm, :ncmUpd, :icms, :icmsUpd, "
-            ":situacaoTrib, :situacaoTribUpd, :qtdPallet, :qtdPalletUpd, :custo, :custoUpd, :ipi, "
-            ":ipiUpd, :st, :stUpd, :precoVenda, :precoVendaUpd, :comissao, :comissaoUpd, "
-            ":observacoes, :observacoesUpd, :origem, :origemUpd, :descontinuado, :descontinuadoUpd, "
-            ":temLote, :temLoteUpd, :ui, :uiUpd, :expirado)");
+              "INSERT INTO Produto (idFornecedor, idFornecedorUpd, fornecedor, fornecedorUpd, "
+              "descricao, descricaoUpd, estoque, estoqueUpd, un, unUpd, colecao, "
+              "colecaoUpd, m2cx, m2cxUpd, pccx, pccxUpd, kgcx, kgcxUpd, formComercial, "
+              "formComercialUpd, codComercial, codComercialUpd, codBarras, codBarrasUpd, ncm, "
+              "ncmUpd, icms, icmsUpd, situacaoTributaria, situacaoTributariaUpd, "
+              "qtdPallet, qtdPalletUpd, custo, custoUpd, ipi, ipiUpd, st, stUpd,"
+              " precoVenda, precoVendaUpd, comissao, comissaoUpd, observacoes, "
+              "observacoesUpd, origem, origemUpd, descontinuado, "
+              "descontinuadoUpd, temLote, temLoteUpd, ui, uiUpd, expirado"
+              ") VALUES "
+              "(:idFornecedor, :idFornecedorUpd, :fornecedor, :fornecedorUpd, :descricao, :descricaoUpd, "
+              ":estoque, :estoqueUpd, :unidade, :unidadeUpd, :colecao, "
+              ":colecaoUpd, :m2cx, :m2cxUpd, :pccx, :pccxUpd, :kgcx, :kgcxUpd, :formatoCom, :formatoComUpd, "
+              ":codCom, :codComUpd, :codBarras, :codBarrasUpd, :ncm, :ncmUpd, :icms, :icmsUpd, "
+              ":situacaoTrib, :situacaoTribUpd, :qtdPallet, :qtdPalletUpd, :custo, :custoUpd, :ipi, "
+              ":ipiUpd, :st, :stUpd, :precoVenda, :precoVendaUpd, :comissao, :comissaoUpd, "
+              ":observacoes, :observacoesUpd, :origem, :origemUpd, :descontinuado, :descontinuadoUpd, "
+              ":temLote, :temLoteUpd, :ui, :uiUpd, :expirado)");
         qryInsert.bindValue(":idFornecedor", map.value(fornecedor));
         qryInsert.bindValue(":idFornecedorUpd", 1);
         qryInsert.bindValue(":fornecedor", fornecedor);
@@ -630,7 +647,7 @@ QString ImportaExport::importar(QString file, int validade) {
         qryInsert.bindValue(":uiUpd", 1);
         qryInsert.bindValue(":expirado", 0);
 
-        if (!qryInsert.exec()) {
+        if (not qryInsert.exec()) {
           qDebug() << "Erro inserindo produto no BD: " << qryInsert.lastError();
           qDebug() << "qry: " << qryInsert.lastQuery();
 
@@ -669,10 +686,10 @@ QString ImportaExport::importar(QString file, int validade) {
           QString idProduto = qryInsert.lastInsertId().toString();
           //          qDebug() << "idProduto: " << idProduto;
 
-          if (!qryInsert.exec(
-                  "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-                  idProduto + ", " + precoVenda + ", '" + QDate::currentDate().toString("yyyy-MM-dd") +
-                  "', '" + QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+          if (not qryInsert.exec(
+                "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
+                idProduto + ", " + precoVenda + ", '" + QDate::currentDate().toString("yyyy-MM-dd") +
+                "', '" + QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
             qDebug() << "Erro inserindo em Preço: " << qryInsert.lastError();
           }
         }
@@ -700,14 +717,14 @@ int ImportaExport::buscarCadastrarFornecedor(QString fornecedor) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
-  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
+  if (not queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   if (queryFornecedor.next()) {
     return queryFornecedor.value("idFornecedor").toInt();
   } else {
     QSqlQuery cadastrar;
-    if (!cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
+    if (not cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
     } else {
       return cadastrar.lastInsertId().toInt();

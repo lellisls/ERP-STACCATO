@@ -5,6 +5,7 @@
 #include <QStyledItemDelegate>
 
 class ImportaExportDelegate : public QStyledItemDelegate {
+
   public:
     ImportaExportDelegate(QObject *parent = 0);
     ~ImportaExportDelegate();

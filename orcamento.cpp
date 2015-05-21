@@ -62,22 +62,22 @@ Orcamento::Orcamento(QWidget *parent)
 
   ui->tableProdutos->horizontalHeader()->setStretchLastSection(false);
 
-  SearchDialog * sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
+  SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
 
-  SearchDialog * sdProd = SearchDialog::produto(ui->itemBoxProduto);
+  SearchDialog *sdProd = SearchDialog::produto(ui->itemBoxProduto);
   ui->itemBoxProduto->setSearchDialog(sdProd);
 
-  RegisterDialog * cadCliente = new CadastroCliente(this);
+  RegisterDialog *cadCliente = new CadastroCliente(this);
   ui->itemBoxCliente->setRegisterDialog(cadCliente);
 
-  SearchDialog * sdVendedor = SearchDialog::vendedor(ui->itemBoxVendedor);
+  SearchDialog *sdVendedor = SearchDialog::vendedor(ui->itemBoxVendedor);
   ui->itemBoxVendedor->setSearchDialog(sdVendedor);
 
-  SearchDialog * sdProfissional = SearchDialog::profissional(ui->itemBoxProfissional);
+  SearchDialog *sdProfissional = SearchDialog::profissional(ui->itemBoxProfissional);
   ui->itemBoxProfissional->setSearchDialog(sdProfissional);
 
-  SearchDialog * sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+  SearchDialog *sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
 
   setupMapper();
@@ -85,7 +85,7 @@ Orcamento::Orcamento(QWidget *parent)
   //  show();
   showMaximized();
 
-  if(UserSession::getTipo() == "ADMINISTRADOR") {
+  if (UserSession::getTipo() == "ADMINISTRADOR") {
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->checkBoxFreteManual->show();
@@ -94,9 +94,7 @@ Orcamento::Orcamento(QWidget *parent)
   }
 }
 
-Orcamento::~Orcamento() {
-  delete ui;
-}
+Orcamento::~Orcamento() { delete ui; }
 
 void Orcamento::on_tableProdutos_clicked(const QModelIndex &index) {
   ui->pushButtonAtualizarItem->show();
@@ -107,7 +105,7 @@ void Orcamento::on_tableProdutos_clicked(const QModelIndex &index) {
 }
 
 bool Orcamento::viewRegister(QModelIndex index) {
-  if (!RegisterDialog::viewRegister(index)) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
   QString idOrcamento = data(primaryKey).toString();
@@ -173,7 +171,7 @@ void Orcamento::updateMode() {
 }
 
 bool Orcamento::newRegister() {
-  if (!RegisterDialog::newRegister()) {
+  if (not RegisterDialog::newRegister()) {
     return false;
   }
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
@@ -197,9 +195,10 @@ void Orcamento::updateId() {
   QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
   qDebug() << "id: " << id;
   QSqlQuery query("SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id +
-                  "%' UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%' ORDER BY idOrcamento ASC");
+                  "%' UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id +
+                  "%' ORDER BY idOrcamento ASC");
   int last = 0;
-  if(query.size() > 0){
+  if (query.size() > 0) {
     query.last();
     last = query.value("idOrcamento").toString().mid(id.size()).toInt();
   }
@@ -266,7 +265,7 @@ bool Orcamento::savingProcedures(int row) {
 
   qDebug() << "desconto global: " << ui->doubleSpinBoxDescontoGlobal->value();
 
-  if (!model.submitAll() and model.lastError().number() != 1062) {
+  if (not model.submitAll() and model.lastError().number() != 1062) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
     qDebug() << "SUBMITALL ERROR: " << model.lastError();
@@ -279,7 +278,7 @@ bool Orcamento::savingProcedures(int row) {
     modelItem.setData(model.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
   }
 
-  if (!modelItem.submitAll()) {
+  if (not modelItem.submitAll()) {
     qDebug() << "Failed to add item! : " << modelItem.lastError().text();
     qDebug() << "QUERY: " << modelItem.query().lastQuery();
     QMessageBox::warning(this, "Atenção!", "Erro ao adicionar um item ao orçamento.", QMessageBox::Ok,
@@ -303,9 +302,7 @@ void Orcamento::clearFields() {
   ui->itemBoxEndereco->setEnabled(false);
 }
 
-void Orcamento::on_pushButtonRemoverItem_clicked() {
-  removeItem();
-}
+void Orcamento::on_pushButtonRemoverItem_clicked() { removeItem(); }
 
 void Orcamento::calcPrecoItemTotal() {
   if (ui->itemBoxProduto->text().isEmpty()) {
@@ -321,9 +318,7 @@ void Orcamento::calcPrecoItemTotal() {
   ui->lineEditPrecoTotal->setValue(subTotalItem);
 }
 
-void Orcamento::on_doubleSpinBoxDesconto_valueChanged(double) {
-  calcPrecoItemTotal();
-}
+void Orcamento::on_doubleSpinBoxDesconto_valueChanged(double) { calcPrecoItemTotal(); }
 
 void Orcamento::on_doubleSpinBoxQte_valueChanged(double) {
   double caixas = ui->doubleSpinBoxQte->value() / ui->doubleSpinBoxQte->singleStep();
@@ -336,9 +331,7 @@ void Orcamento::on_doubleSpinBoxQte_editingFinished() {
   ui->doubleSpinBoxQte->setValue(qCeil(mult) * step);
 }
 
-void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
-  save();
-}
+void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
 
 void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
@@ -347,7 +340,8 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   double minimoFrete = 0, porcFrete = 0;
 
   QSqlQuery qryFrete;
-  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
+  if (not qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) +
+                        "'")) {
     qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
   }
   if (qryFrete.next()) {
@@ -368,7 +362,7 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
   }
   double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
-  if(ui->checkBoxFreteManual->isChecked()) {
+  if (ui->checkBoxFreteManual->isChecked()) {
     frete = ui->doubleSpinBoxFrete->value();
     qDebug() << "novo frete: " << frete;
   }
@@ -377,7 +371,7 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   if (ajusteTotal) {
     const double Final = ui->doubleSpinBoxFinal->value();
     subTotal = Final - frete;
-    if(subTotalItens == 0.0) {
+    if (subTotalItens == 0.0) {
       descGlobal = 0;
     } else {
       descGlobal = 1 - (subTotal / subTotalItens);
@@ -427,7 +421,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   QPrinter printer;
   //  printer.setFullPage(true);
   //  printer.setResolution(300);
-  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter	);
+  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
   printer.setOrientation(QPrinter::Portrait);
   printer.setPaperSize(QPrinter::A4);
   QPrintPreviewDialog preview(&printer, this, Qt::Window);
@@ -455,14 +449,14 @@ QString Orcamento::getItensHtml() {
   }
   QString itens = html;
   for (int row = 0; row < modelItem.rowCount(); ++row) {
-    itens.replace("#MARCA#",itemData(row,"fornecedor"));
-    itens.replace("#CODIGO#",itemData(row,"idProduto"));
-    itens.replace("#DESCRICAO#",itemData(row,"produto"));
-    itens.replace("#AMBIENTE#",itemData(row,"obs"));
-    itens.replace("#PRECOUN#",itemData(row,"prcUnitario"));
-    itens.replace("#QTE#",locale.toString(itemData(row,"qte").toDouble()));
-    itens.replace("#UN#",itemData(row,"un"));
-    itens.replace("#TOTAL#", locale.toString(itemData(row,"total").toDouble()));
+    itens.replace("#MARCA#", itemData(row, "fornecedor"));
+    itens.replace("#CODIGO#", itemData(row, "idProduto"));
+    itens.replace("#DESCRICAO#", itemData(row, "produto"));
+    itens.replace("#AMBIENTE#", itemData(row, "obs"));
+    itens.replace("#PRECOUN#", itemData(row, "prcUnitario"));
+    itens.replace("#QTE#", locale.toString(itemData(row, "qte").toDouble()));
+    itens.replace("#UN#", itemData(row, "un"));
+    itens.replace("#TOTAL#", locale.toString(itemData(row, "total").toDouble()));
   }
   return itens;
 }
@@ -481,53 +475,54 @@ void Orcamento::print(QPrinter *printer) {
   }
   QString str = "SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "';";
   QSqlQuery queryLoja(str);
-  if (!queryLoja.exec(str)) {
+  if (not queryLoja.exec(str)) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryLoja.lastError();
   }
   queryLoja.first();
 
-  //Loja
+  // Loja
   html.replace("#LOGO#", QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString());
   qDebug() << QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString();
   //  html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
   //  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
   html.replace("#TELLOJA#", queryLoja.value("tel").toString());
 
-  Endereco endLoja( queryLoja.value("idEndereco").toInt());
-  //End. Loja
-  html.replace("#ENDLOJA01#",endLoja.linhaUm());
-  html.replace("#ENDLOJA02#",endLoja.linhaDois());
+  Endereco endLoja(queryLoja.value("idEndereco").toInt());
+  // End. Loja
+  html.replace("#ENDLOJA01#", endLoja.linhaUm());
+  html.replace("#ENDLOJA02#", endLoja.linhaDois());
   //  html.replace("TELLOJA",end);
-  //Orcamento
+  // Orcamento
   html.replace("#ORCAMENTO#", ui->lineEditOrcamento->text());
   html.replace("#DATA#", ui->dateTimeEdit->text());
 
-  //Cliente
+  // Cliente
   str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->value().toString() + "';";
   QSqlQuery queryCliente(str);
-  if (!queryCliente.exec()) {
+  if (not queryCliente.exec()) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryCliente.lastError();
   }
   queryCliente.first();
   html.replace("#NOME#", ui->itemBoxCliente->text());
-  if(queryCliente.value("pfpj")=="PF") {
+  if (queryCliente.value("pfpj") == "PF") {
     html.replace("#CPFCNPJ#", queryCliente.value("cpf").toString());
   } else {
     html.replace("#CPFCNPJ#", queryCliente.value("cnpj").toString());
   }
-  html.replace("#EMAILCLIENTE#",queryCliente.value("email").toString());
-  html.replace("#TEL01#",queryCliente.value("tel").toString());
-  html.replace("#TEL02#",queryCliente.value("telCel").toString());
+  html.replace("#EMAILCLIENTE#", queryCliente.value("email").toString());
+  html.replace("#TEL01#", queryCliente.value("tel").toString());
+  html.replace("#TEL02#", queryCliente.value("telCel").toString());
 
-  //End. Cliente
+  // End. Cliente
   Endereco endEntrega(data("idEnderecoEntrega").toInt());
-  html.replace("#ENDENTREGA#",endEntrega.umaLinha());
-  html.replace("#CEPENTREGA#",endEntrega.cep());
+  html.replace("#ENDENTREGA#", endEntrega.umaLinha());
+  html.replace("#CEPENTREGA#", endEntrega.cep());
 
-  //Profissional
-  str = "SELECT * FROM Profissional WHERE idProfissional='"+ ui->itemBoxProfissional->value().toString() + "'";
+  // Profissional
+  str =
+      "SELECT * FROM Profissional WHERE idProfissional='" + ui->itemBoxProfissional->value().toString() + "'";
   QSqlQuery queryProf;
-  if(!queryProf.exec(str)){
+  if (not queryProf.exec(str)) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryProf.lastError();
   }
   queryProf.first();
@@ -535,14 +530,14 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("#TELPRO#", queryProf.value("tel").toString());
   html.replace("#EMAILPRO#", queryProf.value("email").toString());
 
-  //Vendedor
+  // Vendedor
   html.replace("#NOMEVEND#", ui->itemBoxVendedor->text());
   html.replace("#EMAILVEND#", "");
-  //Itens
+  // Itens
   QString itens = getItensHtml();
   html.replace("<!-- #ITENS# -->", itens);
 
-  //Totais
+  // Totais
   //  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
   html.replace("#SUBTOTALBRUTO#", ui->doubleSpinBoxSubTotalBruto->text());
   html.replace("#SUBTOTALLIQ#", ui->doubleSpinBoxTotal->text());
@@ -550,9 +545,9 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("#FRETE#", ui->doubleSpinBoxFrete->text());
   html.replace("#TOTALFINAL#", ui->doubleSpinBoxFinal->text());
 
-  //Prazos
-  html.replace("#PRAZOENTREGA#","A definir");
-  html.replace("#FORMAPAGAMENTO#","A definir");
+  // Prazos
+  html.replace("#PRAZOENTREGA#", "A definir");
+  html.replace("#FORMAPAGAMENTO#", "A definir");
   frame->setHtml(html);
   //  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
@@ -640,26 +635,22 @@ void Orcamento::atualizarItem() {
   novoItem();
 }
 
-void Orcamento::on_pushButtonAdicionarItem_clicked() {
-  adicionarItem();
-}
+void Orcamento::on_pushButtonAdicionarItem_clicked() { adicionarItem(); }
 
 void Orcamento::on_pushButtonAtualizarItem_clicked() {
   atualizarItem();
   ui->tableProdutos->clearSelection();
 }
 
-void Orcamento::on_pushButtonAtualizarOrcamento_clicked() {
-  save();
-}
+void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { save(); }
 
 void Orcamento::on_pushButtonFecharPedido_clicked() {
-  if (!save(true)) {
+  if (not save(true)) {
     return;
   }
 
   QDateTime time = ui->dateTimeEdit->dateTime();
-  if (!time.isValid()) {
+  if (not time.isValid()) {
     qDebug() << "Invalid time!";
     return;
   }
@@ -671,7 +662,7 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  if(ui->itemBoxEndereco->text().isEmpty()){
+  if (ui->itemBoxEndereco->text().isEmpty()) {
     QMessageBox::warning(this, "Aviso!", "Deve selecionar endereço!", QMessageBox::Ok);
     ui->itemBoxEndereco->setFocus();
     return;
@@ -679,9 +670,9 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
 
   int idCliente = ui->itemBoxCliente->value().toInt();
   QSqlQuery qryCadastro;
-  if (!qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente "
-                        "= Cliente.idCliente WHERE Cliente.idCliente = " +
-                        QString::number(idCliente) + " AND incompleto = 1")) {
+  if (not qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente "
+                           "= Cliente.idCliente WHERE Cliente.idCliente = " +
+                           QString::number(idCliente) + " AND incompleto = 1")) {
     qDebug() << "Erro verificando se cadastro do cliente está completo: " << qryCadastro.lastError();
     return;
   }
@@ -705,21 +696,13 @@ void Orcamento::on_pushButtonFecharPedido_clicked() {
   close();
 }
 
-void Orcamento::on_doubleSpinBoxFrete_editingFinished() {
-  calcPrecoGlobalTotal();
-}
+void Orcamento::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 
-void Orcamento::on_pushButtonCancelar_clicked() {
-  close();
-}
+void Orcamento::on_pushButtonCancelar_clicked() { close(); }
 
-void Orcamento::on_pushButtonCancelarItem_clicked() {
-  novoItem();
-}
+void Orcamento::on_pushButtonCancelarItem_clicked() { novoItem(); }
 
-void Orcamento::on_doubleSpinBoxTotal_valueChanged(double) {
-  calcPrecoGlobalTotal();
-}
+void Orcamento::on_doubleSpinBoxTotal_valueChanged(double) { calcPrecoGlobalTotal(); }
 
 void Orcamento::on_doubleSpinBoxCaixas_valueChanged(double caixas) {
   double qte = caixas * ui->doubleSpinBoxQte->singleStep();
@@ -757,7 +740,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   query.prepare("SELECT * FROM Produto WHERE idProduto = :idx");
   query.bindValue(":idx", ui->itemBoxProduto->value().toInt());
   //  qDebug() << "value: " << ui->itemBoxProduto->getValue().toInt();
-  if (!query.exec()) {
+  if (not query.exec()) {
     qDebug() << "Erro na busca do produto: " << query.lastError();
   }
   query.first();
@@ -786,12 +769,12 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
   //  qDebug() << "id: " << ui->itemBoxCliente->getValue().toInt();
-  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
-                                                 " AND ativo = 1");
+  ui->itemBoxEndereco->searchDialog()->setFilter(
+        "idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) + " AND ativo = 1");
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
-  if (!queryCliente.exec() or !queryCliente.first()) {
+  if (not queryCliente.exec() or !queryCliente.first()) {
     qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
   }
   ui->itemBoxProfissional->setValue(queryCliente.value("idProfissionalRel"));
@@ -811,13 +794,13 @@ void Orcamento::on_pushButtonLimparSelecao_clicked() {
 }
 
 void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
-  if(checked == true and UserSession::getTipo() != "ADMINISTRADOR") {
+  if (checked == true and UserSession::getTipo() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
   }
   ui->doubleSpinBoxFrete->setFrame(checked);
-  ui->doubleSpinBoxFrete->setReadOnly(!checked);
-  if(checked) {
+  ui->doubleSpinBoxFrete->setReadOnly(not checked);
+  if (checked) {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
   } else {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::NoButtons);

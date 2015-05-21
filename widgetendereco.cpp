@@ -12,9 +12,7 @@ WidgetEndereco::WidgetEndereco(QWidget *parent)
   ui->lineEditUF->setInputMask(">AA;_");
 }
 
-WidgetEndereco::~WidgetEndereco() {
-  delete ui;
-}
+WidgetEndereco::~WidgetEndereco() { delete ui; }
 
 bool WidgetEndereco::verifyField(QLineEdit *lineEdit, bool silent) {
   if (lineEdit->text().isEmpty()) {
@@ -130,13 +128,9 @@ bool WidgetEndereco::viewCadastro(int id) {
   return true;
 }
 
-int WidgetEndereco::getId() const {
-  return id;
-}
+int WidgetEndereco::getId() const { return id; }
 
-void WidgetEndereco::setId(int value) {
-  viewCadastro(value);
-}
+void WidgetEndereco::setId(int value) { viewCadastro(value); }
 
 void WidgetEndereco::setupUi(QWidget *first, QWidget *last) {
   QWidget::setTabOrder(first, ui->lineEditDescricao);
@@ -150,21 +144,19 @@ void WidgetEndereco::setupUi(QWidget *first, QWidget *last) {
   QWidget::setTabOrder(ui->lineEditUF, last);
 }
 
-QString WidgetEndereco::requiredStyle() {
-  return (QString("background-color: rgb(255, 255, 127);"));
-}
+QString WidgetEndereco::requiredStyle() { return (QString("background-color: rgb(255, 255, 127);")); }
 
 void WidgetEndereco::on_lineEditCEP_textEdited(const QString &cep) {
   if (not ui->lineEditCEP->isValid()) {
     return;
   }
   CepCompleter cc;
-  if(cc.buscaCEP(cep)){
+  if (cc.buscaCEP(cep)) {
     ui->lineEditUF->setText(cc.getUf());
     ui->lineEditCidade->setText(cc.getCidade());
     ui->lineEditEndereco->setText(cc.getEndereco());
     ui->lineEditBairro->setText(cc.getBairro());
-  }else{
+  } else {
     QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
   }
 }

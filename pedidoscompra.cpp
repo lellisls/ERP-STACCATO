@@ -16,19 +16,19 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
 
   modelItemPedidos.setTable("pedidofornecedor_has_produto");
   modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  if (!modelItemPedidos.select()) {
+  if (not modelItemPedidos.select()) {
     qDebug() << "Failed to populate pedidofornecedor_has_produto! " << modelItemPedidos.lastError();
   }
 
   modelPedidos.setTable("pedidofornecedor");
   modelPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  if (!modelPedidos.select()) {
+  if (not modelPedidos.select()) {
     qDebug() << "Failed to populate pedidofornecedor! " << modelPedidos.lastError();
   }
 
   ui->tablePedidos->setModel(&modelItemPedidos);
   ui->tablePedidos->setItemDelegateForColumn(modelItemPedidos.fieldIndex("status"),
-      new ComboBoxDelegate(ui->tablePedidos));
+                                             new ComboBoxDelegate(ui->tablePedidos));
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
@@ -56,9 +56,7 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
   show();
 }
 
-PedidosCompra::~PedidosCompra() {
-  delete ui;
-}
+PedidosCompra::~PedidosCompra() { delete ui; }
 
 void PedidosCompra::viewPedido(QString idPedido) {
   this->idPedido = idPedido;
@@ -71,7 +69,8 @@ void PedidosCompra::viewPedido(QString idPedido) {
   //    }
   //  }
   //  if (idx == -1) {
-  //    QMessageBox::warning(this, "Atenção!", "Pedido não encontrado!", QMessageBox::Ok, QMessageBox::NoButton);
+  //    QMessageBox::warning(this, "Atenção!", "Pedido não encontrado!", QMessageBox::Ok,
+  //    QMessageBox::NoButton);
   //    return;
   //  }
   //  qDebug() << "idPedido: " << idPedido;
@@ -79,8 +78,7 @@ void PedidosCompra::viewPedido(QString idPedido) {
   modelItemPedidos.select();
 
   for (int row = 0; row < modelItemPedidos.rowCount(); ++row) {
-    ui->tablePedidos->openPersistentEditor(
-      modelItemPedidos.index(row, modelItemPedidos.fieldIndex("qte")));
+    ui->tablePedidos->openPersistentEditor(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("qte")));
   }
 }
 
@@ -89,21 +87,21 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
   qryConta.prepare("INSERT INTO contaapagar(idVenda, dataEmissao) VALUES (:idVenda, :dataEmissao)");
   qryConta.bindValue(":idVenda", idPedido);
   qryConta.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-  if (!qryConta.exec()) {
+  if (not qryConta.exec()) {
     qDebug() << "Erro inserindo conta a pagar: " << qryConta.lastError();
   }
 
   QSqlQuery qry;
   qry.prepare("SELECT * FROM pedidofornecedor_has_produto WHERE idPedido = :idPedido");
   qry.bindValue(":idPedido", idPedido);
-  if (!qry.exec()) {
+  if (not qry.exec()) {
     qDebug() << "Erro buscando produtos: " << qry.lastError();
   }
   qDebug() << "size: " << qry.size();
 
   for (int row = 0; row < qry.size(); ++row) {
     QString combobox =
-      modelItemPedidos.data(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("status"))).toString();
+        modelItemPedidos.data(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("status"))).toString();
     qry.next();
     QString bd = qry.value("status").toString();
     //    qDebug() << "row: " << row;
@@ -124,7 +122,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         qryProduto.bindValue(":un", qry.value("un"));
         qryProduto.bindValue(":total", qry.value("total"));
 
-        if (!qryProduto.exec()) {
+        if (not qryProduto.exec()) {
           qDebug() << "Erro inserindo produtos na conta: " << qryProduto.lastError();
         }
         //        qDebug() << "qry: " << qryProduto.lastQuery();
@@ -138,7 +136,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         qryEntrega.bindValue(":status", "PENDENTE");
         qryEntrega.bindValue(":tipo", "Fornecedor");
 
-        if (!qryEntrega.exec()) {
+        if (not qryEntrega.exec()) {
           qDebug() << "Erro inserindo recebimento fornecedor: " << qryEntrega.lastError();
         }
 
@@ -151,7 +149,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         qryEntrega.bindValue(":status", "PENDENTE");
         qryEntrega.bindValue(":tipo", "Cliente");
 
-        if (!qryEntrega.exec()) {
+        if (not qryEntrega.exec()) {
           qDebug() << "Erro inserindo entrega cliente: " << qryEntrega.lastError();
         }
       }
@@ -167,7 +165,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
     qDebug() << "generate NFe";
     qDebug() << "generate delivery for client";
   }
-  if (!modelItemPedidos.submitAll()) {
+  if (not modelItemPedidos.submitAll()) {
     qDebug() << "salvar submit failed!";
   }
 
@@ -178,13 +176,9 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void PedidosCompra::on_pushButtonCancelar_clicked() {
-  close();
-}
+void PedidosCompra::on_pushButtonCancelar_clicked() { close(); }
 
-void PedidosCompra::on_checkBox_toggled(bool checked) {
-  Q_UNUSED(checked);
-}
+void PedidosCompra::on_checkBox_toggled(bool checked) { Q_UNUSED(checked); }
 
 void PedidosCompra::updateTables() {
   modelItemPedidos.select();
@@ -194,18 +188,15 @@ void PedidosCompra::updateTables() {
 }
 
 void PedidosCompra::on_radioButtonVenda_toggled(bool checked) {
-    Q_UNUSED(checked);
-//  modelPedidos
+  Q_UNUSED(checked);
+  //  modelPedidos
 }
 
-void PedidosCompra::on_pushButtonNFe_clicked()
-{
-    QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
-    QList<int> rows;
-    foreach (QModelIndex idx, list) {
-      rows.append(idx.row());
-    }
-    NFe nfe(idPedido);
-    nfe.TXT_Pedido(rows);
-    qDebug() << rows;
+void PedidosCompra::on_pushButtonNFe_clicked() {
+  QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
+  QList<int> rows;
+  foreach (QModelIndex idx, list) { rows.append(idx.row()); }
+  NFe nfe(idPedido);
+  nfe.TXT_Pedido(rows);
+  qDebug() << rows;
 }

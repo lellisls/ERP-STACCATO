@@ -4,6 +4,10 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QFileDialog>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QSqlRecord>
+#include <QSqlField>
 
 #include "importaexportproxy.h"
 #include "importateste.h"
@@ -32,7 +36,14 @@ void ImportaTeste::importar() {
   db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + file);
 
   if (db.open()) {
-    cadastraFornecedores();
+    if (not verificaTabela()) {
+      return;
+    }
+
+    QSqlQuery query("SELECT * FROM [BASE$]", db);
+    query.first();
+
+    cadastraFornecedores(query);
 
     if (fornecedores.size() > 0) {
       mostraApenasEstesFornecedores();
@@ -43,11 +54,11 @@ void ImportaTeste::importar() {
       marcaTodosProdutosExpirado();
       contaProdutos();
 
-      QSqlQuery queryProd("SELECT * FROM [BASE$]", db);
       int current = 0;
-      while (queryProd.next()) {
-        values.insert(0, queryProd.value(0).toString());
-        if (!values.at(fields.indexOf("fornecedor")).isEmpty()) {
+      query.first();
+      while (query.next()) {
+        values.insert(0, query.value(0).toString());
+        if (not values.at(fields.indexOf("fornecedor")).isEmpty()) {
           progressDialog->setValue(current++);
 
           leituraProduto(query);
@@ -66,23 +77,15 @@ void ImportaTeste::importar() {
             marcaProdutoNaoExpirado(produto, idProduto);
           } else {
             cadastraProduto();
-            //            QSqlQuery qryInsert = preparaCadastroProduto();
-
-            //            if (!qryInsert.exec()) {
-            //              qDebug() << "Erro inserindo produto no BD: " << qryInsert.lastError();
-            //              qDebug_InfoProduto(qryInsert);
-            //              qDebug() << "--------------------------------";
-            //            } else {
-            //              //          imported++;
-            //            }
-//                        cadastraProdutoTemPreco(qryInsert);
           }
         }
       }
 
       progressDialog->cancel();
     } else {
+      QMessageBox::warning(this, "Aviso!", "Erro ao cadastrar fornecedores.");
       qDebug() << "Erro ao cadastrar fornecedores.";
+      return;
     }
     qDebug() << "Done!";
   } else {
@@ -114,7 +117,10 @@ bool ImportaTeste::readFile() {
   return true;
 }
 
-void ImportaTeste::readValidade() { validade = 10; }
+void ImportaTeste::readValidade() {
+  validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
+  //  validade = 10;
+}
 
 void ImportaTeste::setModelAndTable() {
   model.setTable("Produto");
@@ -132,11 +138,9 @@ void ImportaTeste::setModelAndTable() {
   ui->tableView->setColumnHidden(model.fieldIndex("idFornecedor"), true);
 }
 
-void ImportaTeste::cadastraFornecedores() {
-  QSqlQuery queryForn("SELECT * FROM [BASE$]", db);
-
-  while (queryForn.next()) {
-    QString fornecedor = queryForn.value(0).toString();
+void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
+  while (query.next()) {
+    QString fornecedor = query.value(0).toString();
     if (!fornecedor.isEmpty()) {
       int id = buscarCadastrarFornecedor(fornecedor);
       //      qDebug() << "id: " << id << " - " << fornecedor;
@@ -207,6 +211,9 @@ void ImportaTeste::leituraProduto(QSqlQuery &queryProd) {
 void ImportaTeste::atualizaCamposProduto(QSqlQuery &produto, QString idProduto) {
   QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto).first();
 
+  model.setData(model.index(index.row(), model.fieldIndex("validade")),
+                QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+
   for (int i = 0; i < fields.size(); ++i) {
     if (!values.at(i).isEmpty() and produto.value(fields.at(i)).toString() != values.at(i)) {
       model.setData(model.index(index.row(), model.fieldIndex(fields.at(i))), values.at(i));
@@ -248,139 +255,19 @@ void ImportaTeste::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
 void ImportaTeste::cadastraProduto() {
   if (model.insertRow(model.rowCount())) {
     int row = model.rowCount() - 1;
-    model.setData(model.index(row, model.fieldIndex("idFornecedor")), fornecedores.value(values.at(fields.indexOf("fornecedor"))));
+
+    model.setData(model.index(row, model.fieldIndex("idFornecedor")),
+                  fornecedores.value(values.at(fields.indexOf("fornecedor"))));
+    model.setData(model.index(row, model.fieldIndex("atualizarTabelaPreco")), true);
+    model.setData(model.index(row, model.fieldIndex("validade")),
+                  QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+
     for (int i = 0; i < fields.size(); ++i) {
       model.setData(model.index(row, model.fieldIndex(fields.at(i))), values.at(i));
       model.setData(model.index(row, model.fieldIndex(fields.at(i)) + 1), 1);
     }
   }
 }
-
-QSqlQuery ImportaTeste::preparaCadastroProduto() {
-  QSqlQuery qryInsert;
-  qryInsert.prepare(
-        "INSERT INTO Produto (idFornecedor, idFornecedorUpd, fornecedor, fornecedorUpd, "
-        "descricao, descricaoUpd, estoque, estoqueUpd, un, unUpd, colecao, "
-        "colecaoUpd, m2cx, m2cxUpd, pccx, pccxUpd, kgcx, kgcxUpd, formComercial, "
-        "formComercialUpd, codComercial, codComercialUpd, codBarras, codBarrasUpd, ncm, "
-        "ncmUpd, icms, icmsUpd, situacaoTributaria, situacaoTributariaUpd, "
-        "qtdPallet, qtdPalletUpd, custo, custoUpd, ipi, ipiUpd, st, stUpd,"
-        " precoVenda, precoVendaUpd, comissao, comissaoUpd, observacoes, "
-        "observacoesUpd, origem, origemUpd, descontinuado, "
-        "descontinuadoUpd, temLote, temLoteUpd, ui, uiUpd, expirado"
-        ") VALUES "
-        "(:idFornecedor, :idFornecedorUpd, :fornecedor, :fornecedorUpd, :descricao, :descricaoUpd, "
-        ":estoque, :estoqueUpd, :unidade, :unidadeUpd, :colecao, "
-        ":colecaoUpd, :m2cx, :m2cxUpd, :pccx, :pccxUpd, :kgcx, :kgcxUpd, :formatoCom, :formatoComUpd, "
-        ":codCom, :codComUpd, :codBarras, :codBarrasUpd, :ncm, :ncmUpd, :icms, :icmsUpd, "
-        ":situacaoTrib, :situacaoTribUpd, :qtdPallet, :qtdPalletUpd, :custo, :custoUpd, :ipi, "
-        ":ipiUpd, :st, :stUpd, :precoVenda, :precoVendaUpd, :comissao, :comissaoUpd, "
-        ":observacoes, :observacoesUpd, :origem, :origemUpd, :descontinuado, :descontinuadoUpd, "
-        ":temLote, :temLoteUpd, :ui, :uiUpd, :expirado)");
-//    qryInsert.bindValue(":idFornecedor", fornecedores.value(fornecedor));
-  //  qryInsert.bindValue(":idFornecedorUpd", 1);
-  //  qryInsert.bindValue(":fornecedor", fornecedor);
-  //  qryInsert.bindValue(":fornecedorUpd", 1);
-  //  qryInsert.bindValue(":descricao", descricao);
-  //  qryInsert.bindValue(":descricaoUpd", 1);
-  //  qryInsert.bindValue(":estoque", estoque);
-  //  qryInsert.bindValue(":estoqueUpd", 1);
-  //  qryInsert.bindValue(":unidade", un);
-  //  qryInsert.bindValue(":unidadeUpd", 1);
-  //  qryInsert.bindValue(":colecao", colecao);
-  //  qryInsert.bindValue(":colecaoUpd", 1);
-  //  qryInsert.bindValue(":m2cx", m2cx);
-  //  qryInsert.bindValue(":m2cxUpd", 1);
-  //  qryInsert.bindValue(":pccx", pccx);
-  //  qryInsert.bindValue(":pccxUpd", 1);
-  //  qryInsert.bindValue(":kgcx", kgcx);
-  //  qryInsert.bindValue(":kgcxUpd", 1);
-  //  qryInsert.bindValue(":formatoCom", formComercial);
-  //  qryInsert.bindValue(":formatoComUpd", 1);
-  //  qryInsert.bindValue(":codCom", codComercial);
-  //  qryInsert.bindValue(":codComUpd", 1);
-  //  qryInsert.bindValue(":codBarras", codBarras);
-  //  qryInsert.bindValue(":codBarrasUpd", 1);
-  //  qryInsert.bindValue(":ncm", ncm);
-  //  qryInsert.bindValue(":ncmUpd", 1);
-  //  qryInsert.bindValue(":icms", icms);
-  //  qryInsert.bindValue(":icmsUpd", 1);
-  //  qryInsert.bindValue(":situacaoTrib", situacaoTributaria);
-  //  qryInsert.bindValue(":situacaoTribUpd", 1);
-  //  qryInsert.bindValue(":qtdPallet", qtdPallet);
-  //  qryInsert.bindValue(":qtdPalletUpd", 1);
-  //  qryInsert.bindValue(":custo", custo);
-  //  qryInsert.bindValue(":custoUpd", 1);
-  //  qryInsert.bindValue(":ipi", ipi);
-  //  qryInsert.bindValue(":ipiUpd", 1);
-  //  qryInsert.bindValue(":st", st);
-  //  qryInsert.bindValue(":stUpd", 1);
-  //  qryInsert.bindValue(":precoVenda", precoVenda);
-  //  qryInsert.bindValue(":precoVendaUpd", 1);
-  //  qryInsert.bindValue(":comissao", comissao);
-  //  qryInsert.bindValue(":comissaoUpd", 1);
-  //  qryInsert.bindValue(":observacoes", observacoes);
-  //  qryInsert.bindValue(":observacoesUpd", 1);
-  //  qryInsert.bindValue(":origem", origem);
-  //  qryInsert.bindValue(":origemUpd", 1);
-  //  qryInsert.bindValue(":descontinuado", descontinuado);
-  //  qryInsert.bindValue(":descontinuadoUpd", 1);
-  //  qryInsert.bindValue(":temLote", temLote);
-  //  qryInsert.bindValue(":temLoteUpd", 1);
-  //  qryInsert.bindValue(":ui", unidInd);
-  //  qryInsert.bindValue(":uiUpd", 1);
-  //  qryInsert.bindValue(":expirado", 0);
-
-  return qryInsert;
-}
-
-void ImportaTeste::qDebug_InfoProduto(QSqlQuery &qryInsert) {
-  qDebug() << "qry: " << qryInsert.lastQuery();
-
-  qDebug() << "--------------------------------";
-  //  qDebug() << "idFornecedor: " << fornecedores.value(fornecedor);
-  //  qDebug() << "fornecedor: " << fornecedor;
-  //  qDebug() << "descricao: " << descricao;
-  //  qDebug() << "estoque: " << estoque;
-  //  qDebug() << "unidade: " << un;
-  //  qDebug() << "colecao: " << colecao;
-  //  qDebug() << "m2cx: " << m2cx;
-  //  qDebug() << "pccx: " << pccx;
-  //  qDebug() << "kgcx: " << kgcx;
-  //  qDebug() << "formatoCom: " << formComercial;
-  //  qDebug() << "codCom: " << codComercial;
-  //  qDebug() << "codBarras: " << codBarras;
-  //  qDebug() << "ncm: " << ncm;
-  //  qDebug() << "icms: " << icms;
-  //  qDebug() << "situacaoTrib: " << situacaoTributaria;
-  //  qDebug() << "qtdPallet: " << qtdPallet;
-  //  qDebug() << "custo: " << custo;
-  //  qDebug() << "ipi: " << ipi;
-  //  qDebug() << "st: " << st;
-  //  qDebug() << "precoVenda: " << precoVenda;
-  //  qDebug() << "comissao: " << comissao;
-  //  qDebug() << "observacoes: " << observacoes;
-  //  qDebug() << "origem: " << origem;
-  //  qDebug() << "descontinuado: " << descontinuado;
-  //  qDebug() << "temLote: " << temLote;
-  //  qDebug() << "ui: " << unidInd;
-  //  qDebug() << "validade: " << validade;
-}
-
-void ImportaTeste::cadastraProdutoTemPreco(QSqlQuery &qryInsert) {
-  QString idProduto = qryInsert.lastInsertId().toString();
-  //          qDebug() << "idProduto: " << idProduto;
-
-  if (!qryInsert.exec(
-        "INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-        idProduto + ", " + values.at(fields.indexOf("precoVenda")) + ", '" +
-        QDate::currentDate().toString("yyyy-MM-dd") + "', '" +
-        QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
-    qDebug() << "Erro inserindo em Preço: " << qryInsert.lastError();
-  }
-}
-
-ImportaTeste::~ImportaTeste() { delete ui; }
 
 int ImportaTeste::buscarCadastrarFornecedor(QString fornecedor) {
   int idFornecedor = 0;
@@ -410,9 +297,41 @@ void ImportaTeste::on_pushButtonSalvar_clicked() {
   if (model.submitAll()) {
     qDebug() << "submeteu model, comittando sql";
     QSqlQuery("COMMIT").exec();
+    // cadastrar preços
+
+    QSqlQuery qryPrecos;
+
+    if (qryPrecos.exec("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) SELECT "
+                       "idProduto, precoVenda, '" +
+                       QDate::currentDate().toString("yyyy-MM-dd") + "' AS validadeInicio, '" +
+                       QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") +
+                       "' AS validadeFim FROM Produto "
+                       "WHERE atualizarTabelaPreco = 1")) {
+      qDebug() << "Preços inseridos com sucesso: " << qryPrecos.lastQuery();
+      qryPrecos.exec("UPDATE Produto SET atualizarTabelaPreco = 0");
+      qryPrecos.exec("COMMIT");
+    } else {
+      qDebug() << "Erro inserindo preços: " << qryPrecos.lastError() << endl;
+      qDebug() << "query: " << qryPrecos.lastQuery();
+    }
+
     close();
   } else {
     qDebug() << "Erro submetendo model: " << model.lastError();
+    QMessageBox::warning(this, "Aviso!", "Ocorreu um erro.");
     QSqlQuery("ROLLBACK").exec();
   }
+}
+
+bool ImportaTeste::verificaTabela() {
+  QSqlRecord record = db.record(db.tables(QSql::AllTables).first());
+
+  for (int i = 0; i < fields.size(); ++i) {
+    if (not record.contains(fields.at(i))) {
+      QMessageBox::warning(this, "Aviso!", "Tabela não possui coluna " + fields.at(i));
+      return false;
+    }
+  }
+
+  return true;
 }

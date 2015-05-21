@@ -9,7 +9,7 @@
 bool loadScript(const QString &filename) {
   qDebug() << "LOADING " << filename << ".";
   QFile file(filename);
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+  if (not file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qDebug() << "sql error: " << QSqlError();
     return false;
   }
@@ -18,9 +18,9 @@ bool loadScript(const QString &filename) {
   stream.setLocale(QLocale::Portuguese);
   stream.setCodec("UTF-8");
   QString script;
-  while (!stream.atEnd()) {
+  while (not stream.atEnd()) {
     QString line = stream.readLine();
-    if (!line.startsWith("--") and line.size() > 5) {
+    if (not line.startsWith("--") and line.size() > 5) {
       script += line + "\n";
     }
   }
@@ -30,7 +30,7 @@ bool loadScript(const QString &filename) {
   foreach (QString queryString, queryes) {
     if (queryString.size() > 5) {
       queryString += ";";
-      if (!query.exec(queryString)) {
+      if (not query.exec(queryString)) {
         qDebug() << "Query: " << queryString;
         qDebug() << "ERROR: " << query.lastError().text();
         return false;
@@ -48,14 +48,14 @@ inline bool initDb() {
   qDebug() << "Initializing mydb: ";
   qDebug() << qApp->applicationDirPath() + "/initdb.sql";
   qDebug() << "LOADING initdb.sql";
-  if (!loadScript(qApp->applicationDirPath() + "/initdb.sql")) {
+  if (not loadScript(qApp->applicationDirPath() + "/initdb.sql")) {
     QMessageBox::warning(0, "Aviso!", "Não carregou o script do BD.");
     return false;
   }
   QSqlQuery query;
-  if (!query.exec("SELECT * FROM cep.sp LIMIT 1")) {
+  if (not query.exec("SELECT * FROM cep.sp LIMIT 1")) {
     qDebug() << "LOADING cep.sql";
-    if (!loadScript(qApp->applicationDirPath() + "/cep.sql")) {
+    if (not loadScript(qApp->applicationDirPath() + "/cep.sql")) {
       QMessageBox::warning(0, "Aviso!", "Não carregou o script do cep.");
       return false;
     }

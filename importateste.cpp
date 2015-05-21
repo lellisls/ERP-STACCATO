@@ -14,8 +14,10 @@ ImportaTeste::ImportaTeste(QWidget *parent) : QDialog(parent), ui(new Ui::Import
   setWindowFlags(Qt::Window);
 }
 
-void ImportaTeste::importar(){
-  if(!readFile()){
+ImportaTeste::~ImportaTeste() { delete ui; }
+
+void ImportaTeste::importar() {
+  if (!readFile()) {
     return;
   }
 
@@ -48,8 +50,8 @@ void ImportaTeste::importar(){
         if (!values.at(fields.indexOf("fornecedor")).isEmpty()) {
           progressDialog->setValue(current++);
 
-          leituraProduto(queryProd);
-          if(!consistenciaDados()){
+          leituraProduto(query);
+          if (not consistenciaDados()) {
             continue;
           }
 
@@ -106,7 +108,7 @@ bool ImportaTeste::readFile() {
                                       tr("Excel (*.xlsx)"));
   qDebug() << "file: " << file;
   if (file.isEmpty()) {
-//    qDebug() << "closing: " << close();
+    //    qDebug() << "closing: " << close();
     return false;
   }
   return true;
@@ -384,14 +386,14 @@ int ImportaTeste::buscarCadastrarFornecedor(QString fornecedor) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
-  if (!queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
+  if (not queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
   if (queryFornecedor.next()) {
     return queryFornecedor.value("idFornecedor").toInt();
   } else {
     QSqlQuery cadastrar;
-    if (!cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
+    if (not cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
     } else {
       return cadastrar.lastInsertId().toInt();

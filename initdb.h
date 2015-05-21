@@ -7,7 +7,7 @@
 #include <QMessageBox>
 
 bool loadScript(const QString &filename) {
-  qDebug() << "LOADING " << filename;
+  qDebug() << "LOADING " << filename << ".";
   QFile file(filename);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qDebug() << "sql error: " << QSqlError();

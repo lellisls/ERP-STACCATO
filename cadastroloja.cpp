@@ -9,15 +9,14 @@
 #include "searchdialog.h"
 #include "usersession.h"
 
-CadastroLoja::CadastroLoja(QWidget *parent) :
-  RegisterDialog("Loja", "idLoja", parent),
-  ui(new Ui::CadastroLoja) {
+CadastroLoja::CadastroLoja(QWidget *parent)
+  : RegisterDialog("Loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
   ui->setupUi(this);
 
   modelAlcadas.setTable("Alcadas");
   modelAlcadas.setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
-  modelAlcadas.setFilter("idLoja = "+ QString::number(UserSession::getLoja()) +"");
-  if(!modelAlcadas.select()) {
+  modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
+  if (not modelAlcadas.select()) {
     qDebug() << "Erro carregando alçadas: " << modelAlcadas.lastError();
   }
   ui->tableAlcadas->setModel(&modelAlcadas);
@@ -34,20 +33,18 @@ CadastroLoja::CadastroLoja(QWidget *parent) :
   newRegister();
 }
 
-CadastroLoja::~CadastroLoja() {
-  delete ui;
-}
+CadastroLoja::~CadastroLoja() { delete ui; }
 
 void CadastroLoja::clearFields() {
   ui->widgetEnd->clearFields();
-  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) {
-    line->clear();
-  }
+  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
 }
 
 bool CadastroLoja::verifyFields(int row) {
   Q_UNUSED(row);
-  if(!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial, ui->lineEditNomeFantasia, ui->lineEditSIGLA, ui->lineEditCNPJ, ui->lineEditInscEstadual, ui->lineEditTel}))
+  if (not RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial,
+                                       ui->lineEditNomeFantasia, ui->lineEditSIGLA, ui->lineEditCNPJ,
+                                       ui->lineEditInscEstadual, ui->lineEditTel}))
     return false;
   if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
     return false;
@@ -97,38 +94,30 @@ void CadastroLoja::setupMapper() {
 }
 
 bool CadastroLoja::viewRegister(QModelIndex idx) {
-  if(!RegisterDialog::viewRegister(idx)) {
+  if (!RegisterDialog::viewRegister(idx)) {
     return false;
   }
   bool ok = false;
   int idEnd = data("idEndereco").toInt(&ok);
-  if (ok) ui->widgetEnd->viewCadastro(idEnd);
+  if (ok){
+    ui->widgetEnd->viewCadastro(idEnd);
+  }
   return true;
 }
 
-void CadastroLoja::on_pushButtonCadastrar_clicked() {
-  save();
-}
+void CadastroLoja::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroLoja::on_pushButtonAtualizar_clicked() {
-  save();
-}
+void CadastroLoja::on_pushButtonAtualizar_clicked() { save(); }
 
-void CadastroLoja::on_pushButtonNovoCad_clicked() {
-  newRegister();
-}
+void CadastroLoja::on_pushButtonNovoCad_clicked() { newRegister(); }
 
-void CadastroLoja::on_pushButtonRemover_clicked() {
-  remove();
-}
+void CadastroLoja::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroLoja::on_pushButtonCancelar_clicked() {
-  close();
-}
+void CadastroLoja::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroLoja::on_pushButtonBuscar_clicked() {
   SearchDialog *sdLoja = SearchDialog::loja(this);
-  connect(sdLoja,&SearchDialog::itemSelected,this,&CadastroLoja::changeItem);
+  connect(sdLoja, &SearchDialog::itemSelected, this, &CadastroLoja::changeItem);
   sdLoja->show();
 }
 
@@ -143,7 +132,7 @@ void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &) {
 }
 
 void CadastroLoja::validaCNPJ(QString text) {
-  if(text.size() == 14) {
+  if (text.size() == 14) {
 
     int digito1;
     int digito2;
@@ -151,20 +140,20 @@ void CadastroLoja::validaCNPJ(QString text) {
     QString sub = text.left(12);
 
     QVector<int> sub2;
-    for(int i = 0; i < sub.size(); ++i) {
+    for (int i = 0; i < sub.size(); ++i) {
       sub2.push_back(sub.at(i).digitValue());
     }
 
     QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 
     int soma = 0;
-    for(int i = 0; i < 12; ++i) {
+    for (int i = 0; i < 12; ++i) {
       soma += sub2.at(i) * multiplicadores.at(i);
     }
 
     int resto = soma % 11;
 
-    if(resto < 2) {
+    if (resto < 2) {
       digito1 = 0;
     } else {
       digito1 = 11 - resto;
@@ -175,19 +164,19 @@ void CadastroLoja::validaCNPJ(QString text) {
     QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
     soma = 0;
 
-    for(int i = 0; i < 13; ++i) {
+    for (int i = 0; i < 13; ++i) {
       soma += sub2.at(i) * multiplicadores2.at(i);
     }
 
     resto = soma % 11;
 
-    if(resto < 2) {
+    if (resto < 2) {
       digito2 = 0;
     } else {
       digito2 = 11 - resto;
     }
 
-    if(digito1 == text.at(12).digitValue() and digito2 == text.at(13).digitValue()) {
+    if (digito1 == text.at(12).digitValue() and digito2 == text.at(13).digitValue()) {
       qDebug() << "Válido!";
     } else {
       QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");

@@ -20,27 +20,24 @@ class ImportaTeste : public QDialog {
     explicit ImportaTeste(QWidget *parent = 0);
     ~ImportaTeste();
     int buscarCadastrarFornecedor(QString fornecedor);
-
-    void setProgressDialog();
+    bool consistenciaDados();
     bool readFile();
+    bool verificaTabela();
+    void atualizaCamposProduto(QSqlQuery &produto, QString idProduto);
+    void cadastraFornecedores(QSqlQuery &query);
+    void cadastraProduto();
+    void contaProdutos();
+    void guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto);
+    void importar();
+    void leituraProduto(QSqlQuery &queryProd);
+    void marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto);
+    void marcaTodosProdutosExpirado();
+    void mostraApenasEstesFornecedores();
     void readValidade();
     void setModelAndTable();
-    void cadastraFornecedores();
-    void mostraApenasEstesFornecedores();
-    void marcaTodosProdutosExpirado();
-    void contaProdutos();
-    bool consistenciaDados();
-    void leituraProduto(QSqlQuery &queryProd);
-    void atualizaCamposProduto(QSqlQuery &produto, QString idProduto);
-    void marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto);
-    void guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto);
+    void setProgressDialog();
     void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
-    QSqlQuery preparaCadastroProduto();
-    void qDebug_InfoProduto(QSqlQuery &qryInsert);
-    void cadastraProdutoTemPreco(QSqlQuery &qryInsert);
-    void cadastraProduto();
 
-    void importar();
   private slots:
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();

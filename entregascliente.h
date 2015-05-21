@@ -22,7 +22,7 @@ class EntregasCliente : public QDialog {
     void on_pushButtonSalvar_clicked();
 
   private:
-    //attributes
+    // attributes
     Ui::EntregasCliente *ui;
     QSqlTableModel modelEntregas;
     QString idPedido;

@@ -46,6 +46,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   modelFluxoCaixa.select();
 
   ui->tableFluxoCaixa->setModel(&modelFluxoCaixa);
+  ui->tableFluxoCaixa->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idVenda"), true);
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idLoja"), true);
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idPagamento"), true);
@@ -55,6 +56,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   modelVenda.select();
 
   ui->tableVenda->setModel(&modelItem);
+  ui->tableVenda->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVenda"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
@@ -465,21 +467,19 @@ void Venda::on_pushButtonFecharPedido_clicked() {
 }
 
 void Venda::on_pushButtonNFe_clicked() {
-  CadastrarNFE * cadNfe = new CadastrarNFE(this);
-  QList<int> lista;
-  for(int item = 0; item < modelItem.rowCount(); ++item) {
-    lista.append(modelItem.data(modelItem.index(item,modelItem.fieldIndex(primaryKey))).toInt());
+  CadastrarNFE *cadNfe = new CadastrarNFE(idOrcamento, this);
+
+  QModelIndexList list = ui->tableVenda->selectionModel()->selectedRows();
+  if (list.size() < 1) {
+    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    return;
   }
-  cadNfe->gerarNFe(idOrcamento,lista);
+  QList<int> lista;
+
+  foreach (QModelIndex index, list) { lista.append(index.row()); }
+
+  cadNfe->gerarNFe(lista);
   cadNfe->showMaximized();
-//  NFe nota(idOrcamento, this);
-//  //  qDebug() << "xml: " << nota.XML();
-//  if (nota.TXT()) {
-//    QMessageBox::information(this, "Aviso!", "NFe gerada com sucesso!");
-//  } else {
-//    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro, NFe não foi gerada.");
-//  }
-  //  qDebug() << "txt: " << nota.TXT();
 }
 
 void Venda::viewVenda(QString idVenda) {
@@ -678,7 +678,6 @@ bool Venda::viewRegister(QModelIndex index) {
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
   fillTotals();
-  on_pushButtonNFe_clicked();
   return true;
 }
 

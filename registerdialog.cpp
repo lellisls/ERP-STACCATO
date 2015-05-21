@@ -121,7 +121,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
        (line->text().size() < line->placeholderText().size() - 1))) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
-    QMessageBox::warning(dynamic_cast<QWidget *>(this), "Atenção!",
+    QMessageBox::warning(this, "Atenção!",
                          "Você não preencheu um campo obrigatório!", QMessageBox::Ok, QMessageBox::NoButton);
     line->setFocus();
     return false;
@@ -144,8 +144,9 @@ bool RegisterDialog::confirmationMessage() {
     msgBox.setDefaultButton(QMessageBox::Save);
     int ret = msgBox.exec();
     if (ret == QMessageBox::Save) {
-      if (!save()) {
-        qDebug() << objectName() << " : " << " save failed!";
+      if (not save()) {
+        qDebug() << objectName() << " : "
+                 << " save failed!";
         return false;
       }
     } else if (ret == QMessageBox::Cancel) {
@@ -186,7 +187,7 @@ bool RegisterDialog::newRegister() {
 bool RegisterDialog::save(bool silent) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
-//  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
+  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
   int row = mapper.currentIndex();
   QVariant id = data(row, primaryKey);
   if (not verifyFields(row)) {

@@ -10,7 +10,7 @@ NFe::NFe(QString idVenda, QObject *parent) : QObject(parent), idVenda(idVenda) {
   modelVenda.setTable("Venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVenda.setFilter("idVenda = '" + idVenda + "'");
-  if (!modelVenda.select() || modelVenda.rowCount() == 0) {
+  if (not modelVenda.select() or modelVenda.rowCount() == 0) {
     qDebug() << "Failed to populate venda!" << modelVenda.lastError();
   }
 
@@ -18,14 +18,14 @@ NFe::NFe(QString idVenda, QObject *parent) : QObject(parent), idVenda(idVenda) {
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);
   QString idLoja = QString::number(UserSession::getLoja());
   modelLoja.setFilter("idLoja = '" + idLoja + "'");
-  if (!modelLoja.select() || modelLoja.rowCount() == 0) {
+  if (not modelLoja.select() or modelLoja.rowCount() == 0) {
     qDebug() << "Failed to populate loja!" << modelLoja.lastError();
   }
 
   modelItem.setTable("Venda_has_Produto");
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  if (!modelItem.select() || modelItem.rowCount() == 0) {
+  if (not modelItem.select() or modelItem.rowCount() == 0) {
     qDebug() << "Failed to populate itemModel!" << modelItem.lastError();
   }
 }
@@ -148,7 +148,7 @@ bool NFe::writeTXT(QString chave) {
     return false;
   }
   QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '" + idEndLoja + "'");
-  if (!endLoja.exec()) {
+  if (not endLoja.exec()) {
     qDebug() << "End. loja failed! : " << endLoja.lastError();
     return false;
   }
@@ -207,7 +207,7 @@ bool NFe::writeTXT(QString chave) {
 
   QSqlQuery cliente;
 
-  if (!cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
+  if (not cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
                     "WHERE Endereco.idCliente = " +
                     idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
@@ -301,7 +301,7 @@ bool NFe::writeTXT(QString chave) {
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     QSqlQuery prod("SELECT * FROM Produto WHERE idProduto = '" +
                    getFromItemModel(row, "idProduto").toString() + "'");
-    if(!prod.exec()){
+    if (not prod.exec()) {
       qDebug() << "Erro buscando produtos: " << prod.lastError();
       return false;
     }
@@ -464,7 +464,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
     return false;
   }
   QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '" + idEndLoja + "'");
-  if (!endLoja.exec()) {
+  if (not endLoja.exec()) {
     qDebug() << "End. loja failed! : " << endLoja.lastError();
     return false;
   }
@@ -523,7 +523,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
 
   QSqlQuery cliente;
 
-  if (!cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
+  if (not cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
                     "WHERE Endereco.idCliente = " +
                     idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
@@ -616,7 +616,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows)
   foreach(int row, rows){
     QSqlQuery prod("SELECT * FROM Produto WHERE idProduto = '" +
                    getFromItemModel(row, "idProduto").toString() + "'");
-    if(!prod.exec()){
+    if (not prod.exec()) {
       qDebug() << "Erro buscando produtos: " << prod.lastError();
       return false;
     }

@@ -4,7 +4,7 @@
 
 Endereco::Endereco(int idEndereco) : m_idEndereco(-1) {
   QSqlQuery qry("SELECT * FROM Endereco WHERE idEndereco = '" + QString::number(idEndereco) + "'");
-  if(!qry.exec() || !qry.first()) {
+  if(!qry.exec() or !qry.first()) {
     return;
   }
   m_idEndereco = idEndereco;

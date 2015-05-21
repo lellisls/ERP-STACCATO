@@ -49,7 +49,7 @@ bool CadastroLoja::verifyFields(int row) {
   Q_UNUSED(row);
   if(!RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial, ui->lineEditNomeFantasia, ui->lineEditSIGLA, ui->lineEditCNPJ, ui->lineEditInscEstadual, ui->lineEditTel}))
     return false;
-  if (ui->widgetEnd->isEnabled() && !ui->widgetEnd->verifyFields()) {
+  if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
     return false;
   }
   return true;

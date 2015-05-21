@@ -114,7 +114,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   clearFields();
   this->idOrcamento = idOrcamento;
   QSqlQuery produtos("SELECT * FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'");
-  if (!produtos.exec()) {
+  if (not produtos.exec()) {
     qDebug() << "Erro buscando produtos: " << produtos.lastError();
   }
 
@@ -132,11 +132,11 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->tableVenda->resizeColumnsToContents();
 
   QSqlQuery qry("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'");
-  if (!qry.exec()) {
+  if (not qry.exec()) {
     qDebug() << "Erro buscando orcamento: " << qry.lastError();
   }
 
-  if (!qry.first()) {
+  if (not qry.first()) {
     qDebug() << "Erro selecionando primeiro resultado: " << qry.lastError();
   }
 
@@ -184,7 +184,8 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   double minimoFrete = 0, porcFrete = 0;
 
   QSqlQuery qryFrete;
-  if (!qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
+  if (not qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) +
+                        "'")) {
     qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
   }
   if (qryFrete.next()) {
@@ -241,19 +242,16 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 
 void Venda::fillTotals() {
   QSqlQuery query;
-  if (!query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+  if (not query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Erro buscando orçamento: " << query.lastError();
     qDebug() << "query: " << query.lastQuery();
   }
 
-  if (!query.first()) {
-    qDebug() << "Não achou orçamento: " << query.size();
-    qDebug() << "query: " << query.lastQuery();
-
-    if(!query.exec("SELECT * FROM Venda WHERE idVenda = '"+idOrcamento+"'")) {
+  if (not query.first()) {
+    if (not query.exec("SELECT * FROM Venda WHERE idVenda = '" + idOrcamento + "'")) {
       qDebug() << "Erro buscando venda: " << query.lastError();
     }
-    if(!query.first()) {
+    if (not query.first()) {
       qDebug() << "Não achou venda: " << query.size();
       qDebug() << "query: " << query.lastQuery();
     }
@@ -288,7 +286,7 @@ void Venda::on_pushButtonCancelar_clicked() {
 }
 
 void Venda::on_pushButtonFecharPedido_clicked() {
-  if(!ui->frame_2->isHidden()) {
+  if (not ui->frame_2->isHidden()) {
     if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
         ui->doubleSpinBoxTotalPag->value()) {
       QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
@@ -309,7 +307,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     }
   }
 
-  if(!ui->itemBoxEnderecoFat->value().isValid()){
+  if (not ui->itemBoxEnderecoFat->value().isValid()) {
     QMessageBox::warning(this, "Aviso!", "Deve selecionar um endereço de faturamento.");
     return;
   }
@@ -322,34 +320,42 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   qry.exec("SET AUTOCOMMIT = 0");
 
   QSqlQuery qryOrc;
-  if(!qryOrc.exec("SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status FROM Orcamento WHERE idOrcamento = '"+ idOrcamento +"'")){
+  if (not qryOrc.exec("SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, "
+                   "data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, "
+                   "status FROM Orcamento WHERE idOrcamento = '" +
+                   idOrcamento + "'")) {
     qDebug() << "Erro lendo orçamento: " << qryOrc.lastError();
     qry.exec("ROLLBACK");
     return;
   }
-  if(!qryOrc.first()){
+  if (not qryOrc.first()) {
     qDebug() << "Não encontrou orçamento: " << qryOrc.size();
   }
 
-//  qDebug() << "-------------------";
-//  qDebug() << "idOrcamento: " << qryOrc.value("idOrcamento");
-//  qDebug() << "idLoja: " << qryOrc.value("idLoja");
-//  qDebug() << "idUsuario: " << qryOrc.value("idUsuario");
-//  qDebug() << "idCliente: " << qryOrc.value("idCliente");
-//  qDebug() << "idEnderecoEntrega: " << qryOrc.value("idEnderecoEntrega");
-//  qDebug() << "idEnderecoFaturamento: " << ui->itemBoxEnderecoFat->value();
-//  qDebug() << "idProfissional: " << qryOrc.value("idProfissional");
-//  qDebug() << "data: " << qryOrc.value("data");
-//  qDebug() << "subTotalBru: " << qryOrc.value("subTotalBru");
-//  qDebug() << "subTotalLiq: " << qryOrc.value("subTotalLiq");
-//  qDebug() << "frete: " << qryOrc.value("frete");
-//  qDebug() << "descontoPorc: " << qryOrc.value("descontoPorc");
-//  qDebug() << "descontoReais: " << qryOrc.value("descontoReais");
-//  qDebug() << "total: " << qryOrc.value("total");
-//  qDebug() << "validade: " << qryOrc.value("validade");
-//  qDebug() << "status: " << qryOrc.value("status");
+  //  qDebug() << "-------------------";
+  //  qDebug() << "idOrcamento: " << qryOrc.value("idOrcamento");
+  //  qDebug() << "idLoja: " << qryOrc.value("idLoja");
+  //  qDebug() << "idUsuario: " << qryOrc.value("idUsuario");
+  //  qDebug() << "idCliente: " << qryOrc.value("idCliente");
+  //  qDebug() << "idEnderecoEntrega: " << qryOrc.value("idEnderecoEntrega");
+  //  qDebug() << "idEnderecoFaturamento: " << ui->itemBoxEnderecoFat->value();
+  //  qDebug() << "idProfissional: " << qryOrc.value("idProfissional");
+  //  qDebug() << "data: " << qryOrc.value("data");
+  //  qDebug() << "subTotalBru: " << qryOrc.value("subTotalBru");
+  //  qDebug() << "subTotalLiq: " << qryOrc.value("subTotalLiq");
+  //  qDebug() << "frete: " << qryOrc.value("frete");
+  //  qDebug() << "descontoPorc: " << qryOrc.value("descontoPorc");
+  //  qDebug() << "descontoReais: " << qryOrc.value("descontoReais");
+  //  qDebug() << "total: " << qryOrc.value("total");
+  //  qDebug() << "validade: " << qryOrc.value("validade");
+  //  qDebug() << "status: " << qryOrc.value("status");
 
-  if(!qry.prepare("INSERT INTO Venda (idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status) VALUES (:idOrcamento, :idLoja, :idUsuario, :idCliente, :idEnderecoEntrega, :idEnderecoFaturamento, :idProfissional, :data, :subTotalBru, :subTotalLiq, :frete, :descontoPorc, :descontoReais, :total, :validade, :status)")){
+  if (not qry.prepare("INSERT INTO Venda (idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
+                   "idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, "
+                   "descontoPorc, descontoReais, total, validade, status) VALUES (:idOrcamento, :idLoja, "
+                   ":idUsuario, :idCliente, :idEnderecoEntrega, :idEnderecoFaturamento, :idProfissional, "
+                   ":data, :subTotalBru, :subTotalLiq, :frete, :descontoPorc, :descontoReais, :total, "
+                   ":validade, :status)")) {
     qDebug() << "Erro preparando query insert venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -371,31 +377,31 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   qry.bindValue(":validade", qryOrc.value("validade"));
   qry.bindValue(":status", qryOrc.value("status"));
 
-  if (!qry.exec()) {
+  if (not qry.exec()) {
     qDebug() << "Erro inserindo em Venda: " << qry.lastError();
     qDebug() << "qry: " << qry.lastQuery();
     qry.exec("ROLLBACK");
     return;
   }
 
-  if (!qry.exec("UPDATE Venda SET status = 'ABERTO' WHERE idVenda = '" + idOrcamento + "'")) {
+  if (not qry.exec("UPDATE Venda SET status = 'ABERTO' WHERE idVenda = '" + idOrcamento + "'")) {
     qDebug() << "Erro atualizando status de Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
-  if (!qry.exec("UPDATE Venda SET data = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +
+  if (not qry.exec("UPDATE Venda SET data = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +
                 "'")) {
     qDebug() << "Erro setando data em Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
-  if (!modelFluxoCaixa.submitAll()) {
+  if (not modelFluxoCaixa.submitAll()) {
     qDebug() << "Erro submetendo fluxoCaixa: " << modelFluxoCaixa.lastError();
   }
 
-  if (!modelItem.submitAll()) {
+  if (not modelItem.submitAll()) {
     qDebug() << "Erro submetendo modelItem: " << modelItem.lastError();
     //    qDebug() << "query: " << modelItem.query().lastQuery();
     qry.exec("ROLLBACK");
@@ -406,22 +412,24 @@ void Venda::on_pushButtonFecharPedido_clicked() {
                        "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
                        "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
                        idOrcamento + "';");
-  if (!qryEstoque.exec()) {
+  if (not qryEstoque.exec()) {
     qDebug() << qryEstoque.lastError();
     qry.exec("ROLLBACK");
     return;
   }
   if (qryEstoque.size() > 0) {
-    if (!qry.exec(
-          "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, status "
-          "FROM Venda WHERE idVenda = '" +
-          idOrcamento + "'")) {
+    if (not qry.exec("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
+                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+                  "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
+                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+                  "descontoReais, total, validade, status "
+                  "FROM Venda WHERE idVenda = '" +
+                  idOrcamento + "'")) {
       qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
       qry.exec("ROLLBACK");
       return;
     }
-    if (!qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
+    if (not qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
                   "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
                   "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
                   idOrcamento + "';")) {
@@ -431,19 +439,19 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     }
   }
 
-  if (!qry.exec("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'")) {
+  if (not qry.exec("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error deleting items from Orcamento_has_Produto: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
-  if (!qry.exec("DELETE FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+  if (not qry.exec("DELETE FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Error deleting row from Orcamento: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
-  if (!qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
+  if (not qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
                 QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento + "')")) {
     qDebug() << "Error inserting contaareceber: " << qry.lastError();
     qry.exec("ROLLBACK");
@@ -518,7 +526,7 @@ void Venda::calculoSpinBox1() {
   double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt2->setValue(pgt2 + restante);
-  if (pgt2 == 0.0 || pgt3 >= 0.0) {
+  if (pgt2 == 0.0 or pgt3 >= 0.0) {
     ui->doubleSpinBoxPgt2->setMaximum(restante + pgt2);
     ui->doubleSpinBoxPgt2->setValue(restante + pgt2);
     ui->doubleSpinBoxPgt3->setMaximum(pgt3);
@@ -800,7 +808,7 @@ void Venda::on_pushButton_clicked() {
 }
 
 void Venda::on_doubleSpinBoxFinal_editingFinished() {
-  if (modelItem.rowCount() == 0 || ui->doubleSpinBoxTotal->value() == 0) {
+  if (modelItem.rowCount() == 0 or ui->doubleSpinBoxTotal->value() == 0) {
     calcPrecoGlobalTotal();
     return;
   }
@@ -818,7 +826,7 @@ void Venda::on_doubleSpinBoxFinal_editingFinished() {
 }
 
 void Venda::on_checkBoxFreteManual_clicked(bool checked) {
-  if(checked == true && UserSession::getTipo() != "ADMINISTRADOR") {
+  if (checked == true and UserSession::getTipo() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
   }

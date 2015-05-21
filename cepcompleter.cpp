@@ -106,7 +106,7 @@ bool CepCompleter::inRange(QString cep, int st, int end) {
   if (valueList.size() != 2)
     return false;
   int vl = valueList.at(0).toInt();
-  return (vl >= st && vl <= end);
+  return (vl >= st and vl <= end);
 }
 
 QString CepCompleter::getUf() const {

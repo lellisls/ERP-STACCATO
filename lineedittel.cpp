@@ -25,22 +25,22 @@ void LineEditTel::processTel(QString value) {
   if (size > 2)
     res += ')';
   if (size < 11) {
-    for (int i = 2; i < 6 && i < size; ++i) {
+    for (int i = 2; i < 6 and i < size; ++i) {
       res += nbr.at(i);
     }
     if (size > 6)
       res += '-';
-    for (int i = 6; i < 10 && i < size; ++i) {
+    for (int i = 6; i < 10 and i < size; ++i) {
       res += nbr.at(i);
     }
   } else {
     res += nbr.at(2); // + '-';
-    for (int i = 3; i < 7 && i < size; ++i) {
+    for (int i = 3; i < 7 and i < size; ++i) {
       res += nbr.at(i);
     }
     if (size >= 7)
       res += '-';
-    for (int i = 7; i < 11 && i < size; ++i) {
+    for (int i = 7; i < 11 and i < size; ++i) {
       res += nbr.at(i);
     }
   }

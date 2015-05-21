@@ -119,14 +119,14 @@ void Smtp::readyRead() {
   do {
     responseLine = socket->readLine();
     response += responseLine;
-  } while (socket->canReadLine() && responseLine[3] != ' ');
+  } while (socket->canReadLine() and responseLine[3] != ' ');
 
   responseLine.truncate(3);
 
   qDebug() << "Server response code:" << responseLine;
   qDebug() << "Server response: " << response;
 
-  if (state == Init && responseLine == "220") {
+  if (state == Init and responseLine == "220") {
     // banner was okay, let's go on
     *t << "EHLO localhost"
        << "\r\n";
@@ -135,7 +135,7 @@ void Smtp::readyRead() {
     state = HandShake;
   }
   // No need, because I'm using socket->startClienEncryption() which makes the SSL handshake for you
-  /*else if (state == Tls && responseLine == "250")
+  /*else if (state == Tls and responseLine == "250")
   {
       // Trying AUTH
       qDebug() << "STarting Tls";
@@ -143,7 +143,7 @@ void Smtp::readyRead() {
       t->flush();
       state = HandShake;
   }*/
-  else if (state == HandShake && responseLine == "250") {
+  else if (state == HandShake and responseLine == "250") {
     socket->startClientEncryption();
     if (!socket->waitForEncrypted(timeout)) {
       qDebug() << socket->errorString();
@@ -156,14 +156,14 @@ void Smtp::readyRead() {
        << "\r\n";
     t->flush();
     state = Auth;
-  } else if (state == Auth && responseLine == "250") {
+  } else if (state == Auth and responseLine == "250") {
     // Trying AUTH
     qDebug() << "Auth";
     *t << "AUTH LOGIN"
        << "\r\n";
     t->flush();
     state = User;
-  } else if (state == User && responseLine == "334") {
+  } else if (state == User and responseLine == "334") {
     // Trying User
     qDebug() << "Username";
     // GMAIL is using XOAUTH2 protocol, which basically means that password and username has to be sent in
@@ -173,14 +173,14 @@ void Smtp::readyRead() {
     t->flush();
 
     state = Pass;
-  } else if (state == Pass && responseLine == "334") {
+  } else if (state == Pass and responseLine == "334") {
     // Trying pass
     qDebug() << "Pass";
     *t << QByteArray().append(pass).toBase64() << "\r\n";
     t->flush();
 
     state = Mail;
-  } else if (state == Mail && responseLine == "235") {
+  } else if (state == Mail and responseLine == "235") {
     // HELO response was okay (well, it has to be)
 
     // Apperantly for Google it is mandatory to have MAIL FROM and RCPT email formated the following way ->
@@ -189,23 +189,23 @@ void Smtp::readyRead() {
     *t << "MAIL FROM:<" << from << ">\r\n";
     t->flush();
     state = Rcpt;
-  } else if (state == Rcpt && responseLine == "250") {
+  } else if (state == Rcpt and responseLine == "250") {
     // Apperantly for Google it is mandatory to have MAIL FROM and RCPT email formated the following way ->
     // <email@gmail.com>
     *t << "RCPT TO:<" << rcpt << ">\r\n"; // r
     t->flush();
     state = Data;
-  } else if (state == Data && responseLine == "250") {
+  } else if (state == Data and responseLine == "250") {
 
     *t << "DATA\r\n";
     t->flush();
     state = Body;
-  } else if (state == Body && responseLine == "354") {
+  } else if (state == Body and responseLine == "354") {
 
     *t << message << "\r\n.\r\n";
     t->flush();
     state = Quit;
-  } else if (state == Quit && responseLine == "250") {
+  } else if (state == Quit and responseLine == "250") {
 
     *t << "QUIT\r\n";
     t->flush();

@@ -33,7 +33,7 @@ void CadastroTransportadora::clearFields() {
 bool CadastroTransportadora::verifyFields(int row) {
   Q_UNUSED(row);
   //  if(!RegisterDialog::verifyFields({ui}))
-  if (ui->widgetEnd->isEnabled() && !ui->widgetEnd->verifyFields()) {
+  if (ui->widgetEnd->isEnabled() and !ui->widgetEnd->verifyFields()) {
     return false;
   }
   return true;
@@ -172,7 +172,7 @@ void CadastroTransportadora::remove() {
   msgBox.setButtonText(QMessageBox::No, "Não");
   if(msgBox.exec() == QMessageBox::Yes) {
     qDebug() << "Yes!";
-    if (model.removeRow(mapper.currentIndex()) && model.submitAll()) {
+    if (model.removeRow(mapper.currentIndex()) and model.submitAll()) {
       qDebug() << "REMOVING " << mapper.currentIndex();
       model.select();
       newRegister();

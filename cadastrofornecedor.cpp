@@ -427,11 +427,11 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit * line, bool silent) {
   if (!line->isVisible()) {
     return true;
   }
-  //  if(line->parent()->isWindowType() && line->parent()->objectName() != objectName() ) {
+  //  if(line->parent()->isWindowType() and line->parent()->objectName() != objectName() ) {
   //    return true;
   //  }
-  if ((line->text().isEmpty()) || line->text() == "0,00" || line->text() == "../-" ||
-      (line->text().size() < (line->inputMask().remove(";").remove(">").remove("_").size()) ||
+  if ((line->text().isEmpty()) or line->text() == "0,00" or line->text() == "../-" or
+      (line->text().size() < (line->inputMask().remove(";").remove(">").remove("_").size()) or
        (line->text().size() < line->placeholderText().size() - 1))) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();

@@ -35,7 +35,7 @@ void LineEditDecimal::setTop(double value) {
 
 void LineEditDecimal::processDecimal(QString value) {
   QString nbr, res;
-  if (value.size() > 0 && value.at(0) == '-' && bottom < 0) {
+  if (value.size() > 0 and value.at(0) == '-' and bottom < 0) {
     res += '-';
   }
   foreach (QChar c, value) {

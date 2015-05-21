@@ -260,7 +260,7 @@ bool Orcamento::savingProcedures(int row) {
 
   qDebug() << "desconto global: " << ui->doubleSpinBoxDescontoGlobal->value();
 
-  if (!model.submitAll() && model.lastError().number() != 1062) {
+  if (!model.submitAll() and model.lastError().number() != 1062) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
     qDebug() << "SUBMITALL ERROR: " << model.lastError();
@@ -400,7 +400,7 @@ void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(double) {
 }
 
 void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
-  if (modelItem.rowCount() == 0 || subTotalItens == 0) {
+  if (modelItem.rowCount() == 0 or subTotalItens == 0) {
     calcPrecoGlobalTotal();
     return;
   }
@@ -785,7 +785,7 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
-  if (!queryCliente.exec() || !queryCliente.first()) {
+  if (!queryCliente.exec() or !queryCliente.first()) {
     qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
   }
   ui->itemBoxProfissional->setValue(queryCliente.value("idProfissionalRel"));
@@ -805,7 +805,7 @@ void Orcamento::on_pushButtonLimparSelecao_clicked() {
 }
 
 void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
-  if(checked == true && UserSession::getTipo() != "ADMINISTRADOR") {
+  if(checked == true and UserSession::getTipo() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
   }

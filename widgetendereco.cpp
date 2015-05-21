@@ -18,7 +18,7 @@ WidgetEndereco::~WidgetEndereco() {
 
 bool WidgetEndereco::verifyField(QLineEdit *lineEdit, bool silent) {
   if (lineEdit->text().isEmpty()) {
-    if (!silent) {
+    if (not silent) {
       lineEdit->setFocus();
       QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
                            QMessageBox::NoButton);
@@ -29,11 +29,11 @@ bool WidgetEndereco::verifyField(QLineEdit *lineEdit, bool silent) {
 }
 
 bool WidgetEndereco::verifyFields(bool silent) {
-  if (!isEnabled()) {
+  if (not isEnabled()) {
     return true;
   }
-  if (!ui->lineEditCEP->isValid()) {
-    if (!silent) {
+  if (not ui->lineEditCEP->isValid()) {
+    if (not silent) {
       ui->lineEditCEP->setFocus();
       QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
     }
@@ -41,7 +41,7 @@ bool WidgetEndereco::verifyFields(bool silent) {
   }
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) {
     if (line->styleSheet() == requiredStyle()) {
-      if (!verifyField(line)) {
+      if (not verifyField(line)) {
         return false;
       }
     }
@@ -68,9 +68,9 @@ void WidgetEndereco::clearFields() {
 }
 
 bool WidgetEndereco::cadastrar() {
-  if (!isEnabled())
+  if (not isEnabled())
     return true;
-  if (!verifyFields()) {
+  if (not verifyFields()) {
     return false;
   }
   QString str;
@@ -115,7 +115,7 @@ bool WidgetEndereco::viewCadastro(int id) {
   this->id = id;
   QString str = "SELECT * FROM Endereco WHERE idEndereco = '" + QString::number(id) + "'";
   QSqlQuery qry(str);
-  if (!qry.exec() || !qry.next()) {
+  if (not qry.exec() or not qry.next()) {
     return false;
   }
   ui->lineEditDescricao->setText(qry.value("descricao").toString());
@@ -155,7 +155,7 @@ QString WidgetEndereco::requiredStyle() {
 }
 
 void WidgetEndereco::on_lineEditCEP_textEdited(const QString &cep) {
-  if (!ui->lineEditCEP->isValid()) {
+  if (not ui->lineEditCEP->isValid()) {
     return;
   }
   CepCompleter cc;

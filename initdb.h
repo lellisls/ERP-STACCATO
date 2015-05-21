@@ -20,7 +20,7 @@ bool loadScript(const QString &filename) {
   QString script;
   while (!stream.atEnd()) {
     QString line = stream.readLine();
-    if (!line.startsWith("--") && line.size() > 5) {
+    if (!line.startsWith("--") and line.size() > 5) {
       script += line + "\n";
     }
   }

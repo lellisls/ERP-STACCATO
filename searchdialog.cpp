@@ -47,7 +47,7 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
     temp[i].append("*");
   }
   QString regex = temp.join(" ");
-  if (text.isEmpty() || regex.isEmpty()) {
+  if (text.isEmpty() or regex.isEmpty()) {
     model.setFilter(filter);
   } else {
     QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' in boolean mode)";

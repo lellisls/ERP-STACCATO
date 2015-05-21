@@ -119,11 +119,11 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
   //  if (line->styleSheet() != requiredStyle()) {
   //    return true;
   //  }
-  //  if(line->parent()->isWindowType() && line->parent()->objectName() != objectName() ) {
+  //  if(line->parent()->isWindowType() and line->parent()->objectName() != objectName() ) {
   //    return true;
   //  }
-  if ((line->text().isEmpty()) || line->text() == "0,00" || line->text() == "../-" ||
-      (line->text().size() < (line->inputMask().remove(";").remove(">").remove("_").size()) ||
+  if ((line->text().isEmpty()) or line->text() == "0,00" or line->text() == "../-" or
+      (line->text().size() < (line->inputMask().remove(";").remove(">").remove("_").size()) or
        (line->text().size() < line->placeholderText().size() - 1))) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
@@ -232,7 +232,7 @@ void RegisterDialog::remove() {
   msgBox.setButtonText(QMessageBox::No, "Não");
   if (msgBox.exec() == QMessageBox::Yes) {
     //    qDebug() << "Yes!";
-    if (model.removeRow(mapper.currentIndex()) && model.submitAll()) {
+    if (model.removeRow(mapper.currentIndex()) and model.submitAll()) {
       //      qDebug() << "REMOVING " << mapper.currentIndex();
       model.select();
       newRegister();

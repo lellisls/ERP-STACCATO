@@ -4,7 +4,12 @@
 #include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
-//  qSetMessagePattern("%{function}:%{file}:%{line} - %{message}");
+
+#ifdef QT_DEBUG
+  qSetMessagePattern("%{function}:%{file}:%{line} - %{message}");
+#else
+  qSetMessagePattern("%{message}");
+#endif
 
   QApplication app(argc, argv);
   app.setOrganizationName("ERP");

@@ -195,12 +195,18 @@ void Orcamento::updateId() {
     return;
   }
   QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
+  qDebug() << "id: " << id;
   QSqlQuery query("SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id +
                   "%' UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id + "%' ORDER BY idOrcamento ASC");
-  query.last();
-  int last = query.value("idOrcamento").toString().mid(id.size()).toInt();
+  int last = 0;
+  if(query.size() > 0){
+    query.last();
+    last = query.value("idOrcamento").toString().mid(id.size()).toInt();
+  }
+  qDebug() << "last: " << last;
   id += QString("%1")
         .arg(last + 1, 4, 10, QChar('0')); // QString("%1").arg(last + 1, 3, 16, QChar('0')).toUpper();
+  qDebug() << "id: " << id;
   ui->lineEditOrcamento->setText(id);
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex(primaryKey)), id);

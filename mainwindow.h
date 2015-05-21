@@ -22,19 +22,14 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
     void setupTable(QTableView *table);
     bool dbConnect();
-
     QString getHostname() const;
-    void setHostname(const QString & value);
-
+    void setHostname(const QString &value);
     QString getUsername() const;
-    void setUsername(const QString & value);
-
+    void setUsername(const QString &value);
     QString getPassword() const;
-    void setPassword(const QString & value);
-
+    void setPassword(const QString &value);
     QString getPort() const;
-    void setPort(const QString & value);
-
+    void setPort(const QString &value);
     void readSettings();
 
   public slots:
@@ -44,13 +39,24 @@ class MainWindow : public QMainWindow {
   private slots:
     void on_actionAtualizar_tabelas_triggered();
     void on_actionCadastrarCliente_triggered();
+    void on_actionCadastrarFornecedor_triggered();
     void on_actionCadastrarProdutos_triggered();
     void on_actionCadastrarProfissional_triggered();
     void on_actionCadastrarUsuario_triggered();
+    void on_actionCriarOrcamento_triggered();
     void on_actionGerenciar_Lojas_triggered();
     void on_actionGerenciar_Transportadoras_triggered();
     void on_actionImportarTabelaFornecedor_triggered();
-//    void on_actionRestaurar_BD_triggered();
+    void on_actionImportaTeste_triggered();
+    void on_actionRestaurar_BD_triggered();
+    void on_lineEditBuscaContasPagar_textChanged(const QString &text);
+    void on_lineEditBuscaContasReceber_textChanged(const QString &text);
+    void on_lineEditBuscaEntregas_textChanged(const QString &arg1);
+    void on_lineEditBuscaNFe_textChanged(const QString &text);
+    void on_lineEditBuscaOrcamentos_textChanged(const QString &text);
+    void on_lineEditBuscaProdutosPend_textChanged(const QString &text);
+    void on_lineEditBuscaRecebimentos_textChanged(const QString &text);
+    void on_lineEditBuscaVendas_textChanged(const QString &text);
     void on_pushButtonCriarOrc_clicked();
     void on_radioButtonContaPagarLimpar_clicked();
     void on_radioButtonContaPagarPago_clicked();
@@ -76,29 +82,14 @@ class MainWindow : public QMainWindow {
     void on_radioButtonVendAberto_clicked();
     void on_radioButtonVendFechado_clicked();
     void on_radioButtonVendLimpar_clicked();
-    void on_tableContasPagar_doubleClicked(const QModelIndex &index);
-    void on_tableContasReceber_doubleClicked(const QModelIndex &index);
-    void on_tableEntregasCliente_doubleClicked(const QModelIndex &index);
-    void on_tableNFE_doubleClicked(const QModelIndex &index);
-    void on_tableOrcamentos_doubleClicked(const QModelIndex &index);
-    void on_tablePedidosCompra_doubleClicked(const QModelIndex &index);
-    void on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index);
-    void on_tableVendas_doubleClicked(const QModelIndex &index);
-    void on_actionCriarOrcamento_triggered();
-    void on_lineEditBuscaOrcamentos_textChanged(const QString &text);
-    void on_lineEditBuscaVendas_textChanged(const QString &text);
-    void on_lineEditBuscaContasPagar_textChanged(const QString &text);
-    void on_lineEditBuscaContasReceber_textChanged(const QString &text);
-    void on_lineEditBuscaEntregas_textChanged(const QString &arg1);
-    void on_lineEditBuscaProdutosPend_textChanged(const QString &text);
-    void on_lineEditBuscaRecebimentos_textChanged(const QString &text);
-    void on_lineEditBuscaNFe_textChanged(const QString &text);
-
-    void on_actionCadastrarFornecedor_triggered();
-
-    void on_actionRestaurar_BD_triggered();
-
-    void on_actionImportaTeste_triggered();
+    void on_tableContasPagar_activated(const QModelIndex &index);
+    void on_tableContasReceber_activated(const QModelIndex &index);
+    void on_tableEntregasCliente_activated(const QModelIndex &index);
+    void on_tableNFE_activated(const QModelIndex &index);
+    void on_tableOrcamentos_activated(const QModelIndex &index);
+    void on_tablePedidosCompra_activated(const QModelIndex &index);
+    void on_tableRecebimentosFornecedor_activated(const QModelIndex &index);
+    void on_tableVendas_activated(const QModelIndex &index);
 
   private:
     // attributes

@@ -19,10 +19,10 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }
-  QShortcut * shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q),this);
-  connect(shortcut,&QShortcut::activated,this,&QWidget::close);
-  shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S),this);
-  connect(shortcut,&QShortcut::activated,this,&RegisterDialog::saveSlot);
+  QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
+  connect(shortcut, &QShortcut::activated, this, &QWidget::close);
+  shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
+  connect(shortcut, &QShortcut::activated, this, &RegisterDialog::saveSlot);
 }
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
@@ -96,13 +96,9 @@ void RegisterDialog::keyPressEvent(QKeyEvent *event) {
   }
 }
 
-QStringList RegisterDialog::getTextKeys() const {
-  return textKeys;
-}
+QStringList RegisterDialog::getTextKeys() const { return textKeys; }
 
-void RegisterDialog::setTextKeys(const QStringList &value) {
-  textKeys = value;
-}
+void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void RegisterDialog::changeItem(QVariant value, QString text) {
   //  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " <<
@@ -111,9 +107,7 @@ void RegisterDialog::changeItem(QVariant value, QString text) {
   viewRegisterById(value);
 }
 
-void RegisterDialog::saveSlot() {
-  save();
-}
+void RegisterDialog::saveSlot() { save(); }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
   //  if (line->styleSheet() != requiredStyle()) {
@@ -220,9 +214,7 @@ bool RegisterDialog::save(bool silent) {
 }
 
 void RegisterDialog::clearFields() {
-  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) {
-    line->clear();
-  }
+  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
 }
 
 void RegisterDialog::remove() {
@@ -244,6 +236,4 @@ void RegisterDialog::remove() {
   }
 }
 
-void RegisterDialog::setTable(QAbstractItemView *table) {
-  this->table = table;
-}
+void RegisterDialog::setTable(QAbstractItemView *table) { this->table = table; }

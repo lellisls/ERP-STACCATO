@@ -137,7 +137,7 @@ void ImportaTeste::cadastraFornecedores() {
     QString fornecedor = queryForn.value(0).toString();
     if (!fornecedor.isEmpty()) {
       int id = buscarCadastrarFornecedor(fornecedor);
-      //        qDebug() << "id: " << id << " - " << fornecedor;
+      //      qDebug() << "id: " << id << " - " << fornecedor;
       fornecedores.insert(fornecedor, id);
     }
   }
@@ -188,7 +188,7 @@ bool ImportaTeste::consistenciaDados() {
   }
 
   values[fields.indexOf("custo")] = values[fields.indexOf("custo")].replace(",", ".");
-  if(values.at(fields.indexOf("custo")).toDouble() <= 0.0){
+  if (values.at(fields.indexOf("custo")).toDouble() <= 0.0) {
     qDebug() << "custo: " << values.at(fields.indexOf("custo")).toDouble();
     return false;
   }

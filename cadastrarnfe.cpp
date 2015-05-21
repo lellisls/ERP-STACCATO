@@ -58,14 +58,14 @@ void CadastrarNFE::getItemData(int row, const QString &key, const QVariant & val
   if(modelItem.fieldIndex(key) == -1) {
     qDebug() << "A chave '" + key + "' não existe na tabela de Itens da NFe";
   }
-  modelItem.setData(modelItem.index(row,modelItem.fieldIndex(key)),value);
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex(key)), value);
 }
 
-QVariant CadastrarNFE::getItemData(int row, const QString & key) {
-  if(modelItem.fieldIndex(key) == -1) {
+QVariant CadastrarNFE::getItemData(int row, const QString &key) {
+  if (modelItem.fieldIndex(key) == -1) {
     qDebug() << "A chave '" + key + "' não existe na tabela de Itens da NFe";
   }
-  return(modelItem.data(modelItem.index(row,modelItem.fieldIndex(key))));
+  return (modelItem.data(modelItem.index(row, modelItem.fieldIndex(key))));
 }
 
 void CadastrarNFE::gerarNFe(QString idVenda, QList<int> items) {
@@ -84,8 +84,9 @@ void CadastrarNFE::gerarNFe(QString idVenda, QList<int> items) {
   ui->doubleSpinBoxFinal->setValue(qryVenda.value("total").toDouble());
   ui->doubleSpinBoxFrete->setValue(qryVenda.value("frete").toDouble());
   ui->itemBoxCliente->setValue(qryVenda.value("idCliente"));
-  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
-      " AND ativo = 1");;
+  ui->itemBoxEndereco->searchDialog()->setFilter(
+        "idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) + " AND ativo = 1");
+  ;
   ui->itemBoxEndereco->setValue(qryVenda.value("idEnderecoFaturamento"));
   double descontoGlobal = qryVenda.value("descontoPorc").toDouble();
   foreach (int item, items) {

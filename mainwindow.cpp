@@ -68,10 +68,10 @@ MainWindow::MainWindow(QWidget *parent)
 
   initializeTables();
 
-//  ui->tabWidget->setTabEnabled(2, false);
-//  ui->tabWidget->setTabEnabled(3, false);
-//  ui->tabWidget->setTabEnabled(4, false);
-//  ui->tabWidget->setTabEnabled(5, false);
+  //  ui->tabWidget->setTabEnabled(2, false);
+  //  ui->tabWidget->setTabEnabled(3, false);
+  //  ui->tabWidget->setTabEnabled(4, false);
+  //  ui->tabWidget->setTabEnabled(5, false);
 
   setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipo());
 
@@ -86,10 +86,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->labelRecebimentosFornecedor->hide();
     ui->tableNFE->hide();
     ui->labelNFE->hide();
-    ui->tabWidget->setTabEnabled(2,false);
-    ui->tabWidget->setTabEnabled(3,false);
-    ui->tabWidget->setTabEnabled(4,false);
-    ui->tabWidget->setTabEnabled(5,false);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget->setTabEnabled(5, false);
     ui->tablePedidosCompra->hide();
     ui->labelPedidosCompra->hide();
     ui->actionCadastrarUsuario->setVisible(false);
@@ -98,17 +98,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
   }
-//  on_tableVendas_doubleClicked(modelVendas->index(0,0));
+  //  on_tableVendas_doubleClicked(modelVendas->index(0,0));
 }
 
 bool MainWindow::dbConnect() {
   if (!QSqlDatabase::drivers().contains("QMYSQL")) {
-    QMessageBox::critical(this, "Não foi possível carregar o banco de dados",
-                          "Este aplicativo requer o driver QMYSQL");
+    QMessageBox::critical(this, "Não foi possível carregar o banco de dados.",
+                          "Este aplicativo requer o driver QMYSQL.");
     exit(1);
   }
 
-  qDebug() << "Connecting to database";
+  qDebug() << "Connecting to database.";
 
   QSqlDatabase::removeDatabase("QMYSQL");
   QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
@@ -130,8 +130,8 @@ bool MainWindow::dbConnect() {
       //      QMessageBox::critical(this, "Atenção", "Banco de dados não encontrado!", QMessageBox::Ok,
       //                            QMessageBox::NoButton);
       //      close();
-      qDebug() << "mydb schema not found!";
-      if(!initDb()) {
+      qDebug() << "mydb schema not found.";
+      if (!initDb()) {
         qDebug() << "initDb Error";
         return false;
       }
@@ -144,7 +144,7 @@ bool MainWindow::dbConnect() {
     db.close();
     db.setDatabaseName("mydb");
     if (db.open()) {
-      qDebug() << "mydb schema found!";
+      qDebug() << "mydb schema found.";
       return true;
     } else {
       showError(db.lastError());
@@ -153,16 +153,20 @@ bool MainWindow::dbConnect() {
   } else {
     switch (db.lastError().number()) {
     case 1045:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o usuário e senha do banco de dados estão corretos.");
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o usuário e senha do banco de dados estão corretos.");
       break;
     case 2002:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o servidor está ligado, e acessível pela rede.");
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o servidor está ligado, e acessível pela rede.");
       break;
     case 2003:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o servidor está ligado, e acessível pela rede.");
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o servidor está ligado, e acessível pela rede.");
       break;
     case 2005:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!", "Verifique se o IP do servidor foi escrito corretamente.");
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o IP do servidor foi escrito corretamente.");
       break;
     default:
       showError(db.lastError());
@@ -193,37 +197,21 @@ void MainWindow::on_actionCriarOrcamento_triggered() {
   connect(orcamento, &Orcamento::finished, this, &MainWindow::updateTables);
 }
 
-QString MainWindow::getPort() const {
-  return port;
-}
+QString MainWindow::getPort() const { return port; }
 
-void MainWindow::setPort(const QString &value) {
-  port = value;
-}
+void MainWindow::setPort(const QString &value) { port = value; }
 
-QString MainWindow::getPassword() const {
-  return password;
-}
+QString MainWindow::getPassword() const { return password; }
 
-void MainWindow::setPassword(const QString &value) {
-  password = value;
-}
+void MainWindow::setPassword(const QString &value) { password = value; }
 
-QString MainWindow::getUsername() const {
-  return username;
-}
+QString MainWindow::getUsername() const { return username; }
 
-void MainWindow::setUsername(const QString &value) {
-  username = value;
-}
+void MainWindow::setUsername(const QString &value) { username = value; }
 
-QString MainWindow::getHostname() const {
-  return hostname;
-}
+QString MainWindow::getHostname() const { return hostname; }
 
-void MainWindow::setHostname(const QString &value) {
-  hostname = value;
-}
+void MainWindow::setHostname(const QString &value) { hostname = value; }
 
 void MainWindow::on_actionCadastrarProdutos_triggered() {
   CadastroProduto *cad = new CadastroProduto(this);
@@ -237,22 +225,15 @@ void MainWindow::on_actionCadastrarCliente_triggered() {
 }
 
 void MainWindow::initializeTables() {
-  modelOrcamento->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelVendas->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelCAPagar->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelCAReceber->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEntregasCliente->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelPedCompra->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelNFe->setEditStrategy(QSqlTableModel::OnManualSubmit);
-
   // Orçamento -------------------------------------
+  modelOrcamento = new QSqlTableModel(this);
+  modelOrcamento->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelOrcamento->setTable("ViewOrcamento");
   modelOrcamento->setSort(modelOrcamento->fieldIndex("Dias Restantes"), Qt::DescendingOrder);
   if (!modelOrcamento->select()) {
     qDebug() << "Failed to populate TableOrcamento! " << modelOrcamento->lastError();
   }
 
-  //  ui->tableOrcamentos->setModel(modelOrcamento);
   BackgroundProxyModel *proxyModel = new BackgroundProxyModel(modelOrcamento->fieldIndex("Dias Restantes"));
   proxyModel->setSourceModel(modelOrcamento);
   ui->tableOrcamentos->setModel(proxyModel);
@@ -260,7 +241,9 @@ void MainWindow::initializeTables() {
   setupTable(ui->tableOrcamentos);
 
   // Vendas -------------------------------------
-  //  modelVendas->setTable("ViewVendas");
+  //  modelVendas->setTable("ViewVendas"); // TODO: remove viewVendas?
+  modelVendas = new QSqlRelationalTableModel(this);
+  modelVendas->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVendas->setTable("Venda");
   modelVendas->setRelation(modelVendas->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"),
@@ -291,6 +274,8 @@ void MainWindow::initializeTables() {
   setupTable(ui->tableVendas);
 
   // Contas a pagar -------------------------------------
+  modelCAPagar = new QSqlTableModel(this);
+  modelCAPagar->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelCAPagar->setTable("ContaAPagar");
   if (!modelCAPagar->select()) {
     qDebug() << "Failed to populate TableContasPagar! " << modelCAPagar->lastError();
@@ -300,6 +285,8 @@ void MainWindow::initializeTables() {
   setupTable(ui->tableContasPagar);
 
   // Contas a receber -------------------------------------
+  modelCAReceber = new QSqlTableModel(this);
+  modelCAReceber->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelCAReceber->setTable("ContaAReceber");
   if (!modelCAReceber->select()) {
     qDebug() << "Failed to populate TableContasReceber! " << modelCAReceber->lastError();
@@ -309,9 +296,11 @@ void MainWindow::initializeTables() {
   setupTable(ui->tableContasReceber);
 
   // Entregas cliente
+  modelEntregasCliente = new QSqlTableModel(this);
+  modelEntregasCliente->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEntregasCliente->setTable("PedidoTransportadora");
   if (!modelEntregasCliente->select()) {
-    qDebug() << "Failed to populate TableEntregasCliente";
+    qDebug() << "Failed to populate TableEntregasCliente.";
   }
   modelEntregasCliente->setFilter("tipo = 'CLIENTE'"); // filter to clientes only
 
@@ -319,9 +308,10 @@ void MainWindow::initializeTables() {
   setupTable(ui->tableEntregasCliente);
 
   // Recebimentos fornecedor
+  modelRecebimentosForn = new QSqlTableModel(this);
   modelRecebimentosForn->setTable("PedidoTransportadora");
   if (!modelRecebimentosForn->select()) {
-    qDebug() << "Failed to populate TableRecebimentosFornecedor";
+    qDebug() << "Failed to populate TableRecebimentosFornecedor.";
   }
   modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR'"); // filter to fornecedor only
 
@@ -329,6 +319,8 @@ void MainWindow::initializeTables() {
   setupTable(ui->tableRecebimentosFornecedor);
 
   // Pedidos de compra
+  modelPedCompra = new QSqlRelationalTableModel(this);
+  modelPedCompra->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelPedCompra->setTable("PedidoFornecedor");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"),
                               QSqlRelation("Loja", "idLoja", "descricao"));
@@ -353,9 +345,11 @@ void MainWindow::initializeTables() {
   setupTable(ui->tablePedidosCompra);
 
   // NFe
+  modelNFe = new QSqlTableModel(this);
+  modelNFe->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelNFe->setTable("NFe");
   if (!modelNFe->select()) {
-    qDebug() << "Failed to populate TableNFe" << modelNFe->lastError();
+    qDebug() << "Failed to populate TableNFe. " << modelNFe->lastError();
   }
 
   ui->tableNFE->setModel(modelNFe);
@@ -485,41 +479,23 @@ void MainWindow::on_radioButtonOrcLimpar_clicked() {
   }
 }
 
-void MainWindow::on_radioButtonVendAberto_clicked() {
-  modelVendas->setFilter("status = 'aberto'");
-}
+void MainWindow::on_radioButtonVendAberto_clicked() { modelVendas->setFilter("status = 'aberto'"); }
 
-void MainWindow::on_radioButtonVendFechado_clicked() {
-  modelVendas->setFilter("status = 'fechado'");
-}
+void MainWindow::on_radioButtonVendFechado_clicked() { modelVendas->setFilter("status = 'fechado'"); }
 
-void MainWindow::on_radioButtonVendLimpar_clicked() {
-  modelVendas->setFilter("");
-}
+void MainWindow::on_radioButtonVendLimpar_clicked() { modelVendas->setFilter(""); }
 
-void MainWindow::on_radioButtonNFeAutorizado_clicked() {
-  modelNFe->setFilter("status = 'autorizado'");
-}
+void MainWindow::on_radioButtonNFeAutorizado_clicked() { modelNFe->setFilter("status = 'autorizado'"); }
 
-void MainWindow::on_radioButtonNFeEnviado_clicked() {
-  modelNFe->setFilter("status = 'enviado'");
-}
+void MainWindow::on_radioButtonNFeEnviado_clicked() { modelNFe->setFilter("status = 'enviado'"); }
 
-void MainWindow::on_radioButtonNFeLimpar_clicked() {
-  modelNFe->setFilter("");
-}
+void MainWindow::on_radioButtonNFeLimpar_clicked() { modelNFe->setFilter(""); }
 
-void MainWindow::on_radioButtonFornLimpar_clicked() {
-  modelPedCompra->setFilter("");
-}
+void MainWindow::on_radioButtonFornLimpar_clicked() { modelPedCompra->setFilter(""); }
 
-void MainWindow::on_radioButtonFornAberto_clicked() {
-  modelPedCompra->setFilter("status = 'aberto'");
-}
+void MainWindow::on_radioButtonFornAberto_clicked() { modelPedCompra->setFilter("status = 'aberto'"); }
 
-void MainWindow::on_radioButtonFornFechado_clicked() {
-  modelPedCompra->setFilter("status = 'fechado'");
-}
+void MainWindow::on_radioButtonFornFechado_clicked() { modelPedCompra->setFilter("status = 'fechado'"); }
 
 void MainWindow::on_radioButtonRecebimentoLimpar_clicked() {
   modelRecebimentosForn->setFilter("tipo = 'fornecedor'");
@@ -545,29 +521,17 @@ void MainWindow::on_radioButtonEntregaPendente_clicked() {
   modelEntregasCliente->setFilter("status = 'pendente' AND tipo = 'cliente'");
 }
 
-void MainWindow::on_radioButtonContaPagarLimpar_clicked() {
-  modelCAPagar->setFilter("");
-}
+void MainWindow::on_radioButtonContaPagarLimpar_clicked() { modelCAPagar->setFilter(""); }
 
-void MainWindow::on_radioButtonContaPagarPago_clicked() {
-  modelCAPagar->setFilter("pago = 'sim'");
-}
+void MainWindow::on_radioButtonContaPagarPago_clicked() { modelCAPagar->setFilter("pago = 'sim'"); }
 
-void MainWindow::on_radioButtonContaPagarPendente_clicked() {
-  modelCAPagar->setFilter("pago = 'não'");
-}
+void MainWindow::on_radioButtonContaPagarPendente_clicked() { modelCAPagar->setFilter("pago = 'não'"); }
 
-void MainWindow::on_radioButtonContaReceberLimpar_clicked() {
-  modelCAReceber->setFilter("");
-}
+void MainWindow::on_radioButtonContaReceberLimpar_clicked() { modelCAReceber->setFilter(""); }
 
-void MainWindow::on_radioButtonContaReceberRecebido_clicked() {
-  modelCAReceber->setFilter("pago = 'sim'");
-}
+void MainWindow::on_radioButtonContaReceberRecebido_clicked() { modelCAReceber->setFilter("pago = 'sim'"); }
 
-void MainWindow::on_radioButtonContaReceberPendente_clicked() {
-  modelCAReceber->setFilter("pago = 'não'");
-}
+void MainWindow::on_radioButtonContaReceberPendente_clicked() { modelCAReceber->setFilter("pago = 'não'"); }
 
 void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
@@ -592,7 +556,7 @@ void MainWindow::on_pushButtonCriarOrc_clicked() {
 }
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelOrcamento->setFilter("");
   } else {
     modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
@@ -600,7 +564,7 @@ void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
 }
 
 void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelVendas->setFilter("");
   } else {
     modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
@@ -608,7 +572,7 @@ void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
 }
 
 void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelCAPagar->setFilter("");
   } else {
     modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
@@ -616,7 +580,7 @@ void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
 }
 
 void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelCAReceber->setFilter("");
   } else {
     modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
@@ -624,7 +588,7 @@ void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) 
 }
 
 void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelEntregasCliente->setFilter("");
   } else {
     modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
@@ -632,7 +596,7 @@ void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
 }
 
 void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelPedCompra->setFilter("");
   } else {
     modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
@@ -640,7 +604,7 @@ void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
 }
 
 void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelRecebimentosForn->setFilter("");
   } else {
     modelRecebimentosForn->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
@@ -648,7 +612,7 @@ void MainWindow::on_lineEditBuscaRecebimentos_textChanged(const QString &text) {
 }
 
 void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
-  if(text.isEmpty()) {
+  if (text.isEmpty()) {
     modelNFe->setFilter("");
   } else {
     modelNFe->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
@@ -665,7 +629,7 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
 void MainWindow::readSettings() {
   QSettings settings("ERP", "Staccato");
   settings.beginGroup("Login");
-  if(!settings.contains("hostname")) {
+  if (!settings.contains("hostname")) {
     settings.setValue("hostname", QString("localhost"));
     settings.setValue("username", QString("test"));
     settings.setValue("password", QString("1234"));
@@ -679,7 +643,7 @@ void MainWindow::readSettings() {
 }
 
 void MainWindow::on_actionRestaurar_BD_triggered() {
-  if(!initDb()) {
+  if (!initDb()) {
     qDebug() << "initDb Error";
   } else {
     QMessageBox::information(this, "Aviso!", "Banco de dados inicializado com sucesso.");

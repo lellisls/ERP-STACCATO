@@ -14,7 +14,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
 
   mapper.setModel(&model);
   //  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
-  if (!model.select()) {
+  if (not model.select()) {
     qDebug() << objectName() << "Failed to populate " + table;
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
@@ -39,7 +39,7 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
 
 bool RegisterDialog::viewRegister(QModelIndex idx) {
   //  qDebug() << idx.row() << " == " << mapper.currentIndex();
-  if (!confirmationMessage()) {
+  if (not confirmationMessage()) {
     return false;
   }
   clearFields();
@@ -54,7 +54,7 @@ bool RegisterDialog::viewRegister(QModelIndex idx) {
 bool RegisterDialog::verifyFields(QList<QLineEdit *> list) {
   foreach (QLineEdit *line, list) {
     //    if (line->styleSheet() == requiredStyle()) {
-    if (!verifyRequiredField(line)) {
+    if (not verifyRequiredField(line)) {
       return false;
     }
     //    }
@@ -65,10 +65,10 @@ bool RegisterDialog::verifyFields(QList<QLineEdit *> list) {
 void RegisterDialog::sendUpdateMessage() {
   QString text;
   foreach (QString key, textKeys) {
-    if (!key.isEmpty()) {
+    if (not key.isEmpty()) {
       QVariant val = data(key);
       if (val.isValid()) {
-        if (!text.isEmpty())
+        if (not text.isEmpty())
           text.append(" - ");
         text.append(val.toString());
       }
@@ -78,7 +78,7 @@ void RegisterDialog::sendUpdateMessage() {
 }
 
 void RegisterDialog::closeEvent(QCloseEvent *event) {
-  if (!confirmationMessage()) {
+  if (not confirmationMessage()) {
     event->ignore();
   } else {
     event->accept();
@@ -173,7 +173,7 @@ void RegisterDialog::successMessage() {
 }
 
 bool RegisterDialog::newRegister() {
-  if (!confirmationMessage()) {
+  if (not confirmationMessage()) {
     return false;
   }
   if (table) {
@@ -195,23 +195,23 @@ bool RegisterDialog::save(bool silent) {
 //  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
   int row = mapper.currentIndex();
   QVariant id = data(row, primaryKey);
-  if (!verifyFields(row)) {
+  if (not verifyFields(row)) {
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
-  if (!savingProcedures(row)) {
+  if (not savingProcedures(row)) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
-  if (!model.submitAll()) {
+  if (not model.submitAll()) {
     qDebug() << objectName() << " : " << model.lastError();
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
   QSqlQuery("COMMIT").exec();
-  if(!silent) {
+  if (not silent) {
     successMessage();
   }
   viewRegister(model.index(row, 0));

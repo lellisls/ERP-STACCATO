@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="qrs/resources.qrc">
     <normaloff>:/logo.svg</normaloff>:/logo.svg</iconset>
   </property>
   <property name="locale">
@@ -836,7 +836,7 @@
      <x>0</x>
      <y>0</y>
      <width>1273</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOp_es">
@@ -953,7 +953,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="qrs/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

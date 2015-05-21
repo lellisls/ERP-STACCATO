@@ -242,7 +242,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo",
                        "ipi", "markup", "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes",
-                       "codBarras", "codIndustrial", "qtdPallet", "st", "validade", "expirado"});
+                       "codBarras", "codIndustrial", "qtdPallet", "st", "expirado"});
   for (int i = 1; i < sdProd->model.columnCount(); i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true);
   }

@@ -54,17 +54,8 @@ MainWindow::MainWindow(QWidget *parent)
     exit(1);
   }
 #endif
-  QShortcut * shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q),this);
-  connect(shortcut,&QShortcut::activated,this,&QWidget::close);
-
-  modelOrcamento = new QSqlTableModel(this);
-  modelVendas = new QSqlRelationalTableModel(this);
-  modelCAPagar = new QSqlTableModel(this);
-  modelCAReceber = new QSqlTableModel(this);
-  modelEntregasCliente = new QSqlTableModel(this);
-  modelRecebimentosForn = new QSqlTableModel(this);
-  modelPedCompra = new QSqlRelationalTableModel(this);
-  modelNFe = new QSqlTableModel(this);
+  QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
+  connect(shortcut, &QShortcut::activated, this, &QWidget::close);
 
   initializeTables();
 
@@ -237,6 +228,7 @@ void MainWindow::initializeTables() {
   BackgroundProxyModel *proxyModel = new BackgroundProxyModel(modelOrcamento->fieldIndex("Dias Restantes"));
   proxyModel->setSourceModel(modelOrcamento);
   ui->tableOrcamentos->setModel(proxyModel);
+  ui->tableOrcamentos->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableOrcamentos->setColumnHidden(modelOrcamento->fieldIndex("idUsuario"), true);
   setupTable(ui->tableOrcamentos);
 
@@ -270,6 +262,7 @@ void MainWindow::initializeTables() {
   }
 
   ui->tableVendas->setModel(modelVendas);
+  ui->tableVendas->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableVendas->setItemDelegate(new QSqlRelationalDelegate(ui->tableVendas));
   setupTable(ui->tableVendas);
 
@@ -282,6 +275,7 @@ void MainWindow::initializeTables() {
   }
 
   ui->tableContasPagar->setModel(modelCAPagar);
+  ui->tableContasPagar->setSelectionBehavior(QAbstractItemView::SelectRows);
   setupTable(ui->tableContasPagar);
 
   // Contas a receber -------------------------------------
@@ -293,6 +287,7 @@ void MainWindow::initializeTables() {
   }
 
   ui->tableContasReceber->setModel(modelCAReceber);
+  ui->tableContasReceber->setSelectionBehavior(QAbstractItemView::SelectRows);
   setupTable(ui->tableContasReceber);
 
   // Entregas cliente
@@ -305,6 +300,7 @@ void MainWindow::initializeTables() {
   modelEntregasCliente->setFilter("tipo = 'CLIENTE'"); // filter to clientes only
 
   ui->tableEntregasCliente->setModel(modelEntregasCliente);
+  ui->tableEntregasCliente->setSelectionBehavior(QAbstractItemView::SelectRows);
   setupTable(ui->tableEntregasCliente);
 
   // Recebimentos fornecedor
@@ -316,6 +312,7 @@ void MainWindow::initializeTables() {
   modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR'"); // filter to fornecedor only
 
   ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
+  ui->tableRecebimentosFornecedor->setSelectionBehavior(QAbstractItemView::SelectRows);
   setupTable(ui->tableRecebimentosFornecedor);
 
   // Pedidos de compra
@@ -342,6 +339,7 @@ void MainWindow::initializeTables() {
   }
 
   ui->tablePedidosCompra->setModel(modelPedCompra);
+  ui->tablePedidosCompra->setSelectionBehavior(QAbstractItemView::SelectRows);
   setupTable(ui->tablePedidosCompra);
 
   // NFe
@@ -353,7 +351,8 @@ void MainWindow::initializeTables() {
   }
 
   ui->tableNFE->setModel(modelNFe);
-  ui->tableNFE->hideColumn(1); // NFe
+  ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
+//  ui->tableNFE->hideColumn(modelNFe->fieldIndex("idVenda")); // TODO: como notas podem ser de parte da venda, devemos mostrar a venda relacionada (remover essa linha)
   setupTable(ui->tableNFE);
 
   //  paintRows();
@@ -413,45 +412,9 @@ void MainWindow::updateTables() {
   ui->tableNFE->resizeColumnsToContents();
 }
 
-void MainWindow::on_actionImportarTabelaFornecedor_triggered() {
-  new ImportaBD(this);
-}
+void MainWindow::on_actionImportarTabelaFornecedor_triggered() { new ImportaBD(this); }
 
-void MainWindow::on_tableOrcamentos_doubleClicked(const QModelIndex &index) {
-  Orcamento *orc = new Orcamento(this);
-  connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
-  //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
-  orc->viewRegisterById(
-    modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
-}
-
-void MainWindow::on_tableContasPagar_doubleClicked(const QModelIndex &index) {
-  ContasAPagar *contas = new ContasAPagar(this);
-  contas->viewConta(
-    modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
-}
-
-void MainWindow::on_tableContasReceber_doubleClicked(const QModelIndex &index) {
-  ContasAReceber *contas = new ContasAReceber(this);
-  contas->viewConta(modelCAReceber->data(modelCAReceber->index(
-      index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
-}
-
-void MainWindow::on_tablePedidosCompra_doubleClicked(const QModelIndex &index) {
-  PedidosCompra *pedidos = new PedidosCompra(this);
-  pedidos->viewPedido(modelPedCompra->data(modelPedCompra->index(index.row(), 0)).toString());
-}
-
-void MainWindow::on_actionAtualizar_tabelas_triggered() {
-  updateTables();
-}
-
-void MainWindow::on_tableVendas_doubleClicked(const QModelIndex &index) {
-  Venda *vendas = new Venda(this);
-  connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
-  vendas->viewRegisterById(
-    modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
-}
+void MainWindow::on_actionAtualizar_tabelas_triggered() { updateTables(); }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
   if (UserSession::getTipo() == "VENDEDOR") {
@@ -533,27 +496,7 @@ void MainWindow::on_radioButtonContaReceberRecebido_clicked() { modelCAReceber->
 
 void MainWindow::on_radioButtonContaReceberPendente_clicked() { modelCAReceber->setFilter("pago = 'não'"); }
 
-void MainWindow::on_tableRecebimentosFornecedor_doubleClicked(const QModelIndex &index) {
-  RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
-  recebimentos->viewRecebimento(
-    modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
-                                  "idPedido"))).toString());
-}
-
-void MainWindow::on_tableEntregasCliente_doubleClicked(const QModelIndex &index) {
-  EntregasCliente *entregas = new EntregasCliente(this);
-  entregas->viewEntrega(
-    modelEntregasCliente->data(modelEntregasCliente->index(
-                                 index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
-}
-
-void MainWindow::on_tableNFE_doubleClicked(const QModelIndex &index) {
-  Q_UNUSED(index);
-}
-
-void MainWindow::on_pushButtonCriarOrc_clicked() {
-  on_actionCriarOrcamento_triggered();
-}
+void MainWindow::on_pushButtonCriarOrc_clicked() { on_actionCriarOrcamento_triggered(); }
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
   if (text.isEmpty()) {
@@ -654,4 +597,62 @@ void MainWindow::on_actionRestaurar_BD_triggered() {
 void MainWindow::on_actionImportaTeste_triggered() {
   ImportaTeste *teste = new ImportaTeste(this);
   teste->importar();
+}
+
+void MainWindow::on_tableVendas_activated(const QModelIndex &index)
+{
+  Venda *vendas = new Venda(this);
+  connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
+  vendas->viewRegisterById(
+        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
+}
+
+void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index)
+{
+  Orcamento *orc = new Orcamento(this);
+  connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
+  //    qDebug() << "index: " << modelOrcamento->fieldIndex("Código");
+  orc->viewRegisterById(
+        modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+}
+
+void MainWindow::on_tableContasPagar_activated(const QModelIndex &index)
+{
+  ContasAPagar *contas = new ContasAPagar(this);
+  contas->viewConta(
+        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+}
+
+void MainWindow::on_tableContasReceber_activated(const QModelIndex &index)
+{
+  ContasAReceber *contas = new ContasAReceber(this);
+  contas->viewConta(modelCAReceber->data(modelCAReceber->index(
+                                           index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+}
+
+void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index)
+{
+  EntregasCliente *entregas = new EntregasCliente(this);
+  entregas->viewEntrega(
+        modelEntregasCliente->data(modelEntregasCliente->index(
+                                     index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
+}
+
+void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index)
+{
+  PedidosCompra *pedidos = new PedidosCompra(this);
+  pedidos->viewPedido(modelPedCompra->data(modelPedCompra->index(index.row(), 0)).toString());
+}
+
+void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index)
+{
+  RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
+  recebimentos->viewRecebimento(
+        modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
+                                                                   "idPedido"))).toString());
+}
+
+void MainWindow::on_tableNFE_activated(const QModelIndex &index)
+{
+    Q_UNUSED(index);
 }

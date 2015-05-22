@@ -33,7 +33,12 @@ void ImportaTeste::importar() {
   QSqlQuery("SET AUTOCOMMIT=0").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
+  if (QSqlDatabase::contains("Excel Connection")) {
+    db = QSqlDatabase::database("Excel Connection");
+  } else {
+    db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
+  }
+
   db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + file);
 
   if (db.open()) {

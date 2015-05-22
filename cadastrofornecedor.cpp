@@ -5,6 +5,7 @@
 #include "cadastrofornecedor.h"
 #include "ui_cadastrofornecedor.h"
 #include "searchdialog.h"
+#include "cepcompleter.h"
 
 CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
   : RegisterDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor),
@@ -520,4 +521,19 @@ bool CadastroFornecedor::atualizarEnd() {
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("valid")), true);
   }
   return true;
+}
+
+void CadastroFornecedor::on_lineEditCEP_textChanged(const QString &cep) {
+  if (not ui->lineEditCEP->isValid()) {
+    return;
+  }
+  CepCompleter cc;
+  if (cc.buscaCEP(cep)) {
+    ui->lineEditUF->setText(cc.getUf());
+    ui->lineEditCidade->setText(cc.getCidade());
+    ui->lineEditEndereco->setText(cc.getEndereco());
+    ui->lineEditBairro->setText(cc.getBairro());
+  } else {
+    QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
+  }
 }

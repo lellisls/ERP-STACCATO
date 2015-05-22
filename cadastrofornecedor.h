@@ -21,6 +21,7 @@ class CadastroFornecedor : public RegisterDialog {
     void show();
 
   private slots:
+    void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &);
     void on_lineEditContatoCPF_textEdited(const QString &);
     void on_pushButtonAdicionarEnd_clicked();

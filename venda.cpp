@@ -8,6 +8,12 @@
 #include <QSqlRelationalDelegate>
 #include <QTime>
 #include <QXmlStreamWriter>
+#include <QPrintPreviewDialog>
+#include <QWebPage>
+#include <QDir>
+#include <QTextCodec>
+#include <QTextDocument>
+#include <QWebFrame>
 
 #include "mainwindow.h"
 #include "nfe.h"
@@ -17,6 +23,7 @@
 #include "usersession.h"
 #include "cadastrocliente.h"
 #include "cadastrarnfe.h"
+#include "endereco.hpp"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -79,10 +86,10 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->dateEditPgt2->setDate(QDate::currentDate());
   ui->dateEditPgt3->setDate(QDate::currentDate());
 
-  SearchDialog *sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
 
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
-  SearchDialog::endereco(ui->itemBoxEndereco);
+  SearchDialog::enderecoCliente(ui->itemBoxEndereco);
 
   ui->itemBoxEnderecoFat->setSearchDialog(sdEndereco);
   //  show();
@@ -827,3 +834,117 @@ void Venda::on_checkBoxFreteManual_clicked(bool checked) {
 void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
+
+void Venda::on_pushButtonImprimir_clicked()
+{
+  QPrinter printer;
+  //  printer.setFullPage(true);
+  //  printer.setResolution(300);
+  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
+  printer.setOrientation(QPrinter::Portrait);
+  printer.setPaperSize(QPrinter::A4);
+  QPrintPreviewDialog preview(&printer, this, Qt::Window);
+  preview.setModal(true);
+  preview.setWindowTitle("Impressão de Venda");
+  connect(&preview, &QPrintPreviewDialog::paintRequested, this, &Venda::print);
+  preview.showMaximized();
+  preview.exec();
+}
+
+void Venda::print(QPrinter *printer) { // TODO: this is just a stub, implement
+  QWebPage *page = new QWebPage(this);
+  QWebFrame *frame = page->mainFrame();
+  QDir appDir(QApplication::applicationDirPath());
+  QFile file(appDir.absoluteFilePath("orcamento.html"));
+  QString html;
+  if (file.open(QFile::ReadOnly)) {
+    QByteArray data = file.readAll();
+    QTextCodec *codec = Qt::codecForHtml(data);
+    html = codec->toUnicode(data);
+    file.close();
+  }
+  QString str = "SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "';";
+  QSqlQuery queryLoja(str);
+  if (not queryLoja.exec(str)) {
+    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryLoja.lastError();
+  }
+  queryLoja.first();
+
+  // Loja
+  html.replace("#LOGO#", QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString());
+  qDebug() << QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString();
+  //  html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
+  //  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
+  html.replace("#TELLOJA#", queryLoja.value("tel").toString());
+
+  Endereco endLoja(queryLoja.value("idEndereco").toInt());
+  // End. Loja
+  html.replace("#ENDLOJA01#", endLoja.linhaUm());
+  html.replace("#ENDLOJA02#", endLoja.linhaDois());
+  //  html.replace("TELLOJA",end);
+  // Orcamento
+//  html.replace("#ORCAMENTO#", ui->lineEditOrcamento->text());
+//  html.replace("#DATA#", ui->dateTimeEdit->text());
+
+  // Cliente
+//  str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->value().toString() + "';";
+//  QSqlQuery queryCliente(str);
+//  if (not queryCliente.exec()) {
+//    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryCliente.lastError();
+//  }
+//  queryCliente.first();
+//  html.replace("#NOME#", ui->itemBoxCliente->text());
+//  if (queryCliente.value("pfpj") == "PF") {
+//    html.replace("#CPFCNPJ#", queryCliente.value("cpf").toString());
+//  } else {
+//    html.replace("#CPFCNPJ#", queryCliente.value("cnpj").toString());
+//  }
+//  html.replace("#EMAILCLIENTE#", queryCliente.value("email").toString());
+//  html.replace("#TEL01#", queryCliente.value("tel").toString());
+//  html.replace("#TEL02#", queryCliente.value("telCel").toString());
+
+  // End. Cliente
+  Endereco endEntrega(data("idEnderecoEntrega").toInt());
+  html.replace("#ENDENTREGA#", endEntrega.umaLinha());
+  html.replace("#CEPENTREGA#", endEntrega.cep());
+
+  // Profissional
+//  str =
+//      "SELECT * FROM Profissional WHERE idProfissional='" + ui->itemBoxProfissional->value().toString() + "'";
+//  QSqlQuery queryProf;
+//  if (not queryProf.exec(str)) {
+//    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryProf.lastError();
+//  }
+//  queryProf.first();
+//  html.replace("#NOMEPRO#", ui->itemBoxProfissional->text());
+//  html.replace("#TELPRO#", queryProf.value("tel").toString());
+//  html.replace("#EMAILPRO#", queryProf.value("email").toString());
+
+  // Vendedor
+//  html.replace("#NOMEVEND#", ui->itemBoxVendedor->text());
+  html.replace("#EMAILVEND#", "");
+  // Itens
+//  QString itens = getItensHtml();
+//  html.replace("<!-- #ITENS# -->", itens);
+
+  // Totais
+  //  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
+  html.replace("#SUBTOTALBRUTO#", ui->doubleSpinBoxSubTotalBruto->text());
+  html.replace("#SUBTOTALLIQ#", ui->doubleSpinBoxTotal->text());
+  html.replace("#DESCONTORS#", ui->doubleSpinBoxDescontoRS->text());
+  html.replace("#FRETE#", ui->doubleSpinBoxFrete->text());
+  html.replace("#TOTALFINAL#", ui->doubleSpinBoxFinal->text());
+
+  // Prazos
+  html.replace("#PRAZOENTREGA#", "A definir");
+  html.replace("#FORMAPAGAMENTO#", "A definir");
+  frame->setHtml(html);
+  //  frame->setTextSizeMultiplier(1.2);
+  frame->print(printer);
+  QFile outputFile(appDir.absoluteFilePath("orc.html"));
+  if (outputFile.open(QIODevice::WriteOnly)) {
+    QTextStream out(&outputFile);
+    out << html;
+    outputFile.close();
+  }
+}

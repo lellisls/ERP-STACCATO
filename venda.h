@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QSqlRelationalTableModel>
 #include <QSqlTableModel>
+#include <QPrinter>
 
 #include "registerdialog.h"
 #include "searchdialog.h"
@@ -49,6 +50,8 @@ class Venda : public RegisterDialog {
     void on_pushButtonFecharPedido_clicked();
     void on_pushButtonNFe_clicked();
     void on_pushButtonVoltar_clicked();
+    void on_pushButtonImprimir_clicked();
+    void print(QPrinter *printer);
 
   signals:
     void finished();

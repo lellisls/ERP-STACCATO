@@ -52,7 +52,8 @@ SOURCES += backgroundproxymodel.cpp \
     importaexportdelegate.cpp \
     importaexportproxy.cpp \
     importateste.cpp \
-    editablesqlmodel.cpp
+    editablesqlmodel.cpp \
+    dateformatdelegate.cpp
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \
@@ -95,7 +96,8 @@ HEADERS  += backgroundproxymodel.h \
     importaexportdelegate.h \
     importaexportproxy.h \
     importateste.h \
-    editablesqlmodel.h
+    editablesqlmodel.h \
+    dateformatdelegate.h
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \

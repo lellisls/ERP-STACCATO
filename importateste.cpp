@@ -12,6 +12,7 @@
 #include "importaexportproxy.h"
 #include "importateste.h"
 #include "ui_importateste.h"
+#include "dateformatdelegate.h"
 
 ImportaTeste::ImportaTeste(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaTeste) {
   ui->setupUi(this);
@@ -136,6 +137,7 @@ void ImportaTeste::setModelAndTable() {
   }
   ui->tableView->setColumnHidden(model.fieldIndex("idProduto"), true);
   ui->tableView->setColumnHidden(model.fieldIndex("idFornecedor"), true);
+  ui->tableView->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
 }
 
 void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {

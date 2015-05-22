@@ -472,6 +472,9 @@ void Orcamento::print(QPrinter *printer) {
     QTextCodec *codec = Qt::codecForHtml(data);
     html = codec->toUnicode(data);
     file.close();
+  } else {
+    QMessageBox::warning(this, "Aviso!", "Erro ao abrir orcamento.html");
+    return;
   }
   QString str = "SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "';";
   QSqlQuery queryLoja(str);

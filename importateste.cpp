@@ -190,7 +190,7 @@ bool ImportaTeste::consistenciaDados() {
   }
 
   if (values.at(fields.indexOf("ncm")).length() != 8) {
-    // TODO: pintar celular
+    // TODO: pintar celula
   }
 
   values[fields.indexOf("custo")] = values[fields.indexOf("custo")].replace(",", ".");

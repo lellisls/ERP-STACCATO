@@ -21,14 +21,15 @@ class CadastroFornecedor : public RegisterDialog {
     void show();
 
   private slots:
-    void on_pushButtonCadastrar_clicked();
-    void on_pushButtonAtualizar_clicked();
-    void on_pushButtonBuscar_clicked();
-    void on_pushButtonNovoCad_clicked();
-    void on_pushButtonRemover_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_lineEditCNPJ_textEdited(const QString &);
     void on_lineEditContatoCPF_textEdited(const QString &);
+    void on_pushButtonAdicionarEnd_clicked();
+    void on_pushButtonAtualizar_clicked();
+    void on_pushButtonBuscar_clicked();
+    void on_pushButtonCadastrar_clicked();
+    void on_pushButtonCancelar_clicked();
+    void on_pushButtonNovoCad_clicked();
+    void on_pushButtonRemover_clicked();
 
   public:
     virtual bool viewRegister(QModelIndex idx);

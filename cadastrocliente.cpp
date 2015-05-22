@@ -39,12 +39,16 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   // TODO: Filtrar para não aparecer o próprio cliente na lista.
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
+
   SearchDialog *sdProfissional = SearchDialog::profissional(this);
   ui->itemBoxProfissional->setSearchDialog(sdProfissional);
+
   RegisterDialog *regProfissional = new CadastroProfissional(this);
   ui->itemBoxProfissional->setRegisterDialog(regProfissional);
+
   SearchDialog *sdVendedor = SearchDialog::usuario(this);
   ui->itemBoxVendedor->setSearchDialog(sdVendedor);
+
   setupMapper();
   newRegister();
 }
@@ -186,8 +190,7 @@ bool CadastroCliente::savingProcedures(int row) {
   setData(row, "pfpj", tipoPFPJ);
 
   if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__
-             << " : Error on model.submitAll() : " << modelEnd.lastError();
+    qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
     return false;
   }
 

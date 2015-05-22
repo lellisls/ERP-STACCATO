@@ -352,11 +352,7 @@ void MainWindow::initializeTables() {
 
   ui->tableNFE->setModel(modelNFe);
   ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
-  //  ui->tableNFE->hideColumn(modelNFe->fieldIndex("idVenda")); // TODO: como notas podem ser de parte da
-  //  venda, devemos mostrar a venda relacionada (remover essa linha)
   setupTable(ui->tableNFE);
-
-  //  paintRows();
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {
@@ -565,6 +561,7 @@ void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
   CadastroFornecedor *cad = new CadastroFornecedor(this);
+  // TODO: put this stuff inside constructor
   cad->setWindowTitle("Cadastrar fornecedor");
   cad->show();
   cad->adjustSize();

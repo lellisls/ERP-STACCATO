@@ -401,35 +401,7 @@
           <string>ACBr</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="lineEditServidor">
-            <property name="text">
-             <string>localhost</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="labelServidor">
-            <property name="text">
-             <string>Servidor:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="labelPorta">
-            <property name="text">
-             <string>Porta:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEditPorta">
-            <property name="text">
-             <string>3436</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
+          <item row="5" column="1">
            <spacer name="verticalSpacer_3">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -441,6 +413,76 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditPortaACBr">
+            <property name="text">
+             <string>3436</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelPortaACBr">
+            <property name="text">
+             <string>Porta:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEditServidorACBr">
+            <property name="text">
+             <string>localhost</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelServidorACBr">
+            <property name="text">
+             <string>Servidor:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="lineEditPastaSaiACBr">
+            <property name="text">
+             <string>C:/ACBrNFeMonitor/SAINFE.TXT/</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEditPastaEntACBr">
+            <property name="text">
+             <string>C:/ACBrNFeMonitor/ENTNFE.TXT/</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelPastaSaiACBr">
+            <property name="text">
+             <string>Pasta saída NFe:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelPastaEntACBr">
+            <property name="text">
+             <string>Pasta entrada NFe:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="pushButtonEntradaNFe">
+            <property name="text">
+             <string>Navegar...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="pushButtonSaidaNFe">
+            <property name="text">
+             <string>Navegar...</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -482,8 +524,8 @@
   <tabstop>doubleSpinBoxValorMinimoFrete</tabstop>
   <tabstop>doubleSpinBoxPorcFrete</tabstop>
   <tabstop>tableAlcadas</tabstop>
-  <tabstop>lineEditServidor</tabstop>
-  <tabstop>lineEditPorta</tabstop>
+  <tabstop>lineEditServidorACBr</tabstop>
+  <tabstop>lineEditPortaACBr</tabstop>
  </tabstops>
  <resources>
   <include location="qrs/resources.qrc"/>

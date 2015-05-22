@@ -482,7 +482,7 @@
             <property name="title">
              <string/>
             </property>
-            <layout class="QGridLayout" name="gridLayout_22">
+            <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
               <widget class="QLabel" name="labelDescricao">
                <property name="text">
@@ -540,13 +540,28 @@
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLineEdit" name="lineEditDescricao">
+              <widget class="QComboBox" name="comboBoxTipoEnd">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
+                 <width>100</width>
                  <height>0</height>
                 </size>
                </property>
+               <item>
+                <property name="text">
+                 <string>Principal</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Faturamento</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Entrega</string>
+                </property>
+               </item>
               </widget>
              </item>
              <item row="1" column="1">
@@ -743,7 +758,6 @@
   <tabstop>lineEditIdNextel</tabstop>
   <tabstop>lineEditNextel</tabstop>
   <tabstop>lineEditEmail</tabstop>
-  <tabstop>lineEditDescricao</tabstop>
   <tabstop>lineEditCEP</tabstop>
   <tabstop>lineEditEndereco</tabstop>
   <tabstop>lineEditNro</tabstop>

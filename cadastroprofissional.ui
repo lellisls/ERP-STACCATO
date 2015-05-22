@@ -263,7 +263,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="resources.qrc">
+        <iconset resource="qrs/resources.qrc">
          <normaloff>:/search.png</normaloff>:/search.png</iconset>
        </property>
       </widget>
@@ -332,7 +332,7 @@
   <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="qrs/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

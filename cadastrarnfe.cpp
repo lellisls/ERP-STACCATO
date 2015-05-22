@@ -18,7 +18,7 @@ CadastrarNFE::CadastrarNFE(QString idOrcamento, QWidget *parent)
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
 
-  SearchDialog *sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
 
   RegisterDialog *cadCliente = new CadastroCliente(this);

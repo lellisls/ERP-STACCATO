@@ -35,7 +35,8 @@ class SearchDialog : public QDialog {
     static SearchDialog *transportadora(QWidget *parent);
     static SearchDialog *usuario(QWidget *parent);
     static SearchDialog *profissional(QWidget *parent);
-    static SearchDialog *endereco(QWidget *parent);
+    static SearchDialog *enderecoCliente(QWidget *parent);
+    static SearchDialog *enderecoFornecedor(QWidget *parent);
     static SearchDialog *vendedor(QWidget *parent);
     void sendUpdateMessage();
     void show();

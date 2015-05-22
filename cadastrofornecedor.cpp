@@ -13,28 +13,25 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
   ui->pushButtonMostrarInativos->hide();
-  // FIXME : ARRUMAR RELAÇÃO DO CADASTRO DE ENDEREÇO COM FORNECEDOR
-  ui->tabWidget->setTabEnabled(1, false);
-  //  modelEnd.setTable("Endereco");
-  //  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
-  //  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  //  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
-  //  modelEnd.select();
+  modelEnd.setTable("Fornecedor_has_Endereco");
+  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
+  modelEnd.setFilter("idFornecedor = '" + data(primaryKey).toString() + "'");
+  modelEnd.select();
 
-  //  ui->tableEndereco->setModel(&modelEnd);
-  //  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  //  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
-  //  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
+  ui->tableEndereco->setModel(&modelEnd);
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idFornecedor"));
 
-  //  mapperEnd.setModel(&modelEnd);
-
+  mapperEnd.setModel(&modelEnd);
   setupUi();
 
   setupMapper();
@@ -80,7 +77,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex idx) {
   mapper.setCurrentModelIndex(idx);
 
   qDebug() << "filtro endereco: " << data(primaryKey).toString();
-  modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
+  modelEnd.setFilter("idFornecedor = '" + data(primaryKey).toString() + "'");
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
   }
@@ -95,7 +92,6 @@ void CadastroFornecedor::clearEnd() {
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
   ui->lineEditComp->clear();
-  ui->lineEditDescricao->clear();
   ui->lineEditEndereco->clear();
   ui->lineEditNro->clear();
   ui->lineEditUF->clear();
@@ -217,27 +213,27 @@ bool CadastroFornecedor::savingProcedures(int row) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
     return false;
   }
-  //  qDebug() << "PK = " << data(row, primaryKey);
-  //  int idCliente = data(row, primaryKey).toInt();
-  //  if (not data(row, primaryKey).isValid()) {
-  //    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
-  //    qryLastId.exec();
-  //    qryLastId.first();
-  //    idCliente = qryLastId.value("lastId").toInt();
-  //  }
-  //  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
-  //  qDebug() << "ID Cliente = " << idCliente;
-  //  for (int end = 0; end < modelEnd.rowCount(); ++end) {
-  //    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
-  //  }
-  //  if (not modelEnd.submitAll()) {
-  //    qDebug() << objectName() << " : " << __LINE__
-  //             << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-  //    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
-  //    return false;
-  //  }
-  //  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
+  int idFornecedor = data(row, primaryKey).toInt();
+  if (not data(row, primaryKey).isValid()) {
+    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
+    qryLastId.exec();
+    qryLastId.first();
+    idFornecedor = qryLastId.value("lastId").toInt();
+  }
+  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
+
+  qDebug() << "ID Fornecedor = " << idFornecedor;
+  for (int end = 0; end < modelEnd.rowCount(); ++end) {
+    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idFornecedor);
+  }
+  if (not modelEnd.submitAll()) {
+    qDebug() << objectName() << " : " << __LINE__
+             << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
+    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    return false;
+  }
+  qDebug() << "modelEnd.rowCount() = " << modelEnd.rowCount();
 
   return true;
 }
@@ -267,7 +263,7 @@ void CadastroFornecedor::setupMapper() {
   addMapping(ui->lineEditContatoApelido, "contatoApelido");
   addMapping(ui->lineEditContatoRG, "contatoRG");
 
-  mapperEnd.addMapping(ui->lineEditDescricao, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
   mapperEnd.addMapping(ui->lineEditEndereco, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
@@ -476,4 +472,52 @@ void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &) {
 void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &) {
   QString text = ui->lineEditContatoCPF->text().remove(".").remove("-");
   validaCPF(text);
+}
+
+void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
+  if (atualizarEnd()) { // TODO: reimplement
+    qDebug() << "cadastrou endereço!";
+  } else {
+    qDebug() << "não cadastrou endereço :(";
+  }
+}
+
+bool CadastroFornecedor::atualizarEnd() {
+  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro,
+                                       ui->lineEditBairro, ui->lineEditCidade, ui->lineEditUF})) {
+    return false;
+  }
+  if (not ui->lineEditCEP->isValid()) {
+    ui->lineEditCEP->setFocus();
+    QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+  int row = mapperEnd.currentIndex();
+  if (row == -1) {
+    row = modelEnd.rowCount();
+    if (not modelEnd.insertRow(row)) {
+      QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
+                           QMessageBox::NoButton);
+      return false;
+    }
+  }
+  modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText());
+  if (not ui->lineEditCEP->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text());
+  if (not ui->lineEditEndereco->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditEndereco->text());
+  if (not ui->lineEditNro->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text());
+  if (not ui->lineEditComp->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text());
+  if (not ui->lineEditBairro->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text());
+  if (not ui->lineEditCidade->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text());
+  if (not ui->lineEditUF->text().isEmpty())
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text());
+  if (not modelEnd.data(modelEnd.index(row, modelEnd.fieldIndex("valid"))).isValid()) {
+    modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("valid")), true);
+  }
+  return true;
 }

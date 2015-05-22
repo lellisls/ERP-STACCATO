@@ -370,8 +370,34 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
   return sdVendedor;
 }
 
-SearchDialog *SearchDialog::endereco(QWidget *parent) {
-  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Endereco", {}, "idCliente = 0", parent);
+SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Cliente_has_Endereco", {}, "idCliente = 0", parent);
+
+  sdEndereco->setPrimaryKey("idEndereco");
+  sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
+
+  sdEndereco->hideColumns({"idEndereco", "idCliente", "ativo"});
+
+  QVector<QPair<QString, QString>> headerData;
+  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
+  headerData.push_back(QPair<QString, QString>("cep", "CEP"));
+  headerData.push_back(QPair<QString, QString>("logradouro", "End."));
+  headerData.push_back(QPair<QString, QString>("numero", "Número"));
+  headerData.push_back(QPair<QString, QString>("complemento", "Comp."));
+  headerData.push_back(QPair<QString, QString>("bairro", "Bairro"));
+  headerData.push_back(QPair<QString, QString>("cidade", "Cidade"));
+  headerData.push_back(QPair<QString, QString>("uf", "UF"));
+  sdEndereco->setHeaderData(headerData);
+
+  sdEndereco->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  sdEndereco->ui->tableBusca->resizeColumnsToContents();
+  sdEndereco->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+  return sdEndereco;
+}
+
+SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Fornecedor_has_Endereco", {}, "idFornecedor = 0", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});

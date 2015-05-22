@@ -77,7 +77,7 @@ Orcamento::Orcamento(QWidget *parent)
   SearchDialog *sdProfissional = SearchDialog::profissional(ui->itemBoxProfissional);
   ui->itemBoxProfissional->setSearchDialog(sdProfissional);
 
-  SearchDialog *sdEndereco = SearchDialog::endereco(ui->itemBoxEndereco);
+  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
 
   setupMapper();

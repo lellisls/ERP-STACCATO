@@ -28,10 +28,16 @@ void CadastroTransportadora::clearFields() { RegisterDialog::clearFields(); }
 
 bool CadastroTransportadora::verifyFields(int row) {
   Q_UNUSED(row);
-  //  if(not RegisterDialog::verifyFields({ui}))
-  if (ui->widgetEnd->isEnabled() and !ui->widgetEnd->verifyFields()) {
+
+  if (not RegisterDialog::verifyFields({ui->lineEditANTT, ui->lineEditCNPJ, ui->lineEditInscEstadual,
+                                       ui->lineEditNomeFantasia, ui->lineEditPlaca, ui->lineEditRazaoSocial,
+                                       ui->lineEditTel})) {
     return false;
   }
+  if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -39,6 +45,7 @@ bool CadastroTransportadora::savingProcedures(int row) {
   if (not ui->widgetEnd->cadastrar()) {
     return false;
   }
+
   setData(row, "cnpj", ui->lineEditCNPJ->text());
   setData(row, "razaoSocial", ui->lineEditRazaoSocial->text());
   setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
@@ -78,8 +85,9 @@ bool CadastroTransportadora::viewRegister(QModelIndex idx) {
   }
   bool ok = false;
   int idEnd = model.data(model.index(idx.row(), model.fieldIndex("idEndereco"))).toInt(&ok);
-  if (ok)
+  if (ok) {
     ui->widgetEnd->viewCadastro(idEnd);
+  }
   mapper.setCurrentModelIndex(idx);
   return true;
 }
@@ -96,6 +104,7 @@ void CadastroTransportadora::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroTransportadora::on_pushButtonBuscar_clicked() {
   SearchDialog *sdTransportadora = SearchDialog::transportadora(this);
+  connect(sdTransportadora, &SearchDialog::itemSelected, this, &CadastroTransportadora::changeItem);
   sdTransportadora->show();
 }
 
@@ -149,25 +158,6 @@ void CadastroTransportadora::validaCNPJ(QString text) {
     } else {
       QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
       return;
-    }
-  }
-}
-
-void CadastroTransportadora::remove() {
-  QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Tem certeza que deseja remover?",
-                     QMessageBox::Yes | QMessageBox::No, this);
-  msgBox.setButtonText(QMessageBox::Yes, "Sim");
-  msgBox.setButtonText(QMessageBox::No, "Não");
-  if (msgBox.exec() == QMessageBox::Yes) {
-    qDebug() << "Yes!";
-    if (model.removeRow(mapper.currentIndex()) and model.submitAll()) {
-      qDebug() << "REMOVING " << mapper.currentIndex();
-      model.select();
-      newRegister();
-    } else {
-      QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
-                           QMessageBox::NoButton);
-      qDebug() << model.lastError();
     }
   }
 }

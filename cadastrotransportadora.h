@@ -27,37 +27,37 @@ class CadastroTransportadora : public RegisterDialog {
 
   public:
     /*!
- * \brief Utilizada para selecionar um item a partir de um QModelIndex
- * \param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
- * \return
- */
+*\brief Utilizada para selecionar um item a partir de um QModelIndex
+*\param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
+*\return
+*/
     virtual bool viewRegister(QModelIndex idx);
 
   private:
     /*!
- * \brief Função padrão para verificar campos obrigatórios
- * \return
- */
+*\brief Função padrão para verificar campos obrigatórios
+*\return
+*/
     virtual bool verifyFields(int row);
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
     virtual bool savingProcedures(int row);
     /*!
- * \brief Limpar os campos da tela
- */
+*\brief Limpar os campos da tela
+*/
     virtual void clearFields();
     /*!
- * \brief Função onde os mapeamentos são configurados
- */
+*\brief Função onde os mapeamentos são configurados
+*/
     virtual void setupMapper();
     /*!
- * \brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
- */
+*\brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
+*/
     virtual void registerMode();
     /*!
- * \brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
- */
+*\brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
+*/
     virtual void updateMode();
 
   private:
@@ -65,7 +65,6 @@ class CadastroTransportadora : public RegisterDialog {
     Ui::CadastroTransportadora *ui;
     // methods
     void validaCNPJ(QString text);
-    virtual void remove();
     virtual bool newRegister();
     void novoItem();
 };

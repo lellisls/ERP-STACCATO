@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QDialog>
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -43,13 +44,16 @@ void CadastroLoja::clearFields() {
 
 bool CadastroLoja::verifyFields(int row) {
   Q_UNUSED(row);
+
   if (not RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial,
                                        ui->lineEditNomeFantasia, ui->lineEditSIGLA, ui->lineEditCNPJ,
-                                       ui->lineEditInscEstadual, ui->lineEditTel}))
+                                       ui->lineEditInscEstadual, ui->lineEditTel})) {
     return false;
+  }
   if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
     return false;
   }
+
   return true;
 }
 
@@ -67,6 +71,10 @@ bool CadastroLoja::savingProcedures(int row) {
   setData(row, "idEndereco", ui->widgetEnd->getId());
   setData(row, "valorMinimoFrete", ui->doubleSpinBoxValorMinimoFrete->value());
   setData(row, "porcentagemFrete", ui->doubleSpinBoxPorcFrete->value());
+  setData(row, "servidorACBr", ui->lineEditServidorACBr->text());
+  setData(row, "portaACBr", ui->lineEditPortaACBr->text().toInt());
+  setData(row, "pastaEntACBr", ui->lineEditPastaEntACBr->text());
+  setData(row, "pastaSaiACBr", ui->lineEditPastaSaiACBr->text());
   return true;
 }
 
@@ -92,6 +100,10 @@ void CadastroLoja::setupMapper() {
   addMapping(ui->lineEditSIGLA, "sigla");
   addMapping(ui->doubleSpinBoxValorMinimoFrete, "valorMinimoFrete");
   addMapping(ui->doubleSpinBoxPorcFrete, "porcentagemFrete");
+  addMapping(ui->lineEditServidorACBr, "servidorACBr");
+  addMapping(ui->lineEditPortaACBr, "portaACBr");
+  addMapping(ui->lineEditPastaEntACBr, "pastaEntACBr");
+  addMapping(ui->lineEditPastaSaiACBr, "pastaSaiACBr");
 }
 
 bool CadastroLoja::viewRegister(QModelIndex idx) {
@@ -99,10 +111,11 @@ bool CadastroLoja::viewRegister(QModelIndex idx) {
     return false;
   }
   bool ok = false;
-  int idEnd = data("idEndereco").toInt(&ok);
+  int idEnd = model.data(model.index(idx.row(), model.fieldIndex("idEndereco"))).toInt(&ok);
   if (ok) {
     ui->widgetEnd->viewCadastro(idEnd);
   }
+  mapper.setCurrentModelIndex(idx);
   return true;
 }
 
@@ -183,5 +196,21 @@ void CadastroLoja::validaCNPJ(QString text) {
       QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
       return;
     }
+  }
+}
+
+void CadastroLoja::on_pushButtonEntradaNFe_clicked() {
+  QString dir = QFileDialog::getExistingDirectory(this, "Pasta entrada NFe", QDir::currentPath());
+
+  if (not dir.isEmpty()) {
+    ui->lineEditPastaEntACBr->setText(dir);
+  }
+}
+
+void CadastroLoja::on_pushButtonSaidaNFe_clicked() {
+  QString dir = QFileDialog::getExistingDirectory(this, "Pasta saída NFe", QDir::currentPath());
+
+  if (not dir.isEmpty()) {
+    ui->lineEditPastaSaiACBr->setText(dir);
   }
 }

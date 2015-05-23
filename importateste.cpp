@@ -197,8 +197,12 @@ bool ImportaTeste::consistenciaDados() {
     values[fields.indexOf("ncm")] = "0";
   }
 
-  if (values.at(fields.indexOf("ncm")).length() != 8) {
-    // TODO: pintar celula
+  if (values.at(fields.indexOf("ncm")).length() != 8) { // NCM pode ter o código EX de 10 digitos
+    // TODO: pintar célula informando erro
+  }
+
+  if (values.at(fields.indexOf("codBarras")).isEmpty()) {
+    values[fields.indexOf("codBarras")] = "0";
   }
 
   values[fields.indexOf("custo")] = values[fields.indexOf("custo")].replace(",", ".");

@@ -299,18 +299,29 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
     qDebug() << modelEnd.lastError();
   }
 
-  ui->groupBoxPJuridica->setChecked(not data("razaoSocial").toString().isEmpty()); // TODO: change to pfpj
   int idCliente = data("idCliente").toInt();
-  QSqlQuery query("SELECT idCliente, nome, razaoSocial FROM Cliente WHERE idCadastroRel = '" +
-                  QString::number(idCliente) + "';");
+  QSqlQuery query;
+  if(not query.exec("SELECT idCliente, nome_razao, nomeFantasia, pfpj FROM Cliente WHERE idCadastroRel = '" +
+                    QString::number(idCliente) + "';")){
+    qDebug() << "Erro na query cliente: " << query.lastError();
+    return false;
+  }
   while (query.next()) {
     QString line =
-        query.value(0).toString() + " - " + query.value(1).toString() + " - " + query.value(2).toString();
+        query.value("idCliente").toString() + " - " + query.value("nome_razao").toString() + " - " + query.value("nomeFantasia").toString();
     ui->textEditObservacoes->insertPlainText(line);
   }
 
+  tipoPFPJ = data("pfpj").toString();
+
+  if (tipoPFPJ == "PJ") {
+    ui->radioButtonPJ->setChecked(true);
+  }
+  if (tipoPFPJ == "PF") {
+    ui->radioButtonPF->setChecked(true);
+  }
+
   show();
-  adjustSize();
   return true;
 }
 
@@ -339,11 +350,6 @@ void CadastroCliente::disableEditor() {
 }
 
 void CadastroCliente::show() {
-  if (tipoPFPJ == "PJ") {
-    ui->radioButtonPJ->setChecked(true);
-  } else {
-    tipoPFPJ == "PF";
-  } // TODO: should be "if(tipo == PF) radioPF->setchecked"?
   adjustSize();
   QWidget::show();
 }

@@ -142,7 +142,8 @@ void ImportaTeste::setModelAndTable() {
   }
   ui->tableView->setColumnHidden(model.fieldIndex("idProduto"), true);
   ui->tableView->setColumnHidden(model.fieldIndex("idFornecedor"), true);
-  ui->tableView->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
+  ui->tableView->setItemDelegateForColumn(model.fieldIndex("validade"),
+                                          new DateFormatDelegate("dd-MM-yyyy", this));
 }
 
 void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {

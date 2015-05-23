@@ -151,7 +151,7 @@ bool NFe::writeTXT(QString chave) {
     qDebug() << "idEndereco Loja vazio";
     return false;
   }
-  QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '" + idEndLoja + "'");
+  QSqlQuery endLoja("SELECT * FROM Loja_has_Endereco WHERE idEndereco = '" + idEndLoja + "'");
   if (not endLoja.exec()) {
     qDebug() << "End. loja failed! : " << endLoja.lastError();
     return false;
@@ -211,8 +211,8 @@ bool NFe::writeTXT(QString chave) {
 
   QSqlQuery cliente;
 
-  if (not cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
-                       "WHERE Endereco.idCliente = " +
+  if (not cliente.exec("SELECT * FROM Cliente LEFT JOIN Cliente_has_Endereco ON Cliente.idCliente = Cliente_has_Endereco.idCliente "
+                       "WHERE Cliente_has_Endereco.idCliente = " +
                        idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
     return false;
@@ -464,7 +464,7 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows) {
     qDebug() << "idEndereco Loja vazio";
     return false;
   }
-  QSqlQuery endLoja("SELECT * FROM Endereco WHERE idEndereco = '" + idEndLoja + "'");
+  QSqlQuery endLoja("SELECT * FROM Loja_has_Endereco WHERE idEndereco = '" + idEndLoja + "'");
   if (not endLoja.exec()) {
     qDebug() << "End. loja failed! : " << endLoja.lastError();
     return false;
@@ -524,8 +524,8 @@ bool NFe::writeTXT_Pedido(QString chave, QList<int> rows) {
 
   QSqlQuery cliente;
 
-  if (not cliente.exec("SELECT * FROM Cliente LEFT JOIN Endereco ON Cliente.idCliente = Endereco.idCliente "
-                       "WHERE Endereco.idCliente = " +
+  if (not cliente.exec("SELECT * FROM Cliente LEFT JOIN Cliente_has_Endereco ON Cliente.idCliente = Cliente_has_Endereco.idCliente "
+                       "WHERE Cliente_has_Endereco.idCliente = " +
                        idCliente + "")) {
     qDebug() << "Cliente query failed! : " << cliente.lastError();
     return false;

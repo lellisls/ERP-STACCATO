@@ -23,6 +23,7 @@ bool WidgetEndereco::verifyField(QLineEdit *lineEdit, bool silent) {
     }
     return false;
   }
+
   return true;
 }
 
@@ -30,6 +31,7 @@ bool WidgetEndereco::verifyFields(bool silent) {
   if (not isEnabled()) {
     return true;
   }
+
   if (not ui->lineEditCEP->isValid()) {
     if (not silent) {
       ui->lineEditCEP->setFocus();
@@ -37,6 +39,7 @@ bool WidgetEndereco::verifyFields(bool silent) {
     }
     return false;
   }
+
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) {
     if (line->styleSheet() == requiredStyle()) {
       if (not verifyField(line)) {
@@ -44,6 +47,7 @@ bool WidgetEndereco::verifyFields(bool silent) {
       }
     }
   }
+
   return true;
 }
 
@@ -66,20 +70,28 @@ void WidgetEndereco::clearFields() {
 }
 
 bool WidgetEndereco::cadastrar() {
-  if (not isEnabled())
+  if (not isEnabled()) {
     return true;
+  }
   if (not verifyFields()) {
     return false;
   }
+  if (table.isEmpty()) {
+    qDebug() << "a tabela do widget endereco não foi setada!";
+    return false;
+  }
+
   QString str;
   if (id == -1) {
-    str = "INSERT INTO Endereco (descricao, CEP, logradouro, numero, complemento, bairro, cidade, uf)"
-          "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
+    str = "INSERT INTO " + table + " (descricao, CEP, logradouro, numero, complemento, bairro, cidade, uf)"
+                                   "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);";
   } else {
-    str = "UPDATE Endereco SET descricao=?, CEP = ?, logradouro = ?, numero = ?, complemento = ?, bairro = "
-          "?, cidade = ?, uf = ? WHERE idEndereco = '" +
-          QString::number(id) + "';";
+    str = "UPDATE " + table +
+          " SET descricao = ?, CEP = ?, logradouro = ?, numero = ?, complemento = ?, bairro = "
+          "?, cidade = ?, uf = ? WHERE idEndereco = " +
+          QString::number(id) + ";";
   }
+  qDebug() << "qry end: " << str;
   QSqlQuery qry(str);
   qry.addBindValue(ui->lineEditDescricao->text());
   qry.addBindValue(ui->lineEditCEP->text());
@@ -102,7 +114,7 @@ bool WidgetEndereco::cadastrar() {
 }
 
 void WidgetEndereco::remove(int id) {
-  QString str = "DELETE from Endereco WHERE idEndereco = '" + QString::number(id) + "';";
+  QString str = "DELETE FROM " + table + " WHERE idEndereco = '" + QString::number(id) + "';";
   QSqlQuery qry(str);
   qry.exec();
 }
@@ -111,7 +123,7 @@ bool WidgetEndereco::viewCadastro(int id) {
   setEnabled(true);
   clearFields();
   this->id = id;
-  QString str = "SELECT * FROM Endereco WHERE idEndereco = '" + QString::number(id) + "'";
+  QString str = "SELECT * FROM " + table + " WHERE idEndereco = '" + QString::number(id) + "'";
   QSqlQuery qry(str);
   if (not qry.exec() or not qry.next()) {
     return false;
@@ -160,6 +172,10 @@ void WidgetEndereco::on_lineEditCEP_textEdited(const QString &cep) {
     QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
   }
 }
+
+QString WidgetEndereco::getTable() const { return table; }
+
+void WidgetEndereco::setTable(const QString &value) { table = value; }
 
 bool WidgetEndereco::isEmpty() {
   if (ui->lineEditBairro->text().isEmpty() and ui->lineEditCEP->text().remove("-").isEmpty() and

@@ -25,6 +25,7 @@ CadastroLoja::CadastroLoja(QWidget *parent)
   ui->tableAlcadas->resizeColumnsToContents();
 
   ui->widgetEnd->setupUi(ui->lineEditTel, ui->pushButtonCadastrar);
+  ui->widgetEnd->setTable("Loja_has_Endereco");
 
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
   ui->lineEditSIGLA->setInputMask(">AANN;_");

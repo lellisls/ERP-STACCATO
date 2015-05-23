@@ -12,6 +12,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   : RegisterDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
   ui->widgetEnd->setupUi(ui->lineEditPlaca, ui->pushButtonCadastrar);
+  ui->widgetEnd->setTable("Transportadora_has_Endereco");
 
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
   ui->lineEditANTT->setInputMask("99999999;_");

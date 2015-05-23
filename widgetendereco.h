@@ -18,17 +18,19 @@ class WidgetEndereco : public QWidget {
     explicit WidgetEndereco(QWidget *parent = 0);
     ~WidgetEndereco();
     bool cadastrar();
+    bool isEmpty();
     bool verifyFields(bool silent = false);
     bool viewCadastro(int id);
     int getId() const;
     int nextId();
+    QString getTable() const;
     void clearFields();
     void novoCadastro();
     void remove(int id);
     void setId(int value);
+    void setTable(const QString &value);
     void setupMapper();
     void setupUi(QWidget *first = nullptr, QWidget *last = nullptr);
-    bool isEmpty();
 
   private slots:
     void on_lineEditCEP_textEdited(const QString &cep);
@@ -38,6 +40,7 @@ class WidgetEndereco : public QWidget {
     Ui::WidgetEndereco *ui;
     int id;
     bool ativo;
+    QString table;
     // methods
     QString buscaUF(QString cep);
     bool inRange(QString cep, int st, int end);

@@ -289,8 +289,8 @@ QString CadastrarNFE::calculaDigitoVerificador(QString chave) {
 }
 
 bool CadastrarNFE::writeTXT(QString chave) { // TODO: refatorar essa função
-  QFile file("C:/ACBrNFeMonitor/ENTNFE.TXT/" + idOrcamento + ".txt");
-  // TODO: usar string da pasta do ACBr (tirar esse hardcoded)
+  QString dir = getFromLoja("pastaEntACBr").toString();
+  QFile file(dir + idOrcamento + ".txt");
   if (not file.open(QFile::WriteOnly)) {
     QMessageBox::warning(0, "Aviso!", "Não foi possível criar a nota na pasta do ACBr, favor verificar se as "
                                       "pastas estão corretamente configuradas.");

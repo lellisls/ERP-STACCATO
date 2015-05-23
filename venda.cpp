@@ -841,7 +841,7 @@ void Venda::on_pushButtonImprimir_clicked()
   //  printer.setFullPage(true);
   //  printer.setResolution(300);
   printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
-  printer.setOrientation(QPrinter::Portrait);
+  printer.setOrientation(QPrinter::Landscape);
   printer.setPaperSize(QPrinter::A4);
   QPrintPreviewDialog preview(&printer, this, Qt::Window);
   preview.setModal(true);

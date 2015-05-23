@@ -23,7 +23,7 @@
 #include "usersession.h"
 #include "cadastrocliente.h"
 #include "cadastrarnfe.h"
-#include "endereco.hpp"
+#include "endereco.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -877,7 +877,7 @@ void Venda::print(QPrinter *printer) { // TODO: this is just a stub, implement
   //  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
   html.replace("#TELLOJA#", queryLoja.value("tel").toString());
 
-  Endereco endLoja(queryLoja.value("idEndereco").toInt());
+  Endereco endLoja(queryLoja.value("idEndereco").toInt(), "Loja_has_Endereco");
   // End. Loja
   html.replace("#ENDLOJA01#", endLoja.linhaUm());
   html.replace("#ENDLOJA02#", endLoja.linhaDois());
@@ -904,7 +904,7 @@ void Venda::print(QPrinter *printer) { // TODO: this is just a stub, implement
 //  html.replace("#TEL02#", queryCliente.value("telCel").toString());
 
   // End. Cliente
-  Endereco endEntrega(data("idEnderecoEntrega").toInt());
+  Endereco endEntrega(data("idEnderecoEntrega").toInt(), "Cliente_has_Endereco");
   html.replace("#ENDENTREGA#", endEntrega.umaLinha());
   html.replace("#CEPENTREGA#", endEntrega.cep());
 

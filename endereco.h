@@ -1,12 +1,12 @@
-#ifndef ENDERECO_HPP
-#define ENDERECO_HPP
+#ifndef ENDERECO_H
+#define ENDERECO_H
 
 #include <QString>
 
 class Endereco {
 
   public:
-    explicit Endereco(int idEndereco);
+    explicit Endereco(int idEndereco, QString table);
     int idEndereco() const;
     QString logradouro() const;
     QString bairro() const;
@@ -40,4 +40,4 @@ class Endereco {
     int m_idEndereco;
 };
 
-#endif // ENDERECO_HPP
+#endif // ENDERECO_H

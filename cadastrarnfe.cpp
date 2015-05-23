@@ -1,6 +1,6 @@
 #include "cadastrarnfe.h"
 #include "cadastrocliente.h"
-#include "endereco.hpp"
+#include "endereco.h"
 #include "nfe.h"
 #include "ui_cadastrarnfe.h"
 #include "usersession.h"
@@ -81,7 +81,7 @@ void CadastrarNFE::updateImpostos() {
   }
   ui->doubleSpinBoxVlICMS->setValue(icms);
   double imposto = 0.593 * ui->doubleSpinBoxFinal->value() + icms;
-  Endereco end(ui->itemBoxEndereco->value().toInt());
+  Endereco end(ui->itemBoxEndereco->value().toInt(), "Cliente_has_Endereco");
   QString texto =
       "Venda de código " +
       modelNFe.data(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("idVenda"))).toString() + "\n" +

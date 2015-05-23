@@ -22,7 +22,7 @@
 #include "venda.h"
 #include "searchdialog.h"
 #include "apagaorcamento.h"
-#include "endereco.hpp"
+#include "endereco.h"
 
 Orcamento::Orcamento(QWidget *parent)
   : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
@@ -490,7 +490,7 @@ void Orcamento::print(QPrinter *printer) {
   //  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
   html.replace("#TELLOJA#", queryLoja.value("tel").toString());
 
-  Endereco endLoja(queryLoja.value("idEndereco").toInt());
+  Endereco endLoja(queryLoja.value("idEndereco").toInt(), "Loja_has_Endereco");
   // End. Loja
   html.replace("#ENDLOJA01#", endLoja.linhaUm());
   html.replace("#ENDLOJA02#", endLoja.linhaDois());
@@ -517,7 +517,7 @@ void Orcamento::print(QPrinter *printer) {
   html.replace("#TEL02#", queryCliente.value("telCel").toString());
 
   // End. Cliente
-  Endereco endEntrega(data("idEnderecoEntrega").toInt());
+  Endereco endEntrega(data("idEnderecoEntrega").toInt(), "Cliente_has_Endereco");
   html.replace("#ENDENTREGA#", endEntrega.umaLinha());
   html.replace("#CEPENTREGA#", endEntrega.cep());
 

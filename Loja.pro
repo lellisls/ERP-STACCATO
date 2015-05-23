@@ -91,13 +91,13 @@ HEADERS  += backgroundproxymodel.h \
     cepcompleter.h \
     importaexport.h \
     cadastrofornecedor.h \
-    endereco.hpp \
     cadastrarnfe.h \
     importaexportdelegate.h \
     importaexportproxy.h \
     importateste.h \
     editablesqlmodel.h \
-    dateformatdelegate.h
+    dateformatdelegate.h \
+    endereco.h
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \

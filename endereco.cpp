@@ -1,9 +1,11 @@
-#include "endereco.hpp"
 #include <QSqlQuery>
 #include <QVariant>
+#include <QDebug>
 
-Endereco::Endereco(int idEndereco) : m_idEndereco(-1) {
-  QSqlQuery qry("SELECT * FROM Endereco WHERE idEndereco = '" + QString::number(idEndereco) + "'");
+#include "endereco.h"
+
+Endereco::Endereco(int idEndereco, QString table) : m_idEndereco(-1) {
+  QSqlQuery qry("SELECT * FROM " + table + " WHERE idEndereco = " + QString::number(idEndereco) + "");
   if (not qry.exec() or not qry.first()) {
     return;
   }

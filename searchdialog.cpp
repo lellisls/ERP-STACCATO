@@ -36,8 +36,6 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   }
 
   ui->groupBoxFiltrosProduto->hide();
-
-  this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 SearchDialog::~SearchDialog() { delete ui; }

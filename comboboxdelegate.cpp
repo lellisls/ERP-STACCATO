@@ -20,6 +20,7 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
        << "Pago"
        << "Recebido";
   editor->addItems(list);
+
   return editor;
 }
 
@@ -27,9 +28,11 @@ void ComboBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
   if (QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
     QString currentText = index.data(Qt::EditRole).toString();
     int cbIndex = cb->findText(currentText);
+
     if (cbIndex >= 0) {
       cb->setCurrentIndex(cbIndex);
     }
+
   } else {
     QStyledItemDelegate::setEditorData(editor, index);
   }

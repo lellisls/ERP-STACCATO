@@ -3,9 +3,9 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "cadastrarnfe.h"
 #include "comboboxdelegate.h"
 #include "mainwindow.h"
-#include "nfe.h"
 #include "pedidoscompra.h"
 #include "ui_pedidoscompra.h"
 
@@ -17,13 +17,13 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
   modelItemPedidos.setTable("pedidofornecedor_has_produto");
   modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
   if (not modelItemPedidos.select()) {
-    qDebug() << "Failed to populate pedidofornecedor_has_produto! " << modelItemPedidos.lastError();
+    qDebug() << "Failed to populate pedidofornecedor_has_produto: " << modelItemPedidos.lastError();
   }
 
   modelPedidos.setTable("pedidofornecedor");
   modelPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
   if (not modelPedidos.select()) {
-    qDebug() << "Failed to populate pedidofornecedor! " << modelPedidos.lastError();
+    qDebug() << "Failed to populate pedidofornecedor: " << modelPedidos.lastError();
   }
 
   ui->tablePedidos->setModel(&modelItemPedidos);
@@ -60,20 +60,7 @@ PedidosCompra::~PedidosCompra() { delete ui; }
 
 void PedidosCompra::viewPedido(QString idPedido) {
   this->idPedido = idPedido;
-  //  int idx = -1;
-  //  for (int row = 0; row < modelPedidos.rowCount(); ++row) {
-  //    if (modelPedidos.data(modelPedidos.index(row, modelPedidos.fieldIndex("idPedido"))).toString() ==
-  //        idPedido) {
-  //      idx = row;
-  //      break;
-  //    }
-  //  }
-  //  if (idx == -1) {
-  //    QMessageBox::warning(this, "Atenção!", "Pedido não encontrado!", QMessageBox::Ok,
-  //    QMessageBox::NoButton);
-  //    return;
-  //  }
-  //  qDebug() << "idPedido: " << idPedido;
+
   modelItemPedidos.setFilter("idPedido = '" + idPedido + "'");
   modelItemPedidos.select();
 
@@ -87,6 +74,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
   qryConta.prepare("INSERT INTO contaapagar(idVenda, dataEmissao) VALUES (:idVenda, :dataEmissao)");
   qryConta.bindValue(":idVenda", idPedido);
   qryConta.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+
   if (not qryConta.exec()) {
     qDebug() << "Erro inserindo conta a pagar: " << qryConta.lastError();
   }
@@ -94,6 +82,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
   QSqlQuery qry;
   qry.prepare("SELECT * FROM pedidofornecedor_has_produto WHERE idPedido = :idPedido");
   qry.bindValue(":idPedido", idPedido);
+
   if (not qry.exec()) {
     qDebug() << "Erro buscando produtos: " << qry.lastError();
   }
@@ -104,11 +93,8 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         modelItemPedidos.data(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("status"))).toString();
     qry.next();
     QString bd = qry.value("status").toString();
-    //    qDebug() << "row: " << row;
-    //    qDebug() << "combo: " << combobox;
-    //    qDebug() << "bd: " << bd;
+
     if (bd != combobox) {
-      qDebug() << "row " << row << " different!";
       if (combobox == "Comprar") {
         qDebug() << "Comprar";
         QSqlQuery qryProduto;
@@ -125,7 +111,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         if (not qryProduto.exec()) {
           qDebug() << "Erro inserindo produtos na conta: " << qryProduto.lastError();
         }
-        //        qDebug() << "qry: " << qryProduto.lastQuery();
+
         QSqlQuery qryEntrega;
         qryEntrega.prepare("INSERT INTO pedidotransportadora (idTransportadora, idPedido, dataEmissao, "
                            "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
@@ -166,7 +152,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
     qDebug() << "generate delivery for client";
   }
   if (not modelItemPedidos.submitAll()) {
-    qDebug() << "salvar submit failed!";
+    qDebug() << "modelItemPedidos falhou: " << modelItemPedidos.lastError();
   }
 
   if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget())) {
@@ -196,7 +182,7 @@ void PedidosCompra::on_pushButtonNFe_clicked() {
   QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
   QList<int> rows;
   foreach (QModelIndex idx, list) { rows.append(idx.row()); }
-  NFe nfe(idPedido);
-  nfe.TXT_Pedido(rows);
+  CadastrarNFE nfe(idPedido);
+  nfe.prepararNFe(rows);
   qDebug() << rows;
 }

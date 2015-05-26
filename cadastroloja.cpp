@@ -17,9 +17,11 @@ CadastroLoja::CadastroLoja(QWidget *parent)
   modelAlcadas.setTable("Alcadas");
   modelAlcadas.setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
   modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
+
   if (not modelAlcadas.select()) {
     qDebug() << "Erro carregando alçadas: " << modelAlcadas.lastError();
   }
+
   ui->tableAlcadas->setModel(&modelAlcadas);
   ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idAlcada"));
   ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idLoja"));
@@ -39,6 +41,7 @@ CadastroLoja::~CadastroLoja() { delete ui; }
 
 void CadastroLoja::clearFields() {
   ui->widgetEnd->clearFields();
+
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
 }
 
@@ -50,6 +53,7 @@ bool CadastroLoja::verifyFields(int row) {
                                        ui->lineEditInscEstadual, ui->lineEditTel})) {
     return false;
   }
+
   if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
     return false;
   }
@@ -61,6 +65,7 @@ bool CadastroLoja::savingProcedures(int row) {
   if (not ui->widgetEnd->cadastrar()) {
     return false;
   }
+
   setData(row, "descricao", ui->lineEditDescricao->text());
   setData(row, "razaoSocial", ui->lineEditRazaoSocial->text());
   setData(row, "sigla", ui->lineEditSIGLA->text());
@@ -75,6 +80,7 @@ bool CadastroLoja::savingProcedures(int row) {
   setData(row, "portaACBr", ui->lineEditPortaACBr->text().toInt());
   setData(row, "pastaEntACBr", ui->lineEditPastaEntACBr->text());
   setData(row, "pastaSaiACBr", ui->lineEditPastaSaiACBr->text());
+
   return true;
 }
 
@@ -110,12 +116,16 @@ bool CadastroLoja::viewRegister(QModelIndex idx) {
   if (not RegisterDialog::viewRegister(idx)) {
     return false;
   }
+
   bool ok = false;
   int idEnd = model.data(model.index(idx.row(), model.fieldIndex("idEndereco"))).toInt(&ok);
+
   if (ok) {
     ui->widgetEnd->viewCadastro(idEnd);
   }
+
   mapper.setCurrentModelIndex(idx);
+
   return true;
 }
 
@@ -136,7 +146,8 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
 }
 
 void CadastroLoja::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text)
+  Q_UNUSED(text);
+
   viewRegisterById(value);
 }
 
@@ -154,6 +165,7 @@ void CadastroLoja::validaCNPJ(QString text) {
     QString sub = text.left(12);
 
     QVector<int> sub2;
+
     for (int i = 0; i < sub.size(); ++i) {
       sub2.push_back(sub.at(i).digitValue());
     }
@@ -161,6 +173,7 @@ void CadastroLoja::validaCNPJ(QString text) {
     QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 
     int soma = 0;
+
     for (int i = 0; i < 12; ++i) {
       soma += sub2.at(i) * multiplicadores.at(i);
     }
@@ -190,9 +203,7 @@ void CadastroLoja::validaCNPJ(QString text) {
       digito2 = 11 - resto;
     }
 
-    if (digito1 == text.at(12).digitValue() and digito2 == text.at(13).digitValue()) {
-      qDebug() << "Válido!";
-    } else {
+    if (digito1 != text.at(12).digitValue() or digito2 != text.at(13).digitValue()) {
       QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
       return;
     }

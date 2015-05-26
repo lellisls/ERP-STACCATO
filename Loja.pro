@@ -23,14 +23,12 @@ SOURCES += backgroundproxymodel.cpp \
     contasapagar.cpp \
     contasareceber.cpp \
     entregascliente.cpp \
-    importabd.cpp \
     lineeditcep.cpp \
     lineeditdecimal.cpp \
     lineedittel.cpp \
     logindialog.cpp \
     main.cpp\
     mainwindow.cpp \
-    nfe.cpp \
     orcamento.cpp \
     pedidoscompra.cpp \
     recebimentosfornecedor.cpp \
@@ -45,11 +43,9 @@ SOURCES += backgroundproxymodel.cpp \
     registerdialog.cpp \
     loginconfig.cpp \
     cepcompleter.cpp \
-    importaexport.cpp \
     cadastrofornecedor.cpp \
     cadastrarnfe.cpp \
     endereco.cpp \
-    importaexportdelegate.cpp \
     importaexportproxy.cpp \
     importateste.cpp \
     editablesqlmodel.cpp \
@@ -67,14 +63,12 @@ HEADERS  += backgroundproxymodel.h \
     contasapagar.h \
     contasareceber.h \
     entregascliente.h \
-    importabd.h \
     initdb.h \
     lineeditcep.h \
     lineeditdecimal.h \
     lineedittel.h \
     logindialog.h \
     mainwindow.h \
-    nfe.h \
     orcamento.h \
     pedidoscompra.h \
     recebimentosfornecedor.h \
@@ -89,10 +83,8 @@ HEADERS  += backgroundproxymodel.h \
     registerdialog.h \
     loginconfig.h \
     cepcompleter.h \
-    importaexport.h \
     cadastrofornecedor.h \
     cadastrarnfe.h \
-    importaexportdelegate.h \
     importaexportproxy.h \
     importateste.h \
     editablesqlmodel.h \

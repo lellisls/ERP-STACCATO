@@ -845,7 +845,6 @@
     </property>
     <addaction name="actionImportaTeste"/>
     <addaction name="actionAtualizar_tabelas"/>
-    <addaction name="actionRestaurar_BD"/>
    </widget>
    <widget class="QMenu" name="menuAdministra_o">
     <property name="title">
@@ -906,11 +905,6 @@
     <string>Cadastrar profissional</string>
    </property>
   </action>
-  <action name="actionRestaurar_BD">
-   <property name="text">
-    <string>Reinicializar banco de dados</string>
-   </property>
-  </action>
   <action name="actionGerenciar_Transportadoras">
    <property name="text">
     <string>Gerenciar transportadoras</string>
@@ -919,14 +913,6 @@
   <action name="actionGerenciar_Lojas">
    <property name="text">
     <string>Gerenciar lojas</string>
-   </property>
-  </action>
-  <action name="actionImportarTabelaFornecedor">
-   <property name="text">
-    <string>Importar tabela fornecedor</string>
-   </property>
-   <property name="toolTip">
-    <string>Importar tabela fornecedor</string>
    </property>
   </action>
   <action name="actionAtualizar_tabelas">

@@ -15,5 +15,6 @@ bool ComboBox::setCurrentValue(QVariant value) {
       return true;
     }
   }
+
   return false;
 }

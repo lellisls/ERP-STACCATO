@@ -1,8 +1,8 @@
 #include <QCloseEvent>
+#include <QShortcut>
 
 #include "registerdialog.h"
 
-#include <QShortcut>
 
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
@@ -11,14 +11,14 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  mapper.setModel(&model);
-  //  mapper.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
   if (not model.select()) {
-    qDebug() << objectName() << "Failed to populate " + table;
+    qDebug() << objectName() << "Failed to populate " + table + ": " << model.lastError();
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
   }
+
+  mapper.setModel(&model);
+
   QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
   connect(shortcut, &QShortcut::activated, this, &QWidget::close);
   shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
@@ -38,32 +38,35 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
 }
 
 bool RegisterDialog::viewRegister(QModelIndex idx) {
-  //  qDebug() << idx.row() << " == " << mapper.currentIndex();
   if (not confirmationMessage()) {
     return false;
   }
+
   clearFields();
   updateMode();
+
   if (table) {
     table->clearSelection();
   }
+
   mapper.setCurrentIndex(idx.row());
+
   return true;
 }
 
 bool RegisterDialog::verifyFields(QList<QLineEdit *> list) {
   foreach (QLineEdit *line, list) {
-    //    if (line->styleSheet() == requiredStyle()) {
     if (not verifyRequiredField(line)) {
       return false;
     }
-    //    }
   }
+
   return true;
 }
 
 void RegisterDialog::sendUpdateMessage() {
   QString text;
+
   foreach (QString key, textKeys) {
     if (not key.isEmpty()) {
       QVariant val = data(key);
@@ -74,6 +77,7 @@ void RegisterDialog::sendUpdateMessage() {
       }
     }
   }
+
   emit registerUpdated(data(primaryKey), text);
 }
 
@@ -101,8 +105,6 @@ QStringList RegisterDialog::getTextKeys() const { return textKeys; }
 void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void RegisterDialog::changeItem(QVariant value, QString text) {
-  //  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " <<
-  //  text;
   Q_UNUSED(text)
   viewRegisterById(value);
 }
@@ -110,12 +112,6 @@ void RegisterDialog::changeItem(QVariant value, QString text) {
 void RegisterDialog::saveSlot() { save(); }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
-  //  if (line->styleSheet() != requiredStyle()) {
-  //    return true;
-  //  }
-  //  if(line->parent()->isWindowType() and line->parent()->objectName() != objectName() ) {
-  //    return true;
-  //  }
   if ((line->text().isEmpty()) or line->text() == "0,00" or line->text() == "../-" or
       (line->text().size() < (line->inputMask().remove(";").remove(">").remove("_").size()) or
        (line->text().size() < line->placeholderText().size() - 1))) {
@@ -126,6 +122,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
     line->setFocus();
     return false;
   }
+
   return true;
 }
 
@@ -142,7 +139,9 @@ bool RegisterDialog::confirmationMessage() {
     msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
     msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
     msgBox.setDefaultButton(QMessageBox::Save);
+
     int ret = msgBox.exec();
+
     if (ret == QMessageBox::Save) {
       if (not save()) {
         qDebug() << objectName() << " : "
@@ -152,8 +151,8 @@ bool RegisterDialog::confirmationMessage() {
     } else if (ret == QMessageBox::Cancel) {
       return false;
     }
-    return true;
   }
+
   return true;
 }
 
@@ -171,9 +170,11 @@ bool RegisterDialog::newRegister() {
   if (not confirmationMessage()) {
     return false;
   }
+
   if (table) {
     table->clearSelection();
   }
+
   registerMode();
   model.select();
   int row = model.rowCount();
@@ -187,30 +188,37 @@ bool RegisterDialog::newRegister() {
 bool RegisterDialog::save(bool silent) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
-  qDebug() << "CURRENT INDEX: " << mapper.currentIndex();
+
+
   int row = mapper.currentIndex();
-  QVariant id = data(row, primaryKey);
+
   if (not verifyFields(row)) {
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
+
   if (not savingProcedures(row)) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
+
   if (not model.submitAll()) {
     qDebug() << objectName() << " : " << model.lastError();
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
+
   QSqlQuery("COMMIT").exec();
+
   if (not silent) {
     successMessage();
   }
+
   viewRegister(model.index(row, 0));
   sendUpdateMessage();
+
   return true;
 }
 
@@ -224,15 +232,13 @@ void RegisterDialog::remove() {
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
   if (msgBox.exec() == QMessageBox::Yes) {
-    //    qDebug() << "Yes!";
     if (model.removeRow(mapper.currentIndex()) and model.submitAll()) {
-      //      qDebug() << "REMOVING " << mapper.currentIndex();
       model.select();
       newRegister();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
                            QMessageBox::NoButton);
-      qDebug() << model.lastError();
+      qDebug() << "model error: " << model.lastError();
     }
   }
 }

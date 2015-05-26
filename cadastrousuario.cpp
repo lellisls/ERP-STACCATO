@@ -8,13 +8,15 @@
 CadastroUsuario::CadastroUsuario(QWidget *parent)
   : RegisterDialog("Usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
-  setupTableWidget();
 
+  setupTableWidget();
   fillCombobox();
+
   ui->lineEditSigla->setInputMask(">AAA");
   ui->tableWidget->setEnabled(false);
   ui->tableWidget->setToolTip("Função indisponível nesta versão!");
   ui->tableWidget->resizeColumnsToContents();
+
   setupMapper();
   newRegister();
 }
@@ -25,6 +27,7 @@ void CadastroUsuario::setupTableWidget() {
   ui->tableWidget->resizeColumnsToContents();
   ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
   ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
   for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
     for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
       QWidget *widget = new QWidget();
@@ -41,14 +44,19 @@ void CadastroUsuario::setupTableWidget() {
 
 bool CadastroUsuario::verifyFields(int row) {
   Q_UNUSED(row);
-  if (not RegisterDialog::verifyFields(
-  {ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd}))
-    return false;
-  if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
-    ui->lineEditPasswd->setFocus();
-    QMessageBox::warning(this, "Atenção!", "As senhas não batem!", QMessageBox::Ok, QMessageBox::NoButton);
+
+  if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser,
+                                        ui->lineEditSigla, ui->lineEditPasswd})){
     return false;
   }
+
+  if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
+    ui->lineEditPasswd->setFocus();
+    QMessageBox::warning(this, "Atenção!", "As senhas não batem!",
+                         QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
   return true;
 }
 
@@ -82,12 +90,14 @@ bool CadastroUsuario::savingProcedures(int row) {
   setData(row, "user", ui->lineEditUser->text());
   setData(row, "sigla", ui->lineEditSigla->text());
   setData(row, "user", ui->lineEditUser->text());
+
   if (ui->lineEditPasswd->text() != "********") {
     QString str = "SELECT PASSWORD('" + ui->lineEditPasswd->text() + "');";
     QSqlQuery qry(str);
     qry.first();
     setData(row, "passwd", qry.value(0));
   }
+
   return true;
 }
 
@@ -95,16 +105,20 @@ bool CadastroUsuario::viewRegister(QModelIndex idx) {
   if (not RegisterDialog::viewRegister(idx)) {
     return false;
   }
+
   ui->lineEditPasswd->setText("********");
   ui->lineEditPasswd_2->setText("********");
+
   return true;
 }
 
 void CadastroUsuario::fillCombobox() {
   QSqlQuery query("SELECT * from Loja");
+
   while (query.next()) {
     ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
+
   ui->comboBoxLoja->setCurrentValue(UserSession::getLoja());
 }
 

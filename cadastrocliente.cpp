@@ -12,9 +12,11 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente),
     closeBeforeUpdate(closeBeforeUpdate) {
   ui->setupUi(this);
+
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
   ui->pushButtonMostrarInativos->hide();
+
   modelEnd.setTable("Cliente_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -34,6 +36,7 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
 
   mapperEnd.setModel(&modelEnd);
+
   setupUi();
 
   // TODO: Filtrar para não aparecer o próprio cliente na lista.
@@ -91,6 +94,7 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
     }
     return false;
   }
+
   return true;
 }
 
@@ -104,6 +108,7 @@ bool CadastroCliente::verifyFields(int row) {
   }
 
   int ok = 0;
+
   foreach (QLineEdit *line, ui->groupBoxContatos->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line, true)) {
       qDebug() << "Faltou " << line->objectName();
@@ -120,6 +125,7 @@ bool CadastroCliente::verifyFields(int row) {
   }
 
   ok = 0;
+
   foreach (QLineEdit *line, ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line, true)) {
       qDebug() << "Faltou " << line->objectName();
@@ -142,6 +148,7 @@ bool CadastroCliente::savingProcedures(int row) {
   if (not ui->lineEditCliente->text().isEmpty()) {
     setData(row, "nome_razao", ui->lineEditCliente->text());
   }
+
   if (not ui->lineEditNomeFantasia->text().isEmpty()) {
     setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
   }
@@ -153,36 +160,47 @@ bool CadastroCliente::savingProcedures(int row) {
   if (not ui->lineEditContatoNome->text().isEmpty()) {
     setData(row, "contatoNome", ui->lineEditContatoNome->text());
   }
+
   if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoCPF", ui->lineEditContatoCPF->text());
   }
+
   if (not ui->lineEditContatoApelido->text().isEmpty()) {
     setData(row, "contatoApelido", ui->lineEditContatoApelido->text());
   }
+
   if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoRG", ui->lineEditContatoRG->text());
   }
+
   if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty()) {
     setData(row, "cnpj", ui->lineEditCNPJ->text());
   }
+
   if (not ui->lineEditInscEstadual->text().isEmpty()) {
     setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
   }
+
   if (not ui->lineEditTel_Res->text().isEmpty()) {
     setData(row, "tel", ui->lineEditTel_Res->text());
   }
+
   if (not ui->lineEditTel_Cel->text().isEmpty()) {
     setData(row, "telCel", ui->lineEditTel_Cel->text());
   }
+
   if (not ui->lineEditTel_Com->text().isEmpty()) {
     setData(row, "telCom", ui->lineEditTel_Com->text());
   }
+
   if (not ui->lineEditNextel->text().isEmpty()) {
     setData(row, "nextel", ui->lineEditNextel->text());
   }
+
   if (not ui->lineEditEmail->text().isEmpty()) {
     setData(row, "email", ui->lineEditEmail->text());
   }
+
   setData(row, "idCadastroRel", ui->itemBoxCliente->value());
   setData(row, "idProfissionalRel", ui->itemBoxProfissional->value());
   setData(row, "idUsuarioRel", ui->itemBoxVendedor->value());
@@ -195,6 +213,7 @@ bool CadastroCliente::savingProcedures(int row) {
   }
 
   int idCliente = data(row, primaryKey).toInt();
+
   if (not data(row, primaryKey).isValid()) {
     QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
     qryLastId.exec();
@@ -205,6 +224,7 @@ bool CadastroCliente::savingProcedures(int row) {
   for (int end = 0; end < modelEnd.rowCount(); ++end) {
     modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
   }
+
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__
              << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
@@ -217,9 +237,12 @@ bool CadastroCliente::savingProcedures(int row) {
 
 void CadastroCliente::clearFields() {
   RegisterDialog::clearFields();
+
   ui->radioButtonPF->setChecked(true);
   novoEnd();
+
   foreach (ItemBox *box, this->findChildren<ItemBox *>()) { box->clear(); }
+
   setupUi();
 }
 
@@ -274,9 +297,11 @@ void CadastroCliente::setTipoClienteFornecedor(const QString &value) {
   bool isForn = (value == "FORNECEDOR");
   ui->groupBoxMaisInfo->setHidden(isForn);
   ui->groupBoxPFPJ->setHidden(isForn);
+
   if (isForn) {
     ui->radioButtonPJ->setChecked(true);
   }
+
   tipoClienteFornecedor = value;
   adjustSize();
 }
@@ -289,23 +314,27 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   if (not confirmationMessage()) {
     return false;
   }
+
   clearFields();
   updateMode();
   model.select();
   mapper.setCurrentModelIndex(idx);
 
   modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
+
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
   }
 
   int idCliente = data("idCliente").toInt();
   QSqlQuery query;
+
   if(not query.exec("SELECT idCliente, nome_razao, nomeFantasia, pfpj FROM Cliente WHERE idCadastroRel = '" +
                     QString::number(idCliente) + "';")){
     qDebug() << "Erro na query cliente: " << query.lastError();
     return false;
   }
+
   while (query.next()) {
     QString line =
         query.value("idCliente").toString() + " - " + query.value("nome_razao").toString() + " - " + query.value("nomeFantasia").toString();
@@ -317,6 +346,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   if (tipoPFPJ == "PJ") {
     ui->radioButtonPJ->setChecked(true);
   }
+
   if (tipoPFPJ == "PF") {
     ui->radioButtonPF->setChecked(true);
   }
@@ -369,7 +399,8 @@ void CadastroCliente::on_pushButtonBuscar_clicked() {
 }
 
 void CadastroCliente::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text)
+  Q_UNUSED(text);
+
   viewRegisterById(value);
 }
 
@@ -392,6 +423,7 @@ void CadastroCliente::validaCNPJ(QString text) {
     QString sub = text.left(12);
 
     QVector<int> sub2;
+
     for (int i = 0; i < sub.size(); ++i) {
       sub2.push_back(sub.at(i).digitValue());
     }
@@ -399,6 +431,7 @@ void CadastroCliente::validaCNPJ(QString text) {
     QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 
     int soma = 0;
+
     for (int i = 0; i < 12; ++i) {
       soma += sub2.at(i) * multiplicadores.at(i);
     }
@@ -428,9 +461,7 @@ void CadastroCliente::validaCNPJ(QString text) {
       digito2 = 11 - resto;
     }
 
-    if (digito1 == text.at(12).digitValue() and digito2 == text.at(13).digitValue()) {
-      qDebug() << "Válido!";
-    } else {
+    if (digito1 != text.at(12).digitValue() or digito2 != text.at(13).digitValue()) {
       QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
       return;
     }
@@ -452,6 +483,7 @@ void CadastroCliente::validaCPF(QString text) {
     QString sub = text.left(9);
 
     QVector<int> sub2;
+
     for (int i = 0; i < sub.size(); ++i) {
       sub2.push_back(sub.at(i).digitValue());
     }
@@ -459,6 +491,7 @@ void CadastroCliente::validaCPF(QString text) {
     QVector<int> multiplicadores = {10, 9, 8, 7, 6, 5, 4, 3, 2};
 
     int soma = 0;
+
     for (int i = 0; i < 9; ++i) {
       soma += sub2.at(i) * multiplicadores.at(i);
     }
@@ -470,6 +503,7 @@ void CadastroCliente::validaCPF(QString text) {
     } else {
       digito1 = 11 - resto;
     }
+
     sub2.push_back(digito1);
 
     QVector<int> multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
@@ -487,8 +521,7 @@ void CadastroCliente::validaCPF(QString text) {
       digito2 = 11 - resto;
     }
 
-    if (digito1 == text.at(9).digitValue() and digito2 == text.at(10).digitValue()) {
-    } else {
+    if (digito1 != text.at(9).digitValue() or digito2 != text.at(10).digitValue()) {
       QMessageBox::warning(this, "Aviso!", "CPF inválido!");
       return;
     }
@@ -497,16 +530,21 @@ void CadastroCliente::validaCPF(QString text) {
 
 bool CadastroCliente::atualizarEnd() {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro,
-                                       ui->lineEditBairro, ui->lineEditCidade, ui->lineEditUF}))
+                                       ui->lineEditBairro, ui->lineEditCidade, ui->lineEditUF})){
     return false;
+  }
+
   if (not ui->lineEditCEP->isValid()) {
     ui->lineEditCEP->setFocus();
     QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
     return false;
   }
+
   int row = mapperEnd.currentIndex();
+
   if (row == -1) {
     row = modelEnd.rowCount();
+
     if (not modelEnd.insertRow(row)) {
       QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                            QMessageBox::NoButton);
@@ -515,23 +553,31 @@ bool CadastroCliente::atualizarEnd() {
   }
 
   modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText());
-  if (not ui->lineEditCEP->text().isEmpty())
+  if (not ui->lineEditCEP->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text());
-  if (not ui->lineEditEndereco->text().isEmpty())
+  }
+  if (not ui->lineEditEndereco->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditEndereco->text());
-  if (not ui->lineEditNro->text().isEmpty())
+  }
+  if (not ui->lineEditNro->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text());
-  if (not ui->lineEditComp->text().isEmpty())
+  }
+  if (not ui->lineEditComp->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text());
-  if (not ui->lineEditBairro->text().isEmpty())
+  }
+  if (not ui->lineEditBairro->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text());
-  if (not ui->lineEditCidade->text().isEmpty())
+  }
+  if (not ui->lineEditCidade->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text());
-  if (not ui->lineEditUF->text().isEmpty())
+  }
+  if (not ui->lineEditUF->text().isEmpty()){
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text());
+  }
   if (not modelEnd.data(modelEnd.index(row, modelEnd.fieldIndex("valid"))).isValid()) {
     modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("valid")), true);
   }
+
   return true;
 }
 
@@ -547,14 +593,16 @@ void CadastroCliente::on_pushButtonAtualizarEnd_clicked() { atualizarEnd(); }
 
 void CadastroCliente::on_pushButtonMostrarInativos_clicked(bool checked) {
   Q_UNUSED(checked)
-  // TODO Fazer filtro para endereços desativados
+  // TODO: Fazer filtro para endereços desativados
 }
 
 void CadastroCliente::on_lineEditCEP_textChanged(const QString &cep) {
   if (not ui->lineEditCEP->isValid()) {
     return;
   }
+
   CepCompleter cc;
+
   if (cc.buscaCEP(cep)) {
     ui->lineEditUF->setText(cc.getUf());
     ui->lineEditCidade->setText(cc.getCidade());
@@ -591,12 +639,14 @@ void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
                        QMessageBox::Yes | QMessageBox::No);
     msgBox.setButtonText(QMessageBox::Yes, "Sim");
     msgBox.setButtonText(QMessageBox::No, "Não");
+
     if (msgBox.exec() == QMessageBox::Yes) {
       if (not atualizarEnd()) {
         return;
       }
     }
   }
+
   ui->pushButtonAtualizarEnd->show();
   ui->pushButtonAdicionarEnd->hide();
   mapperEnd.setCurrentModelIndex(index);
@@ -620,6 +670,7 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
     ui->lineEditInscEstadual->show();
     ui->labelInscricaoEstadual->show();
   }
+
   adjustSize();
 }
 

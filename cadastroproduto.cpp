@@ -11,14 +11,10 @@
 CadastroProduto::CadastroProduto(QWidget *parent)
   : RegisterDialog("Produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
+
   // InputMasks
-  //  ui->lineEditCPOF->setInputMask("9999;_");
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
-
-  //  ui->lineEditPcCx->setValidator(new QIntValidator(0, 9999, this));
-  //  ui->lineEditComissao->setValidator(new QDoubleValidator(0.0,100.0,2,this));
-  //  ui->lineEditEstoque->setValidator(new QIntValidator(0, 9999, this));
 
   ui->comboBoxOrigem->addItem("0 - Nacional", 0);
   ui->comboBoxOrigem->addItem("1 - Imp. Direta", 1);
@@ -40,23 +36,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 
 CadastroProduto::~CadastroProduto() { delete ui; }
 
-// void CadastroProduto::updateComboboxFornecedor() {
-//  ui->comboBoxFornecedor->clear();
-//  ui->comboBoxFornecedor->addItem("Selecione um fornecedor!");
-//  QSqlQuery query("SELECT idCliente, razaoSocial FROM Cliente WHERE tipo ='FORNECEDOR' or tipo =
-//  'AMBOS'");
-//  if (query.exec()) {
-//    while (query.next()) {
-//      QString str = query.value(0).toString() + " - " + query.value(1).toString();
-//      ui->comboBoxFornecedor->addItem(str, query.value(0));
-//    }
-//  }
-//}
-
 void CadastroProduto::clearFields() {
-  //  foreach (QComboBox *box, this->findChildren<QComboBox *>()) {
-  //    box->setCurrentIndex(0);
-  //  }
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
   ui->radioButtonDesc->setChecked(false);
   ui->radioButtonLote->setChecked(false);
@@ -75,10 +55,14 @@ void CadastroProduto::registerMode() {
 }
 
 bool CadastroProduto::verifyFields(int row) {
-  Q_UNUSED(row)
-  // TODO : VerifyFields Produto
-  if (not RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditNCM}))
+  Q_UNUSED(row);
+
+  if (not RegisterDialog::verifyFields({ui->lineEditCodBarras, ui->lineEditCodComer, ui->lineEditCodInd,
+                                       ui->lineEditColecao, ui->lineEditDescricao, ui->lineEditFormComer,
+                                       ui->lineEditICMS, ui->lineEditNCM})) {
     return false;
+  }
+
   if (ui->doubleSpinBoxCusto->value() == 0) {
     ui->doubleSpinBoxCusto->setFocus();
     QMessageBox::warning(this, "Atenção!", "Custo inválido!", QMessageBox::Ok, QMessageBox::NoButton);
@@ -88,6 +72,7 @@ bool CadastroProduto::verifyFields(int row) {
     ui->doubleSpinBoxVenda->setFocus();
     QMessageBox::warning(this, "Atenção!", "Preço inválido!", QMessageBox::Ok, QMessageBox::NoButton);
   }
+
   if (ui->itemBoxFornecedor->value().isNull()) {
     ui->itemBoxFornecedor->setFocus();
     QMessageBox::warning(this, "Atenção!", "Você não preencheu um item obrigatório!", QMessageBox::Ok,
@@ -95,32 +80,22 @@ bool CadastroProduto::verifyFields(int row) {
     return false;
   }
 
-  //  if (ui->comboBoxOrigem->currentData().isNull()) {
-  //    ui->comboBoxOrigem->setFocus();
-  //    QMessageBox::warning(this, "Atenção!", "Você não preencheu um item obrigatório!", QMessageBox::Ok,
-  //                         QMessageBox::NoButton);
-  //    return false;
-  //  }
-
   return true;
 }
 
 void CadastroProduto::setupMapper() {
-  // Não funciona do jeito que eu quero!!
   mapper.setModel(&model);
+
   addMapping(ui->lineEditDescricao, "descricao");
   addMapping(ui->comboBoxUn, "un");
-  // addMapping(ui->lineEditRetBold,"retBold");
   addMapping(ui->lineEditColecao, "colecao");
-  // addMapping(ui->lineEditTipo,"tipo");
   addMapping(ui->lineEditFormComer, "formComercial");
   addMapping(ui->lineEditCodComer, "codComercial");
   addMapping(ui->lineEditCodInd, "codIndustrial");
   addMapping(ui->lineEditCodBarras, "codBarras");
   addMapping(ui->lineEditNCM, "ncm");
-  // addMapping(ui->lineEditCPOF,"cpof");
   addMapping(ui->lineEditICMS, "icms");
-  // Double
+
   addMapping(ui->doubleSpinBoxPcCx, "pccx");
   addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
   addMapping(ui->doubleSpinBoxQtePallet, "qtdPallet", "value");
@@ -132,7 +107,6 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->doubleSpinBoxComissao, "comissao", "value");
   addMapping(ui->doubleSpinBoxEstoque, "estoque");
 
-  // textEdit
   addMapping(ui->textEditObserv, "observacoes", "plainText");
   addMapping(ui->comboBoxSitTrib, "situacaoTributaria");
   addMapping(ui->itemBoxFornecedor, "idFornecedor", "value");
@@ -159,7 +133,7 @@ bool CadastroProduto::savingProcedures(int row) {
   setData(row, "codBarras", ui->lineEditCodBarras->text());
   setData(row, "ncm", ui->lineEditNCM->text());
   setData(row, "icms", ui->lineEditICMS->text());
-  // double
+
   setData(row, "pccx", ui->doubleSpinBoxPcCx->value());
   setData(row, "m2cx", ui->doubleSpinBoxM2Cx->value());
   setData(row, "qtdPallet", ui->doubleSpinBoxQtePallet->value());
@@ -180,12 +154,6 @@ bool CadastroProduto::savingProcedures(int row) {
   return true;
 }
 
-// void CadastroProduto::on_pushButtonCadForn_clicked() {
-////  CadastroCliente *cad = new CadastroCliente(this);
-////  connect(cad, &QDialog::finished, this, &CadastroProduto::updateComboboxFornecedor);
-//  updateComboboxFornecedor();
-//}
-
 void CadastroProduto::on_pushButtonCadastrar_clicked() { save(); }
 
 void CadastroProduto::on_pushButtonAtualizar_clicked() { save(); }
@@ -203,6 +171,7 @@ void CadastroProduto::on_pushButtonBuscar_clicked() {
 }
 
 void CadastroProduto::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text)
+  Q_UNUSED(text);
+
   viewRegisterById(value);
 }

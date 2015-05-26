@@ -21,7 +21,6 @@ class Venda : public RegisterDialog {
     explicit Venda(QWidget *parent = 0);
     ~Venda();
     void fecharOrcamento(const QString &idOrcamento);
-    void viewVenda(QString idVenda); // TODO: porque 2 funcoes fazendo a mesma coisa?
     virtual bool viewRegister(QModelIndex index);
     void updateValues();
 
@@ -40,12 +39,9 @@ class Venda : public RegisterDialog {
     void on_doubleSpinBoxFinal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxPgt1_editingFinished();
-    void on_doubleSpinBoxPgt1_valueChanged(double);
     void on_doubleSpinBoxPgt2_editingFinished();
-    void on_doubleSpinBoxPgt2_valueChanged(double);
     void on_doubleSpinBoxPgt3_editingFinished();
-    void on_doubleSpinBoxPgt3_valueChanged(double);
-    void on_pushButton_clicked();
+    void on_pushButtonLimparPag_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonFecharPedido_clicked();
     void on_pushButtonNFe_clicked();
@@ -76,7 +72,6 @@ class Venda : public RegisterDialog {
     void calcPrecoGlobalTotal(bool ajusteTotal = false);
     void calculoSpinBox1();
     void calculoSpinBox2();
-    void calculoSpinBox3();
     void clearFields();
     void fillComboBoxCliente();
     void fillTotals();

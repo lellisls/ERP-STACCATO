@@ -12,6 +12,7 @@ QString LineEditCEP::getValue() const {
   if (not isValid()) {
     return QString();
   }
+
   return text();
 }
 

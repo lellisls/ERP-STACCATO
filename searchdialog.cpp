@@ -1,10 +1,11 @@
-#include "searchdialog.h"
-#include "ui_searchdialog.h"
-
 #include <QMessageBox>
 #include <QSqlError>
 #include <QDebug>
+
+#include "searchdialog.h"
+#include "ui_searchdialog.h"
 #include "registerdialog.h"
+
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
   : QDialog(parent), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
@@ -42,56 +43,70 @@ SearchDialog::~SearchDialog() { delete ui; }
 
 void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
   QStringList temp = text.split(" ", QString::SkipEmptyParts);
+
   for (int i = 0; i < temp.size(); ++i) {
     temp[i].prepend("+");
     temp[i].append("*");
   }
+
   QString regex = temp.join(" ");
+
   if (text.isEmpty() or regex.isEmpty()) {
     model.setFilter(filter);
   } else {
     QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' in boolean mode)";
+
     if (not filter.isEmpty()) {
       searchFilter.append(" AND (" + filter + ")");
     }
-    //    qDebug() << "FILTER: " << searchFilter;
+
     model.setFilter(searchFilter);
   }
+
   model.select();
 }
 
 void SearchDialog::sendUpdateMessage() {
   QModelIndex index = model.index(0, 0);
+
   if (not ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
     index = ui->tableBusca->selectionModel()->selection().indexes().front();
   }
+
   selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
   QString text;
+
   foreach (QString key, textKeys) {
     if (not key.isEmpty()) {
       QVariant val = model.data(model.index(index.row(), model.fieldIndex(key)));
+
       if (val.isValid()) {
-        if (not text.isEmpty())
+        if (not text.isEmpty()){
           text.append(" - ");
+        }
+
         text.append(val.toString());
       }
     }
   }
+
   emit itemSelected(selectedId, text);
 }
 
 void SearchDialog::show() {
   model.select();
+
   QDialog::show();
 }
 
 void SearchDialog::showMaximized() {
   model.select();
+
   QDialog::showMaximized();
 }
 
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {
-  Q_UNUSED(index)
+  Q_UNUSED(index);
   sendUpdateMessage();
   ui->lineEditBusca->clear();
   close();
@@ -104,7 +119,6 @@ void SearchDialog::setFilter(const QString &value) {
   model.setFilter(filter);
   model.select();
   ui->tableBusca->resizeColumnsToContents();
-  //  qDebug() << model.lastError();
 }
 
 void SearchDialog::hideColumns(QStringList columns) {
@@ -132,35 +146,47 @@ void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
 QString SearchDialog::getText(QVariant idx) {
   QString qryTxt;
+
   foreach (QString key, textKeys) {
     if (not qryTxt.isEmpty()) {
       qryTxt += ", ";
     }
+
     qryTxt += key;
   }
+
   qryTxt = "SELECT " + qryTxt + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" +
            idx.toString() + "';";
+
   QSqlQuery qry(qryTxt);
   qry.exec();
+
   if (qry.first()) {
     QString res;
+
     foreach (QString key, textKeys) {
       QVariant val = qry.value(key);
+
       if (val.isValid()) {
         if (not res.isEmpty()) {
           res += " - ";
         }
+
         res += val.toString();
       }
     }
+
     return (res);
   }
+
   qDebug() << objectName() << " : " << __LINE__ << " : " << qry.lastError();
+
   return (QString());
 }
 
 void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
   QPair<QString, QString> pair;
+
   foreach (pair, headerData) {
     model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second);
   }
@@ -243,8 +269,9 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo",
                        "ipi", "markup", "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes",
                        "codBarras", "codIndustrial", "qtdPallet", "st", "expirado"});
+
   for (int i = 1; i < sdProd->model.columnCount(); i += 2) {
-    sdProd->ui->tableBusca->setColumnHidden(i, true);
+    sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
   }
 
   QVector<QPair<QString, QString>> headerData;

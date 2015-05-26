@@ -12,8 +12,9 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
 
   modelEntregas.setTable("pedidotransportadora");
   modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   if (not modelEntregas.select()) {
-    qDebug() << "Failed to populate TableEntregas!" << modelEntregas.lastError();
+    qDebug() << "Failed to populate TableEntregas:" << modelEntregas.lastError();
   }
 
   ui->tableEntregasCliente->setModel(&modelEntregas);
@@ -29,6 +30,7 @@ void EntregasCliente::on_pushButtonSalvar_clicked() {
 
   if (ui->checkBoxEntregue->isChecked()) {
     QSqlQuery qry;
+
     if (not qry.exec("UPDATE pedidotransportadora SET status = 'ENTREGUE' WHERE idPedido = '" + idPedido +
                      "' AND tipo = 'cliente'")) {
       qDebug() << "Erro ao marcar como entregue: " << qry.lastError();
@@ -37,8 +39,10 @@ void EntregasCliente::on_pushButtonSalvar_clicked() {
     if (not qry.exec("UPDATE venda SET status = 'FECHADO' WHERE idVenda = '" + idPedido + "'")) {
       qDebug() << "Erro ao concluir a venda:" << qry.lastError();
     }
+
   } else {
     QSqlQuery qry;
+
     if (not qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
                      "' AND tipo = 'cliente'")) {
       qDebug() << "Erro ao marcar como não entregue: " << qry.lastError();

@@ -30,6 +30,7 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
   modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("status")), "CANCELADO");
   modelOrc.setData(modelOrc.index(mapperOrc.currentIndex(), modelOrc.fieldIndex("motivoCancelamento")),
                    ui->lineEditMotivo->text());
+
   if (not modelOrc.submitAll()) {
     qDebug() << "Erro cancelando orçamento: " << modelOrc.lastError();
   }

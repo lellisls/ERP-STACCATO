@@ -16,7 +16,6 @@
 #include <QWebFrame>
 
 #include "mainwindow.h"
-#include "nfe.h"
 #include "orcamento.h"
 #include "ui_venda.h"
 #include "venda.h"
@@ -92,7 +91,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   SearchDialog::enderecoCliente(ui->itemBoxEndereco);
 
   ui->itemBoxEnderecoFat->setSearchDialog(sdEndereco);
-  //  show();
+
   showMaximized();
 }
 
@@ -113,13 +112,27 @@ void Venda::resetarPagamentos() {
   ui->comboBoxPgt1Parc->setCurrentIndex(0);
   ui->comboBoxPgt2Parc->setCurrentIndex(0);
   ui->comboBoxPgt3Parc->setCurrentIndex(0);
+
+  // TODO: properly disable/enable fields on payments edit
+//  ui->comboBoxPgt2->setDisabled(true);
+//  ui->comboBoxPgt3->setDisabled(true);
+//  ui->comboBoxPgt1Parc->setDisabled(true);
+//  ui->comboBoxPgt2Parc->setDisabled(true);
+//  ui->comboBoxPgt3Parc->setDisabled(true);
+//  ui->dateEditPgt1->setDisabled(true);
+//  ui->dateEditPgt2->setDisabled(true);
+//  ui->dateEditPgt3->setDisabled(true);
+
   montarFluxoCaixa();
 }
 
 void Venda::fecharOrcamento(const QString &idOrcamento) {
   clearFields();
+
   this->idOrcamento = idOrcamento;
+
   QSqlQuery produtos("SELECT * FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'");
+
   if (not produtos.exec()) {
     qDebug() << "Erro buscando produtos: " << produtos.lastError();
   }
@@ -127,17 +140,20 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   modelItem.setFilter("idVenda = '" + idOrcamento + "'");
 
   while (produtos.next()) {
-    //    qDebug() << "Adding to venda";
     int row = modelItem.rowCount();
     modelItem.insertRow(row);
+
     for (int field = 0; field < produtos.record().count(); field++) {
       modelItem.setData(modelItem.index(row, field), produtos.value(field));
     }
+
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("status")), "PENDENTE");
   }
+
   ui->tableVenda->resizeColumnsToContents();
 
   QSqlQuery qry("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'");
+
   if (not qry.exec()) {
     qDebug() << "Erro buscando orcamento: " << qry.lastError();
   }
@@ -150,32 +166,33 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
                                                  " AND ativo = 1");
   ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
                                                     " AND ativo = 1");
-  //  qDebug() << "idCliente: " << qry.value("idCliente").toString();
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
 
   int row = modelVenda.rowCount();
   modelVenda.insertRow(row);
+
   for (int field = 0; field < modelVenda.columnCount(); field++) {
     modelVenda.setData(modelVenda.index(row, field), qry.value(field));
   }
+
   fillTotals();
   resetarPagamentos();
 
   modelFluxoCaixa.setFilter("idVenda = '" + idOrcamento + "'");
-
-  qDebug() << "idOrcamento: " << idOrcamento;
 }
 
 bool Venda::cadastrar() { return true; }
 
 bool Venda::verifyFields(int row) {
   Q_UNUSED(row);
+
   return true;
 }
 
 bool Venda::verifyRequiredField(QLineEdit *line) {
   line->objectName();
+
   return true;
 }
 
@@ -188,10 +205,11 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   double minimoFrete = 0, porcFrete = 0;
 
   QSqlQuery qryFrete;
-  if (not qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) +
-                        "'")) {
+
+  if (not qryFrete.exec("SELECT * FROM Loja WHERE idLoja = " + QString::number(UserSession::getLoja()))) {
     qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
   }
+
   if (qryFrete.next()) {
     minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
     porcFrete = qryFrete.value("porcentagemFrete").toDouble();
@@ -209,16 +227,21 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);  // Pr. Parcial
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
   }
+
   double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
+
   if (ui->checkBoxFreteManual->isChecked()) {
     frete = ui->doubleSpinBoxFrete->value();
     qDebug() << "novo frete: " << frete;
   }
+
   double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
   subTotal = subTotalItens * (1.0 - descGlobal);
+
   if (ajusteTotal) {
     const double Final = ui->doubleSpinBoxFinal->value();
     subTotal = Final - frete;
+
     if (subTotalItens == 0.0) {
       descGlobal = 0;
     } else {
@@ -246,6 +269,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 
 void Venda::fillTotals() {
   QSqlQuery query;
+
   if (not query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
     qDebug() << "Erro buscando orçamento: " << query.lastError();
     qDebug() << "query: " << query.lastQuery();
@@ -331,24 +355,6 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   if (not qryOrc.first()) {
     qDebug() << "Não encontrou orçamento: " << qryOrc.size();
   }
-
-  //  qDebug() << "-------------------";
-  //  qDebug() << "idOrcamento: " << qryOrc.value("idOrcamento");
-  //  qDebug() << "idLoja: " << qryOrc.value("idLoja");
-  //  qDebug() << "idUsuario: " << qryOrc.value("idUsuario");
-  //  qDebug() << "idCliente: " << qryOrc.value("idCliente");
-  //  qDebug() << "idEnderecoEntrega: " << qryOrc.value("idEnderecoEntrega");
-  //  qDebug() << "idEnderecoFaturamento: " << ui->itemBoxEnderecoFat->value();
-  //  qDebug() << "idProfissional: " << qryOrc.value("idProfissional");
-  //  qDebug() << "data: " << qryOrc.value("data");
-  //  qDebug() << "subTotalBru: " << qryOrc.value("subTotalBru");
-  //  qDebug() << "subTotalLiq: " << qryOrc.value("subTotalLiq");
-  //  qDebug() << "frete: " << qryOrc.value("frete");
-  //  qDebug() << "descontoPorc: " << qryOrc.value("descontoPorc");
-  //  qDebug() << "descontoReais: " << qryOrc.value("descontoReais");
-  //  qDebug() << "total: " << qryOrc.value("total");
-  //  qDebug() << "validade: " << qryOrc.value("validade");
-  //  qDebug() << "status: " << qryOrc.value("status");
 
   if (not qry.prepare("INSERT INTO Venda (idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
                       "idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, "
@@ -472,7 +478,6 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   }
 
   close();
-  //  cancel();
 }
 
 void Venda::on_pushButtonNFe_clicked() {
@@ -487,37 +492,9 @@ void Venda::on_pushButtonNFe_clicked() {
 
   foreach (QModelIndex index, list) { lista.append(index.row()); }
 
-  cadNfe->gerarNFe(lista);
+  cadNfe->prepararNFe(lista);
   cadNfe->showMaximized();
 }
-
-void Venda::viewVenda(QString idVenda) {
-  clearFields();
-  idOrcamento = idVenda;
-
-  setWindowTitle("Venda: " + idVenda);
-  ui->pushButtonCancelar->hide();
-  ui->pushButtonFecharPedido->hide();
-
-  modelItem.setFilter("idVenda = '" + idVenda + "'");
-  ui->tableVenda->resizeColumnsToContents();
-}
-
-void Venda::on_doubleSpinBoxPgt1_valueChanged(double) {
-  //  montarFluxoCaixa();
-}
-
-void Venda::on_doubleSpinBoxPgt2_valueChanged(double) {
-  //  montarFluxoCaixa();
-}
-
-void Venda::on_doubleSpinBoxPgt3_valueChanged(double) {
-  //  montarFluxoCaixa();
-}
-
-// void Venda::on_doubleSpinBoxRestante_valueChanged(double value) {
-//  Q_UNUSED(value);
-//}
 
 void Venda::calculoSpinBox1() {
   double pgt1 = ui->doubleSpinBoxPgt1->value();
@@ -537,7 +514,6 @@ void Venda::calculoSpinBox1() {
     ui->doubleSpinBoxPgt2->setMaximum(pgt2);
     restante = 0;
   }
-  //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
 void Venda::on_doubleSpinBoxPgt1_editingFinished() {
@@ -553,7 +529,6 @@ void Venda::calculoSpinBox2() {
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
   ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
-  //  ui->doubleSpinBoxRestante->setValue(restante);
 }
 
 void Venda::on_doubleSpinBoxPgt2_editingFinished() {
@@ -561,19 +536,7 @@ void Venda::on_doubleSpinBoxPgt2_editingFinished() {
   montarFluxoCaixa();
 }
 
-void Venda::calculoSpinBox3() {
-  //  double pgt1 = ui->doubleSpinBoxPgt1->value();
-  //  double pgt2 = ui->doubleSpinBoxPgt2->value();
-  //  double pgt3 = ui->doubleSpinBoxPgt3->value();
-  //  double total = ui->doubleSpinBoxTotalPag->value();
-  //  double restante = total - (pgt1 + pgt2 + pgt3);
-  //  //  ui->doubleSpinBoxRestante->setValue(restante);
-  //  ui->doubleSpinBoxPgt1->setMaximum(pgt1 + restante);
-  //  ui->doubleSpinBoxPgt2->setMaximum(pgt2 + restante);
-}
-
 void Venda::on_doubleSpinBoxPgt3_editingFinished() {
-  calculoSpinBox3();
   montarFluxoCaixa();
 }
 
@@ -639,7 +602,9 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
 
 bool Venda::savingProcedures(int row) {
   Q_UNUSED(row);
+
   montarFluxoCaixa();
+
   return true;
 }
 
@@ -683,7 +648,6 @@ bool Venda::viewRegister(QModelIndex index) {
   modelItem.select();
   modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
   modelFluxoCaixa.select();
-  //  novoItem();
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
   fillTotals();
@@ -711,8 +675,6 @@ void Venda::montarFluxoCaixa() {
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")),
                               UserSession::getLoja());
-      //      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idPagamento")),
-      //      );
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "1. " + ui->comboBoxPgt1->currentText());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")),
@@ -721,7 +683,6 @@ void Venda::montarFluxoCaixa() {
                               ui->doubleSpinBoxPgt1->value() / parcelas1);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt1->date().addMonths(i));
-      //                              QDate::currentDate().addMonths(i));
       ++row;
     }
   } else {
@@ -742,7 +703,6 @@ void Venda::montarFluxoCaixa() {
                               ui->doubleSpinBoxPgt2->value() / parcelas2);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt2->date().addMonths(i));
-      //                              QDate::currentDate().addMonths(i));
       ++row;
     }
   }
@@ -762,7 +722,6 @@ void Venda::montarFluxoCaixa() {
                               ui->doubleSpinBoxPgt3->value() / parcelas3);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt3->date().addMonths(i));
-      //                              QDate::currentDate().addMonths(i));
       ++row;
     }
   }
@@ -788,15 +747,13 @@ void Venda::on_comboBoxPgt3Parc_currentTextChanged(const QString &text) {
   montarFluxoCaixa();
 }
 
-// TODO: colocar campos de data nos pagamentos para indicar a data do pagamento? (cheque, cartão etc)
-
 void Venda::on_dateEditPgt1_dateChanged(const QDate &) { montarFluxoCaixa(); }
 
 void Venda::on_dateEditPgt2_dateChanged(const QDate &) { montarFluxoCaixa(); }
 
 void Venda::on_dateEditPgt3_dateChanged(const QDate &) { montarFluxoCaixa(); }
 
-void Venda::on_pushButton_clicked() { resetarPagamentos(); }
+void Venda::on_pushButtonLimparPag_clicked() { resetarPagamentos(); }
 
 void Venda::on_doubleSpinBoxFinal_editingFinished() {
   if (modelItem.rowCount() == 0 or ui->doubleSpinBoxTotal->value() == 0) {
@@ -835,14 +792,14 @@ void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
 
-void Venda::on_pushButtonImprimir_clicked()
+void Venda::on_pushButtonImprimir_clicked() // FIXME: fix print alignment
 {
-  QPrinter printer;
-  //  printer.setFullPage(true);
-  //  printer.setResolution(300);
-  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
+  QPrinter printer(QPrinter::ScreenResolution);
+//    printer.setFullPage(true);
+//    printer.setResolution(300);
+//  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
   printer.setOrientation(QPrinter::Landscape);
-  printer.setPaperSize(QPrinter::A4);
+//  printer.setPaperSize(QPrinter::A4);
   QPrintPreviewDialog preview(&printer, this, Qt::Window);
   preview.setModal(true);
   preview.setWindowTitle("Impressão de Venda");
@@ -857,17 +814,21 @@ void Venda::print(QPrinter *printer) { // TODO: this is just a stub, implement
   QDir appDir(QApplication::applicationDirPath());
   QFile file(appDir.absoluteFilePath("orcamento.html"));
   QString html;
+
   if (file.open(QFile::ReadOnly)) {
     QByteArray data = file.readAll();
     QTextCodec *codec = Qt::codecForHtml(data);
     html = codec->toUnicode(data);
     file.close();
   }
+
   QString str = "SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "';";
   QSqlQuery queryLoja(str);
+
   if (not queryLoja.exec(str)) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryLoja.lastError();
   }
+
   queryLoja.first();
 
   // Loja
@@ -941,7 +902,9 @@ void Venda::print(QPrinter *printer) { // TODO: this is just a stub, implement
   frame->setHtml(html);
   //  frame->setTextSizeMultiplier(1.2);
   frame->print(printer);
+
   QFile outputFile(appDir.absoluteFilePath("orc.html"));
+
   if (outputFile.open(QIODevice::WriteOnly)) {
     QTextStream out(&outputFile);
     out << html;

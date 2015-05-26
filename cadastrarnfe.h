@@ -14,9 +14,9 @@ class CadastrarNFE : public QDialog {
     Q_OBJECT
 
   public:
-    explicit CadastrarNFE(QString idOrcamento, QWidget *parent = 0);
+    explicit CadastrarNFE(QString idVenda, QWidget *parent = 0);
     ~CadastrarNFE();
-    void gerarNFe(QList<int> items);
+    void prepararNFe(QList<int> items);
     void setItemData(int row, const QString &key, const QVariant &value);
     QVariant getItemData(int row, const QString &key);
 
@@ -34,20 +34,18 @@ class CadastrarNFE : public QDialog {
     // attributes
     Ui::CadastrarNFE *ui;
     EditableSqlModel modelNFe, modelItem, modelLoja, modelVenda, modelProd;
-    QString idOrcamento;
+    QString idVenda;
     QString arquivo;
     QString chaveAcesso;
     QDataWidgetMapper mapper;
     // methods
-    void writeTXT();
-    bool generateNFE();
     QString criarChaveAcesso();
     QString clearStr(QString str);
     QVariant getFromItemModel(int row, QString column);
     QVariant getFromLoja(QString column);
     QVariant getFromVenda(QString column);
     QString calculaDigitoVerificador(QString chave);
-    bool writeTXT(QString chave);
+    bool writeTXT();
     QVariant getFromProdModel(int row, QString column);
 };
 

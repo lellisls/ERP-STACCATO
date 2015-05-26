@@ -39,9 +39,11 @@ void CadastroProfissional::updateMode() {
 
 bool CadastroProfissional::verifyFields(int row) {
   Q_UNUSED(row);
+
   if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditNome, ui->lineEditTel})) {
     return false;
   }
+
   return true;
 }
 
@@ -56,6 +58,7 @@ bool CadastroProfissional::savingProcedures(int row) {
   setData(row, "cc", ui->lineEditCC->text());
   setData(row, "nomeBanco", ui->lineEditNomeBancario->text());
   setData(row, "cpfBanco", ui->lineEditCPFBancario->text());
+
   return true;
 }
 

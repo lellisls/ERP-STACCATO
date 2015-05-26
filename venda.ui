@@ -926,7 +926,7 @@
                 </spacer>
                </item>
                <item row="0" column="0">
-                <widget class="QPushButton" name="pushButton">
+                <widget class="QPushButton" name="pushButtonLimparPag">
                  <property name="text">
                   <string>Limpar pagamentos</string>
                  </property>
@@ -1056,7 +1056,7 @@
   <tabstop>comboBoxPgt3Parc</tabstop>
   <tabstop>doubleSpinBoxPgt3</tabstop>
   <tabstop>dateEditPgt3</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>pushButtonLimparPag</tabstop>
   <tabstop>doubleSpinBoxTotalPag</tabstop>
   <tabstop>pushButtonFecharPedido</tabstop>
   <tabstop>pushButtonNFe</tabstop>

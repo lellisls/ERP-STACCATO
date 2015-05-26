@@ -6,9 +6,11 @@
 
 Endereco::Endereco(int idEndereco, QString table) : m_idEndereco(-1) {
   QSqlQuery qry("SELECT * FROM " + table + " WHERE idEndereco = " + QString::number(idEndereco) + "");
+
   if (not qry.exec() or not qry.first()) {
     return;
   }
+
   m_idEndereco = idEndereco;
   m_descricao = qry.value("descricao").toString();
   m_cep = qry.value("cep").toString();

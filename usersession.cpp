@@ -18,7 +18,7 @@ bool UserSession::login(QString user, QString password) {
   query->bindValue(":user", user);
   query->bindValue(":password", password);
   if (not query->exec()) {
-    qDebug() << "Login query error! " << query->lastError();
+    qDebug() << "Login query error: " << query->lastError();
   }
   //  qDebug() << query->executedQuery();
   return query->first();
@@ -37,7 +37,7 @@ QString UserSession::getTipo() { return (query->value("tipo").toString()); }
 QString UserSession::getSigla() { return (query->value("sigla").toString()); }
 
 QString UserSession::getSiglaLoja() {
-  QString str = "SELECT sigla FROM Loja WHERE idLoja = '" + QString::number(getLoja()) + "';";
+  QString str = "SELECT sigla FROM Loja WHERE idLoja = " + QString::number(getLoja());
   QSqlQuery queryLoja(str);
   if (not queryLoja.exec(str)) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();

@@ -34,6 +34,7 @@ bool CadastroTransportadora::verifyFields(int row) {
                                        ui->lineEditTel})) {
     return false;
   }
+
   if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
     return false;
   }
@@ -54,6 +55,7 @@ bool CadastroTransportadora::savingProcedures(int row) {
   setData(row, "antt", ui->lineEditANTT->text());
   setData(row, "placaVeiculo", ui->lineEditPlaca->text());
   setData(row, "idEndereco", ui->widgetEnd->getId());
+
   return true;
 }
 
@@ -83,12 +85,16 @@ bool CadastroTransportadora::viewRegister(QModelIndex idx) {
   if (not RegisterDialog::viewRegister(idx)) {
     return false;
   }
+
   bool ok = false;
   int idEnd = model.data(model.index(idx.row(), model.fieldIndex("idEndereco"))).toInt(&ok);
+
   if (ok) {
     ui->widgetEnd->viewCadastro(idEnd);
   }
+
   mapper.setCurrentModelIndex(idx);
+
   return true;
 }
 
@@ -166,7 +172,9 @@ bool CadastroTransportadora::newRegister() {
   if (not RegisterDialog::newRegister()) {
     return false;
   }
+
   novoItem();
+
   return true;
 }
 

@@ -53,7 +53,6 @@ void ImportaTeste::importar() {
 
     if (fornecedores.size() > 0) {
       mostraApenasEstesFornecedores();
-      //      qDebug() << "filter: " << ids;
       model.setFilter(ids);
       model.select();
 
@@ -62,12 +61,15 @@ void ImportaTeste::importar() {
 
       int current = 0;
       query.first();
+
       while (query.next()) {
         values.insert(0, query.value(0).toString());
+
         if (not values.at(fields.indexOf("fornecedor")).isEmpty()) {
           progressDialog->setValue(current++);
 
           leituraProduto(query);
+
           if (not consistenciaDados()) {
             continue;
           }
@@ -90,13 +92,13 @@ void ImportaTeste::importar() {
       progressDialog->cancel();
     } else {
       QMessageBox::warning(this, "Aviso!", "Erro ao cadastrar fornecedores.");
-      qDebug() << "Erro ao cadastrar fornecedores.";
       return;
     }
-    qDebug() << "Done!";
+
   } else {
-    qDebug() << "db failed :( " << db.lastError();
+    qDebug() << "db failed: " << db.lastError();
   }
+
   ui->tableView->resizeColumnsToContents();
   showMaximized();
 }
@@ -115,17 +117,16 @@ void ImportaTeste::setProgressDialog() {
 bool ImportaTeste::readFile() {
   file = QFileDialog::getOpenFileName(this, "Importar tabela genérica", QDir::currentPath(),
                                       tr("Excel (*.xlsx)"));
-  qDebug() << "file: " << file;
+
   if (file.isEmpty()) {
-    //    qDebug() << "closing: " << close();
     return false;
   }
+
   return true;
 }
 
 void ImportaTeste::readValidade() {
   validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
-  //  validade = 10;
 }
 
 void ImportaTeste::setModelAndTable() {
@@ -137,9 +138,11 @@ void ImportaTeste::setModelAndTable() {
   proxyModel = new ImportaExportProxy(model.fieldIndex("expirado"));
   proxyModel->setSourceModel(&model);
   ui->tableView->setModel(proxyModel);
+
   for (int i = 1; i < model.columnCount(); i += 2) {
     ui->tableView->setColumnHidden(i, true);
   }
+
   ui->tableView->setColumnHidden(model.fieldIndex("idProduto"), true);
   ui->tableView->setColumnHidden(model.fieldIndex("idFornecedor"), true);
   ui->tableView->setItemDelegateForColumn(model.fieldIndex("validade"),
@@ -149,9 +152,9 @@ void ImportaTeste::setModelAndTable() {
 void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
   while (query.next()) {
     QString fornecedor = query.value(0).toString();
+
     if (not fornecedor.isEmpty()) {
       int id = buscarCadastrarFornecedor(fornecedor);
-      //      qDebug() << "id: " << id << " - " << fornecedor;
       fornecedores.insert(fornecedor, id);
     }
   }
@@ -184,30 +187,35 @@ void ImportaTeste::contaProdutos() {
 }
 
 bool ImportaTeste::consistenciaDados() {
+    // TODO: pintar células informando erro
+
   if (values.at(fields.indexOf("estoque")).isEmpty()) {
     values[fields.indexOf("estoque")] = "0";
   }
+
   if (values.at(fields.indexOf("descontinuado")).isEmpty()) {
     values[fields.indexOf("descontinuado")] = "0";
   }
+
   if (values.at(fields.indexOf("ui")).isEmpty()) {
     values[fields.indexOf("ui")] = "1";
   }
+
   if (values.at(fields.indexOf("ncm")).isEmpty()) {
     values[fields.indexOf("ncm")] = "0";
   }
 
-  if (values.at(fields.indexOf("ncm")).length() != 8) { // NCM pode ter o código EX de 10 digitos
-    // TODO: pintar célula informando erro
-  }
+  // TODO: NCM pode ter o código EX de 10 digitos
+  //  if (values.at(fields.indexOf("ncm")).length() != 8) {
+  //  }
 
   if (values.at(fields.indexOf("codBarras")).isEmpty()) {
     values[fields.indexOf("codBarras")] = "0";
   }
 
   values[fields.indexOf("custo")] = values[fields.indexOf("custo")].replace(",", ".");
+
   if (values.at(fields.indexOf("custo")).toDouble() <= 0.0) {
-    qDebug() << "custo: " << values.at(fields.indexOf("custo")).toDouble();
     return false;
   }
 
@@ -240,6 +248,7 @@ void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto
   if (not produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
     qDebug() << "Erro marcando produto atualizado como não expirado: " << produto.lastError();
   }
+
   QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto.toInt()).first();
   model.setData(model.index(index.row(), model.fieldIndex("expirado")), 0);
 }
@@ -289,10 +298,12 @@ int ImportaTeste::buscarCadastrarFornecedor(QString fornecedor) {
   if (not queryFornecedor.exec("SELECT * FROM Fornecedor WHERE razaoSocial = '" + fornecedor + "'")) {
     qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
   }
+
   if (queryFornecedor.next()) {
     return queryFornecedor.value("idFornecedor").toInt();
   } else {
     QSqlQuery cadastrar;
+
     if (not cadastrar.exec("INSERT INTO Fornecedor (razaoSocial) VALUES ('" + fornecedor + "')")) {
       qDebug() << "Erro cadastrando fornecedor: " << cadastrar.lastError();
     } else {
@@ -306,11 +317,8 @@ int ImportaTeste::buscarCadastrarFornecedor(QString fornecedor) {
 void ImportaTeste::on_pushButtonCancelar_clicked() { QSqlQuery("ROLLBACK").exec(); }
 
 void ImportaTeste::on_pushButtonSalvar_clicked() {
-  qDebug() << "idFornecedor: " << model.fieldIndex("idFornecedor");
   if (model.submitAll()) {
-    qDebug() << "submeteu model, comittando sql";
     QSqlQuery("COMMIT").exec();
-    // cadastrar preços
 
     QSqlQuery qryPrecos;
 
@@ -320,7 +328,6 @@ void ImportaTeste::on_pushButtonSalvar_clicked() {
                        QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") +
                        "' AS validadeFim FROM Produto "
                        "WHERE atualizarTabelaPreco = 1")) {
-      qDebug() << "Preços inseridos com sucesso: " << qryPrecos.lastQuery();
       qryPrecos.exec("UPDATE Produto SET atualizarTabelaPreco = 0");
       qryPrecos.exec("COMMIT");
     } else {
@@ -329,6 +336,7 @@ void ImportaTeste::on_pushButtonSalvar_clicked() {
     }
 
     close();
+
   } else {
     qDebug() << "Erro submetendo model: " << model.lastError();
     QMessageBox::warning(this, "Aviso!", "Ocorreu um erro.");

@@ -6,5 +6,6 @@ DateFormatDelegate::~DateFormatDelegate() {}
 
 QString DateFormatDelegate::displayText(const QVariant &value, const QLocale &locale) const {
   Q_UNUSED(locale);
+
   return value.toDate().toString(dateFormat);
 }

@@ -26,15 +26,16 @@ void LoginConfig::on_pushButtonSalvar_clicked() {
   settings.setValue("port", ui->lineEditPort->text());
 
   if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())) {
-    //      qDebug() << "cast ok!";
     window->setHostname(ui->lineEditHostname->text());
     window->setUsername(ui->lineEditUsername->text());
     window->setPassword(ui->lineEditPassword->text());
     window->setPort(ui->lineEditPort->text());
+
     if (not window->dbConnect()) {
       return;
     }
   }
+
   close();
 }
 

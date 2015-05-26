@@ -30,18 +30,21 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
   QSize size = m_searchButton->minimumSizeHint();
   int x = rect().right();
   int y = (rect().height() - size.height()) / 2.0;
+
   if (m_searchDialog) {
     x -= size.width();
     m_searchButton->setGeometry(QRect(QPoint(x, y), size));
   } else {
     m_searchButton->hide();
   }
+
   if (m_registerDialog) {
     x -= size.width();
     m_plusButton->setGeometry(QRect(QPoint(x, y), size));
   } else {
     m_plusButton->hide();
   }
+
   int left, top, bottom;
   getTextMargins(&left, &top, 0, &bottom);
   setTextMargins(left, top, 2 + rect().right() - x + 2, bottom);
@@ -58,6 +61,7 @@ void ItemBox::edit() {
     if (not m_value.isNull()) {
       m_registerDialog->viewRegisterById(m_value);
     }
+
     m_registerDialog->show();
   }
 }
@@ -74,13 +78,12 @@ RegisterDialog *ItemBox::registerDialog() { return m_registerDialog; }
 QVariant ItemBox::value() const { return m_value; }
 
 void ItemBox::setValue(const QVariant &value) {
-  //  qDebug() << "Set value : " << value;
-  this->m_value = value;
+  m_value = value;
+
   if (value.isNull()) {
     setText("");
   } else if (m_searchDialog) {
     setText(m_searchDialog->getText(value));
-    //    qDebug() << "Text = " << text();
   }
 }
 
@@ -90,19 +93,17 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
 }
 
 void ItemBox::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text)
-  //  qDebug() << objectName() << " : changeItem : " << __LINE__ << ", value = " << value << ", text = " <<
-  //  text;
+  Q_UNUSED(text);
 
   setValue(value);
-  //  setText(text);
+
   if (m_registerDialog and m_registerDialog->isVisible()) {
     m_registerDialog->close();
   }
+
   if (m_searchDialog and m_searchDialog->isVisible()) {
     m_searchDialog->close();
   }
-  //  qDebug() << "Value changed: " << value << ", " << text;
 }
 
 void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {

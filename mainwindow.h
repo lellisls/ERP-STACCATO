@@ -46,9 +46,7 @@ class MainWindow : public QMainWindow {
     void on_actionCriarOrcamento_triggered();
     void on_actionGerenciar_Lojas_triggered();
     void on_actionGerenciar_Transportadoras_triggered();
-    void on_actionImportarTabelaFornecedor_triggered();
     void on_actionImportaTeste_triggered();
-    void on_actionRestaurar_BD_triggered();
     void on_lineEditBuscaContasPagar_textChanged(const QString &text);
     void on_lineEditBuscaContasReceber_textChanged(const QString &text);
     void on_lineEditBuscaEntregas_textChanged(const QString &arg1);

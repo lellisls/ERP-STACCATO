@@ -10,15 +10,19 @@ BackgroundProxyModel::~BackgroundProxyModel() {}
 QVariant BackgroundProxyModel::data(const QModelIndex &proxyIndex, int role) const {
   if ((role == Qt::BackgroundRole) and (proxyIndex.column() == column)) {
     int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
+
     if (value >= 5) {
       return QBrush(Qt::green);
     }
+
     if (value >= 3) {
       return QBrush(Qt::yellow);
     }
+
     if (value < 3) {
       return QBrush(Qt::red);
     }
   }
+
   return QIdentityProxyModel::data(proxyIndex, role);
 }

@@ -161,3 +161,5 @@ CONFIG(release, debug|release){
 message(Deactivating terminal)
 CONFIG -= console
 }
+
+include(QtRptProject/QtRPT/QtRPT.pri)

@@ -47,7 +47,7 @@ class Venda : public RegisterDialog {
     void on_pushButtonNFe_clicked();
     void on_pushButtonVoltar_clicked();
     void on_pushButtonImprimir_clicked();
-    void print(QPrinter *printer);
+    void setValue(int recNo, QString paramName, QVariant & paramValue, int reportPage);
 
   signals:
     void finished();

@@ -336,7 +336,7 @@
         <location filename="../EditFldDlg.cpp" line="278"/>
         <source>The field contains empty line at the end.
 Remove it?</source>
-        <translation>O campo contém uma linha vazia no final
+        <translation>O campo contém uma linha vazia no final.
 Deseja removê-la?</translation>
     </message>
     <message>
@@ -1686,12 +1686,12 @@ Deseja salvar?</translation>
     <message>
         <location filename="../ReportBand.cpp" line="65"/>
         <source>Report title</source>
-        <translation>Título do Relatório</translation>
+        <translation>Título do relatório</translation>
     </message>
     <message>
         <location filename="../ReportBand.cpp" line="71"/>
         <source>Report summary</source>
-        <translation>Resumo do Relatório</translation>
+        <translation>Resumo do relatório</translation>
     </message>
     <message>
         <location filename="../ReportBand.cpp" line="77"/>
@@ -1706,17 +1706,17 @@ Deseja salvar?</translation>
     <message>
         <location filename="../ReportBand.cpp" line="89"/>
         <source>Master band</source>
-        <translation>Banda Principal</translation>
+        <translation>Banda principal</translation>
     </message>
     <message>
         <location filename="../ReportBand.cpp" line="96"/>
         <source>Master footer</source>
-        <translation>Rodapé Principal</translation>
+        <translation>Rodapé principal</translation>
     </message>
     <message>
         <location filename="../ReportBand.cpp" line="102"/>
         <source>Master header</source>
-        <translation>Cabeçalho Principal</translation>
+        <translation>Cabeçalho principal</translation>
     </message>
     <message>
         <location filename="../ReportBand.cpp" line="108"/>
@@ -1774,7 +1774,7 @@ Deseja salvar?</translation>
     <message>
         <location filename="../SettingDlg.ui" line="95"/>
         <source>Internationalization</source>
-        <translation>Língua</translation>
+        <translation>Internacionalização</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="103"/>
@@ -1784,32 +1784,32 @@ Deseja salvar?</translation>
     <message>
         <location filename="../SettingDlg.ui" line="111"/>
         <source>System Default</source>
-        <translation>Predefinição de Sistema</translation>
+        <translation>Padrão do Sistema</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="116"/>
         <source>Arabic عربي</source>
-        <translation type="unfinished"></translation>
+        <translation>Árabe</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="121"/>
         <source>American English</source>
-        <translation></translation>
+        <translation>Inglês Americano</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="126"/>
         <source>Chinese</source>
-        <translation></translation>
+        <translation>Chinês</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="131"/>
         <source>Dutch</source>
-        <translation></translation>
+        <translation>Holandês</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="136"/>
         <source>French</source>
-        <translation></translation>
+        <translation>Francês</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="141"/>
@@ -1819,7 +1819,7 @@ Deseja salvar?</translation>
     <message>
         <location filename="../SettingDlg.ui" line="146"/>
         <source>German</source>
-        <translation></translation>
+        <translation>Alemão</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="151"/>
@@ -1829,27 +1829,27 @@ Deseja salvar?</translation>
     <message>
         <location filename="../SettingDlg.ui" line="156"/>
         <source>Russian Русский</source>
-        <translation></translation>
+        <translation>Russo</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="161"/>
         <source>Serbian</source>
-        <translation type="unfinished"></translation>
+        <translation>Sérvio</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="166"/>
         <source>Serbian Latin</source>
-        <translation type="unfinished"></translation>
+        <translation>Latim Sérvio</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="171"/>
         <source>Spanish</source>
-        <translation type="unfinished"></translation>
+        <translation>Espanhol</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="176"/>
         <source>Ukraine Український</source>
-        <translation type="unfinished"></translation>
+        <translation>Ucraniano</translation>
     </message>
     <message>
         <location filename="../SettingDlg.ui" line="189"/>
@@ -1876,9 +1876,9 @@ Deseja salvar?</translation>
         <source>The language for this application has been changed.
 The change will take effect the next time the application is started.
 Restart application?</source>
-        <translation>A lingua para esta aplicação foi alterada
-As alterações terão efeito da proxima vez que a aplicação iniciar
-Reiniciar Aplicação?</translation>
+        <translation>A língua para esta aplicação foi alterada
+As alterações terão efeito na proxima vez que a aplicação iniciar
+Reiniciar aplicação?</translation>
     </message>
 </context>
 <context>
@@ -1886,17 +1886,17 @@ Reiniciar Aplicação?</translation>
     <message>
         <location filename="../SqlDesigner.ui" line="34"/>
         <source>Custom DS</source>
-        <translation>DS Customizado</translation>
+        <translation>Fonte de dados Customizado</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="44"/>
         <source>SQL DS</source>
-        <translation>SQL DS</translation>
+        <translation>Fonte de dados SQL</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="51"/>
         <source>XML DS</source>
-        <translation>XML DS</translation>
+        <translation>Fonte de dados XML</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="88"/>
@@ -1952,7 +1952,7 @@ Reiniciar Aplicação?</translation>
     <message>
         <location filename="../SqlDesigner.ui" line="182"/>
         <source>Host name</source>
-        <translation>Nome de anfitrião</translation>
+        <translation>Nome do servidor</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="196"/>
@@ -1962,7 +1962,7 @@ Reiniciar Aplicação?</translation>
     <message>
         <location filename="../SqlDesigner.ui" line="203"/>
         <source>Connection name</source>
-        <translation>Nome da Conexão</translation>
+        <translation>Nome da conexão</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="210"/>
@@ -1972,7 +1972,7 @@ Reiniciar Aplicação?</translation>
     <message>
         <location filename="../SqlDesigner.ui" line="288"/>
         <source>SQL query</source>
-        <translation>SQL query</translation>
+        <translation>Query SQL</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="324"/>
@@ -2032,7 +2032,7 @@ Reiniciar Aplicação?</translation>
         <location filename="../SqlDesigner.ui" line="467"/>
         <location filename="../SqlDesigner.ui" line="470"/>
         <source>Add relationship</source>
-        <translation>Adicionar Relacionamento</translation>
+        <translation>Adicionar relacionamento</translation>
     </message>
     <message>
         <location filename="../SqlDesigner.ui" line="479"/>

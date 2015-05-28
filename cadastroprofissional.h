@@ -54,6 +54,13 @@ class CadastroProfissional : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroProfissional *ui;
+
+    // RegisterDialog interface
+  public:
+    bool viewRegister(QModelIndex idx);
+
+  public slots:
+    void changeItem(QVariant value, QString text);
 };
 
 #endif // CADASTROPROFISSIONAL_H

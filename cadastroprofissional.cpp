@@ -37,6 +37,24 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
+bool CadastroProfissional::viewRegister(QModelIndex idx)
+{
+  if(not RegisterDialog::viewRegister(idx)){
+    return false;
+  }
+
+  mapper.setCurrentModelIndex(idx);
+
+  return true;
+}
+
+void CadastroProfissional::changeItem(QVariant value, QString text)
+{
+  Q_UNUSED(text);
+
+  viewRegisterById(value);
+}
+
 bool CadastroProfissional::verifyFields(int row) {
   Q_UNUSED(row);
 
@@ -83,5 +101,7 @@ void CadastroProfissional::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroProfissional::on_pushButtonBuscar_clicked() {
   SearchDialog *sdProfissional = SearchDialog::profissional(this);
+  connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::changeItem);
   sdProfissional->show();
 }
+

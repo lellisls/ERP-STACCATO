@@ -39,7 +39,6 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
 
   setupUi();
 
-  // TODO: Filtrar para não aparecer o próprio cliente na lista.
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
 
@@ -320,6 +319,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   model.select();
   mapper.setCurrentModelIndex(idx);
 
+  ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data(primaryKey).toString() + ")");
   modelEnd.setFilter("idCliente = '" + data(primaryKey).toString() + "'");
 
   if (not modelEnd.select()) {

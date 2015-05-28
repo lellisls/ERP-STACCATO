@@ -1153,8 +1153,8 @@ void QtRPT::printExec(bool maximum, bool direct, QString printerName) {
                 list.first()->setZoomMode(QPrintPreviewWidget::FitToWidth);
         }
 
-        connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPreview(QPrinter*)));
-        //preview.setWindowState(Qt::WindowMaximized); //Qt BUG https://bugreports.qt-project.org/browse/QTBUG-14517
+        connect(&preview, &QPrintPreviewDialog::paintRequested, this, &QtRPT::printPreview);
+        preview.setWindowState(Qt::WindowMaximized);
         QRect geom = QApplication::desktop()->availableGeometry();
         geom.setTop(30);
         geom.setLeft(5);
@@ -1169,17 +1169,17 @@ void QtRPT::printExec(bool maximum, bool direct, QString printerName) {
         icon.addPixmap(QPixmap(QString::fromUtf8(":/pdf.png")), QIcon::Normal, QIcon::On);
         QAction *actExpToPdf = new QAction(icon,tr("Save as PDF"),this);
         actExpToPdf->setObjectName("actExpToPdf");
-        connect(actExpToPdf, SIGNAL(triggered()), SLOT(exportTo()));
+        connect(actExpToPdf, &QAction::triggered, this, &QtRPT::exportTo);
 
         icon.addPixmap(QPixmap(QString::fromUtf8(":/html.png")), QIcon::Normal, QIcon::On);
         QAction *actExpToHtml = new QAction(icon,tr("Save as HTML"),this);
         actExpToHtml->setObjectName("actExpToHtml");
-        connect(actExpToHtml, SIGNAL(triggered()), SLOT(exportTo()));
+        connect(actExpToHtml, &QAction::triggered, this, &QtRPT::exportTo);
 
         icon.addPixmap(QPixmap(QString::fromUtf8(":/html.png")), QIcon::Normal, QIcon::On);
         QAction *actExpToOdt = new QAction(icon,tr("Save as ODT"),this);
         actExpToOdt->setObjectName("actExpToOdt");
-        connect(actExpToOdt, SIGNAL(triggered()), SLOT(exportTo()));
+        connect(actExpToOdt, &QAction::triggered, this, &QtRPT::exportTo);
 
         QList<QToolBar *> l1 = preview.findChildren<QToolBar *>();
         l1.at(0)->addAction(actExpToPdf);

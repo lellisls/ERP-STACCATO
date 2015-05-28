@@ -22,6 +22,13 @@ ImportaTeste::ImportaTeste(QWidget *parent) : QDialog(parent), ui(new Ui::Import
 
 ImportaTeste::~ImportaTeste() { delete ui; }
 
+void ImportaTeste::expiraPrecosAntigos(QSqlQuery produto, QString idProduto)
+{
+  if(not produto.exec("UPDATE Produto_has_Preco SET expirado = 1 WHERE idProduto = " + idProduto)){
+    qDebug() << "Erro expirando preços antigos: " << produto.lastError();
+  }
+}
+
 void ImportaTeste::importar() {
   if (not readFile()) {
     return;
@@ -83,7 +90,6 @@ void ImportaTeste::importar() {
 
           if (produto.next()) {
             QString idProduto = produto.value("idProduto").toString();
-
             atualizaCamposProduto(produto, idProduto);
             guardaNovoPrecoValidade(produto, idProduto);
             marcaProdutoNaoExpirado(produto, idProduto);
@@ -265,7 +271,9 @@ void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto
 }
 
 void ImportaTeste::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto) {
-  if (produto.value(fields.at(fields.indexOf("precoVenda"))) != values.at(fields.indexOf("precoVenda"))) {
+  if (produto.value("precoVenda") != values.at(fields.indexOf("precoVenda"))) {
+    expiraPrecosAntigos(produto, idProduto);
+
     if (not produto.exec("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, "
                          "validadeFim) VALUES (" +
                          idProduto + ", '" + values.at(fields.indexOf("precoVenda")) + "', '" +

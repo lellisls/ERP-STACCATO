@@ -37,6 +37,7 @@ class ImportaTeste : public QDialog {
     void setModelAndTable();
     void setProgressDialog();
     void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
+    void expiraPrecosAntigos(QSqlQuery produto, QString idProduto);
 
   private slots:
     void on_pushButtonCancelar_clicked();

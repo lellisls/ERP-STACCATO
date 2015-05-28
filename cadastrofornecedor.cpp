@@ -498,6 +498,7 @@ bool CadastroFornecedor::atualizarEnd() {
 
   if (row == -1) {
     row = modelEnd.rowCount();
+
     if (not modelEnd.insertRow(row)) {
       return false;
     }
@@ -562,11 +563,9 @@ bool CadastroFornecedor::atualizarEnd() {
     }
   }
 
-  if (not modelEnd.data(modelEnd.index(row, modelEnd.fieldIndex("valid"))).isValid()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("valid")), true)) {
-      qDebug() << "Erro setData valid: " << modelEnd.lastError();
-      return false;
-    }
+  if(not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)){
+    qDebug() << "Erro setData desativado: " << modelEnd.lastError();
+    return false;
   }
 
   return true;

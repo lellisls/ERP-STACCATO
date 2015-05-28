@@ -266,7 +266,7 @@ void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto
     qDebug() << "Erro marcando produto atualizado como não expirado: " << produto.lastError();
   }
 
-  QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto.toInt()).first();
+  QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto).first();
   model.setData(model.index(index.row(), model.fieldIndex("expirado")), 0);
 }
 

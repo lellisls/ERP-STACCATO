@@ -22,23 +22,22 @@ class CadastroCliente : public RegisterDialog {
 
   private slots:
     void changeItem(QVariant value, QString text);
+    void on_checkBoxMostrarInativos_clicked(bool checked);
     void on_groupBoxPJuridica_toggled(bool arg1);
-    void on_pushButtonAtualizar_clicked();
-    void on_pushButtonCadastrar_clicked();
-    void on_pushButtonCancelar_clicked();
-    void on_pushButtonNovoCad_clicked();
-    void on_pushButtonRemover_clicked();
-
-    // methods derived from RegisterDialog
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &);
     void on_lineEditContatoCPF_textEdited(const QString &);
     void on_lineEditCPF_textEdited(const QString &);
     void on_pushButtonAdicionarEnd_clicked();
+    void on_pushButtonAtualizar_clicked();
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonBuscar_clicked();
-    void on_pushButtonMostrarInativos_clicked(bool checked);
+    void on_pushButtonCadastrar_clicked();
+    void on_pushButtonCancelar_clicked();
+    void on_pushButtonNovoCad_clicked();
     void on_pushButtonNovoEnd_clicked();
+    void on_pushButtonRemover_clicked();
+    void on_pushButtonRemoverEnd_clicked();
     void on_radioButtonPF_toggled(bool checked);
     void on_tableEndereco_clicked(const QModelIndex &index);
 

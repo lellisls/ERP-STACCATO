@@ -11,6 +11,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   if (not model.select()) {
     qDebug() << objectName() << "Failed to populate " + table + ": " << model.lastError();
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
@@ -28,12 +29,15 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
 bool RegisterDialog::viewRegisterById(QVariant id) {
   model.select();
   QModelIndexList idxList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
+
   if (idxList.isEmpty()) {
     QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
     close();
     return false;
   }
+
   viewRegister(idxList.first());
+
   return true;
 }
 
@@ -70,9 +74,12 @@ void RegisterDialog::sendUpdateMessage() {
   foreach (QString key, textKeys) {
     if (not key.isEmpty()) {
       QVariant val = data(key);
+
       if (val.isValid()) {
-        if (not text.isEmpty())
+        if (not text.isEmpty()){
           text.append(" - ");
+        }
+
         text.append(val.toString());
       }
     }
@@ -232,7 +239,8 @@ void RegisterDialog::remove() {
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
   if (msgBox.exec() == QMessageBox::Yes) {
-    if (model.removeRow(mapper.currentIndex()) and model.submitAll()) {
+    model.setData(model.index(mapper.currentIndex(), model.fieldIndex("desativado")), 1);
+    if (model.submitAll()) {
       model.select();
       newRegister();
     } else {

@@ -113,7 +113,7 @@ bool CadastroUsuario::viewRegister(QModelIndex idx) {
 }
 
 void CadastroUsuario::fillCombobox() {
-  QSqlQuery query("SELECT * from Loja");
+  QSqlQuery query("SELECT * FROM Loja");
 
   while (query.next()) {
     ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));

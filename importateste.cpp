@@ -13,6 +13,7 @@
 #include "importateste.h"
 #include "ui_importateste.h"
 #include "dateformatdelegate.h"
+#include "validadedialog.h"
 
 ImportaTeste::ImportaTeste(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaTeste) {
   ui->setupUi(this);
@@ -26,8 +27,11 @@ void ImportaTeste::importar() {
     return;
   }
 
+  if(not readValidade()){
+    return;
+  }
+
   setProgressDialog();
-  readValidade(); // TODO: implement
   setModelAndTable();
 
   QSqlQuery("SET AUTOCOMMIT=0").exec();
@@ -125,8 +129,15 @@ bool ImportaTeste::readFile() {
   return true;
 }
 
-void ImportaTeste::readValidade() {
-  validade = QInputDialog::getInt(this, "Validade", "Insira a validade em dias: ");
+bool ImportaTeste::readValidade() {
+  ValidadeDialog *validadeDlg = new ValidadeDialog();
+  if(validadeDlg->exec()){
+    validade = validadeDlg->getValidade();
+  } else{
+    return false;
+  }
+
+  return true;
 }
 
 void ImportaTeste::setModelAndTable() {

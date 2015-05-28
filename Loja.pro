@@ -49,7 +49,8 @@ SOURCES += backgroundproxymodel.cpp \
     importaexportproxy.cpp \
     importateste.cpp \
     editablesqlmodel.cpp \
-    dateformatdelegate.cpp
+    dateformatdelegate.cpp \
+    validadedialog.cpp
 
 HEADERS  += backgroundproxymodel.h \
     cadastrocliente.h \
@@ -89,7 +90,8 @@ HEADERS  += backgroundproxymodel.h \
     importateste.h \
     editablesqlmodel.h \
     dateformatdelegate.h \
-    endereco.h
+    endereco.h \
+    validadedialog.h
 
 FORMS += cadastrocliente.ui \
     cadastroloja.ui \
@@ -114,7 +116,8 @@ FORMS += cadastrocliente.ui \
     loginconfig.ui \
     cadastrofornecedor.ui \
     cadastrarnfe.ui \
-    importateste.ui
+    importateste.ui \
+    validadedialog.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0 -Wall

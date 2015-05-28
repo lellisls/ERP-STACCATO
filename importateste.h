@@ -33,7 +33,7 @@ class ImportaTeste : public QDialog {
     void marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto);
     void marcaTodosProdutosExpirado();
     void mostraApenasEstesFornecedores();
-    void readValidade();
+    bool readValidade();
     void setModelAndTable();
     void setProgressDialog();
     void verificaSeProdutoJaCadastrado(QSqlQuery &produto);

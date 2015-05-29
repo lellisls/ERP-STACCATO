@@ -83,7 +83,7 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
     if (not silent) {
-      QMessageBox::warning(dynamic_cast<QWidget *>(this), "Atenção!",
+      QMessageBox::warning(this, "Atenção!",
                            "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
                            QMessageBox::NoButton);
       line->setFocus();

@@ -401,40 +401,6 @@
           <string>ACBr</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
-          <item row="5" column="1">
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEditPortaACBr">
-            <property name="text">
-             <string>3436</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="labelPortaACBr">
-            <property name="text">
-             <string>Porta:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="lineEditServidorACBr">
-            <property name="text">
-             <string>localhost</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="labelServidorACBr">
             <property name="text">
@@ -479,6 +445,61 @@
           </item>
           <item row="4" column="2">
            <widget class="QPushButton" name="pushButtonSaidaNFe">
+            <property name="text">
+             <string>Navegar...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditPortaACBr">
+            <property name="text">
+             <string>3436</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEditServidorACBr">
+            <property name="text">
+             <string>localhost</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelPortaACBr">
+            <property name="text">
+             <string>Porta:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="labelPastaXmlACBr">
+            <property name="text">
+             <string>Pasta XML NFe:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="lineEditPastaXmlACBr">
+            <property name="text">
+             <string>C:/ACBrNFeMonitor/XML/</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="pushButtonXmlNFe">
             <property name="text">
              <string>Navegar...</string>
             </property>

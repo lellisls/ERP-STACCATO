@@ -80,6 +80,7 @@ bool CadastroLoja::savingProcedures(int row) {
   setData(row, "portaACBr", ui->lineEditPortaACBr->text().toInt());
   setData(row, "pastaEntACBr", ui->lineEditPastaEntACBr->text());
   setData(row, "pastaSaiACBr", ui->lineEditPastaSaiACBr->text());
+  setData(row, "pastaXmlACBr", ui->lineEditPastaXmlACBr->text());
 
   return true;
 }
@@ -110,6 +111,7 @@ void CadastroLoja::setupMapper() {
   addMapping(ui->lineEditPortaACBr, "portaACBr");
   addMapping(ui->lineEditPastaEntACBr, "pastaEntACBr");
   addMapping(ui->lineEditPastaSaiACBr, "pastaSaiACBr");
+  addMapping(ui->lineEditPastaXmlACBr, "pastaXmlACBr");
 }
 
 bool CadastroLoja::viewRegister(QModelIndex idx) {

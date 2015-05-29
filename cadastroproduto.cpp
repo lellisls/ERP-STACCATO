@@ -166,7 +166,7 @@ void CadastroProduto::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroProduto::on_pushButtonBuscar_clicked() {
   SearchDialog *sdProd = SearchDialog::produto(this);
-  sdProd->show();
+  sdProd->showMaximized();
   connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::changeItem);
 }
 

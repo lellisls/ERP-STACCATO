@@ -267,7 +267,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->setPrimaryKey("idProduto");
   sdProd->setTextKeys({"descricao"});
 
-  sdProd->hideColumns({"idProduto", "idFornecedor", "ncm", "cfop", "situacaoTributaria", "icms", "custo",
+  sdProd->hideColumns({"idProduto", "idFornecedor", "situacaoTributaria", "icms", "custo",
                        "ipi", "markup", "comissao", "origem", "ui", "descontinuado", "temLote", "observacoes",
                        "codBarras", "codIndustrial", "qtdPallet", "st", "expirado"});
 

@@ -205,6 +205,7 @@ void ImportaTeste::contaProdutos() {
 
 bool ImportaTeste::consistenciaDados() {
     // TODO: pintar células informando erro
+    // TODO: formatoComercial, CódigoIndustrial, ICMS devem ser zerados se vazio
 
   if (values.at(fields.indexOf("estoque")).isEmpty()) {
     values[fields.indexOf("estoque")] = "0";

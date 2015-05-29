@@ -238,8 +238,10 @@ void RegisterDialog::remove() {
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
+
   if (msgBox.exec() == QMessageBox::Yes) {
     model.setData(model.index(mapper.currentIndex(), model.fieldIndex("desativado")), 1);
+
     if (model.submitAll()) {
       model.select();
       newRegister();

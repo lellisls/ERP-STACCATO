@@ -805,6 +805,8 @@ void Venda::on_pushButtonImprimir_clicked()
 }
 
 void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage){
+  Q_UNUSED(reportPage);
+
   if(paramName == "customer"){
     paramValue = "Cliente";
   }

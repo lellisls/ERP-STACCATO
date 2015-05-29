@@ -346,6 +346,7 @@ void MainWindow::initializeTables() {
   }
 
   ui->tableNFE->setModel(modelNFe);
+  ui->tableNFE->setColumnHidden(modelNFe->fieldIndex("NFe"), true);
   ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
   setupTable(ui->tableNFE);
 }

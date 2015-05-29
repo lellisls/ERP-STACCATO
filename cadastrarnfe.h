@@ -19,6 +19,7 @@ class CadastrarNFE : public QDialog {
     void prepararNFe(QList<int> items);
     void setItemData(int row, const QString &key, const QVariant &value);
     QVariant getItemData(int row, const QString &key);
+    void guardarNotaBD();
 
   public slots:
     void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -36,6 +37,7 @@ class CadastrarNFE : public QDialog {
     EditableSqlModel modelNFe, modelItem, modelLoja, modelVenda, modelProd;
     QString idVenda;
     QString arquivo;
+    QString chaveNum;
     QString chaveAcesso;
     QDataWidgetMapper mapper;
     // methods

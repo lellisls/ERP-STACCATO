@@ -404,7 +404,7 @@ SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
 
-  sdEndereco->hideColumns({"idEndereco", "idCliente", "ativo"});
+  sdEndereco->hideColumns({"idEndereco", "idCliente"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
@@ -430,7 +430,7 @@ SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
 
-  sdEndereco->hideColumns({"idEndereco", "idCliente", "ativo"});
+  sdEndereco->hideColumns({"idEndereco", "idCliente", "desativado"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));

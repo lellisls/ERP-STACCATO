@@ -6,7 +6,7 @@
 #include "ui_widgetendereco.h"
 
 WidgetEndereco::WidgetEndereco(QWidget *parent)
-  : QWidget(parent), ui(new Ui::WidgetEndereco), id(-1), ativo(false) {
+  : QWidget(parent), ui(new Ui::WidgetEndereco), id(-1) {
   ui->setupUi(this);
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
@@ -58,7 +58,6 @@ void WidgetEndereco::novoCadastro() {
 
 void WidgetEndereco::clearFields() {
   id = -1;
-  ativo = false;
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -136,7 +135,6 @@ bool WidgetEndereco::viewCadastro(int id) {
   ui->lineEditBairro->setText(qry.value("bairro").toString());
   ui->lineEditCidade->setText(qry.value("cidade").toString());
   ui->lineEditUF->setText(qry.value("uf").toString());
-  ativo = qry.value("ativo").toBool();
   return true;
 }
 

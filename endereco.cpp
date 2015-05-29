@@ -20,10 +20,7 @@ Endereco::Endereco(int idEndereco, QString table) : m_idEndereco(-1) {
   m_bairro = qry.value("bairro").toString();
   m_cidade = qry.value("cidade").toString();
   m_uf = qry.value("uf").toString();
-  m_ativo = qry.value("ativo").toBool();
 }
-
-bool Endereco::ativo() const { return m_ativo; }
 
 QString Endereco::linhaUm() {
   return (m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro);

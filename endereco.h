@@ -21,8 +21,6 @@ class Endereco {
     void setComplemento(const QString &complemento);
     QString uf() const;
     void setUf(const QString &uf);
-    bool ativo() const;
-    void setAtivo(bool ativo);
     QString umaLinha();
     QString linhaUm();
     QString linhaDois();
@@ -36,7 +34,6 @@ class Endereco {
     QString m_bairro;
     QString m_cidade;
     QString m_uf;
-    bool m_ativo;
     int m_idEndereco;
 };
 

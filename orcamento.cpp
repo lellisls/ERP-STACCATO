@@ -797,7 +797,7 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
 
   ui->itemBoxEndereco->searchDialog()->setFilter(
-        "idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) + " AND ativo = 1");
+        "idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) + " AND desativado = 0");
 
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");

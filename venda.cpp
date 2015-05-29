@@ -165,9 +165,9 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   }
 
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
-                                                 " AND ativo = 1");
+                                                 " AND desativado = 0");
   ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
-                                                    " AND ativo = 1");
+                                                    " AND desativado = 0");
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
 

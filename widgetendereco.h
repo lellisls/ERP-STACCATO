@@ -39,7 +39,6 @@ class WidgetEndereco : public QWidget {
     // attributes
     Ui::WidgetEndereco *ui;
     int id;
-    bool ativo;
     QString table;
     // methods
     QString buscaUF(QString cep);

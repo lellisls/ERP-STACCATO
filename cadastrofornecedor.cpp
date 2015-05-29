@@ -31,7 +31,7 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
 
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("ativo"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idFornecedor"));
 
   mapperEnd.setModel(&modelEnd);

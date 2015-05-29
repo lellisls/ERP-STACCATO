@@ -17,7 +17,6 @@ void CadastroProfissional::setupMapper() {
   mapper.addMapping(ui->lineEditEmail, model.fieldIndex("email"));
   mapper.addMapping(ui->lineEditTel, model.fieldIndex("tel"));
   mapper.addMapping(ui->comboBoxTipo, model.fieldIndex("tipo"));
-  mapper.addMapping(ui->radioButtonAtivo, model.fieldIndex("ativo"));
   mapper.addMapping(ui->lineEditBanco, model.fieldIndex("banco"));
   mapper.addMapping(ui->lineEditAgencia, model.fieldIndex("agencia"));
   mapper.addMapping(ui->lineEditCC, model.fieldIndex("cc"));
@@ -70,7 +69,6 @@ bool CadastroProfissional::savingProcedures(int row) {
   setData(row, "email", ui->lineEditEmail->text());
   setData(row, "tel", ui->lineEditTel->text());
   setData(row, "tipo", ui->comboBoxTipo->currentText());
-  setData(row, "ativo", ui->radioButtonAtivo->isChecked());
   setData(row, "banco", ui->lineEditBanco->text());
   setData(row, "agencia", ui->lineEditAgencia->text());
   setData(row, "cc", ui->lineEditCC->text());
@@ -89,8 +87,6 @@ void CadastroProfissional::on_pushButtonNovoCad_clicked() { newRegister(); }
 void CadastroProfissional::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroProfissional::clearFields() {
-  ui->radioButtonAtivo->setChecked(true);
-  ui->radioButtonAtivo->setChecked(true);
   ui->lineEditEmail->clear();
   ui->lineEditNome->clear();
   ui->lineEditTel->clear();

@@ -26,7 +26,7 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
   modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idCliente = " + data(primaryKey).toString());
+//  modelEnd.setFilter("idCliente = " + data(primaryKey).toString());
   modelEnd.select();
 
   ui->tableEndereco->setModel(&modelEnd);
@@ -221,6 +221,8 @@ bool CadastroCliente::savingProcedures(int row) {
     modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idCliente);
   }
 
+  qDebug() << "Endereco filter: " << modelEnd.filter();
+  qDebug() << "Query: " << modelEnd.query().lastQuery();
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__
              << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();

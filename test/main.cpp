@@ -1,13 +1,11 @@
 #include <QtTest/QtTest>
-#include "testsuite1.h"
-#include "testsuite2.h"
+#include "testmainwindow.h"
 
 int main(int argc, char** argv){
   QApplication app(argc, argv);
   QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-  TestSuite1 testSuite1;
-  TestSuite2 testSuite2;
+  TestMainWindow testMainWindow;
 
-  return QTest::qExec(&testSuite1, argc, argv) | QTest::qExec(&testSuite2, argc, argv);
+  return QTest::qExec(&testMainWindow, argc, argv);// | QTest::qExec(&testSuite2, argc, argv);
 }

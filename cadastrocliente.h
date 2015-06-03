@@ -14,6 +14,7 @@ class CadastroCliente : public RegisterDialog {
     explicit CadastroCliente(bool closeBeforeUpdate = false, QWidget *parent = 0);
     ~CadastroCliente();
     void setupUi();
+    bool TestClienteIncompleto();
 
   public slots:
     void enableEditor();
@@ -54,6 +55,8 @@ class CadastroCliente : public RegisterDialog {
     void setTipoClienteFornecedor(const QString &value);
     void clearEnd();
 
+    bool TestClienteEndereco();
+    bool TestClienteCompleto();
   private:
     bool atualizarEnd();
     void novoEnd();

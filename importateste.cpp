@@ -137,6 +137,7 @@ bool ImportaTeste::readFile() {
 
 bool ImportaTeste::readValidade() {
   ValidadeDialog *validadeDlg = new ValidadeDialog();
+
   if(validadeDlg->exec()){
     validade = validadeDlg->getValidade();
   } else{
@@ -375,4 +376,8 @@ bool ImportaTeste::verificaTabela() {
   }
 
   return true;
+}
+
+bool ImportaTeste::TestImportacao(){
+
 }

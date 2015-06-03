@@ -90,10 +90,16 @@ bool MainWindow::dbConnect() {
     exit(1);
   }
 
-  qDebug() << "Connecting to database.";
+//  qDebug() << "Connecting to database.";
 
-  QSqlDatabase::removeDatabase("QMYSQL");
-  QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+  QSqlDatabase db;
+
+  if(QSqlDatabase::contains()){
+    db = QSqlDatabase::database();
+  } else{
+    db = QSqlDatabase::addDatabase("QMYSQL");
+  }
+
   db.setHostName(hostname);
   db.setUserName(username);
   db.setPassword(password);
@@ -119,7 +125,7 @@ bool MainWindow::dbConnect() {
     db.setDatabaseName("mydb");
 
     if (db.open()) {
-      qDebug() << "mydb schema found.";
+//      qDebug() << "mydb schema found.";
       return true;
     } else {
       showError(db.lastError());
@@ -564,6 +570,28 @@ void MainWindow::readSettings() {
   password = settings.value("password").toString();
   port = settings.value("port").toString();
   settings.endGroup();
+}
+
+bool MainWindow::TestInitDB(){
+  return initDb();
+}
+
+bool MainWindow::TestCadastroClienteIncompleto()
+{
+  CadastroCliente *cad = new CadastroCliente(this);
+  return cad->TestClienteIncompleto();
+}
+
+bool MainWindow::TestCadastroClienteEndereco()
+{
+  CadastroCliente *cad = new CadastroCliente(this);
+  return cad->TestClienteEndereco();
+}
+
+bool MainWindow::TestCadastroClienteCompleto()
+{
+  CadastroCliente *cad = new CadastroCliente(this);
+  return cad->TestClienteCompleto();
 }
 
 void MainWindow::on_actionImportaTeste_triggered() {

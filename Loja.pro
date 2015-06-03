@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql printsupport webkitwidgets network
+QT       += core gui sql printsupport webkitwidgets network testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -138,31 +138,36 @@ INSTALLS += install_it
 DISTFILES += \
     qt_portuguese.ts
 
-test {
-    message(Test build)
-    QT += testlib
-    TARGET = UnitTests
-
-    SOURCES -= main.cpp
-
-    HEADERS += test/testSuite1.h \
-        test/testSuite2.h
-
-    SOURCES += test/main.cpp \
-        test/testSuite1.cpp \
-        test/testSuite2.cpp
-} else {
-    message(Normal build)
-}
-
 CONFIG(debug, debug|release){
 message(Activating terminal)
-CONFIG += console
+#CONFIG += console
 }
 
 CONFIG(release, debug|release){
 message(Deactivating terminal)
 CONFIG -= console
 }
+
+test {
+    message(Test build)
+    QT += testlib
+    TARGET = UnitTests
+    CONFIG -= console
+    message(Deactivating terminal)
+
+    SOURCES -= main.cpp
+
+    HEADERS += test/testmainwindow.h
+
+
+    SOURCES += test/main.cpp \
+    test/testmainwindow.cpp
+
+} else {
+    message(Normal build)
+}
+
+CONFIG -= console
+
 
 include(QtRptProject/QtRPT/QtRPT.pri)

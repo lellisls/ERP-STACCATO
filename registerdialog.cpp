@@ -196,7 +196,6 @@ bool RegisterDialog::save(bool silent) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-
   int row = mapper.currentIndex();
 
   if (not verifyFields(row)) {

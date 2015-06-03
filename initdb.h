@@ -7,7 +7,7 @@
 #include <QMessageBox>
 
 bool loadScript(const QString &filename) {
-  qDebug() << "LOADING " << filename << ".";
+//  qDebug() << "LOADING " << filename << ".";
   QFile file(filename);
 
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -52,9 +52,9 @@ bool loadScript(const QString &filename) {
 }
 
 inline bool initDb() {
-  qDebug() << "Initializing mydb: ";
-  qDebug() << qApp->applicationDirPath() + "/initdb.sql";
-  qDebug() << "LOADING initdb.sql";
+//  qDebug() << "Initializing mydb: ";
+//  qDebug() << qApp->applicationDirPath() + "/initdb.sql";
+//  qDebug() << "LOADING initdb.sql";
 
   if (not loadScript(qApp->applicationDirPath() + "/initdb.sql")) {
     QMessageBox::warning(0, "Aviso!", "Não carregou o script do BD.");
@@ -64,7 +64,7 @@ inline bool initDb() {
   QSqlQuery query;
 
   if (not query.exec("SELECT * FROM cep.sp LIMIT 1")) {
-    qDebug() << "LOADING cep.sql";
+//    qDebug() << "LOADING cep.sql";
 
     if (not loadScript(qApp->applicationDirPath() + "/cep.sql")) {
       QMessageBox::warning(0, "Aviso!", "Não carregou o script do cep.");

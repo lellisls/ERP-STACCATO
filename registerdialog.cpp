@@ -3,7 +3,6 @@
 
 #include "registerdialog.h"
 
-
 RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
   setWindowModality(Qt::WindowModal);
@@ -76,7 +75,7 @@ void RegisterDialog::sendUpdateMessage() {
       QVariant val = data(key);
 
       if (val.isValid()) {
-        if (not text.isEmpty()){
+        if (not text.isEmpty()) {
           text.append(" - ");
         }
 

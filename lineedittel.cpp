@@ -25,11 +25,11 @@ void LineEditTel::processTel(QString value) {
     res += nbr.at(0);
   }
 
-  if (size > 1){
+  if (size > 1) {
     res += nbr.at(1);
   }
 
-  if (size > 2){
+  if (size > 2) {
     res += ')';
   }
 
@@ -38,7 +38,7 @@ void LineEditTel::processTel(QString value) {
       res += nbr.at(i);
     }
 
-    if (size > 6){
+    if (size > 6) {
       res += '-';
     }
 
@@ -53,7 +53,7 @@ void LineEditTel::processTel(QString value) {
       res += nbr.at(i);
     }
 
-    if (size >= 7){
+    if (size >= 7) {
       res += '-';
     }
 

@@ -22,9 +22,7 @@ Endereco::Endereco(int idEndereco, QString table) : m_idEndereco(-1) {
   m_uf = qry.value("uf").toString();
 }
 
-QString Endereco::linhaUm() {
-  return (m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro);
-}
+QString Endereco::linhaUm() { return (m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro); }
 
 QString Endereco::linhaDois() { return (m_cidade + " - " + m_uf + " - CEP: " + m_cep); }
 

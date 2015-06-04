@@ -71,8 +71,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("status"), true);
 
-  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro",
-                   "Boleto"};
+  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto"};
 
   ui->comboBoxPgt1->insertItems(0, list);
   ui->comboBoxPgt2->insertItems(0, list);
@@ -116,14 +115,14 @@ void Venda::resetarPagamentos() {
   ui->comboBoxPgt3Parc->setCurrentIndex(0);
 
   // TODO: properly disable/enable fields on payments edit
-//  ui->comboBoxPgt2->setDisabled(true);
-//  ui->comboBoxPgt3->setDisabled(true);
-//  ui->comboBoxPgt1Parc->setDisabled(true);
-//  ui->comboBoxPgt2Parc->setDisabled(true);
-//  ui->comboBoxPgt3Parc->setDisabled(true);
-//  ui->dateEditPgt1->setDisabled(true);
-//  ui->dateEditPgt2->setDisabled(true);
-//  ui->dateEditPgt3->setDisabled(true);
+  //  ui->comboBoxPgt2->setDisabled(true);
+  //  ui->comboBoxPgt3->setDisabled(true);
+  //  ui->comboBoxPgt1Parc->setDisabled(true);
+  //  ui->comboBoxPgt2Parc->setDisabled(true);
+  //  ui->comboBoxPgt3Parc->setDisabled(true);
+  //  ui->dateEditPgt1->setDisabled(true);
+  //  ui->dateEditPgt2->setDisabled(true);
+  //  ui->dateEditPgt3->setDisabled(true);
 
   montarFluxoCaixa();
 }
@@ -220,8 +219,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
-    double descItem =
-        modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
+    double descItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     double itemBruto = qteItem * prcUnItem;
     subTotalBruto += itemBruto;
     double stItem = itemBruto * (1.0 - descItem);
@@ -253,8 +251,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")),
-                      descGlobal * 100.0); // Desconto
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0); // Desconto
     // Distr.
     double totalItem = stItem * (1 - descGlobal);
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
@@ -398,8 +395,7 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
 
-  if (not qry.exec("UPDATE Venda SET data = '" +
-                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "'")) {
+  if (not qry.exec("UPDATE Venda SET data = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "'")) {
     qDebug() << "Erro setando data em Venda: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
@@ -426,14 +422,13 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     return;
   }
   if (qryEstoque.size() > 0) {
-    if (not qry.exec(
-          "INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-          "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
-          "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-          "descontoReais, total, validade, status "
-          "FROM Venda WHERE idVenda = '" +
-          idOrcamento + "'")) {
+    if (not qry.exec("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
+                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+                     "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
+                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+                     "descontoReais, total, validade, status "
+                     "FROM Venda WHERE idVenda = '" +
+                     idOrcamento + "'")) {
       qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
       qry.exec("ROLLBACK");
       return;
@@ -461,16 +456,14 @@ void Venda::on_pushButtonFecharPedido_clicked() {
   }
 
   if (not qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
-                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento +
-                   "')")) {
+                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento + "')")) {
     qDebug() << "Error inserting contaareceber: " << qry.lastError();
     qry.exec("ROLLBACK");
     return;
   }
 
   if (qry.exec("COMMIT")) {
-    QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!", QMessageBox::Ok,
-                             QMessageBox::NoButton);
+    QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!", QMessageBox::Ok, QMessageBox::NoButton);
   }
 
   if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget())) {
@@ -538,9 +531,7 @@ void Venda::on_doubleSpinBoxPgt2_editingFinished() {
   montarFluxoCaixa();
 }
 
-void Venda::on_doubleSpinBoxPgt3_editingFinished() {
-  montarFluxoCaixa();
-}
+void Venda::on_doubleSpinBoxPgt3_editingFinished() { montarFluxoCaixa(); }
 
 void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
   if (text == "Escolha uma opção!") {
@@ -675,12 +666,10 @@ void Venda::montarFluxoCaixa() {
     for (int i = 0, z = parcelas1 - 1; i < parcelas1; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")),
-                              UserSession::getLoja());
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "1. " + ui->comboBoxPgt1->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")),
-                              parcelas1 - z);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas1 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
                               ui->doubleSpinBoxPgt1->value() / parcelas1);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -695,12 +684,10 @@ void Venda::montarFluxoCaixa() {
     for (int i = 0, z = parcelas2 - 1; i < parcelas2; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")),
-                              UserSession::getLoja());
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "2. " + ui->comboBoxPgt2->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")),
-                              parcelas2 - z);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas2 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
                               ui->doubleSpinBoxPgt2->value() / parcelas2);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -714,12 +701,10 @@ void Venda::montarFluxoCaixa() {
     for (int i = 0, z = parcelas3 - 1; i < parcelas3; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")),
-                              UserSession::getLoja());
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "3. " + ui->comboBoxPgt3->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")),
-                              parcelas3 - z);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas3 - z);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
                               ui->doubleSpinBoxPgt3->value() / parcelas3);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -794,8 +779,7 @@ void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
 
-void Venda::on_pushButtonImprimir_clicked()
-{
+void Venda::on_pushButtonImprimir_clicked() {
   QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
   QtRPT *report = new QtRPT(this);
   report->loadReport(filename);
@@ -804,33 +788,32 @@ void Venda::on_pushButtonImprimir_clicked()
   report->printExec();
 }
 
-void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage){
+void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage) {
   Q_UNUSED(reportPage);
 
-  if(paramName == "customer"){
+  if (paramName == "customer") {
     paramValue = "Cliente";
   }
-  if(paramName == "date"){
+  if (paramName == "date") {
     paramValue = QDate::currentDate().toString();
   }
-  if(paramName == "NN"){
-    paramValue = recNo+1;
+  if (paramName == "NN") {
+    paramValue = recNo + 1;
   }
-  if(paramName == "Goods"){
-    if(ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 0)) == 0) return;
+  if (paramName == "Goods") {
+    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 0)) == 0) return;
     paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 0)).toString();
   }
-  if(paramName == "Quantity"){
-    if(ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 1)) == 0) return;
+  if (paramName == "Quantity") {
+    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 1)) == 0) return;
     paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 1)).toString();
   }
-  if(paramName == "Price"){
-    if(ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 2)) == 0) return;
+  if (paramName == "Price") {
+    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 2)) == 0) return;
     paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 2)).toString();
   }
-  if(paramName == "Sum"){
-    if(ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 3)) == 0) return;
+  if (paramName == "Sum") {
+    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 3)) == 0) return;
     paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 3)).toString();
   }
-
 }

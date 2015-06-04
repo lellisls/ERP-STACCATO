@@ -3,8 +3,7 @@
 
 #include "importaexportproxy.h"
 
-ImportaExportProxy::ImportaExportProxy(int column, QObject *parent)
-  : QIdentityProxyModel(parent), column(column) {}
+ImportaExportProxy::ImportaExportProxy(int column, QObject *parent) : QIdentityProxyModel(parent), column(column) {}
 
 ImportaExportProxy::~ImportaExportProxy() {}
 

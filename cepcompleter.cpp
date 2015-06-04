@@ -23,10 +23,8 @@ bool CepCompleter::buscaCEP(QString cep) {
 
   QSqlQuery query;
 
-  if (not query.exec("SELECT * FROM cep." + uf.toLower() + " WHERE cep = '" +
-                     cep + "' LIMIT 1")) {
-    qDebug() << __FILE__ " : " << __LINE__
-             << " : Erro ao buscar cep: " << query.lastError();
+  if (not query.exec("SELECT * FROM cep." + uf.toLower() + " WHERE cep = '" + cep + "' LIMIT 1")) {
+    qDebug() << __FILE__ " : " << __LINE__ << " : Erro ao buscar cep: " << query.lastError();
     qDebug() << "Query: " << query.lastQuery();
     return false;
   }
@@ -36,8 +34,7 @@ bool CepCompleter::buscaCEP(QString cep) {
   }
 
   cidade = query.value("cidade").toString();
-  endereco = query.value("tp_logradouro").toString() + " " +
-             query.value("logradouro").toString();
+  endereco = query.value("tp_logradouro").toString() + " " + query.value("logradouro").toString();
   bairro = query.value("bairro").toString();
 
   return true;

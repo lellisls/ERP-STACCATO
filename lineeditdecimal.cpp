@@ -11,9 +11,7 @@ LineEditDecimal::LineEditDecimal(QWidget *parent) : QLineEdit(parent), bottom(0)
 
 double LineEditDecimal::getValue() const { return QLocale(QLocale::Portuguese).toDouble(text()); }
 
-void LineEditDecimal::setValue(double value) {
-  setText(QLocale(QLocale::Portuguese).toString(value, 'f', 2));
-}
+void LineEditDecimal::setValue(double value) { setText(QLocale(QLocale::Portuguese).toString(value, 'f', 2)); }
 
 double LineEditDecimal::getBottom() const { return bottom; }
 
@@ -37,8 +35,9 @@ void LineEditDecimal::processDecimal(QString value) {
   }
 
   for (int i = 0; i < nbr.size() - 2; i++) {
-    if ((res + nbr[i]).toDouble() < top)
+    if ((res + nbr[i]).toDouble() < top) {
       res.append(nbr[i]);
+    }
   }
 
   if (nbr.size() > 2) {
@@ -46,13 +45,15 @@ void LineEditDecimal::processDecimal(QString value) {
   }
 
   if (nbr.size() > 1) {
-    if ((res + nbr[nbr.size() - 2]).toDouble() < top)
+    if ((res + nbr[nbr.size() - 2]).toDouble() < top) {
       res.append(nbr[nbr.size() - 2]);
+    }
   }
 
   if (nbr.size() > 0) {
-    if ((res + nbr[nbr.size() - 1]).toDouble() < top)
+    if ((res + nbr[nbr.size() - 1]).toDouble() < top) {
       res.append(nbr[nbr.size() - 1]);
+    }
   }
 
   setText(res);

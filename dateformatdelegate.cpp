@@ -1,6 +1,7 @@
 #include "dateformatdelegate.h"
 
-DateFormatDelegate::DateFormatDelegate(QString dateFormat, QObject *parent) : QStyledItemDelegate(parent), dateFormat(dateFormat) {}
+DateFormatDelegate::DateFormatDelegate(QString dateFormat, QObject *parent)
+  : QStyledItemDelegate(parent), dateFormat(dateFormat) {}
 
 DateFormatDelegate::~DateFormatDelegate() {}
 

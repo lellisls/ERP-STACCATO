@@ -52,10 +52,9 @@ class ImportaTeste : public QDialog {
     int validade;
     QMap<QString, int> fornecedores;
     QSqlDatabase db;
-    QStringList fields = {"fornecedor", "descricao", "estoque", "un", "colecao", "m2cx", "pccx", "kgcx",
-                          "formComercial", "codComercial", "codBarras", "ncm", "icms", "situacaoTributaria",
-                          "qtdPallet", "custo", "ipi", "st", "precoVenda", "comissao", "observacoes", "origem",
-                          "descontinuado", "temLote", "ui"};
+    QStringList fields = {"fornecedor", "descricao", "estoque", "un", "colecao", "m2cx", "pccx", "kgcx", "formComercial",
+                          "codComercial", "codBarras", "ncm", "icms", "situacaoTributaria", "qtdPallet", "custo", "ipi",
+                          "st", "precoVenda", "comissao", "observacoes", "origem", "descontinuado", "temLote", "ui"};
     QStringList values;
     ImportaExportProxy *proxyModel;
 };

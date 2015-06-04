@@ -243,8 +243,7 @@ bool CadastroFornecedor::savingProcedures(int row) {
   }
 
   if (not modelEnd.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__
-             << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
+    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
     qDebug() << "QUERY : " << modelEnd.query().lastQuery();
     return false;
   }
@@ -428,8 +427,7 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
     if (not silent) {
-      QMessageBox::warning(this, "Atenção!",
-                           "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
+      QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
                            QMessageBox::NoButton);
       line->setFocus();
     }
@@ -441,15 +439,17 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
 
 void CadastroFornecedor::on_pushButtonCadastrar_clicked() {
   if (save()) {
-    if (closeBeforeUpdate)
+    if (closeBeforeUpdate) {
       accept();
+    }
   }
 }
 
 void CadastroFornecedor::on_pushButtonAtualizar_clicked() {
   if (save()) {
-    if (closeBeforeUpdate)
+    if (closeBeforeUpdate) {
       accept();
+    }
   }
 }
 
@@ -482,9 +482,9 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
   }
 }
 
-bool CadastroFornecedor::adicionarEndereco(){
-  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro,
-                                       ui->lineEditBairro, ui->lineEditCidade, ui->lineEditUF})) {
+bool CadastroFornecedor::adicionarEndereco() {
+  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro, ui->lineEditBairro,
+                                       ui->lineEditCidade, ui->lineEditUF})) {
     return false;
   }
 
@@ -497,8 +497,7 @@ bool CadastroFornecedor::adicionarEndereco(){
   modelEnd.insertRow(modelEnd.rowCount());
   int row = modelEnd.rowCount() - 1;
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")),
-                           ui->comboBoxTipoEnd->currentText())) {
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
     qDebug() << "Erro setData descricao: " << modelEnd.lastError();
     return false;
   }
@@ -511,8 +510,7 @@ bool CadastroFornecedor::adicionarEndereco(){
   }
 
   if (not ui->lineEditEndereco->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")),
-                             ui->lineEditEndereco->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditEndereco->text())) {
       qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
       return false;
     }
@@ -526,24 +524,21 @@ bool CadastroFornecedor::adicionarEndereco(){
   }
 
   if (not ui->lineEditComp->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")),
-                             ui->lineEditComp->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
       qDebug() << "Erro setData complemento: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditBairro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")),
-                             ui->lineEditBairro->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
       qDebug() << "Erro setData bairro: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditCidade->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")),
-                             ui->lineEditCidade->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
       qDebug() << "Erro setData cidade: " << modelEnd.lastError();
       return false;
     }
@@ -556,7 +551,7 @@ bool CadastroFornecedor::adicionarEndereco(){
     }
   }
 
-  if(not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)){
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
     qDebug() << "Erro setData desativado: " << modelEnd.lastError();
     return false;
   }
@@ -565,8 +560,8 @@ bool CadastroFornecedor::adicionarEndereco(){
 }
 
 bool CadastroFornecedor::atualizarEndereco() {
-  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro,
-                                       ui->lineEditBairro, ui->lineEditCidade, ui->lineEditUF})) {
+  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro, ui->lineEditBairro,
+                                       ui->lineEditCidade, ui->lineEditUF})) {
     return false;
   }
 
@@ -578,8 +573,7 @@ bool CadastroFornecedor::atualizarEndereco() {
 
   int row = mapperEnd.currentIndex();
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")),
-                           ui->comboBoxTipoEnd->currentText())) {
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
     qDebug() << "Erro setData descricao: " << modelEnd.lastError();
     return false;
   }
@@ -592,8 +586,7 @@ bool CadastroFornecedor::atualizarEndereco() {
   }
 
   if (not ui->lineEditEndereco->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")),
-                             ui->lineEditEndereco->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditEndereco->text())) {
       qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
       return false;
     }
@@ -607,24 +600,21 @@ bool CadastroFornecedor::atualizarEndereco() {
   }
 
   if (not ui->lineEditComp->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")),
-                             ui->lineEditComp->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
       qDebug() << "Erro setData complemento: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditBairro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")),
-                             ui->lineEditBairro->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
       qDebug() << "Erro setData bairro: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditCidade->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")),
-                             ui->lineEditCidade->text())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
       qDebug() << "Erro setData cidade: " << modelEnd.lastError();
       return false;
     }
@@ -637,7 +627,7 @@ bool CadastroFornecedor::atualizarEndereco() {
     }
   }
 
-  if(not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)){
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
     qDebug() << "Erro setData desativado: " << modelEnd.lastError();
     return false;
   }

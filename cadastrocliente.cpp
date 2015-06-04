@@ -352,14 +352,16 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
 
 void CadastroCliente::on_pushButtonCadastrar_clicked() {
   if (save()) {
-    if (closeBeforeUpdate) { accept();
+    if (closeBeforeUpdate) {
+      accept();
     }
   }
 }
 
 void CadastroCliente::on_pushButtonAtualizar_clicked() {
   if (save()) {
-    if (closeBeforeUpdate) { accept();
+    if (closeBeforeUpdate) {
+      accept();
     }
   }
 }

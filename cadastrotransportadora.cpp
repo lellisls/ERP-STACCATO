@@ -66,22 +66,22 @@ bool CadastroTransportadora::savingProcedures(int row) {
   setData(row, "antt", ui->lineEditANTT->text());
   setData(row, "placaVeiculo", ui->lineEditPlaca->text());
 
-  if(not model.submitAll()){
+  if (not model.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
     return false;
   }
 
   int idTransportadora = data(row, primaryKey).toInt();
 
-  if(not data(row, primaryKey).isValid()){
+  if (not data(row, primaryKey).isValid()) {
     idTransportadora = model.query().lastInsertId().toInt();
   }
 
-  for(int row = 0; row < modelEnd.rowCount(); ++row){
+  for (int row = 0; row < modelEnd.rowCount(); ++row) {
     modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idTransportadora);
   }
 
-  if(not modelEnd.submitAll()){
+  if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
     qDebug() << "QUERY : " << modelEnd.query().lastQuery();
     return false;
@@ -131,7 +131,7 @@ bool CadastroTransportadora::viewRegister(QModelIndex idx) {
   mapper.setCurrentModelIndex(idx);
   modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = 0");
 
-  if(not modelEnd.select()){
+  if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
   }
 
@@ -228,29 +228,23 @@ void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &) {
   validaCNPJ(text);
 }
 
-void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked()
-{
-  if(not adicionarEndereco()){
+void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {
+  if (not adicionarEndereco()) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
   }
 }
 
-void CadastroTransportadora::on_pushButtonAtualizarEnd_clicked()
-{
+void CadastroTransportadora::on_pushButtonAtualizarEnd_clicked() {
   if (not atualizarEndereco()) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
   }
 }
 
-void CadastroTransportadora::on_pushButtonEndLimpar_clicked()
-{
-  novoEnd();
-}
+void CadastroTransportadora::on_pushButtonEndLimpar_clicked() { novoEnd(); }
 
-void CadastroTransportadora::on_pushButtonRemoverEnd_clicked()
-{
+void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
   QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Tem certeza que deseja remover?",
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
@@ -269,8 +263,7 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked()
   }
 }
 
-void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(bool checked)
-{
+void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString());
   } else {
@@ -431,14 +424,14 @@ bool CadastroTransportadora::atualizarEndereco() {
   return true;
 }
 
-void CadastroTransportadora::novoEnd(){
+void CadastroTransportadora::novoEnd() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
   ui->tableEndereco->clearSelection();
   clearEnd();
 }
 
-void CadastroTransportadora::clearEnd(){
+void CadastroTransportadora::clearEnd() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();

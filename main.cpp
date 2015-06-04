@@ -16,8 +16,7 @@ int main(int argc, char *argv[]) {
   app.setApplicationName("Staccato");
 
   QTranslator qtTranslator;
-  if (not qtTranslator.load("qt_" + QLocale::system().name(),
-                            QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+  if (not qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
   }
   app.installTranslator(&qtTranslator);
   QTranslator pt;

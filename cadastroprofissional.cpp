@@ -36,9 +36,8 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroProfissional::viewRegister(QModelIndex idx)
-{
-  if(not RegisterDialog::viewRegister(idx)){
+bool CadastroProfissional::viewRegister(QModelIndex idx) {
+  if (not RegisterDialog::viewRegister(idx)) {
     return false;
   }
 
@@ -47,8 +46,7 @@ bool CadastroProfissional::viewRegister(QModelIndex idx)
   return true;
 }
 
-void CadastroProfissional::changeItem(QVariant value, QString text)
-{
+void CadastroProfissional::changeItem(QVariant value, QString text) {
   Q_UNUSED(text);
 
   viewRegisterById(value);
@@ -100,4 +98,3 @@ void CadastroProfissional::on_pushButtonBuscar_clicked() {
   connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::changeItem);
   sdProfissional->show();
 }
-

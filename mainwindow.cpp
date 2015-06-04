@@ -90,13 +90,13 @@ bool MainWindow::dbConnect() {
     exit(1);
   }
 
-//  qDebug() << "Connecting to database.";
+  //  qDebug() << "Connecting to database.";
 
   QSqlDatabase db;
 
-  if(QSqlDatabase::contains()){
+  if (QSqlDatabase::contains()) {
     db = QSqlDatabase::database();
-  } else{
+  } else {
     db = QSqlDatabase::addDatabase("QMYSQL");
   }
 
@@ -109,8 +109,9 @@ bool MainWindow::dbConnect() {
     QSqlQuery qry = db.exec("SHOW SCHEMAS");
     bool hasMydb = false;
     while (qry.next()) {
-      if (qry.value(0).toString() == "mydb")
+      if (qry.value(0).toString() == "mydb") {
         hasMydb = true;
+      }
     }
 
     if (not hasMydb) {
@@ -125,7 +126,7 @@ bool MainWindow::dbConnect() {
     db.setDatabaseName("mydb");
 
     if (db.open()) {
-//      qDebug() << "mydb schema found.";
+      //      qDebug() << "mydb schema found.";
       return true;
     } else {
       showError(db.lastError());
@@ -230,10 +231,8 @@ void MainWindow::initializeTables() {
   modelVendas->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVendas->setTable("Venda");
   modelVendas->setRelation(modelVendas->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
-  modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"),
-                           QSqlRelation("Usuario", "idUsuario", "nome"));
-  modelVendas->setRelation(modelVendas->fieldIndex("idCliente"),
-                           QSqlRelation("Cliente", "idCliente", "nome_razao"));
+  modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"), QSqlRelation("Usuario", "idUsuario", "nome"));
+  modelVendas->setRelation(modelVendas->fieldIndex("idCliente"), QSqlRelation("Cliente", "idCliente", "nome_razao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idEnderecoEntrega"),
                            QSqlRelation("Cliente_has_Endereco", "idEndereco", "logradouro"));
   modelVendas->setRelation(modelVendas->fieldIndex("idProfissional"),
@@ -318,11 +317,9 @@ void MainWindow::initializeTables() {
   modelPedCompra = new QSqlRelationalTableModel(this);
   modelPedCompra->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelPedCompra->setTable("PedidoFornecedor");
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"),
-                              QSqlRelation("Loja", "idLoja", "descricao"));
+  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"),
-                              QSqlRelation("Usuario", "idUsuario", "nome"));
+  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"), QSqlRelation("Usuario", "idUsuario", "nome"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCliente"),
                               QSqlRelation("Cliente", "idCliente", "nome_razao"));
@@ -401,7 +398,9 @@ void MainWindow::updateTables() {
   ui->tableNFE->resizeColumnsToContents();
 }
 
-void MainWindow::on_actionAtualizar_tabelas_triggered() { updateTables(); } // TODO: make sure tables are updated automagically
+void MainWindow::on_actionAtualizar_tabelas_triggered() {
+  updateTables();
+} // TODO: make sure tables are updated automagically
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
   if (UserSession::getTipo() == "VENDEDOR") {
@@ -414,8 +413,7 @@ void MainWindow::on_radioButtonOrcValido_clicked() {
 
 void MainWindow::on_radioButtonOrcExpirado_clicked() {
   if (UserSession::getTipo() == "VENDEDOR") {
-    modelOrcamento->setFilter("`Dias restantes` < 1 AND idUsuario = " +
-                              QString::number(UserSession::getId()) + "");
+    modelOrcamento->setFilter("`Dias restantes` < 1 AND idUsuario = " + QString::number(UserSession::getId()) + "");
   } else {
     modelOrcamento->setFilter("`Dias restantes` < 1");
   }
@@ -447,9 +445,7 @@ void MainWindow::on_radioButtonFornAberto_clicked() { modelPedCompra->setFilter(
 
 void MainWindow::on_radioButtonFornFechado_clicked() { modelPedCompra->setFilter("status = 'fechado'"); }
 
-void MainWindow::on_radioButtonRecebimentoLimpar_clicked() {
-  modelRecebimentosForn->setFilter("tipo = 'fornecedor'");
-}
+void MainWindow::on_radioButtonRecebimentoLimpar_clicked() { modelRecebimentosForn->setFilter("tipo = 'fornecedor'"); }
 
 void MainWindow::on_radioButtonRecebimentoRecebido_clicked() {
   modelRecebimentosForn->setFilter("status = 'recebido' AND tipo = 'fornecedor'");
@@ -459,9 +455,7 @@ void MainWindow::on_radioButtonRecebimentoPendente_clicked() {
   modelRecebimentosForn->setFilter("status = 'pendente' AND tipo = 'fornecedor'");
 }
 
-void MainWindow::on_radioButtonEntregaLimpar_clicked() {
-  modelEntregasCliente->setFilter("tipo = 'cliente'");
-}
+void MainWindow::on_radioButtonEntregaLimpar_clicked() { modelEntregasCliente->setFilter("tipo = 'cliente'"); }
 
 void MainWindow::on_radioButtonEntregaEnviado_clicked() {
   modelEntregasCliente->setFilter("status = 'enviado' AND tipo = 'cliente'");
@@ -580,15 +574,13 @@ void MainWindow::on_actionImportaTeste_triggered() {
 void MainWindow::on_tableVendas_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
-  vendas->viewRegisterById(
-        modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
+  vendas->viewRegisterById(modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 }
 
 void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
   Orcamento *orc = new Orcamento(this);
   connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
-  orc->viewRegisterById(
-        modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+  orc->viewRegisterById(modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
 void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {
@@ -599,15 +591,15 @@ void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {
 
 void MainWindow::on_tableContasReceber_activated(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
-  contas->viewConta(modelCAReceber->data(modelCAReceber->index(
-                                           index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+  contas->viewConta(
+        modelCAReceber->data(modelCAReceber->index(index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-        modelEntregasCliente->data(modelEntregasCliente->index(
-                                     index.row(), modelEntregasCliente->fieldIndex("idPedido"))).toString());
+        modelEntregasCliente->data(modelEntregasCliente->index(index.row(), modelEntregasCliente->fieldIndex("idPedido")))
+        .toString());
 }
 
 void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
@@ -618,31 +610,26 @@ void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
 void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-        modelRecebimentosForn->data(modelRecebimentosForn->index(index.row(), modelRecebimentosForn->fieldIndex(
-                                                                   "idPedido"))).toString());
+        modelRecebimentosForn->data(modelRecebimentosForn->index(
+                                      index.row(), modelRecebimentosForn->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableNFE_activated(const QModelIndex &index) { Q_UNUSED(index); }
 
 #ifdef QT_DEBUG
-bool MainWindow::TestInitDB(){
-  return initDb();
-}
+bool MainWindow::TestInitDB() { return initDb(); }
 
-bool MainWindow::TestCadastroClienteIncompleto()
-{
+bool MainWindow::TestCadastroClienteIncompleto() {
   CadastroCliente *cad = new CadastroCliente(this);
   return cad->TestClienteIncompleto();
 }
 
-bool MainWindow::TestCadastroClienteEndereco()
-{
+bool MainWindow::TestCadastroClienteEndereco() {
   CadastroCliente *cad = new CadastroCliente(this);
   return cad->TestClienteEndereco();
 }
 
-bool MainWindow::TestCadastroClienteCompleto()
-{
+bool MainWindow::TestCadastroClienteCompleto() {
   CadastroCliente *cad = new CadastroCliente(this);
   return cad->TestClienteCompleto();
 }

@@ -45,15 +45,13 @@ void CadastroUsuario::setupTableWidget() {
 bool CadastroUsuario::verifyFields(int row) {
   Q_UNUSED(row);
 
-  if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser,
-                                        ui->lineEditSigla, ui->lineEditPasswd})){
+  if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd})) {
     return false;
   }
 
   if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
     ui->lineEditPasswd->setFocus();
-    QMessageBox::warning(this, "Atenção!", "As senhas não batem!",
-                         QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::warning(this, "Atenção!", "As senhas não batem!", QMessageBox::Ok, QMessageBox::NoButton);
     return false;
   }
 

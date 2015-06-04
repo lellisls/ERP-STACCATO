@@ -21,8 +21,7 @@ Smtp::Smtp(const QString &user, const QString &pass, const QString &host, int po
 
   connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
   connect(socket, SIGNAL(connected()), this, SLOT(connected()));
-  connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-          SLOT(errorReceived(QAbstractSocket::SocketError)));
+  connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorReceived(QAbstractSocket::SocketError)));
   connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
           SLOT(stateChanged(QAbstractSocket::SocketState)));
   connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
@@ -95,10 +94,7 @@ Smtp::~Smtp() {
   delete t;
   delete socket;
 }
-void Smtp::stateChanged(QAbstractSocket::SocketState socketState) {
-
-  qDebug() << "stateChanged " << socketState;
-}
+void Smtp::stateChanged(QAbstractSocket::SocketState socketState) { qDebug() << "stateChanged " << socketState; }
 
 void Smtp::errorReceived(QAbstractSocket::SocketError socketError) { qDebug() << "error " << socketError; }
 
@@ -217,8 +213,7 @@ void Smtp::readyRead() {
     return;
   } else {
     // something broke.
-    QMessageBox::warning(0, tr("Qt Simple SMTP client"),
-                         tr("Unexpected reply from SMTP server:\n\n") + response);
+    QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
     state = Close;
     emit status(tr("Failed to send message"));
   }

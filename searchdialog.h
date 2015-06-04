@@ -14,8 +14,7 @@ class SearchDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SearchDialog(QString title, QString table, QStringList indexes, QString filter,
-                          QWidget *parent = 0);
+    explicit SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent = 0);
     ~SearchDialog();
     QString getFilter() const;
     void setFilter(const QString &value);

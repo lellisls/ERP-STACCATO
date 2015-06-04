@@ -100,8 +100,8 @@ class MainWindow : public QMainWindow {
     int vendRows = 0;
     int pagarRows = 0;
     int recebRows = 0;
-    QSqlTableModel *modelOrcamento, *modelCAPagar, *modelCAReceber, *modelEntregasCliente,
-    *modelRecebimentosForn, *modelNFe;
+    QSqlTableModel *modelOrcamento, *modelCAPagar, *modelCAReceber, *modelEntregasCliente, *modelRecebimentosForn,
+    *modelNFe;
     QSqlRelationalTableModel *modelVendas, *modelPedCompra;
     QString hostname = "localhost";
     QString username = "test";

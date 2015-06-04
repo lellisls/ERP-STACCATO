@@ -6,8 +6,7 @@
 #include "recebimentosfornecedor.h"
 #include "ui_recebimentosfornecedor.h"
 
-RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent)
-  : QDialog(parent), ui(new Ui::RecebimentosFornecedor) {
+RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent) : QDialog(parent), ui(new Ui::RecebimentosFornecedor) {
   ui->setupUi(this);
 
   modelRecebimentos.setTable("pedidotransportadora");

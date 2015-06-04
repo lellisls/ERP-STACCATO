@@ -110,7 +110,7 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->textEditObserv, "observacoes", "plainText");
   addMapping(ui->comboBoxSitTrib, "situacaoTributaria");
   addMapping(ui->itemBoxFornecedor, "idFornecedor", "value");
-  addMapping(ui->comboBoxOrigem, "origem", "currentData");
+  addMapping(ui->comboBoxOrigem, "origem");
   addMapping(ui->radioButtonDesc, "descontinuado");
   addMapping(ui->radioButtonLote, "temLote");
 }

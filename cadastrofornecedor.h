@@ -46,7 +46,7 @@ class CadastroFornecedor : public RegisterDialog {
     void validaCNPJ(QString text);
     void validaCPF(QString text);
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
-    bool atualizarEnd();
+    bool atualizarEndereco();
     void novoEnd();
     virtual bool verifyFields(int row);
     virtual bool savingProcedures(int row);
@@ -54,6 +54,7 @@ class CadastroFornecedor : public RegisterDialog {
     virtual void setupMapper();
     virtual void registerMode();
     virtual void updateMode();
+    bool adicionarEndereco();
 };
 
 #endif // CADASTROFORNECEDOR_H

@@ -98,7 +98,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -690,14 +690,21 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButtonNovoEnd">
+             <widget class="QPushButton" name="pushButtonEndLimpar">
               <property name="text">
-               <string>Novo End.</string>
+               <string>Limpar seleção</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButtonMostrarInativos">
+             <widget class="QPushButton" name="pushButtonRemoverEnd">
+              <property name="text">
+               <string>Remover end.</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxMostrarInativos">
               <property name="text">
                <string>Mostrar Inativos</string>
               </property>
@@ -767,8 +774,8 @@
   <tabstop>lineEditUF</tabstop>
   <tabstop>pushButtonAdicionarEnd</tabstop>
   <tabstop>pushButtonAtualizarEnd</tabstop>
-  <tabstop>pushButtonNovoEnd</tabstop>
-  <tabstop>pushButtonMostrarInativos</tabstop>
+  <tabstop>pushButtonEndLimpar</tabstop>
+  <tabstop>checkBoxMostrarInativos</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>

@@ -7,16 +7,35 @@
 #include "cadastrotransportadora.h"
 #include "ui_cadastrotransportadora.h"
 #include "searchdialog.h"
+#include "cepcompleter.h"
 
 CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   : RegisterDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
-  ui->widgetEnd->setupUi(ui->lineEditPlaca, ui->pushButtonCadastrar);
-  ui->widgetEnd->setTable("Transportadora_has_Endereco");
 
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
   ui->lineEditANTT->setInputMask("99999999;_");
   ui->lineEditPlaca->setInputMask("AAA-9999;_");
+  ui->lineEditCEP->setInputMask("99999-999;_");
+  ui->lineEditUF->setInputMask(">AA;_");
+
+  modelEnd.setTable("Transportadora_has_Endereco");
+  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
+  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
+  modelEnd.setFilter("idEndereco = 0");
+  modelEnd.select();
+
+  ui->tableEndereco->setModel(&modelEnd);
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idTransportadora"));
 
   setupMapper();
   newRegister();
@@ -35,18 +54,10 @@ bool CadastroTransportadora::verifyFields(int row) {
     return false;
   }
 
-  if (ui->widgetEnd->isEnabled() and not ui->widgetEnd->verifyFields()) {
-    return false;
-  }
-
   return true;
 }
 
 bool CadastroTransportadora::savingProcedures(int row) {
-  if (not ui->widgetEnd->cadastrar()) {
-    return false;
-  }
-
   setData(row, "cnpj", ui->lineEditCNPJ->text());
   setData(row, "razaoSocial", ui->lineEditRazaoSocial->text());
   setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
@@ -54,19 +65,50 @@ bool CadastroTransportadora::savingProcedures(int row) {
   setData(row, "tel", ui->lineEditTel->text());
   setData(row, "antt", ui->lineEditANTT->text());
   setData(row, "placaVeiculo", ui->lineEditPlaca->text());
-  setData(row, "idEndereco", ui->widgetEnd->getId());
+
+  if(not model.submitAll()){
+    qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
+    return false;
+  }
+
+  int idTransportadora = data(row, primaryKey).toInt();
+
+  if(not data(row, primaryKey).isValid()){
+    idTransportadora = model.query().lastInsertId().toInt();
+  }
+
+  for(int row = 0; row < modelEnd.rowCount(); ++row){
+    modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idTransportadora);
+  }
+
+  if(not modelEnd.submitAll()){
+    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
+    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    return false;
+  }
 
   return true;
 }
 
 void CadastroTransportadora::setupMapper() {
-  mapper.addMapping(ui->lineEditCNPJ, model.fieldIndex("cnpj"));
-  mapper.addMapping(ui->lineEditRazaoSocial, model.fieldIndex("razaoSocial"));
-  mapper.addMapping(ui->lineEditNomeFantasia, model.fieldIndex("nomeFantasia"));
-  mapper.addMapping(ui->lineEditInscEstadual, model.fieldIndex("inscEstadual"));
-  mapper.addMapping(ui->lineEditTel, model.fieldIndex("tel"));
-  mapper.addMapping(ui->lineEditANTT, model.fieldIndex("antt"));
-  mapper.addMapping(ui->lineEditPlaca, model.fieldIndex("placaVeiculo"));
+  addMapping(ui->lineEditCNPJ, "cnpj");
+  addMapping(ui->lineEditRazaoSocial, "razaoSocial");
+  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditInscEstadual, "inscEstadual");
+  addMapping(ui->lineEditTel, "tel");
+  addMapping(ui->lineEditANTT, "antt");
+  addMapping(ui->lineEditPlaca, "placaVeiculo");
+
+  mapperEnd.setModel(&modelEnd);
+
+  mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
+  mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
 void CadastroTransportadora::registerMode() {
@@ -86,14 +128,12 @@ bool CadastroTransportadora::viewRegister(QModelIndex idx) {
     return false;
   }
 
-  bool ok = false;
-  int idEnd = model.data(model.index(idx.row(), model.fieldIndex("idEndereco"))).toInt(&ok);
-
-  if (ok) {
-    ui->widgetEnd->viewCadastro(idEnd);
-  }
-
   mapper.setCurrentModelIndex(idx);
+  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = 0");
+
+  if(not modelEnd.select()){
+    qDebug() << modelEnd.lastError();
+  }
 
   return true;
 }
@@ -186,4 +226,260 @@ void CadastroTransportadora::novoItem() {
 void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &) {
   QString text = ui->lineEditCNPJ->text().remove(".").remove("/").remove("-");
   validaCNPJ(text);
+}
+
+void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked()
+{
+  if(not adicionarEndereco()){
+    QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
+                         QMessageBox::NoButton);
+  }
+}
+
+void CadastroTransportadora::on_pushButtonAtualizarEnd_clicked()
+{
+  if (not atualizarEndereco()) {
+    QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
+                         QMessageBox::NoButton);
+  }
+}
+
+void CadastroTransportadora::on_pushButtonEndLimpar_clicked()
+{
+  novoEnd();
+}
+
+void CadastroTransportadora::on_pushButtonRemoverEnd_clicked()
+{
+  QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Tem certeza que deseja remover?",
+                     QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Sim");
+  msgBox.setButtonText(QMessageBox::No, "Não");
+  if (msgBox.exec() == QMessageBox::Yes) {
+    qDebug() << "set desativado: "
+             << modelEnd.setData(modelEnd.index(mapperEnd.currentIndex(), modelEnd.fieldIndex("desativado")), 1);
+    if (modelEnd.submitAll()) {
+      modelEnd.select();
+      novoEnd();
+    } else {
+      QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
+                           QMessageBox::NoButton);
+      qDebug() << "model error: " << modelEnd.lastError();
+    }
+  }
+}
+
+void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(bool checked)
+{
+  if (checked) {
+    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString());
+  } else {
+    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = 0");
+  }
+}
+
+bool CadastroTransportadora::adicionarEndereco() {
+  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
+                                       ui->lineEditCidade, ui->lineEditUF})) {
+    return false;
+  }
+
+  if (not ui->lineEditCEP->isValid()) {
+    ui->lineEditCEP->setFocus();
+    QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
+  modelEnd.insertRow(modelEnd.rowCount());
+  int row = modelEnd.rowCount() - 1;
+
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
+    qDebug() << "Erro setData descricao: " << modelEnd.lastError();
+    return false;
+  }
+
+  if (not ui->lineEditCEP->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text())) {
+      qDebug() << "Erro setData cep: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditLogradouro->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditLogradouro->text())) {
+      qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditNro->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text())) {
+      qDebug() << "Erro setData numero: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditComp->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
+      qDebug() << "Erro setData complemento: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditBairro->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
+      qDebug() << "Erro setData bairro: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditCidade->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
+      qDebug() << "Erro setData cidade: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditUF->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text())) {
+      qDebug() << "Erro setData uf: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
+    qDebug() << "Erro setData desativado: " << modelEnd.lastError();
+    return false;
+  }
+
+  return true;
+}
+
+bool CadastroTransportadora::atualizarEndereco() {
+  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
+                                       ui->lineEditCidade, ui->lineEditUF})) {
+    return false;
+  }
+
+  if (not ui->lineEditCEP->isValid()) {
+    ui->lineEditCEP->setFocus();
+    QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
+  int row = mapperEnd.currentIndex();
+
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
+    qDebug() << "Erro setData descricao: " << modelEnd.lastError();
+    return false;
+  }
+
+  if (not ui->lineEditCEP->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text())) {
+      qDebug() << "Erro setData cep: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditLogradouro->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditLogradouro->text())) {
+      qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditNro->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text())) {
+      qDebug() << "Erro setData numero: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditComp->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
+      qDebug() << "Erro setData complemento: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditBairro->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
+      qDebug() << "Erro setData bairro: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditCidade->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
+      qDebug() << "Erro setData cidade: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not ui->lineEditUF->text().isEmpty()) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text())) {
+      qDebug() << "Erro setData uf: " << modelEnd.lastError();
+      return false;
+    }
+  }
+
+  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
+    qDebug() << "Erro setData desativado: " << modelEnd.lastError();
+    return false;
+  }
+
+  return true;
+}
+
+void CadastroTransportadora::novoEnd(){
+  ui->pushButtonAtualizarEnd->hide();
+  ui->pushButtonAdicionarEnd->show();
+  ui->tableEndereco->clearSelection();
+  clearEnd();
+}
+
+void CadastroTransportadora::clearEnd(){
+  ui->lineEditBairro->clear();
+  ui->lineEditCEP->clear();
+  ui->lineEditCidade->clear();
+  ui->lineEditComp->clear();
+  ui->lineEditLogradouro->clear();
+  ui->lineEditNro->clear();
+  ui->lineEditUF->clear();
+}
+
+void CadastroTransportadora::on_lineEditCEP_textChanged(const QString &cep) {
+  if (not ui->lineEditCEP->isValid()) {
+    return;
+  }
+
+  CepCompleter cc;
+
+  if (cc.buscaCEP(cep)) {
+    ui->lineEditUF->setText(cc.getUf());
+    ui->lineEditCidade->setText(cc.getCidade());
+    ui->lineEditLogradouro->setText(cc.getEndereco());
+    ui->lineEditBairro->setText(cc.getBairro());
+  } else {
+    QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
+  }
+}
+
+void CadastroTransportadora::on_tableEndereco_clicked(const QModelIndex &index) {
+  if (modelEnd.isDirty()) {
+    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
+                       QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Sim");
+    msgBox.setButtonText(QMessageBox::No, "Não");
+
+    if (msgBox.exec() == QMessageBox::Yes) {
+      if (not atualizarEndereco()) {
+        return;
+      }
+    }
+  }
+
+  ui->pushButtonAtualizarEnd->show();
+  ui->pushButtonAdicionarEnd->hide();
+  mapperEnd.setCurrentModelIndex(index);
 }

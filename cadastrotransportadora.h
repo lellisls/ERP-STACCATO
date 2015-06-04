@@ -20,10 +20,15 @@ class CadastroTransportadora : public RegisterDialog {
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
-
-    // methods derived from RegisterDialog
     void on_pushButtonBuscar_clicked();
     void on_lineEditCNPJ_textEdited(const QString &);
+    void on_pushButtonAdicionarEnd_clicked();
+    void on_pushButtonAtualizarEnd_clicked();
+    void on_pushButtonEndLimpar_clicked();
+    void on_pushButtonRemoverEnd_clicked();
+    void on_checkBoxMostrarInativos_clicked(bool checked);
+    void on_lineEditCEP_textChanged(const QString &cep);
+    void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
     /*!
@@ -32,6 +37,7 @@ class CadastroTransportadora : public RegisterDialog {
 *\return
 */
     virtual bool viewRegister(QModelIndex idx);
+    void clearEnd();
 
   private:
     /*!
@@ -63,10 +69,15 @@ class CadastroTransportadora : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroTransportadora *ui;
+    QSqlTableModel modelEnd;
+    QDataWidgetMapper mapperEnd;
     // methods
     void validaCNPJ(QString text);
     virtual bool newRegister();
     void novoItem();
+    bool atualizarEndereco();
+    bool adicionarEndereco();
+    void novoEnd();
 };
 
 #endif // CADASTROTRANSPORTADORA_H

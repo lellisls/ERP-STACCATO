@@ -15,6 +15,7 @@ class CadastroLoja : public RegisterDialog {
     ~CadastroLoja();
 
   private slots:
+    void changeItem(QVariant value, QString text);
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
@@ -22,11 +23,15 @@ class CadastroLoja : public RegisterDialog {
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonSaidaNFe_clicked();
-
-    // methods derived from RegisterDialog
     void on_pushButtonBuscar_clicked();
     void on_lineEditCNPJ_textEdited(const QString &);
-    void changeItem(QVariant value, QString text);
+    void on_pushButtonAdicionarEnd_clicked();
+    void on_pushButtonAtualizarEnd_clicked();
+    void on_pushButtonEndLimpar_clicked();
+    void on_pushButtonRemoverEnd_clicked();
+    void on_checkBoxMostrarInativos_clicked(bool checked);
+    void on_lineEditCEP_textChanged(const QString &cep);
+    void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
     /*!
@@ -35,6 +40,7 @@ class CadastroLoja : public RegisterDialog {
 *\return
 */
     virtual bool viewRegister(QModelIndex idx);
+    void clearEnd();
 
   private:
     /*!
@@ -67,8 +73,13 @@ class CadastroLoja : public RegisterDialog {
     // attributes
     Ui::CadastroLoja *ui;
     QSqlRelationalTableModel modelAlcadas;
+    QSqlTableModel modelEnd;
+    QDataWidgetMapper mapperEnd;
     // methods
     void validaCNPJ(QString text);
+    void novoEnd();
+    bool atualizarEndereco();
+    bool adicionarEndereco();
 };
 
 #endif // CADASTROLOJA_H

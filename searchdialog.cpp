@@ -399,7 +399,7 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
-  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Cliente_has_Endereco", {}, "idCliente = 0", parent);
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Cliente_has_Endereco", {}, "idEndereco = 1", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});

@@ -36,7 +36,6 @@ SOURCES += backgroundproxymodel.cpp \
     smtp.cpp \
     usersession.cpp \
     venda.cpp \
-    widgetendereco.cpp \
     searchdialog.cpp \
     itembox.cpp \
     apagaorcamento.cpp \
@@ -77,7 +76,6 @@ HEADERS  += backgroundproxymodel.h \
     smtp.h \
     usersession.h \
     venda.h \
-    widgetendereco.h \
     searchdialog.h \
     itembox.h \
     apagaorcamento.h \

@@ -1,7 +1,6 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QTest>
 
 #include "cadastrocliente.h"
 #include "ui_cadastrocliente.h"
@@ -65,43 +64,6 @@ void CadastroCliente::setupUi() {
   ui->lineEditCPF->setPlaceholderText("999.999.999-99");
   ui->lineEditEmail->setPlaceholderText("usuario@email.com");
   ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
-}
-
-bool CadastroCliente::TestClienteIncompleto() {
-  QTest::keyClicks(ui->lineEditCliente, "Cliente Incompleto");
-  QTest::keyClicks(ui->lineEditCPF, "877.533.489-57");
-  return save(true);
-}
-
-bool CadastroCliente::TestClienteEndereco() {
-  QTest::keyClicks(ui->lineEditCEP, "12245-500");
-  //  QTest::keyClicks(ui->lineEditEndereco, "Rua Abolição");
-  QTest::keyClicks(ui->lineEditNro, "87");
-  QTest::keyClicks(ui->lineEditComp, "Ap. 92 T. 01");
-  //  QTest::keyClicks(ui->lineEditBairro, "Vila Betânia");
-  //  QTest::keyClicks(ui->lineEditCidade, "São José dos Campos");
-  //  QTest::keyClicks(ui->lineEditUF, "SP");
-  on_pushButtonAdicionarEnd_clicked();
-
-  QTest::keyClicks(ui->lineEditCliente, "Cliente Endereco");
-  QTest::keyClicks(ui->lineEditCPF, "976.524.755-97");
-  return save(true);
-}
-
-bool CadastroCliente::TestClienteCompleto() {
-  //  QTest::keyClicks(ui->lineEditCEP, "12245-500");
-  //  QTest::keyClicks(ui->lineEditEndereco, "Rua Abolição");
-  //  QTest::keyClicks(ui->lineEditNro, "87");
-  //  QTest::keyClicks(ui->lineEditComp, "Ap. 92 T. 01");
-  //  QTest::keyClicks(ui->lineEditBairro, "Vila Betânia");
-  //  QTest::keyClicks(ui->lineEditCidade, "São José dos Campos");
-  //  QTest::keyClicks(ui->lineEditUF, "SP");
-  //  QTest::mouseClick(ui->pushButtonAdicionarEnd, Qt::LeftButton);
-
-  QTest::keyClicks(ui->lineEditCliente, "Cliente Completo");
-  QTest::keyClicks(ui->lineEditCPF, "187.958.502-28");
-  // TODO: preencher campos restantes
-  return save(true);
 }
 
 CadastroCliente::~CadastroCliente() { delete ui; }
@@ -836,3 +798,45 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
     }
   }
 }
+
+#ifdef QT_DEBUG
+#include <QTest>
+
+bool CadastroCliente::TestClienteIncompleto() {
+  QTest::keyClicks(ui->lineEditCliente, "Cliente Incompleto");
+  QTest::keyClicks(ui->lineEditCPF, "877.533.489-57");
+  return save(true);
+}
+
+bool CadastroCliente::TestClienteEndereco() {
+  QTest::keyClicks(ui->lineEditCEP, "12245-500");
+  //  QTest::keyClicks(ui->lineEditEndereco, "Rua Abolição");
+  QTest::keyClicks(ui->lineEditNro, "87");
+  QTest::keyClicks(ui->lineEditComp, "Ap. 92 T. 01");
+  //  QTest::keyClicks(ui->lineEditBairro, "Vila Betânia");
+  //  QTest::keyClicks(ui->lineEditCidade, "São José dos Campos");
+  //  QTest::keyClicks(ui->lineEditUF, "SP");
+  on_pushButtonAdicionarEnd_clicked();
+
+  QTest::keyClicks(ui->lineEditCliente, "Cliente Endereco");
+  QTest::keyClicks(ui->lineEditCPF, "976.524.755-97");
+  return save(true);
+}
+
+bool CadastroCliente::TestClienteCompleto() {
+  //  QTest::keyClicks(ui->lineEditCEP, "12245-500");
+  //  QTest::keyClicks(ui->lineEditEndereco, "Rua Abolição");
+  //  QTest::keyClicks(ui->lineEditNro, "87");
+  //  QTest::keyClicks(ui->lineEditComp, "Ap. 92 T. 01");
+  //  QTest::keyClicks(ui->lineEditBairro, "Vila Betânia");
+  //  QTest::keyClicks(ui->lineEditCidade, "São José dos Campos");
+  //  QTest::keyClicks(ui->lineEditUF, "SP");
+  //  QTest::mouseClick(ui->pushButtonAdicionarEnd, Qt::LeftButton);
+
+  QTest::keyClicks(ui->lineEditCliente, "Cliente Completo");
+  QTest::keyClicks(ui->lineEditCPF, "187.958.502-28");
+  // TODO: preencher campos restantes
+  return save(true);
+}
+
+#endif

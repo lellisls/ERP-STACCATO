@@ -572,28 +572,6 @@ void MainWindow::readSettings() {
   settings.endGroup();
 }
 
-bool MainWindow::TestInitDB(){
-  return initDb();
-}
-
-bool MainWindow::TestCadastroClienteIncompleto()
-{
-  CadastroCliente *cad = new CadastroCliente(this);
-  return cad->TestClienteIncompleto();
-}
-
-bool MainWindow::TestCadastroClienteEndereco()
-{
-  CadastroCliente *cad = new CadastroCliente(this);
-  return cad->TestClienteEndereco();
-}
-
-bool MainWindow::TestCadastroClienteCompleto()
-{
-  CadastroCliente *cad = new CadastroCliente(this);
-  return cad->TestClienteCompleto();
-}
-
 void MainWindow::on_actionImportaTeste_triggered() {
   ImportaTeste *teste = new ImportaTeste(this);
   teste->importar();
@@ -645,3 +623,27 @@ void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &ind
 }
 
 void MainWindow::on_tableNFE_activated(const QModelIndex &index) { Q_UNUSED(index); }
+
+#ifdef QT_DEBUG
+bool MainWindow::TestInitDB(){
+  return initDb();
+}
+
+bool MainWindow::TestCadastroClienteIncompleto()
+{
+  CadastroCliente *cad = new CadastroCliente(this);
+  return cad->TestClienteIncompleto();
+}
+
+bool MainWindow::TestCadastroClienteEndereco()
+{
+  CadastroCliente *cad = new CadastroCliente(this);
+  return cad->TestClienteEndereco();
+}
+
+bool MainWindow::TestCadastroClienteCompleto()
+{
+  CadastroCliente *cad = new CadastroCliente(this);
+  return cad->TestClienteCompleto();
+}
+#endif

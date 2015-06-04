@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql printsupport webkitwidgets network testlib
+QT       += core gui sql printsupport webkitwidgets network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -166,6 +166,5 @@ test {
 }
 
 CONFIG -= console
-
 
 include(QtRptProject/QtRPT/QtRPT.pri)

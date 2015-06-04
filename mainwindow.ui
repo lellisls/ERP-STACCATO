@@ -933,7 +933,7 @@
   </action>
   <action name="actionImportaTeste">
    <property name="text">
-    <string>Importa tabela fornecedor</string>
+    <string>Importar tabela fornecedor</string>
    </property>
   </action>
  </widget>

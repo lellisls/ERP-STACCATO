@@ -36,7 +36,7 @@ class CadastroCliente : public RegisterDialog {
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
-    void on_pushButtonNovoEnd_clicked();
+    void on_pushButtonEndLimpar_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonRemoverEnd_clicked();
     void on_radioButtonPF_toggled(bool checked);
@@ -54,11 +54,11 @@ class CadastroCliente : public RegisterDialog {
     QString getTipoClienteFornecedor() const;
     void setTipoClienteFornecedor(const QString &value);
     void clearEnd();
-
     bool TestClienteEndereco();
     bool TestClienteCompleto();
+
   private:
-    bool atualizarEnd();
+    bool atualizarEndereco();
     void novoEnd();
 
     /*!
@@ -99,6 +99,7 @@ class CadastroCliente : public RegisterDialog {
     void validaCNPJ(QString text);
     void validaCPF(QString text);
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
+    bool adicionarEndereco();
 };
 
 #endif // CADASTROCLIENTE_H

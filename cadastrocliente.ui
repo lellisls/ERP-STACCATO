@@ -101,7 +101,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -692,7 +692,7 @@
               </widget>
              </item>
              <item row="1" column="2">
-              <widget class="QLineEdit" name="lineEditEndereco">
+              <widget class="QLineEdit" name="lineEditLogradouro">
                <property name="minimumSize">
                 <size>
                  <width>150</width>
@@ -852,9 +852,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButtonNovoEnd">
+             <widget class="QPushButton" name="pushButtonEndLimpar">
               <property name="text">
-               <string>Novo End.</string>
+               <string>Limpar seleção</string>
               </property>
              </widget>
             </item>
@@ -945,7 +945,7 @@
   <tabstop>pushButtonCancelar</tabstop>
   <tabstop>tableEndereco</tabstop>
   <tabstop>lineEditCEP</tabstop>
-  <tabstop>lineEditEndereco</tabstop>
+  <tabstop>lineEditLogradouro</tabstop>
   <tabstop>lineEditNro</tabstop>
   <tabstop>lineEditComp</tabstop>
   <tabstop>lineEditBairro</tabstop>
@@ -953,7 +953,7 @@
   <tabstop>lineEditUF</tabstop>
   <tabstop>pushButtonAdicionarEnd</tabstop>
   <tabstop>pushButtonAtualizarEnd</tabstop>
-  <tabstop>pushButtonNovoEnd</tabstop>
+  <tabstop>pushButtonEndLimpar</tabstop>
   <tabstop>checkBoxMostrarInativos</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>

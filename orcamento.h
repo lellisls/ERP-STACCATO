@@ -41,12 +41,13 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonCadastrarOrcamento_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonCancelarItem_clicked();
-    void on_pushButtonFecharPedido_clicked();
+    void on_pushButtonGerarVenda_clicked();
     void on_pushButtonImprimir_clicked();
     void on_pushButtonLimparSelecao_clicked();
     void on_pushButtonRemoverItem_clicked();
     void on_tableProdutos_clicked(const QModelIndex &index);
     void print(QPrinter *printer);
+    void on_pushButtonReplicar_clicked();
 
   signals:
     void finished();
@@ -54,10 +55,10 @@ class Orcamento : public RegisterDialog {
     // methods derived from RegisterDialog
   public:
     /*!
- * \brief Utilizada para selecionar um item a partir de um QModelIndex
- * \param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
- * \return
- */
+*\brief Utilizada para selecionar um item a partir de um QModelIndex
+*\param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
+*\return
+*/
     virtual bool viewRegister(QModelIndex idx);
 
   private:
@@ -71,25 +72,25 @@ class Orcamento : public RegisterDialog {
 */
     virtual bool savingProcedures(int row);
     /*!
- * \brief Limpar os campos da tela
- */
+*\brief Limpar os campos da tela
+*/
     virtual void clearFields();
     /*!
- * \brief Função onde os mapeamentos são configurados
- */
+*\brief Função onde os mapeamentos são configurados
+*/
     virtual void setupMapper();
     /*!
- * \brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
- */
+*\brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
+*/
     virtual void registerMode();
     /*!
- * \brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
- */
+*\brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
+*/
     virtual void updateMode();
     /*!
- * \brief newRegister
- * \return
- */
+*\brief newRegister
+*\return
+*/
     virtual bool newRegister();
     /*!
 * \brief Mensagem de confirmação padrão para quando cadastro é realizado com sucesso.

@@ -302,6 +302,11 @@
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
   <tabstop>tabWidget</tabstop>
+  <tabstop>lineEditNomeBancario</tabstop>
+  <tabstop>lineEditCPFBancario</tabstop>
+  <tabstop>lineEditBanco</tabstop>
+  <tabstop>lineEditAgencia</tabstop>
+  <tabstop>lineEditCC</tabstop>
  </tabstops>
  <resources>
   <include location="qrs/resources.qrc"/>

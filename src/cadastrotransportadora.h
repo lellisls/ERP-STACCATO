@@ -78,6 +78,8 @@ class CadastroTransportadora : public RegisterDialog {
     bool atualizarEndereco();
     bool adicionarEndereco();
     void novoEnd();
+  public slots:
+    void show();
 };
 
 #endif // CADASTROTRANSPORTADORA_H

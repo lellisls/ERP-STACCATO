@@ -64,6 +64,8 @@ class CadastroUsuario : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroUsuario *ui;
+  public slots:
+    void show();
 };
 
 #endif // CADASTRARUSUARIO_H

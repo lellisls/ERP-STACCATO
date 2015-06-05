@@ -61,6 +61,7 @@ class CadastroProfissional : public RegisterDialog {
 
   public slots:
     void changeItem(QVariant value, QString text);
+    void show();
 };
 
 #endif // CADASTROPROFISSIONAL_H

@@ -476,3 +476,8 @@ void CadastroTransportadora::on_tableEndereco_clicked(const QModelIndex &index) 
   ui->pushButtonAdicionarEnd->hide();
   mapperEnd.setCurrentModelIndex(index);
 }
+
+void CadastroTransportadora::show(){
+  QWidget::show();
+  adjustSize();
+}

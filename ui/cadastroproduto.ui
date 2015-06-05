@@ -203,12 +203,17 @@
                  </property>
                  <item>
                   <property name="text">
-                   <string>pc</string>
+                   <string>peça</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
                    <string>m2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>m.l.</string>
                   </property>
                  </item>
                 </widget>

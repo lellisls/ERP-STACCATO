@@ -80,6 +80,8 @@ class CadastroLoja : public RegisterDialog {
     void novoEnd();
     bool atualizarEndereco();
     bool adicionarEndereco();
+  public slots:
+    void show();
 };
 
 #endif // CADASTROLOJA_H

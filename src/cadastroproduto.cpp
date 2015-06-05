@@ -175,3 +175,8 @@ void CadastroProduto::changeItem(QVariant value, QString text) {
 
   viewRegisterById(value);
 }
+
+void CadastroProduto::show(){
+  QWidget::show();
+  adjustSize();
+}

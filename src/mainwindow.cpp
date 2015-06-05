@@ -200,7 +200,6 @@ void MainWindow::setHostname(const QString &value) { hostname = value; }
 void MainWindow::on_actionCadastrarProdutos_triggered() {
   CadastroProduto *cad = new CadastroProduto(this);
   cad->show();
-  cad->adjustSize();
 }
 
 void MainWindow::on_actionCadastrarCliente_triggered() {
@@ -357,25 +356,21 @@ void MainWindow::initializeTables() {
 void MainWindow::on_actionCadastrarUsuario_triggered() {
   CadastroUsuario *cad = new CadastroUsuario(this);
   cad->show();
-  cad->adjustSize();
 }
 
 void MainWindow::on_actionCadastrarProfissional_triggered() {
   CadastroProfissional *cad = new CadastroProfissional(this);
   cad->show();
-  cad->adjustSize();
 }
 
 void MainWindow::on_actionGerenciar_Transportadoras_triggered() {
   CadastroTransportadora *cad = new CadastroTransportadora(this);
   cad->show();
-  cad->adjustSize();
 }
 
 void MainWindow::on_actionGerenciar_Lojas_triggered() {
   CadastroLoja *cad = new CadastroLoja(this);
   cad->show();
-  cad->adjustSize();
 }
 
 void MainWindow::updateTables() {

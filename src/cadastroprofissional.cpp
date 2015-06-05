@@ -104,3 +104,8 @@ void CadastroProfissional::on_pushButtonBuscar_clicked() {
   connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::changeItem);
   sdProfissional->show();
 }
+
+void CadastroProfissional::show(){
+  QWidget::show();
+  adjustSize();
+}

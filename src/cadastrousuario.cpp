@@ -135,3 +135,8 @@ void CadastroUsuario::on_pushButtonBuscar_clicked() {
   connect(sdUsuario, &SearchDialog::itemSelected, this, &CadastroUsuario::changeItem);
   sdUsuario->show();
 }
+
+void CadastroUsuario::show(){
+  QWidget::show();
+  adjustSize();
+}

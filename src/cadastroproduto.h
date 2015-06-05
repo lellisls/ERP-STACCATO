@@ -58,6 +58,8 @@ class CadastroProduto : public RegisterDialog {
     // attributes
     Ui::CadastroProduto *ui;
     int ProdutosRow = 0;
+  public slots:
+    void show();
 };
 
 #endif // CADASTROPRODUTO_H

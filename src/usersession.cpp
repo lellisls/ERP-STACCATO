@@ -15,7 +15,7 @@ QString UserSession::getNome() { return (query->value("nome").toString()); }
 bool UserSession::login(QString user, QString password) {
   initialize();
 
-  query->prepare("SELECT * FROM Usuario WHERE user = :user AND passwd = PASSWORD(:password)");
+  query->prepare("SELECT * FROM Usuario WHERE user = :user AND passwd = PASSWORD(:password) AND desativado = false");
   query->bindValue(":user", user);
   query->bindValue(":password", password);
 

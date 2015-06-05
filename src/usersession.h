@@ -14,7 +14,7 @@ class UserSession {
     static QString getNome();
     static QString getSigla();
     static QString getSiglaLoja();
-    static QString getTipo();
+    static QString getTipoUsuario();
     static void logout();
     static void free();
 

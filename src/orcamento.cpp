@@ -82,7 +82,7 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   newRegister();
   show();
 
-  if (UserSession::getTipo() == "ADMINISTRADOR") {
+  if (UserSession::getTipoUsuario() == "ADMINISTRADOR") {
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->checkBoxFreteManual->show();
@@ -794,7 +794,7 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
 
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
-                                                 " AND desativado = 0 OR idEndereco = 1");
+                                                 " AND desativado = false OR idEndereco = 1");
 
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
@@ -820,7 +820,7 @@ void Orcamento::on_pushButtonLimparSelecao_clicked() {
 }
 
 void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
-  if (checked == true and UserSession::getTipo() != "ADMINISTRADOR") {
+  if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
   }

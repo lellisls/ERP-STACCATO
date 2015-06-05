@@ -164,9 +164,9 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   }
 
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
-                                                 " AND desativado = 0");
+                                                 " AND desativado = false");
   ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
-                                                    " AND desativado = 0");
+                                                    " AND desativado = false");
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
 
@@ -761,7 +761,7 @@ void Venda::on_doubleSpinBoxFinal_editingFinished() {
 }
 
 void Venda::on_checkBoxFreteManual_clicked(bool checked) {
-  if (checked == true and UserSession::getTipo() != "ADMINISTRADOR") {
+  if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
   }

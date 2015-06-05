@@ -36,7 +36,7 @@ void UserSession::free() {
   query = nullptr;
 }
 
-QString UserSession::getTipo() { return (query->value("tipo").toString()); }
+QString UserSession::getTipoUsuario() { return (query->value("tipo").toString()); }
 
 QString UserSession::getSigla() { return (query->value("sigla").toString()); }
 

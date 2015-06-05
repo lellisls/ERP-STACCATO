@@ -374,4 +374,6 @@ bool ImportaTeste::verificaTabela() {
   return true;
 }
 
-bool ImportaTeste::TestImportacao() {}
+bool ImportaTeste::TestImportacao() {
+  return true;
+}

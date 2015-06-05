@@ -187,7 +187,7 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
   ui->doubleSpinBoxFrete->setValue(qryVenda.value("frete").toDouble());
   ui->itemBoxCliente->setValue(qryVenda.value("idCliente"));
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
-                                                 " AND desativado = 0");
+                                                 " AND desativado = false");
   ui->itemBoxEndereco->setValue(qryVenda.value("idEnderecoFaturamento"));
 
   double descontoGlobal = qryVenda.value("descontoPorc").toDouble();

@@ -192,7 +192,7 @@ void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
   SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cliente", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
-                                             "desativado = 0", parent);
+                                             "desativado = false", parent);
 
   sdCliente->setPrimaryKey("idCliente");
   sdCliente->setTextKeys({"nomeFantasia", "nome_razao"});
@@ -231,7 +231,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
 
 SearchDialog *SearchDialog::loja(QWidget *parent) {
   SearchDialog *sdLoja =
-      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "desativado = 0", parent);
+      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "desativado = false", parent);
 
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
@@ -297,7 +297,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor = new SearchDialog(
-                                 "Buscar Fornecedor", "Fornecedor", {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "desativado = 0", parent);
+                                 "Buscar Fornecedor", "Fornecedor", {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "desativado = false", parent);
 
   sdFornecedor->setPrimaryKey("idFornecedor");
   sdFornecedor->setTextKeys({"nomeFantasia", "razaoSocial"});
@@ -325,7 +325,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "Transportadora",
-  {"razaoSocial", "nomeFantasia"}, "desativado = 0", parent);
+  {"razaoSocial", "nomeFantasia"}, "desativado = false", parent);
 
   sdTransportadora->setPrimaryKey("idTransportadora");
   sdTransportadora->setTextKeys({"nomeFantasia"});
@@ -351,7 +351,7 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
 
 SearchDialog *SearchDialog::usuario(QWidget *parent) {
   SearchDialog *sdUsuario =
-      new SearchDialog("Buscar Usuário", "Usuario", {"nome, tipo"}, "Usuario.desativado = 0", parent);
+      new SearchDialog("Buscar Usuário", "Usuario", {"nome, tipo"}, "Usuario.desativado = false", parent);
 
   sdUsuario->setPrimaryKey("idUsuario");
   sdUsuario->setTextKeys({"nome"});
@@ -376,7 +376,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
 
 SearchDialog *SearchDialog::vendedor(QWidget *parent) {
   SearchDialog *sdVendedor =
-      new SearchDialog("Buscar Vendedor", "Usuario", {"nome, tipo"}, "desativado = 0 AND tipo = 'VENDEDOR'", parent);
+      new SearchDialog("Buscar Vendedor", "Usuario", {"nome, tipo"}, "desativado = false AND tipo = 'VENDEDOR'", parent);
 
   sdVendedor->setPrimaryKey("idUsuario");
   sdVendedor->setTextKeys({"nome"});
@@ -451,7 +451,7 @@ SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "desativado = 0", parent);
+      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "desativado = false", parent);
 
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome"});
@@ -477,6 +477,6 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   return sdProfissional;
 }
 
-void SearchDialog::on_radioButtonProdAtivos_clicked() { model.setFilter("expirado = 0 AND desativado = 0"); }
+void SearchDialog::on_radioButtonProdAtivos_clicked() { model.setFilter("expirado = 0 AND desativado = false"); }
 
-void SearchDialog::on_radioButtonProdDesc_clicked() { model.setFilter("expirado = 1 AND desativado = 0"); }
+void SearchDialog::on_radioButtonProdDesc_clicked() { model.setFilter("expirado = 1 AND desativado = false"); }

@@ -314,7 +314,7 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
   mapper.setCurrentModelIndex(idx);
 
   ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data(primaryKey).toString() + ")");
-  modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = 0");
+  modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = false");
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
@@ -778,7 +778,7 @@ void CadastroCliente::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idCliente = " + data(primaryKey).toString());
   } else {
-    modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = 0");
+    modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = false");
   }
 }
 

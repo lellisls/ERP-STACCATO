@@ -129,7 +129,7 @@ bool CadastroTransportadora::viewRegister(QModelIndex idx) {
   }
 
   mapper.setCurrentModelIndex(idx);
-  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = 0");
+  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = false");
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
@@ -267,7 +267,7 @@ void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString());
   } else {
-    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = 0");
+    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = false");
   }
 }
 

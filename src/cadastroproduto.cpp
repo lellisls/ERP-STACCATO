@@ -23,7 +23,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   setupMapper();
   newRegister();
 
-  if (UserSession::getTipo() == "VENDEDOR") {
+  if (UserSession::getTipoUsuario() == "VENDEDOR") {
     ui->pushButtonRemover->setDisabled(true);
   }
 

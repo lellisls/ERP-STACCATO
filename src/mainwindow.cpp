@@ -57,9 +57,9 @@ MainWindow::MainWindow(QWidget *parent)
 
   initializeTables();
 
-  setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipo());
+  setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipoUsuario());
 
-  if (UserSession::getTipo() == "VENDEDOR") {
+  if (UserSession::getTipoUsuario() == "VENDEDOR") {
     ui->tableContasPagar->hide();
     ui->labelContasPagar->hide();
     ui->tableContasReceber->hide();
@@ -403,7 +403,7 @@ void MainWindow::on_actionAtualizar_tabelas_triggered() {
 } // TODO: make sure tables are updated automagically
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
-  if (UserSession::getTipo() == "VENDEDOR") {
+  if (UserSession::getTipoUsuario() == "VENDEDOR") {
     modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO' AND idUsuario = " +
                               QString::number(UserSession::getId()) + "");
   } else {
@@ -412,7 +412,7 @@ void MainWindow::on_radioButtonOrcValido_clicked() {
 }
 
 void MainWindow::on_radioButtonOrcExpirado_clicked() {
-  if (UserSession::getTipo() == "VENDEDOR") {
+  if (UserSession::getTipoUsuario() == "VENDEDOR") {
     modelOrcamento->setFilter("`Dias restantes` < 1 AND idUsuario = " + QString::number(UserSession::getId()) + "");
   } else {
     modelOrcamento->setFilter("`Dias restantes` < 1");
@@ -420,7 +420,7 @@ void MainWindow::on_radioButtonOrcExpirado_clicked() {
 }
 
 void MainWindow::on_radioButtonOrcLimpar_clicked() {
-  if (UserSession::getTipo() == "VENDEDOR") {
+  if (UserSession::getTipoUsuario() == "VENDEDOR") {
     modelOrcamento->setFilter("idUsuario = " + QString::number(UserSession::getId()) + "");
   } else {
     modelOrcamento->setFilter("");

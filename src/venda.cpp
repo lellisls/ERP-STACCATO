@@ -780,9 +780,10 @@ void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
 
 void Venda::on_pushButtonImprimir_clicked() {
-  QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
+//  QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
+//  qDebug() << "file: " << filename;
   QtRPT *report = new QtRPT(this);
-  report->loadReport(filename);
+  report->loadReport("C:/temp/venda.xml");
   report->recordCount << ui->tableVenda->model()->rowCount();
   QObject::connect(report, &QtRPT::setValue, this, &Venda::setValue);
   report->printExec();
@@ -791,29 +792,49 @@ void Venda::on_pushButtonImprimir_clicked() {
 void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage) {
   Q_UNUSED(reportPage);
 
-  if (paramName == "customer") {
-    paramValue = "Cliente";
+  QSqlQuery queryClien("SELECT * FROM Cliente WHERE idCliente = " + modelVenda.data(modelVenda.index(0, modelVenda.fieldIndex("idCliente"))).toString());
+  queryClien.first();
+
+  QSqlQuery queryProd("SELECT * FROM Produto WHERE idProduto = " + modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))).toString());
+  queryProd.first();
+
+  if (paramName == "cliente") {
+    paramValue = queryClien.value("nome_razao").toString();
   }
-  if (paramName == "date") {
-    paramValue = QDate::currentDate().toString();
+
+  if (paramName == "data") {
+    paramValue = modelVenda.data(modelVenda.index(0, modelVenda.fieldIndex("data"))).toDateTime();
   }
-  if (paramName == "NN") {
-    paramValue = recNo + 1;
+
+  if (paramName == "Marca") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("fornecedor"))).toString();
   }
-  if (paramName == "Goods") {
-    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 0)) == 0) return;
-    paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 0)).toString();
+
+  if (paramName == "Código") {
+    paramValue = queryProd.value("codComercial").toString();
   }
-  if (paramName == "Quantity") {
-    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 1)) == 0) return;
-    paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 1)).toString();
+
+  if (paramName == "Nome do produto") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("produto"))).toString();
   }
-  if (paramName == "Price") {
-    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 2)) == 0) return;
-    paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 2)).toString();
+
+  if (paramName == "Ambiente") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("obs"))).toString();
   }
-  if (paramName == "Sum") {
-    if (ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 3)) == 0) return;
-    paramValue = ui->tableVenda->model()->data(ui->tableVenda->model()->index(recNo, 3)).toString();
+
+  if (paramName == "Preço-R$") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toString();
+  }
+
+  if (paramName == "Quant.") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("qte"))).toString();
+  }
+
+  if (paramName == "Unid.") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("un"))).toString();
+  }
+
+  if (paramName == "Total") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("total"))).toString();
   }
 }

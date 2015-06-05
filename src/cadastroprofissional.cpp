@@ -1,6 +1,7 @@
 #include "cadastroprofissional.h"
 #include "ui_cadastroprofissional.h"
 #include "searchdialog.h"
+#include "usersession.h"
 
 CadastroProfissional::CadastroProfissional(QWidget *parent)
   : RegisterDialog("Profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
@@ -8,6 +9,10 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 
   setupMapper();
   newRegister();
+
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+    ui->tabWidget->setTabEnabled(1, false);
+  }
 }
 
 CadastroProfissional::~CadastroProfissional() { delete ui; }

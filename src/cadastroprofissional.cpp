@@ -100,6 +100,7 @@ void CadastroProfissional::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroProfissional::on_pushButtonBuscar_clicked() {
   SearchDialog *sdProfissional = SearchDialog::profissional(this);
+  sdProfissional->setFilter("idProfissional NOT IN (1) AND desativado = false");
   connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::changeItem);
   sdProfissional->show();
 }

@@ -18,15 +18,15 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 CadastroProfissional::~CadastroProfissional() { delete ui; }
 
 void CadastroProfissional::setupMapper() {
-  mapper.addMapping(ui->lineEditNome, model.fieldIndex("nome"));
-  mapper.addMapping(ui->lineEditEmail, model.fieldIndex("email"));
-  mapper.addMapping(ui->lineEditTel, model.fieldIndex("tel"));
-  mapper.addMapping(ui->comboBoxTipo, model.fieldIndex("tipo"));
-  mapper.addMapping(ui->lineEditBanco, model.fieldIndex("banco"));
-  mapper.addMapping(ui->lineEditAgencia, model.fieldIndex("agencia"));
-  mapper.addMapping(ui->lineEditCC, model.fieldIndex("cc"));
-  mapper.addMapping(ui->lineEditNomeBancario, model.fieldIndex("nomeBanco"));
-  mapper.addMapping(ui->lineEditCPFBancario, model.fieldIndex("cpfBanco"));
+  addMapping(ui->lineEditNome, "nome");
+  addMapping(ui->lineEditEmail, "email");
+  addMapping(ui->lineEditTel, "tel");
+  addMapping(ui->comboBoxTipo, "tipo");
+  addMapping(ui->lineEditBanco, "banco");
+  addMapping(ui->lineEditAgencia, "agencia");
+  addMapping(ui->lineEditCC, "cc");
+  addMapping(ui->lineEditNomeBancario, "nomeBanco");
+  addMapping(ui->lineEditCPFBancario, "cpfBanco");
 }
 
 void CadastroProfissional::registerMode() {

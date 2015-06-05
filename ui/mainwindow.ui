@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qrs/resources.qrc">
+   <iconset resource="../qrs/resources.qrc">
     <normaloff>:/logo.svg</normaloff>:/logo.svg</iconset>
   </property>
   <property name="locale">
@@ -939,7 +939,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="qrs/resources.qrc"/>
+  <include location="../qrs/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -103,7 +103,6 @@ FORMS += ui/apagaorcamento.ui \
     ui/contasapagar.ui \
     ui/contasareceber.ui \
     ui/entregascliente.ui \
-    ui/importabd.ui \
     ui/importateste.ui \
     ui/loginconfig.ui \
     ui/logindialog.ui \
@@ -146,13 +145,14 @@ CONFIG -= console
 }
 
 test {
+    DEFINES += "TEST"
     message(Test build)
     QT += testlib
     TARGET = UnitTests
     CONFIG -= console
     message(Deactivating terminal)
 
-    SOURCES -= main.cpp
+    SOURCES -= src/main.cpp
 
     HEADERS += test/testmainwindow.h
 

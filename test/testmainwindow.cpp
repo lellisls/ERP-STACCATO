@@ -1,5 +1,5 @@
 #include "testmainwindow.h"
-#include "mainwindow.h"
+#include "src/mainwindow.h"
 
 void TestMainWindow::testInitDB() {
   window = new MainWindow();

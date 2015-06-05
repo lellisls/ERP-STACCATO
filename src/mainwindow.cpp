@@ -616,7 +616,7 @@ void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &ind
 
 void MainWindow::on_tableNFE_activated(const QModelIndex &index) { Q_UNUSED(index); }
 
-#ifdef QT_DEBUG
+#ifdef TEST
 bool MainWindow::TestInitDB() { return initDb(); }
 
 bool MainWindow::TestCadastroClienteIncompleto() {

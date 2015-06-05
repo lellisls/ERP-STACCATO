@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>652</width>
-    <height>534</height>
+    <width>643</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -438,7 +438,7 @@
   <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
-   <header>itembox.h</header>
+   <header>src/itembox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

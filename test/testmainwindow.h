@@ -2,7 +2,7 @@
 #define TESTMAINWINDOW_H
 
 #include <QtTest>
-#include <mainwindow.h>
+#include <src/mainwindow.h>
 
 class TestMainWindow : public QObject {
     Q_OBJECT

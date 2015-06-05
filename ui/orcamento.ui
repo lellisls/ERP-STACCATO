@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1173</width>
-    <height>660</height>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1099,12 +1099,12 @@
   <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
-   <header>itembox.h</header>
+   <header>src/itembox.h</header>
   </customwidget>
   <customwidget>
    <class>LineEditDecimal</class>
    <extends>QLineEdit</extends>
-   <header>lineeditdecimal.h</header>
+   <header>src/lineeditdecimal.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

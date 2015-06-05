@@ -801,7 +801,7 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-#ifdef QT_DEBUG
+#ifdef TEST
 #include <QTest>
 
 bool CadastroCliente::TestClienteIncompleto() {

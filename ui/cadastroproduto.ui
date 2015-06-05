@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1019</width>
-    <height>616</height>
+    <height>558</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1520,7 +1520,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="qrs/resources.qrc">
+        <iconset resource="../qrs/resources.qrc">
          <normaloff>:/search.png</normaloff>:/search.png</iconset>
        </property>
       </widget>
@@ -1596,12 +1596,12 @@
   <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
-   <header>itembox.h</header>
+   <header>src/itembox.h</header>
   </customwidget>
   <customwidget>
    <class>ComboBox</class>
    <extends>QComboBox</extends>
-   <header>combobox.h</header>
+   <header>src/combobox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -1647,7 +1647,7 @@
   <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources>
-  <include location="qrs/resources.qrc"/>
+  <include location="../qrs/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

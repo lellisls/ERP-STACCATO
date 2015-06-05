@@ -193,9 +193,6 @@
                       <height>16777215</height>
                      </size>
                     </property>
-                    <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 255, 127);</string>
-                    </property>
                    </widget>
                   </item>
                   <item row="1" column="4">
@@ -227,9 +224,6 @@
                       <width>16777215</width>
                       <height>16777215</height>
                      </size>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 255, 127);</string>
                     </property>
                    </widget>
                   </item>

@@ -377,8 +377,8 @@ void CadastroCliente::disableEditor() {
 }
 
 void CadastroCliente::show() {
-  adjustSize();
   QWidget::show();
+  adjustSize();
 }
 
 void CadastroCliente::on_pushButtonCancelar_clicked() { close(); }

@@ -88,12 +88,11 @@ void RegisterDialog::sendUpdateMessage() {
 }
 
 void RegisterDialog::closeEvent(QCloseEvent *event) {
-  if (not confirmationMessage()) {
-    event->ignore();
-  } else {
+  if (confirmationMessage()) {
     event->accept();
-    QDialog::closeEvent(event);
     close();
+  } else {
+    event->ignore();
   }
 }
 
@@ -133,7 +132,12 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if (model.isDirty()) {
+  int notNull = 0;
+
+  for (int i = 0; i < model.columnCount(); ++i)
+    if (not model.data(model.index(mapper.currentIndex(), i)).isNull()) ++notNull;
+
+  if (notNull > 0) {
     QMessageBox msgBox;
     msgBox.setParent(this);
     msgBox.setLocale(QLocale::Portuguese);

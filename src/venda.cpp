@@ -87,11 +87,10 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->dateEditPgt3->setDate(QDate::currentDate());
 
   SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
-
   ui->itemBoxEndereco->setSearchDialog(sdEndereco);
-  SearchDialog::enderecoCliente(ui->itemBoxEndereco);
 
-  ui->itemBoxEnderecoFat->setSearchDialog(sdEndereco);
+  SearchDialog *sdEnderecoFat = SearchDialog::enderecoCliente(ui->itemBoxEnderecoFat);
+  ui->itemBoxEnderecoFat->setSearchDialog(sdEnderecoFat);
 
   showMaximized();
 }

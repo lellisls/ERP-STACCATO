@@ -364,7 +364,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   sdUsuario->setPrimaryKey("idUsuario");
   sdUsuario->setTextKeys({"nome"});
 
-  sdUsuario->hideColumns({"idUsuario", "user", "passwd"});
+  sdUsuario->hideColumns({"idUsuario", "user", "passwd", "desativado"});
 
   QVector<QPair<QString, QString>> headerData;
   headerData.push_back(QPair<QString, QString>("idLoja", "Loja"));
@@ -383,8 +383,8 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::vendedor(QWidget *parent) {
-  SearchDialog *sdVendedor =
-      new SearchDialog("Buscar Vendedor", "Usuario", {"nome, tipo"}, "desativado = false AND tipo = 'VENDEDOR'", parent);
+  SearchDialog *sdVendedor = new SearchDialog("Buscar Vendedor", "Usuario", {"nome, tipo"},
+                                              "desativado = false AND tipo = 'VENDEDOR'", parent);
 
   sdVendedor->setPrimaryKey("idUsuario");
   sdVendedor->setTextKeys({"nome"});

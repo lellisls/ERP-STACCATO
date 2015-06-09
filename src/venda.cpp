@@ -28,6 +28,7 @@
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
+
   modelItem.setTable("Venda_has_Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
   modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
@@ -779,8 +780,8 @@ void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
 
 void Venda::on_pushButtonImprimir_clicked() {
-//  QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
-//  qDebug() << "file: " << filename;
+  //  QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
+  //  qDebug() << "file: " << filename;
   QtRPT *report = new QtRPT(this);
   report->loadReport("C:/temp/venda.xml");
   report->recordCount << ui->tableVenda->model()->rowCount();
@@ -791,10 +792,12 @@ void Venda::on_pushButtonImprimir_clicked() {
 void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage) {
   Q_UNUSED(reportPage);
 
-  QSqlQuery queryClien("SELECT * FROM Cliente WHERE idCliente = " + modelVenda.data(modelVenda.index(0, modelVenda.fieldIndex("idCliente"))).toString());
+  QSqlQuery queryClien("SELECT * FROM Cliente WHERE idCliente = " +
+                       modelVenda.data(modelVenda.index(0, modelVenda.fieldIndex("idCliente"))).toString());
   queryClien.first();
 
-  QSqlQuery queryProd("SELECT * FROM Produto WHERE idProduto = " + modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))).toString());
+  QSqlQuery queryProd("SELECT * FROM Produto WHERE idProduto = " +
+                      modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))).toString());
   queryProd.first();
 
   if (paramName == "cliente") {

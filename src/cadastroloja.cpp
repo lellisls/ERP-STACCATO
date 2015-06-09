@@ -53,7 +53,7 @@ CadastroLoja::CadastroLoja(QWidget *parent) : RegisterDialog("Loja", "idLoja", p
   setupMapper();
   newRegister();
 
-  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
   }
@@ -518,7 +518,7 @@ void CadastroLoja::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroLoja::show(){
+void CadastroLoja::show() {
   QWidget::show();
   adjustSize();
 }

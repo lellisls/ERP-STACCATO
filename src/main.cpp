@@ -16,13 +16,17 @@ int main(int argc, char *argv[]) {
   app.setApplicationName("Staccato");
 
   QTranslator qtTranslator;
+
   if (not qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
   }
+
   app.installTranslator(&qtTranslator);
   QTranslator pt;
+
   if (not pt.load(":/qt_portuguese.qm")) {
     qDebug() << "Error loading qt_portuguese.ts";
   }
+
   app.installTranslator(&pt);
 
   MainWindow window;

@@ -29,7 +29,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
-  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
   }
 }
@@ -176,7 +176,7 @@ void CadastroProduto::changeItem(QVariant value, QString text) {
   viewRegisterById(value);
 }
 
-void CadastroProduto::show(){
+void CadastroProduto::show() {
   QWidget::show();
   adjustSize();
 }

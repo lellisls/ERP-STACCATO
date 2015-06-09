@@ -40,7 +40,7 @@ void ImportaTeste::importar() {
   importarTabela();
 }
 
-void ImportaTeste::importarTabela(){
+void ImportaTeste::importarTabela() {
   setProgressDialog();
   setModelAndTable();
 

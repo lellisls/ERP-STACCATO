@@ -19,12 +19,14 @@ void SendMail::on_pushButtonBuscar_clicked() {
 
 void SendMail::on_pushButtonEnviar_clicked() {
   Smtp *smtp = new Smtp(ui->lineEditEmail->text(), ui->lineEditPasswd->text(), "smtp.gmail.com", 465, 30000);
-  if (ui->lineEditAnexo->text().isEmpty())
+
+  if (ui->lineEditAnexo->text().isEmpty()) {
     smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
                    ui->textEdit->toHtml());
-  else
+  } else {
     smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
                    ui->textEdit->toHtml(), QStringList(ui->lineEditAnexo->text()));
+  }
 }
 
 void SendMail::on_pushButtonCancelar_clicked() { close(); }

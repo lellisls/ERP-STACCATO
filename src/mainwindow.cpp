@@ -629,7 +629,7 @@ bool MainWindow::TestCadastroClienteCompleto() {
   return cad->TestClienteCompleto();
 }
 
-void MainWindow::TestImportacao(){
+void MainWindow::TestImportacao() {
   ImportaTeste *importa = new ImportaTeste(this);
   importa->TestImportacao();
 }

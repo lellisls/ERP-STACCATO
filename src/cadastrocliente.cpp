@@ -52,7 +52,7 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   setupMapper();
   newRegister();
 
-  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
   }
@@ -102,7 +102,7 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
 bool CadastroCliente::verifyFields(int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
-	qDebug() << "Faltou endereço!";
+    qDebug() << "Faltou endereço!";
     return true;
   } else {
     setData(row, "incompleto", false);
@@ -219,9 +219,8 @@ bool CadastroCliente::savingProcedures(int row) {
     idCliente = model.query().lastInsertId().toInt();
   }
 
-
   for (int row = 0; row < modelEnd.rowCount(); ++row) {
-    if(not modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idCliente)){
+    if (not modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idCliente)) {
       qDebug() << "error: " << modelEnd.lastError();
     }
   }

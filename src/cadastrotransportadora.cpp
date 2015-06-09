@@ -41,7 +41,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   setupMapper();
   newRegister();
 
-  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
   }
@@ -483,7 +483,7 @@ void CadastroTransportadora::on_tableEndereco_clicked(const QModelIndex &index) 
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroTransportadora::show(){
+void CadastroTransportadora::show() {
   QWidget::show();
   adjustSize();
 }

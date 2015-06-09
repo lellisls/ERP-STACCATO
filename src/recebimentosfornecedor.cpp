@@ -11,6 +11,7 @@ RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent) : QDialog(parent
 
   modelRecebimentos.setTable("pedidotransportadora");
   modelRecebimentos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   if (not modelRecebimentos.select()) {
     qDebug() << "Failed to populate TableRecebimentos: " << modelRecebimentos.lastError();
   }
@@ -27,12 +28,14 @@ RecebimentosFornecedor::~RecebimentosFornecedor() { delete ui; }
 void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
   if (ui->checkBoxEntregue->isChecked()) {
     QSqlQuery qry;
+
     if (not qry.exec("UPDATE pedidotransportadora SET status = 'RECEBIDO' WHERE idPedido = '" + idPedido +
                      "' AND tipo = 'fornecedor'")) {
       qDebug() << "Erro ao marcar como recebido: " << qry.lastError();
     }
   } else {
     QSqlQuery qry;
+
     if (not qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
                      "' AND tipo = 'fornecedor'")) {
       qDebug() << "Erro ao marcar como não recebido: " << qry.lastError();

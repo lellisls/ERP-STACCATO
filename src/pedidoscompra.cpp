@@ -16,12 +16,14 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
 
   modelItemPedidos.setTable("pedidofornecedor_has_produto");
   modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   if (not modelItemPedidos.select()) {
     qDebug() << "Failed to populate pedidofornecedor_has_produto: " << modelItemPedidos.lastError();
   }
 
   modelPedidos.setTable("pedidofornecedor");
   modelPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   if (not modelPedidos.select()) {
     qDebug() << "Failed to populate pedidofornecedor: " << modelPedidos.lastError();
   }
@@ -86,6 +88,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
   if (not qry.exec()) {
     qDebug() << "Erro buscando produtos: " << qry.lastError();
   }
+
   qDebug() << "size: " << qry.size();
 
   for (int row = 0; row < qry.size(); ++row) {
@@ -151,6 +154,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
     qDebug() << "generate NFe";
     qDebug() << "generate delivery for client";
   }
+
   if (not modelItemPedidos.submitAll()) {
     qDebug() << "modelItemPedidos falhou: " << modelItemPedidos.lastError();
   }

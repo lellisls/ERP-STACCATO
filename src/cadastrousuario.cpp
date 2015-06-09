@@ -136,7 +136,7 @@ void CadastroUsuario::on_pushButtonBuscar_clicked() {
   sdUsuario->show();
 }
 
-void CadastroUsuario::show(){
+void CadastroUsuario::show() {
   QWidget::show();
   adjustSize();
 }

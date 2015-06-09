@@ -43,7 +43,7 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
   setupMapper();
   newRegister();
 
-  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
   }
@@ -119,7 +119,7 @@ void CadastroFornecedor::novoEnd() {
 bool CadastroFornecedor::verifyFields(int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
-	qDebug() << "Faltou endereço!";
+    qDebug() << "Faltou endereço!";
     return true;
   } else {
     setData(row, "incompleto", false);

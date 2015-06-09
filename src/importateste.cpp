@@ -112,8 +112,10 @@ void ImportaTeste::importarTabela(){
     qDebug() << "db failed: " << db.lastError();
   }
 
-  ui->tableView->resizeColumnsToContents();
   showMaximized();
+  ui->tableView->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableView->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableView->resizeColumnsToContents();
 }
 
 void ImportaTeste::setProgressDialog() {

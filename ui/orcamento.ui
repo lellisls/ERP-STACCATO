@@ -635,25 +635,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="5">
-           <widget class="QDoubleSpinBox" name="doubleSpinBoxCaixas">
-            <property name="maximumSize">
-             <size>
-              <width>55</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="correctionMode">
-             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-            </property>
-            <property name="maximum">
-             <double>9999999.000000000000000</double>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="6">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxQte">
             <property name="maximumSize">
@@ -797,6 +778,22 @@
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>false</bool>
             </attribute>
+           </widget>
+          </item>
+          <item row="3" column="5">
+           <widget class="QSpinBox" name="spinBoxCaixas">
+            <property name="maximumSize">
+             <size>
+              <width>55</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="correctionMode">
+             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1177,7 +1174,7 @@
   <tabstop>lineEditEstoque</tabstop>
   <tabstop>lineEditPrecoUn</tabstop>
   <tabstop>lineEditObs</tabstop>
-  <tabstop>doubleSpinBoxCaixas</tabstop>
+  <tabstop>spinBoxCaixas</tabstop>
   <tabstop>doubleSpinBoxQte</tabstop>
   <tabstop>lineEditUn</tabstop>
   <tabstop>doubleSpinBoxDesconto</tabstop>

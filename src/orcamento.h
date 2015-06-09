@@ -24,7 +24,7 @@ class Orcamento : public RegisterDialog {
 
   private slots:
     void on_checkBoxFreteManual_clicked(bool checked);
-    void on_doubleSpinBoxCaixas_valueChanged(double caixas);
+    void on_spinBoxCaixas_valueChanged(int caixas);
     void on_doubleSpinBoxDesconto_valueChanged(double);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(double);
     void on_doubleSpinBoxFinal_editingFinished();

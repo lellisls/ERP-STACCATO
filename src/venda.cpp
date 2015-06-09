@@ -72,6 +72,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("status"), true);
 
+  // TODO: make this runtime changeable
   QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto"};
 
   ui->comboBoxPgt1->insertItems(0, list);

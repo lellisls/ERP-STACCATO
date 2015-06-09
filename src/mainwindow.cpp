@@ -31,8 +31,7 @@
 #include "importateste.h"
 
 MainWindow::MainWindow(QWidget *parent)
-  : QMainWindow(parent), ui(new Ui::MainWindow), modelOrcamento(nullptr), modelCAPagar(nullptr),
-    modelCAReceber(nullptr), modelVendas(nullptr), modelPedCompra(nullptr) {
+    : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
   setWindowTitle("ERP Staccato");
 
@@ -168,8 +167,9 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::setupTable(QTableView *table) {
+  table->verticalHeader()->setResizeContentsPrecision(0);
+  table->horizontalHeader()->setResizeContentsPrecision(0);
   table->resizeColumnsToContents();
-  table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 }
 
 void MainWindow::showError(const QSqlError &err) {
@@ -223,7 +223,6 @@ void MainWindow::initializeTables() {
   ui->tableOrcamentos->setModel(proxyModel);
   ui->tableOrcamentos->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableOrcamentos->setColumnHidden(modelOrcamento->fieldIndex("idUsuario"), true);
-  setupTable(ui->tableOrcamentos);
 
   // Vendas -------------------------------------
   modelVendas = new QSqlRelationalTableModel(this);
@@ -255,7 +254,6 @@ void MainWindow::initializeTables() {
   ui->tableVendas->setModel(modelVendas);
   ui->tableVendas->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableVendas->setItemDelegate(new QSqlRelationalDelegate(ui->tableVendas));
-  setupTable(ui->tableVendas);
 
   // Contas a pagar -------------------------------------
   modelCAPagar = new QSqlTableModel(this);
@@ -268,7 +266,6 @@ void MainWindow::initializeTables() {
 
   ui->tableContasPagar->setModel(modelCAPagar);
   ui->tableContasPagar->setSelectionBehavior(QAbstractItemView::SelectRows);
-  setupTable(ui->tableContasPagar);
 
   // Contas a receber -------------------------------------
   modelCAReceber = new QSqlTableModel(this);
@@ -281,7 +278,6 @@ void MainWindow::initializeTables() {
 
   ui->tableContasReceber->setModel(modelCAReceber);
   ui->tableContasReceber->setSelectionBehavior(QAbstractItemView::SelectRows);
-  setupTable(ui->tableContasReceber);
 
   // Entregas cliente
   modelEntregasCliente = new QSqlTableModel(this);
@@ -296,7 +292,6 @@ void MainWindow::initializeTables() {
 
   ui->tableEntregasCliente->setModel(modelEntregasCliente);
   ui->tableEntregasCliente->setSelectionBehavior(QAbstractItemView::SelectRows);
-  setupTable(ui->tableEntregasCliente);
 
   // Recebimentos fornecedor
   modelRecebimentosForn = new QSqlTableModel(this);
@@ -310,7 +305,6 @@ void MainWindow::initializeTables() {
 
   ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
   ui->tableRecebimentosFornecedor->setSelectionBehavior(QAbstractItemView::SelectRows);
-  setupTable(ui->tableRecebimentosFornecedor);
 
   // Pedidos de compra
   modelPedCompra = new QSqlRelationalTableModel(this);
@@ -336,7 +330,6 @@ void MainWindow::initializeTables() {
 
   ui->tablePedidosCompra->setModel(modelPedCompra);
   ui->tablePedidosCompra->setSelectionBehavior(QAbstractItemView::SelectRows);
-  setupTable(ui->tablePedidosCompra);
 
   // NFe
   modelNFe = new QSqlTableModel(this);
@@ -350,7 +343,6 @@ void MainWindow::initializeTables() {
   ui->tableNFE->setModel(modelNFe);
   ui->tableNFE->setColumnHidden(modelNFe->fieldIndex("NFe"), true);
   ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
-  setupTable(ui->tableNFE);
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {
@@ -561,6 +553,19 @@ void MainWindow::readSettings() {
   settings.endGroup();
 }
 
+void MainWindow::showMaximized() {
+  QMainWindow::showMaximized();
+
+  setupTable(ui->tableOrcamentos);
+  setupTable(ui->tableVendas);
+  setupTable(ui->tableContasPagar);
+  setupTable(ui->tableContasReceber);
+  setupTable(ui->tableEntregasCliente);
+  setupTable(ui->tableNFE);
+  setupTable(ui->tablePedidosCompra);
+  setupTable(ui->tableRecebimentosFornecedor);
+}
+
 void MainWindow::on_actionImportaTeste_triggered() {
   ImportaTeste *teste = new ImportaTeste(this);
   teste->importar();
@@ -581,20 +586,20 @@ void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
 void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
-        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+      modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableContasReceber_activated(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(
-        modelCAReceber->data(modelCAReceber->index(index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+      modelCAReceber->data(modelCAReceber->index(index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-        modelEntregasCliente->data(modelEntregasCliente->index(index.row(), modelEntregasCliente->fieldIndex("idPedido")))
-        .toString());
+      modelEntregasCliente->data(modelEntregasCliente->index(index.row(), modelEntregasCliente->fieldIndex("idPedido")))
+          .toString());
 }
 
 void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
@@ -605,7 +610,7 @@ void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
 void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-        modelRecebimentosForn->data(modelRecebimentosForn->index(
+      modelRecebimentosForn->data(modelRecebimentosForn->index(
                                       index.row(), modelRecebimentosForn->fieldIndex("idPedido"))).toString());
 }
 

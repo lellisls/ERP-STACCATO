@@ -108,9 +108,6 @@
           </item>
           <item row="1" column="1">
            <widget class="QTableView" name="tableOrcamentos">
-            <property name="horizontalScrollBarPolicy">
-             <enum>Qt::ScrollBarAlwaysOff</enum>
-            </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -230,9 +227,6 @@
             </property>
             <property name="autoFillBackground">
              <bool>false</bool>
-            </property>
-            <property name="horizontalScrollBarPolicy">
-             <enum>Qt::ScrollBarAlwaysOff</enum>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
@@ -684,9 +678,6 @@
             </property>
             <property name="autoFillBackground">
              <bool>false</bool>
-            </property>
-            <property name="horizontalScrollBarPolicy">
-             <enum>Qt::ScrollBarAlwaysOff</enum>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>

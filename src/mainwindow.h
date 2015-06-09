@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow {
     QString getPort() const;
     void setPort(const QString &value);
     void readSettings();
+    void showMaximized();
 
     bool TestCadastroClienteIncompleto();
     bool TestInitDB();

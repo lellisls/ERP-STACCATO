@@ -6,7 +6,7 @@
 
 class ComboBoxDelegate : public QStyledItemDelegate {
   public:
-    ComboBoxDelegate(QObject *parent = 0);
+    explicit ComboBoxDelegate(QObject *parent = 0);
     ~ComboBoxDelegate();
 
     // QAbstractItemDelegate interface

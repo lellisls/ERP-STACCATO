@@ -5,7 +5,7 @@
 
 class BackgroundProxyModel : public QIdentityProxyModel {
   public:
-    BackgroundProxyModel(int column);
+    explicit BackgroundProxyModel(int column);
     ~BackgroundProxyModel();
 
     // QAbstractItemModel interface

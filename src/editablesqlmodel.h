@@ -7,7 +7,7 @@ class EditableSqlModel : public QSqlRelationalTableModel {
     Q_OBJECT
 
   public:
-    EditableSqlModel(QObject *parent = 0);
+    explicit EditableSqlModel(QObject *parent = 0);
     ~EditableSqlModel();
 
     // QAbstractItemModel interface

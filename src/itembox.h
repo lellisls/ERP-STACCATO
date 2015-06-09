@@ -11,7 +11,7 @@ class ItemBox : public QLineEdit {
     Q_OBJECT
 
   public:
-    ItemBox(QWidget *parent);
+    explicit ItemBox(QWidget *parent);
     ~ItemBox();
     virtual void resizeEvent(QResizeEvent *event);
     void setSearchDialog(SearchDialog *m_value);

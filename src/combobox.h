@@ -7,7 +7,7 @@ class ComboBox : public QComboBox {
     Q_OBJECT
 
   public:
-    ComboBox(QWidget *parent);
+    explicit ComboBox(QWidget *parent);
     ~ComboBox();
     QVariant getCurrentValue() const;
 

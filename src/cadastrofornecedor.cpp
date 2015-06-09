@@ -113,8 +113,8 @@ void CadastroFornecedor::novoEnd() {
 bool CadastroFornecedor::verifyFields(int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
+	qDebug() << "Faltou endereço!";
     return true;
-    qDebug() << "Faltou endereço!";
   } else {
     setData(row, "incompleto", false);
   }
@@ -164,11 +164,8 @@ bool CadastroFornecedor::savingProcedures(int row) {
       qDebug() << "Erro na queryKey: " << queryKey.lastError();
     }
 
-    double key;
-
     if (queryKey.first()) {
-      key = qMax(queryKey.value(0).toInt() + 1, 1000);
-      setData(row, primaryKey, key);
+      setData(row, primaryKey, qMax(queryKey.value(0).toInt() + 1, 1000));
     }
   }
 

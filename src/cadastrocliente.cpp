@@ -96,8 +96,8 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
 bool CadastroCliente::verifyFields(int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
+	qDebug() << "Faltou endereço!";
     return true;
-    qDebug() << "Faltou endereço!";
   } else {
     setData(row, "incompleto", false);
   }

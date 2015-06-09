@@ -5,6 +5,7 @@
 #include <QDate>
 
 class DateFormatDelegate : public QStyledItemDelegate {
+
   public:
     DateFormatDelegate(QString dateFormat, QObject *parent = 0);
     ~DateFormatDelegate();

@@ -213,8 +213,11 @@ bool CadastroCliente::savingProcedures(int row) {
     idCliente = model.query().lastInsertId().toInt();
   }
 
-  for (int row = 1; row < modelEnd.rowCount(); ++row) {
-    modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idCliente);
+
+  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+    if(not modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idCliente)){
+      qDebug() << "error: " << modelEnd.lastError();
+    }
   }
 
   if (not modelEnd.submitAll()) {

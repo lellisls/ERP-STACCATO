@@ -8,6 +8,7 @@
 #include "ui_cadastrotransportadora.h"
 #include "searchdialog.h"
 #include "cepcompleter.h"
+#include "usersession.h"
 
 CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   : RegisterDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
@@ -39,6 +40,11 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
 
   setupMapper();
   newRegister();
+
+  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
 }
 
 CadastroTransportadora::~CadastroTransportadora() { delete ui; }

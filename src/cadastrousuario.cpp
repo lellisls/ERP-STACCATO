@@ -19,6 +19,10 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
 
   setupMapper();
   newRegister();
+
+  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+    ui->removerButton->setDisabled(true);
+  }
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }

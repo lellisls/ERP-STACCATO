@@ -6,6 +6,7 @@
 #include "ui_cadastrofornecedor.h"
 #include "searchdialog.h"
 #include "cepcompleter.h"
+#include "usersession.h"
 
 CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
   : RegisterDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor),
@@ -41,6 +42,11 @@ CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
   setupUi();
   setupMapper();
   newRegister();
+
+  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
 }
 
 CadastroFornecedor::~CadastroFornecedor() { delete ui; }

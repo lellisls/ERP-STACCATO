@@ -12,6 +12,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->tabWidget->setTabEnabled(1, false);
+    ui->pushButtonRemover->setDisabled(true);
   }
 }
 
@@ -105,7 +106,7 @@ void CadastroProfissional::on_pushButtonBuscar_clicked() {
   sdProfissional->show();
 }
 
-void CadastroProfissional::show(){
+void CadastroProfissional::show() {
   QWidget::show();
   adjustSize();
 }

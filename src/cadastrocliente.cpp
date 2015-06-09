@@ -7,6 +7,7 @@
 #include "searchdialog.h"
 #include "cepcompleter.h"
 #include "cadastroprofissional.h"
+#include "usersession.h"
 
 CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
   : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente),
@@ -50,6 +51,11 @@ CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
 
   setupMapper();
   newRegister();
+
+  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
 }
 
 void CadastroCliente::setupUi() {

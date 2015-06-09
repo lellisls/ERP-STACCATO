@@ -52,6 +52,11 @@ CadastroLoja::CadastroLoja(QWidget *parent) : RegisterDialog("Loja", "idLoja", p
 
   setupMapper();
   newRegister();
+
+  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
 }
 
 CadastroLoja::~CadastroLoja() { delete ui; }

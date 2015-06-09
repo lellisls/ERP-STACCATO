@@ -23,15 +23,15 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   setupMapper();
   newRegister();
 
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    ui->pushButtonRemover->setDisabled(true);
-  }
-
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   ui->itemBoxFornecedor->setSearchDialog(sdFornecedor);
 
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
+
+  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
+    ui->pushButtonRemover->setDisabled(true);
+  }
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }

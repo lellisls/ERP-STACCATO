@@ -41,6 +41,8 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   modelItem.setHeaderData(modelItem.fieldIndex("caixas"), Qt::Horizontal, "Caixas");
   modelItem.setHeaderData(modelItem.fieldIndex("qte"), Qt::Horizontal, "Qte.");
   modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
+  modelItem.setHeaderData(modelItem.fieldIndex("codComercial"), Qt::Horizontal, "Código");
+  modelItem.setHeaderData(modelItem.fieldIndex("formComercial"), Qt::Horizontal, "Formato");
   modelItem.setHeaderData(modelItem.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Caixa");
   modelItem.setHeaderData(modelItem.fieldIndex("parcial"), Qt::Horizontal, "Subtotal");
   modelItem.setHeaderData(modelItem.fieldIndex("desconto"), Qt::Horizontal, "Desc. %");
@@ -84,7 +86,6 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
 
   setupMapper();
   newRegister();
-  show();
 
   if (UserSession::getTipoUsuario() == "ADMINISTRADOR") {
     ui->dateTimeEdit->setReadOnly(false);
@@ -93,6 +94,16 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   } else {
     ui->checkBoxFreteManual->hide();
   }
+
+  ui->lineEditCodComercial->hide();
+  ui->lineEditFormComercial->hide();
+  ui->labelCodComercial->hide();
+  ui->labelFormComercial->hide();
+
+  ui->tableProdutos->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+
+  show();
+  adjustSize();
 }
 
 Orcamento::~Orcamento() { delete ui; }
@@ -121,6 +132,8 @@ bool Orcamento::viewRegister(QModelIndex index) {
   } else {
     ui->pushButtonReplicar->hide();
   }
+
+  ui->tableProdutos->resizeColumnsToContents();
 
   return true;
 }
@@ -154,6 +167,8 @@ void Orcamento::setupMapper() {
   mapperItem.addMapping(ui->lineEditOrcamento, modelItem.fieldIndex("idOrcamento"), "text");
   mapperItem.addMapping(ui->lineEditObs, modelItem.fieldIndex("obs"), "text");
   mapperItem.addMapping(ui->lineEditUn, modelItem.fieldIndex("un"), "text");
+  mapperItem.addMapping(ui->lineEditCodComercial, modelItem.fieldIndex("codComercial"));
+  mapperItem.addMapping(ui->lineEditFormComercial, modelItem.fieldIndex("formComercial"));
   mapperItem.addMapping(ui->itemBoxProduto, modelItem.fieldIndex("idProduto"), "value");
   mapperItem.addMapping(ui->doubleSpinBoxQte, modelItem.fieldIndex("qte"), "value");
   mapperItem.addMapping(ui->doubleSpinBoxDesconto, modelItem.fieldIndex("desconto"), "value");
@@ -610,20 +625,20 @@ void Orcamento::adicionarItem() {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idOrcamento")), ui->lineEditOrcamento->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idProduto")), ui->itemBoxProduto->value().toInt());
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("item")), row); // Item
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("item")), row);
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("fornecedor")), ui->lineEditFornecedor->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("produto")), ui->itemBoxProduto->text());
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("obs")), ui->lineEditObs->text()); // Obs
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("prcUnitario")),
-                    ui->lineEditPrecoUn->getValue()); // Pr. Un
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("obs")), ui->lineEditObs->text());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("prcUnitario")), ui->lineEditPrecoUn->getValue());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("caixas")), ui->doubleSpinBoxCaixas->value());
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("qte")), ui->doubleSpinBoxQte->value());          // Qte
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("unCaixa")), ui->doubleSpinBoxQte->singleStep()); // Un/Cx
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("un")), ui->lineEditUn->text());                  // Un
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("desconto")),
-                    ui->doubleSpinBoxDesconto->value()); // Desconto
-  calcPrecoGlobalTotal();
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("qte")), ui->doubleSpinBoxQte->value());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("unCaixa")), ui->doubleSpinBoxQte->singleStep());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("un")), ui->lineEditUn->text());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("codComercial")), ui->lineEditCodComercial->text());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("formComercial")), ui->lineEditFormComercial->text());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("desconto")), ui->doubleSpinBoxDesconto->value());
 
+  calcPrecoGlobalTotal();
   novoItem();
 }
 
@@ -643,25 +658,19 @@ void Orcamento::atualizarItem() {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idOrcamento")), ui->lineEditOrcamento->text()); // Item
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());             // Item
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idProduto")), ui->itemBoxProduto->value());
-
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("item")), row); // Item
-
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("fornecedor")), ui->lineEditFornecedor->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("produto")), ui->itemBoxProduto->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("obs")), ui->lineEditObs->text()); // Obs
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("prcUnitario")),
-                    ui->lineEditPrecoUn->getValue()); // Pr. Un
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("prcUnitario")), ui->lineEditPrecoUn->getValue());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("caixas")), ui->doubleSpinBoxCaixas->value());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("qte")), ui->doubleSpinBoxQte->value());          // Qte
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("unCaixa")), ui->doubleSpinBoxQte->singleStep()); // Un/Cx
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("un")), ui->lineEditUn->text());                  // Un
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("desconto")),
-                    ui->doubleSpinBoxDesconto->value()); // Desconto
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")),
-                    ui->doubleSpinBoxDescontoGlobal->value()); // Desconto global
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("desconto")), ui->doubleSpinBoxDesconto->value());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), ui->doubleSpinBoxDescontoGlobal->value());
 
   calcPrecoGlobalTotal();
-
   novoItem();
 }
 
@@ -747,6 +756,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
 
   ui->doubleSpinBoxQte->setValue(0.0);
   ui->doubleSpinBoxCaixas->setValue(0.0);
+  ui->doubleSpinBoxDesconto->setValue(0.0);
 
   if (ui->itemBoxProduto->text().isEmpty()) {
     ui->doubleSpinBoxCaixas->setDisabled(true);
@@ -759,6 +769,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
     ui->lineEditPrecoUn->setDisabled(true);
     ui->lineEditPrecoTotal->setDisabled(true);
     ui->lineEditUn->clear();
+    ui->lineEditObs->clear();
     return;
   }
 
@@ -776,6 +787,8 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->lineEditPrecoUn->setValue(query.value("precoVenda").toDouble());
   ui->lineEditEstoque->setValue(query.value("estoque").toInt());
   ui->lineEditFornecedor->setText(query.value("fornecedor").toString());
+  ui->lineEditCodComercial->setText(query.value("codComercial").toString());
+  ui->lineEditFormComercial->setText(query.value("formComercial").toString());
 
   ui->doubleSpinBoxCaixas->setEnabled(true);
   ui->doubleSpinBoxQte->setEnabled(true);
@@ -784,11 +797,12 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->lineEditPrecoUn->setEnabled(true);
   ui->lineEditPrecoTotal->setEnabled(true);
 
-  if (un.contains("m2")) {
+  if (un.contains("m2")) {//TODO: refactor this to use "m2/ml else pç"
     ui->doubleSpinBoxQte->setSingleStep(query.value("m2cx").toDouble());
   } else if (un.contains("pç") or un.contains("pc")) {
     ui->doubleSpinBoxQte->setSingleStep(query.value("pccx").toDouble());
   }
+
   ui->doubleSpinBoxQte->setValue(0);
 
   calcPrecoItemTotal();

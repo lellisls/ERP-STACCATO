@@ -18,7 +18,16 @@ void TestMainWindow::testCadastroClienteCompleto() {
   QVERIFY2(window->TestCadastroClienteCompleto(), "Cadastro cliente falhou");
 }
 
-// test importacao
+void TestMainWindow::testImportacao(){
+  window->TestImportacao();
+
+  QSqlQuery *query = new QSqlQuery("SELECT COUNT(*) FROM Produto");
+  query->first();
+
+  // Testa a tabela da Bellinzoni
+  QCOMPARE(query->value(0).toInt(), 22);
+}
+
 // test cadastrar orcamento
 // test cadastrar venda
 // test gerar nfe

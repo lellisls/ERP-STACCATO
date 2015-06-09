@@ -31,11 +31,13 @@ class MainWindow : public QMainWindow {
     QString getPort() const;
     void setPort(const QString &value);
     void readSettings();
-    bool TestCadastroClienteIncompleto();
 
+    bool TestCadastroClienteIncompleto();
     bool TestInitDB();
     bool TestCadastroClienteEndereco();
-    bool TestCadastroClienteCompleto();
+    bool TestCadastroClienteCompleto();  
+    void TestImportacao();
+
   public slots:
     void showError(const QSqlError &err);
     void updateTables();

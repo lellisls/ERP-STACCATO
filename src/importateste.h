@@ -38,7 +38,7 @@ class ImportaTeste : public QDialog {
     void setProgressDialog();
     void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
     void expiraPrecosAntigos(QSqlQuery produto, QString idProduto);
-    bool TestImportacao();
+    void TestImportacao();
 
   private slots:
     void on_pushButtonCancelar_clicked();
@@ -57,6 +57,8 @@ class ImportaTeste : public QDialog {
                           "st", "precoVenda", "comissao", "observacoes", "origem", "descontinuado", "temLote", "ui"};
     QStringList values;
     ImportaExportProxy *proxyModel;
+
+    void importarTabela();
 };
 
 #endif // IMPORTATESTE_H

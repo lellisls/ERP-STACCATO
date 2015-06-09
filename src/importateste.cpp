@@ -37,6 +37,10 @@ void ImportaTeste::importar() {
     return;
   }
 
+  importarTabela();
+}
+
+void ImportaTeste::importarTabela(){
   setProgressDialog();
   setModelAndTable();
 
@@ -374,6 +378,10 @@ bool ImportaTeste::verificaTabela() {
   return true;
 }
 
-bool ImportaTeste::TestImportacao() {
-  return true;
+void ImportaTeste::TestImportacao() {
+  file = "C:/temp/build-Loja-Desktop_Qt_5_4_0_MinGW_32bit-Test/Bellinzoni.xlsx";
+  validade = 10;
+
+  importarTabela();
+  on_pushButtonSalvar_clicked();
 }

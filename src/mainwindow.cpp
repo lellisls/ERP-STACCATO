@@ -628,4 +628,10 @@ bool MainWindow::TestCadastroClienteCompleto() {
   CadastroCliente *cad = new CadastroCliente(this);
   return cad->TestClienteCompleto();
 }
+
+void MainWindow::TestImportacao(){
+  ImportaTeste *importa = new ImportaTeste(this);
+  importa->TestImportacao();
+}
+
 #endif

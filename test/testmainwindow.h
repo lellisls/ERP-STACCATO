@@ -11,7 +11,8 @@ class TestMainWindow : public QObject {
     void testInitDB();
     void testCadastroClienteIncompleto();
     void testCadastroClienteEndereco();
-    void testCadastroClienteCompleto();
+    void testCadastroClienteCompleto();  
+    void testImportacao();
 
   private:
     MainWindow *window;

@@ -28,11 +28,6 @@
 Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
   ui->setupUi(this);
 
-  ui->tableProdutos->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(5);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(5);
-  ui->tableProdutos->horizontalHeader()->setStretchLastSection(true);
-
   modelItem.setTable("Orcamento_has_Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
@@ -101,10 +96,13 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   ui->labelFormComercial->hide();
 
   ui->tableProdutos->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-  ui->tableProdutos->resizeColumnsToContents();
 
   show();
   adjustSize();
+
+  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->resizeColumnsToContents();
 }
 
 Orcamento::~Orcamento() { delete ui; }

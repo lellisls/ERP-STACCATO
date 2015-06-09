@@ -19,10 +19,6 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   setFilter(filter);
   model.select();
   ui->tableBusca->setModel(&model);
-  ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-  ui->tableBusca->verticalHeader()->setResizeContentsPrecision(5);
-  ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(5);
-  ui->tableBusca->horizontalHeader()->setStretchLastSection(true);
 
   DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
   ui->tableBusca->setItemDelegate(doubleDelegate);
@@ -101,12 +97,18 @@ void SearchDialog::show() {
   model.select();
 
   QDialog::show();
+  ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableBusca->resizeColumnsToContents();
 }
 
 void SearchDialog::showMaximized() {
   model.select();
 
   QDialog::showMaximized();
+  ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableBusca->resizeColumnsToContents();
 }
 
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {
@@ -270,7 +272,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "situacaoTributaria", "icms", "custo", "ipi", "markup", "comissao",
                        "origem", "ui", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial",
-                       "qtdPallet", "st", "expirado"});
+                       "qtdPallet", "st", "expirado", "desativado", "cfop", "ncm"});
 
   for (int i = 1; i < sdProd->model.columnCount(); i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
@@ -285,9 +287,11 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
   headerData.push_back(QPair<QString, QString>("m2cx", "M2/Cx."));
   headerData.push_back(QPair<QString, QString>("pccx", "Pç./Cx."));
+  headerData.push_back(QPair<QString, QString>("kgcx", "Kg./Cx."));
   headerData.push_back(QPair<QString, QString>("formComercial", "Form. Com."));
   headerData.push_back(QPair<QString, QString>("codComercial", "Cód. Com."));
   headerData.push_back(QPair<QString, QString>("precoVenda", "R$"));
+  headerData.push_back(QPair<QString, QString>("validade", "Validade"));
   sdProd->setHeaderData(headerData);
 
   sdProd->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);

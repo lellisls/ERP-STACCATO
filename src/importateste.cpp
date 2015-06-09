@@ -238,11 +238,11 @@ bool ImportaTeste::consistenciaDados() {
   }
 
   QString un = values.at(fields.indexOf("un")).toLower();
-  if(un == "m2"){
+  if (un == "m2") {
     values[fields.indexOf("un")] = "m2";
-  } else if(un == "ml"){
+  } else if (un == "ml") {
     values[fields.indexOf("un")] = "ml";
-  } else{
+  } else {
     values[fields.indexOf("un")] = "pç";
   }
 

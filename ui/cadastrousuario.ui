@@ -23,7 +23,7 @@
    <item row="0" column="1" rowspan="2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="cadastrarButton">
+      <widget class="QPushButton" name="pushButtonCadastrar">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -39,7 +39,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="atualizarButton">
+      <widget class="QPushButton" name="pushButtonAtualizar">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -63,21 +63,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="novoCadButton">
+      <widget class="QPushButton" name="pushButtonNovoCad">
        <property name="text">
         <string>Novo Cadastro</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="removerButton">
+      <widget class="QPushButton" name="pushButtonRemover">
        <property name="text">
         <string>Remover</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cancelarButton">
+      <widget class="QPushButton" name="pushButtonCancelar">
        <property name="text">
         <string>Cancelar</string>
        </property>
@@ -113,7 +113,7 @@
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="labelNome">
              <property name="text">
               <string>Nome completo</string>
              </property>
@@ -123,7 +123,7 @@
             <widget class="QLineEdit" name="lineEditNome"/>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label_7">
+            <widget class="QLabel" name="labelLoja">
              <property name="text">
               <string>Loja</string>
              </property>
@@ -133,7 +133,7 @@
             <widget class="ComboBox" name="comboBoxLoja"/>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="labelTipo">
              <property name="text">
               <string>Tipo</string>
              </property>
@@ -159,7 +159,7 @@
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="labelUser">
              <property name="text">
               <string>Nome de Usuário</string>
              </property>
@@ -169,7 +169,7 @@
             <widget class="QLineEdit" name="lineEditUser"/>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="labelSigla">
              <property name="text">
               <string>SIGLA</string>
              </property>
@@ -179,7 +179,7 @@
             <widget class="QLineEdit" name="lineEditSigla"/>
            </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="labelPasswd">
              <property name="text">
               <string>Senha</string>
              </property>
@@ -193,7 +193,7 @@
             </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="labelPasswd_2">
              <property name="text">
               <string>Conf. de Senha</string>
              </property>
@@ -218,7 +218,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="0">
-        <widget class="QTableWidget" name="tableWidget">
+        <widget class="QTableWidget" name="tablePermissoes">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -318,11 +318,11 @@
   <tabstop>lineEditSigla</tabstop>
   <tabstop>lineEditPasswd</tabstop>
   <tabstop>lineEditPasswd_2</tabstop>
-  <tabstop>cadastrarButton</tabstop>
-  <tabstop>atualizarButton</tabstop>
-  <tabstop>novoCadButton</tabstop>
-  <tabstop>removerButton</tabstop>
-  <tabstop>cancelarButton</tabstop>
+  <tabstop>pushButtonCadastrar</tabstop>
+  <tabstop>pushButtonAtualizar</tabstop>
+  <tabstop>pushButtonNovoCad</tabstop>
+  <tabstop>pushButtonRemover</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

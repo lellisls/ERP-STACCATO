@@ -9,31 +9,27 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   : RegisterDialog("Usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
-  setupTableWidget();
+  setupTablePermissoes();
   fillCombobox();
 
   ui->lineEditSigla->setInputMask(">AAA");
-  ui->tableWidget->setEnabled(false);
-  ui->tableWidget->setToolTip("Função indisponível nesta versão!");
-  ui->tableWidget->resizeColumnsToContents();
+  ui->tablePermissoes->setEnabled(false);
+  ui->tablePermissoes->setToolTip("Função indisponível nesta versão!");
+  ui->tablePermissoes->resizeColumnsToContents();
 
   setupMapper();
   newRegister();
-
-  if(UserSession::getTipoUsuario() != "ADMINISTRADOR"){
-    ui->removerButton->setDisabled(true);
-  }
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }
 
-void CadastroUsuario::setupTableWidget() {
-  ui->tableWidget->resizeColumnsToContents();
-  ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+void CadastroUsuario::setupTablePermissoes() {
+  ui->tablePermissoes->resizeColumnsToContents();
+  ui->tablePermissoes->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  ui->tablePermissoes->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-  for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
-    for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
+  for (int i = 0; i < ui->tablePermissoes->rowCount(); ++i) {
+    for (int j = 0; j < ui->tablePermissoes->columnCount(); ++j) {
       QWidget *widget = new QWidget();
       QCheckBox *checkBox = new QCheckBox();
       QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -41,7 +37,7 @@ void CadastroUsuario::setupTableWidget() {
       layout->setAlignment(Qt::AlignCenter);
       layout->setContentsMargins(0, 0, 0, 0);
       widget->setLayout(layout);
-      ui->tableWidget->setCellWidget(i, j, widget);
+      ui->tablePermissoes->setCellWidget(i, j, widget);
     }
   }
 }
@@ -74,15 +70,15 @@ void CadastroUsuario::setupMapper() {
 }
 
 void CadastroUsuario::registerMode() {
-  ui->cadastrarButton->show();
-  ui->atualizarButton->hide();
-  ui->removerButton->hide();
+  ui->pushButtonCadastrar->show();
+  ui->pushButtonAtualizar->hide();
+  ui->pushButtonRemover->hide();
 }
 
 void CadastroUsuario::updateMode() {
-  ui->cadastrarButton->hide();
-  ui->atualizarButton->show();
-  ui->removerButton->show();
+  ui->pushButtonCadastrar->hide();
+  ui->pushButtonAtualizar->show();
+  ui->pushButtonRemover->show();
 }
 
 bool CadastroUsuario::savingProcedures(int row) {
@@ -124,15 +120,15 @@ void CadastroUsuario::fillCombobox() {
   ui->comboBoxLoja->setCurrentValue(UserSession::getLoja());
 }
 
-void CadastroUsuario::on_cadastrarButton_clicked() { save(); }
+void CadastroUsuario::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroUsuario::on_atualizarButton_clicked() { save(); }
+void CadastroUsuario::on_pushButtonAtualizar_clicked() { save(); }
 
-void CadastroUsuario::on_novoCadButton_clicked() { newRegister(); }
+void CadastroUsuario::on_pushButtonNovoCad_clicked() { newRegister(); }
 
-void CadastroUsuario::on_removerButton_clicked() { remove(); }
+void CadastroUsuario::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroUsuario::on_cancelarButton_clicked() { close(); }
+void CadastroUsuario::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroUsuario::on_pushButtonBuscar_clicked() {
   SearchDialog *sdUsuario = SearchDialog::usuario(this);

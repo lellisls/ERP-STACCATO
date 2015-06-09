@@ -15,16 +15,16 @@ class CadastroUsuario : public RegisterDialog {
     ~CadastroUsuario();
 
   private slots:
-    void on_atualizarButton_clicked();
-    void on_cadastrarButton_clicked();
-    void on_cancelarButton_clicked();
-    void on_novoCadButton_clicked();
-    void on_removerButton_clicked();
-    void setupTableWidget();
+    void on_pushButtonAtualizar_clicked();
+    void on_pushButtonCadastrar_clicked();
+    void on_pushButtonCancelar_clicked();
+    void on_pushButtonNovoCad_clicked();
+    void on_pushButtonRemover_clicked();
+    void on_pushButtonBuscar_clicked();
+    void setupTablePermissoes();
     void fillCombobox();
 
     // methods derived from RegisterDialog
-    void on_pushButtonBuscar_clicked();
 
   public:
     /*!
@@ -64,6 +64,7 @@ class CadastroUsuario : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroUsuario *ui;
+
   public slots:
     void show();
 };

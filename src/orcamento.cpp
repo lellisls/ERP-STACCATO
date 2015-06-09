@@ -23,6 +23,7 @@
 #include "searchdialog.h"
 #include "apagaorcamento.h"
 #include "endereco.h"
+#include "doubledelegate.h"
 
 Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
   ui->setupUi(this);
@@ -57,6 +58,9 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("unCaixa"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("descGlobal"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("total"), true);
+
+  DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
+  ui->tableProdutos->setItemDelegate(doubleDelegate);
 
   ui->tableProdutos->horizontalHeader()->setStretchLastSection(false);
 

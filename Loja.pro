@@ -49,7 +49,8 @@ SOURCES += src/apagaorcamento.cpp \
     src/smtp.cpp \
     src/usersession.cpp \
     src/validadedialog.cpp \
-    src/venda.cpp
+    src/venda.cpp \
+    src/doubledelegate.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/backgroundproxymodel.h \
@@ -89,7 +90,8 @@ HEADERS  += src/apagaorcamento.h \
     src/smtp.h \
     src/usersession.h \
     src/validadedialog.h \
-    src/venda.h
+    src/venda.h \
+    src/doubledelegate.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \

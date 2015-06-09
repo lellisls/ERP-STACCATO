@@ -5,6 +5,7 @@
 #include "searchdialog.h"
 #include "ui_searchdialog.h"
 #include "registerdialog.h"
+#include "doubledelegate.h"
 
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
   : QDialog(parent), ui(new Ui::SearchDialog) {
@@ -22,6 +23,9 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(5);
   ui->tableBusca->horizontalHeader()->setStretchLastSection(true);
+
+  DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
+  ui->tableBusca->setItemDelegate(doubleDelegate);
 
   ui->lineEditBusca->setFocus();
 

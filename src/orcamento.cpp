@@ -101,6 +101,7 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   ui->labelFormComercial->hide();
 
   ui->tableProdutos->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+  ui->tableProdutos->resizeColumnsToContents();
 
   show();
   adjustSize();
@@ -143,6 +144,7 @@ void Orcamento::novoItem() {
   ui->pushButtonAtualizarItem->hide();
   ui->itemBoxProduto->clear();
   ui->itemBoxProduto->setValue(QVariant());
+  ui->tableProdutos->resizeColumnsToContents();
 }
 
 void Orcamento::setupMapper() {

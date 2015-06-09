@@ -169,6 +169,11 @@ void ImportaTeste::setModelAndTable() {
 }
 
 void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
+  QSqlQuery queryProdSz("SELECT COUNT(*) FROM [BASE$]", db);
+  queryProdSz.first();
+  progressDialog->setMaximum(queryProdSz.value(0).toInt());
+  progressDialog->setLabelText("Cadastrando fornecedores...");
+
   while (query.next()) {
     QString fornecedor = query.value(0).toString();
 
@@ -176,7 +181,12 @@ void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
       int id = buscarCadastrarFornecedor(fornecedor);
       fornecedores.insert(fornecedor, id);
     }
+
+    progressDialog->setValue(progressDialog->value() + 1);
   }
+
+  progressDialog->setValue(0);
+  progressDialog->setLabelText("Importando...");
 }
 
 void ImportaTeste::mostraApenasEstesFornecedores() {
@@ -223,6 +233,15 @@ bool ImportaTeste::consistenciaDados() {
 
   if (values.at(fields.indexOf("ncm")).isEmpty()) {
     values[fields.indexOf("ncm")] = "0";
+  }
+
+  QString un = values.at(fields.indexOf("un")).toLower();
+  if(un == "m2"){
+    values[fields.indexOf("un")] = "m2";
+  } else if(un == "ml"){
+    values[fields.indexOf("un")] = "ml";
+  } else{
+    values[fields.indexOf("un")] = "pç";
   }
 
   // TODO: NCM pode ter o código EX de 10 digitos

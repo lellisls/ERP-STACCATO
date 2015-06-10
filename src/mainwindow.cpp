@@ -30,8 +30,7 @@
 #include "venda.h"
 #include "importateste.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
   setWindowTitle("ERP Staccato");
 
@@ -178,7 +177,7 @@ void MainWindow::showError(const QSqlError &err) {
 
 void MainWindow::on_actionCriarOrcamento_triggered() {
   Orcamento *orcamento = new Orcamento(this);
-  connect(orcamento, &Orcamento::finished, this, &MainWindow::updateTables);
+  Q_UNUSED(orcamento);
 }
 
 QString MainWindow::getPort() const { return port; }
@@ -385,10 +384,6 @@ void MainWindow::updateTables() {
   ui->tableNFE->resizeColumnsToContents();
 }
 
-void MainWindow::on_actionAtualizar_tabelas_triggered() {
-  updateTables();
-} // TODO: make sure tables are updated automagically
-
 void MainWindow::on_radioButtonOrcValido_clicked() {
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
     modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO' AND idUsuario = " +
@@ -573,33 +568,31 @@ void MainWindow::on_actionImportaTeste_triggered() {
 
 void MainWindow::on_tableVendas_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
-  connect(vendas, &Venda::finished, this, &MainWindow::updateTables);
   vendas->viewRegisterById(modelVendas->data(modelVendas->index(index.row(), modelVendas->fieldIndex("idVenda"))));
 }
 
 void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
   Orcamento *orc = new Orcamento(this);
-  connect(orc, &Orcamento::finished, this, &MainWindow::updateTables);
   orc->viewRegisterById(modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
 }
 
 void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {
   ContasAPagar *contas = new ContasAPagar(this);
   contas->viewConta(
-      modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
+        modelCAPagar->data(modelCAPagar->index(index.row(), modelCAPagar->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableContasReceber_activated(const QModelIndex &index) {
   ContasAReceber *contas = new ContasAReceber(this);
   contas->viewConta(
-      modelCAReceber->data(modelCAReceber->index(index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
+        modelCAReceber->data(modelCAReceber->index(index.row(), modelCAReceber->fieldIndex("idVenda"))).toString());
 }
 
 void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(
-      modelEntregasCliente->data(modelEntregasCliente->index(index.row(), modelEntregasCliente->fieldIndex("idPedido")))
-          .toString());
+        modelEntregasCliente->data(modelEntregasCliente->index(index.row(), modelEntregasCliente->fieldIndex("idPedido")))
+        .toString());
 }
 
 void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
@@ -610,11 +603,33 @@ void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
 void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index) {
   RecebimentosFornecedor *recebimentos = new RecebimentosFornecedor(this);
   recebimentos->viewRecebimento(
-      modelRecebimentosForn->data(modelRecebimentosForn->index(
+        modelRecebimentosForn->data(modelRecebimentosForn->index(
                                       index.row(), modelRecebimentosForn->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableNFE_activated(const QModelIndex &index) { Q_UNUSED(index); }
+
+bool MainWindow::event(QEvent *e) // overloading event(QEvent*) method of QMainWindow
+{
+  switch (e->type()) {
+  // ...
+
+  case QEvent::WindowActivate:
+    // gained focus
+    updateTables();
+//    qDebug() << "focus: updating tables";
+    break;
+
+  case QEvent::WindowDeactivate:
+    // lost focus
+    break;
+    // ...
+  default:
+    break;
+  };
+
+  return QMainWindow::event(e);
+}
 
 #ifdef TEST
 bool MainWindow::TestInitDB() { return initDb(); }

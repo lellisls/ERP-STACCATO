@@ -36,7 +36,7 @@ class MainWindow : public QMainWindow {
     bool TestCadastroClienteIncompleto();
     bool TestInitDB();
     bool TestCadastroClienteEndereco();
-    bool TestCadastroClienteCompleto();  
+    bool TestCadastroClienteCompleto();
     void TestImportacao();
 
   public slots:
@@ -44,7 +44,6 @@ class MainWindow : public QMainWindow {
     void updateTables();
 
   private slots:
-    void on_actionAtualizar_tabelas_triggered();
     void on_actionCadastrarCliente_triggered();
     void on_actionCadastrarFornecedor_triggered();
     void on_actionCadastrarProdutos_triggered();
@@ -112,6 +111,7 @@ class MainWindow : public QMainWindow {
     QString port = "3306";
     // Methods
     void initializeTables();
+    bool event(QEvent *e);
 };
 
 #endif // MAINWINDOW_H

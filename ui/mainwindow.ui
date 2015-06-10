@@ -827,7 +827,7 @@
      <x>0</x>
      <y>0</y>
      <width>1273</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOp_es">
@@ -835,7 +835,6 @@
      <string>Opções</string>
     </property>
     <addaction name="actionImportaTeste"/>
-    <addaction name="actionAtualizar_tabelas"/>
    </widget>
    <widget class="QMenu" name="menuAdministra_o">
     <property name="title">
@@ -904,14 +903,6 @@
   <action name="actionGerenciar_Lojas">
    <property name="text">
     <string>Gerenciar lojas</string>
-   </property>
-  </action>
-  <action name="actionAtualizar_tabelas">
-   <property name="text">
-    <string>Atualizar tabelas</string>
-   </property>
-   <property name="shortcut">
-    <string>F5</string>
    </property>
   </action>
   <action name="actionCadastrarFornecedor">

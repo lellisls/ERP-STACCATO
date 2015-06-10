@@ -118,12 +118,6 @@ void CadastrarNFE::on_pushButtonGerarNFE_clicked() {
   } else {
     QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro, NFe não foi gerada.");
   }
-
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())) {
-    window->updateTables();
-  } else {
-    qDebug() << "something went wrong";
-  }
 }
 
 void CadastrarNFE::on_pushButtonCancelar_clicked() { close(); }

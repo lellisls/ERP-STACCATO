@@ -159,10 +159,6 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
     qDebug() << "modelItemPedidos falhou: " << modelItemPedidos.lastError();
   }
 
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget())) {
-    window->updateTables();
-  }
-
   close();
 }
 

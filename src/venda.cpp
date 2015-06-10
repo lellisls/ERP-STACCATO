@@ -467,12 +467,6 @@ void Venda::on_pushButtonFecharPedido_clicked() {
     QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!", QMessageBox::Ok, QMessageBox::NoButton);
   }
 
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget())) {
-    window->updateTables();
-  } else {
-    qDebug() << "something went wrong";
-  }
-
   close();
 }
 

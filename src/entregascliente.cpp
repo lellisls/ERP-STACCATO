@@ -53,10 +53,6 @@ void EntregasCliente::on_pushButtonSalvar_clicked() {
     }
   }
 
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget())) {
-    window->updateTables();
-  }
-
   close();
 }
 

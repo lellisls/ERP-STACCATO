@@ -317,10 +317,6 @@ bool Orcamento::savingProcedures(int row) {
   novoItem();
   viewRegisterById(idOrcamento);
 
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget())) {
-    window->updateTables();
-  }
-
   return true;
 }
 

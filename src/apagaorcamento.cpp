@@ -35,10 +35,6 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
     qDebug() << "Erro cancelando orçamento: " << modelOrc.lastError();
   }
 
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())) {
-    window->updateTables();
-  }
-
   close();
 }
 

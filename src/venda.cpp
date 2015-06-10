@@ -25,6 +25,7 @@
 #include "cadastrocliente.h"
 #include "cadastrarnfe.h"
 #include "endereco.h"
+#include "doubledelegate.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -72,6 +73,10 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("status"), true);
 
+  DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
+  ui->tableFluxoCaixa->setItemDelegate(doubleDelegate);
+  ui->tableVenda->setItemDelegate(doubleDelegate);
+
   // TODO: make this runtime changeable
   QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto"};
 
@@ -80,7 +85,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->comboBoxPgt3->insertItems(0, list);
 
   ui->tableVenda->resizeColumnsToContents();
-  ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
+  //ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
 
   ui->pushButtonNFe->hide();
 

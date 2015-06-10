@@ -29,6 +29,7 @@
 #include "usersession.h"
 #include "venda.h"
 #include "importateste.h"
+#include "doubledelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -207,6 +208,8 @@ void MainWindow::on_actionCadastrarCliente_triggered() {
 }
 
 void MainWindow::initializeTables() {
+  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
+
   // Orçamento -------------------------------------
   modelOrcamento = new QSqlTableModel(this);
   modelOrcamento->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -222,6 +225,7 @@ void MainWindow::initializeTables() {
   ui->tableOrcamentos->setModel(proxyModel);
   ui->tableOrcamentos->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableOrcamentos->setColumnHidden(modelOrcamento->fieldIndex("idUsuario"), true);
+  ui->tableOrcamentos->setItemDelegate(doubledelegate);
 
   // Vendas -------------------------------------
   modelVendas = new QSqlRelationalTableModel(this);
@@ -252,7 +256,8 @@ void MainWindow::initializeTables() {
 
   ui->tableVendas->setModel(modelVendas);
   ui->tableVendas->setSelectionBehavior(QAbstractItemView::SelectRows);
-  ui->tableVendas->setItemDelegate(new QSqlRelationalDelegate(ui->tableVendas));
+  ui->tableVendas->setColumnHidden(modelVendas->fieldIndex("idEnderecoFaturamento"), true);
+  ui->tableVendas->setItemDelegate(doubledelegate);
 
   // Contas a pagar -------------------------------------
   modelCAPagar = new QSqlTableModel(this);
@@ -265,6 +270,7 @@ void MainWindow::initializeTables() {
 
   ui->tableContasPagar->setModel(modelCAPagar);
   ui->tableContasPagar->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableContasPagar->setItemDelegate(doubledelegate);
 
   // Contas a receber -------------------------------------
   modelCAReceber = new QSqlTableModel(this);
@@ -277,6 +283,7 @@ void MainWindow::initializeTables() {
 
   ui->tableContasReceber->setModel(modelCAReceber);
   ui->tableContasReceber->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableContasReceber->setItemDelegate(doubledelegate);
 
   // Entregas cliente
   modelEntregasCliente = new QSqlTableModel(this);
@@ -291,6 +298,7 @@ void MainWindow::initializeTables() {
 
   ui->tableEntregasCliente->setModel(modelEntregasCliente);
   ui->tableEntregasCliente->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableEntregasCliente->setItemDelegate(doubledelegate);
 
   // Recebimentos fornecedor
   modelRecebimentosForn = new QSqlTableModel(this);
@@ -304,6 +312,7 @@ void MainWindow::initializeTables() {
 
   ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
   ui->tableRecebimentosFornecedor->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableRecebimentosFornecedor->setItemDelegate(doubledelegate);
 
   // Pedidos de compra
   modelPedCompra = new QSqlRelationalTableModel(this);
@@ -329,6 +338,7 @@ void MainWindow::initializeTables() {
 
   ui->tablePedidosCompra->setModel(modelPedCompra);
   ui->tablePedidosCompra->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tablePedidosCompra->setItemDelegate(doubledelegate);
 
   // NFe
   modelNFe = new QSqlTableModel(this);
@@ -342,6 +352,7 @@ void MainWindow::initializeTables() {
   ui->tableNFE->setModel(modelNFe);
   ui->tableNFE->setColumnHidden(modelNFe->fieldIndex("NFe"), true);
   ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableNFE->setItemDelegate(doubledelegate);
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {

@@ -495,7 +495,7 @@ void Orcamento::print(QPrinter *printer) {
   QWebPage *page = new QWebPage(this);
   QWebFrame *frame = page->mainFrame();
   QDir appDir(QApplication::applicationDirPath());
-  QFile file(appDir.absoluteFilePath("orcamento.html"));
+  QFile file("://orcamento.html");
   QString html;
 
   if (file.open(QFile::ReadOnly)) {

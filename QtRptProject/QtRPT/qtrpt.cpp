@@ -1272,7 +1272,8 @@ void QtRPT::setPageSettings(QPrinter *printer, int pageReport) {
     mr = pageList.at(pageReport)->mr;
     mt = pageList.at(pageReport)->mt;
     mb = pageList.at(pageReport)->mb;
-    int orientation = pageList.at(pageReport)->orientation;
+//    int orientation = pageList.at(pageReport)->orientation;
+    int orientation = 0;
 
     QSizeF paperSize;
     paperSize.setWidth(pw/4);

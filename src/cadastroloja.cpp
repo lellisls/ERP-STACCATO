@@ -291,8 +291,6 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
   if (msgBox.exec() == QMessageBox::Yes) {
-    qDebug() << "set desativado: "
-             << modelEnd.setData(modelEnd.index(mapperEnd.currentIndex(), modelEnd.fieldIndex("desativado")), 1);
     if (modelEnd.submitAll()) {
       modelEnd.select();
       novoEnd();

@@ -93,7 +93,7 @@ void CadastrarNFE::guardarNotaBD() {
       espera = false;
     } else {
       qDebug() << ":`(";
-
+      // TODO: caso não encontre o arquivo, guarde os outros dados e posteriormente na tela de nfe pesquisa pelo arquivo
       QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Esperar ACBr?", QMessageBox::Yes | QMessageBox::No, this);
       msgBox.setButtonText(QMessageBox::Yes, "Sim");
       msgBox.setButtonText(QMessageBox::No, "Não");
@@ -103,8 +103,6 @@ void CadastrarNFE::guardarNotaBD() {
       } else {
         espera = false;
       }
-
-      // espera = QInputDialog::getInt(this, "Espera?", "Esperar ACBr?");
     }
   }
 }

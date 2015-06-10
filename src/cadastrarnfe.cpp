@@ -230,10 +230,9 @@ void CadastrarNFE::on_tableView_pressed(const QModelIndex &index) {
   updateImpostos();
 }
 
-QString CadastrarNFE::criarChaveAcesso() { // TODO: remover hardcoded's
+QString CadastrarNFE::criarChaveAcesso() {
   QSqlQuery query;
 
-  // TODO: substituir idNFe por chaveAcesso e pegar substrings para numero e serie
   if (not query.exec("SELECT idNFe FROM NFe ORDER BY idNFe DESC LIMIT 1")) {
     qDebug() << "Erro buscando idNFe: " << query.lastError();
   }
@@ -246,25 +245,33 @@ QString CadastrarNFE::criarChaveAcesso() { // TODO: remover hardcoded's
     id = 1;
   }
 
-  if(id > 999999999){
+  if (id > 999999999) {
     id = 1;
   }
 
-  QString nNF = QString("%1").arg(id, 9, 10, QChar('0'));
-
-  qDebug() << "id: " << id;
-  qDebug() << "padded: " << nNF;
-
   QStringList listChave;
 
-  listChave.push_back("35");                                  // cUF - código da UF
+  QSqlQuery endLoja("SELECT * FROM Loja_has_Endereco WHERE idLoja = " + QString::number(UserSession::getLoja()) + "");
+
+  if (not endLoja.exec()) {
+    qDebug() << "End. loja failed! : " << endLoja.lastError();
+    return QString();
+  }
+
+  endLoja.first();
+  listChave.push_back(endLoja.value("uf").toString()); // cUF - código da UF
+
   listChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
 
   QString cnpj = clearStr(getFromLoja("cnpj").toString());
   listChave.push_back(cnpj); // CNPJ
 
-  listChave.push_back("55");                                     // modelo
-  listChave.push_back("001");                                    // série
+  listChave.push_back("55"); // modelo
+
+  QString serie = QString::number(QInputDialog::getInt(this, "Série", "Digite a série da nota: ", 1));
+  serie = QString("%1").arg(serie.toInt(), 3, 10, QChar('0'));
+
+  listChave.push_back(serie);                                    // série
   listChave.push_back(QString("%1").arg(id, 9, 10, QChar('0'))); // número nf-e (id interno)
   listChave.push_back("1");                                      // tpEmis - forma de emissão
   listChave.push_back("00000001");                               // código númerico aleatorio
@@ -285,15 +292,19 @@ void CadastrarNFE::onDataChanged(const QModelIndex &topLeft,
 
     if (topLeft.column() == 11) { // baseICMS (valor produto + frete)
     }
+
     if (topLeft.column() == 12) { // valorICMS
     }
+
     if (topLeft.column() == 13) { // valorIPI
     }
+
     if (topLeft.column() == 14) { // aliquotaICMS
       if (topLeft.data().toInt() > 100) {
         //        qDebug() << "bigger than 100! limit.";
         modelItem.setData(topLeft, 100);
       }
+
       double icms = modelItem.data(modelItem.index(topLeft.row(), modelItem.fieldIndex("valorTotal"))).toDouble() *
                     (topLeft.data().toDouble() / 100);
       qDebug() << "setting icms: "
@@ -304,6 +315,7 @@ void CadastrarNFE::onDataChanged(const QModelIndex &topLeft,
         qDebug() << "bigger than 100! limit.";
         modelItem.setData(topLeft, 100);
       }
+
       double icms = modelItem.data(modelItem.index(topLeft.row(), modelItem.fieldIndex("valorTotal"))).toDouble() *
                     (topLeft.data().toDouble() / 100);
       qDebug() << "setting icms: "
@@ -330,7 +342,7 @@ QVariant CadastrarNFE::getFromProdModel(int row, QString column) {
 
 QString CadastrarNFE::calculaDigitoVerificador(QString chave) {
   if (chave.size() != 43) {
-    qDebug() << "Erro na chave!";
+    qDebug() << "Erro na chave: " << chave;
     return QString();
   }
 
@@ -404,6 +416,7 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     qDebug() << "cnpj vazio";
     return false;
   }
+
   stream << "CNPJ = " + clearStr(getFromLoja("cnpj").toString()) << endl;
 
   stream << "IE = " + getFromLoja("inscEstadual").toString() << endl;
@@ -412,30 +425,30 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     qDebug() << "razaoSocial vazio";
     return false;
   }
+
   stream << "Razao = " + getFromLoja("razaoSocial").toString() << endl;
 
   if (getFromLoja("nomeFantasia").toString().isEmpty()) {
     qDebug() << "nomeFantasia vazio";
     return false;
   }
+
   stream << "Fantasia = " + getFromLoja("nomeFantasia").toString() << endl;
 
   if (getFromLoja("tel").toString().isEmpty()) {
     qDebug() << "tel vazio";
     return false;
   }
+
   stream << "Fone = " + getFromLoja("tel").toString() << endl;
 
-  QString idEndLoja = getFromLoja("idEndereco").toString();
-  if (idEndLoja.isEmpty()) {
-    qDebug() << "idEndereco Loja vazio";
-    return false;
-  }
-  QSqlQuery endLoja("SELECT * FROM Loja_has_Endereco WHERE idEndereco = '" + idEndLoja + "'");
+  QSqlQuery endLoja("SELECT * FROM Loja_has_Endereco WHERE idLoja = " + QString::number(UserSession::getLoja()) + "");
+
   if (not endLoja.exec()) {
     qDebug() << "End. loja failed! : " << endLoja.lastError();
     return false;
   }
+
   endLoja.first();
 
   if (clearStr(endLoja.value("CEP").toString()).isEmpty()) {
@@ -448,12 +461,14 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     qDebug() << "logradouro vazio";
     return false;
   }
+
   stream << "Logradouro = " + endLoja.value("logradouro").toString() << endl;
 
   if (endLoja.value("numero").toString().isEmpty()) {
     qDebug() << "numero vazio";
     return false;
   }
+
   stream << "Numero = " + endLoja.value("numero").toString() << endl;
 
   stream << "Complemento = " + endLoja.value("complemento").toString() << endl;
@@ -462,24 +477,28 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     qDebug() << "bairro vazio";
     return false;
   }
+
   stream << "Bairro = " + endLoja.value("bairro").toString() << endl;
 
   if (endLoja.value("cidade").toString().isEmpty()) {
     qDebug() << "cidade vazio";
     return false;
   }
+
   stream << "Cidade = " + endLoja.value("cidade").toString() << endl;
 
   if (endLoja.value("uf").toString().isEmpty()) {
     qDebug() << "uf vazio";
     return false;
   }
+
   stream << "UF = " + endLoja.value("uf").toString() << endl;
 
   //  qDebug() << "[Destinatario]";
   stream << "[Destinatario]" << endl;
 
   QString idCliente = getFromVenda("idCliente").toString();
+
   if (idCliente.isEmpty()) {
     qDebug() << "idCliente vazio";
     return false;
@@ -505,6 +524,7 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
       qDebug() << "nome_razao vazio";
       return false;
     }
+
     stream << "NomeRazao = " + cliente.value("nome_razao").toString() << endl;
 
     if (cliente.value("pfpj").toString() == "PF") {
@@ -512,17 +532,21 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
         qDebug() << "cpf vazio";
         return false;
       }
+
       stream << "CPF = " + clearStr(cliente.value("cpf").toString()) << endl;
 
       stream << "indIEDest = 9" << endl;
     }
+
     if (cliente.value("pfpj").toString() == "PJ") {
       if (clearStr(cliente.value("cnpj").toString()).isEmpty()) {
         qDebug() << "cnpj dest vazio";
         return false;
       }
+
       stream << "CNPJ = " + clearStr(cliente.value("cnpj").toString()) << endl;
       stream << "IE = " + clearStr(cliente.value("inscEstadual").toString()) << endl;
+
       if (cliente.value("inscEstadual").toString() == "ISENTO") {
         stream << "indIEDest = 2" << endl;
       }
@@ -532,24 +556,28 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
       qDebug() << "tel vazio";
       return false;
     }
+
     stream << "Fone = " + cliente.value("tel").toString() << endl;
 
     if (cliente.value("CEP").toString().isEmpty()) {
       qDebug() << "CEP vazio";
       return false;
     }
+
     stream << "CEP = " + clearStr(cliente.value("CEP").toString()) << endl;
 
     if (cliente.value("logradouro").toString().isEmpty()) {
       qDebug() << "logradouro vazio";
       return false;
     }
+
     stream << "Logradouro = " + cliente.value("logradouro").toString() << endl;
 
     if (cliente.value("numero").toString().isEmpty()) {
       qDebug() << "numero vazio";
       return false;
     }
+
     stream << "Numero = " + cliente.value("numero").toString() << endl;
 
     stream << "Complemento = " + cliente.value("complemento").toString() << endl;
@@ -558,18 +586,21 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
       qDebug() << "bairro vazio";
       return false;
     }
+
     stream << "Bairro = " + cliente.value("bairro").toString() << endl;
 
     if (cliente.value("cidade").toString().isEmpty()) {
       qDebug() << "cidade vazio";
       return false;
     }
+
     stream << "Cidade = " + cliente.value("cidade").toString() << endl;
 
     if (cliente.value("uf").toString().isEmpty()) {
       qDebug() << "uf vazio";
       return false;
     }
+
     stream << "UF = " + cliente.value("uf").toString() << endl;
   } else {
     qDebug() << "Erro buscando endereço do destinatário: " << cliente.lastError();

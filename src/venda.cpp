@@ -783,7 +783,7 @@ void Venda::on_pushButtonImprimir_clicked() {
   //  QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
   //  qDebug() << "file: " << filename;
   QtRPT *report = new QtRPT(this);
-  report->loadReport("C:/temp/venda.xml");
+  report->loadReport("C:/ERP/venda.xml");
   report->recordCount << ui->tableVenda->model()->rowCount();
   QObject::connect(report, &QtRPT::setValue, this, &Venda::setValue);
   report->printExec();

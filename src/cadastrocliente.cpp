@@ -269,6 +269,7 @@ void CadastroCliente::setupMapper() {
   addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
 
   mapperEnd.setModel(&modelEnd);
+  mapperEnd.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
@@ -727,9 +728,9 @@ void CadastroCliente::clearEnd() {
   ui->lineEditUF->clear();
 }
 
-void CadastroCliente::novoEnd() { // FIXME: arrumar endereco cadastrando por cima de outro
-  ui->pushButtonAtualizarEnd->hide();
+void CadastroCliente::novoEnd() {
   ui->pushButtonAdicionarEnd->show();
+  ui->pushButtonAtualizarEnd->hide();
   ui->tableEndereco->clearSelection();
   clearEnd();
 }
@@ -737,19 +738,6 @@ void CadastroCliente::novoEnd() { // FIXME: arrumar endereco cadastrando por cim
 void CadastroCliente::on_pushButtonEndLimpar_clicked() { novoEnd(); }
 
 void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
-  if (modelEnd.isDirty()) {
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
-                       QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
-
-    if (msgBox.exec() == QMessageBox::Yes) {
-      if (not atualizarEndereco()) {
-        return;
-      }
-    }
-  }
-
   ui->pushButtonAtualizarEnd->show();
   ui->pushButtonAdicionarEnd->hide();
   mapperEnd.setCurrentModelIndex(index);

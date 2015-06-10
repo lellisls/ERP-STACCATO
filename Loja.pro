@@ -119,7 +119,7 @@ FORMS += ui/apagaorcamento.ui \
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0 -Wall
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++14
 QMAKE_LFLAGS += -O3
 
 RESOURCES += \

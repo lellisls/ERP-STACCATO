@@ -206,9 +206,8 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
     int row = modelItem.rowCount();
     modelItem.insertRow(row);
 
-    setItemData(row, "idNFe", 0); // FIXME: idNFE
     setItemData(row, "item", row + 1);
-    setItemData(row, "cst", "060");
+    setItemData(row, "cst", "060"); // FIXME: query this from produto
     setItemData(row, "cfop", "5405");
     setItemData(row, "codComercial", qryItens.value("codComercial"));
     setItemData(row, "descricao", qryItens.value("produto"));
@@ -239,6 +238,8 @@ void CadastrarNFE::on_tableView_pressed(const QModelIndex &index) {
 
 QString CadastrarNFE::criarChaveAcesso() { // TODO: remover hardcoded's
   QSqlQuery query;
+
+  // TODO: substituir idNFe por chaveAcesso e pegar substrings para numero e serie
   if (not query.exec("SELECT idNFe FROM NFe ORDER BY idNFe DESC LIMIT 1")) {
     qDebug() << "Erro buscando idNFe: " << query.lastError();
   }
@@ -248,6 +249,10 @@ QString CadastrarNFE::criarChaveAcesso() { // TODO: remover hardcoded's
   if (query.first()) {
     id = query.value("idNFe").toInt() + 1;
   } else {
+    id = 1;
+  }
+
+  if(id > 999999999){
     id = 1;
   }
 

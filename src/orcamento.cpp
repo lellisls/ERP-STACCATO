@@ -142,6 +142,7 @@ void Orcamento::novoItem() {
   ui->pushButtonAtualizarItem->hide();
   ui->itemBoxProduto->clear();
   ui->itemBoxProduto->setValue(QVariant());
+  ui->tableProdutos->clearSelection();
   ui->tableProdutos->resizeColumnsToContents();
 }
 
@@ -833,7 +834,6 @@ void Orcamento::successMessage() {
 }
 
 void Orcamento::on_pushButtonLimparSelecao_clicked() {
-  ui->tableProdutos->clearSelection();
   novoItem();
 }
 

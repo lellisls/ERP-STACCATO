@@ -57,7 +57,7 @@ class CadastroProfissional : public RegisterDialog {
 
     // RegisterDialog interface
   public:
-    bool viewRegister(QModelIndex idx);
+    bool viewRegister(QModelIndex index);
 
   public slots:
     void changeItem(QVariant value, QString text);

@@ -29,10 +29,10 @@ class CadastroUsuario : public RegisterDialog {
   public:
     /*!
 *\brief Utilizada para selecionar um item a partir de um QModelIndex
-*\param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
+*\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    bool viewRegister(QModelIndex idx);
+    bool viewRegister(QModelIndex index);
 
   private:
     /*!

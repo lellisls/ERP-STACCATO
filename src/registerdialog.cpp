@@ -3,8 +3,8 @@
 
 #include "registerdialog.h"
 
-RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *parent = 0)
-  : QDialog(parent), model(this), primaryKey(primaryIdx), table(nullptr) {
+RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *parent = 0)
+  : QDialog(parent), model(this), primaryKey(primaryKey), table(nullptr) {
   setWindowModality(Qt::WindowModal);
   setWindowFlags(Qt::Window);
 
@@ -27,15 +27,15 @@ RegisterDialog::RegisterDialog(QString table, QString primaryIdx, QWidget *paren
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
   model.select();
-  QModelIndexList idxList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
+  QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
 
-  if (idxList.isEmpty()) {
+  if (indexList.isEmpty()) {
     QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
     close();
     return false;
   }
 
-  viewRegister(idxList.first());
+  viewRegister(indexList.first());
 
   return true;
 }

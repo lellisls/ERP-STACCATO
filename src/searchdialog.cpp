@@ -151,7 +151,7 @@ QString SearchDialog::getPrimaryKey() const { return primaryKey; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
-QString SearchDialog::getText(QVariant idx) {
+QString SearchDialog::getText(QVariant index) {
   QString qryTxt;
 
   foreach (QString key, textKeys) {
@@ -162,7 +162,7 @@ QString SearchDialog::getText(QVariant idx) {
     qryTxt += key;
   }
 
-  qryTxt = "SELECT " + qryTxt + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + idx.toString() + "';";
+  qryTxt = "SELECT " + qryTxt + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + index.toString() + "';";
 
   QSqlQuery qry(qryTxt);
   qry.exec();
@@ -285,7 +285,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("un", "Un."));
   headerData.push_back(QPair<QString, QString>("colecao", "Coleção"));
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("m2cx", "M2/Cx."));
+  headerData.push_back(QPair<QString, QString>("mcx", "M/Cx."));
   headerData.push_back(QPair<QString, QString>("pccx", "Pç./Cx."));
   headerData.push_back(QPair<QString, QString>("kgcx", "Kg./Cx."));
   headerData.push_back(QPair<QString, QString>("formComercial", "Form. Com."));

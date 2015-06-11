@@ -223,7 +223,7 @@
              <item>
               <layout class="QGridLayout" name="gridLayout_7">
                <item row="1" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBoxM2Cx">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxMCx">
                  <property name="maximum">
                   <double>9999999999.000000000000000</double>
                  </property>
@@ -1615,7 +1615,7 @@
   <tabstop>comboBoxUn</tabstop>
   <tabstop>itemBoxFornecedor</tabstop>
   <tabstop>lineEditColecao</tabstop>
-  <tabstop>doubleSpinBoxM2Cx</tabstop>
+  <tabstop>doubleSpinBoxMCx</tabstop>
   <tabstop>doubleSpinBoxPcCx</tabstop>
   <tabstop>lineEditFormComer</tabstop>
   <tabstop>lineEditCodComer</tabstop>

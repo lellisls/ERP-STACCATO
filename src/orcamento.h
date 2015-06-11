@@ -56,10 +56,10 @@ class Orcamento : public RegisterDialog {
   public:
     /*!
 *\brief Utilizada para selecionar um item a partir de um QModelIndex
-*\param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
+*\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    virtual bool viewRegister(QModelIndex idx);
+    virtual bool viewRegister(QModelIndex index);
 
   private:
     /*!

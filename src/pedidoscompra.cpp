@@ -181,7 +181,7 @@ void PedidosCompra::on_radioButtonVenda_toggled(bool checked) {
 void PedidosCompra::on_pushButtonNFe_clicked() {
   QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
   QList<int> rows;
-  foreach (QModelIndex idx, list) { rows.append(idx.row()); }
+  foreach (QModelIndex index, list) { rows.append(index.row()); }
   CadastrarNFE nfe(idPedido);
   nfe.prepararNFe(rows);
   qDebug() << rows;

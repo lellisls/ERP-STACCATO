@@ -770,8 +770,8 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT * FROM Produto WHERE idProduto = :idx");
-  query.bindValue(":idx", ui->itemBoxProduto->value().toInt());
+  query.prepare("SELECT * FROM Produto WHERE idProduto = :index");
+  query.bindValue(":index", ui->itemBoxProduto->value().toInt());
 
   if (not query.exec()) {
     qDebug() << "Erro na busca do produto: " << query.lastError();
@@ -793,8 +793,8 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->lineEditPrecoUn->setEnabled(true);
   ui->lineEditPrecoTotal->setEnabled(true);
 
-  if (un.contains("m2") or un.contains("ml")) { // TODO: refactor this to use "m2/ml else pç"
-    ui->doubleSpinBoxQte->setSingleStep(query.value("m2cx").toDouble());
+  if (un.contains("m2") or un.contains("ml")) {
+    ui->doubleSpinBoxQte->setSingleStep(query.value("mcx").toDouble());
   } else if (un.contains("pç") or un.contains("pc")) {
     ui->doubleSpinBoxQte->setSingleStep(query.value("pccx").toDouble());
   }

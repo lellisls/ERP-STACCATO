@@ -9,9 +9,9 @@ ComboBox::~ComboBox() {}
 QVariant ComboBox::getCurrentValue() const { return (currentData()); }
 
 bool ComboBox::setCurrentValue(QVariant value) {
-  for (int idx = 0; idx < count(); ++idx) {
-    if (value.toInt() == itemData(idx).toInt()) {
-      setCurrentIndex(idx);
+  for (int index = 0; index < count(); ++index) {
+    if (value.toInt() == itemData(index).toInt()) {
+      setCurrentIndex(index);
       return true;
     }
   }

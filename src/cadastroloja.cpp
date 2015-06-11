@@ -157,8 +157,8 @@ void CadastroLoja::setupMapper() {
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
-bool CadastroLoja::viewRegister(QModelIndex idx) {
-  if (not RegisterDialog::viewRegister(idx)) {
+bool CadastroLoja::viewRegister(QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
 

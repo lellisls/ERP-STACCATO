@@ -42,8 +42,8 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroProfissional::viewRegister(QModelIndex idx) {
-  if (not RegisterDialog::viewRegister(idx)) {
+bool CadastroProfissional::viewRegister(QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
 

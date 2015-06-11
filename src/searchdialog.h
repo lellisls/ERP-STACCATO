@@ -23,7 +23,7 @@ class SearchDialog : public QDialog {
     void setPrimaryKey(const QString &value);
     QStringList getTextKeys() const;
     void setTextKeys(const QStringList &value);
-    QString getText(QVariant idx);
+    QString getText(QVariant index);
     void setHeaderData(QVector<QPair<QString, QString>> headerData);
 
     // Factory Methods

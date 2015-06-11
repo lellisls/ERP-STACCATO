@@ -29,21 +29,21 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
   modelNFe.setEditStrategy(EditableSqlModel::OnManualSubmit);
   modelNFe.select();
 
-  modelItem.setTable("NFe_has_Itens");
-  modelItem.setEditStrategy(EditableSqlModel::OnManualSubmit);
-  modelItem.select();
-  ui->tableView->setModel(&modelItem);
-  ui->tableView->setColumnHidden(modelNFe.fieldIndex("idNFe"), true);
+  modelNFeItem.setTable("NFe_has_Itens");
+  modelNFeItem.setEditStrategy(EditableSqlModel::OnManualSubmit);
+  modelNFeItem.select();
+  ui->tableItens->setModel(&modelNFeItem);
+  ui->tableItens->setColumnHidden(modelNFe.fieldIndex("idNFe"), true);
 
-  mapper.setModel(&modelNFe);
-  mapper.addMapping(ui->itemBoxCliente, modelNFe.fieldIndex("idCliente"));
-  mapper.addMapping(ui->itemBoxEndereco, modelNFe.fieldIndex("idEnderecoFaturamento"));
-  mapper.addMapping(ui->doubleSpinBoxFrete, modelNFe.fieldIndex("frete"));
-  mapper.addMapping(ui->doubleSpinBoxFinal, modelNFe.fieldIndex("total"));
-  mapper.addMapping(ui->textEdit, modelNFe.fieldIndex("obs"));
-  mapper.toLast();
+  mapperNFe.setModel(&modelNFe);
+  mapperNFe.addMapping(ui->itemBoxCliente, modelNFe.fieldIndex("idCliente"));
+  mapperNFe.addMapping(ui->itemBoxEndereco, modelNFe.fieldIndex("idEnderecoFaturamento"));
+  mapperNFe.addMapping(ui->doubleSpinBoxFrete, modelNFe.fieldIndex("frete"));
+  mapperNFe.addMapping(ui->doubleSpinBoxFinal, modelNFe.fieldIndex("total"));
+  mapperNFe.addMapping(ui->textEdit, modelNFe.fieldIndex("obs"));
+  mapperNFe.toLast();
 
-  connect(ui->tableView->model(), &QAbstractItemModel::dataChanged, this, &CadastrarNFE::onDataChanged);
+  connect(ui->tableItens->model(), &QAbstractItemModel::dataChanged, this, &CadastrarNFE::onDataChanged);
 
   modelLoja.setTable("Loja");
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -123,7 +123,7 @@ void CadastrarNFE::on_pushButtonCancelar_clicked() { close(); }
 void CadastrarNFE::updateImpostos() {
   double icms = 0;
 
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
+  for (int row = 0; row < modelNFeItem.rowCount(); ++row) {
     icms += getItemData(row, "valorICMS").toDouble();
   }
 
@@ -131,27 +131,29 @@ void CadastrarNFE::updateImpostos() {
   double imposto = 0.593 * ui->doubleSpinBoxFinal->value() + icms;
   Endereco end(ui->itemBoxEndereco->value().toInt(), "Cliente_has_Endereco");
   QString texto = "Venda de código " +
-                  modelNFe.data(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("idVenda"))).toString() +
+                  modelNFe.data(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("idVenda"))).toString() +
                   "\n" + "END. ENTREGA: " + end.umaLinha() + "\n" +
                   "Informações Adicionais de Interesse do Fisco: ICMS RECOLHIDO "
                   "ANTECIPADAMENTE CONFORME ARTIGO 3113Y\n" +
                   "Total aproximado de tributos federais, estaduais e municipais: " + QString::number(imposto);
   ui->textEdit->setPlainText(texto);
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("obs")), texto);
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("obs")), texto);
 }
 
 void CadastrarNFE::setItemData(int row, const QString &key, const QVariant &value) {
-  if (modelItem.fieldIndex(key) == -1) {
+  if (modelNFeItem.fieldIndex(key) == -1) {
     qDebug() << "A chave '" + key + "' não existe na tabela de Itens da NFe";
   }
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex(key)), value);
+
+  modelNFeItem.setData(modelNFeItem.index(row, modelNFeItem.fieldIndex(key)), value);
 }
 
 QVariant CadastrarNFE::getItemData(int row, const QString &key) {
-  if (modelItem.fieldIndex(key) == -1) {
+  if (modelNFeItem.fieldIndex(key) == -1) {
     qDebug() << "A chave '" + key + "' não existe na tabela de Itens da NFe";
   }
-  return (modelItem.data(modelItem.index(row, modelItem.fieldIndex(key))));
+
+  return (modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex(key))));
 }
 
 void CadastrarNFE::prepararNFe(QList<int> items) {
@@ -164,15 +166,15 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
   modelNFe.select();
   int row = modelNFe.rowCount();
   modelNFe.insertRow(row);
-  mapper.toLast();
+  mapperNFe.toLast();
 
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("idVenda")), idVenda);
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("frete")), qryVenda.value("frete"));
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("total")), qryVenda.value("total"));
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("idLoja")), qryVenda.value("idLoja"));
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("idCliente")),
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("idVenda")), idVenda);
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("frete")), qryVenda.value("frete"));
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("total")), qryVenda.value("total"));
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("idLoja")), qryVenda.value("idLoja"));
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("idCliente")),
                    qryVenda.value("idCliente"));
-  modelNFe.setData(modelNFe.index(mapper.currentIndex(), modelNFe.fieldIndex("idEnderecoFaturamento")),
+  modelNFe.setData(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("idEnderecoFaturamento")),
                    qryVenda.value("idEnderecoFaturamento"));
 
   ui->doubleSpinBoxFinal->setValue(qryVenda.value("total").toDouble());
@@ -195,8 +197,8 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
       continue;
     }
 
-    int row = modelItem.rowCount();
-    modelItem.insertRow(row);
+    int row = modelNFeItem.rowCount();
+    modelNFeItem.insertRow(row);
 
     setItemData(row, "item", row + 1);
     setItemData(row, "cst", "060"); // FIXME: query this from produto
@@ -212,17 +214,17 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
     setItemData(row, "valorTotal", total);
   }
 
-  ui->tableView->resizeColumnsToContents();
+  ui->tableItens->resizeColumnsToContents();
   updateImpostos();
 }
 
-void CadastrarNFE::on_tableView_activated(const QModelIndex &index) {
+void CadastrarNFE::on_tableItens_activated(const QModelIndex &index) {
   Q_UNUSED(index);
 
   updateImpostos();
 }
 
-void CadastrarNFE::on_tableView_pressed(const QModelIndex &index) {
+void CadastrarNFE::on_tableItens_pressed(const QModelIndex &index) {
   Q_UNUSED(index);
 
   updateImpostos();
@@ -300,24 +302,24 @@ void CadastrarNFE::onDataChanged(const QModelIndex &topLeft,
     if (topLeft.column() == 14) { // aliquotaICMS
       if (topLeft.data().toInt() > 100) {
         //        qDebug() << "bigger than 100! limit.";
-        modelItem.setData(topLeft, 100);
+        modelNFeItem.setData(topLeft, 100);
       }
 
-      double icms = modelItem.data(modelItem.index(topLeft.row(), modelItem.fieldIndex("valorTotal"))).toDouble() *
+      double icms = modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble() *
                     (topLeft.data().toDouble() / 100);
       qDebug() << "setting icms: "
-               << modelItem.setData(modelItem.index(topLeft.row(), modelItem.fieldIndex("valorICMS")), icms);
+               << modelNFeItem.setData(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorICMS")), icms);
     }
     if (topLeft.column() == 15) { // aliquotaIPI
       if (topLeft.data().toInt() > 100) {
         qDebug() << "bigger than 100! limit.";
-        modelItem.setData(topLeft, 100);
+        modelNFeItem.setData(topLeft, 100);
       }
 
-      double icms = modelItem.data(modelItem.index(topLeft.row(), modelItem.fieldIndex("valorTotal"))).toDouble() *
+      double icms = modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble() *
                     (topLeft.data().toDouble() / 100);
       qDebug() << "setting icms: "
-               << modelItem.setData(modelItem.index(topLeft.row(), modelItem.fieldIndex("valorIPI")), icms);
+               << modelNFeItem.setData(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorIPI")), icms);
     }
   }
 }
@@ -331,7 +333,7 @@ QVariant CadastrarNFE::getFromLoja(QString column) {
 }
 
 QVariant CadastrarNFE::getFromItemModel(int row, QString column) {
-  return (modelItem.data(modelItem.index(row, modelItem.fieldIndex(column))));
+  return (modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex(column))));
 }
 
 QVariant CadastrarNFE::getFromProdModel(int row, QString column) {
@@ -369,33 +371,8 @@ QString CadastrarNFE::calculaDigitoVerificador(QString chave) {
   return QString::number(cDV);
 }
 
-bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
-  QString chave = criarChaveAcesso();
-
-  chave += calculaDigitoVerificador(chave);
-
-  chaveNum = chave;
-
-  QString dir = getFromLoja("pastaEntACBr").toString();
-  QFile file(dir + chaveNum + ".txt");
-
-  if (not file.open(QFile::WriteOnly)) {
-    QMessageBox::warning(0, "Aviso!", "Não foi possível criar a nota na pasta do ACBr, favor verificar se as "
-                                      "pastas estão corretamente configuradas.");
-    return false;
-  }
-
-  QFileInfo fileInfo(file);
-  //  qDebug() << "path: " << fileInfo.absoluteFilePath();
-  arquivo = fileInfo.absoluteFilePath().replace("/", "\\\\");
-
-  chaveAcesso = "NFe" + chave;
-
-  QTextStream stream(&file);
-
-  stream << "NFe.CriarEnviarNFe(\"" << endl;
-
-  //  qDebug() << "[Identificacao]";
+void CadastrarNFE::writeIdentificacao(QTextStream & stream)
+{
   stream << "[Identificacao]" << endl;
   stream << "NaturezaOperacao = 5405-VENDA PROD/SERV D.ESTADO" << endl;
   stream << "Modelo = 55" << endl;
@@ -406,8 +383,9 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
   stream << "Saida = " + QDate::currentDate().toString("dd/MM/yyyy") << endl;
   stream << "Tipo = 1" << endl;
   stream << "FormaPag = 0" << endl;
+}
 
-  //  qDebug() << "[Emitente]";
+bool CadastrarNFE::writeEmitente(QTextStream &stream){
   stream << "[Emitente]" << endl;
 
   if (clearStr(getFromLoja("cnpj").toString()).isEmpty()) {
@@ -492,7 +470,10 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
 
   stream << "UF = " + endLoja.value("uf").toString() << endl;
 
-  //  qDebug() << "[Destinatario]";
+  return true;
+}
+
+bool CadastrarNFE::writeDestinatario(QTextStream &stream){
   stream << "[Destinatario]" << endl;
 
   QString idCliente = getFromVenda("idCliente").toString();
@@ -604,15 +585,15 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     qDebug() << "Erro buscando endereço do destinatário: " << cliente.lastError();
   }
 
-  //  qDebug() << "[Produto]";
+return true;
+}
 
-  double total = 0;
-  double icmsTotal = 0;
-
+bool CadastrarNFE::writeProduto(QTextStream &stream, double &total, double &icmsTotal){
   //  qDebug() << "idProduto: " << getFromProdModel(0, "idProduto").toString();
 
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
+  for (int row = 0; row < modelNFeItem.rowCount(); ++row) {
     QSqlQuery prod("SELECT * FROM Produto WHERE idProduto = '" + getFromProdModel(row, "idProduto").toString() + "'");
+
     if (not prod.exec()) {
       qDebug() << "Erro buscando produtos: " << prod.lastError();
       return false;
@@ -621,37 +602,42 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     prod.first();
     QString number = QString("%1").arg(row + 1, 3, 10, QChar('0')); // padding row with zeros
     stream << "[Produto" + number + "]" << endl;
-    stream << "CFOP = " + modelItem.data(modelItem.index(row, modelItem.fieldIndex("cfop"))).toString() << endl;
-    stream << "NCM = " + clearStr(modelItem.data(modelItem.index(row, modelItem.fieldIndex("ncm"))).toString()) << endl;
+    stream << "CFOP = " + modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("cfop"))).toString() << endl;
+    stream << "NCM = " + clearStr(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("ncm"))).toString()) << endl;
 
     if (prod.value("codBarras").toString().isEmpty()) {
       qDebug() << "codBarras vazio";
       return false;
     }
+
     stream << "Codigo = " + prod.value("codBarras").toString() << endl;
 
     if (prod.value("descricao").toString().isEmpty()) {
       qDebug() << "descricao vazio";
       return false;
     }
+
     stream << "Descricao = " + prod.value("descricao").toString() << endl;
 
     if (prod.value("un").toString().isEmpty()) {
       qDebug() << "un vazio";
       return false;
     }
+
     stream << "Unidade = " + prod.value("un").toString() << endl;
 
     if (getFromProdModel(row, "qte").toString().isEmpty()) {
       qDebug() << "qte vazio";
       return false;
     }
+
     stream << "Quantidade = " + getFromProdModel(row, "qte").toString() << endl;
 
     if (prod.value("precoVenda").toDouble() == 0) {
       qDebug() << "precoVenda = 0";
       return false;
     }
+
     double preco = prod.value("precoVenda").toDouble();
     double rounded_number = static_cast<double>(static_cast<int>(preco * 100 + 0.5)) / 100.0;
     stream << "ValorUnitario = " + QString::number(rounded_number) << endl;
@@ -660,6 +646,7 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
       qDebug() << "parcial vazio";
       return false;
     }
+
     stream << "ValorTotal = " + getFromProdModel(row, "parcial").toString() << endl;
 
     total += getFromProdModel(row, "parcial").toDouble();
@@ -674,12 +661,53 @@ bool CadastrarNFE::writeTXT() { // TODO: refatorar essa função
     stream << "Valor = " + QString::number(icms) << endl;
   }
 
-  //  qDebug() << "[Total]";
+  return true;
+}
+
+void CadastrarNFE::writeTotal(QTextStream &stream, double &total, double &icmsTotal){
   stream << "[Total]" << endl;
   stream << "BaseICMS = " + QString::number(total) << endl;
   stream << "ValorICMS = " + QString::number(icmsTotal) << endl;
   stream << "ValorProduto = " + QString::number(total) << endl;
   stream << "ValorNota = " + QString::number(total) << endl;
+}
+
+bool CadastrarNFE::writeTXT() {
+  QString chave = criarChaveAcesso();
+
+  chave += calculaDigitoVerificador(chave);
+
+  chaveNum = chave;
+  chaveAcesso = "NFe" + chave;
+
+  QString dir = getFromLoja("pastaEntACBr").toString();
+  QFile file(dir + chaveNum + ".txt");
+
+  if (not file.open(QFile::WriteOnly)) {
+    QMessageBox::warning(0, "Aviso!", "Não foi possível criar a nota na pasta do ACBr, favor verificar se as "
+                                      "pastas estão corretamente configuradas.");
+    return false;
+  }
+
+  QFileInfo fileInfo(file);
+  arquivo = fileInfo.absoluteFilePath().replace("/", "\\\\");
+
+  QTextStream stream(&file);
+
+  stream << "NFe.CriarEnviarNFe(\"" << endl;
+
+  writeIdentificacao(stream);
+
+  writeEmitente(stream);
+
+  writeDestinatario(stream);
+
+  double total = 0.0;
+  double icmsTotal = 0.0;
+
+  writeProduto(stream, total, icmsTotal);
+
+  writeTotal(stream, total, icmsTotal);
 
   stream << "\",1,1)";
 

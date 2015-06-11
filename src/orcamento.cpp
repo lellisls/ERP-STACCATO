@@ -829,9 +829,7 @@ void Orcamento::successMessage() {
                            QMessageBox::NoButton);
 }
 
-void Orcamento::on_pushButtonLimparSelecao_clicked() {
-  novoItem();
-}
+void Orcamento::on_pushButtonLimparSelecao_clicked() { novoItem(); }
 
 void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
   if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {

@@ -1128,6 +1128,9 @@ void QtRPT::printHTML(const QString &filePath, bool open) {
 
 #include <QTextDocumentWriter>
 void QtRPT::printODT(const QString &filePath, bool open) {
+  Q_UNUSED(filePath);
+  Q_UNUSED(open);
+
 #ifndef QT_NO_PRINTER
 
 #endif

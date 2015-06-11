@@ -47,8 +47,6 @@ bool CadastroProfissional::viewRegister(QModelIndex idx) {
     return false;
   }
 
-  mapper.setCurrentModelIndex(idx);
-
   return true;
 }
 

@@ -162,7 +162,6 @@ bool CadastroLoja::viewRegister(QModelIndex idx) {
     return false;
   }
 
-  mapper.setCurrentModelIndex(idx);
   modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + " AND desativado = false");
 
   if (not modelEnd.select()) {

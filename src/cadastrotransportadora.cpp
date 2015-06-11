@@ -129,12 +129,11 @@ void CadastroTransportadora::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroTransportadora::viewRegister(QModelIndex idx) {
-  if (not RegisterDialog::viewRegister(idx)) {
+bool CadastroTransportadora::viewRegister(QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
 
-  mapper.setCurrentModelIndex(idx);
   modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = false");
 
   if (not modelEnd.select()) {
@@ -255,9 +254,8 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
+
   if (msgBox.exec() == QMessageBox::Yes) {
-    qDebug() << "set desativado: "
-             << modelEnd.setData(modelEnd.index(mapperEnd.currentIndex(), modelEnd.fieldIndex("desativado")), 1);
     if (modelEnd.submitAll()) {
       modelEnd.select();
       novoEnd();

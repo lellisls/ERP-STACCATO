@@ -9,9 +9,8 @@
 #include "cadastroprofissional.h"
 #include "usersession.h"
 
-CadastroCliente::CadastroCliente(bool closeBeforeUpdate, QWidget *parent)
-  : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente),
-    closeBeforeUpdate(closeBeforeUpdate) {
+CadastroCliente::CadastroCliente(QWidget *parent)
+  : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
   ui->lineEditCEP->setInputMask("99999-999;_");
@@ -65,7 +64,6 @@ void CadastroCliente::setupUi() {
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
 
-  // Placeholders
   ui->lineEditContatoCPF->setPlaceholderText("999.999.999-99");
   ui->lineEditCPF->setPlaceholderText("999.999.999-99");
   ui->lineEditEmail->setPlaceholderText("usuario@email.com");
@@ -88,11 +86,13 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
        (line->text().size() < line->placeholderText().size() - 1))) {
     qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
              << line->text();
+
     if (not silent) {
       QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
                            QMessageBox::NoButton);
       line->setFocus();
     }
+
     return false;
   }
 
@@ -205,7 +205,6 @@ bool CadastroCliente::savingProcedures(int row) {
   setData(row, "idCadastroRel", ui->itemBoxCliente->value());
   setData(row, "idProfissionalRel", ui->itemBoxProfissional->value());
   setData(row, "idUsuarioRel", ui->itemBoxVendedor->value());
-
   setData(row, "pfpj", tipoPFPJ);
 
   if (not model.submitAll()) {
@@ -213,9 +212,11 @@ bool CadastroCliente::savingProcedures(int row) {
     return false;
   }
 
-  int idCliente = data(row, primaryKey).toInt();
+  int idCliente;
 
-  if (not data(row, primaryKey).isValid()) {
+  if (data(row, primaryKey).isValid()) {
+    idCliente = data(row, primaryKey).toInt();
+  } else {
     idCliente = model.query().lastInsertId().toInt();
   }
 
@@ -293,34 +294,14 @@ void CadastroCliente::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-QString CadastroCliente::getTipoClienteFornecedor() const { return tipoClienteFornecedor; }
-
-void CadastroCliente::setTipoClienteFornecedor(const QString &value) {
-  bool isForn = (value == "FORNECEDOR");
-  ui->groupBoxMaisInfo->setHidden(isForn);
-  ui->groupBoxPFPJ->setHidden(isForn);
-
-  if (isForn) {
-    ui->radioButtonPJ->setChecked(true);
-  }
-
-  tipoClienteFornecedor = value;
-  adjustSize();
-}
-
 QString CadastroCliente::getTipo() const { return tipoPFPJ; }
 
 void CadastroCliente::setTipo(const QString &value) { tipoPFPJ = value; }
 
-bool CadastroCliente::viewRegister(QModelIndex idx) {
-  if (not confirmationMessage()) {
+bool CadastroCliente::viewRegister(QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
-
-  clearFields();
-  updateMode();
-  model.select();
-  mapper.setCurrentModelIndex(idx);
 
   ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data(primaryKey).toString() + ")");
   modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = false");
@@ -329,11 +310,10 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
     qDebug() << modelEnd.lastError();
   }
 
-  int idCliente = data("idCliente").toInt();
   QSqlQuery query;
 
   if (not query.exec("SELECT idCliente, nome_razao, nomeFantasia, pfpj FROM Cliente WHERE idCadastroRel = '" +
-                     QString::number(idCliente) + "';")) {
+                     primaryKey + "'")) {
     qDebug() << "Erro na query cliente: " << query.lastError();
     return false;
   }
@@ -354,26 +334,12 @@ bool CadastroCliente::viewRegister(QModelIndex idx) {
     ui->radioButtonPF->setChecked(true);
   }
 
-  show();
-
   return true;
 }
 
-void CadastroCliente::on_pushButtonCadastrar_clicked() {
-  if (save()) {
-    if (closeBeforeUpdate) {
-      accept();
-    }
-  }
-}
+void CadastroCliente::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroCliente::on_pushButtonAtualizar_clicked() {
-  if (save()) {
-    if (closeBeforeUpdate) {
-      accept();
-    }
-  }
-}
+void CadastroCliente::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroCliente::enableEditor() {
   ui->frame->setEnabled(true);
@@ -410,19 +376,14 @@ void CadastroCliente::changeItem(QVariant value, QString text) {
   viewRegisterById(value);
 }
 
-void CadastroCliente::on_lineEditCPF_textEdited(const QString &) {
-  QString text = ui->lineEditCPF->text().remove(".").remove("-");
-  validaCPF(text);
-}
+void CadastroCliente::on_lineEditCPF_textEdited(QString &text) { validaCPF(text.remove(".").remove("-")); }
 
-void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &) {
-  QString text = ui->lineEditCNPJ->text().remove(".").remove("/").remove("-");
-  validaCNPJ(text);
+void CadastroCliente::on_lineEditCNPJ_textEdited(QString &text) {
+  validaCNPJ(text.remove(".").remove("/").remove("-"));
 }
 
 void CadastroCliente::validaCNPJ(QString text) {
   if (text.size() == 14) {
-
     int digito1;
     int digito2;
 
@@ -765,10 +726,7 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
   adjustSize();
 }
 
-void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &) {
-  QString text = ui->lineEditContatoCPF->text().remove(".").remove("-");
-  validaCPF(text);
-}
+void CadastroCliente::on_lineEditContatoCPF_textEdited(QString &text) { validaCPF(text.remove(".").remove("-")); }
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
@@ -783,9 +741,8 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
+
   if (msgBox.exec() == QMessageBox::Yes) {
-    qDebug() << "set desativado: "
-             << modelEnd.setData(modelEnd.index(mapperEnd.currentIndex(), modelEnd.fieldIndex("desativado")), 1);
     if (modelEnd.submitAll()) {
       modelEnd.select();
       novoEnd();

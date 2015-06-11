@@ -8,9 +8,8 @@
 #include "cepcompleter.h"
 #include "usersession.h"
 
-CadastroFornecedor::CadastroFornecedor(bool closeBeforeUpdate, QWidget *parent)
-  : RegisterDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor),
-    closeBeforeUpdate(closeBeforeUpdate) {
+CadastroFornecedor::CadastroFornecedor(QWidget *parent)
+  : RegisterDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
   ui->lineEditCEP->setInputMask("99999-999;_");
@@ -77,23 +76,16 @@ void CadastroFornecedor::show() {
   adjustSize();
 }
 
-bool CadastroFornecedor::viewRegister(QModelIndex idx) {
-  if (not confirmationMessage()) {
+bool CadastroFornecedor::viewRegister(QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
 
-  clearFields();
-  updateMode();
-  model.select();
-  mapper.setCurrentModelIndex(idx);
-
-  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString());
+  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + "AND desativado = false");
 
   if (not modelEnd.select()) {
     qDebug() << "Erro no model endereco: " << modelEnd.lastError();
   }
-
-  show();
 
   return true;
 }
@@ -112,7 +104,6 @@ void CadastroFornecedor::novoEnd() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
   ui->tableEndereco->clearSelection();
-  mapper.setCurrentIndex(-1);
   clearEnd();
 }
 
@@ -441,19 +432,11 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
 }
 
 void CadastroFornecedor::on_pushButtonCadastrar_clicked() {
-  if (save()) {
-    if (closeBeforeUpdate) {
-      accept();
-    }
-  }
+  save();
 }
 
 void CadastroFornecedor::on_pushButtonAtualizar_clicked() {
-  if (save()) {
-    if (closeBeforeUpdate) {
-      accept();
-    }
-  }
+  save();
 }
 
 void CadastroFornecedor::on_pushButtonBuscar_clicked() {

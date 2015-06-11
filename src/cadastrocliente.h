@@ -11,7 +11,7 @@ class CadastroCliente : public RegisterDialog {
     Q_OBJECT
 
   public:
-    explicit CadastroCliente(bool closeBeforeUpdate = false, QWidget *parent = 0);
+    explicit CadastroCliente(QWidget *parent = 0);
     ~CadastroCliente();
     void setupUi();
     bool TestClienteIncompleto();
@@ -26,9 +26,9 @@ class CadastroCliente : public RegisterDialog {
     void on_checkBoxMostrarInativos_clicked(bool checked);
     void on_groupBoxPJuridica_toggled(bool arg1);
     void on_lineEditCEP_textChanged(const QString &cep);
-    void on_lineEditCNPJ_textEdited(const QString &);
-    void on_lineEditContatoCPF_textEdited(const QString &);
-    void on_lineEditCPF_textEdited(const QString &);
+    void on_lineEditCNPJ_textEdited(QString &text);
+    void on_lineEditContatoCPF_textEdited(QString &text);
+    void on_lineEditCPF_textEdited(QString & text);
     void on_pushButtonAdicionarEnd_clicked();
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonAtualizarEnd_clicked();
@@ -48,11 +48,9 @@ class CadastroCliente : public RegisterDialog {
 * \param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
 * \return
 */
-    virtual bool viewRegister(QModelIndex idx);
+    virtual bool viewRegister(QModelIndex index);
     QString getTipo() const;
     void setTipo(const QString &value);
-    QString getTipoClienteFornecedor() const;
-    void setTipoClienteFornecedor(const QString &value);
     void clearEnd();
     bool TestClienteEndereco();
     bool TestClienteCompleto();
@@ -91,8 +89,6 @@ class CadastroCliente : public RegisterDialog {
     // attributes
     Ui::CadastroCliente *ui;
     QString tipoPFPJ;
-    QString tipoClienteFornecedor;
-    bool closeBeforeUpdate;
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods

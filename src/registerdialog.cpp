@@ -40,7 +40,7 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
   return true;
 }
 
-bool RegisterDialog::viewRegister(QModelIndex idx) {
+bool RegisterDialog::viewRegister(QModelIndex index) {
   if (not confirmationMessage()) {
     return false;
   }
@@ -52,7 +52,7 @@ bool RegisterDialog::viewRegister(QModelIndex idx) {
     table->clearSelection();
   }
 
-  mapper.setCurrentIndex(idx.row());
+  mapper.setCurrentIndex(index.row());
 
   return true;
 }
@@ -112,6 +112,7 @@ void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void RegisterDialog::changeItem(QVariant value, QString text) {
   Q_UNUSED(text)
+
   viewRegisterById(value);
 }
 
@@ -210,6 +211,7 @@ bool RegisterDialog::save(bool silent) {
 
   if (not model.submitAll()) {
     qDebug() << objectName() << " : " << model.lastError();
+    qDebug() << "qry: " << model.query().lastQuery();
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;

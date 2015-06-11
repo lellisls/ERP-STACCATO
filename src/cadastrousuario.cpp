@@ -61,12 +61,11 @@ bool CadastroUsuario::verifyFields(int row) {
 void CadastroUsuario::clearFields() { RegisterDialog::clearFields(); }
 
 void CadastroUsuario::setupMapper() {
-  mapper.setModel(&model);
-  mapper.addMapping(ui->lineEditNome, model.fieldIndex("nome"));
-  mapper.addMapping(ui->lineEditUser, model.fieldIndex("user"));
-  mapper.addMapping(ui->comboBoxTipo, model.fieldIndex("tipo"));
-  mapper.addMapping(ui->comboBoxLoja, model.fieldIndex("idLoja"), "currentValue");
-  mapper.addMapping(ui->lineEditSigla, model.fieldIndex("sigla"));
+  addMapping(ui->lineEditNome, "nome");
+  addMapping(ui->lineEditUser, "user");
+  addMapping(ui->comboBoxTipo, "tipo");
+  addMapping(ui->comboBoxLoja, "idLoja", "currentValue");
+  addMapping(ui->lineEditSigla, "sigla");
 }
 
 void CadastroUsuario::registerMode() {

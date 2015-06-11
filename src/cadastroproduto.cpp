@@ -84,8 +84,6 @@ bool CadastroProduto::verifyFields(int row) {
 }
 
 void CadastroProduto::setupMapper() {
-  mapper.setModel(&model);
-
   addMapping(ui->lineEditDescricao, "descricao");
   addMapping(ui->comboBoxUn, "un");
   addMapping(ui->lineEditColecao, "colecao");

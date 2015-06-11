@@ -37,10 +37,10 @@ class RegisterDialog : public QDialog {
     virtual bool viewRegisterById(QVariant id);
     /*!
 * \brief Utilizada para selecionar um item a partir de um QModelIndex.
-* \param idx Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
+* \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
 * \return
 */
-    virtual bool viewRegister(QModelIndex idx);
+    virtual bool viewRegister(QModelIndex index);
     /*!
 * \brief Informa para a superclasse qual é a sua table view.
 * \param table Tabela da interface gráfica.
@@ -153,9 +153,11 @@ class RegisterDialog : public QDialog {
       if (row == -1) {
         qDebug() << "Something wrong on the row!";
       }
+
       if (model.fieldIndex(key) == -1) {
         qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
       }
+
       if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
         qDebug() << key << " error - row: " << row << " - value: " << value;
       }
@@ -170,6 +172,7 @@ class RegisterDialog : public QDialog {
       if (model.fieldIndex(key) == -1) {
         qDebug() << objectName() << " : Key " << key << " not found on model!";
       }
+
       return (model.data(model.index(mapper.currentIndex(), model.fieldIndex(key))));
     }
     /*!

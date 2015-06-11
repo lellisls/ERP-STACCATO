@@ -11,7 +11,7 @@ class CadastroFornecedor : public RegisterDialog {
     Q_OBJECT
 
   public:
-    explicit CadastroFornecedor(bool closeBeforeUpdate = false, QWidget *parent = 0);
+    explicit CadastroFornecedor(QWidget *parent = 0);
     ~CadastroFornecedor();
     void setupUi();
 
@@ -33,13 +33,12 @@ class CadastroFornecedor : public RegisterDialog {
     void on_pushButtonRemover_clicked();
 
   public:
-    virtual bool viewRegister(QModelIndex idx);
+    virtual bool viewRegister(QModelIndex index);
     void clearEnd();
 
   private:
     // attributes
     Ui::CadastroFornecedor *ui;
-    bool closeBeforeUpdate;
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods

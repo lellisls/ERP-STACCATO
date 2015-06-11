@@ -147,8 +147,6 @@ void Orcamento::novoItem() {
 }
 
 void Orcamento::setupMapper() {
-  mapper.setModel(&model);
-
   addMapping(ui->lineEditOrcamento, "idOrcamento");
   addMapping(ui->itemBoxCliente, "idCliente", "value");
   addMapping(ui->itemBoxProfissional, "idProfissional", "value");
@@ -272,7 +270,7 @@ bool Orcamento::verifyFields(int row) {
 
 bool Orcamento::savingProcedures(int row) {
   updateId();
-  QLocale locale(QLocale::Portuguese);
+
   QString idOrcamento = ui->lineEditOrcamento->text();
 
   if (model.data(model.index(row, model.fieldIndex("idOrcamento"))).toString() != idOrcamento) {
@@ -282,6 +280,7 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "idLoja", UserSession::getLoja());
   setData(row, "idCliente", ui->itemBoxCliente->value());
   setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
+  setData(row, "idEnderecoFaturamento", ui->itemBoxEndereco->value());
   setData(row, "idUsuario", ui->itemBoxVendedor->value());
   setData(row, "idProfissional", ui->itemBoxProfissional->value());
   setData(row, "validade", ui->spinBoxValidade->value());

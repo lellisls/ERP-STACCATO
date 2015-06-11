@@ -724,6 +724,7 @@ void Venda::on_pushButtonImprimir_clicked() {
 
 void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage) {
   Q_UNUSED(reportPage);
+  QLocale locale;
 
   QSqlQuery queryClien("SELECT * FROM Cliente WHERE idCliente = " +
                        model.data(model.index(0, model.fieldIndex("idCliente"))).toString());
@@ -738,7 +739,7 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   }
 
   if (paramName == "data") {
-    paramValue = model.data(model.index(0, model.fieldIndex("data"))).toDateTime();
+    paramValue = model.data(model.index(0, model.fieldIndex("data"))).toDateTime().toString("hh:mm dd-MM-yyyy");
   }
 
   if (paramName == "Marca") {
@@ -758,7 +759,8 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   }
 
   if (paramName == "Preço-R$") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toString();
+    double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toDouble();
+    paramValue = locale.toString(value, 'f', 2);
   }
 
   if (paramName == "Quant.") {
@@ -770,7 +772,8 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   }
 
   if (paramName == "Total") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("total"))).toString();
+    double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("total"))).toDouble();
+    paramValue = locale.toString(value, 'f', 2);
   }
 }
 

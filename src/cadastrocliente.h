@@ -26,9 +26,9 @@ class CadastroCliente : public RegisterDialog {
     void on_checkBoxMostrarInativos_clicked(bool checked);
     void on_groupBoxPJuridica_toggled(bool arg1);
     void on_lineEditCEP_textChanged(const QString &cep);
-    void on_lineEditCNPJ_textEdited(QString &text);
-    void on_lineEditContatoCPF_textEdited(QString &text);
-    void on_lineEditCPF_textEdited(QString & text);
+    void on_lineEditCNPJ_textEdited(const QString &text);
+    void on_lineEditContatoCPF_textEdited(const QString &text);
+    void on_lineEditCPF_textEdited(const QString &text);
     void on_pushButtonAdicionarEnd_clicked();
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonAtualizarEnd_clicked();

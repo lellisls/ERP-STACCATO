@@ -376,10 +376,12 @@ void CadastroCliente::changeItem(QVariant value, QString text) {
   viewRegisterById(value);
 }
 
-void CadastroCliente::on_lineEditCPF_textEdited(QString &text) { validaCPF(text.remove(".").remove("-")); }
+void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
+  validaCPF(QString(text).remove(".").remove("-"));
+}
 
-void CadastroCliente::on_lineEditCNPJ_textEdited(QString &text) {
-  validaCNPJ(text.remove(".").remove("/").remove("-"));
+void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
+  validaCNPJ(QString(text).remove(".").remove("/").remove("-"));
 }
 
 void CadastroCliente::validaCNPJ(QString text) {
@@ -726,7 +728,9 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
   adjustSize();
 }
 
-void CadastroCliente::on_lineEditContatoCPF_textEdited(QString &text) { validaCPF(text.remove(".").remove("-")); }
+void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
+  validaCPF(QString(text).remove(".").remove("-"));
+}
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {

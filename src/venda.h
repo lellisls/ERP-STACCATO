@@ -20,7 +20,7 @@ class Venda : public RegisterDialog {
   public:
     explicit Venda(QWidget *parent = 0);
     ~Venda();
-    void fecharOrcamento(const QString &idOrcamento);
+    void fecharOrcamento(const QString &idVenda);
     virtual bool viewRegister(QModelIndex index);
     void updateValues();
 
@@ -43,7 +43,7 @@ class Venda : public RegisterDialog {
     void on_doubleSpinBoxPgt3_editingFinished();
     void on_pushButtonLimparPag_clicked();
     void on_pushButtonCancelar_clicked();
-    void on_pushButtonFecharPedido_clicked();
+    void on_pushButtonCadastrarPedido_clicked();
     void on_pushButtonNFe_clicked();
     void on_pushButtonVoltar_clicked();
     void on_pushButtonImprimir_clicked();
@@ -56,14 +56,13 @@ class Venda : public RegisterDialog {
     virtual bool savingProcedures(int row);
     virtual void registerMode();
     virtual void updateMode();
+    virtual void successMessage();
 
   private:
     // attributes
     Ui::Venda *ui;
-    QSqlTableModel modelVenda;
     QSqlRelationalTableModel modelItem, modelFluxoCaixa;
-    QString idOrcamento;
-    double subTotal;
+    QString idVenda;
     // methods
     bool cadastrar();
     bool verifyFields(int row);

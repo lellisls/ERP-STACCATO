@@ -61,10 +61,6 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idLoja"), true);
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idPagamento"), true);
 
-  modelVenda.setTable("Venda");
-  modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelVenda.select();
-
   ui->tableVenda->setModel(&modelItem);
   ui->tableVenda->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVenda"), true);
@@ -85,7 +81,6 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->comboBoxPgt3->insertItems(0, list);
 
   ui->tableVenda->resizeColumnsToContents();
-  //ui->tableVenda->setItemDelegate(new QSqlRelationalDelegate(ui->tableVenda));
 
   ui->pushButtonNFe->hide();
 
@@ -98,6 +93,9 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
 
   SearchDialog *sdEnderecoFat = SearchDialog::enderecoCliente(ui->itemBoxEnderecoFat);
   ui->itemBoxEnderecoFat->setSearchDialog(sdEnderecoFat);
+
+  setupMapper();
+  newRegister();
 
   showMaximized();
 }
@@ -136,7 +134,7 @@ void Venda::resetarPagamentos() {
 void Venda::fecharOrcamento(const QString &idOrcamento) {
   clearFields();
 
-  this->idOrcamento = idOrcamento;
+  idVenda = idOrcamento;
 
   QSqlQuery produtos("SELECT * FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'");
 
@@ -175,12 +173,12 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
                                                     " AND desativado = false");
 
   ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
+  ui->itemBoxEnderecoFat->setValue(qry.value("idEnderecoEntrega"));
 
-  int row = modelVenda.rowCount();
-  modelVenda.insertRow(row);
-
-  for (int field = 0; field < modelVenda.columnCount(); field++) {
-    modelVenda.setData(modelVenda.index(row, field), qry.value(field));
+  for (int field = 0; field < model.columnCount(); field++) {
+    if (not model.setData(model.index(mapper.currentIndex(), field), qry.value(field))) {
+      qDebug() << "Erro setando dados venda: " << model.lastError();
+    }
   }
 
   fillTotals();
@@ -194,6 +192,30 @@ bool Venda::cadastrar() { return true; }
 bool Venda::verifyFields(int row) {
   Q_UNUSED(row);
 
+  if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
+      ui->doubleSpinBoxTotalPag->value()) {
+    QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
+    return false;
+  }
+
+  if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
+    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 1.");
+    return false;
+  }
+  if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
+    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 2.");
+    return false;
+  }
+  if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
+    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
+    return false;
+  }
+
+  if (not ui->itemBoxEnderecoFat->value().isValid()) {
+    QMessageBox::warning(this, "Aviso!", "Deve selecionar um endereço de faturamento.");
+    return false;
+  }
+
   return true;
 }
 
@@ -206,7 +228,7 @@ bool Venda::verifyRequiredField(QLineEdit *line) {
 QString Venda::requiredStyle() { return QString(); }
 
 void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
-  subTotal = 0.0;
+  double subTotal = 0.0;
   double subTotalItens = 0.0;
   double subTotalBruto = 0.0;
   double minimoFrete = 0, porcFrete = 0;
@@ -230,8 +252,8 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     subTotalBruto += itemBruto;
     double stItem = itemBruto * (1.0 - descItem);
     subTotalItens += stItem;
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);  // Pr. Parcial
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem);
   }
 
   double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
@@ -256,18 +278,19 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   }
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0);
     double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0); // Desconto
-    // Distr.
     double totalItem = stItem * (1 - descGlobal);
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem);
   }
+
   ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
   ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
   ui->doubleSpinBoxFrete->setValue(frete);
   ui->doubleSpinBoxTotal->setValue(subTotalItens);
   ui->doubleSpinBoxFinal->setValue(subTotal + frete);
+
   resetarPagamentos();
   montarFluxoCaixa();
 }
@@ -275,13 +298,13 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 void Venda::fillTotals() {
   QSqlQuery query;
 
-  if (not query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
+  if (not query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idVenda + "'")) {
     qDebug() << "Erro buscando orçamento: " << query.lastError();
     qDebug() << "query: " << query.lastQuery();
   }
 
   if (not query.first()) {
-    if (not query.exec("SELECT * FROM Venda WHERE idVenda = '" + idOrcamento + "'")) {
+    if (not query.exec("SELECT * FROM Venda WHERE idVenda = '" + idVenda + "'")) {
       qDebug() << "Erro buscando venda: " << query.lastError();
     }
     if (not query.first()) {
@@ -298,10 +321,11 @@ void Venda::fillTotals() {
   ui->doubleSpinBoxFinal->setValue(query.value("total").toDouble());
 }
 
-void Venda::clearFields() { idOrcamento = QString(); }
+void Venda::clearFields() { idVenda = QString(); }
 
 void Venda::setupMapper() {
   addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
+  addMapping(ui->itemBoxEnderecoFat, "idEnderecoFaturamento", "value");
   addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
   addMapping(ui->doubleSpinBoxTotal, "subTotalLiq");
   addMapping(ui->doubleSpinBoxFrete, "frete");
@@ -314,175 +338,18 @@ void Venda::updateId() {}
 
 void Venda::on_pushButtonCancelar_clicked() { close(); }
 
-void Venda::on_pushButtonFecharPedido_clicked() {
-  if (not ui->frame_2->isHidden()) {
-    if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
-        ui->doubleSpinBoxTotalPag->value()) {
-      QMessageBox::warning(this, "Aviso!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
-      return;
-    }
-
-    if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
-      QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 1.");
-      return;
-    }
-    if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
-      QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 2.");
-      return;
-    }
-    if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
-      QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
-      return;
-    }
-  }
-
-  if (not ui->itemBoxEnderecoFat->value().isValid()) {
-    QMessageBox::warning(this, "Aviso!", "Deve selecionar um endereço de faturamento.");
-    return;
-  }
-
-  QSqlQuery qry;
-
-  //  qDebug() << "id: " << idOrcamento;
-
-  qry.exec("START TRANSACTION");
-  qry.exec("SET AUTOCOMMIT = 0");
-
-  QSqlQuery qryOrc;
-  if (not qryOrc.exec("SELECT idOrcamento, idLoja, idUsuario, idCliente, idEnderecoEntrega, idProfissional, "
-                      "data, subTotalBru, subTotalLiq, frete, descontoPorc, descontoReais, total, validade, "
-                      "status FROM Orcamento WHERE idOrcamento = '" +
-                      idOrcamento + "'")) {
-    qDebug() << "Erro lendo orçamento: " << qryOrc.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-  if (not qryOrc.first()) {
-    qDebug() << "Não encontrou orçamento: " << qryOrc.size();
-  }
-
-  if (not qry.prepare("INSERT INTO Venda (idVenda, idLoja, idUsuario, idCliente, idEnderecoEntrega, "
-                      "idEnderecoFaturamento, idProfissional, data, subTotalBru, subTotalLiq, frete, "
-                      "descontoPorc, descontoReais, total, validade, status) VALUES (:idOrcamento, :idLoja, "
-                      ":idUsuario, :idCliente, :idEnderecoEntrega, :idEnderecoFaturamento, :idProfissional, "
-                      ":data, :subTotalBru, :subTotalLiq, :frete, :descontoPorc, :descontoReais, :total, "
-                      ":validade, :status)")) {
-    qDebug() << "Erro preparando query insert venda: " << qry.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-  qry.bindValue(":idOrcamento", qryOrc.value("idOrcamento"));
-  qry.bindValue(":idLoja", qryOrc.value("idLoja"));
-  qry.bindValue(":idUsuario", qryOrc.value("idUsuario"));
-  qry.bindValue(":idCliente", qryOrc.value("idCliente"));
-  qry.bindValue(":idEnderecoEntrega", qryOrc.value("idEnderecoEntrega"));
-  qry.bindValue(":idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
-  qry.bindValue(":idProfissional", qryOrc.value("idProfissional"));
-  qry.bindValue(":data", qryOrc.value("data"));
-  qry.bindValue(":subTotalBru", qryOrc.value("subTotalBru"));
-  qry.bindValue(":subTotalLiq", qryOrc.value("subTotalLiq"));
-  qry.bindValue(":frete", qryOrc.value("frete"));
-  qry.bindValue(":descontoPorc", qryOrc.value("descontoPorc"));
-  qry.bindValue(":descontoReais", qryOrc.value("descontoReais"));
-  qry.bindValue(":total", qryOrc.value("total"));
-  qry.bindValue(":validade", qryOrc.value("validade"));
-  qry.bindValue(":status", qryOrc.value("status"));
-
-  if (not qry.exec()) {
-    qDebug() << "Erro inserindo em Venda: " << qry.lastError();
-    qDebug() << "qry: " << qry.lastQuery();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  if (not qry.exec("UPDATE Venda SET status = 'ABERTO' WHERE idVenda = '" + idOrcamento + "'")) {
-    qDebug() << "Erro atualizando status de Venda: " << qry.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  if (not qry.exec("UPDATE Venda SET data = '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "'")) {
-    qDebug() << "Erro setando data em Venda: " << qry.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  if (not modelFluxoCaixa.submitAll()) {
-    qDebug() << "Erro submetendo fluxoCaixa: " << modelFluxoCaixa.lastError();
-  }
-
-  if (not modelItem.submitAll()) {
-    qDebug() << "Erro submetendo modelItem: " << modelItem.lastError();
-    //    qDebug() << "query: " << modelItem.query().lastQuery();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  QSqlQuery qryEstoque("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM "
-                       "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-                       "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
-                       idOrcamento + "';");
-  if (not qryEstoque.exec()) {
-    qDebug() << qryEstoque.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-  if (qryEstoque.size() > 0) {
-    if (not qry.exec("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-                     "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
-                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-                     "descontoReais, total, validade, status "
-                     "FROM Venda WHERE idVenda = '" +
-                     idOrcamento + "'")) {
-      qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
-      qry.exec("ROLLBACK");
-      return;
-    }
-    if (not qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
-                     "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-                     "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
-                     idOrcamento + "';")) {
-      qDebug() << "Erro na inserção dos produtos em pedidofornecedor_has_produto: " << qry.lastError();
-      qry.exec("ROLLBACK");
-      return;
-    }
-  }
-
-  if (not qry.exec("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'")) {
-    qDebug() << "Error deleting items from Orcamento_has_Produto: " << qry.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  if (not qry.exec("DELETE FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'")) {
-    qDebug() << "Error deleting row from Orcamento: " << qry.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  if (not qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
-                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idOrcamento + "')")) {
-    qDebug() << "Error inserting contaareceber: " << qry.lastError();
-    qry.exec("ROLLBACK");
-    return;
-  }
-
-  if (qry.exec("COMMIT")) {
-    QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!", QMessageBox::Ok, QMessageBox::NoButton);
-  }
-
-  close();
-}
+void Venda::on_pushButtonCadastrarPedido_clicked() { save(); }
 
 void Venda::on_pushButtonNFe_clicked() {
-  CadastrarNFE *cadNfe = new CadastrarNFE(idOrcamento, this);
+  CadastrarNFE *cadNfe = new CadastrarNFE(idVenda, this);
 
   QModelIndexList list = ui->tableVenda->selectionModel()->selectedRows();
+
   if (list.size() < 1) {
     QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
     return;
   }
+
   QList<int> lista;
 
   foreach (QModelIndex index, list) { lista.append(index.row()); }
@@ -498,6 +365,7 @@ void Venda::calculoSpinBox1() {
   double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt2->setValue(pgt2 + restante);
+
   if (pgt2 == 0.0 or pgt3 >= 0.0) {
     ui->doubleSpinBoxPgt2->setMaximum(restante + pgt2);
     ui->doubleSpinBoxPgt2->setValue(restante + pgt2);
@@ -594,17 +462,81 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
 }
 
 bool Venda::savingProcedures(int row) {
-  Q_UNUSED(row);
+  setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
+  setData(row, "idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
+  setData(row, "status", "ABERTO");
+  setData(row, "data", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
-  montarFluxoCaixa();
+  if (not model.submitAll()) {
+    qDebug() << "Erro submetendo model: " << model.lastError();
+    return false;
+  }
+
+  if (not modelFluxoCaixa.submitAll()) {
+    qDebug() << "Erro submetendo modelFluxoCaixa: " << modelFluxoCaixa.lastError();
+    return false;
+  }
+
+  if (not modelItem.submitAll()) {
+    qDebug() << "Erro submetendo modelItem: " << modelItem.lastError();
+    return false;
+  }
+
+  QSqlQuery qry;
+
+  // TODO: implement
+  //  QSqlQuery qryEstoque("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM "
+  //                       "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+  //                       "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
+  //                       idVenda + "'");
+  //  if (not qryEstoque.exec()) {
+  //    qDebug() << qryEstoque.lastError();
+  //    return false;
+  //  }
+
+  //  if (qryEstoque.size() > 0) {
+  //    if (not qry.exec("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
+  //                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+  //                     "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
+  //                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+  //                     "descontoReais, total, validade, status "
+  //                     "FROM Venda WHERE idVenda = '" +
+  //                     idVenda + "'")) {
+  //      qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
+  //      return false;
+  //    }
+  //    if (not qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
+  //                     "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+  //                     "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
+  //                     idVenda + "'")) {
+  //      qDebug() << "Erro na inserção dos produtos em pedidofornecedor_has_produto: " << qry.lastError();
+  //      return false;
+  //    }
+  //  }
+
+  if (not qry.exec("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = '" + idVenda + "'")) {
+    qDebug() << "Error deleting items from Orcamento_has_Produto: " << qry.lastError();
+    return false;
+  }
+
+  if (not qry.exec("DELETE FROM Orcamento WHERE idOrcamento = '" + idVenda + "'")) {
+    qDebug() << "Error deleting row from Orcamento: " << qry.lastError();
+    return false;
+  }
+
+  if (not qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
+                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idVenda + "')")) {
+    qDebug() << "Error inserting contaareceber: " << qry.lastError();
+    return false;
+  }
 
   return true;
 }
 
 void Venda::registerMode() {
-  ui->frame_2->show();
+  ui->framePagamentos->show();
   ui->pushButtonNFe->hide();
-  ui->pushButtonFecharPedido->show();
+  ui->pushButtonCadastrarPedido->show();
   ui->pushButtonVoltar->show();
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(false);
   ui->doubleSpinBoxDescontoGlobal->setFrame(true);
@@ -616,9 +548,9 @@ void Venda::registerMode() {
 }
 
 void Venda::updateMode() {
-  ui->frame_2->hide();
+  ui->framePagamentos_2->hide();
   ui->pushButtonNFe->show();
-  ui->pushButtonFecharPedido->hide();
+  ui->pushButtonCadastrarPedido->hide();
   ui->pushButtonVoltar->hide();
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(true);
   ui->doubleSpinBoxDescontoGlobal->setFrame(false);
@@ -634,30 +566,31 @@ bool Venda::viewRegister(QModelIndex index) {
     return false;
   }
 
-  QString idVenda = data(primaryKey).toString();
-  idOrcamento = idVenda;
-  //  qDebug() << "idVenda: " << idVenda;
+  idVenda = data(primaryKey).toString();
+
   modelItem.setFilter("idVenda = '" + idVenda + "'");
   modelItem.select();
   modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
   modelFluxoCaixa.select();
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
+
   fillTotals();
+
   return true;
 }
 
 void Venda::on_pushButtonVoltar_clicked() {
   Orcamento *orc = new Orcamento(parentWidget());
-  orc->viewRegisterById(idOrcamento);
-  //  qDebug() << "idOrcamento: " << idOrcamento;
+  orc->viewRegisterById(idVenda);
   close();
 }
 
 void Venda::montarFluxoCaixa() {
-  if (ui->frame_2->isHidden()) {
+  if (ui->framePagamentos_2->isHidden()) {
     return;
   }
+
   modelFluxoCaixa.removeRows(0, modelFluxoCaixa.rowCount());
 
   int parcelas1 = ui->comboBoxPgt1Parc->currentIndex() + 1;
@@ -665,7 +598,7 @@ void Venda::montarFluxoCaixa() {
   if (ui->comboBoxPgt1->currentText() != "Escolha uma opção!") {
     for (int i = 0, z = parcelas1 - 1; i < parcelas1; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idVenda);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "1. " + ui->comboBoxPgt1->currentText());
@@ -683,7 +616,7 @@ void Venda::montarFluxoCaixa() {
     int parcelas2 = ui->comboBoxPgt2Parc->currentIndex() + 1;
     for (int i = 0, z = parcelas2 - 1; i < parcelas2; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idVenda);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "2. " + ui->comboBoxPgt2->currentText());
@@ -700,7 +633,7 @@ void Venda::montarFluxoCaixa() {
     int parcelas3 = ui->comboBoxPgt3Parc->currentIndex() + 1;
     for (int i = 0, z = parcelas3 - 1; i < parcelas3; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idOrcamento);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idVenda);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "3. " + ui->comboBoxPgt3->currentText());
@@ -793,7 +726,7 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   Q_UNUSED(reportPage);
 
   QSqlQuery queryClien("SELECT * FROM Cliente WHERE idCliente = " +
-                       modelVenda.data(modelVenda.index(0, modelVenda.fieldIndex("idCliente"))).toString());
+                       model.data(model.index(0, model.fieldIndex("idCliente"))).toString());
   queryClien.first();
 
   QSqlQuery queryProd("SELECT * FROM Produto WHERE idProduto = " +
@@ -805,7 +738,7 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   }
 
   if (paramName == "data") {
-    paramValue = modelVenda.data(modelVenda.index(0, modelVenda.fieldIndex("data"))).toDateTime();
+    paramValue = model.data(model.index(0, model.fieldIndex("data"))).toDateTime();
   }
 
   if (paramName == "Marca") {
@@ -839,4 +772,10 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   if (paramName == "Total") {
     paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("total"))).toString();
   }
+}
+
+void Venda::successMessage() {
+  QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!", QMessageBox::Ok, QMessageBox::NoButton);
+
+  close();
 }

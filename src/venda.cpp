@@ -593,36 +593,58 @@ void Venda::montarFluxoCaixa() {
 
   modelFluxoCaixa.removeRows(0, modelFluxoCaixa.rowCount());
 
-  int parcelas1 = ui->comboBoxPgt1Parc->currentIndex() + 1;
   int row = 0;
+
   if (ui->comboBoxPgt1->currentText() != "Escolha uma opção!") {
-    for (int i = 0, z = parcelas1 - 1; i < parcelas1; ++i, --z) {
+    int parcelas = ui->comboBoxPgt1Parc->currentIndex() + 1;
+
+    double resto = ui->doubleSpinBoxPgt1->value() -
+                   (QString::number(ui->doubleSpinBoxPgt1->value() / parcelas, 'f', 2).toDouble() * parcelas);
+
+    for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idVenda);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "1. " + ui->comboBoxPgt1->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas1 - z);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                              ui->doubleSpinBoxPgt1->value() / parcelas1);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
+
+      if (i == 0) {
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
+                                ui->doubleSpinBoxPgt1->value() / parcelas + resto);
+      } else {
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
+                                ui->doubleSpinBoxPgt1->value() / parcelas);
+      }
+
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt1->date().addMonths(i));
       ++row;
     }
-  } else {
   }
 
   if (ui->comboBoxPgt2->currentText() != "Escolha uma opção!") {
-    int parcelas2 = ui->comboBoxPgt2Parc->currentIndex() + 1;
-    for (int i = 0, z = parcelas2 - 1; i < parcelas2; ++i, --z) {
+    int parcelas = ui->comboBoxPgt2Parc->currentIndex() + 1;
+
+    double resto = ui->doubleSpinBoxPgt2->value() -
+                   (QString::number(ui->doubleSpinBoxPgt2->value() / parcelas, 'f', 2).toDouble() * parcelas);
+
+    for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idVenda);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "2. " + ui->comboBoxPgt2->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas2 - z);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                              ui->doubleSpinBoxPgt2->value() / parcelas2);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
+
+      if (i == 0) {
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
+                                ui->doubleSpinBoxPgt2->value() / parcelas + resto);
+      } else {
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
+                                ui->doubleSpinBoxPgt2->value() / parcelas);
+      }
+
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt2->date().addMonths(i));
       ++row;
@@ -630,16 +652,27 @@ void Venda::montarFluxoCaixa() {
   }
 
   if (ui->comboBoxPgt3->currentText() != "Escolha uma opção!") {
-    int parcelas3 = ui->comboBoxPgt3Parc->currentIndex() + 1;
-    for (int i = 0, z = parcelas3 - 1; i < parcelas3; ++i, --z) {
+    int parcelas = ui->comboBoxPgt3Parc->currentIndex() + 1;
+
+    double resto = ui->doubleSpinBoxPgt3->value() -
+                   (QString::number(ui->doubleSpinBoxPgt3->value() / parcelas, 'f', 2).toDouble() * parcelas);
+
+    for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")), idVenda);
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
                               "3. " + ui->comboBoxPgt3->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas3 - z);
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                              ui->doubleSpinBoxPgt3->value() / parcelas3);
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
+
+      if (i == 0) {
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
+                                ui->doubleSpinBoxPgt3->value() / parcelas + resto);
+      } else {
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
+                                ui->doubleSpinBoxPgt3->value() / parcelas);
+      }
+
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt3->date().addMonths(i));
       ++row;

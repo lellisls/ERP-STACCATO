@@ -30,8 +30,6 @@ SOURCES += src/apagaorcamento.cpp \
     src/editablesqlmodel.cpp \
     src/endereco.cpp \
     src/entregascliente.cpp \
-    src/importaexportproxy.cpp \
-    src/importateste.cpp \
     src/itembox.cpp \
     src/lineeditcep.cpp \
     src/lineeditdecimal.cpp \
@@ -50,7 +48,9 @@ SOURCES += src/apagaorcamento.cpp \
     src/usersession.cpp \
     src/validadedialog.cpp \
     src/venda.cpp \
-    src/doubledelegate.cpp
+    src/doubledelegate.cpp \
+    src/importaprodutosproxy.cpp \
+    src/importaprodutos.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/backgroundproxymodel.h \
@@ -71,8 +71,6 @@ HEADERS  += src/apagaorcamento.h \
     src/editablesqlmodel.h \
     src/endereco.h \
     src/entregascliente.h \
-    src/importaexportproxy.h \
-    src/importateste.h \
     src/initdb.h \
     src/itembox.h \
     src/lineeditcep.h \
@@ -91,7 +89,9 @@ HEADERS  += src/apagaorcamento.h \
     src/usersession.h \
     src/validadedialog.h \
     src/venda.h \
-    src/doubledelegate.h
+    src/doubledelegate.h \
+    src/importaprodutosproxy.h \
+    src/importaprodutos.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -105,7 +105,6 @@ FORMS += ui/apagaorcamento.ui \
     ui/contasapagar.ui \
     ui/contasareceber.ui \
     ui/entregascliente.ui \
-    ui/importateste.ui \
     ui/loginconfig.ui \
     ui/logindialog.ui \
     ui/mainwindow.ui \
@@ -115,7 +114,8 @@ FORMS += ui/apagaorcamento.ui \
     ui/searchdialog.ui \
     ui/sendmail.ui \
     ui/validadedialog.ui \
-    ui/venda.ui
+    ui/venda.ui \
+    ui/importaprodutos.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0 -Wall

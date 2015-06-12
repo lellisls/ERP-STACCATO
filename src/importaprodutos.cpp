@@ -9,26 +9,26 @@
 #include <QSqlRecord>
 #include <QSqlField>
 
-#include "importaexportproxy.h"
-#include "importateste.h"
+#include "importaprodutosproxy.h"
+#include "importaprodutos.h"
 #include "ui_importateste.h"
 #include "dateformatdelegate.h"
 #include "validadedialog.h"
 
-ImportaTeste::ImportaTeste(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaTeste) {
+ImportaProdutos::ImportaProdutos(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaProdutos) {
   ui->setupUi(this);
   setWindowFlags(Qt::Window);
 }
 
-ImportaTeste::~ImportaTeste() { delete ui; }
+ImportaProdutos::~ImportaProdutos() { delete ui; }
 
-void ImportaTeste::expiraPrecosAntigos(QSqlQuery produto, QString idProduto) {
+void ImportaProdutos::expiraPrecosAntigos(QSqlQuery produto, QString idProduto) {
   if (not produto.exec("UPDATE Produto_has_Preco SET expirado = 1 WHERE idProduto = " + idProduto)) {
     qDebug() << "Erro expirando preços antigos: " << produto.lastError();
   }
 }
 
-void ImportaTeste::importar() {
+void ImportaProdutos::importar() {
   if (not readFile()) {
     return;
   }
@@ -40,7 +40,7 @@ void ImportaTeste::importar() {
   importarTabela();
 }
 
-void ImportaTeste::importarTabela() {
+void ImportaProdutos::importarTabela() {
   setProgressDialog();
   setModelAndTable();
 
@@ -113,12 +113,12 @@ void ImportaTeste::importarTabela() {
   }
 
   showMaximized();
-  ui->tableView->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableView->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableView->resizeColumnsToContents();
+  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->resizeColumnsToContents();
 }
 
-void ImportaTeste::setProgressDialog() {
+void ImportaProdutos::setProgressDialog() {
   progressDialog = new QProgressDialog(this);
   progressDialog->setCancelButton(0);
   progressDialog->setLabelText("Importando...");
@@ -129,7 +129,7 @@ void ImportaTeste::setProgressDialog() {
   progressDialog->setCancelButtonText("Cancelar");
 }
 
-bool ImportaTeste::readFile() {
+bool ImportaProdutos::readFile() {
   file = QFileDialog::getOpenFileName(this, "Importar tabela genérica", QDir::currentPath(), tr("Excel (*.xlsx)"));
 
   if (file.isEmpty()) {
@@ -139,7 +139,7 @@ bool ImportaTeste::readFile() {
   return true;
 }
 
-bool ImportaTeste::readValidade() {
+bool ImportaProdutos::readValidade() {
   ValidadeDialog *validadeDlg = new ValidadeDialog();
 
   if (validadeDlg->exec()) {
@@ -151,31 +151,26 @@ bool ImportaTeste::readValidade() {
   return true;
 }
 
-void ImportaTeste::setModelAndTable() {
+void ImportaProdutos::setModelAndTable() {
   model.setTable("Produto");
   model.setEditStrategy(EditableSqlModel::OnManualSubmit);
   model.setSort(model.fieldIndex("expirado"), Qt::AscendingOrder);
   model.select();
 
-  proxyModel = new ImportaExportProxy(model.fieldIndex("expirado"));
+  proxyModel = new ImportaProdutosProxy(this);
   proxyModel->setSourceModel(&model);
-  ui->tableView->setModel(proxyModel);
+  ui->tableProdutos->setModel(proxyModel);
 
   for (int i = 1; i < model.columnCount(); i += 2) {
-    ui->tableView->setColumnHidden(i, true);
+    ui->tableProdutos->setColumnHidden(i, true);
   }
 
-  ui->tableView->setColumnHidden(model.fieldIndex("idProduto"), true);
-  ui->tableView->setColumnHidden(model.fieldIndex("idFornecedor"), true);
-  ui->tableView->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
+  ui->tableProdutos->setColumnHidden(model.fieldIndex("idProduto"), true);
+  ui->tableProdutos->setColumnHidden(model.fieldIndex("idFornecedor"), true);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
 }
 
-void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
-  QSqlQuery queryProdSz("SELECT COUNT(*) FROM [BASE$]", db);
-  queryProdSz.first();
-  progressDialog->setMaximum(queryProdSz.value(0).toInt());
-  progressDialog->setLabelText("Cadastrando fornecedores...");
-
+void ImportaProdutos::cadastraFornecedores(QSqlQuery &query) {
   while (query.next()) {
     QString fornecedor = query.value(0).toString();
 
@@ -183,15 +178,10 @@ void ImportaTeste::cadastraFornecedores(QSqlQuery &query) {
       int id = buscarCadastrarFornecedor(fornecedor);
       fornecedores.insert(fornecedor, id);
     }
-
-    progressDialog->setValue(progressDialog->value() + 1);
   }
-
-  progressDialog->setValue(0);
-  progressDialog->setLabelText("Importando...");
 }
 
-void ImportaTeste::mostraApenasEstesFornecedores() {
+void ImportaProdutos::mostraApenasEstesFornecedores() {
   QList<int> idsMap = fornecedores.values();
 
   for (int i = 0; i < fornecedores.size(); ++i) {
@@ -203,7 +193,7 @@ void ImportaTeste::mostraApenasEstesFornecedores() {
   }
 }
 
-void ImportaTeste::marcaTodosProdutosExpirado() {
+void ImportaProdutos::marcaTodosProdutosExpirado() {
   for (int row = 0; row < model.rowCount(); ++row) {
     if (model.index(row, model.fieldIndex("expirado")).isValid()) {
       model.setData(model.index(row, model.fieldIndex("expirado")), 1);
@@ -211,13 +201,13 @@ void ImportaTeste::marcaTodosProdutosExpirado() {
   }
 }
 
-void ImportaTeste::contaProdutos() {
+void ImportaProdutos::contaProdutos() {
   QSqlQuery queryProdSz("SELECT COUNT(*) FROM [BASE$]", db);
   queryProdSz.first();
   progressDialog->setMaximum(queryProdSz.value(0).toInt());
 }
 
-bool ImportaTeste::consistenciaDados() {
+bool ImportaProdutos::consistenciaDados() {
   // TODO: pintar células informando erro
   // TODO: formatoComercial, CódigoIndustrial, ICMS devem ser zerados se vazio
 
@@ -263,13 +253,13 @@ bool ImportaTeste::consistenciaDados() {
   return true;
 }
 
-void ImportaTeste::leituraProduto(QSqlQuery &queryProd) {
+void ImportaProdutos::leituraProduto(QSqlQuery &queryProd) {
   for (int i = 1; i < fields.size(); ++i) {
     values.insert(i, queryProd.value(i).toString());
   }
 }
 
-void ImportaTeste::atualizaCamposProduto(QSqlQuery &produto, QString idProduto) {
+void ImportaProdutos::atualizaCamposProduto(QSqlQuery &produto, QString idProduto) {
   QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto).first();
 
   model.setData(model.index(index.row(), model.fieldIndex("validade")),
@@ -285,7 +275,7 @@ void ImportaTeste::atualizaCamposProduto(QSqlQuery &produto, QString idProduto) 
   }
 }
 
-void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto) {
+void ImportaProdutos::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto) {
   if (not produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
     qDebug() << "Erro marcando produto atualizado como não expirado: " << produto.lastError();
   }
@@ -294,7 +284,7 @@ void ImportaTeste::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto
   model.setData(model.index(index.row(), model.fieldIndex("expirado")), 0);
 }
 
-void ImportaTeste::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto) {
+void ImportaProdutos::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto) {
   if (produto.value("precoVenda") != values.at(fields.indexOf("precoVenda"))) {
     expiraPrecosAntigos(produto, idProduto);
 
@@ -309,14 +299,14 @@ void ImportaTeste::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto
   }
 }
 
-void ImportaTeste::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
+void ImportaProdutos::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
   if (not produto.exec("SELECT * FROM Produto WHERE fornecedor = '" + values.at(fields.indexOf("fornecedor")) +
                        "' AND codComercial = '" + values.at(fields.indexOf("codComercial")) + "'")) {
     qDebug() << "Erro buscando produto: " << produto.lastError();
   }
 }
 
-void ImportaTeste::cadastraProduto() {
+void ImportaProdutos::cadastraProduto() {
   if (model.insertRow(model.rowCount())) {
     int row = model.rowCount() - 1;
 
@@ -333,7 +323,7 @@ void ImportaTeste::cadastraProduto() {
   }
 }
 
-int ImportaTeste::buscarCadastrarFornecedor(QString fornecedor) {
+int ImportaProdutos::buscarCadastrarFornecedor(QString fornecedor) {
   int idFornecedor = 0;
 
   QSqlQuery queryFornecedor;
@@ -356,9 +346,9 @@ int ImportaTeste::buscarCadastrarFornecedor(QString fornecedor) {
   return idFornecedor;
 }
 
-void ImportaTeste::on_pushButtonCancelar_clicked() { QSqlQuery("ROLLBACK").exec(); }
+void ImportaProdutos::on_pushButtonCancelar_clicked() { QSqlQuery("ROLLBACK").exec(); }
 
-void ImportaTeste::on_pushButtonSalvar_clicked() {
+void ImportaProdutos::on_pushButtonSalvar_clicked() {
   if (model.submitAll()) {
     QSqlQuery("COMMIT").exec();
 
@@ -386,7 +376,7 @@ void ImportaTeste::on_pushButtonSalvar_clicked() {
   }
 }
 
-bool ImportaTeste::verificaTabela() {
+bool ImportaProdutos::verificaTabela() {
   QSqlRecord record = db.record(db.tables(QSql::AllTables).first());
 
   for (int i = 0; i < fields.size(); ++i) {
@@ -399,6 +389,8 @@ bool ImportaTeste::verificaTabela() {
   return true;
 }
 
+#ifdef TEST
+
 void ImportaTeste::TestImportacao() {
   file = "C:/temp/build-Loja-Desktop_Qt_5_4_0_MinGW_32bit-Test/Bellinzoni.xlsx";
   validade = 10;
@@ -406,3 +398,5 @@ void ImportaTeste::TestImportacao() {
   importarTabela();
   on_pushButtonSalvar_clicked();
 }
+
+#endif

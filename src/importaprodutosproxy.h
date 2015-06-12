@@ -1,19 +1,16 @@
-#ifndef IMPORTAEXPORTPROXY_H
-#define IMPORTAEXPORTPROXY_H
+#ifndef IMPORTAPRODUTOSPROXY_H
+#define IMPORTAPRODUTOSPROXY_H
 
 #include <QIdentityProxyModel>
 
-class ImportaExportProxy : public QIdentityProxyModel {
+class ImportaProdutosProxy : public QIdentityProxyModel {
 
   public:
-    ImportaExportProxy(int column, QObject *parent = 0);
-    ~ImportaExportProxy();
+    ImportaProdutosProxy(QObject *parent = 0);
+    ~ImportaProdutosProxy();
 
     // QAbstractItemModel interface
     QVariant data(const QModelIndex &proxyIndex, int role) const;
-
-  private:
-    int column;
 };
 
-#endif // IMPORTAEXPORTPROXY_H
+#endif // IMPORTAPRODUTOSPROXY_H

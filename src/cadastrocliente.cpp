@@ -646,6 +646,7 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
 }
 
 #ifdef TEST
+
 #include <QTest>
 
 bool CadastroCliente::TestClienteIncompleto() {

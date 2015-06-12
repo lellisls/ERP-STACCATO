@@ -1,24 +1,24 @@
-#ifndef IMPORTATESTE_H
-#define IMPORTATESTE_H
+#ifndef IMPORTAPRODUTOS_H
+#define IMPORTAPRODUTOS_H
 
 #include <QDialog>
 #include <QFutureWatcher>
 #include <QProgressDialog>
 #include <QSqlRelationalTableModel>
 
-#include "importaexportproxy.h"
+#include "importaprodutosproxy.h"
 #include "editablesqlmodel.h"
 
 namespace Ui {
-  class ImportaTeste;
+  class ImportaProdutos;
 }
 
-class ImportaTeste : public QDialog {
+class ImportaProdutos : public QDialog {
     Q_OBJECT
 
   public:
-    explicit ImportaTeste(QWidget *parent = 0);
-    ~ImportaTeste();
+    explicit ImportaProdutos(QWidget *parent = 0);
+    ~ImportaProdutos();
     bool consistenciaDados();
     bool readFile();
     bool verificaTabela();
@@ -45,7 +45,7 @@ class ImportaTeste : public QDialog {
     void on_pushButtonSalvar_clicked();
 
   private:
-    Ui::ImportaTeste *ui;
+    Ui::ImportaProdutos *ui;
     EditableSqlModel model;
     QProgressDialog *progressDialog;
     QString file, ids;
@@ -56,9 +56,9 @@ class ImportaTeste : public QDialog {
                           "codComercial", "codBarras", "ncm", "icms", "situacaoTributaria", "qtdPallet", "custo", "ipi",
                           "st", "precoVenda", "comissao", "observacoes", "origem", "descontinuado", "temLote", "ui"};
     QStringList values;
-    ImportaExportProxy *proxyModel;
+    ImportaProdutosProxy *proxyModel;
 
     void importarTabela();
 };
 
-#endif // IMPORTATESTE_H
+#endif // IMPORTAPRODUTOS_H

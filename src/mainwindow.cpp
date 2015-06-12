@@ -28,7 +28,7 @@
 #include "ui_mainwindow.h"
 #include "usersession.h"
 #include "venda.h"
-#include "importateste.h"
+#include "importaprodutos.h"
 #include "doubledelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -573,8 +573,8 @@ void MainWindow::showMaximized() {
 }
 
 void MainWindow::on_actionImportaTeste_triggered() {
-  ImportaTeste *teste = new ImportaTeste(this);
-  teste->importar();
+  ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->importar();
 }
 
 void MainWindow::on_tableVendas_activated(const QModelIndex &index) {

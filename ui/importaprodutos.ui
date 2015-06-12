@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImportaTeste</class>
- <widget class="QDialog" name="ImportaTeste">
+ <class>ImportaProdutos</class>
+ <widget class="QDialog" name="ImportaProdutos">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -42,7 +42,7 @@
     </spacer>
    </item>
    <item row="0" column="0" rowspan="3">
-    <widget class="QTableView" name="tableView"/>
+    <widget class="QTableView" name="tableProdutos"/>
    </item>
   </layout>
  </widget>

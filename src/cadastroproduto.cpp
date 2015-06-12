@@ -26,6 +26,9 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   ui->itemBoxFornecedor->setSearchDialog(sdFornecedor);
 
+  sdProd = SearchDialog::produto(this);
+  connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::changeItem);
+
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
@@ -163,9 +166,7 @@ void CadastroProduto::on_pushButtonRemover_clicked() { remove(); }
 void CadastroProduto::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroProduto::on_pushButtonBuscar_clicked() {
-  SearchDialog *sdProd = SearchDialog::produto(this);
   sdProd->showMaximized();
-  connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::changeItem);
 }
 
 void CadastroProduto::changeItem(QVariant value, QString text) {

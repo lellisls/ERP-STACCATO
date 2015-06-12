@@ -4,6 +4,7 @@
 #include <QDialog>
 
 #include "registerdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
   class CadastroProduto;
@@ -57,7 +58,7 @@ class CadastroProduto : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroProduto *ui;
-    int ProdutosRow = 0;
+    SearchDialog *sdProd;
   public slots:
     void show();
 };

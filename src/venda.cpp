@@ -597,9 +597,11 @@ void Venda::montarFluxoCaixa() {
 
   if (ui->comboBoxPgt1->currentText() != "Escolha uma opção!") {
     int parcelas = ui->comboBoxPgt1Parc->currentIndex() + 1;
+    double valor = ui->doubleSpinBoxPgt1->value();
 
-    double resto = ui->doubleSpinBoxPgt1->value() -
-                   (QString::number(ui->doubleSpinBoxPgt1->value() / parcelas, 'f', 2).toDouble() * parcelas);
+    float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
+    double resto = static_cast<double>(valor - (temp * parcelas));
+    double parcela = static_cast<double>(temp);
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
@@ -611,10 +613,10 @@ void Venda::montarFluxoCaixa() {
 
       if (i == 0) {
         modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                ui->doubleSpinBoxPgt1->value() / parcelas + resto);
+                                parcela + resto);
       } else {
         modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                ui->doubleSpinBoxPgt1->value() / parcelas);
+                                parcela);
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -625,9 +627,11 @@ void Venda::montarFluxoCaixa() {
 
   if (ui->comboBoxPgt2->currentText() != "Escolha uma opção!") {
     int parcelas = ui->comboBoxPgt2Parc->currentIndex() + 1;
+    double valor = ui->doubleSpinBoxPgt2->value();
 
-    double resto = ui->doubleSpinBoxPgt2->value() -
-                   (QString::number(ui->doubleSpinBoxPgt2->value() / parcelas, 'f', 2).toDouble() * parcelas);
+    float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
+    double resto = static_cast<double>(valor - (temp * parcelas));
+    double parcela = static_cast<double>(temp);
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
@@ -639,10 +643,10 @@ void Venda::montarFluxoCaixa() {
 
       if (i == 0) {
         modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                ui->doubleSpinBoxPgt2->value() / parcelas + resto);
+                                parcela + resto);
       } else {
         modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                ui->doubleSpinBoxPgt2->value() / parcelas);
+                                parcela);
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -653,9 +657,11 @@ void Venda::montarFluxoCaixa() {
 
   if (ui->comboBoxPgt3->currentText() != "Escolha uma opção!") {
     int parcelas = ui->comboBoxPgt3Parc->currentIndex() + 1;
+    double valor = ui->doubleSpinBoxPgt3->value();
 
-    double resto = ui->doubleSpinBoxPgt3->value() -
-                   (QString::number(ui->doubleSpinBoxPgt3->value() / parcelas, 'f', 2).toDouble() * parcelas);
+    float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
+    double resto = static_cast<double>(valor - (temp * parcelas));
+    double parcela = static_cast<double>(temp);
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
@@ -667,10 +673,10 @@ void Venda::montarFluxoCaixa() {
 
       if (i == 0) {
         modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                ui->doubleSpinBoxPgt3->value() / parcelas + resto);
+                                parcela + resto);
       } else {
         modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                ui->doubleSpinBoxPgt3->value() / parcelas);
+                                parcela);
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),

@@ -14,10 +14,14 @@
 #include "ui_importaprodutos.h"
 #include "dateformatdelegate.h"
 #include "validadedialog.h"
+#include "doubledelegate.h"
 
 ImportaProdutos::ImportaProdutos(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaProdutos) {
   ui->setupUi(this);
   setWindowFlags(Qt::Window);
+
+  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
+  ui->tableProdutos->setItemDelegate(doubledelegate);
 }
 
 ImportaProdutos::~ImportaProdutos() { delete ui; }
@@ -164,7 +168,7 @@ void ImportaProdutos::setModelAndTable() {
   model.setTable("Produto");
   model.setEditStrategy(EditableSqlModel::OnManualSubmit);
   // TODO: verify if it's possible to sort a dirty model
-//  model.setSort(model.fieldIndex("descontinuado"), Qt::AscendingOrder);
+  //  model.setSort(model.fieldIndex("descontinuado"), Qt::AscendingOrder);
   model.select();
 
   proxyModel = new ImportaProdutosProxy(model.fieldIndex("descontinuado"), this);
@@ -253,6 +257,7 @@ bool ImportaProdutos::consistenciaDados() {
     values[fields.indexOf("codBarras")] = "0";
   }
 
+  // TODO; verify if necessary
   values[fields.indexOf("custo")] = values[fields.indexOf("custo")].replace(",", ".");
 
   if (values.at(fields.indexOf("custo")).toDouble() <= 0.0) {
@@ -355,7 +360,10 @@ int ImportaProdutos::buscarCadastrarFornecedor(QString fornecedor) {
   return idFornecedor;
 }
 
-void ImportaProdutos::on_pushButtonCancelar_clicked() { QSqlQuery("ROLLBACK").exec(); }
+void ImportaProdutos::on_pushButtonCancelar_clicked() {
+  QSqlQuery("ROLLBACK").exec();
+  close();
+}
 
 void ImportaProdutos::on_pushButtonSalvar_clicked() {
   if (model.submitAll()) {

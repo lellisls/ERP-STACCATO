@@ -21,7 +21,7 @@ class CadastroTransportadora : public RegisterDialog {
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonBuscar_clicked();
-    void on_lineEditCNPJ_textEdited(const QString &);
+    void on_lineEditCNPJ_textEdited(const QString &text);
     void on_pushButtonAdicionarEnd_clicked();
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonEndLimpar_clicked();
@@ -72,7 +72,6 @@ class CadastroTransportadora : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    void validaCNPJ(QString text);
     virtual bool newRegister();
     void novoItem();
     bool atualizarEndereco();

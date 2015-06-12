@@ -24,7 +24,7 @@ class CadastroLoja : public RegisterDialog {
     void on_pushButtonRemover_clicked();
     void on_pushButtonSaidaNFe_clicked();
     void on_pushButtonBuscar_clicked();
-    void on_lineEditCNPJ_textEdited(const QString &);
+    void on_lineEditCNPJ_textEdited(const QString &text);
     void on_pushButtonAdicionarEnd_clicked();
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonEndLimpar_clicked();
@@ -76,7 +76,6 @@ class CadastroLoja : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    void validaCNPJ(QString text);
     void novoEnd();
     bool atualizarEndereco();
     bool adicionarEndereco();

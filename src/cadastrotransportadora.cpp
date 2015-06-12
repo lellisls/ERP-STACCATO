@@ -159,60 +159,6 @@ void CadastroTransportadora::on_pushButtonBuscar_clicked() {
   sdTransportadora->show();
 }
 
-void CadastroTransportadora::validaCNPJ(QString text) {
-  if (text.size() == 14) {
-
-    int digito1;
-    int digito2;
-
-    QString sub = text.left(12);
-
-    QVector<int> sub2;
-    for (int i = 0; i < sub.size(); ++i) {
-      sub2.push_back(sub.at(i).digitValue());
-    }
-
-    QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-
-    int soma = 0;
-    for (int i = 0; i < 12; ++i) {
-      soma += sub2.at(i) * multiplicadores.at(i);
-    }
-
-    int resto = soma % 11;
-
-    if (resto < 2) {
-      digito1 = 0;
-    } else {
-      digito1 = 11 - resto;
-    }
-
-    sub2.push_back(digito1);
-
-    QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-    soma = 0;
-
-    for (int i = 0; i < 13; ++i) {
-      soma += sub2.at(i) * multiplicadores2.at(i);
-    }
-
-    resto = soma % 11;
-
-    if (resto < 2) {
-      digito2 = 0;
-    } else {
-      digito2 = 11 - resto;
-    }
-
-    if (digito1 == text.at(12).digitValue() and digito2 == text.at(13).digitValue()) {
-      qDebug() << "Válido!";
-    } else {
-      QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
-      return;
-    }
-  }
-}
-
 bool CadastroTransportadora::newRegister() {
   if (not RegisterDialog::newRegister()) {
     return false;
@@ -228,9 +174,8 @@ void CadastroTransportadora::novoItem() {
   ui->pushButtonRemover->hide();
 }
 
-void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &) {
-  QString text = ui->lineEditCNPJ->text().remove(".").remove("/").remove("-");
-  validaCNPJ(text);
+void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {
+  validaCNPJ(QString(text).remove(".").remove("/").remove("-"));
 }
 
 void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {

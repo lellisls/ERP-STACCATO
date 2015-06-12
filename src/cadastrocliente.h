@@ -92,8 +92,6 @@ class CadastroCliente : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    void validaCNPJ(QString text);
-    void validaCPF(QString text);
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
     bool adicionarEndereco();
 };

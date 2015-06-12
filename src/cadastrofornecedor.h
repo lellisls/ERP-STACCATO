@@ -22,8 +22,8 @@ class CadastroFornecedor : public RegisterDialog {
 
   private slots:
     void on_lineEditCEP_textChanged(const QString &cep);
-    void on_lineEditCNPJ_textEdited(const QString &);
-    void on_lineEditContatoCPF_textEdited(const QString &);
+    void on_lineEditCNPJ_textEdited(const QString &text);
+    void on_lineEditContatoCPF_textEdited(const QString &text);
     void on_pushButtonAdicionarEnd_clicked();
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonBuscar_clicked();
@@ -42,8 +42,6 @@ class CadastroFornecedor : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    void validaCNPJ(QString text);
-    void validaCPF(QString text);
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
     bool atualizarEndereco();
     void novoEnd();

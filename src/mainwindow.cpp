@@ -661,7 +661,7 @@ bool MainWindow::TestCadastroClienteCompleto() {
 }
 
 void MainWindow::TestImportacao() {
-  ImportaTeste *importa = new ImportaTeste(this);
+  ImportaProdutos *importa = new ImportaProdutos(this);
   importa->TestImportacao();
 }
 

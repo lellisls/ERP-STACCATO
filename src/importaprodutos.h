@@ -30,8 +30,8 @@ class ImportaProdutos : public QDialog {
     void guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto);
     void importar();
     void leituraProduto(QSqlQuery &queryProd);
-    void marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto);
-    void marcaTodosProdutosExpirado();
+    void marcaProdutoNaoDescontinuado(QSqlQuery &produto, QString idProduto);
+    void marcaTodosProdutosDescontinuados();
     void mostraApenasEstesFornecedores();
     bool readValidade();
     void setModelAndTable();

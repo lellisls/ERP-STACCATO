@@ -11,7 +11,7 @@
 
 #include "importaprodutosproxy.h"
 #include "importaprodutos.h"
-#include "ui_importateste.h"
+#include "ui_importaprodutos.h"
 #include "dateformatdelegate.h"
 #include "validadedialog.h"
 
@@ -44,6 +44,8 @@ void ImportaProdutos::importarTabela() {
   setProgressDialog();
   setModelAndTable();
 
+  bool canceled = false;
+
   QSqlQuery("SET AUTOCOMMIT=0").exec();
   QSqlQuery("START TRANSACTION").exec();
 
@@ -70,7 +72,7 @@ void ImportaProdutos::importarTabela() {
       model.setFilter(ids);
       model.select();
 
-      marcaTodosProdutosExpirado();
+      marcaTodosProdutosDescontinuados();
       contaProdutos();
 
       int current = 0;
@@ -95,10 +97,15 @@ void ImportaProdutos::importarTabela() {
             QString idProduto = produto.value("idProduto").toString();
             atualizaCamposProduto(produto, idProduto);
             guardaNovoPrecoValidade(produto, idProduto);
-            marcaProdutoNaoExpirado(produto, idProduto);
+            marcaProdutoNaoDescontinuado(produto, idProduto);
           } else {
             cadastraProduto();
           }
+        }
+
+        if (progressDialog->wasCanceled()) {
+          canceled = true;
+          break;
         }
       }
 
@@ -112,10 +119,12 @@ void ImportaProdutos::importarTabela() {
     qDebug() << "db failed: " << db.lastError();
   }
 
-  showMaximized();
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->resizeColumnsToContents();
+  if (not canceled) {
+    showMaximized();
+    ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
+    ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+    ui->tableProdutos->resizeColumnsToContents();
+  }
 }
 
 void ImportaProdutos::setProgressDialog() {
@@ -154,10 +163,11 @@ bool ImportaProdutos::readValidade() {
 void ImportaProdutos::setModelAndTable() {
   model.setTable("Produto");
   model.setEditStrategy(EditableSqlModel::OnManualSubmit);
-  model.setSort(model.fieldIndex("expirado"), Qt::AscendingOrder);
+  // TODO: verify if it's possible to sort a dirty model
+//  model.setSort(model.fieldIndex("descontinuado"), Qt::AscendingOrder);
   model.select();
 
-  proxyModel = new ImportaProdutosProxy(this);
+  proxyModel = new ImportaProdutosProxy(model.fieldIndex("descontinuado"), this);
   proxyModel->setSourceModel(&model);
   ui->tableProdutos->setModel(proxyModel);
 
@@ -193,12 +203,11 @@ void ImportaProdutos::mostraApenasEstesFornecedores() {
   }
 }
 
-void ImportaProdutos::marcaTodosProdutosExpirado() {
+void ImportaProdutos::marcaTodosProdutosDescontinuados() {
   for (int row = 0; row < model.rowCount(); ++row) {
-    if (model.index(row, model.fieldIndex("expirado")).isValid()) {
-      model.setData(model.index(row, model.fieldIndex("expirado")), 1);
-    }
+    model.setData(model.index(row, model.fieldIndex("descontinuado")), 1);
   }
+  // TODO: maybe implement progressDialog here
 }
 
 void ImportaProdutos::contaProdutos() {
@@ -275,13 +284,13 @@ void ImportaProdutos::atualizaCamposProduto(QSqlQuery &produto, QString idProdut
   }
 }
 
-void ImportaProdutos::marcaProdutoNaoExpirado(QSqlQuery &produto, QString idProduto) {
-  if (not produto.exec("UPDATE Produto SET expirado = 0 WHERE idProduto = " + idProduto + "")) {
-    qDebug() << "Erro marcando produto atualizado como não expirado: " << produto.lastError();
+void ImportaProdutos::marcaProdutoNaoDescontinuado(QSqlQuery &produto, QString idProduto) {
+  if (not produto.exec("UPDATE Produto SET descontinuado = 0 WHERE idProduto = " + idProduto + "")) {
+    qDebug() << "Erro marcando produto atualizado como não descontinuado: " << produto.lastError();
   }
 
   QModelIndex index = model.match(model.index(0, 0), Qt::DisplayRole, idProduto).first();
-  model.setData(model.index(index.row(), model.fieldIndex("expirado")), 0);
+  model.setData(model.index(index.row(), model.fieldIndex("descontinuado")), 0);
 }
 
 void ImportaProdutos::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto) {
@@ -377,7 +386,7 @@ void ImportaProdutos::on_pushButtonSalvar_clicked() {
 }
 
 bool ImportaProdutos::verificaTabela() {
-  QSqlRecord record = db.record(db.tables(QSql::AllTables).first());
+  QSqlRecord record = db.record("BASE$");
 
   for (int i = 0; i < fields.size(); ++i) {
     if (not record.contains(fields.at(i))) {
@@ -391,7 +400,7 @@ bool ImportaProdutos::verificaTabela() {
 
 #ifdef TEST
 
-void ImportaTeste::TestImportacao() {
+void ImportaProdutos::TestImportacao() {
   file = "C:/temp/build-Loja-Desktop_Qt_5_4_0_MinGW_32bit-Test/Bellinzoni.xlsx";
   validade = 10;
 

@@ -3,12 +3,19 @@
 
 #include "importaprodutosproxy.h"
 
-ImportaProdutosProxy::ImportaProdutosProxy(QObject *parent) : QIdentityProxyModel(parent) {}
+ImportaProdutosProxy::ImportaProdutosProxy(int column, QObject *parent) : QIdentityProxyModel(parent), column(column) {}
 
 ImportaProdutosProxy::~ImportaProdutosProxy() {}
 
 QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) const {
   if (role == Qt::BackgroundRole) {
+
+    // verifica se está descontinuado
+    int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
+
+    if (value == 1) {
+      return QBrush(Qt::red);
+    }
 
     // verifica cada campo
     for (int i = 0; i < columnCount(); ++i) {

@@ -95,7 +95,7 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->lineEditICMS, "icms");
 
   addMapping(ui->doubleSpinBoxPcCx, "pccx");
-  addMapping(ui->doubleSpinBoxMCx, "mcx", "value");
+  addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
   addMapping(ui->doubleSpinBoxQtePallet, "qtdPallet", "value");
   addMapping(ui->doubleSpinBoxCusto, "custo", "value");
   addMapping(ui->doubleSpinBoxIPI, "ipi", "value");
@@ -133,7 +133,7 @@ bool CadastroProduto::savingProcedures(int row) {
   setData(row, "icms", ui->lineEditICMS->text());
 
   setData(row, "pccx", ui->doubleSpinBoxPcCx->value());
-  setData(row, "mcx", ui->doubleSpinBoxMCx->value());
+  setData(row, "m2cx", ui->doubleSpinBoxM2Cx->value());
   setData(row, "qtdPallet", ui->doubleSpinBoxQtePallet->value());
   setData(row, "custo", ui->doubleSpinBoxCusto->value());
   setData(row, "ipi", ui->doubleSpinBoxIPI->value());

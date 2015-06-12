@@ -272,7 +272,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "situacaoTributaria", "icms", "custo", "ipi", "markup", "comissao",
                        "origem", "ui", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial",
-                       "qtdPallet", "st", "expirado", "desativado", "cfop", "ncm"});
+                       "qtdPallet", "st", "desativado", "cfop", "ncm"});
 
   for (int i = 1; i < sdProd->model.columnCount(); i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
@@ -285,7 +285,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("un", "Un."));
   headerData.push_back(QPair<QString, QString>("colecao", "Coleção"));
   headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("mcx", "M/Cx."));
+  headerData.push_back(QPair<QString, QString>("m2cx", "M/Cx."));
   headerData.push_back(QPair<QString, QString>("pccx", "Pç./Cx."));
   headerData.push_back(QPair<QString, QString>("kgcx", "Kg./Cx."));
   headerData.push_back(QPair<QString, QString>("formComercial", "Form. Com."));
@@ -485,6 +485,6 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   return sdProfissional;
 }
 
-void SearchDialog::on_radioButtonProdAtivos_clicked() { model.setFilter("expirado = 0 AND desativado = false"); }
+void SearchDialog::on_radioButtonProdAtivos_clicked() { model.setFilter("descontinuado = false AND desativado = false"); }
 
-void SearchDialog::on_radioButtonProdDesc_clicked() { model.setFilter("expirado = 1 AND desativado = false"); }
+void SearchDialog::on_radioButtonProdDesc_clicked() { model.setFilter("descontinuado = true AND desativado = false"); }

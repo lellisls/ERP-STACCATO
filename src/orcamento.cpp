@@ -794,7 +794,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->lineEditPrecoTotal->setEnabled(true);
 
   if (un.contains("m2") or un.contains("ml")) {
-    ui->doubleSpinBoxQte->setSingleStep(query.value("mcx").toDouble());
+    ui->doubleSpinBoxQte->setSingleStep(query.value("m2cx").toDouble());
   } else if (un.contains("pç") or un.contains("pc")) {
     ui->doubleSpinBoxQte->setSingleStep(query.value("pccx").toDouble());
   }

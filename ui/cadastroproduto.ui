@@ -203,7 +203,7 @@
                  </property>
                  <item>
                   <property name="text">
-                   <string>peça</string>
+                   <string>pç</string>
                   </property>
                  </item>
                  <item>
@@ -213,7 +213,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>m.l.</string>
+                   <string>ml</string>
                   </property>
                  </item>
                 </widget>
@@ -459,6 +459,50 @@
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxPcCx">
                  <property name="maximum">
                   <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="8">
+                <widget class="QLineEdit" name="lineEditUI">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="8">
+                <widget class="QLabel" name="label_29">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>UI</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>lineEditCodInd</cstring>
                  </property>
                 </widget>
                </item>

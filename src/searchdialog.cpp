@@ -271,7 +271,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->setTextKeys({"descricao"});
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "situacaoTributaria", "icms", "custo", "ipi", "markup", "comissao",
-                       "origem", "ui", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial",
+                       "origem", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial",
                        "qtdPallet", "st", "desativado", "cfop", "ncm"});
 
   for (int i = 1; i < sdProd->model.columnCount(); i += 2) {

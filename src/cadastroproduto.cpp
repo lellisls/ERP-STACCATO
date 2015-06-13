@@ -96,6 +96,7 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->lineEditCodBarras, "codBarras");
   addMapping(ui->lineEditNCM, "ncm");
   addMapping(ui->lineEditICMS, "icms");
+  addMapping(ui->lineEditUI, "ui");
 
   addMapping(ui->doubleSpinBoxPcCx, "pccx");
   addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
@@ -134,6 +135,7 @@ bool CadastroProduto::savingProcedures(int row) {
   setData(row, "codBarras", ui->lineEditCodBarras->text());
   setData(row, "ncm", ui->lineEditNCM->text());
   setData(row, "icms", ui->lineEditICMS->text());
+  setData(row, "ui", ui->lineEditUI->text());
 
   setData(row, "pccx", ui->doubleSpinBoxPcCx->value());
   setData(row, "m2cx", ui->doubleSpinBoxM2Cx->value());

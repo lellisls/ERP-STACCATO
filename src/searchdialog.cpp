@@ -462,23 +462,28 @@ SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-      new SearchDialog("Buscar Profissional", "Profissional", {"nome, tipo"}, "desativado = false", parent);
+      new SearchDialog("Buscar Profissional", "Profissional", {"nome_razao, tipoProf"}, "desativado = false", parent);
 
   sdProfissional->setPrimaryKey("idProfissional");
-  sdProfissional->setTextKeys({"nome"});
+  sdProfissional->setTextKeys({"nome_razao"});
 
-  sdProfissional->hideColumns({"idProfissional", "desativado"});
+  sdProfissional->hideColumns({"idProfissional", "rg", "inscEstadual", "contatoNome", "contatoCPF", "contatoApelido",
+                               "contatoRG", "banco", "agencia", "cc", "nomeBanco", "cpfBanco", "incompleto",
+                               "desativado"});
 
   QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("nome", "Nome"));
-  headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
+  headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
+  headerData.push_back(QPair<QString, QString>("nome_razao", "Profissional"));
+  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Fantasia/Apelido"));
+  headerData.push_back(QPair<QString, QString>("cpf", "CPF"));
+  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
   headerData.push_back(QPair<QString, QString>("tel", "Tel."));
+  headerData.push_back(QPair<QString, QString>("telCel", "Tel. Cel."));
+  headerData.push_back(QPair<QString, QString>("telCom", "Tel. Com."));
+  headerData.push_back(QPair<QString, QString>("idNextel", "id Nextel"));
+  headerData.push_back(QPair<QString, QString>("nextel", "Nextel"));
   headerData.push_back(QPair<QString, QString>("email", "E-mail"));
-  headerData.push_back(QPair<QString, QString>("banco", "Banco"));
-  headerData.push_back(QPair<QString, QString>("agencia", "Agência"));
-  headerData.push_back(QPair<QString, QString>("cc", "C/C"));
-  headerData.push_back(QPair<QString, QString>("nomeBanco", "Nome Titular"));
-  headerData.push_back(QPair<QString, QString>("cpfBanco", "CPF Titular"));
+  headerData.push_back(QPair<QString, QString>("tipoProf", "Profissão"));
   sdProfissional->setHeaderData(headerData);
 
   return sdProfissional;

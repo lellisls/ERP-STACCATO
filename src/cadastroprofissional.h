@@ -13,6 +13,11 @@ class CadastroProfissional : public RegisterDialog {
   public:
     explicit CadastroProfissional(QWidget *parent = 0);
     ~CadastroProfissional();
+    bool viewRegister(QModelIndex index);
+
+  public slots:
+    void changeItem(QVariant value);
+    void show();
 
   private slots:
     void on_pushButtonAtualizar_clicked();
@@ -20,9 +25,18 @@ class CadastroProfissional : public RegisterDialog {
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
-
-    // methods derived from RegisterDialog
     void on_pushButtonBuscar_clicked();
+    void on_lineEditCPF_textEdited(const QString &text);
+    void on_lineEditCNPJ_textEdited(const QString &text);
+    void on_pushButtonAdicionarEnd_clicked();
+    void on_pushButtonAtualizarEnd_clicked();
+    void on_lineEditCEP_textChanged(const QString &cep);
+    void on_pushButtonEndLimpar_clicked();
+    void on_tableEndereco_clicked(const QModelIndex &index);
+    void on_pushButtonRemoverEnd_clicked();
+    void on_lineEditContatoCPF_textEdited(const QString &text);
+    void on_checkBoxMostrarInativos_clicked(bool checked);
+    void on_radioButtonPF_toggled(bool checked);
 
   private:
     /*!
@@ -54,14 +68,16 @@ class CadastroProfissional : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroProfissional *ui;
-
-    // RegisterDialog interface
-  public:
-    bool viewRegister(QModelIndex index);
-
-  public slots:
-    void changeItem(QVariant value, QString text);
-    void show();
+    QString tipoPFPJ;
+    QSqlTableModel modelEnd;
+    QDataWidgetMapper mapperEnd;
+    // methods
+    void setupUi();
+    bool verifyRequiredField(QLineEdit *line, bool silent);
+    void novoEnd();
+    void clearEnd();
+    bool adicionarEndereco();
+    bool atualizarEndereco();
 };
 
 #endif // CADASTROPROFISSIONAL_H

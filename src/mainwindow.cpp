@@ -238,7 +238,7 @@ void MainWindow::initializeTables() {
   modelVendas->setRelation(modelVendas->fieldIndex("idEnderecoEntrega"),
                            QSqlRelation("Cliente_has_Endereco", "idEndereco", "logradouro"));
   modelVendas->setRelation(modelVendas->fieldIndex("idProfissional"),
-                           QSqlRelation("Profissional", "idProfissional", "nome"));
+                           QSqlRelation("Profissional", "idProfissional", "nome_razao"));
   modelVendas->setHeaderData(modelVendas->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
@@ -335,7 +335,7 @@ void MainWindow::initializeTables() {
                               QSqlRelation("Fornecedor_has_Endereco", "idEndereco", "logradouro"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idProfissional"),
-                              QSqlRelation("Profissional", "idProfissional", "nome"));
+                              QSqlRelation("Profissional", "idProfissional", "nome_razao"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idProfissional"), Qt::Horizontal, "Profissional");
 
   if (not modelPedCompra->select()) {

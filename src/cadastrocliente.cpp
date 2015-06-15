@@ -1,7 +1,3 @@
-#include <QDebug>
-#include <QMessageBox>
-#include <QSqlError>
-
 #include "cadastrocliente.h"
 #include "ui_cadastrocliente.h"
 #include "searchdialog.h"
@@ -37,8 +33,6 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
-
-  setupUi();
 
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
   ui->itemBoxCliente->setSearchDialog(sdCliente);
@@ -298,10 +292,6 @@ void CadastroCliente::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-QString CadastroCliente::getTipo() const { return tipoPFPJ; }
-
-void CadastroCliente::setTipo(const QString &value) { tipoPFPJ = value; }
-
 bool CadastroCliente::viewRegister(QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
@@ -317,7 +307,7 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
 
   QSqlQuery query;
 
-  if (not query.exec("SELECT idCliente, nome_razao, nomeFantasia, pfpj FROM Cliente WHERE idCadastroRel = '" +
+  if (not query.exec("SELECT idCliente, nome_razao, nomeFantasia FROM Cliente WHERE idCadastroRel = '" +
                      primaryKey + "'")) {
     qDebug() << "Erro na query cliente: " << query.lastError();
     return false;
@@ -346,16 +336,6 @@ void CadastroCliente::on_pushButtonCadastrar_clicked() { save(); }
 
 void CadastroCliente::on_pushButtonAtualizar_clicked() { save(); }
 
-void CadastroCliente::enableEditor() {
-  ui->frame->setEnabled(true);
-  ui->frame_2->setEnabled(true);
-}
-
-void CadastroCliente::disableEditor() {
-  ui->frame->setEnabled(false);
-  ui->frame_2->setEnabled(false);
-}
-
 void CadastroCliente::show() {
   QWidget::show();
   adjustSize();
@@ -367,19 +347,13 @@ void CadastroCliente::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroCliente::on_pushButtonNovoCad_clicked() { newRegister(); }
 
-void CadastroCliente::on_groupBoxPJuridica_toggled(bool arg1) { ui->widgetPJ->setEnabled(arg1); }
-
 void CadastroCliente::on_pushButtonBuscar_clicked() {
   SearchDialog *sdCliente = SearchDialog::cliente(this);
-  sdCliente->show();
   connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::changeItem);
+  sdCliente->show();
 }
 
-void CadastroCliente::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text);
-
-  viewRegisterById(value);
-}
+void CadastroCliente::changeItem(QVariant value) { viewRegisterById(value); }
 
 void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
   validaCPF(QString(text).remove(".").remove("-"));

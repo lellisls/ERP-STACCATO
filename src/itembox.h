@@ -22,7 +22,7 @@ class ItemBox : public QLineEdit {
     void setValue(const QVariant &m_value);
 
   public slots:
-    void changeItem(QVariant m_value, QString text);
+    void changeItem(QVariant m_value);
 
   protected slots:
     virtual void search();

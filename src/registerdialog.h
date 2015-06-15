@@ -51,7 +51,7 @@ class RegisterDialog : public QDialog {
     void setTextKeys(const QStringList &value);
 
   public slots:
-    virtual void changeItem(QVariant value, QString text);
+    virtual void changeItem(QVariant value);
     void saveSlot();
   signals:
     /*!

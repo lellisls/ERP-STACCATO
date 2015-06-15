@@ -193,9 +193,7 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
   sdLoja->show();
 }
 
-void CadastroLoja::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text);
-
+void CadastroLoja::changeItem(QVariant value) {
   viewRegisterById(value);
 }
 
@@ -240,6 +238,7 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
+
   if (msgBox.exec() == QMessageBox::Yes) {
     if (modelEnd.submitAll()) {      
       if (not modelEnd.select()){

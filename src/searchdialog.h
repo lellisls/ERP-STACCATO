@@ -42,7 +42,7 @@ class SearchDialog : public QDialog {
     void showMaximized();
 
   signals:
-    void itemSelected(QVariant value, QString text);
+    void itemSelected(QVariant value);
 
   private slots:
     void on_lineEditBusca_textChanged(const QString &text);

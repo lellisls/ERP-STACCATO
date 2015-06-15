@@ -92,9 +92,7 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
   connect(m_searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);
 }
 
-void ItemBox::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text);
-
+void ItemBox::changeItem(QVariant value) {
   setValue(value);
 
   if (m_registerDialog and m_registerDialog->isVisible()) {

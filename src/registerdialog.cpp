@@ -115,9 +115,7 @@ QStringList RegisterDialog::getTextKeys() const { return textKeys; }
 
 void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
-void RegisterDialog::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text)
-
+void RegisterDialog::changeItem(QVariant value) {
   viewRegisterById(value);
 }
 

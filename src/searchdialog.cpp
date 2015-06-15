@@ -24,6 +24,8 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   }
 
   ui->tableBusca->setModel(&model);
+  ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
+  ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
   DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
   ui->tableBusca->setItemDelegate(doubleDelegate);
@@ -98,7 +100,7 @@ void SearchDialog::sendUpdateMessage() {
     }
   }
 
-  emit itemSelected(selectedId, text);
+  emit itemSelected(selectedId);
 }
 
 void SearchDialog::show() {
@@ -181,7 +183,8 @@ QString SearchDialog::getText(QVariant index) {
     qryTxt += key;
   }
 
-  qryTxt = "SELECT " + qryTxt + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + index.toString() + "';";
+  qryTxt =
+      "SELECT " + qryTxt + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + index.toString() + "';";
 
   QSqlQuery qry(qryTxt);
   qry.exec();
@@ -227,16 +230,14 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
                           "desativado"});
 
   QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
+  headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
   headerData.push_back(QPair<QString, QString>("nome_razao", "Cliente"));
-  headerData.push_back(QPair<QString, QString>("apelido", "Apelido"));
   headerData.push_back(QPair<QString, QString>("cpf", "CPF"));
   headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
   headerData.push_back(QPair<QString, QString>("contatoNome", "Nome - Contato"));
   headerData.push_back(QPair<QString, QString>("contatoCPF", "CPF - Contato"));
   headerData.push_back(QPair<QString, QString>("contatoApelido", "Apelido - Contato"));
   headerData.push_back(QPair<QString, QString>("contatoRG", "RG - Contato"));
-  headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
   headerData.push_back(QPair<QString, QString>("nomeFantasia", "Fantasia/Apelido"));
   headerData.push_back(QPair<QString, QString>("tel", "Tel."));
   headerData.push_back(QPair<QString, QString>("telCel", "Tel. Cel."));
@@ -244,7 +245,6 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("idNextel", "id Nextel"));
   headerData.push_back(QPair<QString, QString>("nextel", "Nextel"));
   headerData.push_back(QPair<QString, QString>("email", "E-mail"));
-  headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
   sdCliente->setHeaderData(headerData);
 
   sdCliente->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
@@ -290,8 +290,8 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->setTextKeys({"descricao"});
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "situacaoTributaria", "icms", "custo", "ipi", "markup", "comissao",
-                       "origem", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial",
-                       "qtdPallet", "st", "desativado", "cfop", "ncm"});
+                       "origem", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial", "qtdPallet",
+                       "st", "desativado", "cfop", "ncm"});
 
   for (int i = 1; i < sdProd->model.columnCount(); i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
@@ -392,11 +392,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
 
-  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "nomeFantasia"));
-
-  sdUsuario->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdUsuario->ui->tableBusca->resizeColumnsToContents();
-  sdUsuario->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
 
   return sdUsuario;
 }
@@ -415,10 +411,6 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("nome", "Nome"));
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdVendedor->setHeaderData(headerData);
-
-  sdVendedor->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdVendedor->ui->tableBusca->resizeColumnsToContents();
-  sdVendedor->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
   return sdVendedor;
 }
@@ -442,10 +434,6 @@ SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("uf", "UF"));
   sdEndereco->setHeaderData(headerData);
 
-  sdEndereco->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdEndereco->ui->tableBusca->resizeColumnsToContents();
-  sdEndereco->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-
   return sdEndereco;
 }
 
@@ -468,10 +456,6 @@ SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("cidade", "Cidade"));
   headerData.push_back(QPair<QString, QString>("uf", "UF"));
   sdEndereco->setHeaderData(headerData);
-
-  sdEndereco->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdEndereco->ui->tableBusca->resizeColumnsToContents();
-  sdEndereco->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
   return sdEndereco;
 }
@@ -497,13 +481,11 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("cpfBanco", "CPF Titular"));
   sdProfissional->setHeaderData(headerData);
 
-  sdProfissional->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdProfissional->ui->tableBusca->resizeColumnsToContents();
-  sdProfissional->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-
   return sdProfissional;
 }
 
-void SearchDialog::on_radioButtonProdAtivos_clicked() { model.setFilter("descontinuado = false AND desativado = false"); }
+void SearchDialog::on_radioButtonProdAtivos_clicked() {
+  model.setFilter("descontinuado = false AND desativado = false");
+}
 
 void SearchDialog::on_radioButtonProdDesc_clicked() { model.setFilter("descontinuado = true AND desativado = false"); }

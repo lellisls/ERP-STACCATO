@@ -13,18 +13,16 @@ class CadastroCliente : public RegisterDialog {
   public:
     explicit CadastroCliente(QWidget *parent = 0);
     ~CadastroCliente();
-    void setupUi();
     bool TestClienteIncompleto();
+    bool TestClienteEndereco();
+    bool TestClienteCompleto();
 
   public slots:
-    void enableEditor();
-    void disableEditor();
     void show();
 
   private slots:
-    void changeItem(QVariant value, QString text);
+    void changeItem(QVariant value);
     void on_checkBoxMostrarInativos_clicked(bool checked);
-    void on_groupBoxPJuridica_toggled(bool arg1);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &text);
     void on_lineEditContatoCPF_textEdited(const QString &text);
@@ -49,16 +47,8 @@ class CadastroCliente : public RegisterDialog {
 * \return
 */
     virtual bool viewRegister(QModelIndex index);
-    QString getTipo() const;
-    void setTipo(const QString &value);
-    void clearEnd();
-    bool TestClienteEndereco();
-    bool TestClienteCompleto();
 
   private:
-    bool atualizarEndereco();
-    void novoEnd();
-
     /*!
 * \brief Função padrão para verificar campos obrigatórios
 * \return
@@ -81,7 +71,7 @@ class CadastroCliente : public RegisterDialog {
 */
     virtual void registerMode();
     /*!
-* \brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
+* \brief Função chamada para atualizar a view, escondendo botão cadastrar, por exemplo
 */
     virtual void updateMode();
 
@@ -94,6 +84,10 @@ class CadastroCliente : public RegisterDialog {
     // methods
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
     bool adicionarEndereco();
+    bool atualizarEndereco();
+    void novoEnd();
+    void setupUi();
+    void clearEnd();
 };
 
 #endif // CADASTROCLIENTE_H

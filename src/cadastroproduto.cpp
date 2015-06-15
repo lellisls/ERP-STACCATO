@@ -171,9 +171,7 @@ void CadastroProduto::on_pushButtonBuscar_clicked() {
   sdProd->showMaximized();
 }
 
-void CadastroProduto::changeItem(QVariant value, QString text) {
-  Q_UNUSED(text);
-
+void CadastroProduto::changeItem(QVariant value) {
   viewRegisterById(value);
 }
 

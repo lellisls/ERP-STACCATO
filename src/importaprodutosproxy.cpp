@@ -29,6 +29,10 @@ QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) con
         if (value == 2) {
           return QBrush(Qt::yellow);
         }
+
+        if (value == 3) {
+          return QBrush(Qt::red);
+        }
       }
     }
   }

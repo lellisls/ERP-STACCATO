@@ -247,10 +247,6 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("email", "E-mail"));
   sdCliente->setHeaderData(headerData);
 
-  sdCliente->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdCliente->ui->tableBusca->resizeColumnsToContents();
-  sdCliente->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-
   return sdCliente;
 }
 
@@ -274,10 +270,6 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("porcentagemFrete", "% Frete"));
   headerData.push_back(QPair<QString, QString>("valorMinimoFrete", "R$ Mínimo Frete"));
   sdLoja->setHeaderData(headerData);
-
-  sdLoja->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdLoja->ui->tableBusca->resizeColumnsToContents();
-  sdLoja->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
   return sdLoja;
 }
@@ -313,9 +305,6 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("validade", "Validade"));
   sdProd->setHeaderData(headerData);
 
-  sdProd->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdProd->ui->tableBusca->resizeColumnsToContents();
-  sdProd->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
   sdProd->ui->groupBoxFiltrosProduto->show();
   sdProd->ui->radioButtonProdAtivos->click();
 
@@ -343,10 +332,6 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("contatoRG", "RG do Contato"));
   sdFornecedor->setHeaderData(headerData);
 
-  sdFornecedor->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdFornecedor->ui->tableBusca->resizeColumnsToContents();
-  sdFornecedor->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-
   return sdFornecedor;
 }
 
@@ -368,10 +353,6 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("antt", "ANTT"));
   headerData.push_back(QPair<QString, QString>("tel", "Tel."));
   sdTransportadora->setHeaderData(headerData);
-
-  sdTransportadora->ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  sdTransportadora->ui->tableBusca->resizeColumnsToContents();
-  sdTransportadora->ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 
   return sdTransportadora;
 }

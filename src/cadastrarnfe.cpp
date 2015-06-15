@@ -27,13 +27,21 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
 
   modelNFe.setTable("NFe");
   modelNFe.setEditStrategy(EditableSqlModel::OnManualSubmit);
-  modelNFe.select();
+
+  if (not modelNFe.select()){
+    qDebug() << "erro modelNFe: " << modelNFe.lastError();
+    return;
+  }
 
   modelNFeItem.setTable("NFe_has_Itens");
   modelNFeItem.setEditStrategy(EditableSqlModel::OnManualSubmit);
-  modelNFeItem.select();
+
+  if (not modelNFeItem.select()){
+    qDebug() << "erro modelNFeItem: " << modelNFeItem.lastError();
+    return;
+  }
+
   ui->tableItens->setModel(&modelNFeItem);
-  ui->tableItens->setColumnHidden(modelNFe.fieldIndex("idNFe"), true);
 
   mapperNFe.setModel(&modelNFe);
   mapperNFe.addMapping(ui->itemBoxCliente, modelNFe.fieldIndex("idCliente"));
@@ -47,19 +55,30 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
 
   modelLoja.setTable("Loja");
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  QString idLoja = QString::number(UserSession::getLoja());
-  modelLoja.setFilter("idLoja = " + idLoja + "");
-  modelLoja.select();
+  modelLoja.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
+
+  if (not modelLoja.select()){
+    qDebug() << "erro modelLoja: " << modelLoja.lastError();
+    return;
+  }
 
   modelVenda.setTable("Venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVenda.setFilter("idVenda = '" + idVenda + "'");
-  modelVenda.select();
+
+  if (not modelVenda.select()){
+    qDebug() << "erro modelVenda: " << modelVenda.lastError();
+    return;
+  }
 
   modelProd.setTable("Venda_has_Produto");
   modelProd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelProd.setFilter("idVenda = '" + idVenda + "'");
-  modelProd.select();
+
+  if (not modelProd.select()){
+    qDebug() << "erro modelProd: " << modelProd.lastError();
+    return;
+  }
 }
 
 CadastrarNFE::~CadastrarNFE() { delete ui; }
@@ -163,7 +182,11 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
     qDebug() << "Erro lendo itens da venda. ERRO: " << qryVenda.lastError();
   }
 
-  modelNFe.select();
+  if (not modelNFe.select()){
+    qDebug() << "erro modelNFe: " << modelNFe.lastError();
+    return;
+  }
+
   int row = modelNFe.rowCount();
   modelNFe.insertRow(row);
   mapperNFe.toLast();

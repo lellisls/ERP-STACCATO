@@ -27,7 +27,11 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idFornecedor = '" + data(primaryKey).toString() + "'");
-  modelEnd.select();
+
+  if (not modelEnd.select()){
+    qDebug() << "erro modelEnd: " << modelEnd.lastError();
+    return;
+  }
 
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
@@ -85,6 +89,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex index) {
 
   if (not modelEnd.select()) {
     qDebug() << "Erro no model endereco: " << modelEnd.lastError();
+    return false;
   }
 
   return true;

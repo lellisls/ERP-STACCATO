@@ -14,6 +14,7 @@ RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent) : QDialog(parent
 
   if (not modelRecebimentos.select()) {
     qDebug() << "Failed to populate TableRecebimentos: " << modelRecebimentos.lastError();
+    return;
   }
 
   ui->tableRecebimentosForncecedor->setModel(&modelRecebimentos);

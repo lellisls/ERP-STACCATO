@@ -15,6 +15,7 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
 
   if (not modelEntregas.select()) {
     qDebug() << "Failed to populate TableEntregas:" << modelEntregas.lastError();
+    return;
   }
 
   ui->tableEntregasCliente->setModel(&modelEntregas);

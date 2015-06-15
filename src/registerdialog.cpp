@@ -15,6 +15,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
     qDebug() << objectName() << "Failed to populate " + table + ": " << model.lastError();
     QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
+    return;
   }
 
   mapper.setModel(&model);
@@ -26,7 +27,11 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
 }
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
-  model.select();
+  if (not model.select()){
+    qDebug() << "erro model: " << model.lastError();
+    return false;
+  }
+
   QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
 
   if (indexList.isEmpty()) {
@@ -183,7 +188,12 @@ bool RegisterDialog::newRegister() {
   }
 
   registerMode();
-  model.select();
+
+  if (not model.select()){
+    qDebug() << "erro model: " << model.lastError();
+    return false;
+  }
+
   int row = model.rowCount();
   model.insertRow(row);
   mapper.toLast();
@@ -243,7 +253,11 @@ void RegisterDialog::remove() {
     model.setData(model.index(mapper.currentIndex(), model.fieldIndex("desativado")), 1);
 
     if (model.submitAll()) {
-      model.select();
+      if (not model.select()){
+        qDebug() << "erro model: " << model.lastError();
+        return;
+      }
+
       newRegister();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,

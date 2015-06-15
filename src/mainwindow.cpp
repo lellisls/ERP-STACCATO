@@ -218,6 +218,7 @@ void MainWindow::initializeTables() {
 
   if (not modelOrcamento->select()) {
     qDebug() << "Failed to populate TableOrcamento: " << modelOrcamento->lastError();
+    return;
   }
 
   BackgroundProxyModel *proxyModel = new BackgroundProxyModel(modelOrcamento->fieldIndex("Dias Restantes"));
@@ -252,6 +253,7 @@ void MainWindow::initializeTables() {
 
   if (not modelVendas->select()) {
     qDebug() << "Failed to populate TableVendas: " << modelVendas->lastError();
+    return;
   }
 
   ui->tableVendas->setModel(modelVendas);
@@ -266,6 +268,7 @@ void MainWindow::initializeTables() {
 
   if (not modelCAPagar->select()) {
     qDebug() << "Failed to populate TableContasPagar: " << modelCAPagar->lastError();
+    return;
   }
 
   ui->tableContasPagar->setModel(modelCAPagar);
@@ -279,6 +282,7 @@ void MainWindow::initializeTables() {
 
   if (not modelCAReceber->select()) {
     qDebug() << "Failed to populate TableContasReceber: " << modelCAReceber->lastError();
+    return;
   }
 
   ui->tableContasReceber->setModel(modelCAReceber);
@@ -292,6 +296,7 @@ void MainWindow::initializeTables() {
 
   if (not modelEntregasCliente->select()) {
     qDebug() << "Failed to populate TableEntregasCliente: " << modelEntregasCliente->lastError();
+    return;
   }
 
   modelEntregasCliente->setFilter("tipo = 'CLIENTE'");
@@ -306,6 +311,7 @@ void MainWindow::initializeTables() {
 
   if (not modelRecebimentosForn->select()) {
     qDebug() << "Failed to populate TableRecebimentosFornecedor: " << modelRecebimentosForn->lastError();
+    return;
   }
 
   modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR'");
@@ -334,6 +340,7 @@ void MainWindow::initializeTables() {
 
   if (not modelPedCompra->select()) {
     qDebug() << "Failed to populate TablePedidosCompra:" << modelPedCompra->lastError();
+    return;
   }
 
   ui->tablePedidosCompra->setModel(modelPedCompra);
@@ -347,6 +354,7 @@ void MainWindow::initializeTables() {
 
   if (not modelNFe->select()) {
     qDebug() << "Failed to populate TableNFe: " << modelNFe->lastError();
+    return;
   }
 
   ui->tableNFE->setModel(modelNFe);
@@ -375,15 +383,46 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
   cad->show();
 }
 
-void MainWindow::updateTables() {
-  modelCAPagar->select();
-  modelCAReceber->select();
-  modelOrcamento->select();
-  modelVendas->select();
-  modelPedCompra->select();
-  modelEntregasCliente->select();
-  modelRecebimentosForn->select();
-  modelNFe->select();
+void MainWindow::updateTables() {  
+  if (not modelCAPagar->select()){
+    qDebug() << "erro modelCAPagar: " << modelCAPagar->lastError();
+    return;
+  }
+
+  if (not modelCAReceber->select()){
+    qDebug() << "erro modelCAReceber: " << modelCAReceber->lastError();
+    return;
+  }
+
+  if (not modelOrcamento->select()){
+    qDebug() << "erro modelOrcamento: " << modelOrcamento->lastError();
+    return;
+  }
+
+  if (not modelVendas->select()){
+    qDebug() << "erro modelVendas: " << modelVendas->lastError();
+    return;
+  }
+
+  if (not modelPedCompra->select()){
+    qDebug() << "erro modelPedCompra: " << modelPedCompra->lastError();
+    return;
+  }
+
+  if (not modelEntregasCliente->select()){
+    qDebug() << "erro modelEntregasCliente: " << modelEntregasCliente->lastError();
+    return;
+  }
+
+  if (not modelRecebimentosForn->select()){
+    qDebug() << "erro modelRecebimentosForn: " << modelRecebimentosForn->lastError();
+    return;
+  }
+
+  if (not modelNFe->select()){
+    qDebug() << "erro modelNFe: " << modelNFe->lastError();
+    return;
+  }
 
   ui->tableContasPagar->resizeColumnsToContents();
   ui->tableContasReceber->resizeColumnsToContents();

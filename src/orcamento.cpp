@@ -45,7 +45,11 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
 
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelItem.setFilter("idOrcamento = '" + ui->lineEditOrcamento->text() + "'");
-  modelItem.select();
+
+  if (not modelItem.select()){
+    qDebug() << "erro modelItem: " << modelItem.lastError();
+    return;
+  }
 
   ui->tableProdutos->setModel(&modelItem);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
@@ -120,7 +124,12 @@ bool Orcamento::viewRegister(QModelIndex index) {
 
   QString idOrcamento = data(primaryKey).toString();
   modelItem.setFilter("idOrcamento = '" + idOrcamento + "'");
-  modelItem.select();
+
+  if (not modelItem.select()){
+    qDebug() << "erro modelItem: " << modelItem.lastError();
+    return false;
+  }
+
   novoItem();
 
   calcPrecoGlobalTotal();

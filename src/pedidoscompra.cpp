@@ -19,6 +19,7 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
 
   if (not modelItemPedidos.select()) {
     qDebug() << "Failed to populate pedidofornecedor_has_produto: " << modelItemPedidos.lastError();
+    return;
   }
 
   modelPedidos.setTable("pedidofornecedor");
@@ -26,6 +27,7 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
 
   if (not modelPedidos.select()) {
     qDebug() << "Failed to populate pedidofornecedor: " << modelPedidos.lastError();
+    return;
   }
 
   ui->tablePedidos->setModel(&modelItemPedidos);
@@ -64,7 +66,11 @@ void PedidosCompra::viewPedido(QString idPedido) {
   this->idPedido = idPedido;
 
   modelItemPedidos.setFilter("idPedido = '" + idPedido + "'");
-  modelItemPedidos.select();
+
+  if (not modelItemPedidos.select()){
+    qDebug() << "erro modelItemPedidos: " << modelItemPedidos.lastError();
+    return;
+  }
 
   for (int row = 0; row < modelItemPedidos.rowCount(); ++row) {
     ui->tablePedidos->openPersistentEditor(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("qte")));
@@ -167,8 +173,15 @@ void PedidosCompra::on_pushButtonCancelar_clicked() { close(); }
 void PedidosCompra::on_checkBox_toggled(bool checked) { Q_UNUSED(checked); }
 
 void PedidosCompra::updateTables() {
-  modelItemPedidos.select();
-  modelPedidos.select();
+  if (not modelItemPedidos.select()){
+    qDebug() << "erro modelItemPedidos: " << modelItemPedidos.lastError();
+    return;
+  }
+
+  if (not modelPedidos.select()){
+    qDebug() << "erro modelPedidos: " << modelPedidos.lastError();
+    return;
+  }
 
   ui->tablePedidos->resizeColumnsToContents();
 }

@@ -27,7 +27,11 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idEndereco = 1");
-  modelEnd.select();
+
+  if (not modelEnd.select()) {
+    qDebug() << "erro modelEnd: " << modelEnd.lastError();
+    return;
+  }
 
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
@@ -308,6 +312,7 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
+    return false;
   }
 
   QSqlQuery query;
@@ -635,7 +640,11 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
 
   if (msgBox.exec() == QMessageBox::Yes) {
     if (modelEnd.submitAll()) {
-      modelEnd.select();
+      if (not modelEnd.select()) {
+        qDebug() << "erro modelEnd: " << modelEnd.lastError();
+        return;
+      }
+
       novoEnd();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,

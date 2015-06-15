@@ -45,7 +45,11 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   modelItem.setHeaderData(modelItem.fieldIndex("descGlobal"), Qt::Horizontal, "Desc. Glob.");
   modelItem.setHeaderData(modelItem.fieldIndex("total"), Qt::Horizontal, "Total");
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelItem.select();
+
+  if (not modelItem.select()){
+    qDebug() << "erro modelItem: " << modelItem.lastError();
+    return;
+  }
 
   modelFluxoCaixa.setTable("Venda_has_Pagamento");
   modelFluxoCaixa.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -53,7 +57,11 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("parcela"), Qt::Horizontal, "Parcela");
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("valor"), Qt::Horizontal, "R$");
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("data"), Qt::Horizontal, "Data");
-  modelFluxoCaixa.select();
+
+  if (not modelFluxoCaixa.select()){
+    qDebug() << "erro modelFluxoCaixa: " << modelFluxoCaixa.lastError();
+    return;
+  }
 
   ui->tableFluxoCaixa->setModel(&modelFluxoCaixa);
   ui->tableFluxoCaixa->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -569,9 +577,18 @@ bool Venda::viewRegister(QModelIndex index) {
   idVenda = data(primaryKey).toString();
 
   modelItem.setFilter("idVenda = '" + idVenda + "'");
-  modelItem.select();
+
+  if (not modelItem.select()){
+    qDebug() << "erro modelItem: " << modelItem.lastError();
+    return false;
+  }
+
   modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
-  modelFluxoCaixa.select();
+
+  if (not modelFluxoCaixa.select()){
+    qDebug() << "erro modelFluxoCaixa: " << modelFluxoCaixa.lastError();
+    return false;
+  }
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
 

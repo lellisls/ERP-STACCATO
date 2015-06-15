@@ -17,7 +17,12 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
   setFilter(filter);
-  model.select();
+
+  if (not model.select()) {
+    qDebug() << "erro model: " << model.lastError();
+    return;
+  }
+
   ui->tableBusca->setModel(&model);
 
   DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
@@ -63,7 +68,10 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
     model.setFilter(searchFilter);
   }
 
-  model.select();
+  if (not model.select()) {
+    qDebug() << "erro model: " << model.lastError();
+    return;
+  }
 }
 
 void SearchDialog::sendUpdateMessage() {
@@ -94,7 +102,10 @@ void SearchDialog::sendUpdateMessage() {
 }
 
 void SearchDialog::show() {
-  model.select();
+  if (not model.select()) {
+    qDebug() << "erro model: " << model.lastError();
+    return;
+  }
 
   QDialog::show();
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
@@ -103,7 +114,10 @@ void SearchDialog::show() {
 }
 
 void SearchDialog::showMaximized() {
-  model.select();
+  if (not model.select()) {
+    qDebug() << "erro model: " << model.lastError();
+    return;
+  }
 
   QDialog::showMaximized();
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
@@ -124,7 +138,12 @@ QString SearchDialog::getFilter() const { return filter; }
 void SearchDialog::setFilter(const QString &value) {
   filter = value;
   model.setFilter(filter);
-  model.select();
+
+  if (not model.select()) {
+    qDebug() << "erro model: " << model.lastError();
+    return;
+  }
+
   ui->tableBusca->resizeColumnsToContents();
 }
 

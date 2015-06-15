@@ -11,7 +11,11 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::Ap
 
   modelOrc.setTable("Orcamento");
   modelOrc.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelOrc.select();
+
+  if (not modelOrc.select()){
+    qDebug() << "erro modelOrc: " << modelOrc.lastError();
+    return;
+  }
 
   mapperOrc.setModel(&modelOrc);
   mapperOrc.addMapping(ui->lineEditMotivo, modelOrc.fieldIndex("motivoCancelamento"));

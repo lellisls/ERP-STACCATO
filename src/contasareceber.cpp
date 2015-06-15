@@ -17,6 +17,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
 
   if (not modelItensConta.select()) {
     qDebug() << "Failed to populate modelItensConta: " << modelItensConta.lastError();
+    return;
   }
 
   modelContas.setTable("contaareceber");
@@ -24,6 +25,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
 
   if (not modelContas.select()) {
     qDebug() << "Failed to populate TableContasAReceber:" << modelContas.lastError();
+    return;
   }
 
   ui->tableView->setModel(&modelContas);

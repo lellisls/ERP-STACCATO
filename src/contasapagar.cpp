@@ -15,6 +15,7 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
 
   if (not modelItensContas.select()) {
     qDebug() << "Failed to populate TableContas:" << modelItensContas.lastError();
+    return;
   }
 
   modelContas.setTable("contaapagar");
@@ -22,6 +23,7 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
 
   if (not modelContas.select()) {
     qDebug() << "Erro carregando tabela contaapagar: " << modelContas.lastError();
+    return;
   }
 
   ui->tableContas->setModel(&modelItensContas);

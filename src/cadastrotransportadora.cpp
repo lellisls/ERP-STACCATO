@@ -31,7 +31,11 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idEndereco = 0");
-  modelEnd.select();
+
+  if (not modelEnd.select()){
+    qDebug() << "erro modelEnd: " << modelEnd.lastError();
+    return;
+  }
 
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
@@ -138,6 +142,7 @@ bool CadastroTransportadora::viewRegister(QModelIndex index) {
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
+    return false;
   }
 
   return true;
@@ -202,7 +207,11 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
 
   if (msgBox.exec() == QMessageBox::Yes) {
     if (modelEnd.submitAll()) {
-      modelEnd.select();
+      if (not modelEnd.select()){
+        qDebug() << "erro modelEnd: " << modelEnd.lastError();
+        return;
+      }
+
       novoEnd();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,

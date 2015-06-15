@@ -19,26 +19,27 @@ class ImportaProdutos : public QDialog {
   public:
     explicit ImportaProdutos(QWidget *parent = 0);
     ~ImportaProdutos();
-    bool consistenciaDados();
+    void consistenciaDados();
     bool readFile();
+    bool readValidade();
     bool verificaTabela();
     int buscarCadastrarFornecedor(QString fornecedor);
     void atualizaCamposProduto(QSqlQuery &produto, QString idProduto);
     void cadastraFornecedores(QSqlQuery &query);
     void cadastraProduto();
     void contaProdutos();
+    void expiraPrecosAntigos(QSqlQuery produto, QString idProduto);
     void guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto);
     void importar();
     void leituraProduto(QSqlQuery &queryProd);
     void marcaProdutoNaoDescontinuado(QSqlQuery &produto, QString idProduto);
     void marcaTodosProdutosDescontinuados();
     void mostraApenasEstesFornecedores();
-    bool readValidade();
     void setModelAndTable();
     void setProgressDialog();
-    void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
-    void expiraPrecosAntigos(QSqlQuery produto, QString idProduto);
     void TestImportacao();
+    void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
+    void pintarCamposForaDoPadrao(int row);
 
   private slots:
     void on_pushButtonCancelar_clicked();
@@ -52,11 +53,7 @@ class ImportaProdutos : public QDialog {
     int validade;
     QMap<QString, int> fornecedores;
     QSqlDatabase db;
-    QStringList fields = {"fornecedor", "descricao", "estoque", "un", "colecao", "m2cx", "pccx", "kgcx", "formComercial",
-                          "codComercial", "codBarras", "ncm", "icms", "situacaoTributaria", "qtdPallet", "custo", "ipi",
-                          "st", "precoVenda", "comissao", "observacoes", "origem", "descontinuado", "temLote", "ui"};
-    QStringList values;
-    ImportaProdutosProxy *proxyModel;
+    QVariantMap variantMap;
 
     void importarTabela();
 };

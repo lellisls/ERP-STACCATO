@@ -127,6 +127,8 @@ void ImportaProdutos::importarTabela() {
     canceled = true;
   }
 
+  db.close();
+
   if (not canceled) {
     showMaximized();
     ui->tableProdutos->resizeColumnsToContents();

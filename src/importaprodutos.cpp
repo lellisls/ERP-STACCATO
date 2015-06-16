@@ -138,7 +138,7 @@ void ImportaProdutos::setProgressDialog() {
   progressDialog->setCancelButton(0);
   progressDialog->setLabelText("Importando...");
   progressDialog->setWindowTitle("ERP Staccato");
-  progressDialog->setWindowModality(Qt::WindowModal);
+  progressDialog->setWindowModality(Qt::NonModal);
   progressDialog->setMinimum(0);
   progressDialog->setMaximum(0);
   progressDialog->setCancelButtonText("Cancelar");

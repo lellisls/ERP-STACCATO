@@ -10,8 +10,9 @@
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
   : QDialog(parent), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
+
   setWindowTitle(title);
-  setWindowModality(Qt::WindowModal);
+  setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
   model.setTable(table);

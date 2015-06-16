@@ -5,9 +5,11 @@
 #include "ui_sendmail.h"
 
 SendMail::SendMail(QWidget *parent) : QDialog(parent), ui(new Ui::SendMail) {
-  setWindowModality(Qt::WindowModal);
   ui->setupUi(this);
+
+  setWindowModality(Qt::NonModal);
   ui->textEdit->insertHtml("<h1>Título</h1><p>Texto</p>");
+
   exec();
 }
 

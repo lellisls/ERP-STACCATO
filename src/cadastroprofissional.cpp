@@ -9,6 +9,8 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   : RegisterDialog("Profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
+  setWindowModality(Qt::NonModal);
+
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
 

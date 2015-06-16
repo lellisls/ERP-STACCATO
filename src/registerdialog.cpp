@@ -5,7 +5,7 @@
 
 RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryKey), table(nullptr) {
-  setWindowModality(Qt::WindowModal);
+  setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
   model.setTable(table);

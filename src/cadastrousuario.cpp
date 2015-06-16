@@ -17,6 +17,8 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   ui->tablePermissoes->setToolTip("Função indisponível nesta versão!");
   ui->tablePermissoes->resizeColumnsToContents();
 
+  ui->tabWidget->setTabEnabled(1, false);
+
   setupMapper();
   newRegister();
 }

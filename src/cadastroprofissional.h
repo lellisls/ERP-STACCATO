@@ -37,6 +37,7 @@ class CadastroProfissional : public RegisterDialog {
     void on_lineEditContatoCPF_textEdited(const QString &text);
     void on_checkBoxMostrarInativos_clicked(bool checked);
     void on_radioButtonPF_toggled(bool checked);
+    void on_lineEditCPFBancario_textEdited(const QString &text);
 
   private:
     /*!

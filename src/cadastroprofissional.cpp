@@ -54,6 +54,7 @@ void CadastroProfissional::setupUi() {
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
   ui->lineEditCPFBancario->setInputMask("999.999.999-99;_");
+  ui->lineEditAgencia->setInputMask("9999-9;_");
 }
 
 void CadastroProfissional::setupMapper() {
@@ -626,4 +627,13 @@ void CadastroProfissional::on_radioButtonPF_toggled(bool checked)
   }
 
   adjustSize();
+}
+
+void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text)
+{
+  if(not validaCPF(QString(text).remove(".").remove("-"))){
+    ui->lineEditCPFBancario->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditCPFBancario->setStyleSheet("");
+  }
 }

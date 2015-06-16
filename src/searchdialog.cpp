@@ -50,18 +50,19 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
 SearchDialog::~SearchDialog() { delete ui; }
 
 void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
-  QStringList temp = text.split(" ", QString::SkipEmptyParts);
-
-  for (int i = 0; i < temp.size(); ++i) {
-    temp[i].prepend("+");
-    temp[i].append("*");
-  }
-
-  QString regex = temp.join(" ");
-
-  if (text.isEmpty() or regex.isEmpty()) {
+  if (text.isEmpty()){
     model.setFilter(filter);
-  } else {
+  } else{
+
+    QStringList temp = text.split(" ", QString::SkipEmptyParts);
+
+    for (int i = 0; i < temp.size(); ++i) {
+      temp[i].prepend("+");
+      temp[i].append("*");
+    }
+
+    QString regex = temp.join(" ");
+
     QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' in boolean mode)";
 
     if (not filter.isEmpty()) {
@@ -473,7 +474,43 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
 }
 
 void SearchDialog::on_radioButtonProdAtivos_clicked() {
-  model.setFilter("descontinuado = false AND desativado = false");
+  QString text = ui->lineEditBusca->text();
+
+  if (text.isEmpty()) {
+    model.setFilter("descontinuado = FALSE AND desativado = FALSE");
+  } else{
+    QStringList temp = text.split(" ", QString::SkipEmptyParts);
+
+    for (int i = 0; i < temp.size(); ++i) {
+      temp[i].prepend("+");
+      temp[i].append("*");
+    }
+
+    QString regex = temp.join(" ");
+
+    QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
+
+    model.setFilter(searchFilter + " AND descontinuado = FALSE AND desativado = FALSE");
+  }
 }
 
-void SearchDialog::on_radioButtonProdDesc_clicked() { model.setFilter("descontinuado = true AND desativado = false"); }
+void SearchDialog::on_radioButtonProdDesc_clicked() {
+  QString text = ui->lineEditBusca->text();
+
+  if (text.isEmpty()) {
+    model.setFilter("descontinuado = TRUE AND desativado = FALSE");
+  } else{
+    QStringList temp = text.split(" ", QString::SkipEmptyParts);
+
+    for (int i = 0; i < temp.size(); ++i) {
+      temp[i].prepend("+");
+      temp[i].append("*");
+    }
+
+    QString regex = temp.join(" ");
+
+    QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
+
+    model.setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE");
+  }
+}

@@ -306,6 +306,12 @@ void ImportaProdutos::contaProdutos() {
 }
 
 void ImportaProdutos::consistenciaDados() {
+  for(int i = 0; i < variantMap.keys().size(); ++i){
+    if (variantMap.value(variantMap.keys().at(i)).toString().contains("*")){
+      variantMap.insert(variantMap.keys().at(i), variantMap.value(variantMap.keys().at(i)).toString().remove("*"));
+    }
+  }
+
   if (variantMap.values().at(variantMap.keys().indexOf("estoque")).isNull()) {
     variantMap.insert("estoque", 0);
   }
@@ -320,6 +326,18 @@ void ImportaProdutos::consistenciaDados() {
 
   if (variantMap.values().at(variantMap.keys().indexOf("ncm")).isNull()) {
     variantMap.insert("ncm", 0);
+  }
+
+  if (variantMap.value("pccx").toInt() <= 0){
+    variantMap.insert("pccx", 1);
+  }
+
+  if (variantMap.value("m2cx").toDouble() <= 0.0){
+    variantMap.insert("m2cx", 1.0);
+  }
+
+  if (variantMap.value("kgcx").toDouble() <= 0.0){
+    variantMap.insert("kgcx", 0.0);
   }
 
   QString un = variantMap.values().at(variantMap.keys().indexOf("un")).toString().toLower();
@@ -361,7 +379,7 @@ void ImportaProdutos::leituraProduto(QSqlQuery &queryProd) {
   QSqlRecord record = db.record("BASE$");
 
   for (int i = 0; i < variantMap.keys().size(); ++i) {
-//    qDebug() << variantMap.keys().at(i) << ": " << queryProd.value(record.indexOf(variantMap.keys().at(i)));
+    //    qDebug() << variantMap.keys().at(i) << ": " << queryProd.value(record.indexOf(variantMap.keys().at(i)));
     variantMap.insert(variantMap.keys().at(i), queryProd.value(record.indexOf(variantMap.keys().at(i))));
   }
 }
@@ -423,7 +441,8 @@ void ImportaProdutos::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
 }
 
 void ImportaProdutos::pintarCamposForaDoPadrao(int row) {
-  if (variantMap.value("ncm").toString() == "0" or variantMap.value("ncm").toString().isEmpty()) {
+  if (variantMap.value("ncm").toString() == "0" or variantMap.value("ncm").toString().isEmpty() or
+      (variantMap.value("ncm").toString().length() != 8 and variantMap.value("ncm").toString().length() != 10)) {
     model.setData(model.index(row, model.fieldIndex("ncmUpd")), 2);
   }
 
@@ -433,6 +452,10 @@ void ImportaProdutos::pintarCamposForaDoPadrao(int row) {
 
   if (variantMap.value("custo") <= 0.0) {
     model.setData(model.index(row, model.fieldIndex("custoUpd")), 3);
+  }
+
+  if (variantMap.value("precoVenda") <= 0.0) {
+    model.setData(model.index(row, model.fieldIndex("precoVendaUpd")), 3);
   }
 }
 
@@ -539,3 +562,5 @@ void ImportaProdutos::TestImportacao() {
 }
 
 #endif
+
+// TODO: colocar o nome da tabela ou do fornecedor no titulo da janela

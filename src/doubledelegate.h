@@ -6,7 +6,7 @@
 class DoubleDelegate : public QStyledItemDelegate {
 
   public:
-    DoubleDelegate(QObject *parent = 0);
+    explicit DoubleDelegate(QObject *parent = 0);
     ~DoubleDelegate();
 
     // QStyledItemDelegate interface

@@ -283,9 +283,9 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "situacaoTributaria", "icms", "custo", "ipi", "markup", "comissao",
                        "origem", "descontinuado", "temLote", "observacoes", "codBarras", "codIndustrial", "qtdPallet",
-                       "st", "desativado", "cfop", "ncm"});
+                       "st", "desativado", "cfop", "ncm", "atualizarTabelaPreco"});
 
-  for (int i = 1; i < sdProd->model.columnCount(); i += 2) {
+  for (int i = 1; i <= sdProd->model.fieldIndex("descontinuadoUpd"); i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
   }
 
@@ -303,6 +303,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("codComercial", "Cód. Com."));
   headerData.push_back(QPair<QString, QString>("precoVenda", "R$"));
   headerData.push_back(QPair<QString, QString>("validade", "Validade"));
+  headerData.push_back(QPair<QString, QString>("ui", "UI"));
   sdProd->setHeaderData(headerData);
 
   sdProd->ui->groupBoxFiltrosProduto->show();

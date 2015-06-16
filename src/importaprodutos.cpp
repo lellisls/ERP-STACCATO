@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <porcentagemdelegate.h>
 
 #include "importaprodutosproxy.h"
 #include "importaprodutos.h"
@@ -18,44 +19,18 @@
 
 ImportaProdutos::ImportaProdutos(QWidget *parent) : QDialog(parent), ui(new Ui::ImportaProdutos) {
   ui->setupUi(this);
+
   setWindowFlags(Qt::Window);
 
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
-  ui->tableProdutos->setItemDelegate(doubledelegate);
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
-
-  variantMap.insert("fornecedor", QVariant(QVariant::String));
-  variantMap.insert("descricao", QVariant(QVariant::String));
-  variantMap.insert("estoque", QVariant(QVariant::Int));
-  variantMap.insert("un", QVariant(QVariant::String));
-  variantMap.insert("colecao", QVariant(QVariant::String));
-  variantMap.insert("m2cx", QVariant(QVariant::Double));
-  variantMap.insert("pccx", QVariant(QVariant::Int));
-  variantMap.insert("kgcx", QVariant(QVariant::Double));
-  variantMap.insert("formComercial", QVariant(QVariant::String));
-  variantMap.insert("codComercial", QVariant(QVariant::String));
-  variantMap.insert("codBarras", QVariant(QVariant::String));
-  variantMap.insert("ncm", QVariant(QVariant::String));
-  variantMap.insert("icms", QVariant(QVariant::Double));
-  variantMap.insert("situacaoTributaria", QVariant(QVariant::Int));
-  variantMap.insert("qtdPallet", QVariant(QVariant::Double));
-  variantMap.insert("custo", QVariant(QVariant::Double));
-  variantMap.insert("ipi", QVariant(QVariant::Double));
-  variantMap.insert("st", QVariant(QVariant::Double));
-  variantMap.insert("precoVenda", QVariant(QVariant::Double));
-  variantMap.insert("comissao", QVariant(QVariant::Double));
-  variantMap.insert("observacoes", QVariant(QVariant::String));
-  variantMap.insert("origem", QVariant(QVariant::Int));
-  variantMap.insert("descontinuado", QVariant(QVariant::Int));
-  variantMap.insert("temLote", QVariant(QVariant::String));
-  variantMap.insert("ui", QVariant(QVariant::String));
+  setVariantMap();
+  setProgressDialog();
+  setModelAndTable();
 }
 
 ImportaProdutos::~ImportaProdutos() { delete ui; }
 
 void ImportaProdutos::expiraPrecosAntigos(QSqlQuery produto, QString idProduto) {
-  if (not produto.exec("UPDATE Produto_has_Preco SET expirado = 1 WHERE idProduto = " + idProduto)) {
+  if (not produto.exec("UPDATE Produto_has_Preco SET expirado = true WHERE idProduto = " + idProduto)) {
     qDebug() << "Erro expirando preços antigos: " << produto.lastError();
   }
 }
@@ -73,9 +48,6 @@ void ImportaProdutos::importar() {
 }
 
 void ImportaProdutos::importarTabela() {
-  setProgressDialog();
-  setModelAndTable();
-
   bool canceled = false;
 
   QSqlQuery("SET AUTOCOMMIT=0").exec();
@@ -95,7 +67,6 @@ void ImportaProdutos::importarTabela() {
     }
 
     QSqlQuery query("SELECT * FROM [BASE$]", db);
-    query.first();
 
     cadastraFornecedores(query);
 
@@ -111,12 +82,12 @@ void ImportaProdutos::importarTabela() {
       marcaTodosProdutosDescontinuados();
       contaProdutos();
 
+      QSqlRecord record = db.record("BASE$");
       int current = 0;
+
       query.first();
 
-      QSqlRecord record = db.record("BASE$");
-
-      while (query.next()) {
+      do {
         if (progressDialog->wasCanceled()) {
           canceled = true;
           break;
@@ -142,7 +113,7 @@ void ImportaProdutos::importarTabela() {
             cadastraProduto();
           }
         }
-      }
+      } while (query.next());
 
       progressDialog->cancel();
     } else {
@@ -207,9 +178,41 @@ void ImportaProdutos::setModelAndTable() {
   //   Proxy usado para pintar células
   ImportaProdutosProxy *proxyModel = new ImportaProdutosProxy(model.fieldIndex("descontinuado"), this);
   proxyModel->setSourceModel(&model);
+
+  model.setHeaderData(model.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
+  model.setHeaderData(model.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
+  model.setHeaderData(model.fieldIndex("un"), Qt::Horizontal, "Un.");
+  model.setHeaderData(model.fieldIndex("colecao"), Qt::Horizontal, "Coleção");
+  model.setHeaderData(model.fieldIndex("tipo"), Qt::Horizontal, "Tipo");
+  model.setHeaderData(model.fieldIndex("m2cx"), Qt::Horizontal, "M./Cx.");
+  model.setHeaderData(model.fieldIndex("pccx"), Qt::Horizontal, "Pç./Cx.");
+  model.setHeaderData(model.fieldIndex("kgcx"), Qt::Horizontal, "Kg./Cx.");
+  model.setHeaderData(model.fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
+  model.setHeaderData(model.fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
+  model.setHeaderData(model.fieldIndex("codIndustrial"), Qt::Horizontal, "Cód. Ind.");
+  model.setHeaderData(model.fieldIndex("codBarras"), Qt::Horizontal, "Cód. Barras");
+  model.setHeaderData(model.fieldIndex("ncm"), Qt::Horizontal, "NCM");
+  model.setHeaderData(model.fieldIndex("icms"), Qt::Horizontal, "ICMS");
+  model.setHeaderData(model.fieldIndex("situacaoTributaria"), Qt::Horizontal, "Sit. Trib.");
+  model.setHeaderData(model.fieldIndex("qtdPallet"), Qt::Horizontal, "Qt. Pallet");
+  model.setHeaderData(model.fieldIndex("custo"), Qt::Horizontal, "Custo");
+  model.setHeaderData(model.fieldIndex("ipi"), Qt::Horizontal, "IPI");
+  model.setHeaderData(model.fieldIndex("st"), Qt::Horizontal, "ST");
+  model.setHeaderData(model.fieldIndex("precoVenda"), Qt::Horizontal, "Preço Venda");
+  model.setHeaderData(model.fieldIndex("comissao"), Qt::Horizontal, "Comissão");
+  model.setHeaderData(model.fieldIndex("observacoes"), Qt::Horizontal, "Obs.");
+  model.setHeaderData(model.fieldIndex("origem"), Qt::Horizontal, "Origem");
+  model.setHeaderData(model.fieldIndex("temLote"), Qt::Horizontal, "Tem Lote?");
+  model.setHeaderData(model.fieldIndex("ui"), Qt::Horizontal, "UI");
+  model.setHeaderData(model.fieldIndex("validade"), Qt::Horizontal, "Validade");
+  model.setHeaderData(model.fieldIndex("markup"), Qt::Horizontal, "Markup");
+
   ui->tableProdutos->setModel(proxyModel);
 
-  for (int i = 1; i < model.columnCount(); i += 2) {
+  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+
+  for (int i = 1; i <= model.fieldIndex("descontinuadoUpd"); i += 2) {
     ui->tableProdutos->setColumnHidden(i, true);
   }
 
@@ -218,19 +221,64 @@ void ImportaProdutos::setModelAndTable() {
   ui->tableProdutos->setColumnHidden(model.fieldIndex("desativado"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("descontinuado"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("estoque"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("markup"), true);
+  ui->tableProdutos->setColumnHidden(model.fieldIndex("cfop"), true);
+  ui->tableProdutos->setColumnHidden(model.fieldIndex("atualizarTabelaPreco"), true);
+
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
+
+  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("m2cx"), doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("kgcx"), doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("qtdPallet"), doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("custo"), doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("precoVenda"), doubledelegate);
+
+  PorcentagemDelegate *porcDelegate = new PorcentagemDelegate(this);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("icms"), porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("ipi"), porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("markup"), porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("st"), doubledelegate);
+}
+
+void ImportaProdutos::setVariantMap() {
+  variantMap.insert("fornecedor", QVariant(QVariant::String));
+  variantMap.insert("descricao", QVariant(QVariant::String));
+  variantMap.insert("estoque", QVariant(QVariant::Int));
+  variantMap.insert("un", QVariant(QVariant::String));
+  variantMap.insert("colecao", QVariant(QVariant::String));
+  variantMap.insert("m2cx", QVariant(QVariant::Double));
+  variantMap.insert("pccx", QVariant(QVariant::Int));
+  variantMap.insert("kgcx", QVariant(QVariant::Double));
+  variantMap.insert("formComercial", QVariant(QVariant::String));
+  variantMap.insert("codComercial", QVariant(QVariant::String));
+  variantMap.insert("codBarras", QVariant(QVariant::String));
+  variantMap.insert("ncm", QVariant(QVariant::String));
+  variantMap.insert("icms", QVariant(QVariant::Double));
+  variantMap.insert("situacaoTributaria", QVariant(QVariant::Int));
+  variantMap.insert("qtdPallet", QVariant(QVariant::Double));
+  variantMap.insert("custo", QVariant(QVariant::Double));
+  variantMap.insert("ipi", QVariant(QVariant::Double));
+  variantMap.insert("st", QVariant(QVariant::Double));
+  variantMap.insert("precoVenda", QVariant(QVariant::Double));
+  variantMap.insert("comissao", QVariant(QVariant::Double));
+  variantMap.insert("observacoes", QVariant(QVariant::String));
+  variantMap.insert("origem", QVariant(QVariant::Int));
+  variantMap.insert("descontinuado", QVariant(QVariant::Int));
+  variantMap.insert("temLote", QVariant(QVariant::String));
+  variantMap.insert("ui", QVariant(QVariant::String));
 }
 
 void ImportaProdutos::cadastraFornecedores(QSqlQuery &query) {
-  while (query.next()) {
+  query.first();
+
+  do {
     QString fornecedor = query.value(0).toString();
 
     if (not fornecedor.isEmpty()) {
       int id = buscarCadastrarFornecedor(fornecedor);
       fornecedores.insert(fornecedor, id);
     }
-  }
+  } while (query.next());
 }
 
 void ImportaProdutos::mostraApenasEstesFornecedores() {
@@ -311,8 +359,7 @@ void ImportaProdutos::leituraProduto(QSqlQuery &queryProd) {
   QSqlRecord record = db.record("BASE$");
 
   for (int i = 0; i < variantMap.keys().size(); ++i) {
-    //                qDebug() << variantMap.keys().at(i) << ": " <<
-    //                queryProd.value(record.indexOf(variantMap.keys().at(i)));
+//    qDebug() << variantMap.keys().at(i) << ": " << queryProd.value(record.indexOf(variantMap.keys().at(i)));
     variantMap.insert(variantMap.keys().at(i), queryProd.value(record.indexOf(variantMap.keys().at(i))));
   }
 }
@@ -322,6 +369,9 @@ void ImportaProdutos::atualizaCamposProduto(QSqlQuery &produto, QString idProdut
 
   model.setData(model.index(index.row(), model.fieldIndex("validade")),
                 QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+
+  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble());
+  model.setData(model.index(index.row(), model.fieldIndex("markup")), markup);
 
   for (int i = 0; i < variantMap.keys().size(); ++i) {
     if (not variantMap.values().at(i).isNull() and
@@ -346,7 +396,7 @@ void ImportaProdutos::marcaProdutoNaoDescontinuado(QSqlQuery &produto, QString i
 }
 
 void ImportaProdutos::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto) {
-  if (produto.value("precoVenda") != variantMap.values().at(variantMap.keys().indexOf("precoVenda"))) {
+  if (produto.value("precoVenda") != variantMap.value("precoVenda")) {
     expiraPrecosAntigos(produto, idProduto);
 
     if (not produto.exec("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
@@ -379,9 +429,7 @@ void ImportaProdutos::pintarCamposForaDoPadrao(int row) {
     model.setData(model.index(row, model.fieldIndex("codBarrasUpd")), 2);
   }
 
-  qDebug() << "custo: " << variantMap.value("custo");
   if (variantMap.value("custo") <= 0.0) {
-    qDebug() << "custo zero!";
     model.setData(model.index(row, model.fieldIndex("custoUpd")), 3);
   }
 }
@@ -395,6 +443,9 @@ void ImportaProdutos::cadastraProduto() {
     model.setData(model.index(row, model.fieldIndex("atualizarTabelaPreco")), true);
     model.setData(model.index(row, model.fieldIndex("validade")),
                   QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+
+    double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble());
+    model.setData(model.index(row, model.fieldIndex("markup")), markup);
 
     for (int i = 0; i < variantMap.keys().size(); ++i) {
       model.setData(model.index(row, model.fieldIndex(variantMap.keys().at(i))), variantMap.values().at(i));

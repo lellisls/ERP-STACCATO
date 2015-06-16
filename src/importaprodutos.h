@@ -40,6 +40,7 @@ class ImportaProdutos : public QDialog {
     void TestImportacao();
     void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
     void pintarCamposForaDoPadrao(int row);
+    void setVariantMap();
 
   private slots:
     void on_pushButtonCancelar_clicked();

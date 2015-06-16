@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1294</width>
-    <height>341</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -107,8 +107,8 @@
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="1" column="0">
         <widget class="QFrame" name="frameCadastro">
-         <layout class="QGridLayout" name="gridLayout_15">
-          <item row="1" column="0" colspan="4">
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="1" column="0" colspan="2">
              <widget class="QGroupBox" name="groupBoxDadosPessoais">
@@ -436,14 +436,7 @@
          </layout>
         </widget>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Endereços</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_23">
-       <item row="0" column="0">
+       <item row="2" column="0">
         <widget class="QFrame" name="frameEndereco">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>

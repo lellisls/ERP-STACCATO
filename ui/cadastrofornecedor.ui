@@ -765,6 +765,7 @@
   <tabstop>lineEditIdNextel</tabstop>
   <tabstop>lineEditNextel</tabstop>
   <tabstop>lineEditEmail</tabstop>
+  <tabstop>comboBoxTipoEnd</tabstop>
   <tabstop>lineEditCEP</tabstop>
   <tabstop>lineEditEndereco</tabstop>
   <tabstop>lineEditNro</tabstop>
@@ -772,9 +773,11 @@
   <tabstop>lineEditBairro</tabstop>
   <tabstop>lineEditCidade</tabstop>
   <tabstop>lineEditUF</tabstop>
+  <tabstop>tableEndereco</tabstop>
   <tabstop>pushButtonAdicionarEnd</tabstop>
   <tabstop>pushButtonAtualizarEnd</tabstop>
   <tabstop>pushButtonEndLimpar</tabstop>
+  <tabstop>pushButtonRemoverEnd</tabstop>
   <tabstop>checkBoxMostrarInativos</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
@@ -782,7 +785,6 @@
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tableEndereco</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

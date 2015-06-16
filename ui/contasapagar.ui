@@ -87,6 +87,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tableContas</tabstop>
+  <tabstop>dateTimeEdit</tabstop>
+  <tabstop>checkBoxPago</tabstop>
+  <tabstop>pushButtonSalvar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

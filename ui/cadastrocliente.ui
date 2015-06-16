@@ -928,16 +928,13 @@
   <tabstop>lineEditIdNextel</tabstop>
   <tabstop>lineEditNextel</tabstop>
   <tabstop>lineEditEmail</tabstop>
+  <tabstop>itemBoxCliente</tabstop>
+  <tabstop>itemBoxProfissional</tabstop>
+  <tabstop>itemBoxVendedor</tabstop>
   <tabstop>lineEditSegmento</tabstop>
   <tabstop>checkBox_4</tabstop>
   <tabstop>textEditObservacoes</tabstop>
-  <tabstop>pushButtonCadastrar</tabstop>
-  <tabstop>pushButtonAtualizar</tabstop>
-  <tabstop>pushButtonBuscar</tabstop>
-  <tabstop>pushButtonNovoCad</tabstop>
-  <tabstop>pushButtonRemover</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tableEndereco</tabstop>
+  <tabstop>comboBoxTipoEnd</tabstop>
   <tabstop>lineEditCEP</tabstop>
   <tabstop>lineEditLogradouro</tabstop>
   <tabstop>lineEditNro</tabstop>
@@ -945,10 +942,18 @@
   <tabstop>lineEditBairro</tabstop>
   <tabstop>lineEditCidade</tabstop>
   <tabstop>lineEditUF</tabstop>
+  <tabstop>tableEndereco</tabstop>
   <tabstop>pushButtonAdicionarEnd</tabstop>
   <tabstop>pushButtonAtualizarEnd</tabstop>
   <tabstop>pushButtonEndLimpar</tabstop>
+  <tabstop>pushButtonRemoverEnd</tabstop>
   <tabstop>checkBoxMostrarInativos</tabstop>
+  <tabstop>pushButtonCadastrar</tabstop>
+  <tabstop>pushButtonAtualizar</tabstop>
+  <tabstop>pushButtonBuscar</tabstop>
+  <tabstop>pushButtonNovoCad</tabstop>
+  <tabstop>pushButtonRemover</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>

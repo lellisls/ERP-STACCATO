@@ -139,6 +139,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEditBusca</tabstop>
+  <tabstop>tableBusca</tabstop>
+  <tabstop>radioButtonProdAtivos</tabstop>
+  <tabstop>radioButtonProdDesc</tabstop>
+  <tabstop>pushButtonSelecionar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

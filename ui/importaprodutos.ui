@@ -46,6 +46,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tableProdutos</tabstop>
+  <tabstop>pushButtonSalvar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

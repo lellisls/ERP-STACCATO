@@ -827,7 +827,7 @@
      <x>0</x>
      <y>0</y>
      <width>1273</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOp_es">
@@ -920,6 +920,50 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>pushButtonCriarOrc</tabstop>
+  <tabstop>radioButtonOrcLimpar</tabstop>
+  <tabstop>radioButtonOrcValido</tabstop>
+  <tabstop>radioButtonOrcExpirado</tabstop>
+  <tabstop>tableOrcamentos</tabstop>
+  <tabstop>lineEditBuscaOrcamentos</tabstop>
+  <tabstop>radioButtonVendLimpar</tabstop>
+  <tabstop>radioButtonVendAberto</tabstop>
+  <tabstop>radioButtonVendFechado</tabstop>
+  <tabstop>tableVendas</tabstop>
+  <tabstop>lineEditBuscaVendas</tabstop>
+  <tabstop>radioButtonContaPagarLimpar</tabstop>
+  <tabstop>radioButtonContaPagarPago</tabstop>
+  <tabstop>radioButtonContaPagarPendente</tabstop>
+  <tabstop>tableContasPagar</tabstop>
+  <tabstop>lineEditBuscaContasPagar</tabstop>
+  <tabstop>radioButtonContaReceberLimpar</tabstop>
+  <tabstop>radioButtonContaReceberRecebido</tabstop>
+  <tabstop>radioButtonContaReceberPendente</tabstop>
+  <tabstop>tableContasReceber</tabstop>
+  <tabstop>lineEditBuscaContasReceber</tabstop>
+  <tabstop>radioButtonEntregaLimpar</tabstop>
+  <tabstop>radioButtonEntregaEnviado</tabstop>
+  <tabstop>radioButtonEntregaPendente</tabstop>
+  <tabstop>tableEntregasCliente</tabstop>
+  <tabstop>lineEditBuscaEntregas</tabstop>
+  <tabstop>radioButtonFornLimpar</tabstop>
+  <tabstop>radioButtonFornAberto</tabstop>
+  <tabstop>radioButtonFornFechado</tabstop>
+  <tabstop>tablePedidosCompra</tabstop>
+  <tabstop>lineEditBuscaProdutosPend</tabstop>
+  <tabstop>radioButtonRecebimentoLimpar</tabstop>
+  <tabstop>radioButtonRecebimentoRecebido</tabstop>
+  <tabstop>radioButtonRecebimentoPendente</tabstop>
+  <tabstop>tableRecebimentosFornecedor</tabstop>
+  <tabstop>lineEditBuscaRecebimentos</tabstop>
+  <tabstop>radioButtonNFeLimpar</tabstop>
+  <tabstop>radioButtonNFeEnviado</tabstop>
+  <tabstop>radioButtonNFeAutorizado</tabstop>
+  <tabstop>tableNFE</tabstop>
+  <tabstop>lineEditBuscaNFe</tabstop>
+ </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>
  </resources>

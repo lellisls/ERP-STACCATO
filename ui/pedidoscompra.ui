@@ -149,6 +149,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>radioButtonVenda</tabstop>
+  <tabstop>radioButtonForn</tabstop>
+  <tabstop>tablePedidos</tabstop>
+  <tabstop>dateTimeEdit</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>pushButtonSalvar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+  <tabstop>pushButtonNFe</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -931,13 +931,50 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>radioButtonPF</tabstop>
+  <tabstop>radioButtonPJ</tabstop>
+  <tabstop>lineEditProfissional</tabstop>
+  <tabstop>lineEditNomeFantasia</tabstop>
+  <tabstop>lineEditCPF</tabstop>
+  <tabstop>lineEditCNPJ</tabstop>
+  <tabstop>lineEditInscEstadual</tabstop>
+  <tabstop>comboBoxTipo</tabstop>
+  <tabstop>lineEditContatoNome</tabstop>
+  <tabstop>lineEditContatoCPF</tabstop>
+  <tabstop>lineEditContatoApelido</tabstop>
+  <tabstop>lineEditContatoRG</tabstop>
+  <tabstop>lineEditTel_Res</tabstop>
+  <tabstop>lineEditTel_Cel</tabstop>
+  <tabstop>lineEditTel_Com</tabstop>
+  <tabstop>lineEditIdNextel</tabstop>
+  <tabstop>lineEditNextel</tabstop>
+  <tabstop>lineEditEmail</tabstop>
+  <tabstop>comboBoxTipoEnd</tabstop>
+  <tabstop>lineEditCEP</tabstop>
+  <tabstop>lineEditLogradouro</tabstop>
+  <tabstop>lineEditNro</tabstop>
+  <tabstop>lineEditComp</tabstop>
+  <tabstop>lineEditBairro</tabstop>
+  <tabstop>lineEditCidade</tabstop>
+  <tabstop>lineEditUF</tabstop>
+  <tabstop>tableEndereco</tabstop>
+  <tabstop>pushButtonAdicionarEnd</tabstop>
+  <tabstop>pushButtonAtualizarEnd</tabstop>
+  <tabstop>pushButtonEndLimpar</tabstop>
+  <tabstop>pushButtonRemoverEnd</tabstop>
+  <tabstop>checkBoxMostrarInativos</tabstop>
+  <tabstop>lineEditNomeBancario</tabstop>
+  <tabstop>lineEditCPFBancario</tabstop>
+  <tabstop>lineEditBanco</tabstop>
+  <tabstop>lineEditAgencia</tabstop>
+  <tabstop>lineEditCC</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

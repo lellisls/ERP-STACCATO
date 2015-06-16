@@ -1048,14 +1048,18 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>tableVenda</tabstop>
+  <tabstop>itemBoxEndereco</tabstop>
+  <tabstop>itemBoxEnderecoFat</tabstop>
+  <tabstop>checkBoxFreteManual</tabstop>
+  <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
   <tabstop>doubleSpinBoxSubTotalBruto</tabstop>
   <tabstop>doubleSpinBoxTotal</tabstop>
-  <tabstop>checkBoxFreteManual</tabstop>
   <tabstop>doubleSpinBoxFrete</tabstop>
-  <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
   <tabstop>doubleSpinBoxDescontoRS</tabstop>
   <tabstop>doubleSpinBoxFinal</tabstop>
+  <tabstop>tableFluxoCaixa</tabstop>
   <tabstop>comboBoxPgt1</tabstop>
   <tabstop>comboBoxPgt1Parc</tabstop>
   <tabstop>doubleSpinBoxPgt1</tabstop>
@@ -1075,7 +1079,6 @@
   <tabstop>pushButtonImprimir</tabstop>
   <tabstop>pushButtonVoltar</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources/>
  <connections/>

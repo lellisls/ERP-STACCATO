@@ -311,6 +311,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>lineEditNome</tabstop>
   <tabstop>comboBoxLoja</tabstop>
   <tabstop>comboBoxTipo</tabstop>
@@ -318,8 +319,10 @@
   <tabstop>lineEditSigla</tabstop>
   <tabstop>lineEditPasswd</tabstop>
   <tabstop>lineEditPasswd_2</tabstop>
+  <tabstop>tablePermissoes</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
+  <tabstop>pushButtonBuscar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>

@@ -83,6 +83,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tableRecebimentosForncecedor</tabstop>
+  <tabstop>dateTimeEdit</tabstop>
+  <tabstop>checkBoxEntregue</tabstop>
+  <tabstop>pushButtonSalvar</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

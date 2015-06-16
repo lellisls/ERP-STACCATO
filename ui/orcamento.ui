@@ -1167,8 +1167,13 @@
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>itemBoxVendedor</tabstop>
+  <tabstop>lineEditOrcamento</tabstop>
+  <tabstop>dateTimeEdit</tabstop>
   <tabstop>spinBoxValidade</tabstop>
+  <tabstop>itemBoxVendedor</tabstop>
+  <tabstop>itemBoxProfissional</tabstop>
+  <tabstop>itemBoxCliente</tabstop>
+  <tabstop>itemBoxEndereco</tabstop>
   <tabstop>itemBoxProduto</tabstop>
   <tabstop>lineEditFornecedor</tabstop>
   <tabstop>lineEditEstoque</tabstop>
@@ -1179,25 +1184,28 @@
   <tabstop>lineEditUn</tabstop>
   <tabstop>doubleSpinBoxDesconto</tabstop>
   <tabstop>lineEditPrecoTotal</tabstop>
+  <tabstop>lineEditCodComercial</tabstop>
+  <tabstop>lineEditFormComercial</tabstop>
+  <tabstop>tableProdutos</tabstop>
   <tabstop>pushButtonAtualizarItem</tabstop>
   <tabstop>pushButtonAdicionarItem</tabstop>
   <tabstop>pushButtonCancelarItem</tabstop>
   <tabstop>pushButtonRemoverItem</tabstop>
   <tabstop>pushButtonLimparSelecao</tabstop>
+  <tabstop>checkBoxFreteManual</tabstop>
+  <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
   <tabstop>doubleSpinBoxSubTotalBruto</tabstop>
   <tabstop>doubleSpinBoxTotal</tabstop>
-  <tabstop>checkBoxFreteManual</tabstop>
   <tabstop>doubleSpinBoxFrete</tabstop>
-  <tabstop>doubleSpinBoxDescontoGlobal</tabstop>
   <tabstop>doubleSpinBoxDescontoRS</tabstop>
   <tabstop>doubleSpinBoxFinal</tabstop>
   <tabstop>pushButtonGerarVenda</tabstop>
+  <tabstop>pushButtonReplicar</tabstop>
   <tabstop>pushButtonCadastrarOrcamento</tabstop>
   <tabstop>pushButtonAtualizarOrcamento</tabstop>
   <tabstop>pushButtonApagarOrc</tabstop>
   <tabstop>pushButtonImprimir</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tableProdutos</tabstop>
  </tabstops>
  <resources/>
  <connections/>

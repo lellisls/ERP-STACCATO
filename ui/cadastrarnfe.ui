@@ -441,6 +441,18 @@
    <header>src/itembox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>itemBoxCliente</tabstop>
+  <tabstop>itemBoxEndereco</tabstop>
+  <tabstop>tableItens</tabstop>
+  <tabstop>textEdit</tabstop>
+  <tabstop>doubleSpinBoxBCICMS</tabstop>
+  <tabstop>doubleSpinBoxVlICMS</tabstop>
+  <tabstop>doubleSpinBoxFrete</tabstop>
+  <tabstop>doubleSpinBoxFinal</tabstop>
+  <tabstop>pushButtonGerarNFE</tabstop>
+  <tabstop>pushButtonCancelar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

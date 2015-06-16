@@ -564,6 +564,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>lineEditRazaoSocial</tabstop>
   <tabstop>lineEditNomeFantasia</tabstop>
   <tabstop>lineEditCNPJ</tabstop>
@@ -571,13 +572,26 @@
   <tabstop>lineEditTel</tabstop>
   <tabstop>lineEditANTT</tabstop>
   <tabstop>lineEditPlaca</tabstop>
+  <tabstop>comboBoxTipoEnd</tabstop>
+  <tabstop>lineEditCEP</tabstop>
+  <tabstop>lineEditLogradouro</tabstop>
+  <tabstop>lineEditNro</tabstop>
+  <tabstop>lineEditComp</tabstop>
+  <tabstop>lineEditBairro</tabstop>
+  <tabstop>lineEditCidade</tabstop>
+  <tabstop>lineEditUF</tabstop>
+  <tabstop>tableEndereco</tabstop>
+  <tabstop>pushButtonAdicionarEnd</tabstop>
+  <tabstop>pushButtonAtualizarEnd</tabstop>
+  <tabstop>pushButtonEndLimpar</tabstop>
+  <tabstop>pushButtonRemoverEnd</tabstop>
+  <tabstop>checkBoxMostrarInativos</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

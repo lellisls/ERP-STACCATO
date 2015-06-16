@@ -792,17 +792,37 @@
   <tabstop>lineEditCNPJ</tabstop>
   <tabstop>lineEditInscEstadual</tabstop>
   <tabstop>lineEditTel</tabstop>
+  <tabstop>comboBoxTipoEnd</tabstop>
+  <tabstop>lineEditCEP</tabstop>
+  <tabstop>lineEditLogradouro</tabstop>
+  <tabstop>lineEditNro</tabstop>
+  <tabstop>lineEditComp</tabstop>
+  <tabstop>lineEditBairro</tabstop>
+  <tabstop>lineEditCidade</tabstop>
+  <tabstop>lineEditUF</tabstop>
+  <tabstop>tableEndereco</tabstop>
+  <tabstop>pushButtonAdicionarEnd</tabstop>
+  <tabstop>pushButtonAtualizarEnd</tabstop>
+  <tabstop>pushButtonEndLimpar</tabstop>
+  <tabstop>pushButtonRemoverEnd</tabstop>
+  <tabstop>checkBoxMostrarInativos</tabstop>
+  <tabstop>doubleSpinBoxValorMinimoFrete</tabstop>
+  <tabstop>doubleSpinBoxPorcFrete</tabstop>
+  <tabstop>tableAlcadas</tabstop>
+  <tabstop>lineEditServidorACBr</tabstop>
+  <tabstop>lineEditPortaACBr</tabstop>
+  <tabstop>lineEditPastaEntACBr</tabstop>
+  <tabstop>pushButtonEntradaNFe</tabstop>
+  <tabstop>lineEditPastaSaiACBr</tabstop>
+  <tabstop>pushButtonSaidaNFe</tabstop>
+  <tabstop>lineEditPastaXmlACBr</tabstop>
+  <tabstop>pushButtonXmlNFe</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
   <tabstop>pushButtonCancelar</tabstop>
-  <tabstop>doubleSpinBoxValorMinimoFrete</tabstop>
-  <tabstop>doubleSpinBoxPorcFrete</tabstop>
-  <tabstop>tableAlcadas</tabstop>
-  <tabstop>lineEditServidorACBr</tabstop>
-  <tabstop>lineEditPortaACBr</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

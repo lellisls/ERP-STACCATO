@@ -11,9 +11,6 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 
   setWindowModality(Qt::NonModal);
 
-  ui->lineEditCEP->setInputMask("99999-999;_");
-  ui->lineEditUF->setInputMask(">AA;_");
-
   modelEnd.setTable("Profissional_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -49,16 +46,14 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 CadastroProfissional::~CadastroProfissional() { delete ui; }
 
 void CadastroProfissional::setupUi() {
+  ui->lineEditCEP->setInputMask("99999-999;_");
+  ui->lineEditUF->setInputMask(">AA;_");
   ui->lineEditCPF->setInputMask("999.999.999-99;_");
   ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
-
-  ui->lineEditContatoCPF->setPlaceholderText("999.999.999-99");
-  ui->lineEditCPF->setPlaceholderText("999.999.999-99");
-  ui->lineEditEmail->setPlaceholderText("usuario@email.com");
-  ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
+  ui->lineEditCPFBancario->setInputMask("999.999.999-99;_");
 }
 
 void CadastroProfissional::setupMapper() {

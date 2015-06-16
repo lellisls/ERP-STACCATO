@@ -61,11 +61,6 @@ void CadastroCliente::setupUi() {
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
-
-  ui->lineEditContatoCPF->setPlaceholderText("999.999.999-99");
-  ui->lineEditCPF->setPlaceholderText("999.999.999-99");
-  ui->lineEditEmail->setPlaceholderText("usuario@email.com");
-  ui->lineEditNextel->setPlaceholderText("(99)99999-9999");
 }
 
 CadastroCliente::~CadastroCliente() { delete ui; }

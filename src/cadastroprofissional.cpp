@@ -616,6 +616,8 @@ void CadastroProfissional::on_radioButtonPF_toggled(bool checked)
     ui->labelCPF->show();
     ui->lineEditInscEstadual->hide();
     ui->labelInscricaoEstadual->hide();
+
+    ui->lineEditCNPJ->clear();
   } else {
     tipoPFPJ = "PJ";
     ui->lineEditCNPJ->show();
@@ -624,6 +626,8 @@ void CadastroProfissional::on_radioButtonPF_toggled(bool checked)
     ui->labelCPF->hide();
     ui->lineEditInscEstadual->show();
     ui->labelInscricaoEstadual->show();
+
+    ui->lineEditCPF->clear();
   }
 
   adjustSize();

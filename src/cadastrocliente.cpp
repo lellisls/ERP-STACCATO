@@ -355,12 +355,20 @@ void CadastroCliente::on_pushButtonBuscar_clicked() {
 
 void CadastroCliente::changeItem(QVariant value) { viewRegisterById(value); }
 
-void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
-  validaCPF(QString(text).remove(".").remove("-"));
+void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {  
+  if(not validaCPF(QString(text).remove(".").remove("-"))){
+    ui->lineEditCPF->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditCPF->setStyleSheet("");
+  }
 }
 
-void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
-  validaCNPJ(QString(text).remove(".").remove("/").remove("-"));
+void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {  
+  if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
+    ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditCNPJ->setStyleSheet("");
+  }
 }
 
 bool CadastroCliente::adicionarEndereco() {
@@ -594,8 +602,12 @@ void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
   adjustSize();
 }
 
-void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
-  validaCPF(QString(text).remove(".").remove("-"));
+void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {  
+  if(not validaCPF(QString(text).remove(".").remove("-"))){
+    ui->lineEditContatoCPF->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditContatoCPF->setStyleSheet("");
+  }
 }
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(bool checked) {

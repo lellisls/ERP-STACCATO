@@ -179,8 +179,12 @@ void CadastroTransportadora::novoItem() {
   ui->pushButtonRemover->hide();
 }
 
-void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {
-  validaCNPJ(QString(text).remove(".").remove("/").remove("-"));
+void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {  
+  if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
+    ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditCNPJ->setStyleSheet("");
+  }
 }
 
 void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {

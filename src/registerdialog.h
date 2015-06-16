@@ -253,8 +253,8 @@ class RegisterDialog : public QDialog {
   protected:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
-    void validaCNPJ(QString text);
-    void validaCPF(QString text);
+    bool validaCNPJ(QString text);
+    bool validaCPF(QString text);
 };
 
 #endif // REGISTERDIALOG_H

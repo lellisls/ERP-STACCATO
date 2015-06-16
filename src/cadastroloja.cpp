@@ -197,8 +197,12 @@ void CadastroLoja::changeItem(QVariant value) {
   viewRegisterById(value);
 }
 
-void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
-  validaCNPJ(QString(text).remove(".").remove("/").remove("-"));
+void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {  
+  if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
+    ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditCNPJ->setStyleSheet("");
+  }
 }
 
 void CadastroLoja::on_pushButtonEntradaNFe_clicked() {

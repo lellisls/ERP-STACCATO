@@ -344,12 +344,20 @@ void CadastroFornecedor::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroFornecedor::on_pushButtonCancelar_clicked() { close(); }
 
-void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {
-  validaCNPJ(QString(text).remove(".").remove("/").remove("-"));
+void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {  
+  if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
+    ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditCNPJ->setStyleSheet("");
+  }
 }
 
-void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {
-  validaCPF(QString(text).remove(".").remove("-"));
+void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {  
+  if(not validaCPF(QString(text).remove(".").remove("-"))){
+    ui->lineEditContatoCPF->setStyleSheet("color: rgb(255, 0, 0);");
+  } else{
+    ui->lineEditContatoCPF->setStyleSheet("");
+  }
 }
 
 void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {

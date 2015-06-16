@@ -93,12 +93,10 @@ void RegisterDialog::sendUpdateMessage() {
 }
 
 void RegisterDialog::closeEvent(QCloseEvent *event) {
-  if (not confirmationMessage()) {
-    event->ignore();
-  } else {
+  if (confirmationMessage()){
     event->accept();
-    QDialog::closeEvent(event);
-    close();
+  } else{
+    event->ignore();
   }
 }
 

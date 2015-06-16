@@ -25,7 +25,7 @@ void TestMainWindow::testImportacao(){
   query->first();
 
   // Testa a tabela da Bellinzoni
-  QCOMPARE(query->value(0).toInt(), 22);
+  QCOMPARE(query->value(0).toInt(), 23);
 }
 
 // test cadastrar orcamento

@@ -12,7 +12,7 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::Ap
   modelOrc.setTable("Orcamento");
   modelOrc.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not modelOrc.select()){
+  if (not modelOrc.select()) {
     qDebug() << "erro modelOrc: " << modelOrc.lastError();
     return;
   }

@@ -27,7 +27,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
 }
 
 bool RegisterDialog::viewRegisterById(QVariant id) {
-  if (not model.select()){
+  if (not model.select()) {
     qDebug() << "erro model: " << model.lastError();
     return false;
   }
@@ -93,9 +93,9 @@ void RegisterDialog::sendUpdateMessage() {
 }
 
 void RegisterDialog::closeEvent(QCloseEvent *event) {
-  if (confirmationMessage()){
+  if (confirmationMessage()) {
     event->accept();
-  } else{
+  } else {
     event->ignore();
   }
 }
@@ -113,9 +113,7 @@ QStringList RegisterDialog::getTextKeys() const { return textKeys; }
 
 void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
-void RegisterDialog::changeItem(QVariant value) {
-  viewRegisterById(value);
-}
+void RegisterDialog::changeItem(QVariant value) { viewRegisterById(value); }
 
 void RegisterDialog::saveSlot() { save(); }
 
@@ -185,7 +183,7 @@ bool RegisterDialog::newRegister() {
 
   registerMode();
 
-  if (not model.select()){
+  if (not model.select()) {
     qDebug() << "erro model: " << model.lastError();
     return false;
   }
@@ -249,7 +247,7 @@ void RegisterDialog::remove() {
     model.setData(model.index(mapper.currentIndex(), model.fieldIndex("desativado")), 1);
 
     if (model.submitAll()) {
-      if (not model.select()){
+      if (not model.select()) {
         qDebug() << "erro model: " << model.lastError();
         return;
       }
@@ -265,7 +263,7 @@ void RegisterDialog::remove() {
 
 void RegisterDialog::setTable(QAbstractItemView *table) { this->table = table; }
 
-bool RegisterDialog::validaCNPJ(QString text){
+bool RegisterDialog::validaCNPJ(QString text) {
   if (text.size() == 14) {
     int digito1;
     int digito2;
@@ -320,7 +318,7 @@ bool RegisterDialog::validaCNPJ(QString text){
   return true;
 }
 
-bool RegisterDialog::validaCPF(QString text){
+bool RegisterDialog::validaCPF(QString text) {
   if (text.size() == 11) {
     if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
         text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or

@@ -67,7 +67,7 @@ void PedidosCompra::viewPedido(QString idPedido) {
 
   modelItemPedidos.setFilter("idPedido = '" + idPedido + "'");
 
-  if (not modelItemPedidos.select()){
+  if (not modelItemPedidos.select()) {
     qDebug() << "erro modelItemPedidos: " << modelItemPedidos.lastError();
     return;
   }
@@ -173,12 +173,12 @@ void PedidosCompra::on_pushButtonCancelar_clicked() { close(); }
 void PedidosCompra::on_checkBox_toggled(bool checked) { Q_UNUSED(checked); }
 
 void PedidosCompra::updateTables() {
-  if (not modelItemPedidos.select()){
+  if (not modelItemPedidos.select()) {
     qDebug() << "erro modelItemPedidos: " << modelItemPedidos.lastError();
     return;
   }
 
-  if (not modelPedidos.select()){
+  if (not modelPedidos.select()) {
     qDebug() << "erro modelPedidos: " << modelPedidos.lastError();
     return;
   }

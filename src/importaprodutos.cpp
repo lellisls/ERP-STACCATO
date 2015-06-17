@@ -310,8 +310,8 @@ void ImportaProdutos::contaProdutos() {
 }
 
 void ImportaProdutos::consistenciaDados() {
-  for(int i = 0; i < variantMap.keys().size(); ++i){
-    if (variantMap.value(variantMap.keys().at(i)).toString().contains("*")){
+  for (int i = 0; i < variantMap.keys().size(); ++i) {
+    if (variantMap.value(variantMap.keys().at(i)).toString().contains("*")) {
       variantMap.insert(variantMap.keys().at(i), variantMap.value(variantMap.keys().at(i)).toString().remove("*"));
     }
   }
@@ -332,15 +332,15 @@ void ImportaProdutos::consistenciaDados() {
     variantMap.insert("ncm", 0);
   }
 
-  if (variantMap.value("pccx").toInt() <= 0){
+  if (variantMap.value("pccx").toInt() <= 0) {
     variantMap.insert("pccx", 1);
   }
 
-  if (variantMap.value("m2cx").toDouble() <= 0.0){
+  if (variantMap.value("m2cx").toDouble() <= 0.0) {
     variantMap.insert("m2cx", 1.0);
   }
 
-  if (variantMap.value("kgcx").toDouble() <= 0.0){
+  if (variantMap.value("kgcx").toDouble() <= 0.0) {
     variantMap.insert("kgcx", 0.0);
   }
 

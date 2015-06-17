@@ -50,9 +50,9 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
 SearchDialog::~SearchDialog() { delete ui; }
 
 void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
-  if (text.isEmpty()){
+  if (text.isEmpty()) {
     model.setFilter(filter);
-  } else{
+  } else {
 
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
@@ -478,7 +478,7 @@ void SearchDialog::on_radioButtonProdAtivos_clicked() {
 
   if (text.isEmpty()) {
     model.setFilter("descontinuado = FALSE AND desativado = FALSE");
-  } else{
+  } else {
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
     for (int i = 0; i < temp.size(); ++i) {
@@ -499,7 +499,7 @@ void SearchDialog::on_radioButtonProdDesc_clicked() {
 
   if (text.isEmpty()) {
     model.setFilter("descontinuado = TRUE AND desativado = FALSE");
-  } else{
+  } else {
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
     for (int i = 0; i < temp.size(); ++i) {

@@ -32,7 +32,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idEndereco = 0");
 
-  if (not modelEnd.select()){
+  if (not modelEnd.select()) {
     qDebug() << "erro modelEnd: " << modelEnd.lastError();
     return;
   }
@@ -179,10 +179,10 @@ void CadastroTransportadora::novoItem() {
   ui->pushButtonRemover->hide();
 }
 
-void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {  
+void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {
   if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
     ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditCNPJ->setStyleSheet("");
   }
 }
@@ -211,7 +211,7 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
 
   if (msgBox.exec() == QMessageBox::Yes) {
     if (modelEnd.submitAll()) {
-      if (not modelEnd.select()){
+      if (not modelEnd.select()) {
         qDebug() << "erro modelEnd: " << modelEnd.lastError();
         return;
       }

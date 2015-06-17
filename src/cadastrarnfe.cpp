@@ -28,7 +28,7 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
   modelNFe.setTable("NFe");
   modelNFe.setEditStrategy(EditableSqlModel::OnManualSubmit);
 
-  if (not modelNFe.select()){
+  if (not modelNFe.select()) {
     qDebug() << "erro modelNFe: " << modelNFe.lastError();
     return;
   }
@@ -36,7 +36,7 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
   modelNFeItem.setTable("NFe_has_Itens");
   modelNFeItem.setEditStrategy(EditableSqlModel::OnManualSubmit);
 
-  if (not modelNFeItem.select()){
+  if (not modelNFeItem.select()) {
     qDebug() << "erro modelNFeItem: " << modelNFeItem.lastError();
     return;
   }
@@ -57,7 +57,7 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelLoja.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
 
-  if (not modelLoja.select()){
+  if (not modelLoja.select()) {
     qDebug() << "erro modelLoja: " << modelLoja.lastError();
     return;
   }
@@ -66,7 +66,7 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVenda.setFilter("idVenda = '" + idVenda + "'");
 
-  if (not modelVenda.select()){
+  if (not modelVenda.select()) {
     qDebug() << "erro modelVenda: " << modelVenda.lastError();
     return;
   }
@@ -75,7 +75,7 @@ CadastrarNFE::CadastrarNFE(QString idVenda, QWidget *parent)
   modelProd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelProd.setFilter("idVenda = '" + idVenda + "'");
 
-  if (not modelProd.select()){
+  if (not modelProd.select()) {
     qDebug() << "erro modelProd: " << modelProd.lastError();
     return;
   }
@@ -182,7 +182,7 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
     qDebug() << "Erro lendo itens da venda. ERRO: " << qryVenda.lastError();
   }
 
-  if (not modelNFe.select()){
+  if (not modelNFe.select()) {
     qDebug() << "erro modelNFe: " << modelNFe.lastError();
     return;
   }
@@ -328,8 +328,9 @@ void CadastrarNFE::onDataChanged(const QModelIndex &topLeft,
         modelNFeItem.setData(topLeft, 100);
       }
 
-      double icms = modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble() *
-                    (topLeft.data().toDouble() / 100);
+      double icms =
+          modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble() *
+          (topLeft.data().toDouble() / 100);
       qDebug() << "setting icms: "
                << modelNFeItem.setData(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorICMS")), icms);
     }
@@ -339,8 +340,9 @@ void CadastrarNFE::onDataChanged(const QModelIndex &topLeft,
         modelNFeItem.setData(topLeft, 100);
       }
 
-      double icms = modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble() *
-                    (topLeft.data().toDouble() / 100);
+      double icms =
+          modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble() *
+          (topLeft.data().toDouble() / 100);
       qDebug() << "setting icms: "
                << modelNFeItem.setData(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorIPI")), icms);
     }
@@ -394,8 +396,7 @@ QString CadastrarNFE::calculaDigitoVerificador(QString chave) {
   return QString::number(cDV);
 }
 
-void CadastrarNFE::writeIdentificacao(QTextStream & stream)
-{
+void CadastrarNFE::writeIdentificacao(QTextStream &stream) {
   stream << "[Identificacao]" << endl;
   stream << "NaturezaOperacao = 5405-VENDA PROD/SERV D.ESTADO" << endl;
   stream << "Modelo = 55" << endl;
@@ -408,7 +409,7 @@ void CadastrarNFE::writeIdentificacao(QTextStream & stream)
   stream << "FormaPag = 0" << endl;
 }
 
-bool CadastrarNFE::writeEmitente(QTextStream &stream){
+bool CadastrarNFE::writeEmitente(QTextStream &stream) {
   stream << "[Emitente]" << endl;
 
   if (clearStr(getFromLoja("cnpj").toString()).isEmpty()) {
@@ -496,7 +497,7 @@ bool CadastrarNFE::writeEmitente(QTextStream &stream){
   return true;
 }
 
-bool CadastrarNFE::writeDestinatario(QTextStream &stream){
+bool CadastrarNFE::writeDestinatario(QTextStream &stream) {
   stream << "[Destinatario]" << endl;
 
   QString idCliente = getFromVenda("idCliente").toString();
@@ -608,10 +609,10 @@ bool CadastrarNFE::writeDestinatario(QTextStream &stream){
     qDebug() << "Erro buscando endereço do destinatário: " << cliente.lastError();
   }
 
-return true;
+  return true;
 }
 
-bool CadastrarNFE::writeProduto(QTextStream &stream, double &total, double &icmsTotal){
+bool CadastrarNFE::writeProduto(QTextStream &stream, double &total, double &icmsTotal) {
   //  qDebug() << "idProduto: " << getFromProdModel(0, "idProduto").toString();
 
   for (int row = 0; row < modelNFeItem.rowCount(); ++row) {
@@ -625,8 +626,10 @@ bool CadastrarNFE::writeProduto(QTextStream &stream, double &total, double &icms
     prod.first();
     QString number = QString("%1").arg(row + 1, 3, 10, QChar('0')); // padding row with zeros
     stream << "[Produto" + number + "]" << endl;
-    stream << "CFOP = " + modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("cfop"))).toString() << endl;
-    stream << "NCM = " + clearStr(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("ncm"))).toString()) << endl;
+    stream << "CFOP = " + modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("cfop"))).toString()
+           << endl;
+    stream << "NCM = " + clearStr(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("ncm"))).toString())
+           << endl;
 
     if (prod.value("codBarras").toString().isEmpty()) {
       qDebug() << "codBarras vazio";
@@ -687,7 +690,7 @@ bool CadastrarNFE::writeProduto(QTextStream &stream, double &total, double &icms
   return true;
 }
 
-void CadastrarNFE::writeTotal(QTextStream &stream, double &total, double &icmsTotal){
+void CadastrarNFE::writeTotal(QTextStream &stream, double &total, double &icmsTotal) {
   stream << "[Total]" << endl;
   stream << "BaseICMS = " + QString::number(total) << endl;
   stream << "ValorICMS = " + QString::number(icmsTotal) << endl;

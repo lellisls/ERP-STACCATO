@@ -46,7 +46,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   modelItem.setHeaderData(modelItem.fieldIndex("total"), Qt::Horizontal, "Total");
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not modelItem.select()){
+  if (not modelItem.select()) {
     qDebug() << "erro modelItem: " << modelItem.lastError();
     return;
   }
@@ -58,7 +58,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("valor"), Qt::Horizontal, "R$");
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("data"), Qt::Horizontal, "Data");
 
-  if (not modelFluxoCaixa.select()){
+  if (not modelFluxoCaixa.select()) {
     qDebug() << "erro modelFluxoCaixa: " << modelFluxoCaixa.lastError();
     return;
   }
@@ -578,14 +578,14 @@ bool Venda::viewRegister(QModelIndex index) {
 
   modelItem.setFilter("idVenda = '" + idVenda + "'");
 
-  if (not modelItem.select()){
+  if (not modelItem.select()) {
     qDebug() << "erro modelItem: " << modelItem.lastError();
     return false;
   }
 
   modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
 
-  if (not modelFluxoCaixa.select()){
+  if (not modelFluxoCaixa.select()) {
     qDebug() << "erro modelFluxoCaixa: " << modelFluxoCaixa.lastError();
     return false;
   }
@@ -629,11 +629,9 @@ void Venda::montarFluxoCaixa() {
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
 
       if (i == 0) {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                parcela + resto);
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela + resto);
       } else {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                parcela);
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela);
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -659,11 +657,9 @@ void Venda::montarFluxoCaixa() {
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
 
       if (i == 0) {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                parcela + resto);
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela + resto);
       } else {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                parcela);
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela);
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
@@ -689,11 +685,9 @@ void Venda::montarFluxoCaixa() {
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
 
       if (i == 0) {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                parcela + resto);
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela + resto);
       } else {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")),
-                                parcela);
+        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela);
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),

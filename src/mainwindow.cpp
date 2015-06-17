@@ -383,43 +383,43 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
   cad->show();
 }
 
-void MainWindow::updateTables() {  
-  if (not modelCAPagar->select()){
+void MainWindow::updateTables() {
+  if (not modelCAPagar->select()) {
     qDebug() << "erro modelCAPagar: " << modelCAPagar->lastError();
     return;
   }
 
-  if (not modelCAReceber->select()){
+  if (not modelCAReceber->select()) {
     qDebug() << "erro modelCAReceber: " << modelCAReceber->lastError();
     return;
   }
 
-  if (not modelOrcamento->select()){
+  if (not modelOrcamento->select()) {
     qDebug() << "erro modelOrcamento: " << modelOrcamento->lastError();
     return;
   }
 
-  if (not modelVendas->select()){
+  if (not modelVendas->select()) {
     qDebug() << "erro modelVendas: " << modelVendas->lastError();
     return;
   }
 
-  if (not modelPedCompra->select()){
+  if (not modelPedCompra->select()) {
     qDebug() << "erro modelPedCompra: " << modelPedCompra->lastError();
     return;
   }
 
-  if (not modelEntregasCliente->select()){
+  if (not modelEntregasCliente->select()) {
     qDebug() << "erro modelEntregasCliente: " << modelEntregasCliente->lastError();
     return;
   }
 
-  if (not modelRecebimentosForn->select()){
+  if (not modelRecebimentosForn->select()) {
     qDebug() << "erro modelRecebimentosForn: " << modelRecebimentosForn->lastError();
     return;
   }
 
-  if (not modelNFe->select()){
+  if (not modelNFe->select()) {
     qDebug() << "erro modelNFe: " << modelNFe->lastError();
     return;
   }
@@ -667,7 +667,7 @@ bool MainWindow::event(QEvent *e) // overloading event(QEvent*) method of QMainW
   case QEvent::WindowActivate:
     // gained focus
     updateTables();
-//    qDebug() << "focus: updating tables";
+    //    qDebug() << "focus: updating tables";
     break;
 
   case QEvent::WindowDeactivate:

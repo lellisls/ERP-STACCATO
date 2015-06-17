@@ -357,17 +357,17 @@ void CadastroProfissional::show() {
 }
 
 void CadastroProfissional::on_lineEditCPF_textEdited(const QString &text) {
-  if(not validaCPF(QString(text).remove(".").remove("-"))){
+  if (not validaCPF(QString(text).remove(".").remove("-"))) {
     ui->lineEditCPF->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditCPF->setStyleSheet("");
   }
 }
 
-void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {  
+void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
   if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
     ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditCNPJ->setStyleSheet("");
   }
 }
@@ -564,10 +564,10 @@ void CadastroProfissional::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text) {  
-  if(not validaCPF(QString(text).remove(".").remove("-"))){
+void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text) {
+  if (not validaCPF(QString(text).remove(".").remove("-"))) {
     ui->lineEditContatoCPF->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditContatoCPF->setStyleSheet("");
   }
 }
@@ -602,8 +602,7 @@ void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroProfissional::on_radioButtonPF_toggled(bool checked)
-{
+void CadastroProfissional::on_radioButtonPF_toggled(bool checked) {
   if (checked) {
     tipoPFPJ = "PF";
     ui->lineEditCNPJ->hide();
@@ -629,11 +628,10 @@ void CadastroProfissional::on_radioButtonPF_toggled(bool checked)
   adjustSize();
 }
 
-void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text)
-{
-  if(not validaCPF(QString(text).remove(".").remove("-"))){
+void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text) {
+  if (not validaCPF(QString(text).remove(".").remove("-"))) {
     ui->lineEditCPFBancario->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditCPFBancario->setStyleSheet("");
   }
 }

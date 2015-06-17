@@ -12,7 +12,6 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   : RegisterDialog("Produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
-  // InputMasks
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
 
@@ -167,13 +166,9 @@ void CadastroProduto::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroProduto::on_pushButtonCancelar_clicked() { close(); }
 
-void CadastroProduto::on_pushButtonBuscar_clicked() {
-  sdProd->showMaximized();
-}
+void CadastroProduto::on_pushButtonBuscar_clicked() { sdProd->showMaximized(); }
 
-void CadastroProduto::changeItem(QVariant value) {
-  viewRegisterById(value);
-}
+void CadastroProduto::changeItem(QVariant value) { viewRegisterById(value); }
 
 void CadastroProduto::show() {
   QWidget::show();

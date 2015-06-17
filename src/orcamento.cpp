@@ -46,7 +46,7 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelItem.setFilter("idOrcamento = '" + ui->lineEditOrcamento->text() + "'");
 
-  if (not modelItem.select()){
+  if (not modelItem.select()) {
     qDebug() << "erro modelItem: " << modelItem.lastError();
     return;
   }
@@ -125,7 +125,7 @@ bool Orcamento::viewRegister(QModelIndex index) {
   QString idOrcamento = data(primaryKey).toString();
   modelItem.setFilter("idOrcamento = '" + idOrcamento + "'");
 
-  if (not modelItem.select()){
+  if (not modelItem.select()) {
     qDebug() << "erro modelItem: " << modelItem.lastError();
     return false;
   }

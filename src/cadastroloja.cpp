@@ -45,7 +45,7 @@ CadastroLoja::CadastroLoja(QWidget *parent) : RegisterDialog("Loja", "idLoja", p
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idEndereco = 0");
 
-  if (not modelEnd.select()){
+  if (not modelEnd.select()) {
     qDebug() << "erro modelEnd: " << modelEnd.lastError();
     return;
   }
@@ -193,14 +193,12 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
   sdLoja->show();
 }
 
-void CadastroLoja::changeItem(QVariant value) {
-  viewRegisterById(value);
-}
+void CadastroLoja::changeItem(QVariant value) { viewRegisterById(value); }
 
-void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {  
+void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
   if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
     ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditCNPJ->setStyleSheet("");
   }
 }
@@ -244,8 +242,8 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
   msgBox.setButtonText(QMessageBox::No, "Não");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    if (modelEnd.submitAll()) {      
-      if (not modelEnd.select()){
+    if (modelEnd.submitAll()) {
+      if (not modelEnd.select()) {
         qDebug() << "erro modelEnd: " << modelEnd.lastError();
         return;
       }

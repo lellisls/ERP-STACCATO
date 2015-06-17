@@ -28,7 +28,7 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
   modelEnd.setFilter("idFornecedor = '" + data(primaryKey).toString() + "'");
 
-  if (not modelEnd.select()){
+  if (not modelEnd.select()) {
     qDebug() << "erro modelEnd: " << modelEnd.lastError();
     return;
   }
@@ -320,13 +320,9 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
   return true;
 }
 
-void CadastroFornecedor::on_pushButtonCadastrar_clicked() {
-  save();
-}
+void CadastroFornecedor::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroFornecedor::on_pushButtonAtualizar_clicked() {
-  save();
-}
+void CadastroFornecedor::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroFornecedor::on_pushButtonBuscar_clicked() {
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
@@ -340,18 +336,18 @@ void CadastroFornecedor::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroFornecedor::on_pushButtonCancelar_clicked() { close(); }
 
-void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {  
+void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {
   if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
     ui->lineEditCNPJ->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditCNPJ->setStyleSheet("");
   }
 }
 
-void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {  
-  if(not validaCPF(QString(text).remove(".").remove("-"))){
+void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {
+  if (not validaCPF(QString(text).remove(".").remove("-"))) {
     ui->lineEditContatoCPF->setStyleSheet("color: rgb(255, 0, 0);");
-  } else{
+  } else {
     ui->lineEditContatoCPF->setStyleSheet("");
   }
 }

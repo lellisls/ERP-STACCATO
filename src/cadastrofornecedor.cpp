@@ -81,7 +81,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex index) {
     return false;
   }
 
-  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + "AND desativado = false");
+  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     qDebug() << "Erro no model endereco: " << modelEnd.lastError();
@@ -353,7 +353,7 @@ void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {
 }
 
 void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
-  if (not atualizarEndereco()) {
+  if (not adicionarEndereco()) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
   }
@@ -526,5 +526,13 @@ void CadastroFornecedor::on_lineEditCEP_textChanged(const QString &cep) {
     ui->lineEditBairro->setText(cc.getBairro());
   } else {
     QMessageBox::warning(this, "Aviso!", "CEP não encontrado!", QMessageBox::Ok);
+  }
+}
+
+void CadastroFornecedor::on_pushButtonAtualizarEnd_clicked()
+{
+  if (not atualizarEndereco()) {
+    QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
+                         QMessageBox::NoButton);
   }
 }

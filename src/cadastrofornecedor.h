@@ -31,6 +31,7 @@ class CadastroFornecedor : public RegisterDialog {
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
+    void on_pushButtonAtualizarEnd_clicked();
 
   public:
     virtual bool viewRegister(QModelIndex index);

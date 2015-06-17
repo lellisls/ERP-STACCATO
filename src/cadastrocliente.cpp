@@ -366,7 +366,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroCliente::adicionarEndereco() {
+bool CadastroCliente::cadastrarEndereco(bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
                                        ui->lineEditCidade, ui->lineEditUF})) {
     return false;
@@ -378,84 +378,14 @@ bool CadastroCliente::adicionarEndereco() {
     return false;
   }
 
-  modelEnd.insertRow(modelEnd.rowCount());
-  int row = modelEnd.rowCount() - 1;
+  int row;
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
-    qDebug() << "Erro setData descricao: " << modelEnd.lastError();
-    return false;
+  if (isUpdate) {
+    row = mapperEnd.currentIndex();
+  } else {
+    row = modelEnd.rowCount();
+    modelEnd.insertRow(row);
   }
-
-  if (not ui->lineEditCEP->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text())) {
-      qDebug() << "Erro setData cep: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not ui->lineEditLogradouro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditLogradouro->text())) {
-      qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not ui->lineEditNro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text())) {
-      qDebug() << "Erro setData numero: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not ui->lineEditComp->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
-      qDebug() << "Erro setData complemento: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not ui->lineEditBairro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
-      qDebug() << "Erro setData bairro: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not ui->lineEditCidade->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
-      qDebug() << "Erro setData cidade: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not ui->lineEditUF->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text())) {
-      qDebug() << "Erro setData uf: " << modelEnd.lastError();
-      return false;
-    }
-  }
-
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
-    qDebug() << "Erro setData desativado: " << modelEnd.lastError();
-    return false;
-  }
-
-  return true;
-}
-
-bool CadastroCliente::atualizarEndereco() {
-  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
-                                       ui->lineEditCidade, ui->lineEditUF})) {
-    return false;
-  }
-
-  if (not ui->lineEditCEP->isValid()) {
-    ui->lineEditCEP->setFocus();
-    QMessageBox::warning(this, "Atenção!", "CEP inválido!", QMessageBox::Ok, QMessageBox::NoButton);
-    return false;
-  }
-
-  int row = mapperEnd.currentIndex();
 
   if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
     qDebug() << "Erro setData descricao: " << modelEnd.lastError();
@@ -520,14 +450,14 @@ bool CadastroCliente::atualizarEndereco() {
 }
 
 void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
-  if (not adicionarEndereco()) {
+  if (not cadastrarEndereco(false)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
   }
 }
 
 void CadastroCliente::on_pushButtonAtualizarEnd_clicked() {
-  if (not atualizarEndereco()) {
+  if (not cadastrarEndereco(true)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
   }

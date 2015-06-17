@@ -83,8 +83,7 @@ class CadastroCliente : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     // methods
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
-    bool adicionarEndereco();
-    bool atualizarEndereco();
+    bool cadastrarEndereco(bool isUpdate);
     void novoEnd();
     void setupUi();
     void clearEnd();

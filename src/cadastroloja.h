@@ -77,8 +77,7 @@ class CadastroLoja : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     // methods
     void novoEnd();
-    bool atualizarEndereco();
-    bool adicionarEndereco();
+    bool cadastrarEndereco(bool isUpdate);
   public slots:
     void show();
 };

@@ -74,8 +74,7 @@ class CadastroTransportadora : public RegisterDialog {
     // methods
     virtual bool newRegister();
     void novoItem();
-    bool atualizarEndereco();
-    bool adicionarEndereco();
+    bool cadastrarEndereco(bool isUpdate);
     void novoEnd();
   public slots:
     void show();

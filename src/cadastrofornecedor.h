@@ -32,6 +32,7 @@ class CadastroFornecedor : public RegisterDialog {
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonAtualizarEnd_clicked();
+    void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
     virtual bool viewRegister(QModelIndex index);
@@ -44,7 +45,6 @@ class CadastroFornecedor : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     // methods
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
-    bool atualizarEndereco();
     void novoEnd();
     virtual bool verifyFields(int row);
     virtual bool savingProcedures(int row);
@@ -52,7 +52,7 @@ class CadastroFornecedor : public RegisterDialog {
     virtual void setupMapper();
     virtual void registerMode();
     virtual void updateMode();
-    bool adicionarEndereco();
+    bool cadastrarEndereco(bool isUpdate);
 };
 
 #endif // CADASTROFORNECEDOR_H

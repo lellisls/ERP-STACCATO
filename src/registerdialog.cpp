@@ -194,12 +194,18 @@ bool RegisterDialog::newRegister() {
   return true;
 }
 
-bool RegisterDialog::save(bool silent) {
+bool RegisterDialog::save(bool isUpdate) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  int row = model.rowCount();
-  model.insertRow(row);
+  int row;
+
+  if(isUpdate){
+    row = mapper.currentIndex();
+  } else{
+    row = model.rowCount();
+    model.insertRow(row);
+  }
 
   if (not verifyFields(row)) {
     QSqlQuery("ROLLBACK").exec();
@@ -221,6 +227,7 @@ bool RegisterDialog::save(bool silent) {
   }
 
   QSqlQuery("COMMIT").exec();
+  isDirty = false;
 
   if (not silent) {
     successMessage();
@@ -232,41 +239,8 @@ bool RegisterDialog::save(bool silent) {
   return true;
 }
 
-bool RegisterDialog::update(bool silent) {
-  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
-
-  int row = mapper.currentIndex();
-
-  if (not verifyFields(row)) {
-    QSqlQuery("ROLLBACK").exec();
-    return false;
-  }
-
-  if (not savingProcedures(row)) {
-    errorMessage();
-    QSqlQuery("ROLLBACK").exec();
-    return false;
-  }
-
-  if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << model.lastError();
-    qDebug() << "qry: " << model.query().lastQuery();
-    errorMessage();
-    QSqlQuery("ROLLBACK").exec();
-    return false;
-  }
-
-  QSqlQuery("COMMIT").exec();
-
-  if (not silent) {
-    successMessage();
-  }
-
-  viewRegister(model.index(row, 0));
-  sendUpdateMessage();
-
-  return true;
+bool RegisterDialog::update() {
+  return save(true);
 }
 
 void RegisterDialog::clearFields() {

@@ -75,8 +75,8 @@ class CadastroProfissional : public RegisterDialog {
     // methods
     void setupUi();
     bool verifyRequiredField(QLineEdit *line, bool silent);
-    void novoEnd();
-    void clearEnd();
+    void novoEndereco();
+    void clearEndereco();
     bool cadastrarEndereco(bool isUpdate);
 };
 

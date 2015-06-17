@@ -236,7 +236,7 @@ void CadastroCliente::clearFields() {
   RegisterDialog::clearFields();
 
   ui->radioButtonPF->setChecked(true);
-  novoEnd();
+  novoEndereco();
 
   foreach (ItemBox *box, this->findChildren<ItemBox *>()) { box->clear(); }
 
@@ -484,7 +484,7 @@ void CadastroCliente::on_lineEditCEP_textChanged(const QString &cep) {
   }
 }
 
-void CadastroCliente::clearEnd() {
+void CadastroCliente::clearEndereco() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -494,14 +494,14 @@ void CadastroCliente::clearEnd() {
   ui->lineEditUF->clear();
 }
 
-void CadastroCliente::novoEnd() {
+void CadastroCliente::novoEndereco() {
   ui->pushButtonAdicionarEnd->show();
   ui->pushButtonAtualizarEnd->hide();
   ui->tableEndereco->clearSelection();
-  clearEnd();
+  clearEndereco();
 }
 
-void CadastroCliente::on_pushButtonEndLimpar_clicked() { novoEnd(); }
+void CadastroCliente::on_pushButtonEndLimpar_clicked() { novoEndereco(); }
 
 void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
   ui->pushButtonAtualizarEnd->show();
@@ -564,7 +564,7 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
         return;
       }
 
-      novoEnd();
+      novoEndereco();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
                            QMessageBox::NoButton);
@@ -580,7 +580,10 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
 bool CadastroCliente::TestClienteIncompleto() {
   QTest::keyClicks(ui->lineEditCliente, "Cliente Incompleto");
   QTest::keyClicks(ui->lineEditCPF, "877.533.489-57");
-  return save(true);
+
+  silent = true;
+
+  return save();
 }
 
 bool CadastroCliente::TestClienteEndereco() {
@@ -595,7 +598,10 @@ bool CadastroCliente::TestClienteEndereco() {
 
   QTest::keyClicks(ui->lineEditCliente, "Cliente Endereco");
   QTest::keyClicks(ui->lineEditCPF, "976.524.755-97");
-  return save(true);
+
+  silent = true;
+
+  return save();
 }
 
 bool CadastroCliente::TestClienteCompleto() {
@@ -611,7 +617,9 @@ bool CadastroCliente::TestClienteCompleto() {
   QTest::keyClicks(ui->lineEditCliente, "Cliente Completo");
   QTest::keyClicks(ui->lineEditCPF, "187.958.502-28");
   // TODO: preencher campos restantes
-  return save(true);
+  silent = true;
+
+  return save();
 }
 
 #endif

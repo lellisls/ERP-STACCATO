@@ -629,9 +629,8 @@ void Orcamento::adicionarItem() {
     return;
   }
 
-  //  qDebug() << "rowCount: " << modelItem.rowCount();
-  modelItem.insertRow(modelItem.rowCount());
-  int row = modelItem.rowCount() - 1;
+  int row = modelItem.rowCount();
+  modelItem.insertRow(row);
 
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idOrcamento")), ui->lineEditOrcamento->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
@@ -693,8 +692,9 @@ void Orcamento::on_pushButtonAtualizarItem_clicked() {
 }
 
 void Orcamento::on_pushButtonGerarVenda_clicked() {
-  // TODO: maybe it's okay to show message here
-  if (not update(true)) {
+  silent = true;
+
+  if (not update()) {
     return;
   }
 
@@ -729,6 +729,7 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
     cadCliente->viewRegisterById(idCliente);
+    cadCliente->show();
     return;
   }
 

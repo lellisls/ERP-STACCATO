@@ -237,7 +237,7 @@ void CadastroLoja::on_pushButtonAtualizarEnd_clicked() {
   }
 }
 
-void CadastroLoja::on_pushButtonEndLimpar_clicked() { novoEnd(); }
+void CadastroLoja::on_pushButtonEndLimpar_clicked() { novoEndereco(); }
 
 void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
   QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Tem certeza que deseja remover?",
@@ -252,7 +252,7 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
         return;
       }
 
-      novoEnd();
+      novoEndereco();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
                            QMessageBox::NoButton);
@@ -352,14 +352,14 @@ bool CadastroLoja::cadastrarEndereco(bool isUpdate) {
   return true;
 }
 
-void CadastroLoja::novoEnd() {
+void CadastroLoja::novoEndereco() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
   ui->tableEndereco->clearSelection();
-  clearEnd();
+  clearEndereco();
 }
 
-void CadastroLoja::clearEnd() {
+void CadastroLoja::clearEndereco() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -387,19 +387,6 @@ void CadastroLoja::on_lineEditCEP_textChanged(const QString &cep) {
 }
 
 void CadastroLoja::on_tableEndereco_clicked(const QModelIndex &index) {
-  if (modelEnd.isDirty()) {
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
-                       QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
-
-    if (msgBox.exec() == QMessageBox::Yes) {
-      if (not cadastrarEndereco(true)) {
-        return;
-      }
-    }
-  }
-
   ui->pushButtonAtualizarEnd->show();
   ui->pushButtonAdicionarEnd->hide();
   mapperEnd.setCurrentModelIndex(index);

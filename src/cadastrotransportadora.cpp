@@ -14,12 +14,6 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   : RegisterDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
-  ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
-  ui->lineEditANTT->setInputMask("99999999;_");
-  ui->lineEditPlaca->setInputMask("AAA-9999;_");
-  ui->lineEditCEP->setInputMask("99999-999;_");
-  ui->lineEditUF->setInputMask(">AA;_");
-
   modelEnd.setTable("Transportadora_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -42,6 +36,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idTransportadora"));
 
+  setupUi();
   setupMapper();
   newRegister();
 
@@ -57,7 +52,11 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
 
 CadastroTransportadora::~CadastroTransportadora() { delete ui; }
 
-void CadastroTransportadora::clearFields() { RegisterDialog::clearFields(); }
+void CadastroTransportadora::clearFields() {
+  RegisterDialog::clearFields();
+  novoEndereco();
+  setupUi();
+}
 
 bool CadastroTransportadora::verifyFields(int row) {
   Q_UNUSED(row);
@@ -142,10 +141,10 @@ bool CadastroTransportadora::viewRegister(QModelIndex index) {
     return false;
   }
 
-  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = false");
+  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
-    qDebug() << modelEnd.lastError();
+    qDebug() << "Erro no model endereco: " << modelEnd.lastError();
     return false;
   }
 
@@ -205,7 +204,7 @@ void CadastroTransportadora::on_pushButtonAtualizarEnd_clicked() {
   }
 }
 
-void CadastroTransportadora::on_pushButtonEndLimpar_clicked() { novoEnd(); }
+void CadastroTransportadora::on_pushButtonEndLimpar_clicked() { novoEndereco(); }
 
 void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
   QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Tem certeza que deseja remover?",
@@ -220,7 +219,7 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
         return;
       }
 
-      novoEnd();
+      novoEndereco();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
                            QMessageBox::NoButton);
@@ -320,14 +319,14 @@ bool CadastroTransportadora::cadastrarEndereco(bool isUpdate) {
   return true;
 }
 
-void CadastroTransportadora::novoEnd() {
+void CadastroTransportadora::novoEndereco() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
   ui->tableEndereco->clearSelection();
-  clearEnd();
+  clearEndereco();
 }
 
-void CadastroTransportadora::clearEnd() {
+void CadastroTransportadora::clearEndereco() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -355,19 +354,6 @@ void CadastroTransportadora::on_lineEditCEP_textChanged(const QString &cep) {
 }
 
 void CadastroTransportadora::on_tableEndereco_clicked(const QModelIndex &index) {
-  if (modelEnd.isDirty()) {
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Deseja aplicar as alterações?",
-                       QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
-
-    if (msgBox.exec() == QMessageBox::Yes) {
-      if (not cadastrarEndereco(true)) {
-        return;
-      }
-    }
-  }
-
   ui->pushButtonAtualizarEnd->show();
   ui->pushButtonAdicionarEnd->hide();
   mapperEnd.setCurrentModelIndex(index);
@@ -376,4 +362,12 @@ void CadastroTransportadora::on_tableEndereco_clicked(const QModelIndex &index) 
 void CadastroTransportadora::show() {
   QWidget::show();
   adjustSize();
+}
+
+void CadastroTransportadora::setupUi() {
+  ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
+  ui->lineEditANTT->setInputMask("99999999;_");
+  ui->lineEditPlaca->setInputMask("AAA-9999;_");
+  ui->lineEditCEP->setInputMask("99999-999;_");
+  ui->lineEditUF->setInputMask(">AA;_");
 }

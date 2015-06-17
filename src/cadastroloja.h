@@ -40,7 +40,7 @@ class CadastroLoja : public RegisterDialog {
 *\return
 */
     virtual bool viewRegister(QModelIndex index);
-    void clearEnd();
+    void clearEndereco();
 
   private:
     /*!
@@ -76,7 +76,7 @@ class CadastroLoja : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    void novoEnd();
+    void novoEndereco();
     bool cadastrarEndereco(bool isUpdate);
   public slots:
     void show();

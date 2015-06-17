@@ -320,7 +320,7 @@ void CadastroProfissional::clearFields() {
   RegisterDialog::clearFields();
 
   ui->radioButtonPF->setChecked(true);
-  novoEnd();
+  novoEndereco();
 
   foreach (ItemBox *box, this->findChildren<ItemBox *>()) { box->clear(); }
 
@@ -329,14 +329,14 @@ void CadastroProfissional::clearFields() {
   ui->comboBoxTipo->setCurrentIndex(0);
 }
 
-void CadastroProfissional::novoEnd() {
+void CadastroProfissional::novoEndereco() {
   ui->pushButtonAdicionarEnd->show();
   ui->pushButtonAtualizarEnd->hide();
   ui->tableEndereco->clearSelection();
-  clearEnd();
+  clearEndereco();
 }
 
-void CadastroProfissional::clearEnd() {
+void CadastroProfissional::clearEndereco() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -490,7 +490,7 @@ void CadastroProfissional::on_lineEditCEP_textChanged(const QString &cep) {
   }
 }
 
-void CadastroProfissional::on_pushButtonEndLimpar_clicked() { novoEnd(); }
+void CadastroProfissional::on_pushButtonEndLimpar_clicked() { novoEndereco(); }
 
 void CadastroProfissional::on_tableEndereco_clicked(const QModelIndex &index) {
   ui->pushButtonAtualizarEnd->show();
@@ -527,7 +527,7 @@ void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
         return;
       }
 
-      novoEnd();
+      novoEndereco();
     } else {
       QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
                            QMessageBox::NoButton);

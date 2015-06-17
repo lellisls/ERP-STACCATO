@@ -84,9 +84,9 @@ class CadastroCliente : public RegisterDialog {
     // methods
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
     bool cadastrarEndereco(bool isUpdate);
-    void novoEnd();
+    void novoEndereco();
     void setupUi();
-    void clearEnd();
+    void clearEndereco();
 };
 
 #endif // CADASTROCLIENTE_H

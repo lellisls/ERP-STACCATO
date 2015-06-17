@@ -12,10 +12,6 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   : RegisterDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
-  ui->lineEditCEP->setInputMask("99999-999;_");
-  ui->lineEditUF->setInputMask(">AA;_");
-  ui->checkBoxMostrarInativos->hide();
-
   modelEnd.setTable("Fornecedor_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -40,8 +36,6 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
 
   mapperEnd.setModel(&modelEnd);
 
-  setWindowTitle("Cadastrar fornecedor");
-
   setupUi();
   setupMapper();
   newRegister();
@@ -63,16 +57,8 @@ void CadastroFornecedor::setupUi() {
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
-}
-
-void CadastroFornecedor::enableEditor() {
-  ui->frameCadastro->setEnabled(true);
-  ui->frameEndereco->setEnabled(true);
-}
-
-void CadastroFornecedor::disableEditor() {
-  ui->frameCadastro->setEnabled(false);
-  ui->frameEndereco->setEnabled(false);
+  ui->lineEditCEP->setInputMask("99999-999;_");
+  ui->lineEditUF->setInputMask(">AA;_");
 }
 
 void CadastroFornecedor::show() {
@@ -95,7 +81,7 @@ bool CadastroFornecedor::viewRegister(QModelIndex index) {
   return true;
 }
 
-void CadastroFornecedor::clearEnd() {
+void CadastroFornecedor::clearEndereco() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();
   ui->lineEditCidade->clear();
@@ -105,11 +91,11 @@ void CadastroFornecedor::clearEnd() {
   ui->lineEditUF->clear();
 }
 
-void CadastroFornecedor::novoEnd() {
+void CadastroFornecedor::novoEndereco() {
   ui->pushButtonAtualizarEnd->hide();
   ui->pushButtonAdicionarEnd->show();
   ui->tableEndereco->clearSelection();
-  clearEnd();
+  clearEndereco();
 }
 
 bool CadastroFornecedor::verifyFields(int row) {
@@ -171,25 +157,15 @@ bool CadastroFornecedor::savingProcedures(int row) {
     }
   }
 
-  if (not ui->lineEditFornecedor->text().isEmpty()) {
-    setData(row, "razaoSocial", ui->lineEditFornecedor->text());
-  }
-
-  if (not ui->lineEditNomeFantasia->text().isEmpty()) {
-    setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
-  }
-
-  if (not ui->lineEditContatoNome->text().isEmpty()) {
-    setData(row, "contatoNome", ui->lineEditContatoNome->text());
-  }
+  setData(row, "razaoSocial", ui->lineEditFornecedor->text());
+  setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
+  setData(row, "contatoNome", ui->lineEditContatoNome->text());
 
   if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoCPF", ui->lineEditContatoCPF->text());
   }
 
-  if (not ui->lineEditContatoApelido->text().isEmpty()) {
-    setData(row, "contatoApelido", ui->lineEditContatoApelido->text());
-  }
+  setData(row, "contatoApelido", ui->lineEditContatoApelido->text());
 
   if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty()) {
     setData(row, "contatoRG", ui->lineEditContatoRG->text());
@@ -199,29 +175,12 @@ bool CadastroFornecedor::savingProcedures(int row) {
     setData(row, "cnpj", ui->lineEditCNPJ->text());
   }
 
-  if (not ui->lineEditInscEstadual->text().isEmpty()) {
-    setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
-  }
-
-  if (not ui->lineEditTel_Res->text().isEmpty()) {
-    setData(row, "tel", ui->lineEditTel_Res->text());
-  }
-
-  if (not ui->lineEditTel_Cel->text().isEmpty()) {
-    setData(row, "telCel", ui->lineEditTel_Cel->text());
-  }
-
-  if (not ui->lineEditTel_Com->text().isEmpty()) {
-    setData(row, "telCom", ui->lineEditTel_Com->text());
-  }
-
-  if (not ui->lineEditNextel->text().isEmpty()) {
-    setData(row, "nextel", ui->lineEditNextel->text());
-  }
-
-  if (not ui->lineEditEmail->text().isEmpty()) {
-    setData(row, "email", ui->lineEditEmail->text());
-  }
+  setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
+  setData(row, "tel", ui->lineEditTel_Res->text());
+  setData(row, "telCel", ui->lineEditTel_Cel->text());
+  setData(row, "telCom", ui->lineEditTel_Com->text());
+  setData(row, "nextel", ui->lineEditNextel->text());
+  setData(row, "email", ui->lineEditEmail->text());
 
   if (not model.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll(): " << model.lastError();
@@ -231,14 +190,11 @@ bool CadastroFornecedor::savingProcedures(int row) {
   int idFornecedor = data(row, primaryKey).toInt();
 
   if (not data(row, primaryKey).isValid()) {
-    QSqlQuery qryLastId("SELECT LAST_INSERT_ID() AS lastId;");
-    qryLastId.exec();
-    qryLastId.first();
-    idFornecedor = qryLastId.value("lastId").toInt();
+    idFornecedor = model.query().lastInsertId().toInt();
   }
 
-  for (int end = 0; end < modelEnd.rowCount(); ++end) {
-    modelEnd.setData(modelEnd.index(end, modelEnd.fieldIndex(primaryKey)), idFornecedor);
+  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+    modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idFornecedor);
   }
 
   if (not modelEnd.submitAll()) {
@@ -252,7 +208,7 @@ bool CadastroFornecedor::savingProcedures(int row) {
 
 void CadastroFornecedor::clearFields() {
   RegisterDialog::clearFields();
-  novoEnd();
+  novoEndereco();
   setupUi();
 }
 
@@ -470,9 +426,8 @@ void CadastroFornecedor::on_pushButtonAtualizarEnd_clicked() {
   }
 }
 
-void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index)
-{
-    ui->pushButtonAtualizarEnd->show();
-    ui->pushButtonAdicionarEnd->hide();
-    mapperEnd.setCurrentModelIndex(index);
+void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
+  ui->pushButtonAtualizarEnd->show();
+  ui->pushButtonAdicionarEnd->hide();
+  mapperEnd.setCurrentModelIndex(index);
 }

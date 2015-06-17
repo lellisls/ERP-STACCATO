@@ -16,8 +16,6 @@ class CadastroFornecedor : public RegisterDialog {
     void setupUi();
 
   public slots:
-    void enableEditor();
-    void disableEditor();
     void show();
 
   private slots:
@@ -36,7 +34,7 @@ class CadastroFornecedor : public RegisterDialog {
 
   public:
     virtual bool viewRegister(QModelIndex index);
-    void clearEnd();
+    void clearEndereco();
 
   private:
     // attributes
@@ -45,7 +43,7 @@ class CadastroFornecedor : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     // methods
     bool verifyRequiredField(QLineEdit *line, bool silent = false);
-    void novoEnd();
+    void novoEndereco();
     virtual bool verifyFields(int row);
     virtual bool savingProcedures(int row);
     virtual void clearFields();

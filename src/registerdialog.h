@@ -94,7 +94,7 @@ class RegisterDialog : public QDialog {
 * \brief Procedimento padrão para salvar informações no BD.
 * \return
 */
-    virtual bool save(bool silent = false);
+    virtual bool save(bool isUpdate = false);
     /*!
 * \brief Chama verifyRequiredField() sobre cada elemento da lista.
 * \param list Lista de QLineEdits a serem verificados.
@@ -159,8 +159,10 @@ class RegisterDialog : public QDialog {
         qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
       }
 
-      if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
-        qDebug() << key << " error - row: " << row << " - value: " << value;
+      if (not value.isNull()) {
+        if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
+          qDebug() << key << " error - row: " << row << " - value: " << value;
+        }
       }
     }
     /*!
@@ -225,7 +227,7 @@ class RegisterDialog : public QDialog {
 * \return
 */
     inline QString requiredStyle() { return (QString("background-color: rgb(255, 255, 127);")); }
-    // Attributes
+
     /*!
 * \brief QDataWidgetMapper que mapeia os itens da tabela com as views, como um QLineEdit, entre outros.
 */
@@ -249,15 +251,16 @@ class RegisterDialog : public QDialog {
 * \brief Tabela da interface gráfica.
 */
     QAbstractItemView *table;
-    bool isDirty = false;
 
-    // QWidget interface
   protected:
+    bool isDirty = false;
+    bool silent = false;
+
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
     bool validaCNPJ(QString text);
     bool validaCPF(QString text);
-    bool update(bool silent = false);
+    bool update();
 };
 
 #endif // REGISTERDIALOG_H

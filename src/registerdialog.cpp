@@ -19,6 +19,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
   }
 
   mapper.setModel(&model);
+  mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
   QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
   connect(shortcut, &QShortcut::activated, this, &QWidget::close);
@@ -133,7 +134,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if (model.isDirty()) {
+  if (model.isDirty() or isDirty) {
     QMessageBox msgBox;
     msgBox.setParent(this);
     msgBox.setLocale(QLocale::Portuguese);
@@ -188,15 +189,50 @@ bool RegisterDialog::newRegister() {
     return false;
   }
 
-  int row = model.rowCount();
-  model.insertRow(row);
-  mapper.toLast();
   clearFields();
 
   return true;
 }
 
 bool RegisterDialog::save(bool silent) {
+  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  int row = model.rowCount();
+  model.insertRow(row);
+
+  if (not verifyFields(row)) {
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  if (not savingProcedures(row)) {
+    errorMessage();
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  if (not model.submitAll()) {
+    qDebug() << objectName() << " : " << model.lastError();
+    qDebug() << "qry: " << model.query().lastQuery();
+    errorMessage();
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  if (not silent) {
+    successMessage();
+  }
+
+  viewRegister(model.index(row, 0));
+  sendUpdateMessage();
+
+  return true;
+}
+
+bool RegisterDialog::update(bool silent) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
@@ -378,4 +414,8 @@ bool RegisterDialog::validaCPF(QString text) {
   }
 
   return true;
+}
+
+void RegisterDialog::marcarDirty(){
+  isDirty = true;
 }

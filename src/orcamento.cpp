@@ -86,6 +86,10 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
   setupMapper();
   newRegister();
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   if (UserSession::getTipoUsuario() == "ADMINISTRADOR") {
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
@@ -364,6 +368,8 @@ void Orcamento::on_doubleSpinBoxQte_editingFinished() {
 }
 
 void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
+
+void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
 
 void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   subTotal = 0.0;
@@ -686,10 +692,9 @@ void Orcamento::on_pushButtonAtualizarItem_clicked() {
   ui->tableProdutos->clearSelection();
 }
 
-void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { save(); }
-
 void Orcamento::on_pushButtonGerarVenda_clicked() {
-  if (not save(true)) {
+  // TODO: maybe it's okay to show message here
+  if (not update(true)) {
     return;
   }
 

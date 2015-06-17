@@ -53,6 +53,7 @@ class RegisterDialog : public QDialog {
   public slots:
     virtual void changeItem(QVariant value);
     void saveSlot();
+    void marcarDirty();
   signals:
     /*!
 * \brief Sinal enviado ao atualizar um campo, normalmente utilizada pela ItemBox.
@@ -248,6 +249,7 @@ class RegisterDialog : public QDialog {
 * \brief Tabela da interface gráfica.
 */
     QAbstractItemView *table;
+    bool isDirty = false;
 
     // QWidget interface
   protected:
@@ -255,6 +257,7 @@ class RegisterDialog : public QDialog {
     void keyPressEvent(QKeyEvent *event);
     bool validaCNPJ(QString text);
     bool validaCPF(QString text);
+    bool update(bool silent = false);
 };
 
 #endif // REGISTERDIALOG_H

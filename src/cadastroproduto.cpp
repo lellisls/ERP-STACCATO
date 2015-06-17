@@ -31,6 +31,10 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
   }
@@ -158,7 +162,7 @@ bool CadastroProduto::savingProcedures(int row) {
 
 void CadastroProduto::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroProduto::on_pushButtonAtualizar_clicked() { save(); }
+void CadastroProduto::on_pushButtonAtualizar_clicked() { update(); }
 
 void CadastroProduto::on_pushButtonNovoCad_clicked() { newRegister(); }
 

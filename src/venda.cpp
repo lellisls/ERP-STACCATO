@@ -105,6 +105,10 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   setupMapper();
   newRegister();
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   showMaximized();
 }
 
@@ -140,7 +144,9 @@ void Venda::resetarPagamentos() {
 }
 
 void Venda::fecharOrcamento(const QString &idOrcamento) {
-  clearFields();
+  int row = model.rowCount();
+  model.insertRow(row);
+  mapper.toLast();
 
   idVenda = idOrcamento;
 
@@ -157,7 +163,9 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     modelItem.insertRow(row);
 
     for (int field = 0; field < produtos.record().count(); field++) {
-      modelItem.setData(modelItem.index(row, field), produtos.value(field));
+      if (not modelItem.setData(modelItem.index(row, field), produtos.value(field))) {
+        qDebug() << "Erro setando itens venda: " << modelItem.lastError();
+      }
     }
 
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("status")), "PENDENTE");
@@ -346,7 +354,7 @@ void Venda::updateId() {}
 
 void Venda::on_pushButtonCancelar_clicked() { close(); }
 
-void Venda::on_pushButtonCadastrarPedido_clicked() { save(); }
+void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 
 void Venda::on_pushButtonNFe_clicked() {
   CadastrarNFE *cadNfe = new CadastrarNFE(idVenda, this);

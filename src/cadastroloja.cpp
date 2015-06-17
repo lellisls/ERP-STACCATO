@@ -58,6 +58,10 @@ CadastroLoja::CadastroLoja(QWidget *parent) : RegisterDialog("Loja", "idLoja", p
   setupMapper();
   newRegister();
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
@@ -179,7 +183,7 @@ bool CadastroLoja::viewRegister(QModelIndex index) {
 
 void CadastroLoja::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroLoja::on_pushButtonAtualizar_clicked() { save(); }
+void CadastroLoja::on_pushButtonAtualizar_clicked() { update(); }
 
 void CadastroLoja::on_pushButtonNovoCad_clicked() { newRegister(); }
 

@@ -46,6 +46,10 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   setupMapper();
   newRegister();
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
@@ -322,7 +326,7 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
 
 void CadastroFornecedor::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroFornecedor::on_pushButtonAtualizar_clicked() { save(); }
+void CadastroFornecedor::on_pushButtonAtualizar_clicked() { update(); }
 
 void CadastroFornecedor::on_pushButtonBuscar_clicked() {
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);

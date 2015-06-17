@@ -37,6 +37,10 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   setupMapper();
   newRegister();
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->tabWidget->setTabEnabled(1, false);
     ui->pushButtonRemover->setDisabled(true);
@@ -306,7 +310,7 @@ bool CadastroProfissional::savingProcedures(int row) {
 
 void CadastroProfissional::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroProfissional::on_pushButtonAtualizar_clicked() { save(); }
+void CadastroProfissional::on_pushButtonAtualizar_clicked() { update(); }
 
 void CadastroProfissional::on_pushButtonNovoCad_clicked() { newRegister(); }
 

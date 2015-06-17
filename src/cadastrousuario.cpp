@@ -21,6 +21,10 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
 
   setupMapper();
   newRegister();
+
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }
@@ -123,7 +127,7 @@ void CadastroUsuario::fillCombobox() {
 
 void CadastroUsuario::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroUsuario::on_pushButtonAtualizar_clicked() { save(); }
+void CadastroUsuario::on_pushButtonAtualizar_clicked() { update(); }
 
 void CadastroUsuario::on_pushButtonNovoCad_clicked() { newRegister(); }
 

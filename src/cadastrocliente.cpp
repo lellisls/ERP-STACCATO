@@ -49,6 +49,10 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   setupMapper();
   newRegister();
 
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
@@ -329,7 +333,7 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
 
 void CadastroCliente::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroCliente::on_pushButtonAtualizar_clicked() { save(); }
+void CadastroCliente::on_pushButtonAtualizar_clicked() { update(); }
 
 void CadastroCliente::show() {
   QWidget::show();

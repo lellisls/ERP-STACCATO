@@ -8,7 +8,7 @@ QString PorcentagemDelegate::displayText(const QVariant &value, const QLocale &l
   Q_UNUSED(locale);
   QLocale local;
 
-  if (value.userType() == QVariant::Double) {
+  if (value.userType() == QVariant::Double or value.userType() == QVariant::Int) {
     return local.toString(value.toDouble() * 100, 'f', 0) + "%";
   } else {
     return QStyledItemDelegate::displayText(value, local);

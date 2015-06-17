@@ -316,19 +316,19 @@ void ImportaProdutos::consistenciaDados() {
     }
   }
 
-  if (variantMap.values().at(variantMap.keys().indexOf("estoque")).isNull()) {
+  if (variantMap.value("estoque").isNull()) {
     variantMap.insert("estoque", 0);
   }
 
-  if (variantMap.values().at(variantMap.keys().indexOf("descontinuado")).isNull()) {
+  if (variantMap.value("descontinuado").isNull()) {
     variantMap.insert("descontinuado", 0);
   }
 
-  if (variantMap.values().at(variantMap.keys().indexOf("ui")).isNull()) {
+  if (variantMap.value("ui").isNull()) {
     variantMap.insert("ui", 0);
   }
 
-  if (variantMap.values().at(variantMap.keys().indexOf("ncm")).isNull()) {
+  if (variantMap.value("ncm").isNull()) {
     variantMap.insert("ncm", 0);
   }
 
@@ -344,7 +344,7 @@ void ImportaProdutos::consistenciaDados() {
     variantMap.insert("kgcx", 0.0);
   }
 
-  QString un = variantMap.values().at(variantMap.keys().indexOf("un")).toString().toLower();
+  QString un = variantMap.value("un").toString().toLower();
   if (un == "m2") {
     variantMap.insert("un", "m2");
   } else if (un == "ml") {
@@ -357,26 +357,18 @@ void ImportaProdutos::consistenciaDados() {
   //    if (values.at(fields.indexOf("ncm")).length() != 8) {
   //  }
 
-  if (variantMap.values().at(variantMap.keys().indexOf("codBarras")).isNull()) {
+  if (variantMap.value("codBarras").isNull()) {
     variantMap.insert("codBarras", "0");
   }
 
-  variantMap.insert("ncm", variantMap.values().at(variantMap.keys().indexOf("ncm")).toString().remove(".").remove(","));
-  variantMap.insert("codBarras",
-                    variantMap.values().at(variantMap.keys().indexOf("codBarras")).toString().remove(".").remove(","));
-  variantMap.insert(
-        "codComercial",
-        variantMap.values().at(variantMap.keys().indexOf("codComercial")).toString().remove(".").remove(","));
-  variantMap.insert("pccx", variantMap.values().at(variantMap.keys().indexOf("pccx")).toInt());
+  variantMap.insert("ncm", variantMap.value("ncm").toString().remove(".").remove(","));
+  variantMap.insert("codBarras", variantMap.value("codBarras").toString().remove(".").remove(","));
+  variantMap.insert("codComercial", variantMap.value("codComercial").toString().remove(".").remove(","));
+  variantMap.insert("pccx", variantMap.value("pccx").toInt());
   variantMap.insert("precoVenda",
-                    QString::number(variantMap.value(variantMap.keys().at(variantMap.keys().indexOf("precoVenda")))
-                                    .toString()
-                                    .replace(",", ".")
-                                    .toDouble()).toDouble());
-  variantMap.insert("custo", QString::number(variantMap.value(variantMap.keys().at(variantMap.keys().indexOf("custo")))
-                                             .toString()
-                                             .replace(",", ".")
-                                             .toDouble()).toDouble());
+                    QString::number(variantMap.value("precoVenda").toString().replace(",", ".").toDouble()).toDouble());
+  variantMap.insert("custo",
+                    QString::number(variantMap.value("custo").toString().replace(",", ".").toDouble()).toDouble());
 }
 
 void ImportaProdutos::leituraProduto(QSqlQuery &queryProd) {
@@ -423,23 +415,26 @@ void ImportaProdutos::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProd
   if (produto.value("precoVenda") != variantMap.value("precoVenda")) {
     expiraPrecosAntigos(produto, idProduto);
 
-    if (not produto.exec("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (" +
-                         idProduto + ", '" +
-                         variantMap.values().at(variantMap.keys().indexOf("precoVenda")).toString() + "', '" +
-                         QDate::currentDate().toString("yyyy-MM-dd") + "', '" +
-                         QDate::currentDate().addDays(validade).toString("yyyy-MM-dd") + "')")) {
+    produto.prepare("INSERT INTO Produto_has_Preco (idProduto, preco, validadeInicio, validadeFim) VALUES (:idProduto, "
+                    ":preco, :validadeInicio, :validadeFim)");
+    produto.bindValue(":idProduto", idProduto);
+    produto.bindValue(":preco", variantMap.value("precoVenda"));
+    produto.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
+    produto.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+
+    if (not produto.exec()) {
       qDebug() << "Erro inserindo em Preço: " << produto.lastError();
-      qDebug() << "qry: " << produto.lastQuery();
     }
   }
 }
 
 void ImportaProdutos::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
-  if (not produto.exec("SELECT * FROM Produto WHERE fornecedor = '" +
-                       variantMap.values().at(variantMap.keys().indexOf("fornecedor")).toString() +
-                       "' AND codComercial = '" +
-                       variantMap.values().at(variantMap.keys().indexOf("codComercial")).toString() + "' AND ui = '" +
-                       variantMap.values().at(variantMap.keys().indexOf("ui")).toString() + "'")) {
+  produto.prepare("SELECT * FROM Produto WHERE fornecedor = :fornecedor AND codComercial = :codComercial AND ui = :ui");
+  produto.bindValue(":fornecedor", variantMap.value("fornecedor"));
+  produto.bindValue(":codComercial", variantMap.value("codComercial"));
+  produto.bindValue(":ui", variantMap.value("ui"));
+
+  if (not produto.exec()) {
     qDebug() << "Erro buscando produto: " << produto.lastError();
   }
 }
@@ -464,25 +459,25 @@ void ImportaProdutos::pintarCamposForaDoPadrao(int row) {
 }
 
 void ImportaProdutos::cadastraProduto() {
-  if (model.insertRow(model.rowCount())) {
-    int row = model.rowCount() - 1;
+  int row = model.rowCount();
+  model.insertRow(row);
 
-    model.setData(model.index(row, model.fieldIndex("idFornecedor")),
-                  fornecedores.value(variantMap.values().at(variantMap.keys().indexOf("fornecedor")).toString()));
-    model.setData(model.index(row, model.fieldIndex("atualizarTabelaPreco")), true);
-    model.setData(model.index(row, model.fieldIndex("validade")),
-                  QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+  model.setData(model.index(row, model.fieldIndex("idFornecedor")),
+                fornecedores.value(variantMap.value("fornecedor").toString()));
 
-    double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble());
-    model.setData(model.index(row, model.fieldIndex("markup")), markup);
+  model.setData(model.index(row, model.fieldIndex("atualizarTabelaPreco")), true);
+  model.setData(model.index(row, model.fieldIndex("validade")),
+                QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
 
-    for (int i = 0; i < variantMap.keys().size(); ++i) {
-      model.setData(model.index(row, model.fieldIndex(variantMap.keys().at(i))), variantMap.values().at(i));
-      model.setData(model.index(row, model.fieldIndex(variantMap.keys().at(i) + "Upd")), 1);
-    }
+  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble());
+  model.setData(model.index(row, model.fieldIndex("markup")), markup);
 
-    pintarCamposForaDoPadrao(row);
+  for (int i = 0; i < variantMap.keys().size(); ++i) {
+    model.setData(model.index(row, model.fieldIndex(variantMap.keys().at(i))), variantMap.values().at(i));
+    model.setData(model.index(row, model.fieldIndex(variantMap.keys().at(i) + "Upd")), 1);
   }
+
+  pintarCamposForaDoPadrao(row);
 }
 
 int ImportaProdutos::buscarCadastrarFornecedor(QString fornecedor) {

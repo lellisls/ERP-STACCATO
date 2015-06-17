@@ -25,6 +25,8 @@ ImportaProdutos::ImportaProdutos(QWidget *parent) : QDialog(parent), ui(new Ui::
   setVariantMap();
   setProgressDialog();
   setModelAndTable();
+
+  ui->tableProdutos->horizontalHeader()->setMinimumSectionSize(60);
 }
 
 ImportaProdutos::~ImportaProdutos() { delete ui; }
@@ -152,6 +154,8 @@ bool ImportaProdutos::readFile() {
   if (file.isEmpty()) {
     return false;
   }
+
+  setWindowTitle(file);
 
   return true;
 }
@@ -562,5 +566,3 @@ void ImportaProdutos::TestImportacao() {
 }
 
 #endif
-
-// TODO: colocar o nome da tabela ou do fornecedor no titulo da janela

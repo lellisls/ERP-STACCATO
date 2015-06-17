@@ -42,11 +42,21 @@ class ImportaProdutos : public QDialog {
     void pintarCamposForaDoPadrao(int row);
     void setVariantMap();
 
+    enum FieldColors {
+      White = 0,  // no change
+      Green = 1,  // new value
+      Yellow = 2, // value changed
+      Red = 3     // wrong value
+    };
+
+    FieldColors colors;
+
   private slots:
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
 
   private:
+    // attributes
     Ui::ImportaProdutos *ui;
     EditableSqlModel model;
     QProgressDialog *progressDialog;
@@ -55,7 +65,7 @@ class ImportaProdutos : public QDialog {
     QMap<QString, int> fornecedores;
     QSqlDatabase db;
     QVariantMap variantMap;
-
+    // methods
     void importarTabela();
 };
 

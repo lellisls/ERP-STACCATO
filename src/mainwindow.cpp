@@ -6,6 +6,7 @@
 #include <QShortcut>
 #include <QSqlTableModel>
 #include <QtSql>
+#include <porcentagemdelegate.h>
 
 #include "backgroundproxymodel.h"
 #include "cadastrocliente.h"
@@ -251,6 +252,11 @@ void MainWindow::initializeTables() {
   modelVendas->setHeaderData(modelVendas->fieldIndex("validade"), Qt::Horizontal, "Validade");
   modelVendas->setHeaderData(modelVendas->fieldIndex("status"), Qt::Horizontal, "Status");
 
+  modelVendas->setHeaderData(modelVendas->fieldIndex("subTotalBru"), Qt::Horizontal, "Bruto");
+  modelVendas->setHeaderData(modelVendas->fieldIndex("subTotalLiq"), Qt::Horizontal, "Líquido");
+  modelVendas->setHeaderData(modelVendas->fieldIndex("descontoPorc"), Qt::Horizontal, "Desc.");
+  modelVendas->setHeaderData(modelVendas->fieldIndex("descontoReais"), Qt::Horizontal, "Desc.");
+
   if (not modelVendas->select()) {
     qDebug() << "Failed to populate TableVendas: " << modelVendas->lastError();
     return;
@@ -259,7 +265,12 @@ void MainWindow::initializeTables() {
   ui->tableVendas->setModel(modelVendas);
   ui->tableVendas->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableVendas->setColumnHidden(modelVendas->fieldIndex("idEnderecoFaturamento"), true);
-  ui->tableVendas->setItemDelegate(doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("subTotalBru"), doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("subTotalLiq"), doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("frete"), doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("descontoReais"), doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("total"), doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("descontoPorc"), new PorcentagemDelegate);
 
   // Contas a pagar -------------------------------------
   modelCAPagar = new QSqlTableModel(this);

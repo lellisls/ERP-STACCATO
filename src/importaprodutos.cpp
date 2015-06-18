@@ -135,6 +135,8 @@ void ImportaProdutos::importarTabela() {
     showMaximized();
     ui->tableProdutos->resizeColumnsToContents();
   }
+
+  // TODO: show messagebox with quantity of new itens, updated etc
 }
 
 void ImportaProdutos::setProgressDialog() {
@@ -236,6 +238,7 @@ void ImportaProdutos::setModelAndTable() {
   ui->tableProdutos->setColumnHidden(model.fieldIndex("comissao"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("observacoes"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("origem"), true);
+  ui->tableProdutos->setColumnHidden(model.fieldIndex("representacao"), true);
 
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
 
@@ -491,11 +494,11 @@ void ImportaProdutos::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
 void ImportaProdutos::pintarCamposForaDoPadrao(int row) {
   if (variantMap.value("ncm").toString() == "0" or variantMap.value("ncm").toString().isEmpty() or
       (variantMap.value("ncm").toString().length() != 8 and variantMap.value("ncm").toString().length() != 10)) {
-    model.setData(model.index(row, model.fieldIndex("ncmUpd")), Yellow);
+    model.setData(model.index(row, model.fieldIndex("ncmUpd")), Gray);
   }
 
   if (variantMap.value("codBarras").toString() == "0" or variantMap.value("codBarras").toString().isEmpty()) {
-    model.setData(model.index(row, model.fieldIndex("codBarrasUpd")), Yellow);
+    model.setData(model.index(row, model.fieldIndex("codBarrasUpd")), Gray);
   }
 
   if (variantMap.value("custo") <= 0.0) {
@@ -605,6 +608,18 @@ bool ImportaProdutos::verificaTabela() {
   }
 
   return true;
+}
+
+void ImportaProdutos::on_checkBoxRepresentacao_clicked(bool checked) {
+  if (checked) {
+    for (int i = 0; i < model.rowCount(); ++i) {
+      model.setData(model.index(i, model.fieldIndex("representacao")), 1);
+    }
+  } else {
+    for (int i = 0; i < model.rowCount(); ++i) {
+      model.setData(model.index(i, model.fieldIndex("representacao")), 0);
+    }
+  }
 }
 
 #ifdef TEST

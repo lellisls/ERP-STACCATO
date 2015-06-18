@@ -46,7 +46,8 @@ class ImportaProdutos : public QDialog {
       White = 0,  // no change
       Green = 1,  // new value
       Yellow = 2, // value changed
-      Red = 3     // wrong value
+      Gray = 3,   // wrong value but accepted
+      Red = 4     // wrong value, must be fixed
     };
 
     FieldColors colors;
@@ -54,6 +55,7 @@ class ImportaProdutos : public QDialog {
   private slots:
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
+    void on_checkBoxRepresentacao_clicked(bool checked);
 
   private:
     // attributes

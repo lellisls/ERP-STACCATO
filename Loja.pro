@@ -127,34 +127,11 @@ QMAKE_LFLAGS += -O3
 RESOURCES += \
     qrs/resources.qrc
 
-install_it.path = $$OUT_PWD
-install_it.files = $$PWD/libmysql.dll \
-                   $$PWD/logo.png \
-                   $$PWD/logo.jpg \
-                   $$PWD/orcamento.html \
-                   $$PWD/itens.html
-INSTALLS += install_it
-
-DISTFILES += \
-    qt_portuguese.ts
-
-CONFIG(debug, debug|release){
-message(Activating terminal)
-#CONFIG += console
-}
-
-CONFIG(release, debug|release){
-message(Deactivating terminal)
-CONFIG -= console
-}
-
 test {
     DEFINES += "TEST"
     message(Test build)
     QT += testlib
     TARGET = UnitTests
-    CONFIG -= console
-    message(Deactivating terminal)
 
     SOURCES -= src/main.cpp
 

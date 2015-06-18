@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>orcamento.html</file>
         <file>search.png</file>
         <file>logo.png</file>
         <file>gear.png</file>

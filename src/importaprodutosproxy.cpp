@@ -14,7 +14,7 @@ QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) con
     int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 
     if (value == 1) {
-      return QBrush(Qt::red);
+      return QBrush(Qt::cyan);
     }
 
     // verifica cada campo

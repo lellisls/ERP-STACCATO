@@ -25,9 +25,13 @@ bool CepCompleter::buscaCEP(QString cep) {
   query.prepare("SELECT * FROM cep." + uf.toLower() + " WHERE cep = :cep LIMIT 1");
   query.bindValue(":cep", cep);
 
-  if (not query.exec() or not query.first()) {
+  if (not query.exec()) {
     qDebug() << __FILE__ " : " << __LINE__ << " : Erro ao buscar cep: " << query.lastError();
     qDebug() << "Query: " << query.lastQuery();
+    return false;
+  }
+
+  if (not query.first()) {
     return false;
   }
 

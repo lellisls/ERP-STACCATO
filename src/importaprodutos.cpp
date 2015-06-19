@@ -211,7 +211,7 @@ void ImportaProdutos::setModelAndTable() {
   model.setHeaderData(model.fieldIndex("ncm"), Qt::Horizontal, "NCM");
   model.setHeaderData(model.fieldIndex("ncmEx"), Qt::Horizontal, "NCM EX");
   model.setHeaderData(model.fieldIndex("icms"), Qt::Horizontal, "ICMS");
-  model.setHeaderData(model.fieldIndex("situacaoTributaria"), Qt::Horizontal, "Sit. Trib.");
+  model.setHeaderData(model.fieldIndex("cst"), Qt::Horizontal, "CST");
   model.setHeaderData(model.fieldIndex("qtdPallet"), Qt::Horizontal, "Qt. Pallet");
   model.setHeaderData(model.fieldIndex("custo"), Qt::Horizontal, "Custo");
   model.setHeaderData(model.fieldIndex("ipi"), Qt::Horizontal, "IPI");
@@ -260,7 +260,6 @@ void ImportaProdutos::setModelAndTable() {
 
   PorcentagemDelegate *porcDelegate = new PorcentagemDelegate(this);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("icms"), porcDelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("situacaoTributaria"), porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("ipi"), porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("markup"), porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("st"), porcDelegate);
@@ -280,7 +279,7 @@ void ImportaProdutos::setVariantMap() {
   variantMap.insert("codBarras", QVariant(QVariant::String));
   variantMap.insert("ncm", QVariant(QVariant::String));
   variantMap.insert("icms", QVariant(QVariant::Double));
-  variantMap.insert("situacaoTributaria", QVariant(QVariant::Int));
+  variantMap.insert("cst", QVariant(QVariant::String));
   variantMap.insert("qtdPallet", QVariant(QVariant::Double));
   variantMap.insert("custo", QVariant(QVariant::Double));
   variantMap.insert("ipi", QVariant(QVariant::Double));
@@ -374,8 +373,8 @@ void ImportaProdutos::consistenciaDados() {
     variantMap.insert("icms", 0);
   }
 
-  if (variantMap.value("situacaoTributaria").isNull()) {
-    variantMap.insert("situacaoTributaria", 0);
+  if (variantMap.value("cst").isNull()) {
+    variantMap.insert("cst", "000");
   }
 
   if (variantMap.value("qtdPallet").isNull()) {

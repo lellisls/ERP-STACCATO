@@ -115,7 +115,7 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->doubleSpinBoxEstoque, "estoque");
 
   addMapping(ui->textEditObserv, "observacoes", "plainText");
-  addMapping(ui->comboBoxSitTrib, "situacaoTributaria");
+  addMapping(ui->comboBoxCST, "cst");
   addMapping(ui->itemBoxFornecedor, "idFornecedor", "value");
   addMapping(ui->comboBoxOrigem, "origem");
   addMapping(ui->radioButtonDesc, "descontinuado");
@@ -145,7 +145,7 @@ bool CadastroProduto::savingProcedures(int row) {
   setData(row, "pccx", ui->doubleSpinBoxPcCx->value());
   setData(row, "precoVenda", ui->doubleSpinBoxVenda->value());
   setData(row, "qtdPallet", ui->doubleSpinBoxQtePallet->value());
-  setData(row, "situacaoTributaria", ui->comboBoxSitTrib->currentText());
+  setData(row, "cst", ui->comboBoxCST->currentText());
   setData(row, "st", ui->doubleSpinBoxST->value());
   setData(row, "temLote", ui->radioButtonLote->isChecked());
   setData(row, "ui", ui->lineEditUI->text());

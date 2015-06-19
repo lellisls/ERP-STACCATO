@@ -236,7 +236,7 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
     modelNFeItem.insertRow(row);
 
     setItemData(row, "item", row + 1);
-    setItemData(row, "cst", "060");   // FIXME: query this from produto
+    setItemData(row, "cst", queryItens.value("cst"));
     setItemData(row, "cfop", "5405"); // TODO: get CFOP from NCM<>CFOP table
     setItemData(row, "codComercial", queryItens.value("codComercial"));
     setItemData(row, "descricao", queryItens.value("produto"));

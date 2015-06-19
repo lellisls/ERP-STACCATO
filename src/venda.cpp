@@ -802,12 +802,18 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT * FROM Cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", model.data(model.index(0, model.fieldIndex("idCliente"))));
-  queryCliente.first();
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    qDebug() << "Erro buscando cliente: " << model.fieldIndex("idCliente") << " - " << model.lastError();
+  }
 
   QSqlQuery queryProduto;
   queryProduto.prepare("SELECT * FROM Produto WHERE idProduto = :idProduto");
   queryProduto.bindValue(":idProduto", modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))));
-  queryProduto.first();
+
+  if (not queryProduto.exec() or not queryProduto.first()) {
+    qDebug() << "Erro buscando produto: " << modelItem.fieldIndex("idProduto") << " - " << modelItem.lastError();
+  }
 
   if (paramName == "cliente") {
     paramValue = queryCliente.value("nome_razao").toString();

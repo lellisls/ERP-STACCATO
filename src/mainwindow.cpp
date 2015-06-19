@@ -668,7 +668,10 @@ void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &ind
                                       index.row(), modelRecebimentosForn->fieldIndex("idPedido"))).toString());
 }
 
-void MainWindow::on_tableNFE_activated(const QModelIndex &index) { Q_UNUSED(index); }
+void MainWindow::on_tableNFE_activated(const QModelIndex &index) {
+  Venda *vendas = new Venda(this);
+  vendas->viewRegisterById(modelNFe->data(modelNFe->index(index.row(), modelNFe->fieldIndex("idVenda"))));
+}
 
 bool MainWindow::event(QEvent *e) // overloading event(QEvent*) method of QMainWindow
 {

@@ -95,23 +95,23 @@ void CadastrarNFE::guardarNotaBD() {
       qDebug() << "file found!";
 
       // TODO: frete e total devem ser substituidos pelos valores na nota
-      QSqlQuery qryNota;
-      qryNota.prepare("INSERT INTO NFe (idVenda, idLoja, idCliente, idEnderecoFaturamento, NFe, status, chaveAcesso, "
+      QSqlQuery queryNota;
+      queryNota.prepare("INSERT INTO NFe (idVenda, idLoja, idCliente, idEnderecoFaturamento, NFe, status, chaveAcesso, "
                       "obs, frete, total) VALUES (:idVenda, :idLoja, :idCliente, :idEnderecoFaturamento, :NFe, "
                       ":status, :chaveAcesso, :obs, :frete, :total)");
-      qryNota.bindValue(":idVenda", idVenda);
-      qryNota.bindValue(":idLoja", getFromLoja("idLoja"));
-      qryNota.bindValue(":idCliente", getFromLoja("idCliente"));
-      qryNota.bindValue(":idEnderecoFaturamento", getFromVenda("idEnderecoFaturamento"));
-      qryNota.bindValue(":NFe", "load_file('" + arquivo + "')");
-      qryNota.bindValue(":status", "''");
-      qryNota.bindValue(":chaveAcesso", chaveNum);
-      qryNota.bindValue(":obs", "''");
-      qryNota.bindValue(":frete", getFromVenda("frete"));
-      qryNota.bindValue(":total", getFromVenda("total"));
+      queryNota.bindValue(":idVenda", idVenda);
+      queryNota.bindValue(":idLoja", getFromLoja("idLoja"));
+      queryNota.bindValue(":idCliente", getFromVenda("idCliente"));
+      queryNota.bindValue(":idEnderecoFaturamento", getFromVenda("idEnderecoFaturamento"));
+      queryNota.bindValue(":NFe", "load_file('" + arquivo + "')");
+      queryNota.bindValue(":status", "''");
+      queryNota.bindValue(":chaveAcesso", chaveNum);
+      queryNota.bindValue(":obs", "''");
+      queryNota.bindValue(":frete", getFromVenda("frete"));
+      queryNota.bindValue(":total", getFromVenda("total"));
 
-      if (not qryNota.exec()) {
-        qDebug() << "Erro guardando nota: " << qryNota.lastError();
+      if (not queryNota.exec()) {
+        qDebug() << "Erro guardando nota: " << queryNota.lastError();
       } else {
         qDebug() << "Nota guardada com sucesso!";
         QMessageBox::information(this, "Aviso!", "Nota guardada com sucesso.");
@@ -219,7 +219,7 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
 
   double descontoGlobal = queryVenda.value("descontoPorc").toDouble();
 
-  for (auto item : items) {
+  for(int item = 0; item < items.size(); ++item){
     QSqlQuery queryItens;
     queryItens.prepare(
           "SELECT * FROM Venda_has_Produto NATURAL LEFT JOIN Produto WHERE idVenda = :idVenda AND item = :item");
@@ -229,7 +229,7 @@ void CadastrarNFE::prepararNFe(QList<int> items) {
     if (not queryItens.exec() or not queryItens.first()) {
       qDebug() << "Erro buscando produto: " << queryItens.lastError();
       qDebug() << "Last query: " << queryItens.lastQuery();
-      continue;
+      return;
     }
 
     int row = modelNFeItem.rowCount();
@@ -295,7 +295,7 @@ QString CadastrarNFE::criarChaveAcesso() {
     return QString();
   }
 
-  listChave.push_back(queryLojaEnd.value("uf").toString()); // cUF - código da UF
+  listChave.push_back(queryLojaEnd.value("codUF").toString()); // cUF - código da UF
 
   listChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
 
@@ -629,7 +629,7 @@ bool CadastrarNFE::writeProduto(QTextStream &stream, double &total, double &icms
     queryProd.prepare("SELECT * FROM Produto WHERE idProduto = :idProduto");
     queryProd.bindValue(":idProduto", getFromProdModel(row, "idProduto"));
 
-    if (not queryProd.exec() or queryProd.first()) {
+    if (not queryProd.exec() or not queryProd.first()) {
       qDebug() << "Erro buscando produtos: " << queryProd.lastError();
       return false;
     }
@@ -734,14 +734,20 @@ bool CadastrarNFE::writeTXT() {
 
   writeIdentificacao(stream);
 
-  writeEmitente(stream);
+  if(not writeEmitente(stream)){
+    return false;
+  }
 
-  writeDestinatario(stream);
+  if(not writeDestinatario(stream)){
+    return false;
+  }
 
   double total = 0.0;
   double icmsTotal = 0.0;
 
-  writeProduto(stream, total, icmsTotal);
+  if(not writeProduto(stream, total, icmsTotal)){
+    return false;
+  }
 
   writeTotal(stream, total, icmsTotal);
 

@@ -215,6 +215,12 @@ QString SearchDialog::getText(QVariant index) {
       }
     }
 
+    if (model.tableName().contains("Endereco")) {
+      if (query.value("descricao").toString() == "Não há") {
+        return "Não há";
+      }
+    }
+
     return (res);
   }
 

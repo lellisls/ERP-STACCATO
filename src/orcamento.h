@@ -106,8 +106,7 @@ class Orcamento : public RegisterDialog {
     double subTotal, subTotalItens;
     // methods
     void removeItem();
-    void adicionarItem();
-    void atualizarItem();
+    void adicionarItem(bool isUpdate = false);
     void calcPrecoGlobalTotal(bool ajusteTotal = false);
     void calcPrecoItemTotal();
     void novoItem();

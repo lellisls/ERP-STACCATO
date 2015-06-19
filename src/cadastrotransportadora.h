@@ -80,6 +80,7 @@ class CadastroTransportadora : public RegisterDialog {
     void novoItem();
     bool cadastrarEndereco(bool isUpdate);
     void novoEndereco();
+    int getCodigoUF();
 };
 
 #endif // CADASTROTRANSPORTADORA_H

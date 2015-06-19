@@ -51,6 +51,7 @@ class CadastroFornecedor : public RegisterDialog {
     virtual void registerMode();
     virtual void updateMode();
     bool cadastrarEndereco(bool isUpdate);
+    int getCodigoUF();
 };
 
 #endif // CADASTROFORNECEDOR_H

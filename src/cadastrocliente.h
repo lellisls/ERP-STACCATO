@@ -87,6 +87,7 @@ class CadastroCliente : public RegisterDialog {
     void novoEndereco();
     void setupUi();
     void clearEndereco();
+    int getCodigoUF();
 };
 
 #endif // CADASTROCLIENTE_H

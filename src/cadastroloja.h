@@ -80,6 +80,7 @@ class CadastroLoja : public RegisterDialog {
     bool cadastrarEndereco(bool isUpdate);
   public slots:
     void show();
+    int getCodigoUF();
 };
 
 #endif // CADASTROLOJA_H

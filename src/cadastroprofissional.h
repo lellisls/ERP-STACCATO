@@ -79,6 +79,7 @@ class CadastroProfissional : public RegisterDialog {
     void clearEndereco();
     bool cadastrarEndereco(bool isUpdate);
     void setupEndereco();
+    int getCodigoUF();
 };
 
 #endif // CADASTROPROFISSIONAL_H

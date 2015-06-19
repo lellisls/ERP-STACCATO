@@ -596,6 +596,12 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
     return;
   }
 
+  if (model.data(model.index(mapper.currentIndex(), model.fieldIndex("status"))).toString() == "CANCELADO") {
+    QMessageBox::warning(this, "Aviso!", "Orçamento cancelado");
+    // TODO: ask user if he wants to replicate orcamento
+    return;
+  }
+
   int idCliente = ui->itemBoxCliente->value().toInt();
 
   QSqlQuery queryCadastro;

@@ -297,7 +297,7 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
   }
 
   ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data(primaryKey).toString() + ")");
-  modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = false");
+  modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
@@ -305,17 +305,19 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
   }
 
   QSqlQuery query;
+  query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM Cliente WHERE idCadastroRel = :primaryKey");
+  query.bindValue(":primaryKey", primaryKey);
 
-  if (not query.exec("SELECT idCliente, nome_razao, nomeFantasia FROM Cliente WHERE idCadastroRel = '" + primaryKey +
-                     "'")) {
+  if (not query.exec()) {
     qDebug() << "Erro na query cliente: " << query.lastError();
     return false;
   }
 
+  // TODO: verificar se o next não pode ser substituido por um last
   while (query.next()) {
-    QString line = query.value("idCliente").toString() + " - " + query.value("nome_razao").toString() + " - " +
-                   query.value("nomeFantasia").toString();
-    ui->textEditObservacoes->insertPlainText(line);
+    ui->textEditObservacoes->insertPlainText(query.value("idCliente").toString() + " - " +
+                                             query.value("nome_razao").toString() + " - " +
+                                             query.value("nomeFantasia").toString());
   }
 
   tipoPFPJ = data("pfpj").toString();
@@ -547,7 +549,7 @@ void CadastroCliente::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idCliente = " + data(primaryKey).toString());
   } else {
-    modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = false");
+    modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = FALSE");
   }
 }
 

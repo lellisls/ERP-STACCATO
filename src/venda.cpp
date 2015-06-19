@@ -150,7 +150,9 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
   idVenda = idOrcamento;
 
-  QSqlQuery produtos("SELECT * FROM Orcamento_has_Produto WHERE idOrcamento = '" + idOrcamento + "'");
+  QSqlQuery produtos;
+  produtos.prepare("SELECT * FROM Orcamento_has_Produto WHERE idOrcamento = :idOrcamento");
+  produtos.bindValue(":idOrcamento", idOrcamento);
 
   if (not produtos.exec()) {
     qDebug() << "Erro buscando produtos: " << produtos.lastError();
@@ -173,26 +175,24 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
   ui->tableVenda->resizeColumnsToContents();
 
-  QSqlQuery qry("SELECT * FROM Orcamento WHERE idOrcamento = '" + idOrcamento + "'");
+  QSqlQuery query;
+  query.prepare("SELECT * FROM Orcamento WHERE idOrcamento = :idOrcamento");
+  query.bindValue(":idOrcamento", idOrcamento);
 
-  if (not qry.exec()) {
-    qDebug() << "Erro buscando orcamento: " << qry.lastError();
+  if (not query.exec() or not query.first()) {
+    qDebug() << "Erro buscando orcamento: " << query.lastError();
   }
 
-  if (not qry.first()) {
-    qDebug() << "Erro selecionando primeiro resultado: " << qry.lastError();
-  }
+  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + query.value("idCliente").toString() +
+                                                 " AND desativado = FALSE");
+  ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + query.value("idCliente").toString() +
+                                                    " AND desativado = FALSE");
 
-  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
-                                                 " AND desativado = false");
-  ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + qry.value("idCliente").toString() +
-                                                    " AND desativado = false");
-
-  ui->itemBoxEndereco->setValue(qry.value("idEnderecoEntrega"));
-  ui->itemBoxEnderecoFat->setValue(qry.value("idEnderecoEntrega"));
+  ui->itemBoxEndereco->setValue(query.value("idEnderecoEntrega"));
+  ui->itemBoxEnderecoFat->setValue(query.value("idEnderecoEntrega"));
 
   for (int field = 0; field < model.columnCount(); field++) {
-    if (not model.setData(model.index(mapper.currentIndex(), field), qry.value(field))) {
+    if (not model.setData(model.index(mapper.currentIndex(), field), query.value(field))) {
       qDebug() << "Erro setando dados venda: " << model.lastError();
     }
   }
@@ -249,15 +249,15 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
   double subTotalBruto = 0.0;
   double minimoFrete = 0, porcFrete = 0;
 
-  QSqlQuery qryFrete;
+  QSqlQuery queryFrete;
+  queryFrete.prepare("SELECT * FROM Loja WHERE idLoja = :idLoja");
+  queryFrete.bindValue(":idLoja", UserSession::getLoja());
 
-  if (not qryFrete.exec("SELECT * FROM Loja WHERE idLoja = " + QString::number(UserSession::getLoja()))) {
-    qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
-  }
-
-  if (qryFrete.next()) {
-    minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
-    porcFrete = qryFrete.value("porcentagemFrete").toDouble();
+  if (not queryFrete.exec() or not queryFrete.first()) {
+    qDebug() << "Erro buscando parâmetros do frete: " << queryFrete.lastError();
+  } else {
+    minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
+    porcFrete = queryFrete.value("porcentagemFrete").toDouble();
   }
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
@@ -313,17 +313,20 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
 
 void Venda::fillTotals() {
   QSqlQuery query;
+  query.prepare("SELECT * FROM Orcamento WHERE idOrcamento = :idOrcamento");
+  query.bindValue(":idOrcamento", idVenda);
 
-  if (not query.exec("SELECT * FROM Orcamento WHERE idOrcamento = '" + idVenda + "'")) {
+  if (not query.exec()) {
     qDebug() << "Erro buscando orçamento: " << query.lastError();
     qDebug() << "query: " << query.lastQuery();
   }
 
   if (not query.first()) {
-    if (not query.exec("SELECT * FROM Venda WHERE idVenda = '" + idVenda + "'")) {
+    query.prepare("SELECT * FROM Venda WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", idVenda);
+
+    if (not query.exec() or not query.first()) {
       qDebug() << "Erro buscando venda: " << query.lastError();
-    }
-    if (not query.first()) {
       qDebug() << "Não achou venda: " << query.size();
       qDebug() << "query: " << query.lastQuery();
     }
@@ -498,51 +501,65 @@ bool Venda::savingProcedures(int row) {
     return false;
   }
 
-  QSqlQuery qry;
+  QSqlQuery query;
 
-  // TODO: implement
-  //  QSqlQuery qryEstoque("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM "
-  //                       "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-  //                       "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
-  //                       idVenda + "'");
-  //  if (not qryEstoque.exec()) {
-  //    qDebug() << qryEstoque.lastError();
+  //  TODO: implement
+  //  query.prepare("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM Venda_has_Produto INNER "
+  //                "JOIN Produto ON Produto.idProduto = Venda_has_Produto.idProduto WHERE estoque = 0 AND "
+  //                "Venda_has_Produto.idVenda = :idVenda");
+  //  query.bindValue(":idVenda", idVenda);
+
+  //  if (not query.exec()) {
+  //    qDebug() << "Erro na verificação de estoque: " << query.lastError();
   //    return false;
   //  }
 
-  //  if (qryEstoque.size() > 0) {
-  //    if (not qry.exec("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-  //                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-  //                     "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
-  //                     "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-  //                     "descontoReais, total, validade, status "
-  //                     "FROM Venda WHERE idVenda = '" +
-  //                     idVenda + "'")) {
-  //      qDebug() << "Erro na criação do pedido fornecedor: " << qry.lastError();
-  //      return false;
+  //  if (query.size() > 0) {
+  //    query.prepare("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
+  //                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+  //                  "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
+  //                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+  //                  "descontoReais, total, validade, status "
+  //                  "FROM Venda WHERE idVenda = :idVenda");
+  //    query.bindValue(":idVenda", idVenda);
+
+  //    if (not query.exec()) {
+  //      qDebug() << "Erro na criação do pedido fornecedor: " << query.lastError();
   //    }
-  //    if (not qry.exec("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
-  //                     "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-  //                     "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = '" +
-  //                     idVenda + "'")) {
-  //      qDebug() << "Erro na inserção dos produtos em pedidofornecedor_has_produto: " << qry.lastError();
+
+  //    query.prepare("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
+  //                  "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+  //                  "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = :idVenda");
+  //    query.bindValue(":idVenda", idVenda);
+
+  //    if (not query.exec()) {
+  //      qDebug() << "Erro na inserção de produtos em PedidoFornecedor_has_Produto: " << query.lastError();
   //      return false;
   //    }
   //  }
 
-  if (not qry.exec("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = '" + idVenda + "'")) {
-    qDebug() << "Error deleting items from Orcamento_has_Produto: " << qry.lastError();
+  query.prepare("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = :idVenda");
+  query.bindValue(":idVenda", idVenda);
+
+  if (not query.exec()) {
+    qDebug() << "Erro deletando itens no Orcamento_has_Produto: " << query.lastError();
     return false;
   }
 
-  if (not qry.exec("DELETE FROM Orcamento WHERE idOrcamento = '" + idVenda + "'")) {
-    qDebug() << "Error deleting row from Orcamento: " << qry.lastError();
+  query.prepare("DELETE FROM Orcamento WHERE idOrcamento = :idVenda");
+  query.bindValue(":idVenda", idVenda);
+
+  if (not query.exec()) {
+    qDebug() << "Erro deletando Orcamento: " << query.lastError();
     return false;
   }
 
-  if (not qry.exec("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES ('" +
-                   QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + "', '" + idVenda + "')")) {
-    qDebug() << "Error inserting contaareceber: " << qry.lastError();
+  query.prepare("INSERT INTO ContaAReceber (dataEmissao, idVenda) VALUES (:dataEmissao, :idVenda)");
+  query.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  query.bindValue(":idVenda", idVenda);
+
+  if (not query.exec()) {
+    qDebug() << "Erro inserindo ContaAReceber: " << query.lastError();
     return false;
   }
 
@@ -771,8 +788,6 @@ void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
 
 void Venda::on_pushButtonImprimir_clicked() {
-  //  QString filename = QFileDialog::getOpenFileName(this, "Selecionar xml", QDir::currentPath());
-  //  qDebug() << "file: " << filename;
   QtRPT *report = new QtRPT(this);
   report->loadReport("C:/ERP/venda.xml");
   report->recordCount << ui->tableVenda->model()->rowCount();
@@ -784,16 +799,18 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   Q_UNUSED(reportPage);
   QLocale locale;
 
-  QSqlQuery queryClien("SELECT * FROM Cliente WHERE idCliente = " +
-                       model.data(model.index(0, model.fieldIndex("idCliente"))).toString());
-  queryClien.first();
+  QSqlQuery queryCliente;
+  queryCliente.prepare("SELECT * FROM Cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", model.data(model.index(0, model.fieldIndex("idCliente"))));
+  queryCliente.first();
 
-  QSqlQuery queryProd("SELECT * FROM Produto WHERE idProduto = " +
-                      modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))).toString());
-  queryProd.first();
+  QSqlQuery queryProduto;
+  queryProduto.prepare("SELECT * FROM Produto WHERE idProduto = :idProduto");
+  queryProduto.bindValue(":idProduto", modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))));
+  queryProduto.first();
 
   if (paramName == "cliente") {
-    paramValue = queryClien.value("nome_razao").toString();
+    paramValue = queryCliente.value("nome_razao").toString();
   }
 
   if (paramName == "data") {
@@ -805,7 +822,7 @@ void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int rep
   }
 
   if (paramName == "Código") {
-    paramValue = queryProd.value("codComercial").toString();
+    paramValue = queryProduto.value("codComercial").toString();
   }
 
   if (paramName == "Nome do produto") {

@@ -171,7 +171,7 @@ bool CadastroLoja::viewRegister(QModelIndex index) {
     return false;
   }
 
-  modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + " AND desativado = false");
+  modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
@@ -265,7 +265,7 @@ void CadastroLoja::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idLoja = " + data(primaryKey).toString());
   } else {
-    modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + " AND desativado = false");
+    modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + " AND desativado = FALSE");
   }
 }
 

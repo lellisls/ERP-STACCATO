@@ -28,29 +28,38 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
 EntregasCliente::~EntregasCliente() { delete ui; }
 
 void EntregasCliente::on_pushButtonSalvar_clicked() {
+  QSqlQuery query;
 
   if (ui->checkBoxEntregue->isChecked()) {
-    QSqlQuery qry;
+    query.prepare(
+          "UPDATE PedidoTransportadora SET status = 'ENTREGUE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
+    query.bindValue(":idPedido", idPedido);
 
-    if (not qry.exec("UPDATE pedidotransportadora SET status = 'ENTREGUE' WHERE idPedido = '" + idPedido +
-                     "' AND tipo = 'cliente'")) {
-      qDebug() << "Erro ao marcar como entregue: " << qry.lastError();
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar como entregue: " << query.lastError();
     }
 
-    if (not qry.exec("UPDATE venda SET status = 'FECHADO' WHERE idVenda = '" + idPedido + "'")) {
-      qDebug() << "Erro ao concluir a venda:" << qry.lastError();
+    query.prepare("UPDATE Venda SET status = 'FECHADO' WHERE idVenda = :idPedido");
+    query.bindValue(":idPedido", idPedido);
+
+    if (not query.exec()) {
+      qDebug() << "Erro ao concluir a venda:" << query.lastError();
     }
 
   } else {
-    QSqlQuery qry;
+    query.prepare(
+          "UPDATE PedidoTransportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
+    query.bindValue(":idPedido", idPedido);
 
-    if (not qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
-                     "' AND tipo = 'cliente'")) {
-      qDebug() << "Erro ao marcar como não entregue: " << qry.lastError();
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar como não entregue: " << query.lastError();
     }
 
-    if (not qry.exec("UPDATE venda set status = 'ABERTO' WHERE idVenda = '" + idPedido + "'")) {
-      qDebug() << "Erro ao marcar venda como não concluída: " << qry.lastError();
+    query.prepare("UPDATE Venda SET status = 'ABERTO' WHERE idVenda = :idVenda");
+    query.bindValue("idVenda", idPedido);
+
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar venda como não concluída: " << query.lastError();
     }
   }
 

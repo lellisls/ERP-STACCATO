@@ -38,18 +38,22 @@ ContasAPagar::~ContasAPagar() { delete ui; }
 void ContasAPagar::on_checkBoxPago_toggled(bool checked) { Q_UNUSED(checked;) }
 
 void ContasAPagar::on_pushButtonSalvar_clicked() {
-  if (ui->checkBoxPago->isChecked()) {
-    QSqlQuery qry;
+  QSqlQuery query;
 
-    if (not qry.exec("UPDATE contaapagar SET pago = 'SIM' WHERE idVenda = '" + idVenda + "'")) {
-      qDebug() << "Erro ao marcar conta como paga: " << qry.lastError();
+  if (ui->checkBoxPago->isChecked()) {
+    query.prepare("UPDATE ContaAPagar SET pago = 'SIM' WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", idVenda);
+
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar conta como paga: " << query.lastError();
     }
 
   } else {
-    QSqlQuery qry;
+    query.prepare("UPDATE ContaAPagar SET pago = 'NÃO' WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", idVenda);
 
-    if (not qry.exec("UPDATE contaapagar SET pago = 'NÃO' WHERE idVenda = '" + idVenda + "'")) {
-      qDebug() << "Erro ao marcar conta como não paga: " << qry.lastError();
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar conta como não paga: " << query.lastError();
     }
   }
 

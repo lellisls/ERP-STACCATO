@@ -232,7 +232,7 @@ void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString());
   } else {
-    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = false");
+    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
   }
 }
 

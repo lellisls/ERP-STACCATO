@@ -11,6 +11,24 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 
   setWindowModality(Qt::NonModal);
 
+  setupEndereco();
+  setupUi();
+  setupMapper();
+  newRegister();
+
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+    ui->tabWidget->setTabEnabled(1, false);
+    ui->pushButtonRemover->setDisabled(true);
+  }
+}
+
+CadastroProfissional::~CadastroProfissional() { delete ui; }
+
+void CadastroProfissional::setupEndereco() {
   modelEnd.setTable("Profissional_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -32,22 +50,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idProfissional"));
-
-  setupUi();
-  setupMapper();
-  newRegister();
-
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
-
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->tabWidget->setTabEnabled(1, false);
-    ui->pushButtonRemover->setDisabled(true);
-  }
 }
-
-CadastroProfissional::~CadastroProfissional() { delete ui; }
 
 void CadastroProfissional::setupUi() {
   ui->lineEditCEP->setInputMask("99999-999;_");
@@ -118,7 +121,7 @@ bool CadastroProfissional::viewRegister(QModelIndex index) {
     return false;
   }
 
-  modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = false");
+  modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     qDebug() << modelEnd.lastError();
@@ -350,7 +353,7 @@ void CadastroProfissional::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroProfissional::on_pushButtonBuscar_clicked() {
   SearchDialog *sdProfissional = SearchDialog::profissional(this);
-  sdProfissional->setFilter("idProfissional NOT IN (1) AND desativado = false");
+  sdProfissional->setFilter("idProfissional NOT IN (1) AND desativado = FALSE");
   connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::changeItem);
   sdProfissional->show();
 }
@@ -510,7 +513,7 @@ void CadastroProfissional::on_checkBoxMostrarInativos_clicked(bool checked) {
   if (checked) {
     modelEnd.setFilter("idProfissional = " + data(primaryKey).toString());
   } else {
-    modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = false");
+    modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = FALSE");
   }
 }
 

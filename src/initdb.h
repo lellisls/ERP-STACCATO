@@ -52,10 +52,6 @@ bool loadScript(const QString &filename) {
 }
 
 inline bool initDb() {
-  //  qDebug() << "Initializing mydb: ";
-  //  qDebug() << qApp->applicationDirPath() + "/initdb.sql";
-  //  qDebug() << "LOADING initdb.sql";
-
   if (not loadScript(qApp->applicationDirPath() + "/initdb.sql")) {
     QMessageBox::warning(0, "Aviso!", "Não carregou o script do BD.");
     return false;
@@ -64,8 +60,6 @@ inline bool initDb() {
   QSqlQuery query;
 
   if (not query.exec("SELECT * FROM cep.sp LIMIT 1")) {
-    //    qDebug() << "LOADING cep.sql";
-
     if (not loadScript(qApp->applicationDirPath() + "/cep.sql")) {
       QMessageBox::warning(0, "Aviso!", "Não carregou o script do cep.");
       return false;

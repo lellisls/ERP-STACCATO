@@ -78,6 +78,7 @@ class CadastroProfissional : public RegisterDialog {
     void novoEndereco();
     void clearEndereco();
     bool cadastrarEndereco(bool isUpdate);
+    void setupEndereco();
 };
 
 #endif // CADASTROPROFISSIONAL_H

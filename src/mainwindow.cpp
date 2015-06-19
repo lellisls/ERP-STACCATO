@@ -6,8 +6,8 @@
 #include <QShortcut>
 #include <QSqlTableModel>
 #include <QtSql>
-#include <porcentagemdelegate.h>
 
+#include "porcentagemdelegate.h"
 #include "backgroundproxymodel.h"
 #include "cadastrocliente.h"
 #include "cadastroloja.h"

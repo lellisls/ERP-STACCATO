@@ -15,7 +15,7 @@ QString UserSession::getNome() { return (query->value("nome").toString()); }
 bool UserSession::login(QString user, QString password) {
   initialize();
 
-  query->prepare("SELECT * FROM Usuario WHERE user = :user AND passwd = PASSWORD(:password) AND desativado = false");
+  query->prepare("SELECT * FROM Usuario WHERE user = :user AND passwd = PASSWORD(:password) AND desativado = FALSE");
   query->bindValue(":user", user);
   query->bindValue(":password", password);
 
@@ -41,15 +41,14 @@ QString UserSession::getTipoUsuario() { return (query->value("tipo").toString())
 QString UserSession::getSigla() { return (query->value("sigla").toString()); }
 
 QString UserSession::getSiglaLoja() {
-  QString str = "SELECT sigla FROM Loja WHERE idLoja = " + QString::number(getLoja());
-  QSqlQuery queryLoja(str);
+  QSqlQuery queryLoja;
+  queryLoja.prepare("SELECT sigla FROM Loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", getLoja());
 
-  if (not queryLoja.exec(str)) {
+  if (not queryLoja.exec() or not queryLoja.first()) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
-  }
-
-  if (queryLoja.first()) {
-    return (queryLoja.value("sigla").toString());
+  } else{
+    return queryLoja.value("sigla").toString();
   }
 
   return QString();

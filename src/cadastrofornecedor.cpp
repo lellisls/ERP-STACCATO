@@ -147,12 +147,13 @@ bool CadastroFornecedor::verifyFields(int row) {
 bool CadastroFornecedor::savingProcedures(int row) {
   if (data(primaryKey).isNull()) {
     QSqlQuery queryKey;
+    queryKey.prepare("SELECT MAX(:primaryKey) FROM :table");
+    queryKey.bindValue(":primaryKey", primaryKey);
+    queryKey.bindValue(":table", model.tableName());
 
-    if (not queryKey.exec("SELECT MAX(" + primaryKey + ") FROM " + model.tableName())) {
+    if (not queryKey.exec() or not queryKey.first()) {
       qDebug() << "Erro na queryKey: " << queryKey.lastError();
-    }
-
-    if (queryKey.first()) {
+    } else {
       setData(row, primaryKey, qMax(queryKey.value(0).toInt() + 1, 1000));
     }
   }

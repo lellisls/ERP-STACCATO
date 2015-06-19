@@ -224,17 +224,28 @@ void Orcamento::removeItem() {
 }
 
 void Orcamento::updateId() {
-  QSqlQuery queryIdExists("SELECT * FROM Orcamento WHERE idOrcamento = '" + ui->lineEditOrcamento->text() + "'");
-  queryIdExists.exec();
+  QSqlQuery query;
+  query.prepare("SELECT * FROM Orcamento WHERE idOrcamento = :idOrcamento");
+  query.bindValue(":idOrcamento", ui->lineEditOrcamento->text());
 
-  if (queryIdExists.size() != 0) {
+  if (not query.exec()) {
+    qDebug() << "Erro na query: " << query.lastError();
+  }
+
+  if (query.size() != 0) {
     return;
   }
 
   QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
-  QSqlQuery query("SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE '" + id +
-                  "%' UNION SELECT idVenda AS idOrcamento FROM Venda WHERE idVenda LIKE '" + id +
-                  "%' ORDER BY idOrcamento ASC");
+
+  query.prepare("SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
+                "Venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
+  query.bindValue(":id", id + "%");
+
+  if (not query.exec()) {
+    qDebug() << "Erro na query: " << query.lastError();
+  }
+
   int last = 0;
 
   if (query.size() > 0) {
@@ -305,6 +316,7 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value());
   setData(row, "total", ui->doubleSpinBoxFinal->value());
 
+  // TODO: search error 1062
   if (not model.submitAll() and model.lastError().number() != 1062) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
@@ -377,13 +389,17 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
   double subTotalBruto = 0.0;
   double minimoFrete = 0, porcFrete = 0;
 
-  QSqlQuery qryFrete;
-  if (not qryFrete.exec("SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "'")) {
-    qDebug() << "Erro buscando parâmetros do frete: " << qryFrete.lastError();
+  QSqlQuery queryFrete;
+  queryFrete.prepare("SELECT * FROM Loja WHERE idLoja = :idLoja");
+  queryFrete.bindValue(":idLoja", UserSession::getLoja());
+
+  if (not queryFrete.exec()) {
+    qDebug() << "Erro buscando parâmetros do frete: " << queryFrete.lastError();
   }
-  if (qryFrete.next()) {
-    minimoFrete = qryFrete.value("valorMinimoFrete").toDouble();
-    porcFrete = qryFrete.value("porcentagemFrete").toDouble();
+
+  if (queryFrete.next()) {
+    minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
+    porcFrete = queryFrete.value("porcentagemFrete").toDouble();
   }
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
@@ -505,116 +521,7 @@ QString Orcamento::getItensHtml() {
   return itens;
 }
 
-void Orcamento::print(QPrinter *printer) {
-  QWebPage *page = new QWebPage(this);
-  QWebFrame *frame = page->mainFrame();
-  QDir appDir(QApplication::applicationDirPath());
-  QFile file("://orcamento.html");
-  QString html;
-
-  if (file.open(QFile::ReadOnly)) {
-    QByteArray data = file.readAll();
-    QTextCodec *codec = Qt::codecForHtml(data);
-    html = codec->toUnicode(data);
-    file.close();
-  } else {
-    QMessageBox::warning(this, "Aviso!", "Erro ao abrir orcamento.html");
-    return;
-  }
-
-  QString str = "SELECT * FROM Loja WHERE idLoja = '" + QString::number(UserSession::getLoja()) + "';";
-  QSqlQuery queryLoja(str);
-
-  if (not queryLoja.exec(str)) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryLoja.lastError();
-  }
-
-  queryLoja.first();
-
-  // Loja
-  html.replace("#LOGO#", QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString());
-  qDebug() << QUrl::fromLocalFile(appDir.absoluteFilePath("logo.jpg")).toString();
-  //  html.replace("NOME FANTASIA", queryLoja.value("nomeFantasia").toString());
-  //  html.replace("RAZAO SOCIAL", queryLoja.value("razaoSocial").toString());
-  html.replace("#TELLOJA#", queryLoja.value("tel").toString());
-
-  Endereco endLoja(queryLoja.value("idEndereco").toInt(), "Loja_has_Endereco");
-  // End. Loja
-  html.replace("#ENDLOJA01#", endLoja.linhaUm());
-  html.replace("#ENDLOJA02#", endLoja.linhaDois());
-  //  html.replace("TELLOJA",end);
-  // Orcamento
-  html.replace("#ORCAMENTO#", ui->lineEditOrcamento->text());
-  html.replace("#DATA#", ui->dateTimeEdit->text());
-
-  // Cliente
-  str = "SELECT * FROM Cliente WHERE idCliente = '" + ui->itemBoxCliente->value().toString() + "';";
-  QSqlQuery queryCliente(str);
-
-  if (not queryCliente.exec()) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryCliente.lastError();
-  }
-
-  queryCliente.first();
-  html.replace("#NOME#", ui->itemBoxCliente->text());
-
-  if (queryCliente.value("pfpj") == "PF") {
-    html.replace("#CPFCNPJ#", queryCliente.value("cpf").toString());
-  } else {
-    html.replace("#CPFCNPJ#", queryCliente.value("cnpj").toString());
-  }
-
-  html.replace("#EMAILCLIENTE#", queryCliente.value("email").toString());
-  html.replace("#TEL01#", queryCliente.value("tel").toString());
-  html.replace("#TEL02#", queryCliente.value("telCel").toString());
-
-  // End. Cliente
-  Endereco endEntrega(data("idEnderecoEntrega").toInt(), "Cliente_has_Endereco");
-  html.replace("#ENDENTREGA#", endEntrega.umaLinha());
-  html.replace("#CEPENTREGA#", endEntrega.cep());
-
-  // Profissional
-  str = "SELECT * FROM Profissional WHERE idProfissional='" + ui->itemBoxProfissional->value().toString() + "'";
-  QSqlQuery queryProf;
-
-  if (not queryProf.exec(str)) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << queryProf.lastError();
-  }
-
-  queryProf.first();
-  html.replace("#NOMEPRO#", ui->itemBoxProfissional->text());
-  html.replace("#TELPRO#", queryProf.value("tel").toString());
-  html.replace("#EMAILPRO#", queryProf.value("email").toString());
-
-  // Vendedor
-  html.replace("#NOMEVEND#", ui->itemBoxVendedor->text());
-  html.replace("#EMAILVEND#", "");
-  // Itens
-  QString itens = getItensHtml();
-  html.replace("<!-- #ITENS# -->", itens);
-
-  // Totais
-  //  html.replace("SUBTOTAL", ui->doubleSpinBoxTotalFrete->text());
-  html.replace("#SUBTOTALBRUTO#", ui->doubleSpinBoxSubTotalBruto->text());
-  html.replace("#SUBTOTALLIQ#", ui->doubleSpinBoxTotal->text());
-  html.replace("#DESCONTORS#", ui->doubleSpinBoxDescontoRS->text());
-  html.replace("#FRETE#", ui->doubleSpinBoxFrete->text());
-  html.replace("#TOTALFINAL#", ui->doubleSpinBoxFinal->text());
-
-  // Prazos
-  html.replace("#PRAZOENTREGA#", "A definir");
-  html.replace("#FORMAPAGAMENTO#", "A definir");
-  frame->setHtml(html);
-  //  frame->setTextSizeMultiplier(1.2);
-  frame->print(printer);
-  QFile outputFile(appDir.absoluteFilePath("orc.html"));
-
-  if (outputFile.open(QIODevice::WriteOnly)) {
-    QTextStream out(&outputFile);
-    out << html;
-    outputFile.close();
-  }
-}
+void Orcamento::print(QPrinter *printer) { Q_UNUSED(printer); }
 
 void Orcamento::adicionarItem() {
   calcPrecoItemTotal();
@@ -716,16 +623,18 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
   }
 
   int idCliente = ui->itemBoxCliente->value().toInt();
-  QSqlQuery qryCadastro;
 
-  if (not qryCadastro.exec("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente "
-                           "= Cliente.idCliente WHERE Cliente.idCliente = " +
-                           QString::number(idCliente) + " AND incompleto = 1")) {
-    qDebug() << "Erro verificando se cadastro do cliente está completo: " << qryCadastro.lastError();
+  QSqlQuery queryCadastro;
+  queryCadastro.prepare("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente = Cliente.idCliente "
+                        "WHERE Cliente.idCliente = :idCliente AND incompleto = TRUE");
+  queryCadastro.bindValue(":idCliente", idCliente);
+
+  if (not queryCadastro.exec()) {
+    qDebug() << "Erro verificando se cadastro do cliente está completo: " << queryCadastro.lastError();
     return;
   }
 
-  if (qryCadastro.next()) {
+  if (queryCadastro.next()) {
     QMessageBox::warning(this, "Aviso!", "Cadastro incompleto, deve terminar.");
     RegisterDialog *cadCliente = new CadastroCliente(this);
     cadCliente->viewRegisterById(idCliente);
@@ -823,13 +732,13 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
   Q_UNUSED(text);
 
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
-                                                 " AND desativado = false OR idEndereco = 1");
+                                                 " AND desativado = FALSE OR idEndereco = 1");
 
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
 
-  if (not queryCliente.exec() or !queryCliente.first()) {
+  if (not queryCliente.exec() or not queryCliente.first()) {
     qDebug() << "Erro ao buscar cliente: " << queryCliente.lastError();
   }
 
@@ -864,6 +773,7 @@ void Orcamento::on_checkBoxFreteManual_clicked(bool checked) {
 }
 
 void Orcamento::on_pushButtonReplicar_clicked() {
+  // TODO: terminar replicação de orcamento
   QString lastOrc = ui->lineEditOrcamento->text();
 
   ui->lineEditOrcamento->clear();

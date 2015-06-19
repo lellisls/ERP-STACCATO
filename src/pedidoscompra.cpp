@@ -78,76 +78,76 @@ void PedidosCompra::viewPedido(QString idPedido) {
 }
 
 void PedidosCompra::on_pushButtonSalvar_clicked() {
-  QSqlQuery qryConta;
-  qryConta.prepare("INSERT INTO contaapagar(idVenda, dataEmissao) VALUES (:idVenda, :dataEmissao)");
-  qryConta.bindValue(":idVenda", idPedido);
-  qryConta.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  QSqlQuery query;
+  query.prepare("INSERT INTO ContaAPagar(idVenda, dataEmissao) VALUES (:idVenda, :dataEmissao)");
+  query.bindValue(":idVenda", idPedido);
+  query.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
-  if (not qryConta.exec()) {
-    qDebug() << "Erro inserindo conta a pagar: " << qryConta.lastError();
+  if (not query.exec()) {
+    qDebug() << "Erro inserindo conta a pagar: " << query.lastError();
   }
 
-  QSqlQuery qry;
-  qry.prepare("SELECT * FROM pedidofornecedor_has_produto WHERE idPedido = :idPedido");
-  qry.bindValue(":idPedido", idPedido);
+  query.prepare("SELECT * FROM PedidoFornecedor_has_Produto WHERE idPedido = :idPedido");
+  query.bindValue(":idPedido", idPedido);
 
-  if (not qry.exec()) {
-    qDebug() << "Erro buscando produtos: " << qry.lastError();
+  if (not query.exec()) {
+    qDebug() << "Erro buscando produtos: " << query.lastError();
   }
 
-  qDebug() << "size: " << qry.size();
+  qDebug() << "size: " << query.size();
 
-  for (int row = 0; row < qry.size(); ++row) {
+  for (int row = 0; row < query.size(); ++row) {
     QString combobox =
         modelItemPedidos.data(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("status"))).toString();
-    qry.next();
-    QString bd = qry.value("status").toString();
+    query.next();
+    QString status = query.value("status").toString();
 
-    if (bd != combobox) {
+    if (status != combobox) {
       if (combobox == "Comprar") {
         qDebug() << "Comprar";
-        QSqlQuery qryProduto;
-        qryProduto.prepare("INSERT INTO contaapagar_has_produto VALUES (:idVenda, :idProduto, :produto, "
-                           ":prcUnitario, :qte, :un, :total)");
-        qryProduto.bindValue(":idVenda", qry.value("idPedido"));
-        qryProduto.bindValue(":idProduto", qry.value("idProduto"));
-        qryProduto.bindValue(":produto", qry.value("produto"));
-        qryProduto.bindValue(":prcUnitario", qry.value("prcUnitario"));
-        qryProduto.bindValue(":qte", qry.value("qte"));
-        qryProduto.bindValue(":un", qry.value("un"));
-        qryProduto.bindValue(":total", qry.value("total"));
+        QSqlQuery queryProduto;
+        queryProduto.prepare("INSERT INTO ContaAPagar_has_Produto VALUES (:idVenda, :idProduto, :produto, "
+                             ":prcUnitario, :qte, :un, :total)");
+        queryProduto.bindValue(":idVenda", query.value("idPedido"));
+        queryProduto.bindValue(":idProduto", query.value("idProduto"));
+        queryProduto.bindValue(":produto", query.value("produto"));
+        queryProduto.bindValue(":prcUnitario", query.value("prcUnitario"));
+        queryProduto.bindValue(":qte", query.value("qte"));
+        queryProduto.bindValue(":un", query.value("un"));
+        queryProduto.bindValue(":total", query.value("total"));
 
-        if (not qryProduto.exec()) {
-          qDebug() << "Erro inserindo produtos na conta: " << qryProduto.lastError();
+        if (not queryProduto.exec()) {
+          qDebug() << "Erro inserindo produtos na conta: " << queryProduto.lastError();
         }
 
-        QSqlQuery qryEntrega;
-        qryEntrega.prepare("INSERT INTO pedidotransportadora (idTransportadora, idPedido, dataEmissao, "
-                           "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
-                           ":tipo)");
-        qryEntrega.bindValue(":idTransportadora", 1);
-        qryEntrega.bindValue(":idPedido", qry.value("idPedido"));
-        qryEntrega.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-        qryEntrega.bindValue(":status", "PENDENTE");
-        qryEntrega.bindValue(":tipo", "Fornecedor");
+        QSqlQuery queryEntrega;
+        queryEntrega.prepare("INSERT INTO PedidoTransportadora (idTransportadora, idPedido, dataEmissao, "
+                             "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
+                             ":tipo)");
+        queryEntrega.bindValue(":idTransportadora", 1);
+        queryEntrega.bindValue(":idPedido", query.value("idPedido"));
+        queryEntrega.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+        queryEntrega.bindValue(":status", "PENDENTE");
+        queryEntrega.bindValue(":tipo", "Fornecedor");
 
-        if (not qryEntrega.exec()) {
-          qDebug() << "Erro inserindo recebimento fornecedor: " << qryEntrega.lastError();
+        if (not queryEntrega.exec()) {
+          qDebug() << "Erro inserindo recebimento fornecedor: " << queryEntrega.lastError();
         }
 
-        qryEntrega.prepare("INSERT INTO pedidotransportadora (idTransportadora, idPedido, dataEmissao, "
-                           "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
-                           ":tipo)");
-        qryEntrega.bindValue(":idTransportadora", 1);
-        qryEntrega.bindValue(":idPedido", qry.value("idPedido"));
-        qryEntrega.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-        qryEntrega.bindValue(":status", "PENDENTE");
-        qryEntrega.bindValue(":tipo", "Cliente");
+        queryEntrega.prepare("INSERT INTO PedidoTransportadora (idTransportadora, idPedido, dataEmissao, "
+                             "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
+                             ":tipo)");
+        queryEntrega.bindValue(":idTransportadora", 1);
+        queryEntrega.bindValue(":idPedido", query.value("idPedido"));
+        queryEntrega.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+        queryEntrega.bindValue(":status", "PENDENTE");
+        queryEntrega.bindValue(":tipo", "Cliente");
 
-        if (not qryEntrega.exec()) {
-          qDebug() << "Erro inserindo entrega cliente: " << qryEntrega.lastError();
+        if (not queryEntrega.exec()) {
+          qDebug() << "Erro inserindo entrega cliente: " << queryEntrega.lastError();
         }
       }
+
       if (combobox == "Pago") {
         qDebug() << "Pago";
         // do something

@@ -27,19 +27,21 @@ RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent) : QDialog(parent
 RecebimentosFornecedor::~RecebimentosFornecedor() { delete ui; }
 
 void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
-  if (ui->checkBoxEntregue->isChecked()) {
-    QSqlQuery qry;
+  QSqlQuery query;
 
-    if (not qry.exec("UPDATE pedidotransportadora SET status = 'RECEBIDO' WHERE idPedido = '" + idPedido +
-                     "' AND tipo = 'fornecedor'")) {
-      qDebug() << "Erro ao marcar como recebido: " << qry.lastError();
+  if (ui->checkBoxEntregue->isChecked()) {
+    query.prepare("UPDATE PedidoTransportadora SET status = 'RECEBIDO' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
+    query.bindValue("idPedido", idPedido);
+
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar como recebido: " << query.lastError();
     }
   } else {
-    QSqlQuery qry;
+    query.prepare("UPDATE PedidoTransportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
+    query.bindValue("idPedido", idPedido);
 
-    if (not qry.exec("UPDATE pedidotransportadora SET status = 'PENDENTE' WHERE idPedido = '" + idPedido +
-                     "' AND tipo = 'fornecedor'")) {
-      qDebug() << "Erro ao marcar como não recebido: " << qry.lastError();
+    if (not query.exec()) {
+      qDebug() << "Erro ao marcar como não recebido: " << query.lastError();
     }
   }
 

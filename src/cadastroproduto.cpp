@@ -97,7 +97,6 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->lineEditColecao, "colecao");
   addMapping(ui->lineEditFormComer, "formComercial");
   addMapping(ui->lineEditCodComer, "codComercial");
-  addMapping(ui->lineEditCodInd, "codIndustrial"); // TODO: codIndustrial deve ser a mesma coisa que UI
   addMapping(ui->lineEditCodBarras, "codBarras");
   addMapping(ui->lineEditNCM, "ncm");
   addMapping(ui->lineEditICMS, "icms");
@@ -125,7 +124,6 @@ void CadastroProduto::setupMapper() {
 bool CadastroProduto::savingProcedures(int row) {
   setData(row, "codBarras", ui->lineEditCodBarras->text());
   setData(row, "codComercial", ui->lineEditCodComer->text());
-  setData(row, "codIndustrial", ui->lineEditCodInd->text());
   setData(row, "colecao", ui->lineEditColecao->text());
   setData(row, "comissao", ui->doubleSpinBoxComissao->value());
   setData(row, "custo", ui->doubleSpinBoxCusto->value());

@@ -206,7 +206,6 @@ void ImportaProdutos::setModelAndTable() {
   model.setHeaderData(model.fieldIndex("kgcx"), Qt::Horizontal, "Kg./Cx.");
   model.setHeaderData(model.fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
   model.setHeaderData(model.fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  model.setHeaderData(model.fieldIndex("codIndustrial"), Qt::Horizontal, "Cód. Ind.");
   model.setHeaderData(model.fieldIndex("codBarras"), Qt::Horizontal, "Cód. Barras");
   model.setHeaderData(model.fieldIndex("ncm"), Qt::Horizontal, "NCM");
   model.setHeaderData(model.fieldIndex("ncmEx"), Qt::Horizontal, "NCM EX");
@@ -243,7 +242,6 @@ void ImportaProdutos::setModelAndTable() {
   ui->tableProdutos->setColumnHidden(model.fieldIndex("atualizarTabelaPreco"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("temLote"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("tipo"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("codIndustrial"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("comissao"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("observacoes"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("origem"), true);

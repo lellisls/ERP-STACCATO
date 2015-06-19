@@ -219,7 +219,6 @@ void ImportaProdutos::setModelAndTable() {
   model.setHeaderData(model.fieldIndex("comissao"), Qt::Horizontal, "Comissão");
   model.setHeaderData(model.fieldIndex("observacoes"), Qt::Horizontal, "Obs.");
   model.setHeaderData(model.fieldIndex("origem"), Qt::Horizontal, "Origem");
-  model.setHeaderData(model.fieldIndex("temLote"), Qt::Horizontal, "Tem Lote?");
   model.setHeaderData(model.fieldIndex("ui"), Qt::Horizontal, "UI");
   model.setHeaderData(model.fieldIndex("validade"), Qt::Horizontal, "Validade");
   model.setHeaderData(model.fieldIndex("markup"), Qt::Horizontal, "Markup");
@@ -287,7 +286,7 @@ void ImportaProdutos::setVariantMap() {
   variantMap.insert("observacoes", QVariant(QVariant::String));
   variantMap.insert("origem", QVariant(QVariant::Int));
   variantMap.insert("descontinuado", QVariant(QVariant::Int));
-  variantMap.insert("temLote", QVariant(QVariant::String));
+  variantMap.insert("representacao", QVariant(QVariant::String));
   variantMap.insert("ui", QVariant(QVariant::String));
 }
 
@@ -385,6 +384,10 @@ void ImportaProdutos::consistenciaDados() {
 
   if (variantMap.value("st").isNull()) {
     variantMap.insert("st", 0);
+  }
+
+  if (variantMap.value("representacao").isNull()) {
+    variantMap.insert("representacao", 0);
   }
 
   if (variantMap.value("descontinuado").isNull()) {

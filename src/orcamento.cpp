@@ -474,18 +474,19 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
 }
 
 void Orcamento::on_pushButtonImprimir_clicked() {
-  QPrinter printer;
-  //  printer.setFullPage(true);
-  //  printer.setResolution(300);
-  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
-  printer.setOrientation(QPrinter::Portrait);
-  printer.setPaperSize(QPrinter::A4);
-  QPrintPreviewDialog preview(&printer, this, Qt::Window);
-  preview.setModal(true);
-  preview.setWindowTitle("Impressão de Orçamento");
-  connect(&preview, &QPrintPreviewDialog::paintRequested, this, &Orcamento::print);
-  preview.showMaximized();
-  preview.exec();
+  QMessageBox::warning(this, "Aviso!", "Ainda não implementado");
+  //  QPrinter printer;
+  //  //  printer.setFullPage(true);
+  //  //  printer.setResolution(300);
+  //  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
+  //  printer.setOrientation(QPrinter::Portrait);
+  //  printer.setPaperSize(QPrinter::A4);
+  //  QPrintPreviewDialog preview(&printer, this, Qt::Window);
+  //  preview.setModal(true);
+  //  preview.setWindowTitle("Impressão de Orçamento");
+  //  connect(&preview, &QPrintPreviewDialog::paintRequested, this, &Orcamento::print);
+  //  preview.showMaximized();
+  //  preview.exec();
 }
 
 QString Orcamento::itemData(int row, QString key) {

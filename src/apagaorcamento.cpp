@@ -39,6 +39,7 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
     qDebug() << "Erro cancelando orçamento: " << modelOrc.lastError();
   }
 
+  parentWidget()->close();
   close();
 }
 

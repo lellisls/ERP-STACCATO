@@ -14,6 +14,9 @@ class CadastroLoja : public RegisterDialog {
     explicit CadastroLoja(QWidget *parent = 0);
     ~CadastroLoja();
 
+  public slots:
+    void show();
+
   private slots:
     void changeItem(QVariant value);
     void on_pushButtonAtualizar_clicked();
@@ -40,7 +43,6 @@ class CadastroLoja : public RegisterDialog {
 *\return
 */
     virtual bool viewRegister(QModelIndex index);
-    void clearEndereco();
 
   private:
     /*!
@@ -78,9 +80,8 @@ class CadastroLoja : public RegisterDialog {
     // methods
     void novoEndereco();
     bool cadastrarEndereco(bool isUpdate);
-  public slots:
-    void show();
     int getCodigoUF();
+    void clearEndereco();
 };
 
 #endif // CADASTROLOJA_H

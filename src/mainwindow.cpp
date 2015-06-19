@@ -135,25 +135,25 @@ bool MainWindow::dbConnect() {
 
   } else {
     switch (db.lastError().number()) {
-    case 1045:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o usuário e senha do banco de dados estão corretos.");
-      break;
-    case 2002:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o servidor está ligado, e acessível pela rede.");
-      break;
-    case 2003:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o servidor está ligado, e acessível pela rede.");
-      break;
-    case 2005:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o IP do servidor foi escrito corretamente.");
-      break;
-    default:
-      showError(db.lastError());
-      break;
+      case 1045:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o usuário e senha do banco de dados estão corretos.");
+        break;
+      case 2002:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o servidor está ligado, e acessível pela rede.");
+        break;
+      case 2003:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o servidor está ligado, e acessível pela rede.");
+        break;
+      case 2005:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o IP do servidor foi escrito corretamente.");
+        break;
+      default:
+        showError(db.lastError());
+        break;
     }
 
     return false;
@@ -676,20 +676,20 @@ void MainWindow::on_tableNFE_activated(const QModelIndex &index) {
 bool MainWindow::event(QEvent *e) // overloading event(QEvent*) method of QMainWindow
 {
   switch (e->type()) {
-  // ...
-
-  case QEvent::WindowActivate:
-    // gained focus
-    updateTables();
-    //    qDebug() << "focus: updating tables";
-    break;
-
-  case QEvent::WindowDeactivate:
-    // lost focus
-    break;
     // ...
-  default:
-    break;
+
+    case QEvent::WindowActivate:
+      // gained focus
+      updateTables();
+      //    qDebug() << "focus: updating tables";
+      break;
+
+    case QEvent::WindowDeactivate:
+      // lost focus
+      break;
+      // ...
+    default:
+      break;
   };
 
   return QMainWindow::event(e);

@@ -164,6 +164,9 @@
                       <height>0</height>
                      </size>
                     </property>
+                    <property name="accessibleName">
+                     <string>Nome/Razão Social</string>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 255, 127);</string>
                     </property>

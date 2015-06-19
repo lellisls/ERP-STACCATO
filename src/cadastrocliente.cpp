@@ -6,12 +6,49 @@
 #include "usersession.h"
 
 CadastroCliente::CadastroCliente(QWidget *parent)
-  : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
+    : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
+  SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
+  ui->itemBoxCliente->setSearchDialog(sdCliente);
+
+  SearchDialog *sdProfissional = SearchDialog::profissional(this);
+  ui->itemBoxProfissional->setSearchDialog(sdProfissional);
+
+  RegisterDialog *regProfissional = new CadastroProfissional(this);
+  ui->itemBoxProfissional->setRegisterDialog(regProfissional);
+
+  SearchDialog *sdVendedor = SearchDialog::usuario(this);
+  ui->itemBoxVendedor->setSearchDialog(sdVendedor);
+
+  setupEndereco();
+  setupMapper();
+  newRegister();
+
+  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
+}
+
+void CadastroCliente::setupUi() {
+  ui->lineEditCPF->setInputMask("999.999.999-99;_");
+  ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
+  ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
+  ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
+  ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
+}
 
+CadastroCliente::~CadastroCliente() { delete ui; }
+
+void CadastroCliente::setupEndereco()
+{
   modelEnd.setTable("Cliente_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -33,41 +70,7 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
-
-  SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
-  ui->itemBoxCliente->setSearchDialog(sdCliente);
-
-  SearchDialog *sdProfissional = SearchDialog::profissional(this);
-  ui->itemBoxProfissional->setSearchDialog(sdProfissional);
-
-  RegisterDialog *regProfissional = new CadastroProfissional(this);
-  ui->itemBoxProfissional->setRegisterDialog(regProfissional);
-
-  SearchDialog *sdVendedor = SearchDialog::usuario(this);
-  ui->itemBoxVendedor->setSearchDialog(sdVendedor);
-
-  setupMapper();
-  newRegister();
-
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
-
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->pushButtonRemover->setDisabled(true);
-    ui->pushButtonRemoverEnd->setDisabled(true);
-  }
 }
-
-void CadastroCliente::setupUi() {
-  ui->lineEditCPF->setInputMask("999.999.999-99;_");
-  ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
-  ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
-  ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
-  ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
-}
-
-CadastroCliente::~CadastroCliente() { delete ui; }
 
 bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
   if (line->styleSheet() != requiredStyle()) {
@@ -136,7 +139,11 @@ bool CadastroCliente::verifyFields(int row) {
     setData(row, "incompleto", false);
   } else {
     setData(row, "incompleto", true);
-    return true;
+  }
+
+  if (ui->lineEditCliente->text().isEmpty()) {
+    QMessageBox::warning(this, "Aviso!", "Faltou: \"" + ui->lineEditCliente->accessibleName() + "\"");
+    return false;
   }
 
   return true;
@@ -222,7 +229,7 @@ bool CadastroCliente::savingProcedures(int row) {
       qDebug() << "error: " << modelEnd.lastError();
     }
   }
-
+  qDebug() << "id: " << idCliente; // NOTE: remove this
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
     qDebug() << "QUERY : " << modelEnd.query().lastQuery();
@@ -374,7 +381,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
 
 bool CadastroCliente::cadastrarEndereco(bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
-                                       ui->lineEditCidade, ui->lineEditUF})) {
+                                        ui->lineEditCidade, ui->lineEditUF})) {
     return false;
   }
 

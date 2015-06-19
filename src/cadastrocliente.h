@@ -48,7 +48,8 @@ class CadastroCliente : public RegisterDialog {
 */
     virtual bool viewRegister(QModelIndex index);
 
-  private:
+    void setupEndereco();
+    private:
     /*!
 * \brief Função padrão para verificar campos obrigatórios
 * \return

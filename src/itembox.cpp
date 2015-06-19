@@ -5,6 +5,7 @@
 ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), m_searchDialog(nullptr), m_registerDialog(nullptr) {
   setReadOnly(true);
 
+  // TODO: make a function to disable search and register (read-only)
   m_searchButton = new QPushButton(this);
   m_searchButton->setIcon(QIcon(":/search.png"));
   m_searchButton->setAutoDefault(false);

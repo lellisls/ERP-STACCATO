@@ -4,7 +4,7 @@ DELIMITER //
 CREATE PROCEDURE InvalidateExpired()
 BEGIN 
 
-	INSERT INTO Log (data, log) VALUES (NOW(), 'Descontinuando produtos vencidos.');
+	INSERT INTO Log (usuario, tipoOperacao, data, log) VALUES ('SISTEMA', 'Manutenção', NOW(), 'Descontinuando produtos vencidos.');
 
 	UPDATE Produto_has_Preco 
 SET 

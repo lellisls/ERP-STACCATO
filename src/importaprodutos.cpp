@@ -440,7 +440,7 @@ void ImportaProdutos::atualizaCamposProduto(QSqlQuery &produto, QString idProdut
     model.setData(model.index(row, model.fieldIndex("validadeUpd")), White);
   }
 
-  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble());
+  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.0;
 
   if (produto.value("markup") != markup) {
     model.setData(model.index(row, model.fieldIndex("markup")), markup);

@@ -96,6 +96,9 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
     ui->checkBoxFreteManual->show();
   } else {
     ui->checkBoxFreteManual->hide();
+    // NOTE: remove this later
+    ui->dateTimeEdit->setReadOnly(false);
+    ui->dateTimeEdit->setCalendarPopup(true);
   }
 
   ui->lineEditCodComercial->hide();
@@ -175,7 +178,8 @@ void Orcamento::setupMapper() {
   mapperItem.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
   mapperItem.addMapping(ui->lineEditPrecoUn, modelItem.fieldIndex("prcUnitario"), "value");
-  mapperItem.addMapping(ui->lineEditPrecoTotal, modelItem.fieldIndex("total"), "value");
+  //  mapperItem.addMapping(ui->lineEditPrecoTotal, modelItem.fieldIndex("total"), "value");
+  mapperItem.addMapping(ui->doubleSpinBoxPrecoTotal, model.fieldIndex("total"));
   mapperItem.addMapping(ui->lineEditOrcamento, modelItem.fieldIndex("idOrcamento"), "text");
   mapperItem.addMapping(ui->lineEditObs, modelItem.fieldIndex("obs"), "text");
   mapperItem.addMapping(ui->lineEditUn, modelItem.fieldIndex("un"), "text");
@@ -316,8 +320,7 @@ bool Orcamento::savingProcedures(int row) {
   setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value());
   setData(row, "total", ui->doubleSpinBoxFinal->value());
 
-  // TODO: search error 1062
-  if (not model.submitAll() and model.lastError().number() != 1062) {
+  if (not model.submitAll()) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
     qDebug() << "SUBMITALL ERROR: " << model.lastError();
@@ -363,7 +366,7 @@ void Orcamento::calcPrecoItemTotal() {
   double itemBruto = qte * prcUn;
   double subTotalItem = itemBruto * (1.0 - desc);
 
-  ui->lineEditPrecoTotal->setValue(subTotalItem);
+  ui->doubleSpinBoxPrecoTotal->setValue(subTotalItem);
 }
 
 void Orcamento::on_doubleSpinBoxDesconto_valueChanged(double) { calcPrecoItemTotal(); }
@@ -410,8 +413,8 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
     subTotalBruto += itemBruto;
     double stItem = itemBruto * (1.0 - descItem);
     subTotalItens += stItem;
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);  // Pr. Parcial
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem); // Pr. Parcial Desc.
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem);
   }
 
   double frete = qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
@@ -436,10 +439,10 @@ void Orcamento::calcPrecoGlobalTotal(bool ajusteTotal) {
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0); // Desconto
-    // Distr.
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0);
+
     double totalItem = stItem * (1 - descGlobal);
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem); // Pr. Final
+    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem);
   }
 
   ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
@@ -491,35 +494,6 @@ void Orcamento::on_pushButtonImprimir_clicked() {
 
 QString Orcamento::itemData(int row, QString key) {
   return modelItem.data(modelItem.index(row, modelItem.fieldIndex(key))).toString();
-}
-
-QString Orcamento::getItensHtml() {
-  QLocale locale(QLocale::Portuguese);
-  QDir dir(QApplication::applicationDirPath());
-  QFile file(dir.absoluteFilePath("itens.html"));
-  QString html;
-
-  if (file.open(QFile::ReadOnly)) {
-    QByteArray data = file.readAll();
-    QTextCodec *codec = Qt::codecForHtml(data);
-    html = codec->toUnicode(data);
-    file.close();
-  }
-
-  QString itens = html;
-
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
-    itens.replace("#MARCA#", itemData(row, "fornecedor"));
-    itens.replace("#CODIGO#", itemData(row, "idProduto"));
-    itens.replace("#DESCRICAO#", itemData(row, "produto"));
-    itens.replace("#AMBIENTE#", itemData(row, "obs"));
-    itens.replace("#PRECOUN#", itemData(row, "prcUnitario"));
-    itens.replace("#QTE#", locale.toString(itemData(row, "qte").toDouble()));
-    itens.replace("#UN#", itemData(row, "un"));
-    itens.replace("#TOTAL#", locale.toString(itemData(row, "total").toDouble()));
-  }
-
-  return itens;
 }
 
 void Orcamento::print(QPrinter *printer) { Q_UNUSED(printer); }
@@ -664,10 +638,10 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
     ui->doubleSpinBoxDesconto->setDisabled(true);
     ui->doubleSpinBoxQte->setSingleStep(1.0);
     ui->lineEditFornecedor->clear();
-    ui->lineEditPrecoTotal->clear();
+    ui->doubleSpinBoxPrecoTotal->clear();
     ui->lineEditPrecoUn->clear();
     ui->lineEditPrecoUn->setDisabled(true);
-    ui->lineEditPrecoTotal->setDisabled(true);
+    ui->doubleSpinBoxPrecoTotal->setDisabled(true);
     ui->lineEditUn->clear();
     ui->lineEditObs->clear();
     return;
@@ -695,7 +669,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->spinBoxCaixas->setEnabled(true);
   ui->doubleSpinBoxDesconto->setEnabled(true);
   ui->lineEditPrecoUn->setEnabled(true);
-  ui->lineEditPrecoTotal->setEnabled(true);
+  ui->doubleSpinBoxPrecoTotal->setEnabled(true);
 
   if (un.contains("m2") or un.contains("ml")) {
     ui->doubleSpinBoxQte->setSingleStep(query.value("m2cx").toDouble());
@@ -764,4 +738,18 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   QLocale locale(QLocale::Portuguese);
 
   save();
+}
+
+void Orcamento::on_doubleSpinBoxPrecoTotal_editingFinished() {
+  if (ui->itemBoxProduto->text().isEmpty()) {
+    return;
+  }
+
+  double qte = ui->doubleSpinBoxQte->value();
+  double prcUn = ui->lineEditPrecoUn->getValue();
+  double itemBruto = qte * prcUn;
+  double subTotalItem = ui->doubleSpinBoxPrecoTotal->value();
+  double desconto = (itemBruto - subTotalItem) / itemBruto * 100;
+
+  ui->doubleSpinBoxDesconto->setValue(desconto);
 }

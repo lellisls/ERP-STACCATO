@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1385</width>
+    <width>1366</width>
     <height>612</height>
    </rect>
   </property>
@@ -312,31 +312,6 @@
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_5">
-              <item row="0" column="0">
-               <widget class="QDateTimeEdit" name="dateTimeEdit">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data/hora em que o orçamento foi criado pela primeira vez&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::NoButtons</enum>
-                </property>
-                <property name="displayFormat">
-                 <string>dd/MM/yy hh:mm</string>
-                </property>
-                <property name="calendarPopup">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="ItemBox" name="itemBoxProfissional"/>
-              </item>
-              <item row="3" column="0">
-               <widget class="ItemBox" name="itemBoxEndereco"/>
-              </item>
               <item row="0" column="1">
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
@@ -374,6 +349,31 @@
                 </item>
                </layout>
               </item>
+              <item row="3" column="0">
+               <widget class="ItemBox" name="itemBoxEndereco"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="ItemBox" name="itemBoxProfissional"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QDateTimeEdit" name="dateTimeEdit">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data/hora em que o orçamento foi criado pela primeira vez&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
+                </property>
+                <property name="displayFormat">
+                 <string>dd/MM/yy hh:mm</string>
+                </property>
+                <property name="calendarPopup">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -387,19 +387,166 @@
           <string>Item do Orçamento</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="3" column="3">
-           <widget class="LineEditDecimal" name="lineEditPrecoUn">
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="lineEditFornecedor">
+            <property name="minimumSize">
+             <size>
+              <width>140</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nome do fornecedor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QLabel" name="labelObs">
+            <property name="text">
+             <string>Obs.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="labelEstoque">
+            <property name="text">
+             <string>Estoque</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="6">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxQte">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>55</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preço unitário&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade por unidade&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="correctionMode">
+             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+            </property>
+            <property name="maximum">
+             <double>9999999.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="4">
+           <widget class="QLineEdit" name="lineEditObs">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Observações:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;* Ambientes de instalação&lt;/p&gt;&lt;p&gt;* Instruções&lt;/p&gt;&lt;p&gt;* Descrição&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Ex: Piso do Banheiro&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="readOnly">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ItemBox" name="itemBoxProduto"/>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="labelPrecoUn">
+            <property name="text">
+             <string>Preço un.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="QLabel" name="labelCaixas">
+            <property name="text">
+             <string>Caixas</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="8">
+           <widget class="QLabel" name="labelDesconto">
+            <property name="text">
+             <string>Desconto</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="LineEditDecimal" name="lineEditEstoque">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade em estoque&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6">
+           <widget class="QLabel" name="labelQte">
+            <property name="text">
+             <string>Qte.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="7">
+           <widget class="QLabel" name="labelUn">
+            <property name="text">
+             <string>Unidade</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="7">
+           <widget class="QLineEdit" name="lineEditUn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>0</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidade padrão do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="labelFornecedor">
+            <property name="text">
+             <string>Fornecedor</string>
             </property>
            </widget>
           </item>
@@ -410,7 +557,20 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="13" rowspan="2">
+          <item row="3" column="8">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxDesconto">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto por item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> %</string>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="15" rowspan="2">
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <widget class="QPushButton" name="pushButtonAtualizarItem">
@@ -495,187 +655,8 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="8">
-           <widget class="QDoubleSpinBox" name="doubleSpinBoxDesconto">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto por item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="suffix">
-             <string> %</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="labelFornecedor">
-            <property name="text">
-             <string>Fornecedor</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="7">
-           <widget class="QLineEdit" name="lineEditUn">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>0</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidade padrão do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="7">
-           <widget class="QLabel" name="labelUn">
-            <property name="text">
-             <string>Unidade</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="6">
-           <widget class="QLabel" name="labelQte">
-            <property name="text">
-             <string>Qte.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="LineEditDecimal" name="lineEditEstoque">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade em estoque&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="8">
-           <widget class="QLabel" name="labelDesconto">
-            <property name="text">
-             <string>Desconto</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="5">
-           <widget class="QLabel" name="labelCaixas">
-            <property name="text">
-             <string>Caixas</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QLabel" name="labelPrecoUn">
-            <property name="text">
-             <string>Preço un.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="lineEditFornecedor">
-            <property name="minimumSize">
-             <size>
-              <width>140</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nome do fornecedor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="ItemBox" name="itemBoxProduto"/>
-          </item>
-          <item row="3" column="4">
-           <widget class="QLineEdit" name="lineEditObs">
-            <property name="minimumSize">
-             <size>
-              <width>120</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Observações:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;* Ambientes de instalação&lt;/p&gt;&lt;p&gt;* Instruções&lt;/p&gt;&lt;p&gt;* Descrição&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Ex: Piso do Banheiro&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="readOnly">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="6">
-           <widget class="QDoubleSpinBox" name="doubleSpinBoxQte">
-            <property name="maximumSize">
-             <size>
-              <width>55</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade por unidade&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="correctionMode">
-             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-            </property>
-            <property name="maximum">
-             <double>9999999.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="labelEstoque">
-            <property name="text">
-             <string>Estoque</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QLabel" name="labelObs">
-            <property name="text">
-             <string>Obs.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="9" colspan="2">
-           <widget class="LineEditDecimal" name="lineEditPrecoTotal">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>0</height>
-             </size>
-            </property>
+          <item row="3" column="3">
+           <widget class="LineEditDecimal" name="lineEditPrecoUn">
             <property name="maximumSize">
              <size>
               <width>60</width>
@@ -683,14 +664,56 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preço final do item, considerando desconto total aplicado&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preço unitário&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="3" column="11">
+          <item row="3" column="5">
+           <widget class="QSpinBox" name="spinBoxCaixas">
+            <property name="maximumSize">
+             <size>
+              <width>55</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="correctionMode">
+             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="9">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxPrecoTotal">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wrapping">
+             <bool>false</bool>
+            </property>
+            <property name="correctionMode">
+             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+            </property>
+            <property name="prefix">
+             <string>R$ </string>
+            </property>
+            <property name="maximum">
+             <double>9999999.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="9">
+           <widget class="QLabel" name="labelPrecoTotal">
+            <property name="text">
+             <string>Total</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="10">
            <widget class="QLineEdit" name="lineEditCodComercial">
             <property name="minimumSize">
              <size>
@@ -712,7 +735,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="12">
+          <item row="3" column="11">
            <widget class="QLineEdit" name="lineEditFormComercial">
             <property name="minimumSize">
              <size>
@@ -734,28 +757,21 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="11">
+          <item row="1" column="10">
            <widget class="QLabel" name="labelCodComercial">
             <property name="text">
              <string>Código</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="12">
+          <item row="1" column="11">
            <widget class="QLabel" name="labelFormComercial">
             <property name="text">
              <string>Formato</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="9" colspan="2">
-           <widget class="QLabel" name="labelPrecoTotal">
-            <property name="text">
-             <string>Total</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="13">
+          <item row="4" column="0" colspan="12">
            <widget class="QTableView" name="tableProdutos">
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustIgnored</enum>
@@ -778,22 +794,6 @@
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>false</bool>
             </attribute>
-           </widget>
-          </item>
-          <item row="3" column="5">
-           <widget class="QSpinBox" name="spinBoxCaixas">
-            <property name="maximumSize">
-             <size>
-              <width>55</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="correctionMode">
-             <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-            </property>
            </widget>
           </item>
          </layout>
@@ -894,7 +894,7 @@
                <string> %</string>
               </property>
               <property name="decimals">
-               <number>2</number>
+               <number>4</number>
               </property>
               <property name="maximum">
                <double>99.000000000000000</double>
@@ -1183,9 +1183,6 @@
   <tabstop>doubleSpinBoxQte</tabstop>
   <tabstop>lineEditUn</tabstop>
   <tabstop>doubleSpinBoxDesconto</tabstop>
-  <tabstop>lineEditPrecoTotal</tabstop>
-  <tabstop>lineEditCodComercial</tabstop>
-  <tabstop>lineEditFormComercial</tabstop>
   <tabstop>tableProdutos</tabstop>
   <tabstop>pushButtonAtualizarItem</tabstop>
   <tabstop>pushButtonAdicionarItem</tabstop>

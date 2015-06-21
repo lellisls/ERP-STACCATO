@@ -32,6 +32,7 @@ class Orcamento : public RegisterDialog {
     void on_doubleSpinBoxQte_editingFinished();
     void on_doubleSpinBoxQte_valueChanged(double);
     void on_doubleSpinBoxTotal_valueChanged(double);
+    void on_doubleSpinBoxPrecoTotal_editingFinished();
     void on_itemBoxCliente_textChanged(const QString &text);
     void on_itemBoxProduto_textChanged(const QString &text);
     void on_pushButtonAdicionarItem_clicked();
@@ -99,7 +100,6 @@ class Orcamento : public RegisterDialog {
 
   private:
     // attributes
-    QString getItensHtml();
     Ui::Orcamento *ui;
     QSqlRelationalTableModel modelItem;
     QDataWidgetMapper mapperItem;

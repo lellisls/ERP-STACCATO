@@ -126,7 +126,12 @@ bool MainWindow::dbConnect() {
     db.setDatabaseName("mydb");
 
     if (db.open()) {
-      //      qDebug() << "mydb schema found.";
+      QSqlQuery queryProcedure;
+
+      if (not queryProcedure.exec("CALL InvalidateExpired()")) {
+        qDebug() << "Erro executando procedure InvalidateExpired: " << queryProcedure.lastError();
+      }
+
       return true;
     } else {
       showError(db.lastError());

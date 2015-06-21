@@ -95,6 +95,8 @@ class MainWindow : public QMainWindow {
     void on_tableRecebimentosFornecedor_activated(const QModelIndex &index);
     void on_tableVendas_activated(const QModelIndex &index);
 
+    void on_radioButtonOrcProprios_clicked();
+
   private:
     // attributes
     Ui::MainWindow *ui;

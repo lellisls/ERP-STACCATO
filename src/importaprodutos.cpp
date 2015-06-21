@@ -530,10 +530,7 @@ void ImportaProdutos::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
   produto.prepare("SELECT * FROM Produto WHERE fornecedor = :fornecedor AND codComercial = "
                   ":codComercial AND ui = :ui");
   produto.bindValue(":fornecedor", variantMap.value("fornecedor"));
-  produto.bindValue(":descricao", variantMap.value("descricao"));
-  produto.bindValue(":colecao", variantMap.value("colecao"));
   produto.bindValue(":codComercial", variantMap.value("codComercial"));
-  produto.bindValue(":formComercial", variantMap.value("formComercial"));
   produto.bindValue(":ui", variantMap.value("ui"));
 
   if (not produto.exec()) {
@@ -552,11 +549,25 @@ void ImportaProdutos::pintarCamposForaDoPadrao(int row) {
     model.setData(model.index(row, model.fieldIndex("codBarrasUpd")), Gray);
   }
 
-  if (variantMap.value("codComercial").toString() == "0" or variantMap.value("codComercial").toString().isEmpty()) {
-    model.setData(model.index(row, model.fieldIndex("codComercialUpd")), Gray);
+  // Errados
+  if (variantMap.value("un").toString() == "m2" and variantMap.value("m2cx") <= 0.0) {
+    model.setData(model.index(row, model.fieldIndex("m2cxUpd")), Red);
+    hasError = true;
+    itensError++;
   }
 
-  // Errados
+  if (variantMap.value("un").toString() == "pç" and variantMap.value("pccx") < 1) {
+    model.setData(model.index(row, model.fieldIndex("pccxUpd")), Red);
+    hasError = true;
+    itensError++;
+  }
+
+  if (variantMap.value("codComercial").toString() == "0" or variantMap.value("codComercial").toString().isEmpty()) {
+    model.setData(model.index(row, model.fieldIndex("codComercialUpd")), Red);
+    hasError = true;
+    itensError++;
+  }
+
   if (variantMap.value("custo") <= 0.0) {
     model.setData(model.index(row, model.fieldIndex("custoUpd")), Red);
     hasError = true;
@@ -582,7 +593,7 @@ void ImportaProdutos::cadastraProduto() {
                 QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
   model.setData(model.index(row, model.fieldIndex("validadeUpd")), Green);
 
-  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble());
+  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.0;
   model.setData(model.index(row, model.fieldIndex("markup")), markup);
   model.setData(model.index(row, model.fieldIndex("markupUpd")), Green);
 
@@ -591,7 +602,7 @@ void ImportaProdutos::cadastraProduto() {
     model.setData(model.index(row, model.fieldIndex("ncmExUpd")), Green);
     variantMap.insert("ncm", variantMap.value("ncm").toString().left(8));
   } else {
-    model.setData(model.index(row, model.fieldIndex("ncmEx")), 0);
+    //    model.setData(model.index(row, model.fieldIndex("ncmEx")), 0);
     model.setData(model.index(row, model.fieldIndex("ncmExUpd")), Green);
   }
 

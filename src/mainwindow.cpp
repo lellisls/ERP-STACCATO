@@ -451,79 +451,129 @@ void MainWindow::updateTables() {
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO' AND idUsuario = " +
-                              QString::number(UserSession::getId()) + "");
-  } else {
-    modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO'");
-  }
+  modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO'");
+  ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonOrcExpirado_clicked() {
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    modelOrcamento->setFilter("`Dias restantes` < 1 AND idUsuario = " + QString::number(UserSession::getId()) + "");
-  } else {
-    modelOrcamento->setFilter("`Dias restantes` < 1");
-  }
+  modelOrcamento->setFilter("`Dias restantes` < 1");
+  ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonOrcLimpar_clicked() {
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    modelOrcamento->setFilter("idUsuario = " + QString::number(UserSession::getId()) + "");
-  } else {
-    modelOrcamento->setFilter("");
-  }
+  modelOrcamento->setFilter("");
+  ui->tableOrcamentos->resizeColumnsToContents();
 }
 
-void MainWindow::on_radioButtonVendAberto_clicked() { modelVendas->setFilter("status = 'aberto'"); }
+void MainWindow::on_radioButtonVendAberto_clicked() {
+  modelVendas->setFilter("status = 'aberto'");
+  ui->tableVendas->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonVendFechado_clicked() { modelVendas->setFilter("status = 'fechado'"); }
+void MainWindow::on_radioButtonVendFechado_clicked() {
+  modelVendas->setFilter("status = 'fechado'");
+  ui->tableVendas->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonVendLimpar_clicked() { modelVendas->setFilter(""); }
+void MainWindow::on_radioButtonVendLimpar_clicked() {
+  modelVendas->setFilter("");
+  ui->tableVendas->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonNFeAutorizado_clicked() { modelNFe->setFilter("status = 'autorizado'"); }
+void MainWindow::on_radioButtonNFeAutorizado_clicked() {
+  modelNFe->setFilter("status = 'autorizado'");
+  ui->tableNFE->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonNFeEnviado_clicked() { modelNFe->setFilter("status = 'enviado'"); }
+void MainWindow::on_radioButtonNFeEnviado_clicked() {
+  modelNFe->setFilter("status = 'enviado'");
+  ui->tableNFE->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonNFeLimpar_clicked() { modelNFe->setFilter(""); }
+void MainWindow::on_radioButtonNFeLimpar_clicked() {
+  modelNFe->setFilter("");
+  ui->tableNFE->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonFornLimpar_clicked() { modelPedCompra->setFilter(""); }
+void MainWindow::on_radioButtonFornLimpar_clicked() {
+  modelPedCompra->setFilter("");
+  ui->tablePedidosCompra->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonFornAberto_clicked() { modelPedCompra->setFilter("status = 'aberto'"); }
+void MainWindow::on_radioButtonFornAberto_clicked() {
+  modelPedCompra->setFilter("status = 'aberto'");
+  ui->tablePedidosCompra->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonFornFechado_clicked() { modelPedCompra->setFilter("status = 'fechado'"); }
+void MainWindow::on_radioButtonFornFechado_clicked() {
+  modelPedCompra->setFilter("status = 'fechado'");
+  ui->tablePedidosCompra->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonRecebimentoLimpar_clicked() { modelRecebimentosForn->setFilter("tipo = 'fornecedor'"); }
+void MainWindow::on_radioButtonRecebimentoLimpar_clicked() {
+  modelRecebimentosForn->setFilter("tipo = 'fornecedor'");
+  ui->tableRecebimentosFornecedor->resizeColumnsToContents();
+}
 
 void MainWindow::on_radioButtonRecebimentoRecebido_clicked() {
   modelRecebimentosForn->setFilter("status = 'recebido' AND tipo = 'fornecedor'");
+  ui->tableRecebimentosFornecedor->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonRecebimentoPendente_clicked() {
   modelRecebimentosForn->setFilter("status = 'pendente' AND tipo = 'fornecedor'");
+  ui->tableRecebimentosFornecedor->resizeColumnsToContents();
 }
 
-void MainWindow::on_radioButtonEntregaLimpar_clicked() { modelEntregasCliente->setFilter("tipo = 'cliente'"); }
+void MainWindow::on_radioButtonEntregaLimpar_clicked() {
+  modelEntregasCliente->setFilter("tipo = 'cliente'");
+  ui->tableEntregasCliente->resizeColumnsToContents();
+}
 
 void MainWindow::on_radioButtonEntregaEnviado_clicked() {
   modelEntregasCliente->setFilter("status = 'enviado' AND tipo = 'cliente'");
+  ui->tableEntregasCliente->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonEntregaPendente_clicked() {
   modelEntregasCliente->setFilter("status = 'pendente' AND tipo = 'cliente'");
+  ui->tableEntregasCliente->resizeColumnsToContents();
 }
 
-void MainWindow::on_radioButtonContaPagarLimpar_clicked() { modelCAPagar->setFilter(""); }
+void MainWindow::on_radioButtonContaPagarLimpar_clicked() {
+  modelCAPagar->setFilter("");
+  ui->tableContasPagar->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonContaPagarPago_clicked() { modelCAPagar->setFilter("pago = 'sim'"); }
+void MainWindow::on_radioButtonContaPagarPago_clicked() {
+  modelCAPagar->setFilter("pago = 'sim'");
+  ui->tableContasPagar->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonContaPagarPendente_clicked() { modelCAPagar->setFilter("pago = 'não'"); }
+void MainWindow::on_radioButtonContaPagarPendente_clicked() {
+  modelCAPagar->setFilter("pago = 'não'");
+  ui->tableContasPagar->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonContaReceberLimpar_clicked() { modelCAReceber->setFilter(""); }
+void MainWindow::on_radioButtonContaReceberLimpar_clicked() {
+  modelCAReceber->setFilter("");
+  ui->tableContasReceber->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonContaReceberRecebido_clicked() { modelCAReceber->setFilter("pago = 'sim'"); }
+void MainWindow::on_radioButtonContaReceberRecebido_clicked() {
+  modelCAReceber->setFilter("pago = 'sim'");
+  ui->tableContasReceber->resizeColumnsToContents();
+}
 
-void MainWindow::on_radioButtonContaReceberPendente_clicked() { modelCAReceber->setFilter("pago = 'não'"); }
+void MainWindow::on_radioButtonContaReceberPendente_clicked() {
+  modelCAReceber->setFilter("pago = 'não'");
+  ui->tableContasReceber->resizeColumnsToContents();
+}
+
+void MainWindow::on_radioButtonOrcProprios_clicked() {
+  modelOrcamento->setFilter("idUsuario = " + QString::number(UserSession::getId()));
+  ui->tableOrcamentos->resizeColumnsToContents();
+}
 
 void MainWindow::on_pushButtonCriarOrc_clicked() { on_actionCriarOrcamento_triggered(); }
 

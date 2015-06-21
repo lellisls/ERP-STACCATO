@@ -334,57 +334,57 @@ void ImportaProdutos::consistenciaDados() {
     }
   }
 
-  if (variantMap.value("colecao").isNull()) {
-    variantMap.insert("colecao", 0);
-  }
+  //  if (variantMap.value("colecao").isNull()) {
+  //    variantMap.insert("colecao", 0);
+  //  }
 
   if (variantMap.value("estoque").isNull()) {
     variantMap.insert("estoque", 0);
   }
 
-  if (variantMap.value("m2cx").toDouble() <= 0.0) {
-    variantMap.insert("m2cx", 1.0);
-  }
+  //  if (variantMap.value("m2cx").toDouble() <= 0.0) {
+  //    variantMap.insert("m2cx", 1.0);
+  //  }
 
-  if (variantMap.value("pccx").toInt() <= 0) {
-    variantMap.insert("pccx", 1);
-  }
+  //  if (variantMap.value("pccx").toInt() <= 0) {
+  //    variantMap.insert("pccx", 1);
+  //  }
 
-  if (variantMap.value("kgcx").toDouble() <= 0.0) {
-    variantMap.insert("kgcx", 0.0);
-  }
+  //  if (variantMap.value("kgcx").toDouble() <= 0.0) {
+  //    variantMap.insert("kgcx", 0.0);
+  //  }
 
-  if (variantMap.value("formComercial").isNull()) {
-    variantMap.insert("formComercial", "0");
-  }
+  //  if (variantMap.value("formComercial").isNull()) {
+  //    variantMap.insert("formComercial", "0");
+  //  }
 
-  if (variantMap.value("codBarras").isNull()) {
-    variantMap.insert("codBarras", "0");
-  }
+  //  if (variantMap.value("codBarras").isNull()) {
+  //    variantMap.insert("codBarras", "0");
+  //  }
 
-  if (variantMap.value("ncm").toString().isEmpty()) {
-    variantMap.insert("ncm", 0);
-  }
+  //  if (variantMap.value("ncm").toString().isEmpty()) {
+  //    variantMap.insert("ncm", 0);
+  //  }
 
-  if (variantMap.value("icms").isNull()) {
-    variantMap.insert("icms", 0);
-  }
+  //  if (variantMap.value("icms").isNull()) {
+  //    variantMap.insert("icms", 0);
+  //  }
 
   if (variantMap.value("cst").isNull()) {
     variantMap.insert("cst", "000");
   }
 
-  if (variantMap.value("qtdPallet").isNull()) {
-    variantMap.insert("qtdPallet", 0);
-  }
+  //  if (variantMap.value("qtdPallet").isNull()) {
+  //    variantMap.insert("qtdPallet", 0);
+  //  }
 
-  if (variantMap.value("ipi").isNull()) {
-    variantMap.insert("ipi", 0);
-  }
+  //  if (variantMap.value("ipi").isNull()) {
+  //    variantMap.insert("ipi", 0);
+  //  }
 
-  if (variantMap.value("st").isNull()) {
-    variantMap.insert("st", 0);
-  }
+  //  if (variantMap.value("st").isNull()) {
+  //    variantMap.insert("st", 0);
+  //  }
 
   if (variantMap.value("representacao").isNull()) {
     variantMap.insert("representacao", 0);
@@ -517,9 +517,18 @@ void ImportaProdutos::guardaNovoPrecoValidade(QSqlQuery &produto, QString idProd
 }
 
 void ImportaProdutos::verificaSeProdutoJaCadastrado(QSqlQuery &produto) {
-  produto.prepare("SELECT * FROM Produto WHERE fornecedor = :fornecedor AND descricao = :descricao AND colecao = "
-                  ":colecao AND codComercial = "
-                  ":codComercial AND formComercial = :formComercial AND ui = :ui");
+  //  produto.prepare("SELECT * FROM Produto WHERE fornecedor = :fornecedor AND descricao = :descricao AND colecao = "
+  //                  ":colecao AND codComercial = "
+  //                  ":codComercial AND formComercial = :formComercial AND ui = :ui");
+  //  produto.bindValue(":fornecedor", variantMap.value("fornecedor"));
+  //  produto.bindValue(":descricao", variantMap.value("descricao"));
+  //  produto.bindValue(":colecao", variantMap.value("colecao"));
+  //  produto.bindValue(":codComercial", variantMap.value("codComercial"));
+  //  produto.bindValue(":formComercial", variantMap.value("formComercial"));
+  //  produto.bindValue(":ui", variantMap.value("ui"));
+
+  produto.prepare("SELECT * FROM Produto WHERE fornecedor = :fornecedor AND codComercial = "
+                  ":codComercial AND ui = :ui");
   produto.bindValue(":fornecedor", variantMap.value("fornecedor"));
   produto.bindValue(":descricao", variantMap.value("descricao"));
   produto.bindValue(":colecao", variantMap.value("colecao"));

@@ -99,7 +99,7 @@ void ImportaProdutos::importarTabela() {
           break;
         }
 
-        if (not query.value(record.indexOf("fornecedor")).isNull()) {
+        if (not query.value(record.indexOf("fornecedor")).toString().isEmpty()) {
           variantMap.insert("fornecedor", query.value(record.indexOf("fornecedor")));
           progressDialog->setValue(current++);
 

@@ -184,7 +184,7 @@ void MainWindow::showError(const QSqlError &err) {
 
 void MainWindow::on_actionCriarOrcamento_triggered() {
   Orcamento *orcamento = new Orcamento(this);
-  Q_UNUSED(orcamento);
+  orcamento->show();
 }
 
 QString MainWindow::getPort() const { return port; }

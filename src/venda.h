@@ -25,7 +25,7 @@ class Venda : public RegisterDialog {
     void updateValues();
 
   private slots:
-    void on_checkBoxFreteManual_clicked(bool checked);
+    void on_checkBoxFreteManual_clicked(const bool checked);
     void on_comboBoxPgt1_currentTextChanged(const QString &text);
     void on_comboBoxPgt1Parc_currentTextChanged(const QString &text);
     void on_comboBoxPgt2_currentTextChanged(const QString &text);
@@ -47,7 +47,7 @@ class Venda : public RegisterDialog {
     void on_pushButtonNFe_clicked();
     void on_pushButtonVoltar_clicked();
     void on_pushButtonImprimir_clicked();
-    void setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage);
+    void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
 
   signals:
     void finished();
@@ -64,11 +64,10 @@ class Venda : public RegisterDialog {
     QSqlRelationalTableModel modelItem, modelFluxoCaixa;
     QString idVenda;
     // methods
-    bool cadastrar();
-    bool verifyFields(int row);
+    bool verifyFields(const int row);
     bool verifyRequiredField(QLineEdit *line);
     QString requiredStyle();
-    void calcPrecoGlobalTotal(bool ajusteTotal = false);
+    void calcPrecoGlobalTotal(const bool ajusteTotal = false);
     void calculoSpinBox1();
     void calculoSpinBox2();
     void clearFields();
@@ -77,7 +76,7 @@ class Venda : public RegisterDialog {
     void montarFluxoCaixa();
     void resetarPagamentos();
     void setupMapper();
-    void updateId();
+    void setupTables();
 };
 
 #endif // VENDA_H

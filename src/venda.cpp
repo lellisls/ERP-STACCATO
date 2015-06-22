@@ -30,6 +30,41 @@
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
 
+  setupTables();
+
+  // TODO: make this runtime changeable
+  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto"};
+
+  ui->comboBoxPgt1->insertItems(0, list);
+  ui->comboBoxPgt2->insertItems(0, list);
+  ui->comboBoxPgt3->insertItems(0, list);
+
+  ui->pushButtonNFe->hide();
+
+  ui->dateEditPgt1->setDate(QDate::currentDate());
+  ui->dateEditPgt2->setDate(QDate::currentDate());
+  ui->dateEditPgt3->setDate(QDate::currentDate());
+
+  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
+  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+
+  SearchDialog *sdEnderecoFat = SearchDialog::enderecoCliente(ui->itemBoxEnderecoFat);
+  ui->itemBoxEnderecoFat->setSearchDialog(sdEnderecoFat);
+
+  setupMapper();
+  newRegister();
+
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
+  showMaximized();
+  ui->tableVenda->resizeColumnsToContents();
+}
+
+Venda::~Venda() { delete ui; }
+
+void Venda::setupTables() {
   modelItem.setTable("Venda_has_Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
   modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
@@ -80,39 +115,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
   ui->tableFluxoCaixa->setItemDelegate(doubleDelegate);
   ui->tableVenda->setItemDelegate(doubleDelegate);
-
-  // TODO: make this runtime changeable
-  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto"};
-
-  ui->comboBoxPgt1->insertItems(0, list);
-  ui->comboBoxPgt2->insertItems(0, list);
-  ui->comboBoxPgt3->insertItems(0, list);
-
-  ui->tableVenda->resizeColumnsToContents();
-
-  ui->pushButtonNFe->hide();
-
-  ui->dateEditPgt1->setDate(QDate::currentDate());
-  ui->dateEditPgt2->setDate(QDate::currentDate());
-  ui->dateEditPgt3->setDate(QDate::currentDate());
-
-  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
-  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
-
-  SearchDialog *sdEnderecoFat = SearchDialog::enderecoCliente(ui->itemBoxEnderecoFat);
-  ui->itemBoxEnderecoFat->setSearchDialog(sdEnderecoFat);
-
-  setupMapper();
-  newRegister();
-
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
-
-  showMaximized();
 }
-
-Venda::~Venda() { delete ui; }
 
 void Venda::resetarPagamentos() {
   ui->doubleSpinBoxTotalPag->setValue(ui->doubleSpinBoxFinal->value());
@@ -144,7 +147,7 @@ void Venda::resetarPagamentos() {
 }
 
 void Venda::fecharOrcamento(const QString &idOrcamento) {
-  int row = model.rowCount();
+  const int row = model.rowCount();
   model.insertRow(row);
   mapper.toLast();
 
@@ -161,10 +164,10 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   modelItem.setFilter("idVenda = '" + idOrcamento + "'");
 
   while (produtos.next()) {
-    int row = modelItem.rowCount();
+    const int row = modelItem.rowCount();
     modelItem.insertRow(row);
 
-    for (int field = 0; field < produtos.record().count(); field++) {
+    for (int field = 0, fieldCount = produtos.record().count(); field < fieldCount; ++field) {
       if (not modelItem.setData(modelItem.index(row, field), produtos.value(field))) {
         qDebug() << "Erro setando itens venda: " << modelItem.lastError();
       }
@@ -191,7 +194,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->itemBoxEndereco->setValue(query.value("idEnderecoEntrega"));
   ui->itemBoxEnderecoFat->setValue(query.value("idEnderecoEntrega"));
 
-  for (int field = 0; field < model.columnCount(); field++) {
+  for (int field = 0, columnCount = model.columnCount(); field < columnCount; ++field) {
     if (not model.setData(model.index(mapper.currentIndex(), field), query.value(field))) {
       qDebug() << "Erro setando dados venda: " << model.lastError();
     }
@@ -203,9 +206,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   modelFluxoCaixa.setFilter("idVenda = '" + idOrcamento + "'");
 }
 
-bool Venda::cadastrar() { return true; }
-
-bool Venda::verifyFields(int row) {
+bool Venda::verifyFields(const int row) {
   Q_UNUSED(row);
 
   if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
@@ -243,7 +244,7 @@ bool Venda::verifyRequiredField(QLineEdit *line) {
 
 QString Venda::requiredStyle() { return QString(); }
 
-void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
+void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
   double subTotal = 0.0;
   double subTotalItens = 0.0;
   double subTotalBruto = 0.0;
@@ -260,7 +261,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     porcFrete = queryFrete.value("porcentagemFrete").toDouble();
   }
 
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
     double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
     double descItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
@@ -293,7 +294,7 @@ void Venda::calcPrecoGlobalTotal(bool ajusteTotal) {
     }
   }
 
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0);
     double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
     double totalItem = stItem * (1 - descGlobal);
@@ -353,8 +354,6 @@ void Venda::setupMapper() {
   addMapping(ui->doubleSpinBoxFinal, "total");
 }
 
-void Venda::updateId() {}
-
 void Venda::on_pushButtonCancelar_clicked() { close(); }
 
 void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
@@ -362,26 +361,26 @@ void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 void Venda::on_pushButtonNFe_clicked() {
   CadastrarNFe *cadNFe = new CadastrarNFe(idVenda, this);
 
-  QModelIndexList list = ui->tableVenda->selectionModel()->selectedRows();
+  const QModelIndexList list = ui->tableVenda->selectionModel()->selectedRows();
 
-  if (list.size() < 1) {
+  if (list.size() == 0) {
     QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
     return;
   }
 
   QList<int> lista;
 
-  foreach (QModelIndex index, list) { lista.append(index.row()); }
+  foreach (const QModelIndex index, list) { lista.append(index.row()); }
 
-  cadNfe->prepararNFe(lista);
-  cadNfe->showMaximized();
+  cadNFe->prepararNFe(lista);
+  cadNFe->showMaximized();
 }
 
 void Venda::calculoSpinBox1() {
-  double pgt1 = ui->doubleSpinBoxPgt1->value();
-  double pgt2 = ui->doubleSpinBoxPgt2->value();
-  double pgt3 = ui->doubleSpinBoxPgt3->value();
-  double total = ui->doubleSpinBoxTotalPag->value();
+  const double pgt1 = ui->doubleSpinBoxPgt1->value();
+  const double pgt2 = ui->doubleSpinBoxPgt2->value();
+  const double pgt3 = ui->doubleSpinBoxPgt3->value();
+  const double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt2->setValue(pgt2 + restante);
 
@@ -404,10 +403,10 @@ void Venda::on_doubleSpinBoxPgt1_editingFinished() {
 }
 
 void Venda::calculoSpinBox2() {
-  double pgt1 = ui->doubleSpinBoxPgt1->value();
-  double pgt2 = ui->doubleSpinBoxPgt2->value();
-  double pgt3 = ui->doubleSpinBoxPgt3->value();
-  double total = ui->doubleSpinBoxTotalPag->value();
+  const double pgt1 = ui->doubleSpinBoxPgt1->value();
+  const double pgt2 = ui->doubleSpinBoxPgt2->value();
+  const double pgt3 = ui->doubleSpinBoxPgt3->value();
+  const double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
   ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
   ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
@@ -503,40 +502,39 @@ bool Venda::savingProcedures(int row) {
 
   QSqlQuery query;
 
-  //  TODO: implement
-  //  query.prepare("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM Venda_has_Produto INNER "
-  //                "JOIN Produto ON Produto.idProduto = Venda_has_Produto.idProduto WHERE estoque = 0 AND "
-  //                "Venda_has_Produto.idVenda = :idVenda");
-  //  query.bindValue(":idVenda", idVenda);
+  query.prepare("SELECT Produto.descricao, Produto.estoque, Venda_has_Produto.idVenda FROM Venda_has_Produto INNER "
+                "JOIN Produto ON Produto.idProduto = Venda_has_Produto.idProduto WHERE estoque = 0 AND "
+                "Venda_has_Produto.idVenda = :idVenda");
+  query.bindValue(":idVenda", idVenda);
 
-  //  if (not query.exec()) {
-  //    qDebug() << "Erro na verificação de estoque: " << query.lastError();
-  //    return false;
-  //  }
+  if (not query.exec()) {
+    qDebug() << "Erro na verificação de estoque: " << query.lastError();
+    return false;
+  }
 
-  //  if (query.size() > 0) {
-  //    query.prepare("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
-  //                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-  //                  "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
-  //                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-  //                  "descontoReais, total, validade, status "
-  //                  "FROM Venda WHERE idVenda = :idVenda");
-  //    query.bindValue(":idVenda", idVenda);
+  if (query.size() > 0) {
+    query.prepare("INSERT INTO PedidoFornecedor (idPedido, idLoja, idUsuario, idCliente, "
+                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+                  "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
+                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
+                  "descontoReais, total, validade, status "
+                  "FROM Venda WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", idVenda);
 
-  //    if (not query.exec()) {
-  //      qDebug() << "Erro na criação do pedido fornecedor: " << query.lastError();
-  //    }
+    if (not query.exec()) {
+      qDebug() << "Erro na criação do pedido fornecedor: " << query.lastError();
+    }
 
-  //    query.prepare("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
-  //                  "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-  //                  "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = :idVenda");
-  //    query.bindValue(":idVenda", idVenda);
+    query.prepare("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
+                  "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
+                  "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = :idVenda");
+    query.bindValue(":idVenda", idVenda);
 
-  //    if (not query.exec()) {
-  //      qDebug() << "Erro na inserção de produtos em PedidoFornecedor_has_Produto: " << query.lastError();
-  //      return false;
-  //    }
-  //  }
+    if (not query.exec()) {
+      qDebug() << "Erro na inserção de produtos em PedidoFornecedor_has_Produto: " << query.lastError();
+      return false;
+    }
+  }
 
   query.prepare("DELETE FROM Orcamento_has_Produto WHERE idOrcamento = :idVenda");
   query.bindValue(":idVenda", idVenda);
@@ -623,8 +621,9 @@ bool Venda::viewRegister(QModelIndex index) {
 }
 
 void Venda::on_pushButtonVoltar_clicked() {
-  Orcamento *orc = new Orcamento(parentWidget());
-  orc->viewRegisterById(idVenda);
+  Orcamento *orcamento = new Orcamento(parentWidget());
+  orcamento->viewRegisterById(idVenda);
+  orcamento->show();
   close();
 }
 
@@ -638,12 +637,12 @@ void Venda::montarFluxoCaixa() {
   int row = 0;
 
   if (ui->comboBoxPgt1->currentText() != "Escolha uma opção!") {
-    int parcelas = ui->comboBoxPgt1Parc->currentIndex() + 1;
-    double valor = ui->doubleSpinBoxPgt1->value();
+    const int parcelas = ui->comboBoxPgt1Parc->currentIndex() + 1;
+    const double valor = ui->doubleSpinBoxPgt1->value();
 
-    float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
-    double resto = static_cast<double>(valor - (temp * parcelas));
-    double parcela = static_cast<double>(temp);
+    const float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
+    const double resto = static_cast<double>(valor - (temp * parcelas));
+    const double parcela = static_cast<double>(temp);
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
@@ -666,12 +665,12 @@ void Venda::montarFluxoCaixa() {
   }
 
   if (ui->comboBoxPgt2->currentText() != "Escolha uma opção!") {
-    int parcelas = ui->comboBoxPgt2Parc->currentIndex() + 1;
-    double valor = ui->doubleSpinBoxPgt2->value();
+    const int parcelas = ui->comboBoxPgt2Parc->currentIndex() + 1;
+    const double valor = ui->doubleSpinBoxPgt2->value();
 
-    float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
-    double resto = static_cast<double>(valor - (temp * parcelas));
-    double parcela = static_cast<double>(temp);
+    const float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
+    const double resto = static_cast<double>(valor - (temp * parcelas));
+    const double parcela = static_cast<double>(temp);
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
@@ -694,12 +693,12 @@ void Venda::montarFluxoCaixa() {
   }
 
   if (ui->comboBoxPgt3->currentText() != "Escolha uma opção!") {
-    int parcelas = ui->comboBoxPgt3Parc->currentIndex() + 1;
-    double valor = ui->doubleSpinBoxPgt3->value();
+    const int parcelas = ui->comboBoxPgt3Parc->currentIndex() + 1;
+    const double valor = ui->doubleSpinBoxPgt3->value();
 
-    float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
-    double resto = static_cast<double>(valor - (temp * parcelas));
-    double parcela = static_cast<double>(temp);
+    const float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
+    const double resto = static_cast<double>(valor - (temp * parcelas));
+    const double parcela = static_cast<double>(temp);
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
@@ -756,9 +755,9 @@ void Venda::on_doubleSpinBoxFinal_editingFinished() {
     return;
   }
 
-  double new_total = ui->doubleSpinBoxFinal->value();
-  double frete = ui->doubleSpinBoxFrete->value();
-  double new_subtotal = new_total - frete;
+  const double new_total = ui->doubleSpinBoxFinal->value();
+  const double frete = ui->doubleSpinBoxFrete->value();
+  const double new_subtotal = new_total - frete;
 
   if (new_subtotal >= ui->doubleSpinBoxTotal->value()) {
     ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
@@ -768,18 +767,21 @@ void Venda::on_doubleSpinBoxFinal_editingFinished() {
   }
 }
 
-void Venda::on_checkBoxFreteManual_clicked(bool checked) {
+void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
   if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
   }
+
   ui->doubleSpinBoxFrete->setFrame(checked);
   ui->doubleSpinBoxFrete->setReadOnly(not checked);
+
   if (checked) {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::UpDownArrows);
   } else {
     ui->doubleSpinBoxFrete->setButtonSymbols(QDoubleSpinBox::NoButtons);
   }
+
   calcPrecoGlobalTotal();
 }
 
@@ -795,7 +797,7 @@ void Venda::on_pushButtonImprimir_clicked() {
   report->printExec();
 }
 
-void Venda::setValue(int recNo, QString paramName, QVariant &paramValue, int reportPage) {
+void Venda::setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage) {
   Q_UNUSED(reportPage);
   QLocale locale;
 

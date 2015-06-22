@@ -412,8 +412,8 @@ QString CadastrarNFE::calculaDigitoVerificador(QString chave) {
 
 void CadastrarNFE::writeIdentificacao(QTextStream &stream) {
   stream << "[Identificacao]" << endl;
-  // TODO: ask for user input or list some options for choice
-  stream << "NaturezaOperacao = 5405-VENDA PROD/SERV D.ESTADO" << endl;
+  // TODO: make gui for showing/changing those values
+  stream << "NaturezaOperacao = VENDA" << endl;
   stream << "Modelo = 55" << endl;
   stream << "Serie = " + chaveAcesso.mid(25, 3) << endl;
   stream << "Codigo = " + chaveAcesso.mid(25, 3) << endl;

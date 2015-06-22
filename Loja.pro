@@ -120,7 +120,7 @@ FORMS += ui/apagaorcamento.ui \
     ui/importaprodutos.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
-QMAKE_CXXFLAGS_DEBUG += -O0 -Wall
+QMAKE_CXXFLAGS_DEBUG += -O0
 QMAKE_CXXFLAGS += -std=c++14
 QMAKE_LFLAGS += -O3
 

@@ -555,8 +555,14 @@ void Orcamento::on_pushButtonAtualizarItem_clicked() {
 void Orcamento::on_pushButtonGerarVenda_clicked() {
   silent = true;
 
-  if (not update()) {
-    return;
+  if (ui->lineEditOrcamento->text().isEmpty()) {
+    if (not save()) {
+      return;
+    }
+  } else {
+    if (not update()) {
+      return;
+    }
   }
 
   const QDateTime time = ui->dateTimeEdit->dateTime();

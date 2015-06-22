@@ -360,7 +360,7 @@ void Venda::on_pushButtonCancelar_clicked() { close(); }
 void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 
 void Venda::on_pushButtonNFe_clicked() {
-  CadastrarNFE *cadNfe = new CadastrarNFE(idVenda, this);
+  CadastrarNFe *cadNFe = new CadastrarNFe(idVenda, this);
 
   QModelIndexList list = ui->tableVenda->selectionModel()->selectedRows();
 

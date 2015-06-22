@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CadastrarNFE</class>
- <widget class="QDialog" name="CadastrarNFE">
+ <class>CadastrarNFe</class>
+ <widget class="QDialog" name="CadastrarNFe">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>

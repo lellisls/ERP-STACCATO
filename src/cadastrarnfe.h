@@ -8,15 +8,15 @@
 #include <QTextStream>
 
 namespace Ui {
-  class CadastrarNFE;
+  class CadastrarNFe;
 }
 
-class CadastrarNFE : public QDialog {
+class CadastrarNFe : public QDialog {
     Q_OBJECT
 
   public:
-    explicit CadastrarNFE(QString idVenda, QWidget *parent = 0);
-    ~CadastrarNFE();
+    explicit CadastrarNFe(QString idVenda, QWidget *parent = 0);
+    ~CadastrarNFe();
     void prepararNFe(QList<int> items);
     void setItemData(int row, const QString &key, const QVariant &value);
     QVariant getItemData(int row, const QString &key);
@@ -34,7 +34,7 @@ class CadastrarNFE : public QDialog {
 
   private:
     // attributes
-    Ui::CadastrarNFE *ui;
+    Ui::CadastrarNFe *ui;
     EditableSqlModel modelNFe, modelNFeItem, modelLoja, modelVenda, modelProd;
     QString idVenda;
     QString arquivo;

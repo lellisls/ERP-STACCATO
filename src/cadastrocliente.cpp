@@ -229,7 +229,7 @@ bool CadastroCliente::savingProcedures(int row) {
       qDebug() << "error: " << modelEnd.lastError();
     }
   }
-  qDebug() << "id: " << idCliente; // NOTE: remove this
+
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
     qDebug() << "QUERY : " << modelEnd.query().lastQuery();
@@ -320,7 +320,6 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
     return false;
   }
 
-  // TODO: verificar se o next não pode ser substituido por um last
   while (query.next()) {
     ui->textEditObservacoes->insertPlainText(query.value("idCliente").toString() + " - " +
                                              query.value("nome_razao").toString() + " - " +

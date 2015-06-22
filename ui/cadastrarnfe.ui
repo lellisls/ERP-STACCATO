@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>643</width>
-    <height>530</height>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -423,6 +423,108 @@
            </property>
            <property name="readOnly">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="2">
+       <widget class="QGroupBox" name="groupBox_6">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="title">
+         <string>NFe</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Natureza operação</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Modelo</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Saída</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Código</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="ItemBox" name="itemBoxCliente_4"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="ItemBox" name="itemBoxCliente_6"/>
+         </item>
+         <item row="6" column="0">
+          <widget class="ItemBox" name="itemBoxCliente_7"/>
+         </item>
+         <item row="14" column="1">
+          <widget class="ItemBox" name="itemBoxCliente_8"/>
+         </item>
+         <item row="14" column="0">
+          <widget class="ItemBox" name="itemBoxCliente_9"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Série</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="ItemBox" name="itemBoxCliente_5"/>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Número</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="ItemBox" name="itemBoxCliente_2"/>
+         </item>
+         <item row="5" column="2">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Emissão</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="ItemBox" name="itemBoxCliente_3"/>
+         </item>
+         <item row="14" column="2">
+          <widget class="ItemBox" name="itemBoxCliente_10"/>
+         </item>
+         <item row="8" column="2">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Formato Página</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>Tipo</string>
            </property>
           </widget>
          </item>

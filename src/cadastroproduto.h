@@ -17,27 +17,27 @@ class CadastroProduto : public RegisterDialog {
     explicit CadastroProduto(QWidget *parent = 0);
     ~CadastroProduto();
 
+  public slots:
+    void show();
+
   private slots:
-    void changeItem(QVariant value);
+    void changeItem(const QVariant value);
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
 
-    // methods derived from RegisterDialog
-    void on_pushButtonBuscar_clicked();
-
   private:
     /*!
 * \brief Função padrão para verificar campos obrigatórios
 * \return
 */
-    virtual bool verifyFields(int row);
+    virtual bool verifyFields(const int row);
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     /*!
 *\brief Limpar os campos da tela
 */
@@ -58,9 +58,6 @@ class CadastroProduto : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroProduto *ui;
-    SearchDialog *sdProd;
-  public slots:
-    void show();
 };
 
 #endif // CADASTROPRODUTO_H

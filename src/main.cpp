@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
   }
 
   app.installTranslator(&qtTranslator);
+
   QTranslator pt;
 
   if (not pt.load(":/qt_portuguese.qm")) {

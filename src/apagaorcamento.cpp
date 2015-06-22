@@ -45,4 +45,4 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
 
 void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }
 
-void ApagaOrcamento::apagar(int index) { mapperOrc.setCurrentIndex(index); }
+void ApagaOrcamento::apagar(const int index) { mapperOrc.setCurrentIndex(index); }

@@ -26,8 +26,8 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 
 void ComboBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
   if (QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
-    QString currentText = index.data(Qt::EditRole).toString();
-    int cbIndex = cb->findText(currentText);
+    const QString currentText = index.data(Qt::EditRole).toString();
+    const int cbIndex = cb->findText(currentText);
 
     if (cbIndex >= 0) {
       cb->setCurrentIndex(cbIndex);

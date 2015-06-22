@@ -6,7 +6,7 @@
 class Endereco {
 
   public:
-    explicit Endereco(int idEndereco, QString table);
+    explicit Endereco(const int idEndereco, const QString table);
     int idEndereco() const;
     QString logradouro() const;
     QString bairro() const;
@@ -21,9 +21,9 @@ class Endereco {
     void setComplemento(const QString &complemento);
     QString uf() const;
     void setUf(const QString &uf);
-    QString umaLinha();
-    QString linhaUm();
-    QString linhaDois();
+    QString umaLinha() const;
+    QString linhaUm() const;
+    QString linhaDois() const;
 
   private:
     QString m_descricao;

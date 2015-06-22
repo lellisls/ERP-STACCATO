@@ -12,7 +12,7 @@ class LineEditCEP : public QLineEdit {
     bool isValid() const;
 
     QString getValue() const;
-    void setValue(QString value);
+    void setValue(const QString value);
 
   private:
     Q_PROPERTY(QString value READ getValue WRITE setValue STORED false)

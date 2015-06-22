@@ -16,4 +16,4 @@ QString LineEditCEP::getValue() const {
   return text();
 }
 
-void LineEditCEP::setValue(QString value) { setText(value); }
+void LineEditCEP::setValue(const QString value) { setText(value); }

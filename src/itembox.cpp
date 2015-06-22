@@ -28,7 +28,7 @@ ItemBox::~ItemBox() {}
 
 void ItemBox::resizeEvent(QResizeEvent *event) {
   QLineEdit::resizeEvent(event);
-  QSize size = m_searchButton->minimumSizeHint();
+  const QSize size = m_searchButton->minimumSizeHint();
   int x = rect().right();
   int y = (rect().height() - size.height()) / 2.0;
 
@@ -93,7 +93,7 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
   connect(m_searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);
 }
 
-void ItemBox::changeItem(QVariant value) {
+void ItemBox::changeItem(const QVariant value) {
   setValue(value);
 
   if (m_registerDialog and m_registerDialog->isVisible()) {
@@ -106,6 +106,6 @@ void ItemBox::changeItem(QVariant value) {
 }
 
 void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {
-  Q_UNUSED(event);
   search();
+  event->accept();
 }

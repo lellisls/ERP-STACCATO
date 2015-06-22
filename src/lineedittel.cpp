@@ -5,7 +5,7 @@ LineEditTel::LineEditTel(QWidget *parent) : QLineEdit(parent) {
   connect(this, &QLineEdit::textEdited, this, &LineEditTel::processTel);
 }
 
-void LineEditTel::processTel(QString value) {
+void LineEditTel::processTel(const QString value) {
   QString nbr, res = value;
 
   foreach (QChar c, value) {
@@ -14,7 +14,7 @@ void LineEditTel::processTel(QString value) {
     }
   }
 
-  int size = nbr.size();
+  const int size = nbr.size();
 
   if (nbr.isEmpty()) {
     res = nbr;

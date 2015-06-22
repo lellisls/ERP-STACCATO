@@ -12,7 +12,7 @@ class ComboBox : public QComboBox {
     QVariant getCurrentValue() const;
 
   public slots:
-    bool setCurrentValue(QVariant value);
+    bool setCurrentValue(const QVariant value);
 
   private:
     Q_PROPERTY(QVariant currentValue READ getCurrentValue WRITE setCurrentValue STORED false)

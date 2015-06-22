@@ -18,10 +18,14 @@ RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent) : QDialog(parent
   }
 
   ui->tableRecebimentosForncecedor->setModel(&modelRecebimentos);
+  ui->tableRecebimentosForncecedor->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableRecebimentosForncecedor->verticalHeader()->setResizeContentsPrecision(0);
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
   show();
+
+  ui->tableRecebimentosForncecedor->resizeColumnsToContents();
 }
 
 RecebimentosFornecedor::~RecebimentosFornecedor() { delete ui; }
@@ -30,14 +34,16 @@ void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
 
   if (ui->checkBoxEntregue->isChecked()) {
-    query.prepare("UPDATE PedidoTransportadora SET status = 'RECEBIDO' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
+    query.prepare(
+          "UPDATE PedidoTransportadora SET status = 'RECEBIDO' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
     query.bindValue("idPedido", idPedido);
 
     if (not query.exec()) {
       qDebug() << "Erro ao marcar como recebido: " << query.lastError();
     }
   } else {
-    query.prepare("UPDATE PedidoTransportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
+    query.prepare(
+          "UPDATE PedidoTransportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
     query.bindValue("idPedido", idPedido);
 
     if (not query.exec()) {
@@ -50,7 +56,7 @@ void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
 
 void RecebimentosFornecedor::on_pushButtonCancelar_clicked() { close(); }
 
-void RecebimentosFornecedor::viewRecebimento(QString idPedido) {
+void RecebimentosFornecedor::viewRecebimento(const QString idPedido) {
   this->idPedido = idPedido;
   modelRecebimentos.setFilter("idPedido = '" + idPedido + "' AND tipo = 'fornecedor'");
 }

@@ -14,6 +14,24 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   : RegisterDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
+  setupTables();
+  setupUi();
+  setupMapper();
+  newRegister();
+
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
+}
+
+CadastroTransportadora::~CadastroTransportadora() { delete ui; }
+
+void CadastroTransportadora::setupTables() {
   modelEnd.setTable("Transportadora_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -35,22 +53,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idTransportadora"));
-
-  setupUi();
-  setupMapper();
-  newRegister();
-
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
-
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->pushButtonRemover->setDisabled(true);
-    ui->pushButtonRemoverEnd->setDisabled(true);
-  }
 }
-
-CadastroTransportadora::~CadastroTransportadora() { delete ui; }
 
 void CadastroTransportadora::clearFields() {
   RegisterDialog::clearFields();
@@ -58,7 +61,7 @@ void CadastroTransportadora::clearFields() {
   setupUi();
 }
 
-bool CadastroTransportadora::verifyFields(int row) {
+bool CadastroTransportadora::verifyFields(const int row) {
   Q_UNUSED(row);
 
   if (not RegisterDialog::verifyFields({ui->lineEditANTT, ui->lineEditCNPJ, ui->lineEditInscEstadual,
@@ -70,7 +73,7 @@ bool CadastroTransportadora::verifyFields(int row) {
   return true;
 }
 
-bool CadastroTransportadora::savingProcedures(int row) {
+bool CadastroTransportadora::savingProcedures(const int row) {
   setData(row, "cnpj", ui->lineEditCNPJ->text());
   setData(row, "razaoSocial", ui->lineEditRazaoSocial->text());
   setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
@@ -84,13 +87,10 @@ bool CadastroTransportadora::savingProcedures(int row) {
     return false;
   }
 
-  int idTransportadora = data(row, primaryKey).toInt();
+  const int idTransportadora =
+      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
-  if (not data(row, primaryKey).isValid()) {
-    idTransportadora = model.query().lastInsertId().toInt();
-  }
-
-  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idTransportadora);
   }
 
@@ -113,7 +113,6 @@ void CadastroTransportadora::setupMapper() {
   addMapping(ui->lineEditPlaca, "placaVeiculo");
 
   mapperEnd.setModel(&modelEnd);
-
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
   mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
@@ -136,7 +135,7 @@ void CadastroTransportadora::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroTransportadora::viewRegister(QModelIndex index) {
+bool CadastroTransportadora::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -228,15 +227,15 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(bool checked) {
-  if (checked) {
-    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString());
-  } else {
-    modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
+void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool checked) {
+  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString());
+
+  if (not checked) {
+    modelEnd.setFilter(modelEnd.filter() + " AND desativado = FALSE");
   }
 }
 
-bool CadastroTransportadora::cadastrarEndereco(bool isUpdate) {
+bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
                                        ui->lineEditCidade, ui->lineEditUF})) {
     return false;
@@ -248,12 +247,9 @@ bool CadastroTransportadora::cadastrarEndereco(bool isUpdate) {
     return false;
   }
 
-  int row;
+  const int row = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (isUpdate) {
-    row = mapperEnd.currentIndex();
-  } else {
-    row = modelEnd.rowCount();
+  if (not isUpdate) {
     modelEnd.insertRow(row);
   }
 
@@ -378,7 +374,7 @@ void CadastroTransportadora::setupUi() {
 }
 
 int CadastroTransportadora::getCodigoUF() {
-  QString uf = ui->lineEditUF->text().toLower();
+  const QString uf = ui->lineEditUF->text().toLower();
 
   if (uf == "ro") return 11;
   if (uf == "ac") return 12;

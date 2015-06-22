@@ -10,10 +10,10 @@ class BackgroundProxyModel : public QIdentityProxyModel {
 
     // QAbstractItemModel interface
   public:
-    QVariant data(const QModelIndex &proxyIndex, int role) const;
+    QVariant data(const QModelIndex &proxyIndex, const int role) const;
 
   private:
-    int column;
+    const int column;
 };
 
 #endif // BACKGROUNDPROXYMODEL_H

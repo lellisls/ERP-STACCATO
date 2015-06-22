@@ -27,13 +27,13 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
   connect(shortcut, &QShortcut::activated, this, &RegisterDialog::saveSlot);
 }
 
-bool RegisterDialog::viewRegisterById(QVariant id) {
+bool RegisterDialog::viewRegisterById(const QVariant id) {
   if (not model.select()) {
     qDebug() << "erro model: " << model.lastError();
     return false;
   }
 
-  QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
+  const QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
 
   if (indexList.isEmpty()) {
     QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
@@ -46,7 +46,7 @@ bool RegisterDialog::viewRegisterById(QVariant id) {
   return true;
 }
 
-bool RegisterDialog::viewRegister(QModelIndex index) {
+bool RegisterDialog::viewRegister(const QModelIndex index) {
   if (not confirmationMessage()) {
     return false;
   }
@@ -63,7 +63,7 @@ bool RegisterDialog::viewRegister(QModelIndex index) {
   return true;
 }
 
-bool RegisterDialog::verifyFields(QList<QLineEdit *> list) {
+bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
   foreach (QLineEdit *line, list) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -78,7 +78,7 @@ void RegisterDialog::sendUpdateMessage() {
 
   foreach (QString key, textKeys) {
     if (not key.isEmpty()) {
-      QVariant val = data(key);
+      const QVariant val = data(key);
 
       if (val.isValid()) {
         if (not text.isEmpty()) {
@@ -114,7 +114,7 @@ QStringList RegisterDialog::getTextKeys() const { return textKeys; }
 
 void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
-void RegisterDialog::changeItem(QVariant value) { viewRegisterById(value); }
+void RegisterDialog::changeItem(const QVariant value) { viewRegisterById(value); }
 
 void RegisterDialog::saveSlot() { save(); }
 
@@ -147,7 +147,7 @@ bool RegisterDialog::confirmationMessage() {
     msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
     msgBox.setDefaultButton(QMessageBox::Save);
 
-    int ret = msgBox.exec();
+    const int ret = msgBox.exec();
 
     if (ret == QMessageBox::Save) {
       if (not save()) {
@@ -194,18 +194,16 @@ bool RegisterDialog::newRegister() {
   return true;
 }
 
-bool RegisterDialog::save(bool isUpdate) {
+bool RegisterDialog::save(const bool isUpdate) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  int row;
+  const int row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
 
-  if(isUpdate){
-    row = mapper.currentIndex();
-  } else{
-    row = model.rowCount();
+  if (not isUpdate) {
     model.insertRow(row);
   }
+  qDebug() << "row: " << row;
 
   if (not verifyFields(row)) {
     QSqlQuery("ROLLBACK").exec();
@@ -239,9 +237,7 @@ bool RegisterDialog::save(bool isUpdate) {
   return true;
 }
 
-bool RegisterDialog::update() {
-  return save(true);
-}
+bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
@@ -273,20 +269,20 @@ void RegisterDialog::remove() {
 
 void RegisterDialog::setTable(QAbstractItemView *table) { this->table = table; }
 
-bool RegisterDialog::validaCNPJ(QString text) {
+bool RegisterDialog::validaCNPJ(const QString text) {
   if (text.size() == 14) {
     int digito1;
     int digito2;
 
-    QString sub = text.left(12);
+    const QString sub = text.left(12);
 
     QVector<int> sub2;
 
-    for (int i = 0; i < sub.size(); ++i) {
+    for (int i = 0, size = sub.size(); i < size; ++i) {
       sub2.push_back(sub.at(i).digitValue());
     }
 
-    QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+    const QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 
     int soma = 0;
 
@@ -304,7 +300,7 @@ bool RegisterDialog::validaCNPJ(QString text) {
 
     sub2.push_back(digito1);
 
-    QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+    const QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
     soma = 0;
 
     for (int i = 0; i < 13; ++i) {
@@ -328,7 +324,7 @@ bool RegisterDialog::validaCNPJ(QString text) {
   return true;
 }
 
-bool RegisterDialog::validaCPF(QString text) {
+bool RegisterDialog::validaCPF(const QString text) {
   if (text.size() == 11) {
     if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
         text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or
@@ -340,15 +336,15 @@ bool RegisterDialog::validaCPF(QString text) {
     int digito1;
     int digito2;
 
-    QString sub = text.left(9);
+    const QString sub = text.left(9);
 
     QVector<int> sub2;
 
-    for (int i = 0; i < sub.size(); ++i) {
+    for (int i = 0, size = sub.size(); i < size; ++i) {
       sub2.push_back(sub.at(i).digitValue());
     }
 
-    QVector<int> multiplicadores = {10, 9, 8, 7, 6, 5, 4, 3, 2};
+    const QVector<int> multiplicadores = {10, 9, 8, 7, 6, 5, 4, 3, 2};
 
     int soma = 0;
 
@@ -366,7 +362,7 @@ bool RegisterDialog::validaCPF(QString text) {
 
     sub2.push_back(digito1);
 
-    QVector<int> multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
+    const QVector<int> multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
     soma = 0;
 
     for (int i = 0; i < 10; ++i) {
@@ -390,6 +386,4 @@ bool RegisterDialog::validaCPF(QString text) {
   return true;
 }
 
-void RegisterDialog::marcarDirty(){
-  isDirty = true;
-}
+void RegisterDialog::marcarDirty() { isDirty = true; }

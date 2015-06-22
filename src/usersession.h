@@ -7,7 +7,7 @@
 
 class UserSession {
   public:
-    static bool login(QString user, QString password);
+    static bool login(const QString user, const QString password);
     static int getId();
     static int getLoja();
     static QSqlQuery *initialize();

@@ -34,13 +34,13 @@ class RegisterDialog : public QDialog {
 * \param id Valor da PK.
 * \return
 */
-    virtual bool viewRegisterById(QVariant id);
+    virtual bool viewRegisterById(const QVariant id);
     /*!
 * \brief Utilizada para selecionar um item a partir de um QModelIndex.
 * \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
 * \return
 */
-    virtual bool viewRegister(QModelIndex index);
+    virtual bool viewRegister(const QModelIndex index);
     /*!
 * \brief Informa para a superclasse qual é a sua table view.
 * \param table Tabela da interface gráfica.
@@ -51,7 +51,7 @@ class RegisterDialog : public QDialog {
     void setTextKeys(const QStringList &value);
 
   public slots:
-    virtual void changeItem(QVariant value);
+    virtual void changeItem(const QVariant value);
     void saveSlot();
     void marcarDirty();
   signals:
@@ -94,13 +94,13 @@ class RegisterDialog : public QDialog {
 * \brief Procedimento padrão para salvar informações no BD.
 * \return
 */
-    virtual bool save(bool isUpdate = false);
+    virtual bool save(const bool isUpdate = false);
     /*!
 * \brief Chama verifyRequiredField() sobre cada elemento da lista.
 * \param list Lista de QLineEdits a serem verificados.
 * \return
 */
-    bool verifyFields(QList<QLineEdit *> list);
+    bool verifyFields(const QList<QLineEdit *> list);
     /*!
 * \brief Função padrão para verificar campos obrigatórios.
 * \return
@@ -258,8 +258,8 @@ class RegisterDialog : public QDialog {
 
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
-    bool validaCNPJ(QString text);
-    bool validaCPF(QString text);
+    bool validaCNPJ(const QString text);
+    bool validaCPF(const QString text);
     bool update();
 };
 

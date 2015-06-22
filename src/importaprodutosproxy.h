@@ -6,14 +6,14 @@
 class ImportaProdutosProxy : public QIdentityProxyModel {
 
   public:
-    ImportaProdutosProxy(int column, QObject *parent = 0);
+    ImportaProdutosProxy(const int column, QObject *parent = 0);
     ~ImportaProdutosProxy();
 
     // QAbstractItemModel interface
     QVariant data(const QModelIndex &proxyIndex, int role) const;
 
   private:
-    int column;
+    const int column;
 };
 
 #endif // IMPORTAPRODUTOSPROXY_H

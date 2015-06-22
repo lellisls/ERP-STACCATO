@@ -65,12 +65,12 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
-    for (int i = 0; i < temp.size(); ++i) {
+    for (int i = 0, size = temp.size(); i < size; ++i) {
       temp[i].prepend("+");
       temp[i].append("*");
     }
 
-    QString regex = temp.join(" ");
+    const QString regex = temp.join(" ");
 
     QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
 
@@ -99,7 +99,7 @@ void SearchDialog::sendUpdateMessage() {
 
   foreach (QString key, textKeys) {
     if (not key.isEmpty()) {
-      QVariant val = model.data(model.index(index.row(), model.fieldIndex(key)));
+      const QVariant val = model.data(model.index(index.row(), model.fieldIndex(key)));
 
       if (val.isValid()) {
         if (not text.isEmpty()) {
@@ -160,8 +160,8 @@ void SearchDialog::setFilter(const QString &value) {
   ui->tableBusca->resizeColumnsToContents();
 }
 
-void SearchDialog::hideColumns(QStringList columns) {
-  foreach (QString column, columns) { ui->tableBusca->setColumnHidden(model.fieldIndex(column), true); }
+void SearchDialog::hideColumns(const QStringList columns) {
+  foreach (const QString column, columns) { ui->tableBusca->setColumnHidden(model.fieldIndex(column), true); }
 }
 
 void SearchDialog::on_pushButtonSelecionar_clicked() {
@@ -183,7 +183,7 @@ QString SearchDialog::getPrimaryKey() const { return primaryKey; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
-QString SearchDialog::getText(QVariant index) {
+QString SearchDialog::getText(const QVariant index) {
   QString queryText;
 
   foreach (QString key, textKeys) {
@@ -204,7 +204,7 @@ QString SearchDialog::getText(QVariant index) {
     QString res;
 
     foreach (QString key, textKeys) {
-      QVariant val = query.value(key);
+      const QVariant val = query.value(key);
 
       if (val.isValid()) {
         if (not res.isEmpty()) {
@@ -229,10 +229,8 @@ QString SearchDialog::getText(QVariant index) {
   return (QString());
 }
 
-void SearchDialog::setHeaderData(QVector<QPair<QString, QString>> headerData) {
-  QPair<QString, QString> pair;
-
-  foreach (pair, headerData) { model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second); }
+void SearchDialog::setHeaderData(const QVector<QPair<QString, QString>> headerData) {
+  foreach (auto pair, headerData) { model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second); }
 }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
@@ -298,11 +296,11 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->setPrimaryKey("idProduto");
   sdProd->setTextKeys({"descricao"});
 
-  sdProd->hideColumns({"idProduto", "idFornecedor", "cst", "icms", "custo", "ipi", "markup", "comissao",
-                       "origem", "descontinuado", "temLote", "observacoes", "codBarras", "qtdPallet",
-                       "st", "desativado", "cfop", "ncm", "ncmEx", "atualizarTabelaPreco"});
+  sdProd->hideColumns({"idProduto", "idFornecedor", "cst", "icms", "custo", "ipi", "markup", "comissao", "origem",
+                       "descontinuado", "temLote", "observacoes", "codBarras", "qtdPallet", "st", "desativado", "cfop",
+                       "ncm", "ncmEx", "atualizarTabelaPreco"});
 
-  for (int i = 1; i <= sdProd->model.fieldIndex("descontinuadoUpd"); i += 2) {
+  for (int i = 1, fieldIndex = sdProd->model.fieldIndex("descontinuadoUpd"); i <= fieldIndex; i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
   }
 
@@ -488,44 +486,35 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   return sdProfissional;
 }
 
-void SearchDialog::on_radioButtonProdAtivos_clicked() {
-  QString text = ui->lineEditBusca->text();
+void SearchDialog::on_radioButtonProdAtivos_clicked() { montarFiltroAtivoDesc(true); }
+
+void SearchDialog::on_radioButtonProdDesc_clicked() { montarFiltroAtivoDesc(false); }
+
+void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
+  const QString text = ui->lineEditBusca->text();
 
   if (text.isEmpty()) {
-    model.setFilter("descontinuado = FALSE AND desativado = FALSE");
+    if (ativo) {
+      model.setFilter("descontinuado = FALSE AND desativado = FALSE");
+    } else {
+      model.setFilter("descontinuado = TRUE AND desativado = FALSE");
+    }
   } else {
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
-    for (int i = 0; i < temp.size(); ++i) {
+    for (int i = 0, size = temp.size(); i < size; ++i) {
       temp[i].prepend("+");
       temp[i].append("*");
     }
 
-    QString regex = temp.join(" ");
+    const QString regex = temp.join(" ");
 
-    QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
+    const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
 
-    model.setFilter(searchFilter + " AND descontinuado = FALSE AND desativado = FALSE");
-  }
-}
-
-void SearchDialog::on_radioButtonProdDesc_clicked() {
-  QString text = ui->lineEditBusca->text();
-
-  if (text.isEmpty()) {
-    model.setFilter("descontinuado = TRUE AND desativado = FALSE");
-  } else {
-    QStringList temp = text.split(" ", QString::SkipEmptyParts);
-
-    for (int i = 0; i < temp.size(); ++i) {
-      temp[i].prepend("+");
-      temp[i].append("*");
+    if (ativo) {
+      model.setFilter(searchFilter + " AND descontinuado = FALSE AND desativado = FALSE");
+    } else {
+      model.setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE");
     }
-
-    QString regex = temp.join(" ");
-
-    QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
-
-    model.setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE");
   }
 }

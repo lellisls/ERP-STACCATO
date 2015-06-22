@@ -31,7 +31,7 @@ class CadastroTransportadora : public RegisterDialog {
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonEndLimpar_clicked();
     void on_pushButtonRemoverEnd_clicked();
-    void on_checkBoxMostrarInativos_clicked(bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
 
@@ -41,18 +41,18 @@ class CadastroTransportadora : public RegisterDialog {
 *\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    virtual bool viewRegister(QModelIndex index);
+    virtual bool viewRegister(const QModelIndex index);
 
   private:
     /*!
 *\brief Função padrão para verificar campos obrigatórios
 *\return
 */
-    virtual bool verifyFields(int row);
+    virtual bool verifyFields(const int row);
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     /*!
 *\brief Limpar os campos da tela
 */
@@ -78,9 +78,10 @@ class CadastroTransportadora : public RegisterDialog {
     // methods
     virtual bool newRegister();
     void novoItem();
-    bool cadastrarEndereco(bool isUpdate);
+    bool cadastrarEndereco(const bool isUpdate);
     void novoEndereco();
     int getCodigoUF();
+    void setupTables();
 };
 
 #endif // CADASTROTRANSPORTADORA_H

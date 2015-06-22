@@ -90,8 +90,6 @@ bool MainWindow::dbConnect() {
     exit(1);
   }
 
-  //  qDebug() << "Connecting to database.";
-
   QSqlDatabase db;
 
   if (QSqlDatabase::contains()) {
@@ -106,16 +104,17 @@ bool MainWindow::dbConnect() {
   db.setDatabaseName("mysql");
 
   if (db.open()) {
-    QSqlQuery qry = db.exec("SHOW SCHEMAS");
+    QSqlQuery query = db.exec("SHOW SCHEMAS");
     bool hasMydb = false;
-    while (qry.next()) {
-      if (qry.value(0).toString() == "mydb") {
+
+    while (query.next()) {
+      if (query.value(0).toString() == "mydb") {
         hasMydb = true;
       }
     }
 
     if (not hasMydb) {
-      qDebug() << "mydb schema not found.";
+//      qDebug() << "mydb schema not found.";
       if (not initDb()) {
         qDebug() << "initDb Error";
         return false;
@@ -341,17 +340,17 @@ void MainWindow::initializeTables() {
   modelPedCompra->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelPedCompra->setTable("PedidoFornecedor");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"), QSqlRelation("Usuario", "idUsuario", "nome"));
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCliente"),
                               QSqlRelation("Cliente", "idCliente", "nome_razao"));
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
-                              QSqlRelation("Fornecedor_has_Endereco", "idEndereco", "logradouro"));
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");
+                              QSqlRelation("Cliente_has_Endereco", "idEndereco", "logradouro"));
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idProfissional"),
                               QSqlRelation("Profissional", "idProfissional", "nome_razao"));
+  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
+  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
+  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
+  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idProfissional"), Qt::Horizontal, "Profissional");
 
   if (not modelPedCompra->select()) {
@@ -667,6 +666,7 @@ void MainWindow::readSettings() {
 void MainWindow::showMaximized() {
   QMainWindow::showMaximized();
 
+  // TODO: substituir por findChildren
   setupTable(ui->tableOrcamentos);
   setupTable(ui->tableVendas);
   setupTable(ui->tableContasPagar);
@@ -688,8 +688,10 @@ void MainWindow::on_tableVendas_activated(const QModelIndex &index) {
 }
 
 void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
-  Orcamento *orc = new Orcamento(this);
-  orc->viewRegisterById(modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+  Orcamento *orcamento = new Orcamento(this);
+  orcamento->viewRegisterById(
+        modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
+  orcamento->show();
 }
 
 void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {
@@ -728,21 +730,16 @@ void MainWindow::on_tableNFE_activated(const QModelIndex &index) {
   vendas->viewRegisterById(modelNFe->data(modelNFe->index(index.row(), modelNFe->fieldIndex("idVenda"))));
 }
 
-bool MainWindow::event(QEvent *e) // overloading event(QEvent*) method of QMainWindow
-{
+bool MainWindow::event(QEvent *e) {
   switch (e->type()) {
-    // ...
 
     case QEvent::WindowActivate:
-      // gained focus
       updateTables();
-      //    qDebug() << "focus: updating tables";
       break;
 
     case QEvent::WindowDeactivate:
-      // lost focus
       break;
-      // ...
+
     default:
       break;
   };
@@ -754,18 +751,18 @@ bool MainWindow::event(QEvent *e) // overloading event(QEvent*) method of QMainW
 bool MainWindow::TestInitDB() { return initDb(); }
 
 bool MainWindow::TestCadastroClienteIncompleto() {
-  CadastroCliente *cad = new CadastroCliente(this);
-  return cad->TestClienteIncompleto();
+  CadastroCliente *cliente = new CadastroCliente(this);
+  return cliente->TestClienteIncompleto();
 }
 
 bool MainWindow::TestCadastroClienteEndereco() {
-  CadastroCliente *cad = new CadastroCliente(this);
-  return cad->TestClienteEndereco();
+  CadastroCliente *cliente = new CadastroCliente(this);
+  return cliente->TestClienteEndereco();
 }
 
 bool MainWindow::TestCadastroClienteCompleto() {
-  CadastroCliente *cad = new CadastroCliente(this);
-  return cad->TestClienteCompleto();
+  CadastroCliente *cliente = new CadastroCliente(this);
+  return cliente->TestClienteCompleto();
 }
 
 void MainWindow::TestImportacao() {

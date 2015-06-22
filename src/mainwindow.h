@@ -94,16 +94,11 @@ class MainWindow : public QMainWindow {
     void on_tablePedidosCompra_activated(const QModelIndex &index);
     void on_tableRecebimentosFornecedor_activated(const QModelIndex &index);
     void on_tableVendas_activated(const QModelIndex &index);
-
     void on_radioButtonOrcProprios_clicked();
 
   private:
     // attributes
     Ui::MainWindow *ui;
-    int orcRows = 0;
-    int vendRows = 0;
-    int pagarRows = 0;
-    int recebRows = 0;
     QSqlTableModel *modelOrcamento, *modelCAPagar, *modelCAReceber, *modelEntregasCliente, *modelRecebimentosForn,
     *modelNFe;
     QSqlRelationalTableModel *modelVendas, *modelPedCompra;

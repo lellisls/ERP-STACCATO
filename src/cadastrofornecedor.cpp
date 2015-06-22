@@ -40,7 +40,7 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -66,7 +66,7 @@ void CadastroFornecedor::show() {
   adjustSize();
 }
 
-bool CadastroFornecedor::viewRegister(QModelIndex index) {
+bool CadastroFornecedor::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -98,7 +98,7 @@ void CadastroFornecedor::novoEndereco() {
   clearEndereco();
 }
 
-bool CadastroFornecedor::verifyFields(int row) {
+bool CadastroFornecedor::verifyFields(const int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
     qDebug() << "Faltou endereço!";
@@ -144,7 +144,7 @@ bool CadastroFornecedor::verifyFields(int row) {
   return true;
 }
 
-bool CadastroFornecedor::savingProcedures(int row) {
+bool CadastroFornecedor::savingProcedures(const int row) {
   if (data(primaryKey).isNull()) {
     QSqlQuery queryKey;
     queryKey.prepare("SELECT MAX(:primaryKey) FROM :table");
@@ -188,13 +188,10 @@ bool CadastroFornecedor::savingProcedures(int row) {
     return false;
   }
 
-  int idFornecedor = data(row, primaryKey).toInt();
+  const int idFornecedor =
+      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
-  if (not data(row, primaryKey).isValid()) {
-    idFornecedor = model.query().lastInsertId().toInt();
-  }
-
-  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idFornecedor);
   }
 
@@ -254,7 +251,7 @@ void CadastroFornecedor::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, bool silent) {
+bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, const bool silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
   }
@@ -320,7 +317,7 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
   }
 }
 
-bool CadastroFornecedor::cadastrarEndereco(bool isUpdate) {
+bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro, ui->lineEditBairro,
                                        ui->lineEditCidade, ui->lineEditUF})) {
     return false;
@@ -332,12 +329,9 @@ bool CadastroFornecedor::cadastrarEndereco(bool isUpdate) {
     return false;
   }
 
-  int row;
+  const int row = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (isUpdate) {
-    row = mapperEnd.currentIndex();
-  } else {
-    row = modelEnd.rowCount();
+  if (not isUpdate) {
     modelEnd.insertRow(row);
   }
 
@@ -439,7 +433,7 @@ void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
 }
 
 int CadastroFornecedor::getCodigoUF() {
-  QString uf = ui->lineEditUF->text().toLower();
+  const QString uf = ui->lineEditUF->text().toLower();
 
   if (uf == "ro") return 11;
   if (uf == "ac") return 12;

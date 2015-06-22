@@ -35,7 +35,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
 
 ContasAReceber::~ContasAReceber() { delete ui; }
 
-void ContasAReceber::on_checkBox_toggled(bool checked) { Q_UNUSED(checked) }
+void ContasAReceber::on_checkBox_toggled(const bool checked) { Q_UNUSED(checked) }
 
 void ContasAReceber::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
@@ -62,7 +62,7 @@ void ContasAReceber::on_pushButtonSalvar_clicked() {
 
 void ContasAReceber::on_pushButtonCancelar_clicked() { close(); }
 
-void ContasAReceber::viewConta(QString idVenda) {
+void ContasAReceber::viewConta(const QString idVenda) {
   this->idVenda = idVenda;
 
   modelItensConta.setFilter("idVenda = '" + idVenda + "'");

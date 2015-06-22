@@ -14,7 +14,7 @@ class EntregasCliente : public QDialog {
   public:
     explicit EntregasCliente(QWidget *parent = 0);
     ~EntregasCliente();
-    void viewEntrega(QString idPedido);
+    void viewEntrega(const QString idPedido);
 
   private slots:
     void on_checkBoxEntregue_clicked();

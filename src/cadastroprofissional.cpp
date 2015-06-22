@@ -16,7 +16,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -116,7 +116,7 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroProfissional::viewRegister(QModelIndex index) {
+bool CadastroProfissional::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -141,9 +141,9 @@ bool CadastroProfissional::viewRegister(QModelIndex index) {
   return true;
 }
 
-void CadastroProfissional::changeItem(QVariant value) { viewRegisterById(value); }
+void CadastroProfissional::changeItem(const QVariant value) { viewRegisterById(value); }
 
-bool CadastroProfissional::verifyRequiredField(QLineEdit *line, bool silent) {
+bool CadastroProfissional::verifyRequiredField(QLineEdit *line, const bool silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
   }
@@ -170,7 +170,7 @@ bool CadastroProfissional::verifyRequiredField(QLineEdit *line, bool silent) {
   return true;
 }
 
-bool CadastroProfissional::verifyFields(int row) {
+bool CadastroProfissional::verifyFields(const int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
     qDebug() << "Faltou endereço!";
@@ -216,7 +216,7 @@ bool CadastroProfissional::verifyFields(int row) {
   return true;
 }
 
-bool CadastroProfissional::savingProcedures(int row) {
+bool CadastroProfissional::savingProcedures(const int row) {
   if (not ui->lineEditProfissional->text().isEmpty()) {
     setData(row, "nome_razao", ui->lineEditProfissional->text());
   }
@@ -288,15 +288,10 @@ bool CadastroProfissional::savingProcedures(int row) {
     return false;
   }
 
-  int idProfissional;
+  const int idProfissional =
+      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
-  if (data(row, primaryKey).isValid()) {
-    idProfissional = data(row, primaryKey).toInt();
-  } else {
-    idProfissional = model.query().lastInsertId().toInt();
-  }
-
-  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     if (not modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idProfissional)) {
       qDebug() << "error: " << modelEnd.lastError();
     }
@@ -379,7 +374,7 @@ void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroProfissional::cadastrarEndereco(bool isUpdate) {
+bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
                                        ui->lineEditCidade, ui->lineEditUF})) {
     return false;
@@ -391,12 +386,9 @@ bool CadastroProfissional::cadastrarEndereco(bool isUpdate) {
     return false;
   }
 
-  int row;
+  const int row = (isUpdate) ? mapperEnd.currentIndex() : model.rowCount();
 
-  if (isUpdate) {
-    row = mapperEnd.currentIndex();
-  } else {
-    row = modelEnd.rowCount();
+  if (not isUpdate) {
     modelEnd.insertRow(row);
   }
 
@@ -514,7 +506,7 @@ void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text)
   }
 }
 
-void CadastroProfissional::on_checkBoxMostrarInativos_clicked(bool checked) {
+void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool checked) {
   if (checked) {
     modelEnd.setFilter("idProfissional = " + data(primaryKey).toString());
   } else {
@@ -544,7 +536,7 @@ void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroProfissional::on_radioButtonPF_toggled(bool checked) {
+void CadastroProfissional::on_radioButtonPF_toggled(const bool checked) {
   if (checked) {
     tipoPFPJ = "PF";
     ui->lineEditCNPJ->hide();
@@ -579,7 +571,7 @@ void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text
 }
 
 int CadastroProfissional::getCodigoUF() {
-  QString uf = ui->lineEditUF->text().toLower();
+  const QString uf = ui->lineEditUF->text().toLower();
 
   if (uf == "ro") return 11;
   if (uf == "ac") return 12;

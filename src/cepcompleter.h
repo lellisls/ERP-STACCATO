@@ -9,7 +9,7 @@ class CepCompleter {
   public:
     CepCompleter();
     ~CepCompleter();
-    bool buscaCEP(QString cpf);
+    bool buscaCEP(const QString cpf);
     QString getCidade() const;
     QString getEndereco() const;
     QString getBairro() const;
@@ -22,8 +22,8 @@ class CepCompleter {
     QString bairro;
     QString uf;
     // methods
-    QString buscaUF(QString cep);
-    bool inRange(QString cep, int st, int end);
+    QString buscaUF(const QString cep);
+    bool inRange(const QString cep, const int st, const int end);
     void clearFields();
 };
 

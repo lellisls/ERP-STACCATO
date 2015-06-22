@@ -35,7 +35,7 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
 
 ContasAPagar::~ContasAPagar() { delete ui; }
 
-void ContasAPagar::on_checkBoxPago_toggled(bool checked) { Q_UNUSED(checked;) }
+void ContasAPagar::on_checkBoxPago_toggled(const bool checked) { Q_UNUSED(checked;) }
 
 void ContasAPagar::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
@@ -62,7 +62,7 @@ void ContasAPagar::on_pushButtonSalvar_clicked() {
 
 void ContasAPagar::on_pushButtonCancelar_clicked() {}
 
-void ContasAPagar::viewConta(QString idVenda) {
+void ContasAPagar::viewConta(const QString idVenda) {
   this->idVenda = idVenda;
 
   modelItensContas.setFilter("idVenda = '" + idVenda + "'");

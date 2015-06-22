@@ -13,10 +13,10 @@ class CadastroProfissional : public RegisterDialog {
   public:
     explicit CadastroProfissional(QWidget *parent = 0);
     ~CadastroProfissional();
-    bool viewRegister(QModelIndex index);
+    bool viewRegister(const QModelIndex index);
 
   public slots:
-    void changeItem(QVariant value);
+    void changeItem(const QVariant value);
     void show();
 
   private slots:
@@ -35,8 +35,8 @@ class CadastroProfissional : public RegisterDialog {
     void on_tableEndereco_clicked(const QModelIndex &index);
     void on_pushButtonRemoverEnd_clicked();
     void on_lineEditContatoCPF_textEdited(const QString &text);
-    void on_checkBoxMostrarInativos_clicked(bool checked);
-    void on_radioButtonPF_toggled(bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool checked);
+    void on_radioButtonPF_toggled(const bool checked);
     void on_lineEditCPFBancario_textEdited(const QString &text);
 
   private:
@@ -44,11 +44,11 @@ class CadastroProfissional : public RegisterDialog {
 *\brief Função padrão para verificar campos obrigatórios
 *\return
 */
-    virtual bool verifyFields(int row);
+    virtual bool verifyFields(const int row);
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     /*!
 *\brief Limpar os campos da tela
 */
@@ -74,10 +74,10 @@ class CadastroProfissional : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     // methods
     void setupUi();
-    bool verifyRequiredField(QLineEdit *line, bool silent);
+    bool verifyRequiredField(QLineEdit *line, const bool silent);
     void novoEndereco();
     void clearEndereco();
-    bool cadastrarEndereco(bool isUpdate);
+    bool cadastrarEndereco(const bool isUpdate);
     void setupEndereco();
     int getCodigoUF();
 };

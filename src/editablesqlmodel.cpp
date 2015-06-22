@@ -5,8 +5,7 @@ EditableSqlModel::EditableSqlModel(QObject *parent) : QSqlRelationalTableModel(p
 EditableSqlModel::~EditableSqlModel() {}
 
 Qt::ItemFlags EditableSqlModel::flags(const QModelIndex &index) const {
-  Qt::ItemFlags flags = QSqlQueryModel::flags(index);
-  flags |= Qt::ItemIsEditable;
+  const Qt::ItemFlags flags = QSqlQueryModel::flags(index) | Qt::ItemIsEditable;
 
   return flags;
 }

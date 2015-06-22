@@ -17,12 +17,12 @@ class CadastrarNFe : public QDialog {
   public:
     explicit CadastrarNFe(QString idVenda, QWidget *parent = 0);
     ~CadastrarNFe();
-    void prepararNFe(QList<int> items);
-    void setItemData(int row, const QString &key, const QVariant &value);
-    QVariant getItemData(int row, const QString &key);
+    void prepararNFe(const QList<int> items);
+    void setItemData(const int row, const QString &key, const QVariant &value);
+    QVariant getItemData(const int row, const QString &key) const;
     void guardarNotaBD();
 
-    public slots:
+  public slots:
     void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
   private slots:
@@ -36,7 +36,7 @@ class CadastrarNFe : public QDialog {
     // attributes
     Ui::CadastrarNFe *ui;
     EditableSqlModel modelNFe, modelNFeItem, modelLoja, modelVenda, modelProd;
-    QString idVenda;
+    const QString idVenda;
     QString arquivo;
     QString chaveNum;
     QString chaveAcesso;
@@ -44,17 +44,17 @@ class CadastrarNFe : public QDialog {
     // methods
     QString criarChaveAcesso();
     QString clearStr(QString str);
-    QVariant getFromItemModel(int row, QString column);
-    QVariant getFromLoja(QString column);
-    QVariant getFromVenda(QString column);
-    QVariant getFromProdModel(int row, QString column);
-    QString calculaDigitoVerificador(QString chave);
+    QVariant getFromItemModel(const int row, const QString column) const;
+    QVariant getFromLoja(const QString column) const;
+    QVariant getFromVenda(const QString column) const;
+    QVariant getFromProdModel(const int row, const QString column) const;
+    QString calculaDigitoVerificador(const QString chave);
     bool writeTXT();
     void writeIdentificacao(QTextStream &stream);
-    bool writeEmitente(QTextStream & stream);
-    bool writeDestinatario(QTextStream & stream);
-    bool writeProduto(QTextStream & stream, double & total, double & icmsTotal);
-    void writeTotal(QTextStream & stream, double & total, double & icmsTotal);
+    bool writeEmitente(QTextStream &stream);
+    bool writeDestinatario(QTextStream &stream);
+    bool writeProduto(QTextStream &stream, double &total, double &icmsTotal);
+    void writeTotal(QTextStream &stream, double &total, double &icmsTotal);
 };
 
 #endif // CADASTRARNFE_H

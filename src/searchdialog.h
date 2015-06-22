@@ -18,13 +18,13 @@ class SearchDialog : public QDialog {
     ~SearchDialog();
     QString getFilter() const;
     void setFilter(const QString &value);
-    void hideColumns(QStringList columns);
+    void hideColumns(const QStringList columns);
     QString getPrimaryKey() const;
     void setPrimaryKey(const QString &value);
     QStringList getTextKeys() const;
     void setTextKeys(const QStringList &value);
-    QString getText(QVariant index);
-    void setHeaderData(QVector<QPair<QString, QString>> headerData);
+    QString getText(const QVariant index);
+    void setHeaderData(const QVector<QPair<QString, QString>> headerData);
 
     // Factory Methods
     static SearchDialog *cliente(QWidget *parent);
@@ -40,6 +40,7 @@ class SearchDialog : public QDialog {
     void sendUpdateMessage();
     void show();
     void showMaximized();
+    void montarFiltroAtivoDesc(const bool ativo);
 
   signals:
     void itemSelected(QVariant value);

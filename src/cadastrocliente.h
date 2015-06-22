@@ -22,7 +22,7 @@ class CadastroCliente : public RegisterDialog {
 
   private slots:
     void changeItem(QVariant value);
-    void on_checkBoxMostrarInativos_clicked(bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &text);
     void on_lineEditContatoCPF_textEdited(const QString &text);
@@ -37,7 +37,7 @@ class CadastroCliente : public RegisterDialog {
     void on_pushButtonEndLimpar_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonRemoverEnd_clicked();
-    void on_radioButtonPF_toggled(bool checked);
+    void on_radioButtonPF_toggled(const bool checked);
     void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
@@ -46,19 +46,20 @@ class CadastroCliente : public RegisterDialog {
 * \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
 * \return
 */
-    virtual bool viewRegister(QModelIndex index);
+    virtual bool viewRegister(const QModelIndex index);
 
     void setupEndereco();
-    private:
+
+  private:
     /*!
 * \brief Função padrão para verificar campos obrigatórios
 * \return
 */
-    virtual bool verifyFields(int row);
+    virtual bool verifyFields(const int row);
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     /*!
 * \brief Limpar os campos da tela
 */
@@ -83,8 +84,8 @@ class CadastroCliente : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    bool verifyRequiredField(QLineEdit *line, bool silent = false);
-    bool cadastrarEndereco(bool isUpdate);
+    bool verifyRequiredField(QLineEdit *line, const bool silent = false);
+    bool cadastrarEndereco(const bool isUpdate);
     void novoEndereco();
     void setupUi();
     void clearEndereco();

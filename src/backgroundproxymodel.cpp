@@ -7,7 +7,7 @@ BackgroundProxyModel::BackgroundProxyModel(int column) : column(column) {}
 
 BackgroundProxyModel::~BackgroundProxyModel() {}
 
-QVariant BackgroundProxyModel::data(const QModelIndex &proxyIndex, int role) const {
+QVariant BackgroundProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if ((role == Qt::BackgroundRole) and (proxyIndex.column() == column)) {
     int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 

@@ -14,6 +14,9 @@ class CadastroUsuario : public RegisterDialog {
     explicit CadastroUsuario(QWidget *parent = 0);
     ~CadastroUsuario();
 
+  public slots:
+    void show();
+
   private slots:
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();
@@ -32,18 +35,18 @@ class CadastroUsuario : public RegisterDialog {
 *\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    bool viewRegister(QModelIndex index);
+    bool viewRegister(const QModelIndex index);
 
   private:
     /*!
 *\brief Função padrão para verificar campos obrigatórios
 *\return
 */
-    virtual bool verifyFields(int row);
+    virtual bool verifyFields(const int row);
     /*!
 *\brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     /*!
 *\brief Limpar os campos da tela
 */
@@ -64,9 +67,6 @@ class CadastroUsuario : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroUsuario *ui;
-
-  public slots:
-    void show();
 };
 
 #endif // CADASTRARUSUARIO_H

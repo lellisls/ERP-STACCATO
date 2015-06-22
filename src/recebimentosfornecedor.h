@@ -14,7 +14,7 @@ class RecebimentosFornecedor : public QDialog {
   public:
     explicit RecebimentosFornecedor(QWidget *parent = 0);
     ~RecebimentosFornecedor();
-    void viewRecebimento(QString idPedido);
+    void viewRecebimento(const QString idPedido);
 
   private slots:
     void on_pushButtonCancelar_clicked();

@@ -22,31 +22,31 @@ class ImportaProdutos : public QDialog {
     void consistenciaDados();
     bool readFile();
     bool readValidade();
-    bool verificaTabela();
-    int buscarCadastrarFornecedor(QString fornecedor);
-    void atualizaCamposProduto(QSqlQuery &produto, QString idProduto);
+    bool verificaTabela(const QSqlRecord &record);
+    int buscarCadastrarFornecedor(const QString fornecedor);
+    void atualizaCamposProduto(const QSqlQuery &produto, const QString idProduto);
     void cadastraFornecedores(QSqlQuery &query);
     void cadastraProduto();
     void contaProdutos();
-    void expiraPrecosAntigos(QSqlQuery produto, QString idProduto);
-    void guardaNovoPrecoValidade(QSqlQuery &produto, QString idProduto);
+    void expiraPrecosAntigos(QSqlQuery &produto, const QString idProduto);
+    void guardaNovoPrecoValidade(QSqlQuery &produto, const QString idProduto);
     void importar();
-    void leituraProduto(QSqlQuery &query, QSqlRecord &record);
-    void marcaProdutoNaoDescontinuado(QSqlQuery &produto, QString idProduto);
+    void leituraProduto(const QSqlQuery &query, const QSqlRecord &record);
+    void marcaProdutoNaoDescontinuado(QSqlQuery &produto, const QString idProduto);
     void marcaTodosProdutosDescontinuados();
     void mostraApenasEstesFornecedores();
     void setModelAndTable();
     void setProgressDialog();
     void TestImportacao();
     void verificaSeProdutoJaCadastrado(QSqlQuery &produto);
-    void pintarCamposForaDoPadrao(int row);
+    void pintarCamposForaDoPadrao(const int row);
     void setVariantMap();
     void salvar();
 
   private slots:
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
-    void on_checkBoxRepresentacao_clicked(bool checked);
+    void on_checkBoxRepresentacao_clicked(const bool checked);
 
   private:
     // attributes

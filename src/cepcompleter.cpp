@@ -1,7 +1,9 @@
-#include "cepcompleter.h"
 #include <QVariant>
 #include <QDebug>
 #include <QSqlError>
+
+#include "cepcompleter.h"
+
 CepCompleter::CepCompleter() {}
 
 CepCompleter::~CepCompleter() {}
@@ -13,7 +15,7 @@ void CepCompleter::clearFields() {
   bairro.clear();
 }
 
-bool CepCompleter::buscaCEP(QString cep) {
+bool CepCompleter::buscaCEP(const QString cep) {
   clearFields();
   uf = buscaUF(cep).toUpper();
 
@@ -42,7 +44,7 @@ bool CepCompleter::buscaCEP(QString cep) {
   return true;
 }
 
-QString CepCompleter::buscaUF(QString cep) {
+QString CepCompleter::buscaUF(const QString cep) {
   if (inRange(cep, 01000, 19999)) return "sp";
   if (inRange(cep, 69900, 69999)) return "ac";
   if (inRange(cep, 57000, 57999)) return "al";
@@ -77,14 +79,14 @@ QString CepCompleter::buscaUF(QString cep) {
   return QString();
 }
 
-bool CepCompleter::inRange(QString cep, int st, int end) {
-  QStringList valueList = cep.split(QChar('-'));
+bool CepCompleter::inRange(const QString cep, const int st, const int end) {
+  const QStringList valueList = cep.split(QChar('-'));
 
   if (valueList.size() != 2) {
     return false;
   }
 
-  int vl = valueList.at(0).toInt();
+  const int vl = valueList.at(0).toInt();
 
   return (vl >= st and vl <= end);
 }

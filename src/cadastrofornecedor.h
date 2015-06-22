@@ -33,7 +33,7 @@ class CadastroFornecedor : public RegisterDialog {
     void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
-    virtual bool viewRegister(QModelIndex index);
+    virtual bool viewRegister(const QModelIndex index);
     void clearEndereco();
 
   private:
@@ -42,15 +42,15 @@ class CadastroFornecedor : public RegisterDialog {
     QSqlTableModel modelEnd;
     QDataWidgetMapper mapperEnd;
     // methods
-    bool verifyRequiredField(QLineEdit *line, bool silent = false);
+    bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     void novoEndereco();
-    virtual bool verifyFields(int row);
-    virtual bool savingProcedures(int row);
+    virtual bool verifyFields(const int row);
+    virtual bool savingProcedures(const int row);
     virtual void clearFields();
     virtual void setupMapper();
     virtual void registerMode();
     virtual void updateMode();
-    bool cadastrarEndereco(bool isUpdate);
+    bool cadastrarEndereco(const bool isUpdate);
     int getCodigoUF();
 };
 

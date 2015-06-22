@@ -12,7 +12,7 @@ class DateFormatDelegate : public QStyledItemDelegate {
     virtual QString displayText(const QVariant &value, const QLocale &locale) const;
 
   private:
-    QString dateFormat;
+    const QString dateFormat;
 };
 
 #endif // DATEFORMATDELEGATE_H

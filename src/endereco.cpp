@@ -4,7 +4,7 @@
 
 #include "endereco.h"
 
-Endereco::Endereco(int idEndereco, QString table) : m_idEndereco(-1) {
+Endereco::Endereco(const int idEndereco, const QString table) : m_idEndereco(-1) {
   QSqlQuery query;
   query.prepare("SELECT * FROM :table WHERE idEndereco = :idEndereco");
   query.bindValue(":table", table);
@@ -25,11 +25,11 @@ Endereco::Endereco(int idEndereco, QString table) : m_idEndereco(-1) {
   m_uf = query.value("uf").toString();
 }
 
-QString Endereco::linhaUm() { return (m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro); }
+QString Endereco::linhaUm() const { return (m_logradouro + ", " + m_numero + " " + m_complemento + " - " + m_bairro); }
 
-QString Endereco::linhaDois() { return (m_cidade + " - " + m_uf + " - CEP: " + m_cep); }
+QString Endereco::linhaDois() const { return (m_cidade + " - " + m_uf + " - CEP: " + m_cep); }
 
-QString Endereco::umaLinha() { return (linhaUm() + " - " + m_cidade + " - " + m_uf); }
+QString Endereco::umaLinha() const { return (linhaUm() + " - " + m_cidade + " - " + m_uf); }
 
 QString Endereco::uf() const { return m_uf; }
 

@@ -6,7 +6,7 @@
 #include "usersession.h"
 
 CadastroCliente::CadastroCliente(QWidget *parent)
-    : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
+  : RegisterDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
@@ -25,7 +25,7 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -47,8 +47,7 @@ void CadastroCliente::setupUi() {
 
 CadastroCliente::~CadastroCliente() { delete ui; }
 
-void CadastroCliente::setupEndereco()
-{
+void CadastroCliente::setupEndereco() {
   modelEnd.setTable("Cliente_has_Endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
@@ -72,7 +71,7 @@ void CadastroCliente::setupEndereco()
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
 }
 
-bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
+bool CadastroCliente::verifyRequiredField(QLineEdit *line, const bool silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
   }
@@ -99,7 +98,7 @@ bool CadastroCliente::verifyRequiredField(QLineEdit *line, bool silent) {
   return true;
 }
 
-bool CadastroCliente::verifyFields(int row) {
+bool CadastroCliente::verifyFields(const int row) {
   if (modelEnd.rowCount() == 0) {
     setData(row, "incompleto", true);
     qDebug() << "Faltou endereço!";
@@ -149,7 +148,7 @@ bool CadastroCliente::verifyFields(int row) {
   return true;
 }
 
-bool CadastroCliente::savingProcedures(int row) {
+bool CadastroCliente::savingProcedures(const int row) {
   if (not ui->lineEditCliente->text().isEmpty()) {
     setData(row, "nome_razao", ui->lineEditCliente->text());
   }
@@ -216,15 +215,10 @@ bool CadastroCliente::savingProcedures(int row) {
     return false;
   }
 
-  int idCliente;
+  const int idCliente =
+      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
-  if (data(row, primaryKey).isValid()) {
-    idCliente = data(row, primaryKey).toInt();
-  } else {
-    idCliente = model.query().lastInsertId().toInt();
-  }
-
-  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     if (not modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idCliente)) {
       qDebug() << "error: " << modelEnd.lastError();
     }
@@ -298,7 +292,7 @@ void CadastroCliente::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroCliente::viewRegister(QModelIndex index) {
+bool CadastroCliente::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -313,7 +307,7 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
 
   QSqlQuery query;
   query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM Cliente WHERE idCadastroRel = :primaryKey");
-  query.bindValue(":primaryKey", primaryKey);
+  query.bindValue(":primaryKey", data(primaryKey));
 
   if (not query.exec()) {
     qDebug() << "Erro na query cliente: " << query.lastError();
@@ -323,7 +317,7 @@ bool CadastroCliente::viewRegister(QModelIndex index) {
   while (query.next()) {
     ui->textEditObservacoes->insertPlainText(query.value("idCliente").toString() + " - " +
                                              query.value("nome_razao").toString() + " - " +
-                                             query.value("nomeFantasia").toString());
+                                             query.value("nomeFantasia").toString() + "\n");
   }
 
   tipoPFPJ = data("pfpj").toString();
@@ -378,9 +372,9 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroCliente::cadastrarEndereco(bool isUpdate) {
+bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
-                                        ui->lineEditCidade, ui->lineEditUF})) {
+                                       ui->lineEditCidade, ui->lineEditUF})) {
     return false;
   }
 
@@ -390,12 +384,9 @@ bool CadastroCliente::cadastrarEndereco(bool isUpdate) {
     return false;
   }
 
-  int row;
+  const int row = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (isUpdate) {
-    row = mapperEnd.currentIndex();
-  } else {
-    row = modelEnd.rowCount();
+  if (not isUpdate) {
     modelEnd.insertRow(row);
   }
 
@@ -522,7 +513,7 @@ void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroCliente::on_radioButtonPF_toggled(bool checked) {
+void CadastroCliente::on_radioButtonPF_toggled(const bool checked) {
   if (checked) {
     tipoPFPJ = "PF";
     ui->lineEditCNPJ->hide();
@@ -556,7 +547,7 @@ void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
   }
 }
 
-void CadastroCliente::on_checkBoxMostrarInativos_clicked(bool checked) {
+void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool checked) {
   if (checked) {
     modelEnd.setFilter("idCliente = " + data(primaryKey).toString());
   } else {
@@ -638,7 +629,7 @@ bool CadastroCliente::TestClienteCompleto() {
 #endif
 
 int CadastroCliente::getCodigoUF() {
-  QString uf = ui->lineEditUF->text().toLower();
+  const QString uf = ui->lineEditUF->text().toLower();
 
   if (uf == "ro") return 11;
   if (uf == "ac") return 12;

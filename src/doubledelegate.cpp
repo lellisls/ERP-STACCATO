@@ -6,7 +6,7 @@ DoubleDelegate::~DoubleDelegate() {}
 
 QString DoubleDelegate::displayText(const QVariant &value, const QLocale &locale) const {
   Q_UNUSED(locale);
-  QLocale local;
+  const QLocale local;
 
   if (value.userType() == QVariant::Double) {
     return local.toString(value.toDouble(), 'f', 2);

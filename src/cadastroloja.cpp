@@ -19,6 +19,23 @@ CadastroLoja::CadastroLoja(QWidget *parent) : RegisterDialog("Loja", "idLoja", p
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
 
+  setupTables();
+  setupMapper();
+  newRegister();
+
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+    ui->pushButtonRemover->setDisabled(true);
+    ui->pushButtonRemoverEnd->setDisabled(true);
+  }
+}
+
+CadastroLoja::~CadastroLoja() { delete ui; }
+
+void CadastroLoja::setupTables() {
   modelAlcadas.setTable("Alcadas");
   modelAlcadas.setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
   modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
@@ -54,27 +71,13 @@ CadastroLoja::CadastroLoja(QWidget *parent) : RegisterDialog("Loja", "idLoja", p
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idLoja"));
-
-  setupMapper();
-  newRegister();
-
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
-
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->pushButtonRemover->setDisabled(true);
-    ui->pushButtonRemoverEnd->setDisabled(true);
-  }
 }
-
-CadastroLoja::~CadastroLoja() { delete ui; }
 
 void CadastroLoja::clearFields() {
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
 }
 
-bool CadastroLoja::verifyFields(int row) {
+bool CadastroLoja::verifyFields(const int row) {
   Q_UNUSED(row);
 
   if (not RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial, ui->lineEditNomeFantasia,
@@ -86,7 +89,7 @@ bool CadastroLoja::verifyFields(int row) {
   return true;
 }
 
-bool CadastroLoja::savingProcedures(int row) {
+bool CadastroLoja::savingProcedures(const int row) {
   setData(row, "descricao", ui->lineEditDescricao->text());
   setData(row, "razaoSocial", ui->lineEditRazaoSocial->text());
   setData(row, "sigla", ui->lineEditSIGLA->text());
@@ -107,13 +110,10 @@ bool CadastroLoja::savingProcedures(int row) {
     return false;
   }
 
-  int idLoja = data(row, primaryKey).toInt();
+  const int idLoja =
+      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
-  if (not data(row, primaryKey).isValid()) {
-    idLoja = model.query().lastInsertId().toInt();
-  }
-
-  for (int row = 0; row < modelEnd.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idLoja);
   }
 
@@ -166,7 +166,7 @@ void CadastroLoja::setupMapper() {
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
-bool CadastroLoja::viewRegister(QModelIndex index) {
+bool CadastroLoja::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -197,7 +197,7 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
   sdLoja->show();
 }
 
-void CadastroLoja::changeItem(QVariant value) { viewRegisterById(value); }
+void CadastroLoja::changeItem(const QVariant value) { viewRegisterById(value); }
 
 void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
   if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {
@@ -208,7 +208,7 @@ void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
 }
 
 void CadastroLoja::on_pushButtonEntradaNFe_clicked() {
-  QString dir = QFileDialog::getExistingDirectory(this, "Pasta entrada NFe", QDir::currentPath());
+  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta entrada NFe", QDir::currentPath());
 
   if (not dir.isEmpty()) {
     ui->lineEditPastaEntACBr->setText(dir);
@@ -216,7 +216,7 @@ void CadastroLoja::on_pushButtonEntradaNFe_clicked() {
 }
 
 void CadastroLoja::on_pushButtonSaidaNFe_clicked() {
-  QString dir = QFileDialog::getExistingDirectory(this, "Pasta saída NFe", QDir::currentPath());
+  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta saída NFe", QDir::currentPath());
 
   if (not dir.isEmpty()) {
     ui->lineEditPastaSaiACBr->setText(dir);
@@ -261,7 +261,7 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroLoja::on_checkBoxMostrarInativos_clicked(bool checked) {
+void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool checked) {
   if (checked) {
     modelEnd.setFilter("idLoja = " + data(primaryKey).toString());
   } else {
@@ -269,7 +269,7 @@ void CadastroLoja::on_checkBoxMostrarInativos_clicked(bool checked) {
   }
 }
 
-bool CadastroLoja::cadastrarEndereco(bool isUpdate) {
+bool CadastroLoja::cadastrarEndereco(const bool isUpdate) {
   if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditLogradouro, ui->lineEditNro, ui->lineEditBairro,
                                        ui->lineEditCidade, ui->lineEditUF})) {
     return false;
@@ -281,12 +281,9 @@ bool CadastroLoja::cadastrarEndereco(bool isUpdate) {
     return false;
   }
 
-  int row;
+  const int row = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (isUpdate) {
-    row = mapperEnd.currentIndex();
-  } else {
-    row = modelEnd.rowCount();
+  if (not isUpdate) {
     modelEnd.insertRow(row);
   }
 
@@ -403,7 +400,7 @@ void CadastroLoja::show() {
 }
 
 int CadastroLoja::getCodigoUF() {
-  QString uf = ui->lineEditUF->text().toLower();
+  const QString uf = ui->lineEditUF->text().toLower();
 
   if (uf == "ro") return 11;
   if (uf == "ac") return 12;

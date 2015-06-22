@@ -18,7 +18,7 @@ class CadastroLoja : public RegisterDialog {
     void show();
 
   private slots:
-    void changeItem(QVariant value);
+    void changeItem(const QVariant value);
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
@@ -32,7 +32,7 @@ class CadastroLoja : public RegisterDialog {
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonEndLimpar_clicked();
     void on_pushButtonRemoverEnd_clicked();
-    void on_checkBoxMostrarInativos_clicked(bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
 
@@ -42,18 +42,18 @@ class CadastroLoja : public RegisterDialog {
 *\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    virtual bool viewRegister(QModelIndex index);
+    virtual bool viewRegister(const QModelIndex index);
 
   private:
     /*!
 *\brief Função padrão para verificar campos obrigatórios
 *\return
 */
-    virtual bool verifyFields(int row);
+    virtual bool verifyFields(const int row);
     /*!
 *\brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     /*!
 *\brief Limpar os campos da tela
 */
@@ -79,9 +79,10 @@ class CadastroLoja : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     // methods
     void novoEndereco();
-    bool cadastrarEndereco(bool isUpdate);
+    bool cadastrarEndereco(const bool isUpdate);
     int getCodigoUF();
     void clearEndereco();
+    void setupTables();
 };
 
 #endif // CADASTROLOJA_H

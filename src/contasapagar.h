@@ -15,10 +15,10 @@ class ContasAPagar : public QDialog {
   public:
     explicit ContasAPagar(QWidget *parent = 0);
     ~ContasAPagar();
-    void viewConta(QString idVenda);
+    void viewConta(const QString idVenda);
 
   private slots:
-    void on_checkBoxPago_toggled(bool checked);
+    void on_checkBoxPago_toggled(const bool checked);
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
 

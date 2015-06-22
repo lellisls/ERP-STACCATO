@@ -70,7 +70,7 @@ void EntregasCliente::on_pushButtonCancelar_clicked() { close(); }
 
 void EntregasCliente::on_checkBoxEntregue_clicked() {}
 
-void EntregasCliente::viewEntrega(QString idPedido) {
+void EntregasCliente::viewEntrega(const QString idPedido) {
   this->idPedido = idPedido;
   modelEntregas.setFilter("idPedido = '" + idPedido + "' AND tipo = 'cliente'");
 }

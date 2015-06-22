@@ -10,14 +10,14 @@ class LineEditDecimal : public QLineEdit {
   public:
     explicit LineEditDecimal(QWidget *parent = 0);
     double getBottom() const;
-    void setBottom(double value);
+    void setBottom(const double value);
     double getTop() const;
-    void setTop(double value);
+    void setTop(const double value);
     double getValue() const;
-    void setValue(double value);
+    void setValue(const double value);
 
   private slots:
-    void processDecimal(QString value);
+    void processDecimal(const QString value);
 
   private:
     Q_PROPERTY(double value READ getValue WRITE setValue STORED false)

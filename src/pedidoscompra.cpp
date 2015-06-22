@@ -13,56 +13,18 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
-
-  modelItemPedidos.setTable("pedidofornecedor_has_produto");
-  modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelItemPedidos.select()) {
-    qDebug() << "Failed to populate pedidofornecedor_has_produto: " << modelItemPedidos.lastError();
-    return;
-  }
-
-  modelPedidos.setTable("pedidofornecedor");
-  modelPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelPedidos.select()) {
-    qDebug() << "Failed to populate pedidofornecedor: " << modelPedidos.lastError();
-    return;
-  }
-
-  ui->tablePedidos->setModel(&modelItemPedidos);
-  ui->tablePedidos->setItemDelegateForColumn(modelItemPedidos.fieldIndex("status"),
-                                             new ComboBoxDelegate(ui->tablePedidos));
+  setupTables();
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("idLoja"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("item"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("idProduto"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("prcUnitario"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("parcial"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("desconto"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("parcialDesc"));
-  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("descGlobal"));
-
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("idPedido"), Qt::Horizontal, "Pedido");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("produto"), Qt::Horizontal, "Produto");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("obs"), Qt::Horizontal, "Obs.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("caixas"), Qt::Horizontal, "Cx.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("qte"), Qt::Horizontal, "Qte.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Cx.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("total"), Qt::Horizontal, "Total");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("status"), Qt::Horizontal, "Status");
-
-  updateTables();
   show();
+
+  ui->tablePedidos->resizeColumnsToContents();
 }
 
 PedidosCompra::~PedidosCompra() { delete ui; }
 
-void PedidosCompra::viewPedido(QString idPedido) {
+void PedidosCompra::viewPedido(const QString idPedido) {
   this->idPedido = idPedido;
 
   modelItemPedidos.setFilter("idPedido = '" + idPedido + "'");
@@ -72,7 +34,7 @@ void PedidosCompra::viewPedido(QString idPedido) {
     return;
   }
 
-  for (int row = 0; row < modelItemPedidos.rowCount(); ++row) {
+  for (int row = 0, rowCount = modelItemPedidos.rowCount(); row < rowCount; ++row) {
     ui->tablePedidos->openPersistentEditor(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("qte")));
   }
 }
@@ -96,11 +58,11 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
 
   qDebug() << "size: " << query.size();
 
-  for (int row = 0; row < query.size(); ++row) {
-    QString combobox =
+  for (int row = 0, size = query.size(); row < size; ++row) {
+    const QString combobox =
         modelItemPedidos.data(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("status"))).toString();
     query.next();
-    QString status = query.value("status").toString();
+    const QString status = query.value("status").toString();
 
     if (status != combobox) {
       if (combobox == "Comprar") {
@@ -170,32 +132,71 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
 
 void PedidosCompra::on_pushButtonCancelar_clicked() { close(); }
 
-void PedidosCompra::on_checkBox_toggled(bool checked) { Q_UNUSED(checked); }
+void PedidosCompra::on_checkBox_toggled(const bool checked) { Q_UNUSED(checked); }
 
-void PedidosCompra::updateTables() {
-  if (not modelItemPedidos.select()) {
-    qDebug() << "erro modelItemPedidos: " << modelItemPedidos.lastError();
-    return;
-  }
-
-  if (not modelPedidos.select()) {
-    qDebug() << "erro modelPedidos: " << modelPedidos.lastError();
-    return;
-  }
-
-  ui->tablePedidos->resizeColumnsToContents();
-}
-
-void PedidosCompra::on_radioButtonVenda_toggled(bool checked) {
+void PedidosCompra::on_radioButtonVenda_toggled(const bool checked) {
   Q_UNUSED(checked);
   //  modelPedidos
 }
 
+void PedidosCompra::setupTables() {
+  modelPedidos.setTable("pedidofornecedor");
+  modelPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not modelPedidos.select()) {
+    qDebug() << "Failed to populate pedidofornecedor: " << modelPedidos.lastError();
+    return;
+  }
+
+  modelItemPedidos.setTable("pedidofornecedor_has_produto");
+  modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("idPedido"), Qt::Horizontal, "Pedido");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("produto"), Qt::Horizontal, "Produto");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("obs"), Qt::Horizontal, "Obs.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("caixas"), Qt::Horizontal, "Cx.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("qte"), Qt::Horizontal, "Qte.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("un"), Qt::Horizontal, "Un.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Cx.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("total"), Qt::Horizontal, "Total");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("status"), Qt::Horizontal, "Status");
+
+  if (not modelItemPedidos.select()) {
+    qDebug() << "Failed to populate pedidofornecedor_has_produto: " << modelItemPedidos.lastError();
+    return;
+  }
+
+  ui->tablePedidos->setModel(&modelItemPedidos);
+  ui->tablePedidos->setItemDelegateForColumn(modelItemPedidos.fieldIndex("status"),
+                                             new ComboBoxDelegate(ui->tablePedidos));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("idLoja"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("item"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("idProduto"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("prcUnitario"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("parcial"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("desconto"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("parcialDesc"));
+  ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("descGlobal"));
+  ui->tablePedidos->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tablePedidos->verticalHeader()->setResizeContentsPrecision(0);
+}
+
 void PedidosCompra::on_pushButtonNFe_clicked() {
-  QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
-  QList<int> rows;
-  foreach (QModelIndex index, list) { rows.append(index.row()); }
-  CadastrarNFe nfe(idPedido);
-  nfe.prepararNFe(rows);
-  qDebug() << rows;
+  CadastrarNFe *const cadNFe = new CadastrarNFe(idPedido, this);
+
+  const QModelIndexList list = ui->tablePedidos->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    return;
+  }
+
+  QList<int> lista;
+
+  foreach (const QModelIndex index, list) { lista.append(index.row()); }
+  qDebug() << "lista: " << lista;
+
+  cadNFe->prepararNFe(lista);
+  cadNFe->showMaximized();
 }

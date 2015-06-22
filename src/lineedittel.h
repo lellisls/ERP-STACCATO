@@ -9,7 +9,7 @@ class LineEditTel : public QLineEdit {
 
   public:
     explicit LineEditTel(QWidget *parent);
-    void processTel(QString value);
+    void processTel(const QString value);
     ~LineEditTel();
 };
 

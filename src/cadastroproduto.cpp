@@ -25,13 +25,14 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   ui->itemBoxFornecedor->setSearchDialog(sdFornecedor);
 
-  sdProd = SearchDialog::produto(this);
+  SearchDialog *sdProd = SearchDialog::produto(this);
   connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::changeItem);
+  connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProd, &SearchDialog::showMaximized);
 
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -60,7 +61,7 @@ void CadastroProduto::registerMode() {
   ui->pushButtonRemover->hide();
 }
 
-bool CadastroProduto::verifyFields(int row) {
+bool CadastroProduto::verifyFields(const int row) {
   Q_UNUSED(row);
 
   // TODO: see what to do with these
@@ -121,7 +122,7 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->radioButtonLote, "temLote");
 }
 
-bool CadastroProduto::savingProcedures(int row) {
+bool CadastroProduto::savingProcedures(const int row) {
   setData(row, "codBarras", ui->lineEditCodBarras->text());
   setData(row, "codComercial", ui->lineEditCodComer->text());
   setData(row, "colecao", ui->lineEditColecao->text());
@@ -161,8 +162,6 @@ void CadastroProduto::on_pushButtonNovoCad_clicked() { newRegister(); }
 void CadastroProduto::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroProduto::on_pushButtonCancelar_clicked() { close(); }
-
-void CadastroProduto::on_pushButtonBuscar_clicked() { sdProd->showMaximized(); }
 
 void CadastroProduto::changeItem(QVariant value) { viewRegisterById(value); }
 

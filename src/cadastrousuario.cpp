@@ -13,6 +13,7 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   fillCombobox();
 
   ui->lineEditSigla->setInputMask(">AAA");
+
   ui->tablePermissoes->setEnabled(false);
   ui->tablePermissoes->setToolTip("Função indisponível nesta versão!");
   ui->tablePermissoes->resizeColumnsToContents();
@@ -22,7 +23,7 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (QLineEdit *line, findChildren<QLineEdit *>()) {
+  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 }
@@ -33,9 +34,10 @@ void CadastroUsuario::setupTablePermissoes() {
   ui->tablePermissoes->resizeColumnsToContents();
   ui->tablePermissoes->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
   ui->tablePermissoes->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  // NOTE: checkbox em tabela aqui
 
-  for (int i = 0; i < ui->tablePermissoes->rowCount(); ++i) {
-    for (int j = 0; j < ui->tablePermissoes->columnCount(); ++j) {
+  for (int i = 0, rowCount = ui->tablePermissoes->rowCount(); i < rowCount; ++i) {
+    for (int j = 0, columnCount = ui->tablePermissoes->columnCount(); j < columnCount; ++j) {
       QWidget *widget = new QWidget();
       QCheckBox *checkBox = new QCheckBox();
       QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -48,7 +50,7 @@ void CadastroUsuario::setupTablePermissoes() {
   }
 }
 
-bool CadastroUsuario::verifyFields(int row) {
+bool CadastroUsuario::verifyFields(const int row) {
   Q_UNUSED(row);
 
   if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd})) {
@@ -86,7 +88,7 @@ void CadastroUsuario::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroUsuario::savingProcedures(int row) {
+bool CadastroUsuario::savingProcedures(const int row) {
   setData(row, "nome", ui->lineEditNome->text());
   setData(row, "idLoja", ui->comboBoxLoja->getCurrentValue());
   setData(row, "tipo", ui->comboBoxTipo->currentText());
@@ -106,7 +108,7 @@ bool CadastroUsuario::savingProcedures(int row) {
   return true;
 }
 
-bool CadastroUsuario::viewRegister(QModelIndex index) {
+bool CadastroUsuario::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }

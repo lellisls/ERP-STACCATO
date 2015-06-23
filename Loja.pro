@@ -51,7 +51,8 @@ SOURCES += src/apagaorcamento.cpp \
     src/doubledelegate.cpp \
     src/importaprodutosproxy.cpp \
     src/importaprodutos.cpp \
-    src/porcentagemdelegate.cpp
+    src/porcentagemdelegate.cpp \
+    src/checkboxdelegate.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/backgroundproxymodel.h \
@@ -93,7 +94,8 @@ HEADERS  += src/apagaorcamento.h \
     src/doubledelegate.h \
     src/importaprodutosproxy.h \
     src/importaprodutos.h \
-    src/porcentagemdelegate.h
+    src/porcentagemdelegate.h \
+    src/checkboxdelegate.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \

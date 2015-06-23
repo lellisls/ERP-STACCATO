@@ -137,15 +137,15 @@ void Venda::resetarPagamentos() {
   ui->comboBoxPgt2Parc->setCurrentIndex(0);
   ui->comboBoxPgt3Parc->setCurrentIndex(0);
 
-  // TODO: properly disable/enable fields on payments edit
-  //  ui->comboBoxPgt2->setDisabled(true);
-  //  ui->comboBoxPgt3->setDisabled(true);
-  //  ui->comboBoxPgt1Parc->setDisabled(true);
-  //  ui->comboBoxPgt2Parc->setDisabled(true);
-  //  ui->comboBoxPgt3Parc->setDisabled(true);
-  //  ui->dateEditPgt1->setDisabled(true);
-  //  ui->dateEditPgt2->setDisabled(true);
-  //  ui->dateEditPgt3->setDisabled(true);
+  ui->comboBoxPgt2->setDisabled(true);
+  ui->comboBoxPgt3->setDisabled(true);
+  ui->comboBoxPgt2Parc->setDisabled(true);
+  ui->comboBoxPgt3Parc->setDisabled(true);
+  ui->dateEditPgt2->setDisabled(true);
+  ui->dateEditPgt3->setDisabled(true);
+
+  ui->doubleSpinBoxPgt2->setDisabled(true);
+  ui->doubleSpinBoxPgt3->setDisabled(true);
 
   montarFluxoCaixa();
 }
@@ -172,8 +172,15 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     modelItem.insertRow(row);
 
     for (int field = 0, fieldCount = produtos.record().count(); field < fieldCount; ++field) {
-      if (not modelItem.setData(modelItem.index(row, field), produtos.value(field))) {
-        qDebug() << "Erro setando itens venda: " << modelItem.lastError();
+      if (modelItem.fieldIndex(produtos.record().fieldName(field)) != -1) {
+        if (not modelItem.setData(modelItem.index(row, modelItem.fieldIndex(produtos.record().fieldName(field))),
+                                  produtos.value(produtos.record().fieldName(field)))) {
+          qDebug() << "Erro setando itens venda: " << modelItem.lastError();
+        }
+      }
+
+      if (not modelItem.setData(modelItem.index(row, modelItem.fieldIndex("idVenda")), produtos.value("idOrcamento"))) {
+        qDebug() << "Erro setando idVenda: " << modelItem.lastError();
       }
     }
 
@@ -386,7 +393,10 @@ void Venda::calculoSpinBox1() {
   const double pgt3 = ui->doubleSpinBoxPgt3->value();
   const double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
+
   ui->doubleSpinBoxPgt2->setValue(pgt2 + restante);
+  ui->doubleSpinBoxPgt2->setEnabled(true);
+  ui->comboBoxPgt2->setEnabled(true);
 
   if (pgt2 == 0.0 or pgt3 >= 0.0) {
     ui->doubleSpinBoxPgt2->setMaximum(restante + pgt2);
@@ -412,8 +422,12 @@ void Venda::calculoSpinBox2() {
   const double pgt3 = ui->doubleSpinBoxPgt3->value();
   const double total = ui->doubleSpinBoxTotalPag->value();
   double restante = total - (pgt1 + pgt2 + pgt3);
+
   ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
   ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
+
+  ui->doubleSpinBoxPgt3->setEnabled(true);
+  ui->comboBoxPgt3->setEnabled(true);
 }
 
 void Venda::on_doubleSpinBoxPgt2_editingFinished() {
@@ -529,9 +543,13 @@ bool Venda::savingProcedures(int row) {
       qDebug() << "Erro na criação do pedido fornecedor: " << query.lastError();
     }
 
-    query.prepare("INSERT INTO PedidoFornecedor_has_Produto SELECT Venda_has_Produto.* FROM "
-                  "Venda_has_Produto INNER JOIN Produto ON Produto.idProduto = "
-                  "Venda_has_Produto.idProduto WHERE estoque = 0 AND Venda_has_Produto.idVenda = :idVenda");
+    query.prepare("INSERT INTO PedidoFornecedor_has_Produto (idPedido, idLoja, item, idProduto, fornecedor, produto, "
+                  "obs, prcUnitario, caixas, qte, un, unCaixa, codComercial, formComercial, parcial, desconto, "
+                  "parcialDesc, descGlobal, total, status) SELECT v.idVenda, v.idLoja, v.item, v.idProduto, "
+                  "v.fornecedor, v.produto, v.obs, v.prcUnitario, v.caixas, v.qte, v.un, v.unCaixa, v.codComercial, "
+                  "v.formComercial, v.parcial, v.desconto, v.parcialDesc, v.descGlobal, v.total, v.status FROM "
+                  "Venda_has_Produto AS v INNER JOIN Produto ON Produto.idProduto = v.idProduto WHERE estoque = 0 AND "
+                  "v.idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {

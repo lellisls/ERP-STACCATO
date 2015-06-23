@@ -107,8 +107,6 @@ bool Orcamento::viewRegister(const QModelIndex index) {
 
   if (time.addDays(data("validade").toInt()).date() < QDateTime::currentDateTime().date()) {
     ui->pushButtonGerarVenda->hide();
-  } else {
-    ui->pushButtonReplicar->hide();
   }
 
   ui->tableProdutos->resizeColumnsToContents();
@@ -155,6 +153,7 @@ void Orcamento::setupMapper() {
 void Orcamento::registerMode() {
   ui->pushButtonCadastrarOrcamento->show();
   ui->pushButtonAtualizarOrcamento->hide();
+  ui->pushButtonReplicar->hide();
 
   ui->pushButtonImprimir->setEnabled(false);
   ui->pushButtonGerarVenda->setEnabled(true);
@@ -164,6 +163,7 @@ void Orcamento::registerMode() {
 void Orcamento::updateMode() {
   ui->pushButtonCadastrarOrcamento->hide();
   ui->pushButtonAtualizarOrcamento->show();
+  ui->pushButtonReplicar->show();
 
   ui->pushButtonImprimir->setEnabled(true);
   ui->pushButtonGerarVenda->setEnabled(true);
@@ -176,7 +176,6 @@ bool Orcamento::newRegister() {
     return false;
   }
 
-  ui->pushButtonReplicar->hide();
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
   ui->spinBoxValidade->setValue(7);
   novoItem();
@@ -739,17 +738,32 @@ void Orcamento::on_checkBoxFreteManual_clicked(const bool checked) {
 }
 
 void Orcamento::on_pushButtonReplicar_clicked() {
-  // TODO: terminar replicação de orcamento
-  const QString lastOrc = ui->lineEditOrcamento->text();
+  Orcamento *orcamento = new Orcamento(parentWidget());
+  orcamento->ui->pushButtonReplicar->hide();
 
-  ui->lineEditOrcamento->clear();
-  ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
-  newRegister();
+  int row = mapper.currentIndex();
 
-  updateId();
-  const QLocale locale(QLocale::Portuguese);
+  // MODEL
+  orcamento->ui->itemBoxCliente->setValue(model.data(model.index(row, model.fieldIndex("idCliente"))));
+  orcamento->ui->itemBoxProfissional->setValue(model.data(model.index(row, model.fieldIndex("idProfissional"))));
+  orcamento->ui->itemBoxVendedor->setValue(model.data(model.index(row, model.fieldIndex("idUsuario"))));
+  orcamento->ui->itemBoxEndereco->setValue(model.data(model.index(row, model.fieldIndex("idEnderecoEntrega"))));
+  orcamento->ui->spinBoxValidade->setValue(model.data(model.index(row, model.fieldIndex("validade"))).toInt());
+  orcamento->ui->doubleSpinBoxDescontoGlobal->setValue(
+      model.data(model.index(row, model.fieldIndex("descontoPorc"))).toDouble());
+  orcamento->ui->doubleSpinBoxFrete->setValue(model.data(model.index(row, model.fieldIndex("frete"))).toDouble());
+  orcamento->ui->doubleSpinBoxFinal->setValue(model.data(model.index(row, model.fieldIndex("total"))).toDouble());
+  orcamento->ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
-  save();
+  // MODELITEM
+  for (int i = 0; i < modelItem.rowCount(); ++i) {
+    orcamento->ui->itemBoxProduto->setValue(modelItem.data(modelItem.index(i, modelItem.fieldIndex("idProduto"))));
+    orcamento->ui->doubleSpinBoxQte->setValue(
+        modelItem.data(modelItem.index(i, modelItem.fieldIndex("qte"))).toDouble());
+    orcamento->adicionarItem();
+  }
+
+  orcamento->show();
 }
 
 void Orcamento::on_doubleSpinBoxPrecoTotal_editingFinished() {

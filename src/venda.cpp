@@ -14,7 +14,6 @@
 #include <QTextCodec>
 #include <QTextDocument>
 #include <QWebFrame>
-#include <qtrpt.h>
 #include <QFileDialog>
 
 #include "mainwindow.h"
@@ -26,6 +25,8 @@
 #include "cadastrarnfe.h"
 #include "endereco.h"
 #include "doubledelegate.h"
+#include "checkboxdelegate.h"
+#include "qtrpt.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -66,6 +67,7 @@ Venda::~Venda() { delete ui; }
 
 void Venda::setupTables() {
   modelItem.setTable("Venda_has_Produto");
+  modelItem.setHeaderData(modelItem.fieldIndex("selecionado"), Qt::Horizontal, "");
   modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
   modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
@@ -115,6 +117,8 @@ void Venda::setupTables() {
   DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
   ui->tableFluxoCaixa->setItemDelegate(doubleDelegate);
   ui->tableVenda->setItemDelegate(doubleDelegate);
+
+  ui->tableVenda->setItemDelegateForColumn(modelItem.fieldIndex("selecionado"), new CheckBoxDelegate(ui->tableVenda));
 }
 
 void Venda::resetarPagamentos() {
@@ -361,7 +365,7 @@ void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 void Venda::on_pushButtonNFe_clicked() {
   CadastrarNFe *cadNFe = new CadastrarNFe(idVenda, this);
 
-  const QModelIndexList list = ui->tableVenda->selectionModel()->selectedRows();
+  const QModelIndexList list = modelItem.match(modelItem.index(0, 0), Qt::DisplayRole, true, -1);
 
   if (list.size() == 0) {
     QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
@@ -592,7 +596,7 @@ void Venda::updateMode() {
   ui->checkBoxFreteManual->hide();
 }
 
-bool Venda::viewRegister(QModelIndex index) {
+bool Venda::viewRegister(const QModelIndex index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -614,6 +618,10 @@ bool Venda::viewRegister(QModelIndex index) {
   }
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
+
+  for (int i = 0; i < modelItem.rowCount(); ++i) {
+    ui->tableVenda->openPersistentEditor(modelItem.index(i, 0));
+  }
 
   fillTotals();
 
@@ -787,7 +795,7 @@ void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
 
 void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 
-void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(double) { calcPrecoGlobalTotal(); }
+void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) { calcPrecoGlobalTotal(); }
 
 void Venda::on_pushButtonImprimir_clicked() {
   QtRPT *report = new QtRPT(this);

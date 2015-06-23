@@ -21,7 +21,7 @@ class Venda : public RegisterDialog {
     explicit Venda(QWidget *parent = 0);
     ~Venda();
     void fecharOrcamento(const QString &idVenda);
-    virtual bool viewRegister(QModelIndex index);
+    virtual bool viewRegister(const QModelIndex index);
     void updateValues();
 
   private slots:
@@ -35,7 +35,7 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt1_dateChanged(const QDate &date);
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
-    void on_doubleSpinBoxDescontoGlobal_valueChanged(double);
+    void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
     void on_doubleSpinBoxFinal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxPgt1_editingFinished();

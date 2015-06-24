@@ -22,8 +22,6 @@ class CepCompleter {
     QString bairro;
     QString uf;
     // methods
-    QString buscaUF(const QString cep);
-    bool inRange(const QString cep, const int st, const int end);
     void clearFields();
 };
 

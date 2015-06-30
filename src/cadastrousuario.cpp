@@ -97,11 +97,8 @@ bool CadastroUsuario::savingProcedures(const int row) {
   setData(row, "user", ui->lineEditUser->text());
 
   if (ui->lineEditPasswd->text() != "********") {
-    QSqlQuery query;
-    query.prepare("SELECT PASSWORD(:password)");
-    query.bindValue(":password", ui->lineEditPasswd->text());
+    QSqlQuery query("SELECT PASSWORD('" + ui->lineEditPasswd->text() + "')");
     query.first();
-
     setData(row, "passwd", query.value(0));
   }
 

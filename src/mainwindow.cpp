@@ -171,12 +171,6 @@ MainWindow::~MainWindow() {
   UserSession::free();
 }
 
-void MainWindow::setupTable(QTableView *table) {
-  table->verticalHeader()->setResizeContentsPrecision(0);
-  table->horizontalHeader()->setResizeContentsPrecision(0);
-  table->resizeColumnsToContents();
-}
-
 void MainWindow::showError(const QSqlError &err) {
   QMessageBox::critical(this, "Erro", "Erro inicializando o banco de dados: " + err.text());
 }
@@ -232,6 +226,8 @@ void MainWindow::initializeTables() {
   ui->tableOrcamentos->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableOrcamentos->setColumnHidden(modelOrcamento->fieldIndex("idUsuario"), true);
   ui->tableOrcamentos->setItemDelegate(doubledelegate);
+  ui->tableOrcamentos->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableOrcamentos->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Vendas -------------------------------------
   modelVendas = new QSqlRelationalTableModel(this);
@@ -275,6 +271,8 @@ void MainWindow::initializeTables() {
   ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("descontoReais"), doubledelegate);
   ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("total"), doubledelegate);
   ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("descontoPorc"), new PorcentagemDelegate);
+  ui->tableVendas->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableVendas->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Contas a pagar -------------------------------------
   modelCAPagar = new QSqlTableModel(this);
@@ -289,6 +287,8 @@ void MainWindow::initializeTables() {
   ui->tableContasPagar->setModel(modelCAPagar);
   ui->tableContasPagar->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableContasPagar->setItemDelegate(doubledelegate);
+  ui->tableContasPagar->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableContasPagar->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Contas a receber -------------------------------------
   modelCAReceber = new QSqlTableModel(this);
@@ -303,6 +303,8 @@ void MainWindow::initializeTables() {
   ui->tableContasReceber->setModel(modelCAReceber);
   ui->tableContasReceber->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableContasReceber->setItemDelegate(doubledelegate);
+  ui->tableContasReceber->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableContasReceber->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Entregas cliente
   modelEntregasCliente = new QSqlTableModel(this);
@@ -319,6 +321,8 @@ void MainWindow::initializeTables() {
   ui->tableEntregasCliente->setModel(modelEntregasCliente);
   ui->tableEntregasCliente->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableEntregasCliente->setItemDelegate(doubledelegate);
+  ui->tableEntregasCliente->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableEntregasCliente->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Recebimentos fornecedor
   modelRecebimentosForn = new QSqlTableModel(this);
@@ -334,6 +338,8 @@ void MainWindow::initializeTables() {
   ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
   ui->tableRecebimentosFornecedor->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableRecebimentosFornecedor->setItemDelegate(doubledelegate);
+  ui->tableRecebimentosFornecedor->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableRecebimentosFornecedor->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Pedidos de compra
   modelPedCompra = new QSqlRelationalTableModel(this);
@@ -361,6 +367,8 @@ void MainWindow::initializeTables() {
   ui->tablePedidosCompra->setModel(modelPedCompra);
   ui->tablePedidosCompra->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tablePedidosCompra->setItemDelegate(doubledelegate);
+  ui->tablePedidosCompra->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tablePedidosCompra->horizontalHeader()->setResizeContentsPrecision(0);
 
   // NFe
   modelNFe = new QSqlTableModel(this);
@@ -376,6 +384,8 @@ void MainWindow::initializeTables() {
   ui->tableNFE->setColumnHidden(modelNFe->fieldIndex("NFe"), true);
   ui->tableNFE->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->tableNFE->setItemDelegate(doubledelegate);
+  ui->tableNFE->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableNFE->horizontalHeader()->setResizeContentsPrecision(0);
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {
@@ -665,16 +675,6 @@ void MainWindow::readSettings() {
 
 void MainWindow::showMaximized() {
   QMainWindow::showMaximized();
-
-  // TODO: substituir por findChildren
-  setupTable(ui->tableOrcamentos);
-  setupTable(ui->tableVendas);
-  setupTable(ui->tableContasPagar);
-  setupTable(ui->tableContasReceber);
-  setupTable(ui->tableEntregasCliente);
-  setupTable(ui->tableNFE);
-  setupTable(ui->tablePedidosCompra);
-  setupTable(ui->tableRecebimentosFornecedor);
 }
 
 void MainWindow::on_actionImportaTeste_triggered() {
@@ -769,5 +769,4 @@ void MainWindow::TestImportacao() {
   ImportaProdutos *importa = new ImportaProdutos(this);
   importa->TestImportacao();
 }
-
 #endif

@@ -20,7 +20,6 @@ class MainWindow : public QMainWindow {
   public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setupTable(QTableView *table);
     bool dbConnect();
     QString getHostname() const;
     void setHostname(const QString &value);

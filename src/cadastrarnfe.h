@@ -54,7 +54,7 @@ class CadastrarNFe : public QDialog {
     bool writeEmitente(QTextStream &stream);
     bool writeDestinatario(QTextStream &stream);
     bool writeProduto(QTextStream &stream, double &total, double &icmsTotal);
-    void writeTotal(QTextStream &stream, double &total, double &icmsTotal);
+    void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete);
 };
 
 #endif // CADASTRARNFE_H

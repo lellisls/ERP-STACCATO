@@ -400,14 +400,12 @@ void ImportaProdutos::consistenciaDados() {
     variantMap.insert("ui", 0);
   }
 
-  const QString un = variantMap.value("un").toString().toLower();
+  const QString un = variantMap.value("un").toString().toUpper();
 
-  if (un == "m2") {
-    variantMap.insert("un", "m2");
-  } else if (un == "ml") {
-    variantMap.insert("un", "ml");
+  if (un == "M2" or un == "M²") {
+    variantMap.insert("un", "M²");
   } else {
-    variantMap.insert("un", "pç");
+    variantMap.insert("un", un);
   }
 
   variantMap.insert("ncm", variantMap.value("ncm").toString().remove(".").remove(","));
@@ -542,13 +540,15 @@ void ImportaProdutos::pintarCamposForaDoPadrao(const int row) {
   }
 
   // Errados
-  if (variantMap.value("un").toString() == "m2" and variantMap.value("m2cx") <= 0.0) {
+  if ((variantMap.value("un").toString() == "M2" or variantMap.value("un").toString() == "M²") and
+      variantMap.value("m2cx") <= 0.0) {
     model.setData(model.index(row, model.fieldIndex("m2cxUpd")), Red);
     hasError = true;
     itensError++;
   }
 
-  if (variantMap.value("un").toString() == "pç" and variantMap.value("pccx") < 1) {
+  if (variantMap.value("un").toString() != "M2" and variantMap.value("un").toString() != "M²" and
+      variantMap.value("pccx") < 1) {
     model.setData(model.index(row, model.fieldIndex("pccxUpd")), Red);
     hasError = true;
     itensError++;

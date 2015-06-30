@@ -25,13 +25,11 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   }
 
   ui->tableBusca->setModel(&model);
-  ui->tableBusca->horizontalHeader()->setStretchLastSection(false);
-  ui->tableBusca->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+  ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
 
   DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
   ui->tableBusca->setItemDelegate(doubleDelegate);
-
-  ui->lineEditBusca->setFocus();
 
   if (indexes.isEmpty()) {
     ui->lineEditBusca->hide();
@@ -45,6 +43,7 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   }
 
   ui->groupBoxFiltrosProduto->hide();
+  ui->lineEditBusca->setFocus();
 }
 
 SearchDialog::~SearchDialog() { delete ui; }
@@ -120,10 +119,13 @@ void SearchDialog::show() {
     return;
   }
 
-  QDialog::show();
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
   ui->tableBusca->resizeColumnsToContents();
+
+  ui->lineEditBusca->setFocus();
+
+  QDialog::show();
 }
 
 void SearchDialog::showMaximized() {
@@ -132,10 +134,11 @@ void SearchDialog::showMaximized() {
     return;
   }
 
-  QDialog::showMaximized();
-  ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
   ui->tableBusca->resizeColumnsToContents();
+
+  ui->lineEditBusca->setFocus();
+
+  QDialog::showMaximized();
 }
 
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {

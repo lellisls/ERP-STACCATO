@@ -34,7 +34,7 @@ void CadastroUsuario::setupTablePermissoes() {
   ui->tablePermissoes->resizeColumnsToContents();
   ui->tablePermissoes->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
   ui->tablePermissoes->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  // NOTE: checkbox em tabela aqui
+  // NOTE: checkbox em tableWidget
 
   for (int i = 0, rowCount = ui->tablePermissoes->rowCount(); i < rowCount; ++i) {
     for (int j = 0, columnCount = ui->tablePermissoes->columnCount(); j < columnCount; ++j) {

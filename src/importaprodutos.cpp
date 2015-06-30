@@ -317,7 +317,7 @@ void ImportaProdutos::mostraApenasEstesFornecedores() {
 
 void ImportaProdutos::marcaTodosProdutosDescontinuados() {
   for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
-    model.setData(model.index(row, model.fieldIndex("descontinuado")), 1);
+    model.setData(model.index(row, model.fieldIndex("descontinuado")), true);
   }
 
   itensExpired = model.rowCount();

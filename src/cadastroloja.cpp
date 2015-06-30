@@ -401,6 +401,7 @@ void CadastroLoja::show() {
   adjustSize();
 }
 
+// TODO: remove this
 int CadastroLoja::getCodigoUF() {
   const QString uf = ui->lineEditUF->text().toLower();
 

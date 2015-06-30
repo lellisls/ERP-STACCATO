@@ -289,7 +289,7 @@ void CadastroFornecedor::on_pushButtonAtualizar_clicked() { update(); }
 void CadastroFornecedor::on_pushButtonBuscar_clicked() {
   SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
   sdFornecedor->show();
-  connect(sdFornecedor, &SearchDialog::itemSelected, this, &CadastroFornecedor::changeItem);
+  connect(sdFornecedor, &SearchDialog::itemSelected, this, &CadastroFornecedor::viewRegisterById);
 }
 
 void CadastroFornecedor::on_pushButtonNovoCad_clicked() { newRegister(); }

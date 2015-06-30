@@ -29,12 +29,7 @@ class RegisterDialog : public QDialog {
 \param parent Janela "mãe" do QDialog.
 */
     explicit RegisterDialog(QString table, QString primaryKey, QWidget *parent);
-    /*!
-* \brief Seleciona um item a partir do valor da PK.
-* \param id Valor da PK.
-* \return
-*/
-    virtual bool viewRegisterById(const QVariant id);
+
     /*!
 * \brief Utilizada para selecionar um item a partir de um QModelIndex.
 * \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
@@ -51,9 +46,15 @@ class RegisterDialog : public QDialog {
     void setTextKeys(const QStringList &value);
 
   public slots:
-    virtual void changeItem(const QVariant value);
+    /*!
+* \brief Seleciona um item a partir do valor da PK.
+* \param id Valor da PK.
+* \return
+*/
+    virtual bool viewRegisterById(const QVariant id);
     void saveSlot();
     void marcarDirty();
+
   signals:
     /*!
 * \brief Sinal enviado ao atualizar um campo, normalmente utilizada pela ItemBox.

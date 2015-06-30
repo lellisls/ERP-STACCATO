@@ -21,7 +21,6 @@ class CadastroCliente : public RegisterDialog {
     void show();
 
   private slots:
-    void changeItem(QVariant value);
     void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &text);

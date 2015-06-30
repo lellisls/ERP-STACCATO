@@ -197,11 +197,9 @@ void CadastroLoja::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroLoja::on_pushButtonBuscar_clicked() {
   SearchDialog *sdLoja = SearchDialog::loja(this);
-  connect(sdLoja, &SearchDialog::itemSelected, this, &CadastroLoja::changeItem);
+  connect(sdLoja, &SearchDialog::itemSelected, this, &CadastroLoja::viewRegisterById);
   sdLoja->show();
 }
-
-void CadastroLoja::changeItem(const QVariant value) { viewRegisterById(value); }
 
 void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
   if (not validaCNPJ(QString(text).remove(".").remove("/").remove("-"))) {

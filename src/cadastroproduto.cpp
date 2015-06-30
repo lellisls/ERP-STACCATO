@@ -26,7 +26,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   ui->itemBoxFornecedor->setSearchDialog(sdFornecedor);
 
   SearchDialog *sdProd = SearchDialog::produto(this);
-  connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::changeItem);
+  connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::viewRegisterById);
   connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProd, &SearchDialog::showMaximized);
 
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
@@ -162,8 +162,6 @@ void CadastroProduto::on_pushButtonNovoCad_clicked() { newRegister(); }
 void CadastroProduto::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroProduto::on_pushButtonCancelar_clicked() { close(); }
-
-void CadastroProduto::changeItem(QVariant value) { viewRegisterById(value); }
 
 void CadastroProduto::show() {
   QWidget::show();

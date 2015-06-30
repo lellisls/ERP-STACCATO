@@ -21,7 +21,6 @@ class CadastroProduto : public RegisterDialog {
     void show();
 
   private slots:
-    void changeItem(const QVariant value);
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();

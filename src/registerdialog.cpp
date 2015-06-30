@@ -116,8 +116,6 @@ QStringList RegisterDialog::getTextKeys() const { return textKeys; }
 
 void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
-void RegisterDialog::changeItem(const QVariant value) { viewRegisterById(value); }
-
 void RegisterDialog::saveSlot() { save(); }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line) {

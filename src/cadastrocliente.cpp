@@ -355,11 +355,9 @@ void CadastroCliente::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroCliente::on_pushButtonBuscar_clicked() {
   SearchDialog *sdCliente = SearchDialog::cliente(this);
-  connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::changeItem);
+  connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::viewRegisterById);
   sdCliente->show();
 }
-
-void CadastroCliente::changeItem(QVariant value) { viewRegisterById(value); }
 
 void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
   if (not validaCPF(QString(text).remove(".").remove("-"))) {

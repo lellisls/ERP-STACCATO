@@ -166,7 +166,7 @@ void CadastroTransportadora::on_pushButtonCancelar_clicked() { close(); }
 
 void CadastroTransportadora::on_pushButtonBuscar_clicked() {
   SearchDialog *sdTransportadora = SearchDialog::transportadora(this);
-  connect(sdTransportadora, &SearchDialog::itemSelected, this, &CadastroTransportadora::changeItem);
+  connect(sdTransportadora, &SearchDialog::itemSelected, this, &CadastroTransportadora::viewRegisterById);
   sdTransportadora->show();
 }
 

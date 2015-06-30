@@ -144,8 +144,6 @@ bool CadastroProfissional::viewRegister(const QModelIndex index) {
   return true;
 }
 
-void CadastroProfissional::changeItem(const QVariant value) { viewRegisterById(value); }
-
 bool CadastroProfissional::verifyRequiredField(QLineEdit *line, const bool silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
@@ -354,7 +352,7 @@ void CadastroProfissional::on_pushButtonCancelar_clicked() { close(); }
 void CadastroProfissional::on_pushButtonBuscar_clicked() {
   SearchDialog *sdProfissional = SearchDialog::profissional(this);
   sdProfissional->setFilter("idProfissional NOT IN (1) AND desativado = FALSE");
-  connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::changeItem);
+  connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::viewRegisterById);
   sdProfissional->show();
 }
 

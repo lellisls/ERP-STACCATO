@@ -16,7 +16,6 @@ class CadastroProfissional : public RegisterDialog {
     bool viewRegister(const QModelIndex index);
 
   public slots:
-    void changeItem(const QVariant value);
     void show();
 
   private slots:

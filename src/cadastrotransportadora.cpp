@@ -1,8 +1,10 @@
 #include <QDebug>
 #include <QDialog>
 #include <QMessageBox>
+#include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "cadastrotransportadora.h"
 #include "ui_cadastrotransportadora.h"
@@ -96,7 +98,9 @@ bool CadastroTransportadora::savingProcedures(const int row) {
 
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    qDebug() << "Last query: "
+             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
+                                                           modelEnd.record(row), false);
     return false;
   }
 

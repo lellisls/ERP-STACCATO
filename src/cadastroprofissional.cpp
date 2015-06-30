@@ -1,3 +1,6 @@
+#include <QSqlDriver>
+#include <QSqlRecord>
+
 #include "cadastroprofissional.h"
 #include "ui_cadastroprofissional.h"
 #include "searchdialog.h"
@@ -299,7 +302,9 @@ bool CadastroProfissional::savingProcedures(const int row) {
 
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    qDebug() << "Last query: "
+             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
+                                                           modelEnd.record(row), false);
     return false;
   }
 

@@ -1,5 +1,7 @@
 #include <QCloseEvent>
 #include <QShortcut>
+#include <QSqlDriver>
+#include <QSqlRecord>
 
 #include "registerdialog.h"
 
@@ -218,7 +220,9 @@ bool RegisterDialog::save(const bool isUpdate) {
 
   if (not model.submitAll()) {
     qDebug() << objectName() << " : " << model.lastError();
-    qDebug() << "qry: " << model.query().lastQuery();
+    qDebug() << "Last query: "
+             << model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, model.tableName(),
+                                                        model.record(row), false);
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;

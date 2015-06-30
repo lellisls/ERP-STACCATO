@@ -2,8 +2,10 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "cadastroloja.h"
 #include "ui_cadastroloja.h"
@@ -119,7 +121,9 @@ bool CadastroLoja::savingProcedures(const int row) {
 
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    qDebug() << "Last query: "
+             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
+                                                           modelEnd.record(row), false);
     return false;
   }
 

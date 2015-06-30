@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QSqlDriver>
 
 #include "importaprodutosproxy.h"
 #include "importaprodutos.h"
@@ -661,6 +662,9 @@ void ImportaProdutos::salvar() {
   } else {
     qDebug() << "Erro submetendo model: " << model.lastError();
     qDebug() << "query: " << model.query().lastQuery();
+    qDebug() << "Last query: "
+             << model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, model.tableName(), model.record(),
+                                                        false);
     QMessageBox::warning(this, "Aviso!", "Ocorreu um erro: " + model.lastError().text());
     QSqlQuery("ROLLBACK").exec();
   }

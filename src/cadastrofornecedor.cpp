@@ -1,6 +1,8 @@
 #include <QDebug>
 #include <QMessageBox>
+#include <QSqlDriver>
 #include <QSqlError>
+#include <QSqlRecord>
 
 #include "cadastrofornecedor.h"
 #include "ui_cadastrofornecedor.h"
@@ -197,7 +199,9 @@ bool CadastroFornecedor::savingProcedures(const int row) {
 
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    qDebug() << "Last query: "
+             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
+                                                           modelEnd.record(row), false);
     return false;
   }
 

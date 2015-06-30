@@ -1,3 +1,6 @@
+#include <QSqlDriver>
+#include <QSqlRecord>
+
 #include "cadastrocliente.h"
 #include "ui_cadastrocliente.h"
 #include "searchdialog.h"
@@ -226,7 +229,9 @@ bool CadastroCliente::savingProcedures(const int row) {
 
   if (not modelEnd.submitAll()) {
     qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "QUERY : " << modelEnd.query().lastQuery();
+    qDebug() << "Last query: "
+             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
+                                                           modelEnd.record(row), false);
     return false;
   }
 

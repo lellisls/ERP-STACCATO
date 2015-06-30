@@ -13,6 +13,8 @@
 #include <QtWebKitWidgets/QWebFrame>
 #include <QtWebKitWidgets/QWebPage>
 #include <QDir>
+#include <QSqlDriver>
+#include <QSqlRecord>
 
 #include "cadastrocliente.h"
 #include "mainwindow.h"
@@ -297,6 +299,9 @@ bool Orcamento::savingProcedures(const int row) {
   if (not modelItem.submitAll()) {
     qDebug() << "Failed to add item! : " << modelItem.lastError().text();
     qDebug() << "QUERY: " << modelItem.query().lastQuery();
+    qDebug() << "Last query: "
+             << modelItem.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelItem.tableName(),
+                                                            modelItem.record(row), false);
     QMessageBox::warning(this, "Atenção!", "Erro ao adicionar um item ao orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
     return false;

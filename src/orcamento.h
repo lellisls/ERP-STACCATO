@@ -22,6 +22,7 @@ class Orcamento : public RegisterDialog {
     explicit Orcamento(QWidget *parent = 0);
     ~Orcamento();
     void show();
+    void testaOrcamento();
 
   private slots:
     void on_checkBoxFreteManual_clicked(const bool checked);
@@ -63,7 +64,7 @@ class Orcamento : public RegisterDialog {
 */
     virtual bool viewRegister(const QModelIndex index);
 
-  private:
+private:
     /*!
 * \brief Função padrão para verificar campos obrigatórios
 * \return

@@ -67,11 +67,6 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
   }
-
-  ui->lineEditCodComercial->hide();
-  ui->lineEditFormComercial->hide();
-  ui->labelCodComercial->hide();
-  ui->labelFormComercial->hide();
 }
 
 Orcamento::~Orcamento() { delete ui; }
@@ -109,6 +104,10 @@ bool Orcamento::viewRegister(const QModelIndex index) {
 
   if (time.addDays(data("validade").toInt()).date() < QDateTime::currentDateTime().date()) {
     ui->pushButtonGerarVenda->hide();
+    ui->pushButtonReplicar->show();
+  } else {
+    ui->pushButtonGerarVenda->show();
+    ui->pushButtonReplicar->hide();
   }
 
   ui->tableProdutos->resizeColumnsToContents();
@@ -224,7 +223,9 @@ void Orcamento::updateId() {
   ui->lineEditOrcamento->setText(id);
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex(primaryKey)), id);
+    if (not modelItem.setData(modelItem.index(row, modelItem.fieldIndex(primaryKey)), id)) {
+      qDebug() << "Erro setando id nos itens: " << modelItem.lastError();
+    }
   }
 }
 
@@ -283,11 +284,35 @@ bool Orcamento::savingProcedures(const int row) {
   setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value());
   setData(row, "total", ui->doubleSpinBoxFinal->value());
 
+  //    QString stmt1 = model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, "Orcamento",
+  //    model.record(row), false);
+  //    qDebug() << "stmt: " << stmt1;
+
   if (not model.submitAll()) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
                          QMessageBox::NoButton);
     qDebug() << "SUBMITALL ERROR: " << model.lastError();
-    qDebug() << "QUERY: " << model.query().lastQuery();
+    qDebug() << "idOrcamento: " << data(row, "idOrcamento");
+    qDebug() << "idLoja: " << data(row, "idLoja");
+    qDebug() << "idCliente: " << data(row, "idCliente");
+    qDebug() << "idEnderecoEntrega: " << data(row, "idEnderecoEntrega");
+    qDebug() << "idEnderecoFaturamento: " << data(row, "idEnderecoFaturamento");
+    qDebug() << "idUsuario: " << data(row, "idUsuario");
+    qDebug() << "idProfissional: " << data(row, "idProfissional");
+    qDebug() << "validade: " << data(row, "validade");
+    qDebug() << "data: " << data(row, "data");
+    qDebug() << "subTotalBru: " << data(row, "subTotalBru");
+    qDebug() << "subTotalLiq: " << data(row, "subTotalLiq");
+    qDebug() << "frete: " << data(row, "frete");
+    qDebug() << "descontoPorc: " << data(row, "descontoPorc");
+    qDebug() << "descontoReais: " << data(row, "descontoReais");
+    qDebug() << "total: " << data(row, "total");
+    qDebug() << "row: " << row;
+    qDebug() << "rowCount: " << model.rowCount();
+    QString stmt2 =
+        model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, "Orcamento", model.record(row), false);
+    qDebug() << "stmt: " << stmt2;
+
     return false;
   }
 
@@ -306,6 +331,11 @@ bool Orcamento::savingProcedures(const int row) {
                          QMessageBox::NoButton);
     return false;
   }
+  // FIX: orcamento chama model.submit duas vezes, talvez seja isso dando problema
+  // TODO: fazer subclasse de registerdialog para classes com endereco de forma que o submitAll seja chamado apenas na
+  // funcao save e nao 2 vezes
+  // TOdO: fazendo isso nao será mais necessario esse comando abaixo
+  isDirty = false;
 
   novoItem();
   viewRegisterById(idOrcamento);
@@ -364,14 +394,14 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
   queryFrete.prepare("SELECT * FROM Loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::getLoja());
 
-  if (not queryFrete.exec()) {
+  if (not queryFrete.exec() or not queryFrete.next()) {
     qDebug() << "Erro buscando parâmetros do frete: " << queryFrete.lastError();
   }
 
-  if (queryFrete.next()) {
+//  if (queryFrete.next()) {
     minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
     porcFrete = queryFrete.value("porcentagemFrete").toDouble();
-  }
+//  }
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     const double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
@@ -395,8 +425,8 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
   subTotal = subTotalItens * (1.0 - descGlobal);
 
   if (ajusteTotal) {
-    const double Final = ui->doubleSpinBoxFinal->value();
-    subTotal = Final - frete;
+    const double final = ui->doubleSpinBoxFinal->value();
+    subTotal = final - frete;
 
     if (subTotalItens == 0.0) {
       descGlobal = 0;
@@ -653,13 +683,16 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
     ui->doubleSpinBoxQte->setDisabled(true);
     ui->doubleSpinBoxDesconto->setDisabled(true);
     ui->doubleSpinBoxQte->setSingleStep(1.0);
-    ui->lineEditFornecedor->clear();
     ui->doubleSpinBoxPrecoTotal->clear();
+    ui->doubleSpinBoxPrecoTotal->setDisabled(true);
+    ui->lineEditFornecedor->clear();
     ui->lineEditPrecoUn->clear();
     ui->lineEditPrecoUn->setDisabled(true);
-    ui->doubleSpinBoxPrecoTotal->setDisabled(true);
     ui->lineEditUn->clear();
     ui->lineEditObs->clear();
+    ui->lineEditCodComercial->clear();
+    ui->lineEditFormComercial->clear();
+    ui->lineEditEstoque->clear();
     return;
   }
 
@@ -667,11 +700,11 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   query.prepare("SELECT * FROM Produto WHERE idProduto = :index");
   query.bindValue(":index", ui->itemBoxProduto->value().toInt());
 
-  if (not query.exec()) {
+  if (not query.exec() or not query.first()) {
     qDebug() << "Erro na busca do produto: " << query.lastError();
   }
 
-  query.first();
+//  query.first();
   const QString un = query.value("un").toString();
   ui->lineEditUn->setText(un);
   ui->lineEditPrecoUn->setValue(query.value("precoVenda").toDouble());
@@ -755,7 +788,7 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   orcamento->ui->itemBoxEndereco->setValue(model.data(model.index(row, model.fieldIndex("idEnderecoEntrega"))));
   orcamento->ui->spinBoxValidade->setValue(model.data(model.index(row, model.fieldIndex("validade"))).toInt());
   orcamento->ui->doubleSpinBoxDescontoGlobal->setValue(
-      model.data(model.index(row, model.fieldIndex("descontoPorc"))).toDouble());
+        model.data(model.index(row, model.fieldIndex("descontoPorc"))).toDouble());
   orcamento->ui->doubleSpinBoxFrete->setValue(model.data(model.index(row, model.fieldIndex("frete"))).toDouble());
   orcamento->ui->doubleSpinBoxFinal->setValue(model.data(model.index(row, model.fieldIndex("total"))).toDouble());
   orcamento->ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
@@ -764,7 +797,7 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   for (int i = 0; i < modelItem.rowCount(); ++i) {
     orcamento->ui->itemBoxProduto->setValue(modelItem.data(modelItem.index(i, modelItem.fieldIndex("idProduto"))));
     orcamento->ui->doubleSpinBoxQte->setValue(
-        modelItem.data(modelItem.index(i, modelItem.fieldIndex("qte"))).toDouble());
+          modelItem.data(modelItem.index(i, modelItem.fieldIndex("qte"))).toDouble());
     orcamento->adicionarItem();
   }
 
@@ -784,3 +817,17 @@ void Orcamento::on_doubleSpinBoxPrecoTotal_editingFinished() {
 
   ui->doubleSpinBoxDesconto->setValue(desconto);
 }
+
+#ifdef TEST
+void Orcamento::testaOrcamento() {
+  ui->itemBoxCliente->setValue(17);
+  ui->itemBoxEndereco->setValue(31);
+  ui->itemBoxProfissional->setValue(5);
+  ui->itemBoxProduto->setValue(4000);
+  ui->doubleSpinBoxQte->setValue(10);
+  adicionarItem();
+  silent = true;
+  save();
+  close();
+}
+#endif

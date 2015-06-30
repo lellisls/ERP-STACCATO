@@ -6,7 +6,7 @@
 #include "registerdialog.h"
 
 RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *parent = 0)
-  : QDialog(parent), model(this), primaryKey(primaryKey), table(nullptr) {
+  : QDialog(parent), model(this), primaryKey(primaryKey) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
@@ -15,7 +15,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
 
   if (not model.select()) {
     qDebug() << objectName() << "Failed to populate " + table + ": " << model.lastError();
-    QMessageBox::critical(this, "ERRO!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
+    QMessageBox::critical(this, "Erro!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
                           QMessageBox::NoButton);
     return;
   }
@@ -55,10 +55,6 @@ bool RegisterDialog::viewRegister(const QModelIndex index) {
 
   clearFields();
   updateMode();
-
-  if (table) {
-    table->clearSelection();
-  }
 
   mapper.setCurrentIndex(index.row());
 
@@ -135,6 +131,9 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 
 bool RegisterDialog::confirmationMessage() {
   if (model.isDirty() or isDirty) {
+    qDebug() << "model is dirty: " << model.isDirty() << "(" << model.tableName() << ")";
+    qDebug() << "isDirty: " << isDirty;
+
     QMessageBox msgBox;
     msgBox.setParent(this);
     msgBox.setLocale(QLocale::Portuguese);
@@ -178,10 +177,6 @@ bool RegisterDialog::newRegister() {
     return false;
   }
 
-  if (table) {
-    table->clearSelection();
-  }
-
   registerMode();
 
   if (not model.select()) {
@@ -200,10 +195,14 @@ bool RegisterDialog::save(const bool isUpdate) {
 
   const int row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
 
+  if (row == -1) {
+    qDebug() << "Something went very wrong!";
+    return false;
+  }
+
   if (not isUpdate) {
     model.insertRow(row);
   }
-  qDebug() << "row: " << row;
 
   if (not verifyFields(row)) {
     QSqlQuery("ROLLBACK").exec();
@@ -268,8 +267,6 @@ void RegisterDialog::remove() {
     }
   }
 }
-
-void RegisterDialog::setTable(QAbstractItemView *table) { this->table = table; }
 
 bool RegisterDialog::validaCNPJ(const QString text) {
   if (text.size() == 14) {

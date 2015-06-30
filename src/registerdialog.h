@@ -36,12 +36,6 @@ class RegisterDialog : public QDialog {
 * \return
 */
     virtual bool viewRegister(const QModelIndex index);
-    /*!
-* \brief Informa para a superclasse qual é a sua table view.
-* \param table Tabela da interface gráfica.
-*/
-    void setTable(QAbstractItemView *table);
-
     QStringList getTextKeys() const;
     void setTextKeys(const QStringList &value);
 
@@ -246,12 +240,6 @@ class RegisterDialog : public QDialog {
 * \brief Chave das colunas que formam o texto de descrição
 */
     QStringList textKeys;
-
-  private:
-    /*!
-* \brief Tabela da interface gráfica.
-*/
-    QAbstractItemView *table;
 
   protected:
     bool isDirty = false;

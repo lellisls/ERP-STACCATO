@@ -352,7 +352,7 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>135</width>
+              <width>110</width>
               <height>16777215</height>
              </size>
             </property>
@@ -411,7 +411,7 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>135</width>
+              <width>110</width>
               <height>16777215</height>
              </size>
             </property>
@@ -422,10 +422,10 @@
           </item>
           <item row="1" column="7">
            <widget class="LineEditTel" name="lineEditTel">
-            <property name="minimumSize">
+            <property name="maximumSize">
              <size>
-              <width>100</width>
-              <height>0</height>
+              <width>90</width>
+              <height>16777215</height>
              </size>
             </property>
             <property name="styleSheet">
@@ -449,10 +449,10 @@
           </item>
           <item row="1" column="2">
            <widget class="QLineEdit" name="lineEditSIGLA">
-            <property name="minimumSize">
+            <property name="maximumSize">
              <size>
-              <width>120</width>
-              <height>0</height>
+              <width>40</width>
+              <height>16777215</height>
              </size>
             </property>
             <property name="styleSheet">

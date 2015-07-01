@@ -9,12 +9,12 @@
 #include "itembox.h"
 
 CadastroProfissional::CadastroProfissional(QWidget *parent)
-  : RegisterDialog("Profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
+  : RegisterAddressDialog("Profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
   setWindowModality(Qt::NonModal);
 
-  setupEndereco();
+  setupTables();
   setupUi();
   setupMapper();
   newRegister();
@@ -31,28 +31,12 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
 
 CadastroProfissional::~CadastroProfissional() { delete ui; }
 
-void CadastroProfissional::setupEndereco() {
-  modelEnd.setTable("Profissional_has_Endereco");
-  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idEndereco = 1");
-
-  if (not modelEnd.select()) {
-    qDebug() << "erro modelEnd: " << modelEnd.lastError();
-    return;
-  }
-
+void CadastroProfissional::setupTables() {
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idProfissional"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
 }
 
 void CadastroProfissional::setupUi() {
@@ -73,7 +57,6 @@ void CadastroProfissional::setupMapper() {
   addMapping(ui->lineEditCC, "cc");
   addMapping(ui->lineEditNomeBancario, "nomeBanco");
   addMapping(ui->lineEditCPFBancario, "cpfBanco");
-
   addMapping(ui->comboBoxTipo, "tipoProf");
   addMapping(ui->lineEditProfissional, "nome_razao");
   addMapping(ui->lineEditContatoNome, "contatoNome");
@@ -93,9 +76,6 @@ void CadastroProfissional::setupMapper() {
   addMapping(ui->lineEditContatoCPF, "contatoCPF");
   addMapping(ui->lineEditContatoApelido, "contatoApelido");
   addMapping(ui->lineEditContatoRG, "contatoRG");
-
-  mapperEnd.setModel(&modelEnd);
-  mapperEnd.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
@@ -127,9 +107,10 @@ bool CadastroProfissional::viewRegister(const QModelIndex index) {
   modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
-    qDebug() << modelEnd.lastError();
-    return false;
+    qDebug() << "erro: " << modelEnd.lastError();
   }
+
+  ui->tableEndereco->resizeColumnsToContents();
 
   tipoPFPJ = data("pfpj").toString();
 
@@ -218,91 +199,118 @@ bool CadastroProfissional::verifyFields(const int row) {
 }
 
 bool CadastroProfissional::savingProcedures(const int row) {
-  if (not ui->lineEditProfissional->text().isEmpty()) {
-    setData(row, "nome_razao", ui->lineEditProfissional->text());
-  }
-
-  if (not ui->lineEditNomeFantasia->text().isEmpty()) {
-    setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
-  }
-
-  if (not ui->lineEditCPF->text().remove(".").remove("-").isEmpty()) {
-    setData(row, "cpf", ui->lineEditCPF->text());
-  }
-
-  if (not ui->lineEditContatoNome->text().isEmpty()) {
-    setData(row, "contatoNome", ui->lineEditContatoNome->text());
-  }
-
-  if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
-    setData(row, "contatoCPF", ui->lineEditContatoCPF->text());
-  }
-
-  if (not ui->lineEditContatoApelido->text().isEmpty()) {
-    setData(row, "contatoApelido", ui->lineEditContatoApelido->text());
-  }
-
-  if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty()) {
-    setData(row, "contatoRG", ui->lineEditContatoRG->text());
-  }
-
-  if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty()) {
-    setData(row, "cnpj", ui->lineEditCNPJ->text());
-  }
-
-  if (not ui->lineEditInscEstadual->text().isEmpty()) {
-    setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
-  }
-
-  if (not ui->lineEditTel_Res->text().isEmpty()) {
-    setData(row, "tel", ui->lineEditTel_Res->text());
-  }
-
-  if (not ui->lineEditTel_Cel->text().isEmpty()) {
-    setData(row, "telCel", ui->lineEditTel_Cel->text());
-  }
-
-  if (not ui->lineEditTel_Com->text().isEmpty()) {
-    setData(row, "telCom", ui->lineEditTel_Com->text());
-  }
-
-  if (not ui->lineEditNextel->text().isEmpty()) {
-    setData(row, "nextel", ui->lineEditNextel->text());
-  }
-
-  if (not ui->lineEditEmail->text().isEmpty()) {
-    setData(row, "email", ui->lineEditEmail->text());
-  }
-
-  setData(row, "pfpj", tipoPFPJ);
-  setData(row, "tipoProf", ui->comboBoxTipo->currentText());
-
-  // Dados bancários
-  setData(row, "banco", ui->lineEditBanco->text());
-  setData(row, "agencia", ui->lineEditAgencia->text());
-  setData(row, "cc", ui->lineEditCC->text());
-  setData(row, "nomeBanco", ui->lineEditNomeBancario->text());
-  setData(row, "cpfBanco", ui->lineEditCPFBancario->text());
-
-  if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
+  if (not ui->lineEditProfissional->text().isEmpty() and
+      not setData(row, "nome_razao", ui->lineEditProfissional->text())) {
+    qDebug() << "Erro setando nome_razao";
     return false;
   }
 
-  const int idProfissional =
-      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
-
-  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    if (not modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idProfissional)) {
-      qDebug() << "error: " << modelEnd.lastError();
-    }
+  if (not ui->lineEditNomeFantasia->text().isEmpty() and
+      not setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text())) {
+    qDebug() << "Erro setando nomeFantasia";
+    return false;
   }
 
-  if (not modelEnd.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "Last query: "
-             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
-                                                           modelEnd.record(row), false);
+  if (not ui->lineEditCPF->text().remove(".").remove("-").isEmpty() and
+      not setData(row, "cpf", ui->lineEditCPF->text())) {
+    qDebug() << "Erro setando cpf";
+    return false;
+  }
+
+  if (not ui->lineEditContatoNome->text().isEmpty() and
+      not setData(row, "contatoNome", ui->lineEditContatoNome->text())) {
+    qDebug() << "Erro setando contatoNome";
+    return false;
+  }
+
+  if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty() and
+      not setData(row, "contatoCPF", ui->lineEditContatoCPF->text())) {
+    qDebug() << "Erro setando contatoCPF";
+    return false;
+  }
+
+  if (not ui->lineEditContatoApelido->text().isEmpty() and
+      not setData(row, "contatoApelido", ui->lineEditContatoApelido->text())) {
+    qDebug() << "Erro setando contatoApelido";
+    return false;
+  }
+
+  if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty() and
+      not setData(row, "contatoRG", ui->lineEditContatoRG->text())) {
+    qDebug() << "Erro setando contatoRG";
+    return false;
+  }
+
+  if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty() and
+      not setData(row, "cnpj", ui->lineEditCNPJ->text())) {
+    qDebug() << "Erro setando cnpj";
+    return false;
+  }
+
+  if (not ui->lineEditInscEstadual->text().isEmpty() and
+      not setData(row, "inscEstadual", ui->lineEditInscEstadual->text())) {
+    qDebug() << "Erro setando inscEstadual";
+    return false;
+  }
+
+  if (not ui->lineEditTel_Res->text().isEmpty() and not setData(row, "tel", ui->lineEditTel_Res->text())) {
+    qDebug() << "Erro setando tel";
+    return false;
+  }
+
+  if (not ui->lineEditTel_Cel->text().isEmpty() and not setData(row, "telCel", ui->lineEditTel_Cel->text())) {
+    qDebug() << "Erro setando telCel";
+    return false;
+  }
+
+  if (not ui->lineEditTel_Com->text().isEmpty() and not setData(row, "telCom", ui->lineEditTel_Com->text())) {
+    qDebug() << "Erro setando telCom";
+    return false;
+  }
+
+  if (not ui->lineEditNextel->text().isEmpty() and not setData(row, "nextel", ui->lineEditNextel->text())) {
+    qDebug() << "Erro setando nextel";
+    return false;
+  }
+
+  if (not ui->lineEditEmail->text().isEmpty() and not setData(row, "email", ui->lineEditEmail->text())) {
+    qDebug() << "Erro setando email";
+    return false;
+  }
+
+  if (not setData(row, "pfpj", tipoPFPJ)) {
+    qDebug() << "Erro setando pfpj";
+    return false;
+  }
+
+  if (not setData(row, "tipoProf", ui->comboBoxTipo->currentText())) {
+    qDebug() << "Erro setando tipoProf";
+    return false;
+  }
+
+  // Dados bancários
+  if (not setData(row, "banco", ui->lineEditBanco->text())) {
+    qDebug() << "Erro setando banco";
+    return false;
+  }
+
+  if (not setData(row, "agencia", ui->lineEditAgencia->text())) {
+    qDebug() << "Erro setando agencia";
+    return false;
+  }
+
+  if (not setData(row, "cc", ui->lineEditCC->text())) {
+    qDebug() << "Erro setando cc";
+    return false;
+  }
+
+  if (not setData(row, "nomeBanco", ui->lineEditNomeBancario->text())) {
+    qDebug() << "Erro setando nomeBanco";
+    return false;
+  }
+
+  if (not setData(row, "cpfBanco", ui->lineEditCPFBancario->text())) {
+    qDebug() << "Erro setando cpfBanco";
     return false;
   }
 
@@ -448,7 +456,7 @@ bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
       return false;
     }
 
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("codUF")), getCodigoUF())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("codUF")), getCodigoUF(ui->lineEditUF->text()))) {
       qDebug() << "Erro setData uf: " << modelEnd.lastError();
       return false;
     }
@@ -458,6 +466,8 @@ bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
     qDebug() << "Erro setData desativado: " << modelEnd.lastError();
     return false;
   }
+
+  ui->tableEndereco->resizeColumnsToContents();
 
   return true;
 }
@@ -571,38 +581,4 @@ void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text
   } else {
     ui->lineEditCPFBancario->setStyleSheet("");
   }
-}
-
-int CadastroProfissional::getCodigoUF() {
-  const QString uf = ui->lineEditUF->text().toLower();
-
-  if (uf == "ro") return 11;
-  if (uf == "ac") return 12;
-  if (uf == "am") return 13;
-  if (uf == "rr") return 14;
-  if (uf == "pa") return 15;
-  if (uf == "ap") return 16;
-  if (uf == "to") return 17;
-  if (uf == "ma") return 21;
-  if (uf == "pi") return 22;
-  if (uf == "ce") return 23;
-  if (uf == "rn") return 24;
-  if (uf == "pb") return 25;
-  if (uf == "pe") return 26;
-  if (uf == "al") return 27;
-  if (uf == "se") return 28;
-  if (uf == "ba") return 29;
-  if (uf == "mg") return 31;
-  if (uf == "es") return 32;
-  if (uf == "rj") return 33;
-  if (uf == "sp") return 35;
-  if (uf == "pr") return 41;
-  if (uf == "sc") return 42;
-  if (uf == "rs") return 43;
-  if (uf == "ms") return 50;
-  if (uf == "mt") return 51;
-  if (uf == "go") return 52;
-  if (uf == "df") return 53;
-
-  return 0;
 }

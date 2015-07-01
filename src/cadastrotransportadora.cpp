@@ -13,7 +13,7 @@
 #include "usersession.h"
 
 CadastroTransportadora::CadastroTransportadora(QWidget *parent)
-  : RegisterDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
+  : RegisterAddressDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
   setupTables();
@@ -34,27 +34,11 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
 CadastroTransportadora::~CadastroTransportadora() { delete ui; }
 
 void CadastroTransportadora::setupTables() {
-  modelEnd.setTable("Transportadora_has_Endereco");
-  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idEndereco = 0");
-
-  if (not modelEnd.select()) {
-    qDebug() << "erro modelEnd: " << modelEnd.lastError();
-    return;
-  }
-
   ui->tableEndereco->setModel(&modelEnd);
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idTransportadora"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
 }
 
 void CadastroTransportadora::clearFields() {
@@ -76,32 +60,32 @@ bool CadastroTransportadora::verifyFields(const int row) {
 }
 
 bool CadastroTransportadora::savingProcedures(const int row) {
-  setData(row, "cnpj", ui->lineEditCNPJ->text());
-  setData(row, "razaoSocial", ui->lineEditRazaoSocial->text());
-  setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
-  setData(row, "tel", ui->lineEditTel->text());
-  setData(row, "antt", ui->lineEditANTT->text());
-  setData(row, "placaVeiculo", ui->lineEditPlaca->text());
-
-  if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll() : " << model.lastError();
-    return false;
+  if (not setData(row, "cnpj", ui->lineEditCNPJ->text())) {
+    qDebug() << "Erro setando cnpj";
   }
 
-  const int idTransportadora =
-      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
-
-  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idTransportadora);
+  if (not setData(row, "razaoSocial", ui->lineEditRazaoSocial->text())) {
+    qDebug() << "Erro setando razaoSocial";
   }
 
-  if (not modelEnd.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "Last query: "
-             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
-                                                           modelEnd.record(row), false);
-    return false;
+  if (not setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text())) {
+    qDebug() << "Erro setando nomeFantasia";
+  }
+
+  if (not setData(row, "inscEstadual", ui->lineEditInscEstadual->text())) {
+    qDebug() << "Erro setando inscEstadual";
+  }
+
+  if (not setData(row, "tel", ui->lineEditTel->text())) {
+    qDebug() << "Erro setando tel";
+  }
+
+  if (not setData(row, "antt", ui->lineEditANTT->text())) {
+    qDebug() << "Erro setando antt";
+  }
+
+  if (not setData(row, "placaVeiculo", ui->lineEditPlaca->text())) {
+    qDebug() << "Erro setando placaVeiculo";
   }
 
   return true;
@@ -116,7 +100,6 @@ void CadastroTransportadora::setupMapper() {
   addMapping(ui->lineEditANTT, "antt");
   addMapping(ui->lineEditPlaca, "placaVeiculo");
 
-  mapperEnd.setModel(&modelEnd);
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
   mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
@@ -137,21 +120,6 @@ void CadastroTransportadora::updateMode() {
   ui->pushButtonCadastrar->hide();
   ui->pushButtonAtualizar->show();
   ui->pushButtonRemover->show();
-}
-
-bool CadastroTransportadora::viewRegister(const QModelIndex index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
-
-  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
-
-  if (not modelEnd.select()) {
-    qDebug() << "Erro no model endereco: " << modelEnd.lastError();
-    return false;
-  }
-
-  return true;
 }
 
 void CadastroTransportadora::on_pushButtonCadastrar_clicked() { save(); }
@@ -310,7 +278,7 @@ bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
       return false;
     }
 
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("codUF")), getCodigoUF())) {
+    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("codUF")), getCodigoUF(ui->lineEditUF->text()))) {
       qDebug() << "Erro setData uf: " << modelEnd.lastError();
       return false;
     }
@@ -320,6 +288,8 @@ bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
     qDebug() << "Erro setData desativado: " << modelEnd.lastError();
     return false;
   }
+
+  ui->tableEndereco->resizeColumnsToContents();
 
   return true;
 }
@@ -377,36 +347,18 @@ void CadastroTransportadora::setupUi() {
   ui->lineEditUF->setInputMask(">AA;_");
 }
 
-int CadastroTransportadora::getCodigoUF() {
-  const QString uf = ui->lineEditUF->text().toLower();
+bool CadastroTransportadora::viewRegister(const QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
+    return false;
+  }
 
-  if (uf == "ro") return 11;
-  if (uf == "ac") return 12;
-  if (uf == "am") return 13;
-  if (uf == "rr") return 14;
-  if (uf == "pa") return 15;
-  if (uf == "ap") return 16;
-  if (uf == "to") return 17;
-  if (uf == "ma") return 21;
-  if (uf == "pi") return 22;
-  if (uf == "ce") return 23;
-  if (uf == "rn") return 24;
-  if (uf == "pb") return 25;
-  if (uf == "pe") return 26;
-  if (uf == "al") return 27;
-  if (uf == "se") return 28;
-  if (uf == "ba") return 29;
-  if (uf == "mg") return 31;
-  if (uf == "es") return 32;
-  if (uf == "rj") return 33;
-  if (uf == "sp") return 35;
-  if (uf == "pr") return 41;
-  if (uf == "sc") return 42;
-  if (uf == "rs") return 43;
-  if (uf == "ms") return 50;
-  if (uf == "mt") return 51;
-  if (uf == "go") return 52;
-  if (uf == "df") return 53;
+  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
-  return 0;
+  if (not modelEnd.select()) {
+    qDebug() << "erro: " << modelEnd.lastError();
+  }
+
+  ui->tableEndereco->resizeColumnsToContents();
+
+  return true;
 }

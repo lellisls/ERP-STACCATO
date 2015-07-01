@@ -145,20 +145,25 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \param value Valor a ser atualizado.
 */
-    inline void setData(int row, const QString &key, QVariant value) {
+    inline bool setData(int row, const QString &key, QVariant value) {
       if (row == -1) {
         qDebug() << "Something wrong on the row!";
+        return false;
       }
 
       if (model.fieldIndex(key) == -1) {
         qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
+        return false;
       }
 
       if (not value.isNull()) {
         if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
           qDebug() << key << " error - row: " << row << " - value: " << value;
+          return false;
         }
       }
+
+      return true;
     }
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.

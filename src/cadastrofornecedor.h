@@ -1,19 +1,20 @@
 #ifndef CADASTROFORNECEDOR_H
 #define CADASTROFORNECEDOR_H
 
-#include "registerdialog.h"
+#include "registeraddressdialog.h"
 
 namespace Ui {
   class CadastroFornecedor;
 }
 
-class CadastroFornecedor : public RegisterDialog {
+class CadastroFornecedor : public RegisterAddressDialog {
     Q_OBJECT
 
   public:
     explicit CadastroFornecedor(QWidget *parent = 0);
     ~CadastroFornecedor();
     void setupUi();
+    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -33,14 +34,12 @@ class CadastroFornecedor : public RegisterDialog {
     void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
-    virtual bool viewRegister(const QModelIndex index);
     void clearEndereco();
+    void setupTables();
 
   private:
     // attributes
     Ui::CadastroFornecedor *ui;
-    QSqlTableModel modelEnd;
-    QDataWidgetMapper mapperEnd;
     // methods
     bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     void novoEndereco();
@@ -51,7 +50,6 @@ class CadastroFornecedor : public RegisterDialog {
     virtual void registerMode();
     virtual void updateMode();
     bool cadastrarEndereco(const bool isUpdate);
-    int getCodigoUF();
 };
 
 #endif // CADASTROFORNECEDOR_H

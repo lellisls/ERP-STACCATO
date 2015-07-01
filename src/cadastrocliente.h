@@ -1,13 +1,13 @@
 #ifndef CADASTROCLIENTE_H
 #define CADASTROCLIENTE_H
 
-#include "registerdialog.h"
+#include "registeraddressdialog.h"
 
 namespace Ui {
   class CadastroCliente;
 }
 
-class CadastroCliente : public RegisterDialog {
+class CadastroCliente : public RegisterAddressDialog {
     Q_OBJECT
 
   public:
@@ -47,7 +47,7 @@ class CadastroCliente : public RegisterDialog {
 */
     virtual bool viewRegister(const QModelIndex index);
 
-    void setupEndereco();
+    void setupTables();
 
   private:
     /*!
@@ -80,15 +80,12 @@ class CadastroCliente : public RegisterDialog {
     // attributes
     Ui::CadastroCliente *ui;
     QString tipoPFPJ;
-    QSqlTableModel modelEnd;
-    QDataWidgetMapper mapperEnd;
     // methods
     bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     bool cadastrarEndereco(const bool isUpdate);
     void novoEndereco();
     void setupUi();
     void clearEndereco();
-    int getCodigoUF();
 };
 
 #endif // CADASTROCLIENTE_H

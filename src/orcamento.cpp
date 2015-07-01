@@ -266,79 +266,81 @@ bool Orcamento::savingProcedures(const int row) {
   const QString idOrcamento = ui->lineEditOrcamento->text();
 
   if (model.data(model.index(row, model.fieldIndex("idOrcamento"))).toString() != idOrcamento) {
-    setData(row, "idOrcamento", idOrcamento);
+    if (not setData(row, "idOrcamento", idOrcamento)) {
+      qDebug() << "erro setando idOrcamento";
+      return false;
+    }
   }
 
-  setData(row, "idLoja", UserSession::getLoja());
-  setData(row, "idCliente", ui->itemBoxCliente->value());
-  setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
-  setData(row, "idEnderecoFaturamento", ui->itemBoxEndereco->value());
-  setData(row, "idUsuario", ui->itemBoxVendedor->value());
-  setData(row, "idProfissional", ui->itemBoxProfissional->value());
-  setData(row, "validade", ui->spinBoxValidade->value());
-  setData(row, "data", ui->dateTimeEdit->dateTime());
-  setData(row, "subTotalBru", ui->doubleSpinBoxSubTotalBruto->value());
-  setData(row, "subTotalLiq", ui->doubleSpinBoxTotal->value());
-  setData(row, "frete", ui->doubleSpinBoxFrete->value());
-  setData(row, "descontoPorc", ui->doubleSpinBoxDescontoGlobal->value());
-  setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value());
-  setData(row, "total", ui->doubleSpinBoxFinal->value());
-
-  //    QString stmt1 = model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, "Orcamento",
-  //    model.record(row), false);
-  //    qDebug() << "stmt: " << stmt1;
-
-  if (not model.submitAll()) {
-    QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este orçamento.", QMessageBox::Ok,
-                         QMessageBox::NoButton);
-    qDebug() << "SUBMITALL ERROR: " << model.lastError();
-    qDebug() << "idOrcamento: " << data(row, "idOrcamento");
-    qDebug() << "idLoja: " << data(row, "idLoja");
-    qDebug() << "idCliente: " << data(row, "idCliente");
-    qDebug() << "idEnderecoEntrega: " << data(row, "idEnderecoEntrega");
-    qDebug() << "idEnderecoFaturamento: " << data(row, "idEnderecoFaturamento");
-    qDebug() << "idUsuario: " << data(row, "idUsuario");
-    qDebug() << "idProfissional: " << data(row, "idProfissional");
-    qDebug() << "validade: " << data(row, "validade");
-    qDebug() << "data: " << data(row, "data");
-    qDebug() << "subTotalBru: " << data(row, "subTotalBru");
-    qDebug() << "subTotalLiq: " << data(row, "subTotalLiq");
-    qDebug() << "frete: " << data(row, "frete");
-    qDebug() << "descontoPorc: " << data(row, "descontoPorc");
-    qDebug() << "descontoReais: " << data(row, "descontoReais");
-    qDebug() << "total: " << data(row, "total");
-    qDebug() << "row: " << row;
-    qDebug() << "rowCount: " << model.rowCount();
-    QString stmt2 =
-        model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, "Orcamento", model.record(row), false);
-    qDebug() << "stmt: " << stmt2;
-
+  if (not setData(row, "idLoja", UserSession::getLoja())) {
+    qDebug() << "erro setando idLoja";
     return false;
   }
 
-  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    modelItem.setData(model.index(row, modelItem.fieldIndex(primaryKey)), idOrcamento);
-    modelItem.setData(model.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
-  }
-
-  if (not modelItem.submitAll()) {
-    qDebug() << "Failed to add item! : " << modelItem.lastError().text();
-    qDebug() << "QUERY: " << modelItem.query().lastQuery();
-    qDebug() << "Last query: "
-             << modelItem.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelItem.tableName(),
-                                                            modelItem.record(row), false);
-    QMessageBox::warning(this, "Atenção!", "Erro ao adicionar um item ao orçamento.", QMessageBox::Ok,
-                         QMessageBox::NoButton);
+  if (not setData(row, "idCliente", ui->itemBoxCliente->value())) {
+    qDebug() << "erro setando idCliente";
     return false;
   }
-  // FIX: orcamento chama model.submit duas vezes, talvez seja isso dando problema
-  // TODO: fazer subclasse de registerdialog para classes com endereco de forma que o submitAll seja chamado apenas na
-  // funcao save e nao 2 vezes
-  // TOdO: fazendo isso nao será mais necessario esse comando abaixo
-  isDirty = false;
 
-  novoItem();
-  viewRegisterById(idOrcamento);
+  if (not setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value())) {
+    qDebug() << "erro setando idEnderecoEntrega";
+    return false;
+  }
+
+  if (not setData(row, "idEnderecoFaturamento", ui->itemBoxEndereco->value())) {
+    qDebug() << "erro setando idEnderecoFaturamento";
+    return false;
+  }
+
+  if (not setData(row, "idUsuario", ui->itemBoxVendedor->value())) {
+    qDebug() << "erro setando idUsuario";
+    return false;
+  }
+
+  if (not setData(row, "idProfissional", ui->itemBoxProfissional->value())) {
+    qDebug() << "erro setando idProfissional";
+    return false;
+  }
+
+  if (not setData(row, "validade", ui->spinBoxValidade->value())) {
+    qDebug() << "erro setando validade";
+    return false;
+  }
+
+  if (not setData(row, "data", ui->dateTimeEdit->dateTime())) {
+    qDebug() << "erro setando data";
+    return false;
+  }
+
+  if (not setData(row, "subTotalBru", ui->doubleSpinBoxSubTotalBruto->value())) {
+    qDebug() << "erro setando subTotalBru";
+    return false;
+  }
+
+  if (not setData(row, "subTotalLiq", ui->doubleSpinBoxTotal->value())) {
+    qDebug() << "erro setando subTotalLiq";
+    return false;
+  }
+
+  if (not setData(row, "frete", ui->doubleSpinBoxFrete->value())) {
+    qDebug() << "erro setando frete";
+    return false;
+  }
+
+  if (not setData(row, "descontoPorc", ui->doubleSpinBoxDescontoGlobal->value())) {
+    qDebug() << "erro setando descontoPorc";
+    return false;
+  }
+
+  if (not setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value())) {
+    qDebug() << "erro setando descontoReais";
+    return false;
+  }
+
+  if (not setData(row, "total", ui->doubleSpinBoxFinal->value())) {
+    qDebug() << "erro setando total";
+    return false;
+  }
 
   return true;
 }
@@ -398,10 +400,8 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
     qDebug() << "Erro buscando parâmetros do frete: " << queryFrete.lastError();
   }
 
-//  if (queryFrete.next()) {
-    minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
-    porcFrete = queryFrete.value("porcentagemFrete").toDouble();
-//  }
+  minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
+  porcFrete = queryFrete.value("porcentagemFrete").toDouble();
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     const double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
@@ -704,7 +704,6 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
     qDebug() << "Erro na busca do produto: " << query.lastError();
   }
 
-//  query.first();
   const QString un = query.value("un").toString();
   ui->lineEditUn->setText(un);
   ui->lineEditPrecoUn->setValue(query.value("precoVenda").toDouble());
@@ -831,3 +830,67 @@ void Orcamento::testaOrcamento() {
   close();
 }
 #endif
+
+bool Orcamento::save(const bool isUpdate) {
+  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  const int row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
+
+  if (row == -1) {
+    qDebug() << "Something went very wrong!";
+    return false;
+  }
+
+  if (not isUpdate) {
+    model.insertRow(row);
+  }
+
+  if (not verifyFields(row)) {
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  if (not savingProcedures(row)) {
+    errorMessage();
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  if (not model.submitAll()) {
+    qDebug() << objectName() << " : " << model.lastError();
+    qDebug() << "Last query: "
+             << model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, model.tableName(),
+                                                        model.record(row), false);
+    errorMessage();
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
+    modelItem.setData(model.index(row, modelItem.fieldIndex(primaryKey)), ui->lineEditOrcamento->text());
+    modelItem.setData(model.index(row, modelItem.fieldIndex("idLoja")), UserSession::getLoja());
+  }
+
+  if (not modelItem.submitAll()) {
+    qDebug() << "Failed to add item! : " << modelItem.lastError().text();
+    qDebug() << "Last query: "
+             << modelItem.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelItem.tableName(),
+                                                            modelItem.record(row), false);
+    QMessageBox::warning(this, "Atenção!", "Erro ao adicionar um item ao orçamento.", QMessageBox::Ok,
+                         QMessageBox::NoButton);
+    return false;
+  }
+
+  QSqlQuery("COMMIT").exec();
+  isDirty = false;
+
+  viewRegister(model.index(row, 0));
+  sendUpdateMessage();
+
+  if (not silent) {
+    successMessage();
+  }
+
+  return true;
+}

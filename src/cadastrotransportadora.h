@@ -1,13 +1,13 @@
 #ifndef CADASTROTRANSPORTADORA_H
 #define CADASTROTRANSPORTADORA_H
 
-#include "registerdialog.h"
+#include "registeraddressdialog.h"
 
 namespace Ui {
   class CadastroTransportadora;
 }
 
-class CadastroTransportadora : public RegisterDialog {
+class CadastroTransportadora : public RegisterAddressDialog {
     Q_OBJECT
 
   public:
@@ -15,6 +15,7 @@ class CadastroTransportadora : public RegisterDialog {
     ~CadastroTransportadora();
     void clearEndereco();
     void setupUi();
+    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -34,14 +35,6 @@ class CadastroTransportadora : public RegisterDialog {
     void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
-
-  public:
-    /*!
-*\brief Utilizada para selecionar um item a partir de um QModelIndex
-*\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
-*\return
-*/
-    virtual bool viewRegister(const QModelIndex index);
 
   private:
     /*!
@@ -73,14 +66,11 @@ class CadastroTransportadora : public RegisterDialog {
   private:
     // attributes
     Ui::CadastroTransportadora *ui;
-    QSqlTableModel modelEnd;
-    QDataWidgetMapper mapperEnd;
     // methods
     virtual bool newRegister();
     void novoItem();
     bool cadastrarEndereco(const bool isUpdate);
     void novoEndereco();
-    int getCodigoUF();
     void setupTables();
 };
 

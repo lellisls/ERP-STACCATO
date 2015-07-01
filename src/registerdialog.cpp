@@ -228,12 +228,12 @@ bool RegisterDialog::save(const bool isUpdate) {
   QSqlQuery("COMMIT").exec();
   isDirty = false;
 
+  viewRegister(model.index(row, 0));
+  sendUpdateMessage();
+
   if (not silent) {
     successMessage();
   }
-
-  viewRegister(model.index(row, 0));
-  sendUpdateMessage();
 
   return true;
 }

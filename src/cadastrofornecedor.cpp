@@ -11,33 +11,10 @@
 #include "usersession.h"
 
 CadastroFornecedor::CadastroFornecedor(QWidget *parent)
-  : RegisterDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
+  : RegisterAddressDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
-  modelEnd.setTable("Fornecedor_has_Endereco");
-  modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
-  modelEnd.setFilter("idFornecedor = '" + data(primaryKey).toString() + "'");
-
-  if (not modelEnd.select()) {
-    qDebug() << "erro modelEnd: " << modelEnd.lastError();
-    return;
-  }
-
-  ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idFornecedor"));
-
-  mapperEnd.setModel(&modelEnd);
-
+  setupTables();
   setupUi();
   setupMapper();
   newRegister();
@@ -54,6 +31,14 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
 
 CadastroFornecedor::~CadastroFornecedor() { delete ui; }
 
+void CadastroFornecedor::setupTables() {
+  ui->tableEndereco->setModel(&modelEnd);
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idFornecedor"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
+}
+
 void CadastroFornecedor::setupUi() {
   ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
@@ -66,21 +51,6 @@ void CadastroFornecedor::setupUi() {
 void CadastroFornecedor::show() {
   QWidget::show();
   adjustSize();
-}
-
-bool CadastroFornecedor::viewRegister(const QModelIndex index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
-
-  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + " AND desativado = FALSE");
-
-  if (not modelEnd.select()) {
-    qDebug() << "Erro no model endereco: " << modelEnd.lastError();
-    return false;
-  }
-
-  return true;
 }
 
 void CadastroFornecedor::clearEndereco() {
@@ -147,61 +117,71 @@ bool CadastroFornecedor::verifyFields(const int row) {
 }
 
 bool CadastroFornecedor::savingProcedures(const int row) {
-  if (data(primaryKey).isNull()) {
-    QSqlQuery queryKey;
-    queryKey.prepare("SELECT MAX(:primaryKey) FROM :table");
-    queryKey.bindValue(":primaryKey", primaryKey);
-    queryKey.bindValue(":table", model.tableName());
-
-    if (not queryKey.exec() or not queryKey.first()) {
-      qDebug() << "Erro na queryKey: " << queryKey.lastError();
-    } else {
-      setData(row, primaryKey, qMax(queryKey.value(0).toInt() + 1, 1000));
-    }
-  }
-
-  setData(row, "razaoSocial", ui->lineEditFornecedor->text());
-  setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData(row, "contatoNome", ui->lineEditContatoNome->text());
-
-  if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty()) {
-    setData(row, "contatoCPF", ui->lineEditContatoCPF->text());
-  }
-
-  setData(row, "contatoApelido", ui->lineEditContatoApelido->text());
-
-  if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty()) {
-    setData(row, "contatoRG", ui->lineEditContatoRG->text());
-  }
-
-  if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty()) {
-    setData(row, "cnpj", ui->lineEditCNPJ->text());
-  }
-
-  setData(row, "inscEstadual", ui->lineEditInscEstadual->text());
-  setData(row, "tel", ui->lineEditTel_Res->text());
-  setData(row, "telCel", ui->lineEditTel_Cel->text());
-  setData(row, "telCom", ui->lineEditTel_Com->text());
-  setData(row, "nextel", ui->lineEditNextel->text());
-  setData(row, "email", ui->lineEditEmail->text());
-
-  if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on model.submitAll(): " << model.lastError();
+  if (not setData(row, "razaoSocial", ui->lineEditFornecedor->text())) {
+    qDebug() << "erro setando razaoSocial";
     return false;
   }
 
-  const int idFornecedor =
-      (data(row, primaryKey).isValid()) ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
-
-  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    modelEnd.setData(model.index(row, modelEnd.fieldIndex(primaryKey)), idFornecedor);
+  if (not setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text())) {
+    qDebug() << "erro setando nomeFantasia";
+    return false;
   }
 
-  if (not modelEnd.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "Last query: "
-             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
-                                                           modelEnd.record(row), false);
+  if (not setData(row, "contatoNome", ui->lineEditContatoNome->text())) {
+    qDebug() << "erro setando contatoNome";
+    return false;
+  }
+
+  if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty() and
+      not setData(row, "contatoCPF", ui->lineEditContatoCPF->text())) {
+    qDebug() << "erro setando contatoCPF";
+    return false;
+  }
+
+  if (not setData(row, "contatoApelido", ui->lineEditContatoApelido->text())) {
+    qDebug() << "erro setando contatoApelido";
+    return false;
+  }
+
+  if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty() and
+      not setData(row, "contatoRG", ui->lineEditContatoRG->text())) {
+    qDebug() << "erro setando contatoRG";
+    return false;
+  }
+
+  if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty() and
+      not setData(row, "cnpj", ui->lineEditCNPJ->text())) {
+    qDebug() << "erro setando cnpj";
+    return false;
+  }
+
+  if (not setData(row, "inscEstadual", ui->lineEditInscEstadual->text())) {
+    qDebug() << "erro setando inscEstadual";
+    return false;
+  }
+
+  if (not setData(row, "tel", ui->lineEditTel_Res->text())) {
+    qDebug() << "erro setando tel";
+    return false;
+  }
+
+  if (not setData(row, "telCel", ui->lineEditTel_Cel->text())) {
+    qDebug() << "erro setando telCel";
+    return false;
+  }
+
+  if (not setData(row, "telCom", ui->lineEditTel_Com->text())) {
+    qDebug() << "erro setando telCom";
+    return false;
+  }
+
+  if (not setData(row, "nextel", ui->lineEditNextel->text())) {
+    qDebug() << "erro setando nextel";
+    return false;
+  }
+
+  if (not setData(row, "email", ui->lineEditEmail->text())) {
+    qDebug() << "erro setando email";
     return false;
   }
 
@@ -339,69 +319,57 @@ bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
     modelEnd.insertRow(row);
   }
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
+  if (not setDataEnd(row, "descricao", ui->comboBoxTipoEnd->currentText())) {
     qDebug() << "Erro setData descricao: " << modelEnd.lastError();
     return false;
   }
 
-  if (not ui->lineEditCEP->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cep")), ui->lineEditCEP->text())) {
-      qDebug() << "Erro setData cep: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditCEP->text().isEmpty() and not setDataEnd(row, "cep", ui->lineEditCEP->text())) {
+    qDebug() << "Erro setData cep: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not ui->lineEditEndereco->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditEndereco->text())) {
-      qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditEndereco->text().isEmpty() and not setDataEnd(row, "logradouro", ui->lineEditEndereco->text())) {
+    qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not ui->lineEditNro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text())) {
-      qDebug() << "Erro setData numero: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditNro->text().isEmpty() and not setDataEnd(row, "numero", ui->lineEditNro->text())) {
+    qDebug() << "Erro setData numero: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not ui->lineEditComp->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
-      qDebug() << "Erro setData complemento: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditComp->text().isEmpty() and not setDataEnd(row, "complemento", ui->lineEditComp->text())) {
+    qDebug() << "Erro setData complemento: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not ui->lineEditBairro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
-      qDebug() << "Erro setData bairro: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditBairro->text().isEmpty() and not setDataEnd(row, "bairro", ui->lineEditBairro->text())) {
+    qDebug() << "Erro setData bairro: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not ui->lineEditCidade->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
-      qDebug() << "Erro setData cidade: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditCidade->text().isEmpty() and not setDataEnd(row, "cidade", ui->lineEditCidade->text())) {
+    qDebug() << "Erro setData cidade: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not ui->lineEditUF->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text())) {
-      qDebug() << "Erro setData uf: " << modelEnd.lastError();
-      return false;
-    }
-
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("codUF")), getCodigoUF())) {
-      qDebug() << "Erro setData uf: " << modelEnd.lastError();
-      return false;
-    }
+  if (not ui->lineEditUF->text().isEmpty() and not setDataEnd(row, "uf", ui->lineEditUF->text())) {
+    qDebug() << "Erro setData uf: " << modelEnd.lastError();
+    return false;
   }
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
+  if (not setDataEnd(row, "codUF", getCodigoUF(ui->lineEditUF->text()))) {
+    qDebug() << "Erro setData codUF: " << modelEnd.lastError();
+    return false;
+  }
+
+  if (not setDataEnd(row, "desativado", false)) {
     qDebug() << "Erro setData desativado: " << modelEnd.lastError();
     return false;
   }
+
+  ui->tableEndereco->resizeColumnsToContents();
 
   return true;
 }
@@ -436,36 +404,18 @@ void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-int CadastroFornecedor::getCodigoUF() {
-  const QString uf = ui->lineEditUF->text().toLower();
+bool CadastroFornecedor::viewRegister(const QModelIndex index) {
+  if (not RegisterDialog::viewRegister(index)) {
+    return false;
+  }
 
-  if (uf == "ro") return 11;
-  if (uf == "ac") return 12;
-  if (uf == "am") return 13;
-  if (uf == "rr") return 14;
-  if (uf == "pa") return 15;
-  if (uf == "ap") return 16;
-  if (uf == "to") return 17;
-  if (uf == "ma") return 21;
-  if (uf == "pi") return 22;
-  if (uf == "ce") return 23;
-  if (uf == "rn") return 24;
-  if (uf == "pb") return 25;
-  if (uf == "pe") return 26;
-  if (uf == "al") return 27;
-  if (uf == "se") return 28;
-  if (uf == "ba") return 29;
-  if (uf == "mg") return 31;
-  if (uf == "es") return 32;
-  if (uf == "rj") return 33;
-  if (uf == "sp") return 35;
-  if (uf == "pr") return 41;
-  if (uf == "sc") return 42;
-  if (uf == "rs") return 43;
-  if (uf == "ms") return 50;
-  if (uf == "mt") return 51;
-  if (uf == "go") return 52;
-  if (uf == "df") return 53;
+  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
-  return 0;
+  if (not modelEnd.select()) {
+    qDebug() << "erro: " << modelEnd.lastError();
+  }
+
+  ui->tableEndereco->resizeColumnsToContents();
+
+  return true;
 }

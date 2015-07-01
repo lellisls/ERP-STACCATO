@@ -1,13 +1,13 @@
 #ifndef CADASTROPROFISSIONAL_H
 #define CADASTROPROFISSIONAL_H
 
-#include "registerdialog.h"
+#include "registeraddressdialog.h"
 
 namespace Ui {
   class CadastroProfissional;
 }
 
-class CadastroProfissional : public RegisterDialog {
+class CadastroProfissional : public RegisterAddressDialog {
     Q_OBJECT
 
   public:
@@ -69,16 +69,13 @@ class CadastroProfissional : public RegisterDialog {
     // attributes
     Ui::CadastroProfissional *ui;
     QString tipoPFPJ;
-    QSqlTableModel modelEnd;
-    QDataWidgetMapper mapperEnd;
     // methods
     void setupUi();
     bool verifyRequiredField(QLineEdit *line, const bool silent);
     void novoEndereco();
     void clearEndereco();
     bool cadastrarEndereco(const bool isUpdate);
-    void setupEndereco();
-    int getCodigoUF();
+    void setupTables();
 };
 
 #endif // CADASTROPROFISSIONAL_H

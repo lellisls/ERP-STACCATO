@@ -1,18 +1,19 @@
 #ifndef CADASTROLOJA_H
 #define CADASTROLOJA_H
 
-#include "registerdialog.h"
+#include "registeraddressdialog.h"
 
 namespace Ui {
   class CadastroLoja;
 }
 
-class CadastroLoja : public RegisterDialog {
+class CadastroLoja : public RegisterAddressDialog {
     Q_OBJECT
 
   public:
     explicit CadastroLoja(QWidget *parent = 0);
     ~CadastroLoja();
+    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -34,14 +35,6 @@ class CadastroLoja : public RegisterDialog {
     void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
-
-  public:
-    /*!
-*\brief Utilizada para selecionar um item a partir de um QModelIndex
-*\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
-*\return
-*/
-    virtual bool viewRegister(const QModelIndex index);
 
   private:
     /*!
@@ -66,7 +59,7 @@ class CadastroLoja : public RegisterDialog {
 */
     virtual void registerMode();
     /*!
-*\brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
+*\brief Função chamada para atualizar a view, escondendo botão cadastrar, por exemplo
 */
     virtual void updateMode();
 
@@ -74,14 +67,12 @@ class CadastroLoja : public RegisterDialog {
     // attributes
     Ui::CadastroLoja *ui;
     QSqlRelationalTableModel modelAlcadas;
-    QSqlTableModel modelEnd;
-    QDataWidgetMapper mapperEnd;
     // methods
     void novoEndereco();
     bool cadastrarEndereco(const bool isUpdate);
-    int getCodigoUF();
     void clearEndereco();
     void setupTables();
+    void setupUi();
 };
 
 #endif // CADASTROLOJA_H

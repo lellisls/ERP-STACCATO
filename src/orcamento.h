@@ -115,6 +115,10 @@ private:
     void updateId();
     QString itemData(const int row, const QString key);
     void setupTables();
+
+    // RegisterDialog interface
+protected:
+    bool save(const bool isUpdate = false);
 };
 
 #endif // ORCAMENTO_H

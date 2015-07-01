@@ -1,6 +1,6 @@
-#include "checkboxdelegate.h"
-
 #include <QCheckBox>
+
+#include "checkboxdelegate.h"
 
 CheckBoxDelegate::CheckBoxDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
 
@@ -28,9 +28,9 @@ void CheckBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
 }
 
 void CheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-  if(QCheckBox *cb = qobject_cast<QCheckBox *>(editor)){
+  if (QCheckBox *cb = qobject_cast<QCheckBox *>(editor)) {
     model->setData(index, cb->isChecked(), Qt::EditRole);
-  } else{
+  } else {
     QStyledItemDelegate::setModelData(editor, model, index);
   }
 }

@@ -1,15 +1,15 @@
+#include <QFile>
+#include <QDate>
+#include <QFileInfo>
+#include <QInputDialog>
+#include <QSqlDriver>
+
 #include "cadastrarnfe.h"
 #include "cadastrocliente.h"
 #include "endereco.h"
 #include "mainwindow.h"
 #include "ui_cadastrarnfe.h"
 #include "usersession.h"
-
-#include <QFile>
-#include <QDate>
-#include <QFileInfo>
-#include <QInputDialog>
-#include <QSqlDriver>
 
 CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   : QDialog(parent), ui(new Ui::CadastrarNFe), idVenda(idVenda) {

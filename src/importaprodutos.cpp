@@ -146,7 +146,7 @@ void ImportaProdutos::importarTabela() {
                               QString::number(itensUpdated) + "\nNão modificados: " + QString::number(itensNotChanged) +
                               "\nDescontinuados: " + QString::number(itensExpired) + "\nCom erro: " +
                               QString::number(itensError);
-    QMessageBox::information(this, "Resultado", resultado);
+    QMessageBox::information(0, "Resultado", resultado);
   }
 }
 

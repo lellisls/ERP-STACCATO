@@ -373,6 +373,9 @@ void CadastroLoja::on_lineEditCEP_textChanged(const QString &cep) {
     return;
   }
 
+  ui->lineEditNro->clear();
+  ui->lineEditComp->clear();
+
   CepCompleter cc;
 
   if (cc.buscaCEP(cep)) {

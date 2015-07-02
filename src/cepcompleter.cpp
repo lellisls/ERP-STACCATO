@@ -32,7 +32,6 @@ bool CepCompleter::buscaCEP(const QString cep) {
   }
 
   if (not query.first()) {
-    qDebug() << "Erro no query first";
     return false;
   }
 

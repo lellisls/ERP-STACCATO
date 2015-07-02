@@ -109,6 +109,8 @@ bool RegisterAddressDialog::newRegister() {
     return false;
   }
 
+  modelEnd.setFilter("idEndereco = 0");
+
   if (not modelEnd.select()) {
     qDebug() << "erro modelEnd: " << modelEnd.lastError();
     return false;

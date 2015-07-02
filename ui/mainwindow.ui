@@ -847,7 +847,7 @@
     <property name="title">
      <string>Opções</string>
     </property>
-    <addaction name="actionImportaTeste"/>
+    <addaction name="actionImportaProdutos"/>
    </widget>
    <widget class="QMenu" name="menuAdministra_o">
     <property name="title">
@@ -926,7 +926,7 @@
     <string>Cadastrar fornecedor</string>
    </property>
   </action>
-  <action name="actionImportaTeste">
+  <action name="actionImportaProdutos">
    <property name="text">
     <string>Importar tabela fornecedor</string>
    </property>

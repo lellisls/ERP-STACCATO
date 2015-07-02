@@ -675,7 +675,7 @@ void MainWindow::readSettings() {
 
 void MainWindow::showMaximized() { QMainWindow::showMaximized(); }
 
-void MainWindow::on_actionImportaTeste_triggered() {
+void MainWindow::on_actionImportaProdutos_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);
   importa->importar();
 }

@@ -81,6 +81,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->radioButtonOrcValido->setChecked(true);
     on_radioButtonOrcValido_clicked();
   }
+
+  ui->tableOrcamentos->sortByColumn(0);
+  ui->tableVendas->sortByColumn(0);
 }
 
 bool MainWindow::dbConnect() {

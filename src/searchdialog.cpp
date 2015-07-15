@@ -119,13 +119,10 @@ void SearchDialog::show() {
     return;
   }
 
-  ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableBusca->resizeColumnsToContents();
-
   ui->lineEditBusca->setFocus();
 
   QDialog::show();
+  ui->tableBusca->resizeColumnsToContents();
 }
 
 void SearchDialog::showMaximized() {
@@ -134,11 +131,10 @@ void SearchDialog::showMaximized() {
     return;
   }
 
-  ui->tableBusca->resizeColumnsToContents();
-
   ui->lineEditBusca->setFocus();
 
   QDialog::showMaximized();
+  ui->tableBusca->resizeColumnsToContents();
 }
 
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {

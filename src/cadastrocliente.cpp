@@ -189,6 +189,13 @@ bool CadastroCliente::savingProcedures(const int row) {
     return false;
   }
 
+  if (ui->dateEdit->date().toString("dd-MM-yyyy") != "01-01-1900") {
+    if (not setData(row, "dataNasc", ui->dateEdit->date().toString("yyyy-MM-dd"))) {
+      qDebug() << "Erro setando data nasc.";
+      return false;
+    }
+  }
+
   if (not ui->lineEditTel_Res->text().isEmpty() and not setData(row, "tel", ui->lineEditTel_Res->text())) {
     qDebug() << "Erro setando tel";
     return false;
@@ -270,6 +277,7 @@ void CadastroCliente::setupMapper() {
   addMapping(ui->itemBoxCliente, "idCadastroRel", "value");
   addMapping(ui->itemBoxProfissional, "idProfissionalRel", "value");
   addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
+  addMapping(ui->dateEdit, "dataNasc");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
@@ -515,6 +523,8 @@ void CadastroCliente::on_radioButtonPF_toggled(const bool checked) {
     ui->labelCPF->show();
     ui->lineEditInscEstadual->hide();
     ui->labelInscricaoEstadual->hide();
+    ui->dateEdit->show();
+    ui->labelDataNasc->show();
 
     ui->lineEditCNPJ->clear();
   } else {
@@ -525,6 +535,8 @@ void CadastroCliente::on_radioButtonPF_toggled(const bool checked) {
     ui->labelCPF->hide();
     ui->lineEditInscEstadual->show();
     ui->labelInscricaoEstadual->show();
+    ui->dateEdit->hide();
+    ui->labelDataNasc->hide();
 
     ui->lineEditCPF->clear();
   }

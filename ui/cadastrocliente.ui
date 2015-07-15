@@ -135,27 +135,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_54">
-                    <property name="text">
-                     <string>Apelido/Nome Fantasia</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QLabel" name="labelCNPJ">
-                    <property name="text">
-                     <string>CNPJ</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="4">
-                   <widget class="QLabel" name="labelInscricaoEstadual">
-                    <property name="text">
-                     <string>Insc. Estadual</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="0">
                    <widget class="QLineEdit" name="lineEditCliente">
                     <property name="minimumSize">
@@ -172,6 +151,13 @@
                     </property>
                    </widget>
                   </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_54">
+                    <property name="text">
+                     <string>Apelido/Nome Fantasia</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="1">
                    <widget class="QLineEdit" name="lineEditNomeFantasia">
                     <property name="minimumSize">
@@ -182,19 +168,24 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="3">
-                   <widget class="QLineEdit" name="lineEditCNPJ">
-                    <property name="minimumSize">
-                     <size>
-                      <width>100</width>
-                      <height>0</height>
-                     </size>
+                  <item row="0" column="4">
+                   <widget class="QLabel" name="labelInscricaoEstadual">
+                    <property name="text">
+                     <string>Insc. Estadual</string>
                     </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>135</width>
-                      <height>16777215</height>
-                     </size>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QLabel" name="labelCNPJ">
+                    <property name="text">
+                     <string>CNPJ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="labelCPF">
+                    <property name="text">
+                     <string>CPF</string>
                     </property>
                    </widget>
                   </item>
@@ -230,10 +221,40 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QLabel" name="labelCPF">
+                  <item row="1" column="3">
+                   <widget class="QLineEdit" name="lineEditCNPJ">
+                    <property name="minimumSize">
+                     <size>
+                      <width>100</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>135</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QDateEdit" name="dateEdit">
+                    <property name="calendarPopup">
+                     <bool>true</bool>
+                    </property>
+                    <property name="date">
+                     <date>
+                      <year>1900</year>
+                      <month>1</month>
+                      <day>1</day>
+                     </date>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QLabel" name="labelDataNasc">
                     <property name="text">
-                     <string>CPF</string>
+                     <string>Data Nasc.</string>
                     </property>
                    </widget>
                   </item>

@@ -31,7 +31,6 @@ class Orcamento : public RegisterDialog {
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
     void on_doubleSpinBoxFinal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
-    void on_doubleSpinBoxQte_editingFinished();
     void on_doubleSpinBoxQte_valueChanged(const double);
     void on_doubleSpinBoxTotal_valueChanged(const double);
     void on_doubleSpinBoxPrecoTotal_editingFinished();
@@ -65,7 +64,7 @@ class Orcamento : public RegisterDialog {
 */
     virtual bool viewRegister(const QModelIndex index);
 
-private:
+  private:
     /*!
 * \brief Função padrão para verificar campos obrigatórios
 * \return
@@ -116,9 +115,10 @@ private:
     void updateId();
     QString itemData(const int row, const QString key);
     void setupTables();
+    bool verificaCampos();
 
     // RegisterDialog interface
-protected:
+  protected:
     bool save(const bool isUpdate = false);
 };
 

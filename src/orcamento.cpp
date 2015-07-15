@@ -141,7 +141,7 @@ void Orcamento::setupMapper() {
   mapperItem.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
   mapperItem.addMapping(ui->lineEditPrecoUn, modelItem.fieldIndex("prcUnitario"), "value");
-  mapperItem.addMapping(ui->doubleSpinBoxPrecoTotal, model.fieldIndex("total"));
+  mapperItem.addMapping(ui->doubleSpinBoxPrecoTotal, modelItem.fieldIndex("parcialDesc"));
   mapperItem.addMapping(ui->lineEditOrcamento, modelItem.fieldIndex("idOrcamento"), "text");
   mapperItem.addMapping(ui->lineEditObs, modelItem.fieldIndex("obs"), "text");
   mapperItem.addMapping(ui->lineEditUn, modelItem.fieldIndex("un"), "text");
@@ -157,9 +157,10 @@ void Orcamento::registerMode() {
   ui->pushButtonAtualizarOrcamento->hide();
   ui->pushButtonReplicar->hide();
 
-  ui->pushButtonImprimir->setEnabled(false);
+  ui->pushButtonApagarOrc->setDisabled(true);
+  ui->pushButtonImprimir->setDisabled(true);
   ui->pushButtonGerarVenda->setEnabled(true);
-  ui->itemBoxEndereco->setEnabled(false);
+  ui->itemBoxEndereco->setDisabled(true);
 }
 
 void Orcamento::updateMode() {
@@ -167,10 +168,11 @@ void Orcamento::updateMode() {
   ui->pushButtonAtualizarOrcamento->show();
   ui->pushButtonReplicar->show();
 
+  ui->pushButtonApagarOrc->setEnabled(true);
   ui->pushButtonImprimir->setEnabled(true);
   ui->pushButtonGerarVenda->setEnabled(true);
   ui->itemBoxEndereco->setVisible(true);
-  ui->spinBoxValidade->setEnabled(false);
+  ui->spinBoxValidade->setDisabled(true);
 }
 
 bool Orcamento::newRegister() {
@@ -348,14 +350,11 @@ void Orcamento::calcPrecoItemTotal() {
 void Orcamento::on_doubleSpinBoxDesconto_valueChanged(const double) { calcPrecoItemTotal(); }
 
 void Orcamento::on_doubleSpinBoxQte_valueChanged(const double) {
-  const double caixas = ui->doubleSpinBoxQte->value() / ui->doubleSpinBoxQte->singleStep();
-  ui->spinBoxCaixas->setValue(caixas);
-}
+  const int caixas = qRound(ui->doubleSpinBoxQte->value() / ui->doubleSpinBoxQte->singleStep());
 
-void Orcamento::on_doubleSpinBoxQte_editingFinished() {
-  const double step = ui->doubleSpinBoxQte->singleStep();
-  const double mult = ui->doubleSpinBoxQte->value() / step;
-  ui->doubleSpinBoxQte->setValue(qCeil(mult) * step);
+  if (ui->spinBoxCaixas->value() != caixas) {
+    ui->spinBoxCaixas->setValue(caixas);
+  }
 }
 
 void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
@@ -791,6 +790,9 @@ void Orcamento::adicionarItem(const bool isUpdate) {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("desconto")), ui->doubleSpinBoxDesconto->value());
 
   calcPrecoGlobalTotal();
+
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), ui->doubleSpinBoxPrecoTotal->value());
+
   novoItem();
 }
 
@@ -877,7 +879,11 @@ void Orcamento::on_doubleSpinBoxTotal_valueChanged(const double) { calcPrecoGlob
 
 void Orcamento::on_spinBoxCaixas_valueChanged(const int caixas) {
   const double qte = caixas * ui->doubleSpinBoxQte->singleStep();
-  ui->doubleSpinBoxQte->setValue(qte);
+
+  if (ui->doubleSpinBoxQte->value() != qte) {
+    ui->doubleSpinBoxQte->setValue(qte);
+  }
+
   calcPrecoItemTotal();
 }
 

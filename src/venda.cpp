@@ -40,14 +40,12 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
   ui->comboBoxPgt2->insertItems(0, list);
   ui->comboBoxPgt3->insertItems(0, list);
 
-  ui->pushButtonNFe->hide();
-
   ui->dateEditPgt1->setDate(QDate::currentDate());
   ui->dateEditPgt2->setDate(QDate::currentDate());
   ui->dateEditPgt3->setDate(QDate::currentDate());
 
-  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(ui->itemBoxEndereco);
-  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+  SearchDialog *sdEnderecoEnt = SearchDialog::enderecoCliente(ui->itemBoxEnderecoEnt);
+  ui->itemBoxEnderecoEnt->setSearchDialog(sdEnderecoEnt);
 
   SearchDialog *sdEnderecoFat = SearchDialog::enderecoCliente(ui->itemBoxEnderecoFat);
   ui->itemBoxEnderecoFat->setSearchDialog(sdEnderecoFat);
@@ -59,8 +57,8 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
-  showMaximized();
-  ui->tableVenda->resizeColumnsToContents();
+  //  showMaximized();
+  show();
 }
 
 Venda::~Venda() { delete ui; }
@@ -197,12 +195,12 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     qDebug() << "Erro buscando orcamento: " << query.lastError();
   }
 
-  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + query.value("idCliente").toString() +
-                                                 " AND desativado = FALSE");
+  ui->itemBoxEnderecoEnt->searchDialog()->setFilter("idCliente = " + query.value("idCliente").toString() +
+                                                    " AND desativado = FALSE");
   ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + query.value("idCliente").toString() +
                                                     " AND desativado = FALSE");
 
-  ui->itemBoxEndereco->setValue(query.value("idEnderecoEntrega"));
+  ui->itemBoxEnderecoEnt->setValue(query.value("idEnderecoEntrega"));
   ui->itemBoxEnderecoFat->setValue(query.value("idEnderecoEntrega"));
 
   for (int field = 0, columnCount = model.columnCount(); field < columnCount; ++field) {
@@ -355,7 +353,9 @@ void Venda::fillTotals() {
 void Venda::clearFields() { idVenda = QString(); }
 
 void Venda::setupMapper() {
-  addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
+  addMapping(ui->itemBoxCliente, "idCliente", "value");
+
+  addMapping(ui->itemBoxEnderecoEnt, "idEnderecoEntrega", "value");
   addMapping(ui->itemBoxEnderecoFat, "idEnderecoFaturamento", "value");
   addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
   addMapping(ui->doubleSpinBoxTotal, "subTotalLiq");
@@ -372,16 +372,16 @@ void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 void Venda::on_pushButtonNFe_clicked() {
   CadastrarNFe *cadNFe = new CadastrarNFe(idVenda, this);
 
-  const QModelIndexList list = modelItem.match(modelItem.index(0, 0), Qt::DisplayRole, true, -1);
+  QList<int> lista;
 
-  if (list.size() == 0) {
+  foreach (const QModelIndex index, modelItem.match(modelItem.index(0, 0), Qt::DisplayRole, true, -1)) {
+    lista.append(index.row());
+  }
+
+  if (lista.size() == 0) {
     QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
     return;
   }
-
-  QList<int> lista;
-
-  foreach (const QModelIndex index, list) { lista.append(index.row()); }
 
   cadNFe->prepararNFe(lista);
   cadNFe->showMaximized();
@@ -498,7 +498,7 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
 }
 
 bool Venda::savingProcedures(int row) {
-  setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
+  setData(row, "idEnderecoEntrega", ui->itemBoxEnderecoEnt->value());
   setData(row, "idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
   setData(row, "status", "ABERTO");
   setData(row, "data", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
@@ -589,6 +589,7 @@ bool Venda::savingProcedures(int row) {
 void Venda::registerMode() {
   ui->framePagamentos->show();
   ui->pushButtonNFe->hide();
+  ui->pushButtonImprimir->hide();
   ui->pushButtonCadastrarPedido->show();
   ui->pushButtonVoltar->show();
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(false);
@@ -603,6 +604,7 @@ void Venda::registerMode() {
 void Venda::updateMode() {
   ui->framePagamentos_2->hide();
   ui->pushButtonNFe->show();
+  ui->pushButtonImprimir->show();
   ui->pushButtonCadastrarPedido->hide();
   ui->pushButtonVoltar->hide();
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(true);
@@ -643,6 +645,104 @@ bool Venda::viewRegister(const QModelIndex index) {
 
   fillTotals();
 
+  QSqlQuery query;
+  query.prepare("SELECT * FROM Orcamento WHERE idOrcamento = :idOrcamento");
+  query.bindValue(":idOrcamento", idVenda);
+
+  if (not query.exec()) {
+    qDebug() << "Erro buscando orçamento: " << query.lastError();
+    qDebug() << "query: " << query.lastQuery();
+  }
+
+  if (not query.first()) {
+    query.prepare("SELECT * FROM Venda WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", idVenda);
+
+    if (not query.exec() or not query.first()) {
+      qDebug() << "Erro buscando venda: " << query.lastError();
+      qDebug() << "Não achou venda: " << query.size();
+      qDebug() << "query: " << query.lastQuery();
+    }
+  }
+
+  QSqlQuery queryCliente;
+  queryCliente.prepare("SELECT * FROM Cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", query.value("idCliente"));
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    qDebug() << "Erro buscando cliente: " << queryCliente.lastError();
+    qDebug() << "Não achou venda: " << queryCliente.size();
+    qDebug() << "query: " << queryCliente.lastQuery();
+    qDebug() << "id: " << query.value("idCliente");
+  }
+
+  QSqlQuery queryEndFat;
+  queryEndFat.prepare("SELECT * FROM Cliente_has_Endereco WHERE idEndereco = :idEndereco");
+  queryEndFat.bindValue(":idEndereco", query.value("idEnderecoFaturamento"));
+
+  if (not queryEndFat.exec() or not queryEndFat.first()) {
+    qDebug() << "Erro buscando endereco faturamento: " << queryEndFat.lastError();
+    qDebug() << "Não achou venda: " << queryEndFat.size();
+    qDebug() << "query: " << queryEndFat.lastQuery();
+    qDebug() << "id: " << query.value("idEnderecoFaturamento");
+  }
+
+  QSqlQuery queryEndEnt;
+  queryEndEnt.prepare("SELECT * FROM Cliente_has_Endereco WHERE idEndereco= :idEndereco");
+  queryEndEnt.bindValue(":idEndereco", query.value("idEnderecoEntrega"));
+
+  if (not queryEndEnt.exec() or not queryEndEnt.first()) {
+    qDebug() << "Erro buscando endereco entrega: " << queryEndEnt.lastError();
+    qDebug() << "Não achou venda: " << queryEndEnt.size();
+    qDebug() << "query: " << queryEndEnt.lastQuery();
+    qDebug() << "id: " << query.value("idEnderecoEntrega");
+  }
+
+  QSqlQuery queryVendedor;
+  queryVendedor.prepare("SELECT * FROM Usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.bindValue(":idUsuario", query.value("idUsuario"));
+
+  if (not queryVendedor.exec() or not queryVendedor.first()) {
+    qDebug() << "Erro buscando vendedor: " << queryVendedor.lastError();
+    qDebug() << "Não achou venda: " << queryVendedor.size();
+    qDebug() << "query: " << queryVendedor.lastQuery();
+    qDebug() << "id: " << query.value("idUsuario");
+  }
+
+  QSqlQuery queryProfissional;
+  queryProfissional.prepare("SELECT * FROM Profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.bindValue(":idProfissional", query.value("idProfissional"));
+
+  if (not queryProfissional.exec() or not queryProfissional.first()) {
+    qDebug() << "Erro buscando profissional: " << queryProfissional.lastError();
+    qDebug() << "Não achou venda: " << queryProfissional.size();
+    qDebug() << "query: " << queryProfissional.lastQuery();
+    qDebug() << "id: " << query.value("idProfissional");
+  }
+
+  ui->itemBoxVenda->setText(query.value("idVenda").toString());
+  ui->dateTimeEdit->setDateTime(query.value("data").toDateTime());
+  ui->itemBoxCliente->setText(queryCliente.value("nome_razao").toString());
+
+  if (queryCliente.value("pfpj").toString() == "PF") {
+    ui->itemBoxCPFCNPJ->setText(queryCliente.value("cpf").toString());
+  } else {
+    ui->itemBoxCPFCNPJ->setText(queryCliente.value("cnpj").toString());
+  }
+
+  ui->itemBoxEmailCliente->setText(queryCliente.value("email").toString());
+  ui->itemBoxTel1Cliente->setText(queryCliente.value("tel").toString());
+  ui->itemBoxTel2Cliente->setText(queryCliente.value("telCel").toString());
+  ui->itemBoxEnderecoEntCEP->setText(queryEndEnt.value("cep").toString());
+  ui->itemBoxEnderecoFatCEP->setText(queryEndFat.value("cep").toString());
+  ui->itemBoxProfissional->setText(queryProfissional.value("nome_razao").toString());
+  ui->itemBoxEmailProfissional->setText(queryProfissional.value("email").toString());
+  ui->itemBoxTelProfissional->setText(queryProfissional.value("tel").toString());
+  ui->itemBoxVendedor->setText(queryVendedor.value("nome").toString());
+  ui->itemBoxEmailVendedor->setText(queryVendedor.value("email").toString());
+
+  ui->tableVenda->resizeColumnsToContents();
+
   return true;
 }
 
@@ -650,6 +750,8 @@ void Venda::on_pushButtonVoltar_clicked() {
   Orcamento *orcamento = new Orcamento(parentWidget());
   orcamento->viewRegisterById(idVenda);
   orcamento->show();
+
+  model.select();
   close();
 }
 
@@ -817,9 +919,16 @@ void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) { calcPrec
 
 void Venda::on_pushButtonImprimir_clicked() {
   QtRPT *report = new QtRPT(this);
-  report->loadReport("C:/ERP/venda.xml");
+  QFile file(qApp->applicationDirPath() + "/venda.xml");
+
+  if (not file.exists()) {
+    QMessageBox::warning(this, "Aviso!", "XML da impressão não encontrado!");
+    return;
+  }
+
+  report->loadReport(file.fileName());
   report->recordCount << ui->tableVenda->model()->rowCount();
-  QObject::connect(report, &QtRPT::setValue, this, &Venda::setValue);
+  connect(report, &QtRPT::setValue, this, &Venda::setValue);
   report->printExec();
 }
 
@@ -843,14 +952,94 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     qDebug() << "Erro buscando produto: " << modelItem.fieldIndex("idProduto") << " - " << modelItem.lastError();
   }
 
-  if (paramName == "cliente") {
-    paramValue = queryCliente.value("nome_razao").toString();
+  // REPORT TITLE
+  if (paramName == "pedido") {
+    paramValue = ui->itemBoxVenda->text();
   }
 
   if (paramName == "data") {
-    paramValue = model.data(model.index(0, model.fieldIndex("data"))).toDateTime().toString("hh:mm dd-MM-yyyy");
+    paramValue = ui->dateTimeEdit->dateTime().toString("hh:mm dd-MM-yyyy");
   }
 
+  if (paramName == "cliente") {
+    paramValue = ui->itemBoxCliente->text();
+  }
+
+  if (paramName == "cpfcnpj") {
+    paramValue = ui->itemBoxCPFCNPJ->text();
+  }
+
+  if (paramName == "email") {
+    paramValue = ui->itemBoxEmailCliente->text();
+  }
+
+  if (paramName == "tel1") {
+    paramValue = ui->itemBoxTel1Cliente->text();
+  }
+
+  if (paramName == "tel2") {
+    paramValue = ui->itemBoxTel2Cliente->text();
+  }
+
+  if (paramName == "endfiscal") {
+    QString endereco = ui->itemBoxEnderecoFat->text();
+
+    if (endereco != "Não há") {
+      endereco = endereco.remove(0, endereco.indexOf("-") + 2);
+    }
+
+    paramValue = endereco;
+  }
+
+  if (paramName == "cepfiscal") {
+    paramValue = ui->itemBoxEnderecoFatCEP->text();
+  }
+
+  if (paramName == "endentrega") {
+    QString endereco = ui->itemBoxEnderecoEnt->text();
+
+    if (endereco != "Não há") {
+      endereco = endereco.remove(0, endereco.indexOf("-") + 2);
+    }
+
+    paramValue = endereco;
+  }
+
+  if (paramName == "cepentrega") {
+    paramValue = ui->itemBoxEnderecoEntCEP->text();
+  }
+
+  if (paramName == "profissional") {
+    if (ui->itemBoxProfissional->text().isEmpty()) {
+      paramValue = "Não há";
+    } else {
+      paramValue = ui->itemBoxProfissional->text();
+    }
+  }
+
+  if (paramName == "telprofissional") {
+    paramValue = ui->itemBoxTelProfissional->text();
+  }
+
+  if (paramName == "emailprofissional") {
+    paramValue = ui->itemBoxEmailProfissional->text();
+  }
+
+  if (paramName == "vendedor") {
+    paramValue = ui->itemBoxVendedor->text();
+  }
+
+  if (paramName == "emailvendedor") {
+    paramValue = ui->itemBoxEmailVendedor->text();
+  }
+
+  if (paramName == "estoque") {
+  }
+
+  if (paramName == "dataestoque") {
+  }
+
+  // MASTER BAND
   if (paramName == "Marca") {
     paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("fornecedor"))).toString();
   }
@@ -869,7 +1058,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (paramName == "Preço-R$") {
     double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    paramValue = locale.toString(value, 'f', 2);
+    paramValue = "R$ " + locale.toString(value, 'f', 2);
   }
 
   if (paramName == "Quant.") {
@@ -880,9 +1069,103 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("un"))).toString();
   }
 
+  if (paramName == "TotalProd") {
+    double parcial = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("parcial"))).toDouble();
+    paramValue = "R$ " + locale.toString(parcial, 'f', 2);
+  }
+
+  // REPORT SUMMARY
+
   if (paramName == "Total") {
-    double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("total"))).toDouble();
+    double value = ui->doubleSpinBoxTotal->value();
     paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "Frete") {
+    double value = ui->doubleSpinBoxFrete->value();
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "TotalFinal") {
+    double value = ui->doubleSpinBoxFinal->value();
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "Observacao") {
+    paramValue = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc placerat diam et imperdiet posuere. "
+                 "Donec placerat sapien vel velit bibendum, vel porttitor justo ultrices. Morbi lobortis metus vitae ";
+  }
+
+  if (paramName == "PrazoEntrega") {
+    paramValue = "XX Dias";
+  }
+
+  if (paramName == "FormaPagamento1") {
+    QSqlQuery queryPgt1;
+    if (not queryPgt1.exec("SELECT tipo, COUNT(valor), valor, data FROM mydb.venda_has_pagamento where idVenda = '" +
+                           idVenda + "' and tipo like '1%';") or
+        not queryPgt1.first()) {
+      qDebug() << "Erro buscando pagamentos: " << queryPgt1.lastError();
+      return;
+    }
+
+    if (queryPgt1.value(1) == 1) {
+      paramValue = queryPgt1.value(0).toString() + " - " + queryPgt1.value(1).toString() + "x de R$ " +
+                   locale.toString(queryPgt1.value(2).toDouble(), 'f', 2) + " - pag. em: " +
+                   queryPgt1.value(3).toString();
+    } else {
+      paramValue = queryPgt1.value(0).toString() + " - " + queryPgt1.value(1).toString() + "x de R$ " +
+                   locale.toString(queryPgt1.value(2).toDouble(), 'f', 2) + " - 1° pag. em: " +
+                   queryPgt1.value(3).toString();
+    }
+  }
+
+  if (paramName == "FormaPagamento2") {
+    QSqlQuery queryPgt2;
+    if (not queryPgt2.exec("SELECT tipo, COUNT(valor), valor, data FROM mydb.venda_has_pagamento where idVenda = '" +
+                           idVenda + "' and tipo like '2%';") or
+        not queryPgt2.first()) {
+      qDebug() << "Erro buscando pagamentos: " << queryPgt2.lastError();
+      return;
+    }
+
+    if (queryPgt2.value(2) == 0) {
+      return;
+    }
+
+    if (queryPgt2.value(1) == 1) {
+      paramValue = queryPgt2.value(0).toString() + " - " + queryPgt2.value(1).toString() + "x de R$ " +
+                   locale.toString(queryPgt2.value(2).toDouble(), 'f', 2) + " - pag. em: " +
+                   queryPgt2.value(3).toString();
+    } else {
+      paramValue = queryPgt2.value(0).toString() + " - " + queryPgt2.value(1).toString() + "x de R$ " +
+                   locale.toString(queryPgt2.value(2).toDouble(), 'f', 2) + " - 1° pag. em: " +
+                   queryPgt2.value(3).toString();
+    }
+  }
+
+  if (paramName == "FormaPagamento3") {
+    QSqlQuery queryPgt3;
+    if (not queryPgt3.exec("SELECT tipo, COUNT(valor), valor, data FROM mydb.venda_has_pagamento where idVenda = '" +
+                           idVenda + "' and tipo like '3%';") or
+        not queryPgt3.first()) {
+      qDebug() << "Erro buscando pagamentos: " << queryPgt3.lastError();
+      return;
+    }
+
+    if (queryPgt3.value(2) == 0) {
+      return;
+    }
+
+    if (queryPgt3.value(1) == 1) {
+      paramValue = queryPgt3.value(0).toString() + " - " + queryPgt3.value(1).toString() + "x de R$ " +
+                   locale.toString(queryPgt3.value(2).toDouble(), 'f', 2) + " - pag. em: " +
+                   queryPgt3.value(3).toString();
+    } else {
+      paramValue = queryPgt3.value(0).toString() + " - " + queryPgt3.value(1).toString() + "x de R$ " +
+                   locale.toString(queryPgt3.value(2).toDouble(), 'f', 2) + " - 1° pag. em: " +
+                   queryPgt3.value(3).toString();
+    }
   }
 }
 

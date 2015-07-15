@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
+    <width>968</width>
     <height>663</height>
    </rect>
   </property>
@@ -480,6 +480,9 @@
                 <property name="correctionMode">
                  <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
                 </property>
+                <property name="maximum">
+                 <number>9999</number>
+                </property>
                </widget>
               </item>
               <item row="1" column="3">
@@ -495,6 +498,9 @@
                 </property>
                 <property name="correctionMode">
                  <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
                 </property>
                 <property name="maximum">
                  <double>9999999.000000000000000</double>
@@ -543,6 +549,12 @@
                 <property name="decimals">
                  <number>4</number>
                 </property>
+                <property name="minimum">
+                 <double>-100.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>100.000000000000000</double>
+                </property>
                </widget>
               </item>
               <item row="1" column="6">
@@ -555,6 +567,9 @@
                 </property>
                 <property name="correctionMode">
                  <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+                </property>
+                <property name="showGroupSeparator" stdset="0">
+                 <bool>true</bool>
                 </property>
                 <property name="prefix">
                  <string>R$ </string>
@@ -810,9 +825,6 @@
             <property name="sortingEnabled">
              <bool>true</bool>
             </property>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>false</bool>
-            </attribute>
            </widget>
           </item>
          </layout>
@@ -894,7 +906,7 @@
                <bool>false</bool>
               </property>
               <property name="showGroupSeparator" stdset="0">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -914,6 +926,9 @@
               </property>
               <property name="decimals">
                <number>4</number>
+              </property>
+              <property name="minimum">
+               <double>-100.000000000000000</double>
               </property>
               <property name="maximum">
                <double>99.000000000000000</double>
@@ -954,6 +969,9 @@
               <property name="keyboardTracking">
                <bool>false</bool>
               </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>true</bool>
+              </property>
               <property name="prefix">
                <string>R$ </string>
               </property>
@@ -972,6 +990,9 @@
               </property>
               <property name="correctionMode">
                <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>true</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -1123,7 +1144,7 @@
                <bool>false</bool>
               </property>
               <property name="showGroupSeparator" stdset="0">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>
@@ -1152,6 +1173,9 @@
               </property>
               <property name="correctionMode">
                <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>true</bool>
               </property>
               <property name="prefix">
                <string>R$ </string>

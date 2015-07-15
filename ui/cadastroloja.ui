@@ -394,6 +394,40 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="labelCNPJ">
+            <property name="text">
+             <string>CNPJ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="QLabel" name="labelTel">
+            <property name="text">
+             <string>Tel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLineEdit" name="lineEditSIGLA">
+            <property name="maximumSize">
+             <size>
+              <width>40</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="labelSIGLA">
+            <property name="text">
+             <string>Sigla</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="1">
            <widget class="QLabel" name="labelRazaoSocial">
             <property name="text">
@@ -433,25 +467,11 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
-           <widget class="QLabel" name="labelCNPJ">
-            <property name="text">
-             <string>CNPJ</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="7">
-           <widget class="QLabel" name="labelTel">
-            <property name="text">
-             <string>Tel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="lineEditSIGLA">
+          <item row="1" column="8">
+           <widget class="LineEditTel" name="lineEditTel2">
             <property name="maximumSize">
              <size>
-              <width>40</width>
+              <width>90</width>
               <height>16777215</height>
              </size>
             </property>
@@ -460,10 +480,10 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="labelSIGLA">
+          <item row="0" column="8">
+           <widget class="QLabel" name="labelTel2">
             <property name="text">
-             <string>Sigla</string>
+             <string>Tel2</string>
             </property>
            </widget>
           </item>

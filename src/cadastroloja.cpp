@@ -115,6 +115,11 @@ bool CadastroLoja::savingProcedures(const int row) {
     return false;
   }
 
+  if (not setData(row, "tel2", ui->lineEditTel2->text())) {
+    qDebug() << "erro setando tel2";
+    return false;
+  }
+
   if (not setData(row, "valorMinimoFrete", ui->doubleSpinBoxValorMinimoFrete->value())) {
     qDebug() << "erro setando valorMinimoFrete";
     return false;
@@ -172,6 +177,7 @@ void CadastroLoja::setupMapper() {
   addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
   addMapping(ui->lineEditInscEstadual, "inscEstadual");
   addMapping(ui->lineEditTel, "tel");
+  addMapping(ui->lineEditTel2, "tel2");
   addMapping(ui->lineEditSIGLA, "sigla");
   addMapping(ui->doubleSpinBoxValorMinimoFrete, "valorMinimoFrete");
   addMapping(ui->doubleSpinBoxPorcFrete, "porcentagemFrete");

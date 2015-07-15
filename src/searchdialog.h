@@ -52,6 +52,7 @@ class SearchDialog : public QDialog {
     void on_pushButtonCancelar_clicked();
     void on_radioButtonProdAtivos_clicked();
     void on_radioButtonProdDesc_clicked();
+    void on_tableBusca_entered(const QModelIndex &index);
 
   private:
     Ui::SearchDialog *ui;

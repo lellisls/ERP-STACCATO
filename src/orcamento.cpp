@@ -232,31 +232,6 @@ void Orcamento::updateId() {
 bool Orcamento::verifyFields(const int row) {
   Q_UNUSED(row)
 
-  if (ui->itemBoxCliente->text().isEmpty()) {
-    ui->itemBoxCliente->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Cliente inválido.", QMessageBox::Ok, QMessageBox::NoButton);
-    return false;
-  }
-
-  if (ui->itemBoxVendedor->text().isEmpty()) {
-    ui->itemBoxVendedor->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Vendedor inválido.", QMessageBox::Ok, QMessageBox::NoButton);
-    return false;
-  }
-
-  if (ui->itemBoxProfissional->text().isEmpty()) {
-    ui->itemBoxProfissional->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Profissional inválido.", QMessageBox::Ok, QMessageBox::NoButton);
-    return false;
-  }
-
-  if (modelItem.rowCount() == 0) {
-    ui->itemBoxProduto->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Você não pode cadastrar um orçamento sem itens.", QMessageBox::Ok,
-                         QMessageBox::NoButton);
-    return false;
-  }
-
   return true;
 }
 
@@ -536,6 +511,35 @@ void Orcamento::setupTables() {
 
   ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+}
+
+bool Orcamento::verificaCampos() {
+  if (ui->itemBoxCliente->text().isEmpty()) {
+    ui->itemBoxCliente->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Cliente inválido.", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
+  if (ui->itemBoxVendedor->text().isEmpty()) {
+    ui->itemBoxVendedor->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Vendedor inválido.", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
+  if (ui->itemBoxProfissional->text().isEmpty()) {
+    ui->itemBoxProfissional->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Profissional inválido.", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
+  if (modelItem.rowCount() == 0) {
+    ui->itemBoxProduto->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Você não pode cadastrar um orçamento sem itens.", QMessageBox::Ok,
+                         QMessageBox::NoButton);
+    return false;
+  }
+
+  return true;
 }
 
 void Orcamento::print(const QPrinter *printer) { Q_UNUSED(printer); }
@@ -832,6 +836,10 @@ void Orcamento::testaOrcamento() {
 #endif
 
 bool Orcamento::save(const bool isUpdate) {
+  if (not verificaCampos()) {
+    return false;
+  }
+
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
@@ -844,11 +852,6 @@ bool Orcamento::save(const bool isUpdate) {
 
   if (not isUpdate) {
     model.insertRow(row);
-  }
-
-  if (not verifyFields(row)) {
-    QSqlQuery("ROLLBACK").exec();
-    return false;
   }
 
   if (not savingProcedures(row)) {

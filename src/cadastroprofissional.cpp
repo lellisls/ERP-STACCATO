@@ -1,9 +1,9 @@
-#include <QSqlDriver>
-#include <QSqlRecord>
+#include <QSqlError>
+#include <QMessageBox>
+#include <QDebug>
 
 #include "cadastroprofissional.h"
 #include "ui_cadastroprofissional.h"
-#include "searchdialog.h"
 #include "usersession.h"
 #include "cepcompleter.h"
 #include "itembox.h"

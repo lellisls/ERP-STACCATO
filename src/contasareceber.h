@@ -1,7 +1,6 @@
 #ifndef CONTASARECEBER_H
 #define CONTASARECEBER_H
 
-#include <QDataWidgetMapper>
 #include <QDialog>
 #include <QSqlTableModel>
 

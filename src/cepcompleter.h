@@ -1,9 +1,6 @@
 #ifndef CEPCOMPLETER_H
 #define CEPCOMPLETER_H
 
-#include <QSqlQuery>
-#include <QString>
-
 class CepCompleter {
 
   public:

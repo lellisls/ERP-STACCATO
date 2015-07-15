@@ -17,15 +17,9 @@ DEALINGS IN THE SOFTWARE.*/
 #ifndef SMTP_H
 #define SMTP_H
 
-#include <QByteArray>
-#include <QDebug>
-#include <QFile>
-#include <QFileInfo>
-#include <QString>
 #include <QTextStream>
 #include <QAbstractSocket>
 #include <QSslSocket>
-#include <QMessageBox>
 
 class Smtp : public QObject {
     Q_OBJECT

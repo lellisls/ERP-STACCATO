@@ -3,11 +3,10 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-#include "cadastrarnfe.h"
-#include "comboboxdelegate.h"
-#include "mainwindow.h"
 #include "pedidoscompra.h"
 #include "ui_pedidoscompra.h"
+#include "cadastrarnfe.h"
+#include "comboboxdelegate.h"
 
 PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::PedidosCompra) {
   ui->setupUi(this);

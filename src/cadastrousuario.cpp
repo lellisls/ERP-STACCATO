@@ -1,8 +1,10 @@
 #include <QCheckBox>
+#include <QMessageBox>
+#include <QSqlQuery>
 
-#include "usersession.h"
 #include "cadastrousuario.h"
 #include "ui_cadastrousuario.h"
+#include "usersession.h"
 #include "searchdialog.h"
 
 CadastroUsuario::CadastroUsuario(QWidget *parent)

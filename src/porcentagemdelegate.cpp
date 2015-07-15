@@ -6,6 +6,7 @@ PorcentagemDelegate::~PorcentagemDelegate() {}
 
 QString PorcentagemDelegate::displayText(const QVariant &value, const QLocale &locale) const {
   Q_UNUSED(locale);
+
   const QLocale local;
 
   if (value.userType() == QVariant::Double or value.userType() == QVariant::Int) {

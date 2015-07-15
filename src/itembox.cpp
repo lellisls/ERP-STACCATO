@@ -1,6 +1,6 @@
-#include "itembox.h"
 #include <QMouseEvent>
-#include <QDebug>
+
+#include "itembox.h"
 
 ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), m_searchDialog(nullptr), m_registerDialog(nullptr) {
   setReadOnly(true);

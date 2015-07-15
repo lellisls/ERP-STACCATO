@@ -1,10 +1,8 @@
 #include <QDebug>
-#include <QMessageBox>
-#include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlError>
 
 #include "entregascliente.h"
-#include "mainwindow.h"
 #include "ui_entregascliente.h"
 
 EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::EntregasCliente) {

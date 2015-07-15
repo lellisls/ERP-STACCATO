@@ -2,6 +2,10 @@
 #include <QShortcut>
 #include <QSqlDriver>
 #include <QSqlRecord>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QMessageBox>
+#include <QDebug>
 
 #include "registerdialog.h"
 
@@ -71,6 +75,65 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
   return true;
 }
 
+void RegisterDialog::setData(const QString &key, QVariant value) {
+  if (model.fieldIndex(key) == -1) {
+    qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
+  }
+  if (not model.setData(model.index(mapper.currentIndex(), model.fieldIndex(key)), value)) {
+    qDebug() << key << " error - row: " << mapper.currentIndex() << " - value: " << value;
+  }
+}
+
+bool RegisterDialog::setData(int row, const QString &key, QVariant value) {
+  if (row == -1) {
+    qDebug() << "Something wrong on the row!";
+    return false;
+  }
+
+  if (model.fieldIndex(key) == -1) {
+    qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
+    return false;
+  }
+
+  if (not value.isNull()) {
+    if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
+      qDebug() << key << " error - row: " << row << " - value: " << value;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+QVariant RegisterDialog::data(const QString &key) {
+  if (model.fieldIndex(key) == -1) {
+    qDebug() << objectName() << " : Key " << key << " not found on model!";
+  }
+
+  return (model.data(model.index(mapper.currentIndex(), model.fieldIndex(key))));
+}
+
+QVariant RegisterDialog::data(int row, const QString &key) {
+  if (model.fieldIndex(key) == -1) {
+    qDebug() << objectName() << " : Key " << key << " not found on model!";
+  }
+  return (model.data(model.index(row, model.fieldIndex(key))));
+}
+
+void RegisterDialog::addMapping(QWidget *widget, const QString &key) {
+  if (model.fieldIndex(key) == -1) {
+    qDebug() << objectName() << " : Key " << key << " not found on model!";
+  }
+  mapper.addMapping(widget, model.fieldIndex(key));
+}
+
+void RegisterDialog::addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName) {
+  if (model.fieldIndex(key) == -1) {
+    qDebug() << objectName() << " : Key " << key << " not found on model!";
+  }
+  mapper.addMapping(widget, model.fieldIndex(key), propertyName);
+}
+
 void RegisterDialog::sendUpdateMessage() {
   QString text;
 
@@ -90,6 +153,8 @@ void RegisterDialog::sendUpdateMessage() {
 
   emit registerUpdated(data(primaryKey), text);
 }
+
+QString RegisterDialog::requiredStyle() { return (QString("background-color: rgb(255, 255, 127);")); }
 
 void RegisterDialog::closeEvent(QCloseEvent *event) {
   if (confirmationMessage()) {

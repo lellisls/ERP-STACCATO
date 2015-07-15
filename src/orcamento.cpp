@@ -1,31 +1,16 @@
-#include <QDate>
-#include <QFile>
-#include <QLocale>
-#include <QMessageBox>
-#include <QPrintPreviewDialog>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QTableWidgetItem>
-#include <QTextCodec>
-#include <QTextDocument>
-#include <QTime>
-#include <QtMath>
-#include <QtWebKitWidgets/QWebFrame>
-#include <QtWebKitWidgets/QWebPage>
-#include <QDir>
 #include <QSqlDriver>
 #include <QSqlRecord>
-#include <qtrpt.h>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QMessageBox>
 
-#include "cadastrocliente.h"
-#include "mainwindow.h"
 #include "orcamento.h"
 #include "ui_orcamento.h"
+#include "qtrpt.h"
+#include "cadastrocliente.h"
 #include "usersession.h"
 #include "venda.h"
-#include "searchdialog.h"
 #include "apagaorcamento.h"
-#include "endereco.h"
 #include "doubledelegate.h"
 
 Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
@@ -751,8 +736,6 @@ bool Orcamento::verificaCampos() {
 
   return true;
 }
-
-void Orcamento::print(const QPrinter *printer) { Q_UNUSED(printer); }
 
 void Orcamento::adicionarItem(const bool isUpdate) {
   calcPrecoItemTotal();

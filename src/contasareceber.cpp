@@ -1,11 +1,9 @@
 #include <QDebug>
-#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
 #include "contasareceber.h"
 #include "ui_contasareceber.h"
-#include "mainwindow.h"
 
 ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::ContasAReceber) {
   ui->setupUi(this);

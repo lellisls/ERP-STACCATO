@@ -1,10 +1,10 @@
 #ifndef COMBOBOXDELEGATE_H
 #define COMBOBOXDELEGATE_H
 
-#include <QObject>
 #include <QStyledItemDelegate>
 
 class ComboBoxDelegate : public QStyledItemDelegate {
+
   public:
     explicit ComboBoxDelegate(QObject *parent = 0);
     ~ComboBoxDelegate();

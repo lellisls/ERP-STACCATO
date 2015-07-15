@@ -1,18 +1,14 @@
-#include <QDebug>
-#include <QDate>
-#include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QFileDialog>
-#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlRecord>
-#include <QSqlField>
 #include <QSqlDriver>
+#include <QDebug>
 
-#include "importaprodutosproxy.h"
 #include "importaprodutos.h"
 #include "ui_importaprodutos.h"
+#include "importaprodutosproxy.h"
 #include "dateformatdelegate.h"
 #include "validadedialog.h"
 #include "doubledelegate.h"

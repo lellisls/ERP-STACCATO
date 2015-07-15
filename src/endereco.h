@@ -1,8 +1,6 @@
 #ifndef ENDERECO_H
 #define ENDERECO_H
 
-#include <QString>
-
 class Endereco {
 
   public:

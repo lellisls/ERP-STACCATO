@@ -1,10 +1,9 @@
-#include <QSqlError>
 #include <QMessageBox>
-#include <QDateTime>
+#include <QDebug>
+#include <QSqlError>
 
 #include "apagaorcamento.h"
 #include "ui_apagaorcamento.h"
-#include "mainwindow.h"
 
 ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::ApagaOrcamento) {
   ui->setupUi(this);

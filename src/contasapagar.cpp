@@ -1,10 +1,8 @@
 #include <QDebug>
-#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
 #include "contasapagar.h"
-#include "mainwindow.h"
 #include "ui_contasapagar.h"
 
 ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::ContasAPagar) {

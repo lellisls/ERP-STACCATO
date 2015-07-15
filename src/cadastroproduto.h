@@ -1,10 +1,7 @@
 #ifndef CADASTROPRODUTO_H
 #define CADASTROPRODUTO_H
 
-#include <QDialog>
-
 #include "registerdialog.h"
-#include "searchdialog.h"
 
 namespace Ui {
   class CadastroProduto;

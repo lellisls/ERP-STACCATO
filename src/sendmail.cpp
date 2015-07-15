@@ -1,8 +1,8 @@
 #include <QFileDialog>
 
 #include "sendmail.h"
-#include "smtp.h"
 #include "ui_sendmail.h"
+#include "smtp.h"
 
 SendMail::SendMail(QWidget *parent) : QDialog(parent), ui(new Ui::SendMail) {
   ui->setupUi(this);

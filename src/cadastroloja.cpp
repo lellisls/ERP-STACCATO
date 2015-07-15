@@ -1,11 +1,7 @@
-#include <QDebug>
-#include <QDialog>
 #include <QFileDialog>
-#include <QMessageBox>
-#include <QSqlDriver>
 #include <QSqlError>
-#include <QSqlQuery>
-#include <QSqlRecord>
+#include <QMessageBox>
+#include <QDebug>
 
 #include "cadastroloja.h"
 #include "ui_cadastroloja.h"
@@ -43,7 +39,7 @@ void CadastroLoja::setupUi() {
 
 void CadastroLoja::setupTables() {
   modelAlcadas.setTable("Alcadas");
-  modelAlcadas.setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
+  modelAlcadas.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
 
   if (not modelAlcadas.select()) {

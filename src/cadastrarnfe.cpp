@@ -1,15 +1,16 @@
 #include <QFile>
 #include <QDate>
 #include <QFileInfo>
-#include <QInputDialog>
-#include <QSqlDriver>
 #include <QProgressDialog>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QMessageBox>
+#include <QDebug>
 
 #include "cadastrarnfe.h"
+#include "ui_cadastrarnfe.h"
 #include "cadastrocliente.h"
 #include "endereco.h"
-#include "mainwindow.h"
-#include "ui_cadastrarnfe.h"
 #include "usersession.h"
 
 CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)

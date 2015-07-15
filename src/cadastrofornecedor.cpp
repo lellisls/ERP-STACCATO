@@ -1,8 +1,6 @@
-#include <QDebug>
 #include <QMessageBox>
-#include <QSqlDriver>
 #include <QSqlError>
-#include <QSqlRecord>
+#include <QDebug>
 
 #include "cadastrofornecedor.h"
 #include "ui_cadastrofornecedor.h"

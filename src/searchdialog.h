@@ -2,7 +2,6 @@
 #define SEARCHDIALOG_H
 
 #include <QDialog>
-#include <QSqlQuery>
 #include <QSqlRelationalTableModel>
 #include <QDataWidgetMapper>
 

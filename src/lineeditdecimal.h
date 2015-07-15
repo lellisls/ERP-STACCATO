@@ -2,7 +2,6 @@
 #define LINEEDITDECIMAL_H
 
 #include <QLineEdit>
-#include <QObject>
 
 class LineEditDecimal : public QLineEdit {
     Q_OBJECT

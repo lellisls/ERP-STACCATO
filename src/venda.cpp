@@ -1,29 +1,13 @@
-#include <QDateTime>
-#include <QDebug>
-#include <QFile>
-#include <QMessageBox>
-#include <QSqlError>
-#include <QSqlQuery>
 #include <QSqlRecord>
-#include <QSqlRelationalDelegate>
-#include <QTime>
-#include <QXmlStreamWriter>
-#include <QPrintPreviewDialog>
-#include <QWebPage>
-#include <QDir>
-#include <QTextCodec>
-#include <QTextDocument>
-#include <QWebFrame>
-#include <QFileDialog>
+#include <QSqlError>
+#include <QMessageBox>
+#include <QSqlQuery>
 
-#include "mainwindow.h"
-#include "orcamento.h"
-#include "ui_venda.h"
 #include "venda.h"
+#include "ui_venda.h"
+#include "orcamento.h"
 #include "usersession.h"
-#include "cadastrocliente.h"
 #include "cadastrarnfe.h"
-#include "endereco.h"
 #include "doubledelegate.h"
 #include "checkboxdelegate.h"
 #include "qtrpt.h"
@@ -57,7 +41,6 @@ Venda::Venda(QWidget *parent) : RegisterDialog("Venda", "idVenda", parent), ui(n
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
-  //  showMaximized();
   show();
 }
 

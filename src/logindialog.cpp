@@ -1,11 +1,9 @@
-#include <QDebug>
 #include <QMessageBox>
-#include <QPushButton>
 #include <QSettings>
 
 #include "logindialog.h"
-#include "mainwindow.h"
 #include "ui_logindialog.h"
+#include "mainwindow.h"
 #include "usersession.h"
 #include "loginconfig.h"
 

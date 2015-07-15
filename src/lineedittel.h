@@ -2,14 +2,13 @@
 #define LINEEDITTEL_H
 
 #include <QLineEdit>
-#include <QString>
 
 class LineEditTel : public QLineEdit {
     Q_OBJECT
 
   public:
     explicit LineEditTel(QWidget *parent);
-    void processTel(const QString value);
+    void processTel(const QString &value);
     ~LineEditTel();
 };
 

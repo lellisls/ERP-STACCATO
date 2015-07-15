@@ -1,3 +1,5 @@
+#include <QSqlQuery>
+
 #include "testmainwindow.h"
 #include "src/mainwindow.h"
 

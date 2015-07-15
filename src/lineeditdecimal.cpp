@@ -1,4 +1,3 @@
-#include <QEvent>
 #include <QLocale>
 
 #include "lineeditdecimal.h"

@@ -2,11 +2,9 @@
 #define IMPORTAPRODUTOS_H
 
 #include <QDialog>
-#include <QFutureWatcher>
 #include <QProgressDialog>
 #include <QSqlRelationalTableModel>
 
-#include "importaprodutosproxy.h"
 #include "editablesqlmodel.h"
 
 namespace Ui {

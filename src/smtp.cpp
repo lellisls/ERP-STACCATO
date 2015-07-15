@@ -14,6 +14,10 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABI
 CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.*/
 
+#include <QFile>
+#include <QFileInfo>
+#include <QMessageBox>
+
 #include "smtp.h"
 
 Smtp::Smtp(const QString &user, const QString &pass, const QString &host, int port, int timeout) {

@@ -1,15 +1,7 @@
 #ifndef ORCAMENTO_H
 #define ORCAMENTO_H
 
-#include <QDataWidgetMapper>
-#include <QDialog>
-#include <QPrinter>
-#include <QSqlRelationalTableModel>
-#include <QStandardItemModel>
-#include <QTableWidgetItem>
-
 #include "registerdialog.h"
-#include "searchdialog.h"
 
 namespace Ui {
   class Orcamento;
@@ -48,7 +40,6 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonLimparSelecao_clicked();
     void on_pushButtonRemoverItem_clicked();
     void on_tableProdutos_clicked(const QModelIndex &index);
-    void print(const QPrinter *printer);
     void on_pushButtonReplicar_clicked();
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
 
@@ -103,7 +94,7 @@ class Orcamento : public RegisterDialog {
   private:
     // attributes
     Ui::Orcamento *ui;
-    QSqlRelationalTableModel modelItem;
+    QSqlTableModel modelItem;
     QDataWidgetMapper mapperItem;
     double subTotal, subTotalItens;
     // methods

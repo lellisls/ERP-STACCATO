@@ -66,7 +66,7 @@ class CadastroLoja : public RegisterAddressDialog {
   private:
     // attributes
     Ui::CadastroLoja *ui;
-    QSqlRelationalTableModel modelAlcadas;
+    QSqlTableModel modelAlcadas;
     // methods
     void novoEndereco();
     bool cadastrarEndereco(const bool isUpdate);

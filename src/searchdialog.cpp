@@ -1,10 +1,9 @@
-#include <QMessageBox>
 #include <QSqlError>
 #include <QDebug>
+#include <QSqlQuery>
 
 #include "searchdialog.h"
 #include "ui_searchdialog.h"
-#include "registerdialog.h"
 #include "doubledelegate.h"
 
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)

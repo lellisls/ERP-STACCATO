@@ -2,7 +2,6 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-#include "mainwindow.h"
 #include "recebimentosfornecedor.h"
 #include "ui_recebimentosfornecedor.h"
 

@@ -2,7 +2,6 @@
 #define APAGAORCAMENTO_H
 
 #include <QDialog>
-#include <QDebug>
 #include <QSqlRelationalTableModel>
 #include <QDataWidgetMapper>
 

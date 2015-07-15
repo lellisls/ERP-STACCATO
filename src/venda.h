@@ -1,14 +1,7 @@
 #ifndef VENDA_H
 #define VENDA_H
 
-#include <QDialog>
-#include <QLineEdit>
-#include <QSqlRelationalTableModel>
-#include <QSqlTableModel>
-#include <QPrinter>
-
 #include "registerdialog.h"
-#include "searchdialog.h"
 
 namespace Ui {
   class Venda;
@@ -61,7 +54,7 @@ class Venda : public RegisterDialog {
   private:
     // attributes
     Ui::Venda *ui;
-    QSqlRelationalTableModel modelItem, modelFluxoCaixa;
+    QSqlTableModel modelItem, modelFluxoCaixa;
     QString idVenda;
     // methods
     bool verifyFields(const int row);

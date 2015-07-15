@@ -1,9 +1,7 @@
 #ifndef USERSESSION_H
 #define USERSESSION_H
 
-#include <QPointer>
 #include <QSqlQuery>
-#include <QString>
 
 class UserSession {
   public:

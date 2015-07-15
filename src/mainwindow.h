@@ -1,14 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QDebug>
 #include <QMainWindow>
-#include <QPointer>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QSqlTableModel>
 #include <QSqlRelationalTableModel>
-#include <QTableWidgetItem>
 
 namespace Ui {
   class MainWindow;

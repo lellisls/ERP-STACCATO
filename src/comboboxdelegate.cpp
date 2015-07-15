@@ -1,6 +1,4 @@
 #include <QComboBox>
-#include <QDebug>
-#include <QTableView>
 
 #include "comboboxdelegate.h"
 

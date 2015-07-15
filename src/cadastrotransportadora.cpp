@@ -1,10 +1,6 @@
-#include <QDebug>
-#include <QDialog>
 #include <QMessageBox>
-#include <QSqlDriver>
 #include <QSqlError>
-#include <QSqlQuery>
-#include <QSqlRecord>
+#include <QDebug>
 
 #include "cadastrotransportadora.h"
 #include "ui_cadastrotransportadora.h"

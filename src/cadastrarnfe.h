@@ -1,11 +1,11 @@
 #ifndef CADASTRARNFE_H
 #define CADASTRARNFE_H
 
-#include "editablesqlmodel.h"
-
 #include <QDialog>
 #include <QDataWidgetMapper>
 #include <QTextStream>
+
+#include "editablesqlmodel.h"
 
 namespace Ui {
   class CadastrarNFe;

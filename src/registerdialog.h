@@ -1,17 +1,10 @@
 #ifndef REGISTERDIALOG_H
 #define REGISTERDIALOG_H
 
-#include <QSqlRelationalTableModel>
 #include <QDataWidgetMapper>
 #include <QSqlTableModel>
-#include <QTableView>
-#include <QMessageBox>
 #include <QLineEdit>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QString>
 #include <QDialog>
-#include <QDebug>
 
 /*!
   \brief A Classe RegisterDialog é base para todas as janelas de cadastro.
@@ -129,14 +122,7 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \param value Valor a ser atualizado.
 */
-    inline void setData(const QString &key, QVariant value) {
-      if (model.fieldIndex(key) == -1) {
-        qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
-      }
-      if (not model.setData(model.index(mapper.currentIndex(), model.fieldIndex(key)), value)) {
-        qDebug() << key << " error - row: " << mapper.currentIndex() << " - value: " << value;
-      }
-    }
+    void setData(const QString &key, QVariant value);
 
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
@@ -145,39 +131,14 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \param value Valor a ser atualizado.
 */
-    inline bool setData(int row, const QString &key, QVariant value) {
-      if (row == -1) {
-        qDebug() << "Something wrong on the row!";
-        return false;
-      }
-
-      if (model.fieldIndex(key) == -1) {
-        qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
-        return false;
-      }
-
-      if (not value.isNull()) {
-        if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
-          qDebug() << key << " error - row: " << row << " - value: " << value;
-          return false;
-        }
-      }
-
-      return true;
-    }
+    bool setData(int row, const QString &key, QVariant value);
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
 *        Equivale à função 'data' do model, e usa o currentIndex do mapper.
 * \param key Chave da coluna.
 * \return
 */
-    inline QVariant data(const QString &key) {
-      if (model.fieldIndex(key) == -1) {
-        qDebug() << objectName() << " : Key " << key << " not found on model!";
-      }
-
-      return (model.data(model.index(mapper.currentIndex(), model.fieldIndex(key))));
-    }
+    QVariant data(const QString &key);
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
 *        Equivale à função 'data' do model.
@@ -185,24 +146,14 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \return
 */
-    inline QVariant data(int row, const QString &key) {
-      if (model.fieldIndex(key) == -1) {
-        qDebug() << objectName() << " : Key " << key << " not found on model!";
-      }
-      return (model.data(model.index(row, model.fieldIndex(key))));
-    }
+    QVariant data(int row, const QString &key);
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
 *        Equivale à função addMapping do mapper;
 * \param widget Widget relacionado.
 * \param key Nome da coluna mapeada.
 */
-    inline void addMapping(QWidget *widget, const QString &key) {
-      if (model.fieldIndex(key) == -1) {
-        qDebug() << objectName() << " : Key " << key << " not found on model!";
-      }
-      mapper.addMapping(widget, model.fieldIndex(key));
-    }
+    void addMapping(QWidget *widget, const QString &key);
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
 *        Equivale à função addMapping do mapper;
@@ -210,12 +161,7 @@ class RegisterDialog : public QDialog {
 * \param key Nome da coluna mapeada.
 * \param propertyName Nome da propriedade mapeada.
 */
-    inline void addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName) {
-      if (model.fieldIndex(key) == -1) {
-        qDebug() << objectName() << " : Key " << key << " not found on model!";
-      }
-      mapper.addMapping(widget, model.fieldIndex(key), propertyName);
-    }
+    void addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName);
     /*!
 * \brief Gera o output correto e envia o signal 'registerUpdated';
 
@@ -226,7 +172,7 @@ class RegisterDialog : public QDialog {
 * \brief É um style padrão a ser aplicado nos campos obrigatórios.
 * \return
 */
-    inline QString requiredStyle() { return (QString("background-color: rgb(255, 255, 127);")); }
+    QString requiredStyle();
 
     /*!
 * \brief QDataWidgetMapper que mapeia os itens da tabela com as views, como um QLineEdit, entre outros.

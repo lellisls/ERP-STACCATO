@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "lineeditcep.h"
 
 LineEditCEP::LineEditCEP(QWidget *parent) : QLineEdit(parent) { setProperty("value", ""); }

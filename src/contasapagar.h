@@ -1,7 +1,6 @@
 #ifndef CONTASAPAGAR_H
 #define CONTASAPAGAR_H
 
-#include <QDataWidgetMapper>
 #include <QDialog>
 #include <QSqlRelationalTableModel>
 

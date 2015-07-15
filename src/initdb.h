@@ -3,7 +3,8 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QtSql>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QMessageBox>
 
 bool loadScript(const QString &filename) {
@@ -29,9 +30,9 @@ bool loadScript(const QString &filename) {
   }
 
   QSqlQuery query;
-  QStringList queryes = script.split(QChar(';'));
+  QStringList queries = script.split(QChar(';'));
 
-  foreach (QString queryString, queryes) {
+  foreach (QString queryString, queries) {
     if (queryString.size() > 5) {
       queryString += ";";
 

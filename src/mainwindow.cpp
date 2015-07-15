@@ -1,36 +1,29 @@
-#include <QCheckBox>
-#include <QDataWidgetMapper>
-#include <QDialogButtonBox>
-#include <QFileDialog>
-#include <QMessageBox>
 #include <QShortcut>
-#include <QSqlTableModel>
-#include <QtSql>
+#include <QSettings>
 
-#include "porcentagemdelegate.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include "backgroundproxymodel.h"
 #include "cadastrocliente.h"
+#include "cadastrofornecedor.h"
 #include "cadastroloja.h"
 #include "cadastroproduto.h"
 #include "cadastroprofissional.h"
 #include "cadastrotransportadora.h"
-#include "cadastrofornecedor.h"
 #include "cadastrousuario.h"
 #include "contasapagar.h"
 #include "contasareceber.h"
+#include "doubledelegate.h"
 #include "entregascliente.h"
+#include "importaprodutos.h"
 #include "initdb.h"
 #include "logindialog.h"
-#include "mainwindow.h"
 #include "orcamento.h"
 #include "pedidoscompra.h"
+#include "porcentagemdelegate.h"
 #include "recebimentosfornecedor.h"
-#include "sendmail.h"
-#include "ui_mainwindow.h"
 #include "usersession.h"
 #include "venda.h"
-#include "importaprodutos.h"
-#include "doubledelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);

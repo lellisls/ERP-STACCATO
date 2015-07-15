@@ -1,11 +1,8 @@
-#include <QDebug>
 #include <QMessageBox>
-#include <QSqlError>
-#include <QSqlQuery>
 
-#include "cadastrofornecedor.h"
 #include "cadastroproduto.h"
 #include "ui_cadastroproduto.h"
+#include "cadastrofornecedor.h"
 #include "usersession.h"
 
 CadastroProduto::CadastroProduto(QWidget *parent)

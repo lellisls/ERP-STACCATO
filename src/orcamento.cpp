@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QSqlDriver>
 #include <QSqlRecord>
+#include <qtrpt.h>
 
 #include "cadastrocliente.h"
 #include "mainwindow.h"
@@ -450,19 +451,229 @@ void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
 }
 
 void Orcamento::on_pushButtonImprimir_clicked() {
-  QMessageBox::warning(this, "Aviso!", "Ainda não implementado");
-  //  QPrinter printer;
-  //  //  printer.setFullPage(true);
-  //  //  printer.setResolution(300);
-  //  printer.setPageMargins(QMargins(300, 600, 300, 200), QPageLayout::Millimeter);
-  //  printer.setOrientation(QPrinter::Portrait);
-  //  printer.setPaperSize(QPrinter::A4);
-  //  QPrintPreviewDialog preview(&printer, this, Qt::Window);
-  //  preview.setModal(true);
-  //  preview.setWindowTitle("Impressão de Orçamento");
-  //  connect(&preview, &QPrintPreviewDialog::paintRequested, this, &Orcamento::print);
-  //  preview.showMaximized();
-  //  preview.exec();
+  QtRPT *report = new QtRPT(this);
+  QFile file(qApp->applicationDirPath() + "/orcamento.xml");
+
+  if (not file.exists()) {
+    QMessageBox::warning(this, "Aviso!", "XML da impressão não encontrado!");
+    return;
+  }
+
+  report->loadReport(file.fileName());
+  report->recordCount << ui->tableProdutos->model()->rowCount();
+  connect(report, &QtRPT::setValue, this, &Orcamento::setValue);
+  report->printExec();
+}
+
+void Orcamento::setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage) {
+  Q_UNUSED(reportPage);
+
+  QLocale locale;
+
+  QSqlQuery queryCliente;
+  queryCliente.prepare("SELECT * FROM Cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", model.data(model.index(0, model.fieldIndex("idCliente"))));
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    qDebug() << "Erro buscando cliente: " << model.fieldIndex("idCliente") << " - " << queryCliente.lastError();
+  }
+
+  QSqlQuery queryProfissional;
+  queryProfissional.prepare("SELECT * FROM Profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.bindValue(":idProfissional", model.data(model.index(0, model.fieldIndex("idProfissional"))));
+
+  if (not queryProfissional.exec() or not queryProfissional.first()) {
+    qDebug() << "Erro buscando profissional: " << model.fieldIndex("idProfissional") << " - "
+             << queryProfissional.lastError();
+  }
+
+  QSqlQuery queryVendedor;
+  queryVendedor.prepare("SELECT * FROM Usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.bindValue(":idUsuario", model.data(model.index(0, model.fieldIndex("idUsuario"))));
+
+  if (not queryVendedor.exec() or not queryVendedor.first()) {
+    qDebug() << "Erro buscando vendedor: " << model.fieldIndex("idUsuario") << " - " << queryVendedor.lastError();
+  }
+
+  QSqlQuery queryProduto;
+  queryProduto.prepare("SELECT * FROM Produto WHERE idProduto = :idProduto");
+  queryProduto.bindValue(":idProduto", modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))));
+
+  if (not queryProduto.exec() or not queryProduto.first()) {
+    qDebug() << "Erro buscando produto: " << modelItem.fieldIndex("idProduto") << " - " << queryProduto.lastError();
+  }
+
+  QSqlQuery queryLoja;
+  queryLoja.prepare("SELECT * FROM Loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", UserSession::getLoja());
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    qDebug() << "Erro buscando loja: " << modelItem.fieldIndex("idLoja") << " - " << queryLoja.lastError();
+  }
+
+  QSqlQuery queryLojaEnd;
+  queryLojaEnd.prepare("SELECT * FROM Loja_has_Endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.bindValue(":idLoja", UserSession::getLoja());
+
+  if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
+    qDebug() << "Erro buscando loja end.: " << modelItem.fieldIndex("idLoja") << " - " << queryLojaEnd.lastError();
+  }
+
+  // REPORT TITLE
+  if (paramName == "Unidade") {
+    paramValue = "Unidade " + queryLoja.value("descricao").toString();
+  }
+
+  if (paramName == "Endereco") {
+    paramValue = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() + " - " +
+                 queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() + " - " +
+                 queryLojaEnd.value("uf").toString() + " - CEP: " + queryLojaEnd.value("cep").toString() + "\n" +
+                 queryLoja.value("tel").toString() + " - " + queryLoja.value("tel2").toString();
+  }
+
+  if (paramName == "orcamento") {
+    paramValue = ui->lineEditOrcamento->text();
+  }
+
+  if (paramName == "data") {
+    paramValue = ui->dateTimeEdit->dateTime().toString("hh:mm dd-MM-yyyy");
+  }
+
+  if (paramName == "validade") {
+    paramValue = QString::number(ui->spinBoxValidade->value()) + " dias";
+  }
+
+  if (paramName == "cliente") {
+    paramValue = ui->itemBoxCliente->text();
+  }
+
+  if (paramName == "cpfcnpj") {
+    if (queryCliente.value("pfpj").toString() == "PF") {
+      paramValue = queryCliente.value("cpf").toString();
+    } else if (queryCliente.value("pfpj").toString() == "PJ") {
+      paramValue = queryCliente.value("cnpj").toString();
+    }
+  }
+
+  if (paramName == "email") {
+    paramValue = queryCliente.value("email").toString();
+  }
+
+  if (paramName == "tel1") {
+    paramValue = queryCliente.value("tel").toString();
+  }
+
+  if (paramName == "tel2") {
+    paramValue = queryCliente.value("telCel").toString();
+  }
+
+  if (paramName == "profissional") {
+    if (ui->itemBoxProfissional->text().isEmpty()) {
+      paramValue = "Não há";
+    } else {
+      paramValue = ui->itemBoxProfissional->text();
+    }
+  }
+
+  if (paramName == "telprofissional") {
+    paramValue = queryProfissional.value("tel").toString();
+  }
+
+  if (paramName == "emailprofissional") {
+    paramValue = queryProfissional.value("email").toString();
+  }
+
+  if (paramName == "vendedor") {
+    paramValue = ui->itemBoxVendedor->text();
+  }
+
+  if (paramName == "emailvendedor") {
+  }
+
+  if (paramName == "estoque") {
+  }
+
+  if (paramName == "dataestoque") {
+  }
+
+  // MASTER BAND
+  if (paramName == "Marca") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("fornecedor"))).toString();
+  }
+
+  if (paramName == "Código") {
+    paramValue = queryProduto.value("codComercial").toString();
+  }
+
+  if (paramName == "Nome do produto") {
+    if (modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("formComercial"))).toString().isEmpty()) {
+      paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("produto"))).toString();
+    } else {
+      paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("produto"))).toString() + " (" +
+                   modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("formComercial"))).toString() + ")";
+    }
+  }
+
+  if (paramName == "Ambiente") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("obs"))).toString();
+  }
+
+  if (paramName == "Preço-R$") {
+    double desconto = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("desconto"))).toDouble();
+    if (desconto == 0) {
+      double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toDouble();
+      paramValue = "R$ " + locale.toString(value, 'f', 2);
+    } else {
+      double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toDouble();
+      paramValue = "R$ " + locale.toString(value, 'f', 2) + " (-" + QString::number(desconto) + "%)\n" + "R$ " +
+                   locale.toString(value * (1 - (desconto / 100)), 'f', 2);
+    }
+  }
+
+  if (paramName == "Quant.") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("qte"))).toString();
+  }
+
+  if (paramName == "Unid.") {
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("un"))).toString();
+  }
+
+  if (paramName == "TotalProd") {
+    double parcial = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("parcialDesc"))).toDouble();
+    paramValue = "R$ " + locale.toString(parcial, 'f', 2);
+  }
+
+  // REPORT SUMMARY
+  if (paramName == "Soma") {
+    double value = ui->doubleSpinBoxTotal->value();
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "Desconto") {
+    double value = ui->doubleSpinBoxDescontoGlobal->value();
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "Total") {
+    double value = ui->doubleSpinBoxTotal->value() -
+                   (ui->doubleSpinBoxTotal->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100);
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "Frete") {
+    double value = ui->doubleSpinBoxFrete->value();
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "TotalFinal") {
+    double value = ui->doubleSpinBoxFinal->value();
+    paramValue = locale.toString(value, 'f', 2);
+  }
+
+  if (paramName == "Observacao") {
+    paramValue = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc placerat diam et imperdiet posuere. "
+                 "Donec placerat sapien vel velit bibendum, vel porttitor justo ultrices. Morbi lobortis metus vitae ";
+  }
 }
 
 QString Orcamento::itemData(const int row, const QString key) {

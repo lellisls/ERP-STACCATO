@@ -51,6 +51,7 @@ class Orcamento : public RegisterDialog {
     void on_tableProdutos_clicked(const QModelIndex &index);
     void print(const QPrinter *printer);
     void on_pushButtonReplicar_clicked();
+    void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
 
   signals:
     void finished();

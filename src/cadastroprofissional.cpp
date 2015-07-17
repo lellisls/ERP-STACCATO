@@ -294,9 +294,11 @@ bool CadastroProfissional::savingProcedures(const int row) {
     return false;
   }
 
-  if (not setData(row, "agencia", ui->lineEditAgencia->text())) {
-    qDebug() << "Erro setando agencia";
-    return false;
+  if (not ui->lineEditAgencia->text().remove("-").isEmpty()) {
+    if (not setData(row, "agencia", ui->lineEditAgencia->text())) {
+      qDebug() << "Erro setando agencia";
+      return false;
+    }
   }
 
   if (not setData(row, "cc", ui->lineEditCC->text())) {
@@ -309,9 +311,11 @@ bool CadastroProfissional::savingProcedures(const int row) {
     return false;
   }
 
-  if (not setData(row, "cpfBanco", ui->lineEditCPFBancario->text())) {
-    qDebug() << "Erro setando cpfBanco";
-    return false;
+  if (not ui->lineEditCPFBancario->text().remove(".").remove("-").isEmpty()) {
+    if (not setData(row, "cpfBanco", ui->lineEditCPFBancario->text())) {
+      qDebug() << "Erro setando cpfBanco";
+      return false;
+    }
   }
 
   return true;

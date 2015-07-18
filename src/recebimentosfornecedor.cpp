@@ -8,7 +8,7 @@
 RecebimentosFornecedor::RecebimentosFornecedor(QWidget *parent) : QDialog(parent), ui(new Ui::RecebimentosFornecedor) {
   ui->setupUi(this);
 
-  modelRecebimentos.setTable("pedidotransportadora");
+  modelRecebimentos.setTable("pedido_transportadora");
   modelRecebimentos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelRecebimentos.select()) {
@@ -34,7 +34,7 @@ void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
 
   if (ui->checkBoxEntregue->isChecked()) {
     query.prepare(
-          "UPDATE PedidoTransportadora SET status = 'RECEBIDO' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
+          "UPDATE pedido_transportadora SET status = 'RECEBIDO' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
     query.bindValue("idPedido", idPedido);
 
     if (not query.exec()) {
@@ -42,7 +42,7 @@ void RecebimentosFornecedor::on_pushButtonSalvar_clicked() {
     }
   } else {
     query.prepare(
-          "UPDATE PedidoTransportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
+          "UPDATE pedido_transportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'fornecedor'");
     query.bindValue("idPedido", idPedido);
 
     if (not query.exec()) {

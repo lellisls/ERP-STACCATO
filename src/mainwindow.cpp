@@ -27,8 +27,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
-  setWindowTitle("ERP Staccato");
 
+  setWindowTitle("ERP Staccato");
   readSettings();
 
 #ifdef QT_DEBUG
@@ -123,7 +123,7 @@ bool MainWindow::dbConnect() {
     if (db.open()) {
       QSqlQuery queryProcedure;
 
-      if (not queryProcedure.exec("CALL InvalidateExpired()")) {
+      if (not queryProcedure.exec("CALL invalidate_expired()")) {
         qDebug() << "Erro executando procedure InvalidateExpired: " << queryProcedure.lastError();
       }
 
@@ -135,25 +135,25 @@ bool MainWindow::dbConnect() {
 
   } else {
     switch (db.lastError().number()) {
-    case 1045:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o usuário e senha do banco de dados estão corretos.");
-      break;
-    case 2002:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o servidor está ligado, e acessível pela rede.");
-      break;
-    case 2003:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o servidor está ligado, e acessível pela rede.");
-      break;
-    case 2005:
-      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                            "Verifique se o IP do servidor foi escrito corretamente.");
-      break;
-    default:
-      showError(db.lastError());
-      break;
+      case 1045:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o usuário e senha do banco de dados estão corretos.");
+        break;
+      case 2002:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o servidor está ligado, e acessível pela rede.");
+        break;
+      case 2003:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o servidor está ligado, e acessível pela rede.");
+        break;
+      case 2005:
+        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                              "Verifique se o IP do servidor foi escrito corretamente.");
+        break;
+      default:
+        showError(db.lastError());
+        break;
     }
 
     return false;
@@ -173,7 +173,7 @@ void MainWindow::showError(const QSqlError &err) {
 
 void MainWindow::on_actionCriarOrcamento_triggered() {
   Orcamento *orcamento = new Orcamento(this);
-  orcamento->show();
+  orcamento->showMaximized();
 }
 
 QString MainWindow::getPort() const { return port; }
@@ -208,7 +208,7 @@ void MainWindow::initializeTables() {
   // Orçamento -------------------------------------
   modelOrcamento = new QSqlTableModel(this);
   modelOrcamento->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelOrcamento->setTable("ViewOrcamento");
+  modelOrcamento->setTable("view_orcamento");
   modelOrcamento->setSort(modelOrcamento->fieldIndex("Dias Restantes"), Qt::DescendingOrder);
 
   if (not modelOrcamento->select()) {
@@ -228,14 +228,14 @@ void MainWindow::initializeTables() {
   // Vendas -------------------------------------
   modelVendas = new QSqlRelationalTableModel(this);
   modelVendas->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelVendas->setTable("Venda");
-  modelVendas->setRelation(modelVendas->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
-  modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"), QSqlRelation("Usuario", "idUsuario", "nome"));
-  modelVendas->setRelation(modelVendas->fieldIndex("idCliente"), QSqlRelation("Cliente", "idCliente", "nome_razao"));
+  modelVendas->setTable("venda");
+  modelVendas->setRelation(modelVendas->fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
+  modelVendas->setRelation(modelVendas->fieldIndex("idUsuario"), QSqlRelation("usuario", "idUsuario", "nome"));
+  modelVendas->setRelation(modelVendas->fieldIndex("idCliente"), QSqlRelation("cliente", "idCliente", "nome_razao"));
   modelVendas->setRelation(modelVendas->fieldIndex("idEnderecoEntrega"),
-                           QSqlRelation("Cliente_has_Endereco", "idEndereco", "logradouro"));
+                           QSqlRelation("cliente_has_endereco", "idEndereco", "logradouro"));
   modelVendas->setRelation(modelVendas->fieldIndex("idProfissional"),
-                           QSqlRelation("Profissional", "idProfissional", "nome_razao"));
+                           QSqlRelation("profissional", "idProfissional", "nome_razao"));
   modelVendas->setHeaderData(modelVendas->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelVendas->setHeaderData(modelVendas->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
@@ -247,11 +247,12 @@ void MainWindow::initializeTables() {
   modelVendas->setHeaderData(modelVendas->fieldIndex("frete"), Qt::Horizontal, "Frete");
   modelVendas->setHeaderData(modelVendas->fieldIndex("validade"), Qt::Horizontal, "Validade");
   modelVendas->setHeaderData(modelVendas->fieldIndex("status"), Qt::Horizontal, "Status");
-
   modelVendas->setHeaderData(modelVendas->fieldIndex("subTotalBru"), Qt::Horizontal, "Bruto");
   modelVendas->setHeaderData(modelVendas->fieldIndex("subTotalLiq"), Qt::Horizontal, "Líquido");
   modelVendas->setHeaderData(modelVendas->fieldIndex("descontoPorc"), Qt::Horizontal, "Desc.");
   modelVendas->setHeaderData(modelVendas->fieldIndex("descontoReais"), Qt::Horizontal, "Desc.");
+  modelVendas->setHeaderData(modelVendas->fieldIndex("observacao"), Qt::Horizontal, "Obs.");
+  modelVendas->setHeaderData(modelVendas->fieldIndex("prazoEntrega"), Qt::Horizontal, "Prazo Entrega");
 
   if (not modelVendas->select()) {
     qDebug() << "Failed to populate TableVendas: " << modelVendas->lastError();
@@ -273,7 +274,7 @@ void MainWindow::initializeTables() {
   // Contas a pagar -------------------------------------
   modelCAPagar = new QSqlTableModel(this);
   modelCAPagar->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelCAPagar->setTable("ContaAPagar");
+  modelCAPagar->setTable("conta_a_pagar");
 
   if (not modelCAPagar->select()) {
     qDebug() << "Failed to populate TableContasPagar: " << modelCAPagar->lastError();
@@ -289,7 +290,7 @@ void MainWindow::initializeTables() {
   // Contas a receber -------------------------------------
   modelCAReceber = new QSqlTableModel(this);
   modelCAReceber->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelCAReceber->setTable("ContaAReceber");
+  modelCAReceber->setTable("conta_a_receber");
 
   if (not modelCAReceber->select()) {
     qDebug() << "Failed to populate TableContasReceber: " << modelCAReceber->lastError();
@@ -305,7 +306,7 @@ void MainWindow::initializeTables() {
   // Entregas cliente
   modelEntregasCliente = new QSqlTableModel(this);
   modelEntregasCliente->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEntregasCliente->setTable("PedidoTransportadora");
+  modelEntregasCliente->setTable("pedido_transportadora");
 
   if (not modelEntregasCliente->select()) {
     qDebug() << "Failed to populate TableEntregasCliente: " << modelEntregasCliente->lastError();
@@ -322,7 +323,7 @@ void MainWindow::initializeTables() {
 
   // Recebimentos fornecedor
   modelRecebimentosForn = new QSqlTableModel(this);
-  modelRecebimentosForn->setTable("PedidoTransportadora");
+  modelRecebimentosForn->setTable("pedido_transportadora");
 
   if (not modelRecebimentosForn->select()) {
     qDebug() << "Failed to populate TableRecebimentosFornecedor: " << modelRecebimentosForn->lastError();
@@ -340,15 +341,15 @@ void MainWindow::initializeTables() {
   // Pedidos de compra
   modelPedCompra = new QSqlRelationalTableModel(this);
   modelPedCompra->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelPedCompra->setTable("PedidoFornecedor");
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"), QSqlRelation("Usuario", "idUsuario", "nome"));
+  modelPedCompra->setTable("pedido_fornecedor");
+  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
+  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"), QSqlRelation("usuario", "idUsuario", "nome"));
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCliente"),
-                              QSqlRelation("Cliente", "idCliente", "nome_razao"));
+                              QSqlRelation("cliente", "idCliente", "nome_razao"));
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
-                              QSqlRelation("Cliente_has_Endereco", "idEndereco", "logradouro"));
+                              QSqlRelation("cliente_has_endereco", "idEndereco", "logradouro"));
   modelPedCompra->setRelation(modelPedCompra->fieldIndex("idProfissional"),
-                              QSqlRelation("Profissional", "idProfissional", "nome_razao"));
+                              QSqlRelation("profissional", "idProfissional", "nome_razao"));
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
   modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
@@ -369,7 +370,7 @@ void MainWindow::initializeTables() {
   // NFe
   modelNFe = new QSqlTableModel(this);
   modelNFe->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelNFe->setTable("NFe");
+  modelNFe->setTable("nfe");
 
   if (not modelNFe->select()) {
     qDebug() << "Failed to populate TableNFe: " << modelNFe->lastError();
@@ -594,7 +595,7 @@ void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
   if (text.isEmpty()) {
     modelVendas->setFilter("");
   } else {
-    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%')");
+    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (cliente LIKE '%" + text + "%')");
   }
 }
 
@@ -626,7 +627,7 @@ void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) {
   if (text.isEmpty()) {
     modelPedCompra->setFilter("");
   } else {
-    modelPedCompra->setFilter("(Cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+    modelPedCompra->setFilter("(cliente LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
   }
 }
 
@@ -727,15 +728,15 @@ void MainWindow::on_tableNFE_activated(const QModelIndex &index) {
 bool MainWindow::event(QEvent *e) {
   switch (e->type()) {
 
-  case QEvent::WindowActivate:
-    updateTables();
-    break;
+    case QEvent::WindowActivate:
+      updateTables();
+      break;
 
-  case QEvent::WindowDeactivate:
-    break;
+    case QEvent::WindowDeactivate:
+      break;
 
-  default:
-    break;
+    default:
+      break;
   };
 
   return QMainWindow::event(e);

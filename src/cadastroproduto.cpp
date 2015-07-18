@@ -6,7 +6,7 @@
 #include "usersession.h"
 
 CadastroProduto::CadastroProduto(QWidget *parent)
-  : RegisterDialog("Produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
+  : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
   ui->lineEditCodBarras->setInputMask("9999999999999;_");

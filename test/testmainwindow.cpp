@@ -23,7 +23,7 @@ void TestMainWindow::testCadastroClienteCompleto() {
 void TestMainWindow::testImportacao(){
   window->TestImportacao();
 
-  QSqlQuery *query = new QSqlQuery("SELECT COUNT(*) FROM Produto");
+  QSqlQuery *query = new QSqlQuery("SELECT COUNT(*) FROM produto");
   query->first();
 
   // Testa a tabela da Bellinzoni

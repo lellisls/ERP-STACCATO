@@ -15,7 +15,7 @@ QString UserSession::getNome() { return (query->value("nome").toString()); }
 bool UserSession::login(const QString user, const QString password) {
   initialize();
 
-  query->prepare("SELECT * FROM Usuario WHERE user = :user AND passwd = PASSWORD(:password) AND desativado = FALSE");
+  query->prepare("SELECT * FROM usuario WHERE user = :user AND passwd = PASSWORD(:password) AND desativado = FALSE");
   query->bindValue(":user", user);
   query->bindValue(":password", password);
 
@@ -42,7 +42,7 @@ QString UserSession::getSigla() { return (query->value("sigla").toString()); }
 
 QString UserSession::getSiglaLoja() {
   QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT sigla FROM Loja WHERE idLoja = :idLoja");
+  queryLoja.prepare("SELECT sigla FROM loja WHERE idLoja = :idLoja");
   queryLoja.bindValue(":idLoja", getLoja());
 
   if (not queryLoja.exec() or not queryLoja.first()) {

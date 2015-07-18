@@ -9,7 +9,7 @@
 #include "usersession.h"
 
 CadastroFornecedor::CadastroFornecedor(QWidget *parent)
-  : RegisterAddressDialog("Fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
+  : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
   setupTables();

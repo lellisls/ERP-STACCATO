@@ -10,7 +10,7 @@
 #include "usersession.h"
 
 CadastroCliente::CadastroCliente(QWidget *parent)
-  : RegisterAddressDialog("Cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
+  : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
   SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
@@ -316,7 +316,7 @@ bool CadastroCliente::viewRegister(const QModelIndex index) {
   ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data(primaryKey).toString() + ")");
 
   QSqlQuery query;
-  query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM Cliente WHERE idCadastroRel = :primaryKey");
+  query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM cliente WHERE idCadastroRel = :primaryKey");
   query.bindValue(":primaryKey", data(primaryKey));
 
   if (not query.exec()) {

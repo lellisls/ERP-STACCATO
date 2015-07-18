@@ -28,7 +28,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   RegisterDialog *cadCliente = new CadastroCliente(this);
   ui->itemBoxCliente->setRegisterDialog(cadCliente);
 
-  modelNFe.setTable("NFe");
+  modelNFe.setTable("nfe");
   modelNFe.setEditStrategy(EditableSqlModel::OnManualSubmit);
 
   if (not modelNFe.select()) {
@@ -36,7 +36,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
     return;
   }
 
-  modelNFeItem.setTable("NFe_has_Itens");
+  modelNFeItem.setTable("nfe_has_itens");
   modelNFeItem.setEditStrategy(EditableSqlModel::OnManualSubmit);
   modelNFeItem.setFilter("idNFe = 0");
 
@@ -57,7 +57,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
 
   connect(ui->tableItens->model(), &QAbstractItemModel::dataChanged, this, &CadastrarNFe::onDataChanged);
 
-  modelLoja.setTable("Loja");
+  modelLoja.setTable("loja");
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelLoja.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
 
@@ -66,7 +66,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
     return;
   }
 
-  modelVenda.setTable("Venda");
+  modelVenda.setTable("venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVenda.setFilter("idVenda = '" + idVenda + "'");
 
@@ -75,7 +75,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
     return;
   }
 
-  modelProd.setTable("Venda_has_Produto");
+  modelProd.setTable("venda_has_produto");
   modelProd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelProd.setFilter("idVenda = '" + idVenda + "'");
 
@@ -144,7 +144,7 @@ void CadastrarNFe::guardarNotaBD() {
   QSqlQuery queryNota;
 
   if (file.exists()) {
-    queryNota.prepare("INSERT INTO NFe (idVenda, idLoja, idCliente, idEnderecoFaturamento, NFe, chaveAcesso, frete, "
+    queryNota.prepare("INSERT INTO nfe (idVenda, idLoja, idCliente, idEnderecoFaturamento, NFe, chaveAcesso, frete, "
                       "total) VALUES (:idVenda, :idLoja, :idCliente, :idEnderecoFaturamento, load_file('" +
                       arquivo + "'), :chaveAcesso, :frete, :total)");
     queryNota.bindValue(":idVenda", idVenda);
@@ -205,7 +205,7 @@ void CadastrarNFe::updateImpostos() {
 
   ui->doubleSpinBoxVlICMS->setValue(icms);
   const double imposto = 0.3 * ui->doubleSpinBoxFinal->value() + icms;
-  Endereco end(ui->itemBoxEndereco->value().toInt(), "Cliente_has_Endereco");
+  Endereco end(ui->itemBoxEndereco->value().toInt(), "cliente_has_endereco");
   // TODO: fix this
   QString texto = "Venda de código " +
                   modelNFe.data(modelNFe.index(mapperNFe.currentIndex(), modelNFe.fieldIndex("idVenda"))).toString() +
@@ -235,7 +235,7 @@ QVariant CadastrarNFe::getItemData(const int row, const QString &key) const {
 
 void CadastrarNFe::prepararNFe(const QList<int> items) {
   QSqlQuery queryVenda;
-  queryVenda.prepare("SELECT * FROM Venda WHERE idVenda = :idVenda");
+  queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
   queryVenda.bindValue(":idVenda", idVenda);
 
   if (not queryVenda.exec() or not queryVenda.first()) {
@@ -274,8 +274,8 @@ void CadastrarNFe::prepararNFe(const QList<int> items) {
 
   foreach (const int item, items) {
     QSqlQuery queryItens;
-    queryItens.prepare("SELECT * FROM Venda_has_Produto NATURAL LEFT JOIN "
-                       "Produto WHERE idVenda = :idVenda AND item = :item");
+    queryItens.prepare("SELECT * FROM venda_has_produto NATURAL LEFT JOIN "
+                       "produto WHERE idVenda = :idVenda AND item = :item");
     queryItens.bindValue(":idVenda", idVenda);
     queryItens.bindValue(":item", item);
 
@@ -341,7 +341,7 @@ void CadastrarNFe::on_tableItens_pressed(const QModelIndex &index) {
 QString CadastrarNFe::criarChaveAcesso() {
   QSqlQuery query;
 
-  if (not query.exec("SELECT idNFe FROM NFe ORDER BY idNFe DESC LIMIT 1")) {
+  if (not query.exec("SELECT idNFe FROM nfe ORDER BY idNFe DESC LIMIT 1")) {
     qDebug() << "Erro buscando idNFe: " << query.lastError();
   }
 
@@ -356,7 +356,7 @@ QString CadastrarNFe::criarChaveAcesso() {
   }
 
   QSqlQuery queryLojaEnd;
-  queryLojaEnd.prepare("SELECT * FROM Loja_has_Endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", UserSession::getLoja());
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
@@ -537,7 +537,7 @@ bool CadastrarNFe::writeEmitente(QTextStream &stream) {
   stream << "Fone = " + getFromLoja("tel").toString() << endl;
 
   QSqlQuery queryLojaEnd;
-  queryLojaEnd.prepare("SELECT * FROM Loja_has_Endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", UserSession::getLoja());
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
@@ -603,10 +603,10 @@ bool CadastrarNFe::writeDestinatario(QTextStream &stream) {
   }
 
   QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT * FROM Cliente LEFT JOIN Cliente_has_Endereco "
-                       "ON Cliente.idCliente = "
-                       "Cliente_has_Endereco.idCliente WHERE "
-                       "Cliente_has_Endereco.idCliente = :idCliente");
+  queryCliente.prepare("SELECT * FROM cliente LEFT JOIN cliente_has_endereco "
+                       "ON cliente.idCliente = "
+                       "cliente_has_endereco.idCliente WHERE "
+                       "cliente_has_endereco.idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", idCliente);
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -703,7 +703,7 @@ bool CadastrarNFe::writeDestinatario(QTextStream &stream) {
 bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icmsTotal) {
   for (int row = 0, rowCount = modelNFeItem.rowCount(); row < rowCount; ++row) {
     QSqlQuery queryProd;
-    queryProd.prepare("SELECT * FROM Produto WHERE idProduto = :idProduto");
+    queryProd.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
     queryProd.bindValue(
           ":idProduto",
           getFromProdModel(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("item"))).toInt() - 1,
@@ -832,8 +832,8 @@ bool CadastrarNFe::writeTXT() {
     return false;
   }
 
-  double total = 0.0;
-  double icmsTotal = 0.0;
+  double total = 0.;
+  double icmsTotal = 0.;
   double frete = ui->doubleSpinBoxFrete->value();
 
   if (not writeProduto(stream, total, icmsTotal)) {

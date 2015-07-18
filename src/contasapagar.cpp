@@ -8,7 +8,7 @@
 ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::ContasAPagar) {
   ui->setupUi(this);
 
-  modelItensContas.setTable("contaapagar_has_produto");
+  modelItensContas.setTable("conta_a_pagar_has_produto");
   modelItensContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelItensContas.select()) {
@@ -16,11 +16,11 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
     return;
   }
 
-  modelContas.setTable("contaapagar");
+  modelContas.setTable("conta_a_pagar");
   modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelContas.select()) {
-    qDebug() << "Erro carregando tabela contaapagar: " << modelContas.lastError();
+    qDebug() << "Erro carregando tabela conta_a_pagar: " << modelContas.lastError();
     return;
   }
 
@@ -39,7 +39,7 @@ void ContasAPagar::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
 
   if (ui->checkBoxPago->isChecked()) {
-    query.prepare("UPDATE ContaAPagar SET pago = 'SIM' WHERE idVenda = :idVenda");
+    query.prepare("UPDATE conta_a_pagar SET pago = 'SIM' WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {
@@ -47,7 +47,7 @@ void ContasAPagar::on_pushButtonSalvar_clicked() {
     }
 
   } else {
-    query.prepare("UPDATE ContaAPagar SET pago = 'NÃO' WHERE idVenda = :idVenda");
+    query.prepare("UPDATE conta_a_pagar SET pago = 'NÃO' WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {

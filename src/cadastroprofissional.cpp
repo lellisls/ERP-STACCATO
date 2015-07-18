@@ -9,7 +9,7 @@
 #include "itembox.h"
 
 CadastroProfissional::CadastroProfissional(QWidget *parent)
-  : RegisterAddressDialog("Profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
+  : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
   setWindowModality(Qt::NonModal);

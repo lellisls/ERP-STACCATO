@@ -130,7 +130,7 @@
                   </size>
                  </property>
                  <property name="text">
-                  <string>Un</string>
+                  <string>Un.</string>
                  </property>
                 </widget>
                </item>
@@ -696,7 +696,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Qte. pallet</string>
+                    <string>Quant. pallet</string>
                    </property>
                   </widget>
                  </item>
@@ -1060,7 +1060,7 @@
                   </size>
                  </property>
                  <property name="text">
-                  <string>Qte.</string>
+                  <string>Quant.</string>
                  </property>
                 </widget>
                </item>

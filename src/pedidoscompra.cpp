@@ -40,7 +40,7 @@ void PedidosCompra::viewPedido(const QString idPedido) {
 
 void PedidosCompra::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
-  query.prepare("INSERT INTO ContaAPagar(idVenda, dataEmissao) VALUES (:idVenda, :dataEmissao)");
+  query.prepare("INSERT INTO conta_a_pagar(idVenda, dataEmissao) VALUES (:idVenda, :dataEmissao)");
   query.bindValue(":idVenda", idPedido);
   query.bindValue(":dataEmissao", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
@@ -48,7 +48,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
     qDebug() << "Erro inserindo conta a pagar: " << query.lastError();
   }
 
-  query.prepare("SELECT * FROM PedidoFornecedor_has_Produto WHERE idPedido = :idPedido");
+  query.prepare("SELECT * FROM pedido_fornecedor_has_produto WHERE idPedido = :idPedido");
   query.bindValue(":idPedido", idPedido);
 
   if (not query.exec()) {
@@ -67,7 +67,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
       if (combobox == "Comprar") {
         qDebug() << "Comprar";
         QSqlQuery queryProduto;
-        queryProduto.prepare("INSERT INTO ContaAPagar_has_Produto VALUES (:idVenda, :idProduto, :produto, "
+        queryProduto.prepare("INSERT INTO conta_a_pagar_has_produto VALUES (:idVenda, :idProduto, :produto, "
                              ":prcUnitario, :qte, :un, :total)");
         queryProduto.bindValue(":idVenda", query.value("idPedido"));
         queryProduto.bindValue(":idProduto", query.value("idProduto"));
@@ -82,7 +82,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         }
 
         QSqlQuery queryEntrega;
-        queryEntrega.prepare("INSERT INTO PedidoTransportadora (idTransportadora, idPedido, dataEmissao, "
+        queryEntrega.prepare("INSERT INTO pedido_transportadora (idTransportadora, idPedido, dataEmissao, "
                              "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
                              ":tipo)");
         queryEntrega.bindValue(":idTransportadora", 1);
@@ -95,7 +95,7 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
           qDebug() << "Erro inserindo recebimento fornecedor: " << queryEntrega.lastError();
         }
 
-        queryEntrega.prepare("INSERT INTO PedidoTransportadora (idTransportadora, idPedido, dataEmissao, "
+        queryEntrega.prepare("INSERT INTO pedido_transportadora (idTransportadora, idPedido, dataEmissao, "
                              "status, tipo) VALUES (:idTransportadora, :idPedido, :dataEmissao, :status, "
                              ":tipo)");
         queryEntrega.bindValue(":idTransportadora", 1);
@@ -147,7 +147,7 @@ void PedidosCompra::setupTables() {
     return;
   }
 
-  modelItemPedidos.setTable("pedidofornecedor_has_produto");
+  modelItemPedidos.setTable("pedido_fornecedor_has_produto");
   modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("idPedido"), Qt::Horizontal, "Pedido");
@@ -155,14 +155,14 @@ void PedidosCompra::setupTables() {
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("produto"), Qt::Horizontal, "Produto");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("obs"), Qt::Horizontal, "Obs.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("caixas"), Qt::Horizontal, "Cx.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("qte"), Qt::Horizontal, "Qte.");
+  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("qte"), Qt::Horizontal, "Quant.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("un"), Qt::Horizontal, "Un.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Cx.");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("total"), Qt::Horizontal, "Total");
   modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("status"), Qt::Horizontal, "Status");
 
   if (not modelItemPedidos.select()) {
-    qDebug() << "Failed to populate pedidofornecedor_has_produto: " << modelItemPedidos.lastError();
+    qDebug() << "Failed to populate pedido_fornecedor_has_produto: " << modelItemPedidos.lastError();
     return;
   }
 

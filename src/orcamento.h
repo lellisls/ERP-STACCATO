@@ -21,10 +21,10 @@ class Orcamento : public RegisterDialog {
     void on_spinBoxCaixas_valueChanged(const int caixas);
     void on_doubleSpinBoxDesconto_valueChanged(const double);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
-    void on_doubleSpinBoxFinal_editingFinished();
+    void on_doubleSpinBoxTotal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxQte_valueChanged(const double);
-    void on_doubleSpinBoxTotal_valueChanged(const double);
+    void on_doubleSpinBoxSubTotalLiq_valueChanged(const double);
     void on_doubleSpinBoxPrecoTotal_editingFinished();
     void on_itemBoxCliente_textChanged(const QString &text);
     void on_itemBoxProduto_textChanged(const QString &text);
@@ -96,7 +96,6 @@ class Orcamento : public RegisterDialog {
     Ui::Orcamento *ui;
     QSqlTableModel modelItem;
     QDataWidgetMapper mapperItem;
-    double subTotal, subTotalItens;
     // methods
     void removeItem();
     void adicionarItem(const bool isUpdate = false);

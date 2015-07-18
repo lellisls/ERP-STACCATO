@@ -8,7 +8,7 @@
 ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::ApagaOrcamento) {
   ui->setupUi(this);
 
-  modelOrc.setTable("Orcamento");
+  modelOrc.setTable("orcamento");
   modelOrc.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelOrc.select()) {

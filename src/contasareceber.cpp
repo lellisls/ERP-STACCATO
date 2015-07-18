@@ -10,7 +10,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
-  modelItensConta.setTable("contaareceber_has_produto");
+  modelItensConta.setTable("conta_a_receber_has_produto");
   modelItensConta.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelItensConta.select()) {
@@ -18,7 +18,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
     return;
   }
 
-  modelContas.setTable("contaareceber");
+  modelContas.setTable("conta_a_receber");
   modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelContas.select()) {
@@ -39,7 +39,7 @@ void ContasAReceber::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
 
   if (ui->checkBox->isChecked()) {
-    query.prepare("UPDATE ContaAReceber SET pago = 'SIM' WHERE idVenda = :idVenda");
+    query.prepare("UPDATE conta_a_receber SET pago = 'SIM' WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {
@@ -47,7 +47,7 @@ void ContasAReceber::on_pushButtonSalvar_clicked() {
     }
 
   } else {
-    query.prepare("UPDATE ContaAReceber SET pago = 'NÃO' WHERE idVenda = :idVenda");
+    query.prepare("UPDATE conta_a_receber SET pago = 'NÃO' WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {

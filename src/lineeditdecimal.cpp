@@ -5,7 +5,7 @@
 LineEditDecimal::LineEditDecimal(QWidget *parent) : QLineEdit(parent), bottom(0), top(99999999) {
   connect(this, &QLineEdit::textEdited, this, &LineEditDecimal::processDecimal);
   setAlignment(Qt::AlignRight);
-  setProperty("value", 0.0);
+  setProperty("value", 0.);
 }
 
 double LineEditDecimal::getValue() const { return QLocale(QLocale::Portuguese).toDouble(text()); }

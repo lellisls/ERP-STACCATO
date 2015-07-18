@@ -45,6 +45,7 @@ class ImportaProdutos : public QDialog {
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
     void on_checkBoxRepresentacao_clicked(const bool checked);
+    void on_tableProdutos_entered(const QModelIndex &index);
 
   private:
     // attributes

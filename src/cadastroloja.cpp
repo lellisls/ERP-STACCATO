@@ -10,7 +10,7 @@
 #include "cepcompleter.h"
 
 CadastroLoja::CadastroLoja(QWidget *parent)
-  : RegisterAddressDialog("Loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
+  : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
   ui->setupUi(this);
 
   setupUi();
@@ -38,7 +38,7 @@ void CadastroLoja::setupUi() {
 }
 
 void CadastroLoja::setupTables() {
-  modelAlcadas.setTable("Alcadas");
+  modelAlcadas.setTable("alcadas");
   modelAlcadas.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
 

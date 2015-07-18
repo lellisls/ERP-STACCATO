@@ -13,28 +13,17 @@
 #include "apagaorcamento.h"
 #include "doubledelegate.h"
 
-Orcamento::Orcamento(QWidget *parent) : RegisterDialog("Orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
+Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
   ui->setupUi(this);
 
   setupTables();
 
-  SearchDialog *sdCliente = SearchDialog::cliente(this);
-  ui->itemBoxCliente->setSearchDialog(sdCliente);
-
-  SearchDialog *sdProd = SearchDialog::produto(this);
-  ui->itemBoxProduto->setSearchDialog(sdProd);
-
-  RegisterDialog *cadCliente = new CadastroCliente(this);
-  ui->itemBoxCliente->setRegisterDialog(cadCliente);
-
-  SearchDialog *sdVendedor = SearchDialog::vendedor(this);
-  ui->itemBoxVendedor->setSearchDialog(sdVendedor);
-
-  SearchDialog *sdProfissional = SearchDialog::profissional(this);
-  ui->itemBoxProfissional->setSearchDialog(sdProfissional);
-
-  SearchDialog *sdEndereco = SearchDialog::enderecoCliente(this);
-  ui->itemBoxEndereco->setSearchDialog(sdEndereco);
+  ui->itemBoxCliente->setSearchDialog(SearchDialog::cliente(this));
+  ui->itemBoxCliente->setRegisterDialog(new CadastroCliente(this));
+  ui->itemBoxProduto->setSearchDialog(SearchDialog::produto(this));
+  ui->itemBoxVendedor->setSearchDialog(SearchDialog::vendedor(this));
+  ui->itemBoxProfissional->setSearchDialog(SearchDialog::profissional(this));
+  ui->itemBoxEndereco->setSearchDialog(SearchDialog::enderecoCliente(this));
 
   setupMapper();
   newRegister();
@@ -119,7 +108,7 @@ void Orcamento::setupMapper() {
   addMapping(ui->spinBoxValidade, "validade");
   addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
   addMapping(ui->doubleSpinBoxFrete, "frete");
-  addMapping(ui->doubleSpinBoxFinal, "total");
+  addMapping(ui->doubleSpinBoxTotal, "total");
   addMapping(ui->dateTimeEdit, "data");
 
   mapperItem.setModel(&modelItem);
@@ -179,7 +168,7 @@ void Orcamento::removeItem() {
 
 void Orcamento::updateId() {
   QSqlQuery query;
-  query.prepare("SELECT * FROM Orcamento WHERE idOrcamento = :idOrcamento");
+  query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
   query.bindValue(":idOrcamento", ui->lineEditOrcamento->text());
 
   if (not query.exec()) {
@@ -192,8 +181,8 @@ void Orcamento::updateId() {
 
   QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
 
-  query.prepare("SELECT idOrcamento FROM Orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
-                "Venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
+  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
+                "venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {
@@ -280,7 +269,7 @@ bool Orcamento::savingProcedures(const int row) {
     return false;
   }
 
-  if (not setData(row, "subTotalLiq", ui->doubleSpinBoxTotal->value())) {
+  if (not setData(row, "subTotalLiq", ui->doubleSpinBoxSubTotalLiq->value())) {
     qDebug() << "erro setando subTotalLiq";
     return false;
   }
@@ -295,12 +284,18 @@ bool Orcamento::savingProcedures(const int row) {
     return false;
   }
 
-  if (not setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value())) {
+  //  if (not setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value())) {
+  //    qDebug() << "erro setando descontoReais";
+  //    return false;
+  //  }
+
+  if (not setData(row, "descontoReais",
+                  ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100)) {
     qDebug() << "erro setando descontoReais";
     return false;
   }
 
-  if (not setData(row, "total", ui->doubleSpinBoxFinal->value())) {
+  if (not setData(row, "total", ui->doubleSpinBoxTotal->value())) {
     qDebug() << "erro setando total";
     return false;
   }
@@ -347,13 +342,13 @@ void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
 void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
 
 void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
-  subTotal = 0.0;
-  subTotalItens = 0.0;
-  double subTotalBruto = 0.0;
-  double minimoFrete = 0, porcFrete = 0;
+  double subTotal = 0.;
+  double subTotalItens = 0.;
+  double subTotalBruto = 0.;
+  double minimoFrete = 0., porcFrete = 0.;
 
   QSqlQuery queryFrete;
-  queryFrete.prepare("SELECT * FROM Loja WHERE idLoja = :idLoja");
+  queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::getLoja());
 
   if (not queryFrete.exec() or not queryFrete.next()) {
@@ -385,10 +380,10 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
   subTotal = subTotalItens * (1.0 - descGlobal);
 
   if (ajusteTotal) {
-    const double final = ui->doubleSpinBoxFinal->value();
+    const double final = ui->doubleSpinBoxTotal->value();
     subTotal = final - frete;
 
-    if (subTotalItens == 0.0) {
+    if (subTotalItens == 0.) {
       descGlobal = 0;
     } else {
       descGlobal = 1 - (subTotal / subTotalItens);
@@ -404,11 +399,11 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
   }
 
   ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
+  ui->doubleSpinBoxSubTotalLiq->setValue(subTotalItens);
   ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
-  ui->doubleSpinBoxDescontoRS->setValue(subTotalItens - subTotal);
+  ui->doubleSpinBoxDescontoGlobal->setPrefix("- R$ " + QString::number(subTotalItens - subTotal, 'f', 2) + " - ");
   ui->doubleSpinBoxFrete->setValue(frete);
-  ui->doubleSpinBoxTotal->setValue(subTotalItens);
-  ui->doubleSpinBoxFinal->setValue(subTotal + frete);
+  ui->doubleSpinBoxTotal->setValue(subTotal + frete);
 }
 
 void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) {
@@ -416,18 +411,18 @@ void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) {
   calcPrecoGlobalTotal();
 }
 
-void Orcamento::on_doubleSpinBoxFinal_editingFinished() {
-  if (modelItem.rowCount() == 0 or subTotalItens == 0) {
+void Orcamento::on_doubleSpinBoxTotal_editingFinished() {
+  if (modelItem.rowCount() == 0 or ui->doubleSpinBoxSubTotalLiq->value() == 0.) {
     calcPrecoGlobalTotal();
     return;
   }
 
-  const double new_total = ui->doubleSpinBoxFinal->value();
+  const double new_total = ui->doubleSpinBoxTotal->value();
   const double frete = ui->doubleSpinBoxFrete->value();
   const double new_subtotal = new_total - frete;
 
-  if (new_subtotal >= subTotalItens) {
-    ui->doubleSpinBoxDescontoGlobal->setValue(0.0);
+  if (new_subtotal >= ui->doubleSpinBoxSubTotalLiq->value()) {
+    ui->doubleSpinBoxDescontoGlobal->setValue(0.);
     calcPrecoGlobalTotal();
   } else {
     calcPrecoGlobalTotal(true);
@@ -455,7 +450,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   QLocale locale;
 
   QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT * FROM Cliente WHERE idCliente = :idCliente");
+  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", model.data(model.index(0, model.fieldIndex("idCliente"))));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -463,7 +458,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   QSqlQuery queryProfissional;
-  queryProfissional.prepare("SELECT * FROM Profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
   queryProfissional.bindValue(":idProfissional", model.data(model.index(0, model.fieldIndex("idProfissional"))));
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
@@ -472,7 +467,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   QSqlQuery queryVendedor;
-  queryVendedor.prepare("SELECT * FROM Usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
   queryVendedor.bindValue(":idUsuario", model.data(model.index(0, model.fieldIndex("idUsuario"))));
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
@@ -480,7 +475,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   QSqlQuery queryProduto;
-  queryProduto.prepare("SELECT * FROM Produto WHERE idProduto = :idProduto");
+  queryProduto.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
   queryProduto.bindValue(":idProduto", modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))));
 
   if (not queryProduto.exec() or not queryProduto.first()) {
@@ -488,7 +483,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT * FROM Loja WHERE idLoja = :idLoja");
+  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
   queryLoja.bindValue(":idLoja", UserSession::getLoja());
 
   if (not queryLoja.exec() or not queryLoja.first()) {
@@ -496,7 +491,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   QSqlQuery queryLojaEnd;
-  queryLojaEnd.prepare("SELECT * FROM Loja_has_Endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", UserSession::getLoja());
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
@@ -609,7 +604,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
       paramValue = "R$ " + locale.toString(value, 'f', 2);
     } else {
       double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toDouble();
-      paramValue = "R$ " + locale.toString(value, 'f', 2) + " (-" + QString::number(desconto) + "%)\n" + "R$ " +
+      paramValue = "(R$ " + locale.toString(value, 'f', 2) + " -" + locale.toString(desconto, 'f', 1) + "%)\n" + "R$ " +
                    locale.toString(value * (1 - (desconto / 100)), 'f', 2);
     }
   }
@@ -629,7 +624,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
 
   // REPORT SUMMARY
   if (paramName == "Soma") {
-    double value = ui->doubleSpinBoxTotal->value();
+    double value = ui->doubleSpinBoxSubTotalLiq->value();
     paramValue = locale.toString(value, 'f', 2);
   }
 
@@ -639,8 +634,8 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   if (paramName == "Total") {
-    double value = ui->doubleSpinBoxTotal->value() -
-                   (ui->doubleSpinBoxTotal->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100);
+    double value = ui->doubleSpinBoxSubTotalLiq->value() -
+                   (ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100);
     paramValue = locale.toString(value, 'f', 2);
   }
 
@@ -650,7 +645,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   if (paramName == "TotalFinal") {
-    double value = ui->doubleSpinBoxFinal->value();
+    double value = ui->doubleSpinBoxTotal->value();
     paramValue = locale.toString(value, 'f', 2);
   }
 
@@ -665,13 +660,13 @@ QString Orcamento::itemData(const int row, const QString key) {
 }
 
 void Orcamento::setupTables() {
-  modelItem.setTable("Orcamento_has_Produto");
+  modelItem.setTable("orcamento_has_produto");
   modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
   modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
   modelItem.setHeaderData(modelItem.fieldIndex("prcUnitario"), Qt::Horizontal, "Preço/Un.");
   modelItem.setHeaderData(modelItem.fieldIndex("caixas"), Qt::Horizontal, "Caixas");
-  modelItem.setHeaderData(modelItem.fieldIndex("qte"), Qt::Horizontal, "Qte.");
+  modelItem.setHeaderData(modelItem.fieldIndex("qte"), Qt::Horizontal, "Quant.");
   modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
   modelItem.setHeaderData(modelItem.fieldIndex("codComercial"), Qt::Horizontal, "Código");
   modelItem.setHeaderData(modelItem.fieldIndex("formComercial"), Qt::Horizontal, "Formato");
@@ -825,8 +820,8 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
   const int idCliente = ui->itemBoxCliente->value().toInt();
 
   QSqlQuery queryCadastro;
-  queryCadastro.prepare("SELECT incompleto FROM Orcamento LEFT JOIN Cliente ON Orcamento.idCliente = Cliente.idCliente "
-                        "WHERE Cliente.idCliente = :idCliente AND incompleto = TRUE");
+  queryCadastro.prepare("SELECT incompleto FROM orcamento LEFT JOIN cliente ON orcamento.idCliente = cliente.idCliente "
+                        "WHERE cliente.idCliente = :idCliente AND incompleto = TRUE");
   queryCadastro.bindValue(":idCliente", idCliente);
 
   if (not queryCadastro.exec()) {
@@ -858,7 +853,7 @@ void Orcamento::on_pushButtonCancelar_clicked() { close(); }
 
 void Orcamento::on_pushButtonCancelarItem_clicked() { novoItem(); }
 
-void Orcamento::on_doubleSpinBoxTotal_valueChanged(const double) { calcPrecoGlobalTotal(); }
+void Orcamento::on_doubleSpinBoxSubTotalLiq_valueChanged(const double) { calcPrecoGlobalTotal(); }
 
 void Orcamento::on_spinBoxCaixas_valueChanged(const int caixas) {
   const double qte = caixas * ui->doubleSpinBoxQte->singleStep();
@@ -878,9 +873,9 @@ void Orcamento::on_pushButtonApagarOrc_clicked() {
 void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   Q_UNUSED(text);
 
-  ui->doubleSpinBoxQte->setValue(0.0);
-  ui->spinBoxCaixas->setValue(0.0);
-  ui->doubleSpinBoxDesconto->setValue(0.0);
+  ui->doubleSpinBoxQte->setValue(0.);
+  ui->spinBoxCaixas->setValue(0.);
+  ui->doubleSpinBoxDesconto->setValue(0.);
 
   if (ui->itemBoxProduto->text().isEmpty()) {
     ui->spinBoxCaixas->setDisabled(true);
@@ -901,7 +896,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT * FROM Produto WHERE idProduto = :index");
+  query.prepare("SELECT * FROM produto WHERE idProduto = :index");
   query.bindValue(":index", ui->itemBoxProduto->value().toInt());
 
   if (not query.exec() or not query.first()) {
@@ -941,7 +936,7 @@ void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
                                                  " AND desativado = FALSE OR idEndereco = 1");
 
   QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT idProfissionalRel FROM Cliente WHERE idCliente = :idCliente");
+  queryCliente.prepare("SELECT idProfissionalRel FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -993,7 +988,7 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   orcamento->ui->doubleSpinBoxDescontoGlobal->setValue(
         model.data(model.index(row, model.fieldIndex("descontoPorc"))).toDouble());
   orcamento->ui->doubleSpinBoxFrete->setValue(model.data(model.index(row, model.fieldIndex("frete"))).toDouble());
-  orcamento->ui->doubleSpinBoxFinal->setValue(model.data(model.index(row, model.fieldIndex("total"))).toDouble());
+  orcamento->ui->doubleSpinBoxTotal->setValue(model.data(model.index(row, model.fieldIndex("total"))).toDouble());
   orcamento->ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
   // MODELITEM

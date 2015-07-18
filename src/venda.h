@@ -29,7 +29,7 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
-    void on_doubleSpinBoxFinal_editingFinished();
+    void on_doubleSpinBoxTotal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxPgt1_editingFinished();
     void on_doubleSpinBoxPgt2_editingFinished();
@@ -55,7 +55,7 @@ class Venda : public RegisterDialog {
     // attributes
     Ui::Venda *ui;
     QSqlTableModel modelItem, modelFluxoCaixa;
-    QString idVenda;
+    QString idVenda; // TODO: remover isso e usar lineEdit
     // methods
     bool verifyFields(const int row);
     bool verifyRequiredField(QLineEdit *line);

@@ -9,7 +9,7 @@
 #include "usersession.h"
 
 CadastroTransportadora::CadastroTransportadora(QWidget *parent)
-  : RegisterAddressDialog("Transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
+  : RegisterAddressDialog("transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
   setupTables();

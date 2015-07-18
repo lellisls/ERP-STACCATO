@@ -8,7 +8,7 @@
 EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::EntregasCliente) {
   ui->setupUi(this);
 
-  modelEntregas.setTable("pedidotransportadora");
+  modelEntregas.setTable("pedido_transportadora");
   modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelEntregas.select()) {
@@ -30,14 +30,14 @@ void EntregasCliente::on_pushButtonSalvar_clicked() {
 
   if (ui->checkBoxEntregue->isChecked()) {
     query.prepare(
-          "UPDATE PedidoTransportadora SET status = 'ENTREGUE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
+          "UPDATE pedido_transportadora SET status = 'ENTREGUE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
     query.bindValue(":idPedido", idPedido);
 
     if (not query.exec()) {
       qDebug() << "Erro ao marcar como entregue: " << query.lastError();
     }
 
-    query.prepare("UPDATE Venda SET status = 'FECHADO' WHERE idVenda = :idPedido");
+    query.prepare("UPDATE venda SET status = 'FECHADO' WHERE idVenda = :idPedido");
     query.bindValue(":idPedido", idPedido);
 
     if (not query.exec()) {
@@ -46,14 +46,14 @@ void EntregasCliente::on_pushButtonSalvar_clicked() {
 
   } else {
     query.prepare(
-          "UPDATE PedidoTransportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
+          "UPDATE pedido_transportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
     query.bindValue(":idPedido", idPedido);
 
     if (not query.exec()) {
       qDebug() << "Erro ao marcar como não entregue: " << query.lastError();
     }
 
-    query.prepare("UPDATE Venda SET status = 'ABERTO' WHERE idVenda = :idVenda");
+    query.prepare("UPDATE venda SET status = 'ABERTO' WHERE idVenda = :idVenda");
     query.bindValue("idVenda", idPedido);
 
     if (not query.exec()) {

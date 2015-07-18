@@ -12,7 +12,7 @@ RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, 
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
-  modelEnd.setTable(table + "_has_Endereco");
+  modelEnd.setTable(table + "_has_endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
   modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
@@ -25,7 +25,7 @@ RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, 
   modelEnd.setFilter("idEndereco = 0");
 
   if (not modelEnd.select()) {
-    qDebug() << objectName() << "Failed to populate " + table + "_has_Endereco: " << modelEnd.lastError();
+    qDebug() << objectName() << "Failed to populate " + table + "_has_endereco: " << modelEnd.lastError();
     QMessageBox::critical(this, "Erro!", "Algum erro ocorreu ao acessar a tabela de endereço.", QMessageBox::Ok,
                           QMessageBox::NoButton);
     return;

@@ -8,7 +8,7 @@
 #include "searchdialog.h"
 
 CadastroUsuario::CadastroUsuario(QWidget *parent)
-  : RegisterDialog("Usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
+  : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
   setupTablePermissoes();
@@ -119,7 +119,7 @@ bool CadastroUsuario::viewRegister(const QModelIndex index) {
 }
 
 void CadastroUsuario::fillCombobox() {
-  QSqlQuery query("SELECT * FROM Loja");
+  QSqlQuery query("SELECT * FROM loja");
 
   while (query.next()) {
     ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));

@@ -232,7 +232,7 @@ void SearchDialog::setHeaderData(const QVector<QPair<QString, QString>> headerDa
 }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
-  SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "Cliente", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
+  SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "cliente", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
                                              "desativado = FALSE", parent);
 
   sdCliente->setPrimaryKey("idCliente");
@@ -265,7 +265,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
 
 SearchDialog *SearchDialog::loja(QWidget *parent) {
   SearchDialog *sdLoja =
-      new SearchDialog("Buscar Loja", "Loja", {"descricao, nomeFantasia, razaoSocial"}, "desativado = FALSE", parent);
+      new SearchDialog("Buscar Loja", "loja", {"descricao, nomeFantasia, razaoSocial"}, "desativado = FALSE", parent);
 
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
@@ -289,14 +289,14 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
 
 SearchDialog *SearchDialog::produto(QWidget *parent) {
   SearchDialog *sdProd =
-      new SearchDialog("Buscar Produto", "Produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
+      new SearchDialog("Buscar Produto", "produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
 
   sdProd->setPrimaryKey("idProduto");
   sdProd->setTextKeys({"descricao"});
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "cst", "icms", "custo", "ipi", "markup", "comissao", "origem",
                        "descontinuado", "temLote", "observacoes", "codBarras", "qtdPallet", "st", "desativado", "cfop",
-                       "ncm", "ncmEx", "atualizarTabelaPreco"});
+                       "ncm", "ncmEx", "atualizarTabelaPreco", "representacao"});
 
   for (int i = 1, fieldIndex = sdProd->model.fieldIndex("descontinuadoUpd"); i <= fieldIndex; i += 2) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
@@ -327,7 +327,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor = new SearchDialog(
-                                 "Buscar Fornecedor", "Fornecedor", {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "desativado = FALSE", parent);
+                                 "Buscar Fornecedor", "fornecedor", {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "desativado = FALSE", parent);
 
   sdFornecedor->setPrimaryKey("idFornecedor");
   sdFornecedor->setTextKeys({"nomeFantasia", "razaoSocial"});
@@ -350,7 +350,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
-  SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "Transportadora",
+  SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "transportadora",
   {"razaoSocial", "nomeFantasia"}, "desativado = FALSE", parent);
 
   sdTransportadora->setPrimaryKey("idTransportadora");
@@ -373,7 +373,7 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
 
 SearchDialog *SearchDialog::usuario(QWidget *parent) {
   SearchDialog *sdUsuario =
-      new SearchDialog("Buscar Usuário", "Usuario", {"nome, tipo"}, "Usuario.desativado = FALSE", parent);
+      new SearchDialog("Buscar Usuário", "usuario", {"nome, tipo"}, "usuario.desativado = FALSE", parent);
 
   sdUsuario->setPrimaryKey("idUsuario");
   sdUsuario->setTextKeys({"nome"});
@@ -387,13 +387,13 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
 
-  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("Loja", "idLoja", "descricao"));
+  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
 
   return sdUsuario;
 }
 
 SearchDialog *SearchDialog::vendedor(QWidget *parent) {
-  SearchDialog *sdVendedor = new SearchDialog("Buscar Vendedor", "Usuario", {"nome, tipo"},
+  SearchDialog *sdVendedor = new SearchDialog("Buscar Vendedor", "usuario", {"nome, tipo"},
                                               "desativado = FALSE AND tipo = 'VENDEDOR'", parent);
 
   sdVendedor->setPrimaryKey("idUsuario");
@@ -411,7 +411,7 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
-  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "Cliente_has_Endereco", {}, "idEndereco = 1", parent);
+  SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "cliente_has_endereco", {}, "idEndereco = 1", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
@@ -434,7 +434,7 @@ SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
 
 SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
   SearchDialog *sdEndereco =
-      new SearchDialog("Buscar Endereço", "Fornecedor_has_Endereco", {}, "idFornecedor = 0", parent);
+      new SearchDialog("Buscar Endereço", "fornecedor_has_endereco", {}, "idFornecedor = 0", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
@@ -457,7 +457,7 @@ SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::profissional(QWidget *parent) {
   SearchDialog *sdProfissional =
-      new SearchDialog("Buscar Profissional", "Profissional", {"nome_razao, tipoProf"}, "desativado = FALSE", parent);
+      new SearchDialog("Buscar Profissional", "profissional", {"nome_razao, tipoProf"}, "desativado = FALSE", parent);
 
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome_razao"});
@@ -520,5 +520,6 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
 void SearchDialog::on_tableBusca_entered(const QModelIndex &index)
 {
   Q_UNUSED(index);
+
   ui->tableBusca->resizeColumnsToContents();
 }

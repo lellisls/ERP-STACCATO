@@ -110,6 +110,8 @@ void Orcamento::setupMapper() {
   addMapping(ui->doubleSpinBoxFrete, "frete");
   addMapping(ui->doubleSpinBoxTotal, "total");
   addMapping(ui->dateTimeEdit, "data");
+  addMapping(ui->lineEditPrazoEntrega, "prazoEntrega");
+  addMapping(ui->textEditObs, "observacao");
 
   mapperItem.setModel(&modelItem);
   mapperItem.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
@@ -261,6 +263,16 @@ bool Orcamento::savingProcedures(const int row) {
 
   if (not setData(row, "data", ui->dateTimeEdit->dateTime())) {
     qDebug() << "erro setando data";
+    return false;
+  }
+
+  if (not setData(row, "prazoEntrega", ui->lineEditPrazoEntrega->text())) {
+    qDebug() << "erro setando prazoEntrega";
+    return false;
+  }
+
+  if (not setData(row, "observacao", ui->textEditObs->toPlainText())) {
+    qDebug() << "erro setando observacao";
     return false;
   }
 

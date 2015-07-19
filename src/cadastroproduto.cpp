@@ -86,6 +86,12 @@ bool CadastroProduto::verifyFields(const int row) {
     return false;
   }
 
+  if (ui->lineEditICMS->text().isEmpty()){
+    ui->lineEditICMS->setFocus();
+    QMessageBox::warning(this, "Atenção!", "Faltou preencher ICMS", QMessageBox::Ok, QMessageBox::NoButton);
+    return false;
+  }
+
   return true;
 }
 

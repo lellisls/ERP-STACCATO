@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>976</width>
-    <height>663</height>
+    <width>998</width>
+    <height>707</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -332,18 +332,14 @@
                   <property name="toolTip">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Validade em dias do orçamento, contando a partir de hoje&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
+                  <property name="suffix">
+                   <string> dias</string>
+                  </property>
                   <property name="maximum">
                    <number>365</number>
                   </property>
                   <property name="singleStep">
                    <number>1</number>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="labelValidadeDias">
-                  <property name="text">
-                   <string>dias</string>
                   </property>
                  </widget>
                 </item>
@@ -844,9 +840,22 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEditPrazoEntrega"/>
+        <widget class="QSpinBox" name="spinBoxPrazoEntrega">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Validade em dias do orçamento, contando a partir de hoje&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> dias</string>
+         </property>
+         <property name="maximum">
+          <number>365</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="2" rowspan="3">
+       <item row="2" column="2" rowspan="2">
         <widget class="QGroupBox" name="groupBox_3">
          <property name="title">
           <string>Totais</string>

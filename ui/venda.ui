@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1086</width>
-    <height>739</height>
+    <width>1103</width>
+    <height>787</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,75 +38,8 @@
          <property name="lineWidth">
           <number>0</number>
          </property>
-         <layout class="QGridLayout" name="gridLayout_16">
-          <item row="1" column="0" colspan="3">
-           <widget class="QTableView" name="tableVenda">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>500</width>
-              <height>300</height>
-             </size>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::NoSelection</enum>
-            </property>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>false</bool>
-            </attribute>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="labelPrazoEntrega">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Prazo de entrega:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0" colspan="3">
-           <widget class="QTextEdit" name="textEdit">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1" colspan="2">
-           <widget class="QLineEdit" name="lineEditPrazoEntrega"/>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="labelEndereco_9">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Observação:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="3">
+         <layout class="QGridLayout" name="gridLayout_10">
+          <item row="0" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_9">
             <property name="title">
              <string>Info. Pedido</string>
@@ -158,10 +91,10 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="ItemBox" name="itemBoxVendedor_2"/>
+                  <widget class="ItemBox" name="itemBoxVendedor"/>
                  </item>
                  <item>
-                  <widget class="ItemBox" name="itemBoxCliente_2"/>
+                  <widget class="ItemBox" name="itemBoxCliente"/>
                  </item>
                 </layout>
                </item>
@@ -209,7 +142,7 @@
                <item>
                 <layout class="QGridLayout" name="gridLayout_18">
                  <item row="0" column="0">
-                  <widget class="QDateTimeEdit" name="dateTimeEdit_2">
+                  <widget class="QDateTimeEdit" name="dateTimeEdit">
                    <property name="toolTip">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data/hora em que o orçamento foi criado pela primeira vez&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
@@ -228,7 +161,7 @@
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="ItemBox" name="itemBoxProfissional_2"/>
+                  <widget class="ItemBox" name="itemBoxProfissional"/>
                  </item>
                  <item row="2" column="0">
                   <widget class="ItemBox" name="itemBoxEndereco"/>
@@ -238,6 +171,102 @@
               </layout>
              </item>
             </layout>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QTableView" name="tableVenda">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>500</width>
+              <height>300</height>
+             </size>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::NoSelection</enum>
+            </property>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelPrazoEntrega">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Prazo de entrega:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="spinBoxPrazoEntrega">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Validade em dias do orçamento, contando a partir de hoje&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> dias</string>
+            </property>
+            <property name="maximum">
+             <number>365</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelPrazoEntrega_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>End. de faturamento:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="ItemBox" name="itemBoxEnderecoFat"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelEndereco_9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Observação:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QTextEdit" name="textEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
            </widget>
           </item>
          </layout>

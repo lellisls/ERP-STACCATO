@@ -55,7 +55,6 @@ class Venda : public RegisterDialog {
     // attributes
     Ui::Venda *ui;
     QSqlTableModel modelItem, modelFluxoCaixa;
-    QString idVenda; // TODO: remover isso e usar lineEdit
     // methods
     bool verifyFields(const int row);
     bool verifyRequiredField(QLineEdit *line);

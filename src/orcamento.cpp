@@ -110,7 +110,7 @@ void Orcamento::setupMapper() {
   addMapping(ui->doubleSpinBoxFrete, "frete");
   addMapping(ui->doubleSpinBoxTotal, "total");
   addMapping(ui->dateTimeEdit, "data");
-  addMapping(ui->lineEditPrazoEntrega, "prazoEntrega");
+  addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
   addMapping(ui->textEditObs, "observacao");
 
   mapperItem.setModel(&modelItem);
@@ -266,7 +266,7 @@ bool Orcamento::savingProcedures(const int row) {
     return false;
   }
 
-  if (not setData(row, "prazoEntrega", ui->lineEditPrazoEntrega->text())) {
+  if (not setData(row, "prazoEntrega", ui->spinBoxPrazoEntrega->value())) {
     qDebug() << "erro setando prazoEntrega";
     return false;
   }
@@ -295,11 +295,6 @@ bool Orcamento::savingProcedures(const int row) {
     qDebug() << "erro setando descontoPorc";
     return false;
   }
-
-  //  if (not setData(row, "descontoReais", ui->doubleSpinBoxDescontoRS->value())) {
-  //    qDebug() << "erro setando descontoReais";
-  //    return false;
-  //  }
 
   if (not setData(row, "descontoReais",
                   ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100)) {
@@ -662,8 +657,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   if (paramName == "Observacao") {
-    paramValue = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc placerat diam et imperdiet posuere. "
-                 "Donec placerat sapien vel velit bibendum, vel porttitor justo ultrices. Morbi lobortis metus vitae ";
+    paramValue = ui->textEditObs->toPlainText();
   }
 }
 
@@ -673,6 +667,7 @@ QString Orcamento::itemData(const int row, const QString key) {
 
 void Orcamento::setupTables() {
   modelItem.setTable("orcamento_has_produto");
+  modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
   modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
   modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
@@ -687,7 +682,6 @@ void Orcamento::setupTables() {
   modelItem.setHeaderData(modelItem.fieldIndex("desconto"), Qt::Horizontal, "Desc. %");
   modelItem.setHeaderData(modelItem.fieldIndex("parcialDesc"), Qt::Horizontal, "Total");
 
-  modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelItem.setFilter("idOrcamento = '" + ui->lineEditOrcamento->text() + "'");
 
   if (not modelItem.select()) {
@@ -704,12 +698,7 @@ void Orcamento::setupTables() {
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("descGlobal"), true);
   ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("total"), true);
 
-  DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
-  ui->tableProdutos->setItemDelegate(doubleDelegate);
-
-  ui->tableProdutos->horizontalHeader()->setStretchLastSection(false);
-
-  ui->tableProdutos->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+  ui->tableProdutos->setItemDelegate(new DoubleDelegate(this));
 
   ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);

@@ -686,7 +686,7 @@ void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
   Orcamento *orcamento = new Orcamento(this);
   orcamento->viewRegisterById(
         modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
-  orcamento->show();
+  orcamento->showMaximized();
 }
 
 void MainWindow::on_tableContasPagar_activated(const QModelIndex &index) {

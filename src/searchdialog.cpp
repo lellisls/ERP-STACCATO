@@ -213,7 +213,7 @@ QString SearchDialog::getText(const QVariant index) {
       }
     }
 
-    if (model.tableName().contains("Endereco")) {
+    if (model.tableName().contains("endereco")) {
       if (query.value("descricao").toString() == "Não há") {
         return "Não há";
       }

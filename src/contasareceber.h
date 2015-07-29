@@ -24,7 +24,7 @@ class ContasAReceber : public QDialog {
   private:
     // attributes
     Ui::ContasAReceber *ui;
-    QSqlTableModel modelContas, modelItensConta;
+    QSqlTableModel modelContas;
     QString idVenda;
 };
 

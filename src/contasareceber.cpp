@@ -2,23 +2,19 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "comboboxdelegate.h"
 #include "contasareceber.h"
+#include "doubledelegate.h"
 #include "ui_contasareceber.h"
 
 ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::ContasAReceber) {
   ui->setupUi(this);
 
+  setWindowFlags(Qt::Window);
+
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
-  modelItensConta.setTable("conta_a_receber_has_produto");
-  modelItensConta.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelItensConta.select()) {
-    qDebug() << "Failed to populate modelItensConta: " << modelItensConta.lastError();
-    return;
-  }
-
-  modelContas.setTable("conta_a_receber");
+  modelContas.setTable("conta_a_receber_has_pagamento");
   modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelContas.select()) {
@@ -27,6 +23,11 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
   }
 
   ui->tableView->setModel(&modelContas);
+  ui->tableView->setItemDelegate(new DoubleDelegate(this));
+  ui->tableView->setItemDelegateForColumn(modelContas.fieldIndex("status"), new ComboBoxDelegate(this));
+  ui->tableView->hideColumn(modelContas.fieldIndex("idPagamento"));
+  ui->tableView->hideColumn(modelContas.fieldIndex("idVenda"));
+  ui->tableView->hideColumn(modelContas.fieldIndex("idLoja"));
 
   show();
 }
@@ -63,10 +64,15 @@ void ContasAReceber::on_pushButtonCancelar_clicked() { close(); }
 void ContasAReceber::viewConta(const QString idVenda) {
   this->idVenda = idVenda;
 
-  modelItensConta.setFilter("idVenda = '" + idVenda + "'");
   modelContas.setFilter("idVenda = '" + idVenda + "'");
 
   if (modelContas.data(modelContas.index(0, modelContas.fieldIndex("pago"))).toString() == "SIM") {
     ui->checkBox->setChecked(true);
+  }
+
+  ui->tableView->resizeColumnsToContents();
+
+  for (int row = 0, rowCount = modelContas.rowCount(); row < rowCount; ++row) {
+    ui->tableView->openPersistentEditor(modelContas.index(row, modelContas.fieldIndex("status")));
   }
 }

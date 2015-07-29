@@ -16,8 +16,12 @@ PedidosCompra::PedidosCompra(QWidget *parent) : QDialog(parent), ui(new Ui::Pedi
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
-  show();
+  ui->groupBox->hide();
+  ui->dateTimeEdit->hide();
+  ui->checkBox->hide();
+  ui->pushButtonNFe->hide();
 
+  show();
   ui->tablePedidos->resizeColumnsToContents();
 }
 
@@ -26,7 +30,12 @@ PedidosCompra::~PedidosCompra() { delete ui; }
 void PedidosCompra::viewPedido(const QString idPedido) {
   this->idPedido = idPedido;
 
-  modelItemPedidos.setFilter("idPedido = '" + idPedido + "'");
+  QModelIndex index = modelItemPedidos.match(modelItemPedidos.index(0, modelItemPedidos.fieldIndex("idPedido")),
+                                             Qt::DisplayRole, idPedido).first();
+  QString idProduto =
+      modelItemPedidos.data(modelItemPedidos.index(index.row(), modelItemPedidos.fieldIndex("idProduto"))).toString();
+
+  modelItemPedidos.setFilter("idProduto = '" + idProduto + "'");
 
   if (not modelItemPedidos.select()) {
     qDebug() << "erro modelItemPedidos: " << modelItemPedidos.lastError();
@@ -34,7 +43,7 @@ void PedidosCompra::viewPedido(const QString idPedido) {
   }
 
   for (int row = 0, rowCount = modelItemPedidos.rowCount(); row < rowCount; ++row) {
-    ui->tablePedidos->openPersistentEditor(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("qte")));
+    ui->tablePedidos->openPersistentEditor(modelItemPedidos.index(row, modelItemPedidos.fieldIndex("quant")));
   }
 }
 
@@ -68,12 +77,12 @@ void PedidosCompra::on_pushButtonSalvar_clicked() {
         qDebug() << "Comprar";
         QSqlQuery queryProduto;
         queryProduto.prepare("INSERT INTO conta_a_pagar_has_produto VALUES (:idVenda, :idProduto, :produto, "
-                             ":prcUnitario, :qte, :un, :total)");
+                             ":prcUnitario, :quant, :un, :total)");
         queryProduto.bindValue(":idVenda", query.value("idPedido"));
         queryProduto.bindValue(":idProduto", query.value("idProduto"));
         queryProduto.bindValue(":produto", query.value("produto"));
         queryProduto.bindValue(":prcUnitario", query.value("prcUnitario"));
-        queryProduto.bindValue(":qte", query.value("qte"));
+        queryProduto.bindValue(":quant", query.value("quant"));
         queryProduto.bindValue(":un", query.value("un"));
         queryProduto.bindValue(":total", query.value("total"));
 
@@ -139,27 +148,19 @@ void PedidosCompra::on_radioButtonVenda_toggled(const bool checked) {
 }
 
 void PedidosCompra::setupTables() {
-  modelPedidos.setTable("pedidofornecedor");
-  modelPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelPedidos.select()) {
-    qDebug() << "Failed to populate pedidofornecedor: " << modelPedidos.lastError();
-    return;
-  }
-
   modelItemPedidos.setTable("pedido_fornecedor_has_produto");
   modelItemPedidos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("idPedido"), Qt::Horizontal, "Pedido");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("produto"), Qt::Horizontal, "Produto");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("obs"), Qt::Horizontal, "Obs.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("caixas"), Qt::Horizontal, "Cx.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("qte"), Qt::Horizontal, "Quant.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Cx.");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("total"), Qt::Horizontal, "Total");
-  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("status"), Qt::Horizontal, "Status");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("idPedido"), Qt::Horizontal, "Pedido");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("produto"), Qt::Horizontal, "Produto");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("obs"), Qt::Horizontal, "Obs.");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("caixas"), Qt::Horizontal, "Cx.");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("quant"), Qt::Horizontal, "Quant.");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("un"), Qt::Horizontal, "Un.");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Cx.");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("total"), Qt::Horizontal, "Total");
+  //  modelItemPedidos.setHeaderData(modelItemPedidos.fieldIndex("status"), Qt::Horizontal, "Status");
 
   if (not modelItemPedidos.select()) {
     qDebug() << "Failed to populate pedido_fornecedor_has_produto: " << modelItemPedidos.lastError();
@@ -167,8 +168,7 @@ void PedidosCompra::setupTables() {
   }
 
   ui->tablePedidos->setModel(&modelItemPedidos);
-  ui->tablePedidos->setItemDelegateForColumn(modelItemPedidos.fieldIndex("status"),
-                                             new ComboBoxDelegate(ui->tablePedidos));
+  ui->tablePedidos->setItemDelegateForColumn(modelItemPedidos.fieldIndex("status"), new ComboBoxDelegate(this));
   ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("idLoja"));
   ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("item"));
   ui->tablePedidos->hideColumn(modelItemPedidos.fieldIndex("idProduto"));

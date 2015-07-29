@@ -26,7 +26,7 @@ class PedidosCompra : public QDialog {
   private:
     // attributes
     Ui::PedidosCompra *ui;
-    QSqlRelationalTableModel modelItemPedidos, modelPedidos;
+    QSqlRelationalTableModel modelItemPedidos;
     QString idPedido;
     // methods
     void setupTables();

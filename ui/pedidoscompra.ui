@@ -63,7 +63,7 @@
       <enum>QAbstractScrollArea::AdjustToContents</enum>
      </property>
      <property name="selectionMode">
-      <enum>QAbstractItemView::MultiSelection</enum>
+      <enum>QAbstractItemView::SingleSelection</enum>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
@@ -110,6 +110,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QPushButton" name="pushButtonNFe">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="text">
         <string>Gerar NFe</string>
        </property>

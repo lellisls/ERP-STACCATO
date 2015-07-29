@@ -171,6 +171,7 @@ void XML::readTree(QStandardItem *item) {
       }
 
       if (child->text().mid(0, 10) == "det nItem=") {
+        // TODO: adicionar TRANSACTION para caso ocorra um produto não cadastrado, poder dar ROLLBACK
         if (insertProdutoEstoque()) {
           insertEstoque();
         }
@@ -180,108 +181,10 @@ void XML::readTree(QStandardItem *item) {
 }
 
 void XML::saveXML() {
-  //--------------------------------------------------//
   QStandardItem *modelRoot = model.item(0, 0);
-  //  qDebug() << modelRoot->text();
   if (modelRoot->hasChildren()) {
     readTree(modelRoot);
   }
-
-  //  qDebug() << "item: " << itemNumero;
-  //  qDebug() << "codProd: " << codProd;
-  //  qDebug() << "codBarras: " << codBarras;
-  //  qDebug() << "descricao: " << descricao;
-  //  qDebug() << "ncm: " << ncm;
-  //  qDebug() << "cfop: " << cfop;
-  //  qDebug() << "un: " << un;
-  //  qDebug() << "quant: " << quant;
-  //  qDebug() << "valorUnid: " << valorUnid;
-  //  qDebug() << "valor: " << valor;
-  //  qDebug() << "codBarrasTrib: " << codBarrasTrib;
-  //  qDebug() << "unTrib: " << unTrib;
-  //  qDebug() << "quantTrib: " << quantTrib;
-  //  qDebug() << "valorTrib: " << valorTrib;
-  //  qDebug() << "desconto: " << desconto;
-  //  qDebug() << "compoeTotal: " << compoeTotal;
-  //  qDebug() << "numeroPed: " << numeroPedido;
-  //  qDebug() << "itemPedido: " << itemPedido;
-
-  //  QSqlQuery query;
-  //  query.prepare(
-  //        "INSERT INTO estoque (item, codProd, codBarras, descricao, ncm, cfop, un, quant, valorUnid, "
-  //        "valor, codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
-  //        "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, "
-  //        "cstIPI, cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS, vBC_Total, vICMS_Total, "
-  //        "vICMSDeson_Total, vBCST_Total, vST_Total, vProd_Total, vFrete_Total, vSeg_Total, vDesc_Total, "
-  //        "vII_Total, vIPI_Total, vPIS_Total, vCOFINS_Total, vOutro_Total, vNF_Total) "
-  //        "VALUES (:item, :codProd, :codBarras, :descricao, :ncm, :cfop, :un, :quant, :valorUnid, :valor, "
-  //        ":codBarrasTrib, :unTrib, :quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, "
-  //        ":itemPedido, :tipoICMS, :orig, :cstICMS, :modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST,
-  //        ":vICMSST, :cEnq, :cstIPI, :cstPIS, :vBCPIS, :pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS, "
-  //        ":vBC_Total, :vICMS_Total, :vICMSDeson_Total, :vBCST_Total, :vST_Total, :vProd_Total, :vFrete_Total, "
-  //        ":vSeg_Total, :vDesc_Total, :vII_Total, :vIPI_Total, :vPIS_Total, :vCOFINS_Total, :vOutro_Total,
-  //        ": vNF_Total) ");
-  //  query.bindValue(":item", itemNumero);
-  //  query.bindValue(":codProd", codProd);
-  //  query.bindValue(":codBarras", codBarras);
-  //  query.bindValue(":descricao", descricao);
-  //  query.bindValue(":ncm", ncm);
-  //  query.bindValue(":cfop", cfop);
-  //  query.bindValue(":un", un);
-  //  query.bindValue(":quant", quant);
-  //  query.bindValue(":valorUnid", valorUnid);
-  //  query.bindValue(":valor", valor);
-  //  query.bindValue(":codBarrasTrib", codBarrasTrib);
-  //  query.bindValue(":unTrib", unTrib);
-  //  query.bindValue(":quantTrib", quantTrib);
-  //  query.bindValue(":valorTrib", valorTrib);
-  //  query.bindValue(":desconto", desconto);
-  //  query.bindValue(":compoeTotal", compoeTotal);
-  //  query.bindValue(":numeroPedido", numeroPedido);
-  //  query.bindValue(":itemPedido", itemPedido);
-
-  //  if (not query.exec()) {
-  //    qDebug() << "erro: " << query.lastError();
-  //  }
-
-  //  qDebug() << "tipoICMS: " << tipoICMS;
-  //  qDebug() << "orig: " << orig;
-  //  qDebug() << "cst: " << cst;
-  //  qDebug() << "modBC: " << modBC;
-  //  qDebug() << "vBC: " << vBC;
-  //  qDebug() << "pICMS: " << pICMS;
-  //  qDebug() << "vICMS: " << vICMS;
-  //  qDebug() << "modBCST: " << modBCST;
-  //  qDebug() << "pMVAST: " << pMVAST;
-  //  qDebug() << "vBCST: " << vBCST;
-  //  qDebug() << "pICMSST: " << pICMSST;
-  //  qDebug() << "vICMSST: " << vICMSST;
-
-  //  qDebug() << "cstPIS: " << cstPIS;
-  //  qDebug() << "vBC: " << vBCPIS;
-  //  qDebug() << "pPIS: " << pPIS;
-  //  qDebug() << "vPIS: " << vPIS;
-
-  //  qDebug() << "cstCOFINS: " << cstCOFINS;
-  //  qDebug() << "vBCCOFINS: " << vBCCOFINS;
-  //  qDebug() << "pCOFINS: " << pCOFINS;
-  //  qDebug() << "vCOFINS: " << vCOFINS;
-
-  //  qDebug() << "vBC: " << vBC_Total;
-  //  qDebug() << "vICMS: " << vICMS_Total;
-  //  qDebug() << "vICMSDeson: " << vICMSDeson_Total;
-  //  qDebug() << "vBCST: " << vBCST_Total;
-  //  qDebug() << "vST: " << vST_Total;
-  //  qDebug() << "vProd: " << vProd_Total;
-  //  qDebug() << "vFrete: " << vFrete_Total;
-  //  qDebug() << "vSeg: " << vSeg_Total;
-  //  qDebug() << "vDesc: " << vDesc_Total;
-  //  qDebug() << "vII: " << vII_Total;
-  //  qDebug() << "vIPI: " << vIPI_Total;
-  //  qDebug() << "vPIS: " << vPIS_Total;
-  //  qDebug() << "vCOFINS: " << vCOFINS_Total;
-  //  qDebug() << "vOutro: " << vOutro_Total;
-  //  qDebug() << "vNF: " << vNF_Total;
 }
 
 void XML::darkTheme() {
@@ -542,12 +445,15 @@ void XML::lerTotais(QStandardItem *child) {
 }
 
 bool XML::insertProdutoEstoque() {
+  qDebug() << "cod: " << codProd;
   QModelIndexList indexList =
       modelProduto.match(modelProduto.index(0, modelProduto.fieldIndex("codComercial")), Qt::DisplayRole, codProd);
-  //      modelProduto.match(modelProduto.index(0, 0), Qt::DisplayRole, codProd);
+  qDebug() << "size: " << indexList.size();
 
   if (indexList.isEmpty()) {
-    qDebug() << "produto nao cadastrado";
+//    qDebug() << "produto nao cadastrado";
+    QMessageBox::warning(this, "Aviso!", "Produto não cadastrado!");
+    return false;
   } else {
     idProduto =
         modelProduto.data(modelProduto.index(indexList.first().row(), modelProduto.fieldIndex("idProduto"))).toInt();
@@ -619,15 +525,55 @@ bool XML::insertEstoque() {
       qDebug() << "Error: " << queryProd.lastError();
     }
   } else {
-    queryProd.prepare("INSERT INTO estoque (idProduto, descricao, quant, un, codBarras, codComercial, m2cx) "
-                      "VALUES (:idProduto, :descricao, :quant, :un, :codBarras, :codComercial, :m2cx)");
+    queryProd.prepare(
+          "INSERT INTO estoque (idProduto, descricao, quant, un, codBarras, codComercial, ncm, cfop, valorUnid, valor, "
+          "codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
+          "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, "
+          "cstIPI, cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS) "
+          "VALUES (:idProduto, :descricao, :quant, :un, :codBarras, :codComercial, :ncm, :cfop, :valorUnid, :valor, "
+          ":codBarrasTrib, :unTrib, :quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, :itemPedido, "
+          ":tipoICMS, :orig, :cstICMS, :modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST, :vICMSST, "
+          ":cEnq, :cstIPI, :cstPIS, :vBCPIS, :pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS)");
     queryProd.bindValue(":idProduto", idProduto);
     queryProd.bindValue(":descricao", descricao);
     queryProd.bindValue(":quant", quant);
     queryProd.bindValue(":un", un);
     queryProd.bindValue(":codBarras", codBarras);
     queryProd.bindValue(":codComercial", codProd);
-    queryProd.bindValue(":m2cx", quant);
+    queryProd.bindValue(":ncm", ncm);
+    queryProd.bindValue(":cfop", cfop);
+    queryProd.bindValue(":valorUnid", valorUnid);
+    queryProd.bindValue(":valor", valor);
+    queryProd.bindValue(":codBarrasTrib", codBarrasTrib);
+    queryProd.bindValue(":unTrib", unTrib);
+    queryProd.bindValue(":quantTrib", quantTrib);
+    queryProd.bindValue(":valorTrib", valorTrib);
+    queryProd.bindValue(":desconto", desconto);
+    queryProd.bindValue(":compoeTotal", compoeTotal);
+    queryProd.bindValue(":numeroPedido", numeroPedido);
+    queryProd.bindValue(":itemPedido", itemPedido);
+    queryProd.bindValue(":tipoICMS", tipoICMS);
+    queryProd.bindValue(":orig", orig);
+    queryProd.bindValue(":cstICMS", cstICMS);
+    queryProd.bindValue(":modBC", modBC);
+    queryProd.bindValue(":vBC", vBC);
+    queryProd.bindValue(":pICMS", pICMS);
+    queryProd.bindValue(":vICMS", vICMS);
+    queryProd.bindValue(":modBCST", modBCST);
+    queryProd.bindValue(":pMVAST", pMVAST);
+    queryProd.bindValue(":vBCST", vBCST);
+    queryProd.bindValue(":pICMSST", pICMSST);
+    queryProd.bindValue(":vICMSST", vICMSST);
+    queryProd.bindValue(":cEnq", cEnq);
+    queryProd.bindValue(":cstIPI", cstIPI);
+    queryProd.bindValue(":cstPIS", cstPIS);
+    queryProd.bindValue(":vBCPIS", vBCPIS);
+    queryProd.bindValue(":pPIS", pPIS);
+    queryProd.bindValue(":vPIS", vPIS);
+    queryProd.bindValue(":cstCOFINS", cstCOFINS);
+    queryProd.bindValue(":vBCCOFINS", vBCCOFINS);
+    queryProd.bindValue(":pCOFINS", pCOFINS);
+    queryProd.bindValue(":vCOFINS", vCOFINS);
 
     if (not queryProd.exec()) {
       qDebug() << "Error: " << queryProd.lastError();

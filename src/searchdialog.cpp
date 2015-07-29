@@ -515,6 +515,8 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
       model.setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE");
     }
   }
+
+  ui->tableBusca->resizeColumnsToContents();
 }
 
 void SearchDialog::on_tableBusca_entered(const QModelIndex &index)

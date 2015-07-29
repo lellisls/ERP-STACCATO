@@ -25,7 +25,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tabOrcamentos">
        <attribute name="title">
@@ -276,9 +276,9 @@
        <attribute name="title">
         <string>Contas</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_19">
+       <layout class="QGridLayout" name="gridLayout_24">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_2">
+         <layout class="QGridLayout" name="gridLayout_19">
           <item row="0" column="0" rowspan="2">
            <widget class="QGroupBox" name="groupBox_4">
             <property name="title">
@@ -335,7 +335,40 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2" rowspan="2">
+          <item row="1" column="1">
+           <widget class="QTableView" name="tableContasPagar">
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <attribute name="horizontalHeaderCascadingSectionResizes">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelContasPagar_2">
+            <property name="text">
+             <string>Buscar:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEditBuscaContasPagar"/>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0" rowspan="2">
            <widget class="QGroupBox" name="groupBox_3">
             <property name="title">
              <string>Filtros:</string>
@@ -381,7 +414,7 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="3">
+          <item row="0" column="1">
            <widget class="QLabel" name="labelContasReceber">
             <property name="text">
              <string>Contas a receber</string>
@@ -392,22 +425,6 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QTableView" name="tableContasPagar">
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <attribute name="horizontalHeaderCascadingSectionResizes">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>false</bool>
-            </attribute>
-           </widget>
-          </item>
-          <item row="1" column="3">
            <widget class="QTableView" name="tableContasReceber">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
@@ -424,19 +441,6 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="labelContasPagar_2">
-            <property name="text">
-             <string>Buscar:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="lineEditBuscaContasPagar"/>
-          </item>
-          <item row="2" column="2">
            <widget class="QLabel" name="labelContasPagar_3">
             <property name="text">
              <string>Buscar:</string>
@@ -446,7 +450,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
+          <item row="2" column="1">
            <widget class="QLineEdit" name="lineEditBuscaContasReceber"/>
           </item>
          </layout>
@@ -455,7 +459,7 @@
       </widget>
       <widget class="QWidget" name="tabEntregas">
        <attribute name="title">
-        <string>Entregas</string>
+        <string>Transportadora</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_18">
         <item row="0" column="0">
@@ -541,15 +545,124 @@
           </item>
          </layout>
         </item>
+        <item row="0" column="1">
+         <widget class="QFrame" name="frameRecebimentos">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0" rowspan="2">
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>Filtros:</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="radioButtonRecebimentoRecebido">
+                <property name="text">
+                 <string>Recebidos</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QRadioButton" name="radioButtonRecebimentoPendente">
+                <property name="text">
+                 <string>Pendentes</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <spacer name="verticalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>290</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="radioButtonRecebimentoLimpar">
+                <property name="text">
+                 <string>Todos</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QTableView" name="tableRecebimentosFornecedor">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="horizontalHeaderCascadingSectionResizes">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>false</bool>
+             </attribute>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelRecebimentosFornecedor_2">
+             <property name="text">
+              <string>Buscar:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="lineEditBuscaRecebimentos"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="labelRecebimentosFornecedor">
+             <property name="text">
+              <string>Recebimentos fornecedor</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tabFornecedor">
        <attribute name="title">
         <string>Compras</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_16">
+       <layout class="QGridLayout" name="gridLayout_23">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QGridLayout" name="gridLayout_16">
           <item row="0" column="0" rowspan="2">
            <widget class="QGroupBox" name="groupBox_7">
             <property name="title">
@@ -606,96 +719,12 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2" rowspan="2">
-           <widget class="QGroupBox" name="groupBox_6">
-            <property name="title">
-             <string>Filtros:</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_13">
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButtonRecebimentoRecebido">
-               <property name="text">
-                <string>Recebidos</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButtonRecebimentoPendente">
-               <property name="text">
-                <string>Pendentes</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <spacer name="verticalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>290</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="radioButtonRecebimentoLimpar">
-               <property name="text">
-                <string>Todos</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="labelRecebimentosFornecedor">
-            <property name="text">
-             <string>Recebimentos fornecedor</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="1">
            <widget class="QTableView" name="tablePedidosCompra">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
             <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <attribute name="horizontalHeaderCascadingSectionResizes">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>false</bool>
-            </attribute>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QTableView" name="tableRecebimentosFornecedor">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="sortingEnabled">
              <bool>true</bool>
             </property>
             <attribute name="horizontalHeaderCascadingSectionResizes">
@@ -718,19 +747,6 @@
           </item>
           <item row="2" column="1">
            <widget class="QLineEdit" name="lineEditBuscaProdutosPend"/>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="labelRecebimentosFornecedor_2">
-            <property name="text">
-             <string>Buscar:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3">
-           <widget class="QLineEdit" name="lineEditBuscaRecebimentos"/>
           </item>
          </layout>
         </item>
@@ -826,6 +842,49 @@
            <widget class="QLineEdit" name="lineEditBuscaNFe"/>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabEstoque">
+       <attribute name="title">
+        <string>Estoque</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_22">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButtonEntradaEstoque">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Dar entrada no estoque</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <spacer name="verticalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1" rowspan="2">
+         <widget class="QTableView" name="tableEstoque">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -934,7 +993,6 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>pushButtonCriarOrc</tabstop>
   <tabstop>radioButtonOrcLimpar</tabstop>
   <tabstop>radioButtonOrcValido</tabstop>
@@ -966,11 +1024,6 @@
   <tabstop>radioButtonFornFechado</tabstop>
   <tabstop>tablePedidosCompra</tabstop>
   <tabstop>lineEditBuscaProdutosPend</tabstop>
-  <tabstop>radioButtonRecebimentoLimpar</tabstop>
-  <tabstop>radioButtonRecebimentoRecebido</tabstop>
-  <tabstop>radioButtonRecebimentoPendente</tabstop>
-  <tabstop>tableRecebimentosFornecedor</tabstop>
-  <tabstop>lineEditBuscaRecebimentos</tabstop>
   <tabstop>radioButtonNFeLimpar</tabstop>
   <tabstop>radioButtonNFeEnviado</tabstop>
   <tabstop>radioButtonNFeAutorizado</tabstop>

@@ -1,6 +1,7 @@
 #include <QShortcut>
 #include <QSettings>
 #include <QStyleFactory>
+#include <QFileDialog>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -25,31 +26,13 @@
 #include "recebimentosfornecedor.h"
 #include "usersession.h"
 #include "venda.h"
+#include "xml.h"
+#include "estoque.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-//  qApp->setStyle(QStyleFactory::create("Fusion"));
-
-//  QPalette darkPalette;
-//  darkPalette.setColor(QPalette::Window, QColor(53,53,53));
-//  darkPalette.setColor(QPalette::WindowText, Qt::white);
-//  darkPalette.setColor(QPalette::Base, QColor(25,25,25));
-//  darkPalette.setColor(QPalette::AlternateBase, QColor(53,53,53));
-//  darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
-//  darkPalette.setColor(QPalette::ToolTipText, Qt::white);
-//  darkPalette.setColor(QPalette::Text, Qt::white);
-//  darkPalette.setColor(QPalette::Button, QColor(53,53,53));
-//  darkPalette.setColor(QPalette::ButtonText, Qt::white);
-//  darkPalette.setColor(QPalette::BrightText, Qt::red);
-//  darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
-
-//  darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
-//  darkPalette.setColor(QPalette::HighlightedText, Qt::black);
-
-//  qApp->setPalette(darkPalette);
-
-//  qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+  darkTheme();
 
   setWindowTitle("ERP Staccato");
   readSettings();
@@ -158,25 +141,25 @@ bool MainWindow::dbConnect() {
 
   } else {
     switch (db.lastError().number()) {
-      case 1045:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                              "Verifique se o usuário e senha do banco de dados estão corretos.");
-        break;
-      case 2002:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                              "Verifique se o servidor está ligado, e acessível pela rede.");
-        break;
-      case 2003:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                              "Verifique se o servidor está ligado, e acessível pela rede.");
-        break;
-      case 2005:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
-                              "Verifique se o IP do servidor foi escrito corretamente.");
-        break;
-      default:
-        showError(db.lastError());
-        break;
+    case 1045:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o usuário e senha do banco de dados estão corretos.");
+      break;
+    case 2002:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o servidor está ligado, e acessível pela rede.");
+      break;
+    case 2003:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o servidor está ligado, e acessível pela rede.");
+      break;
+    case 2005:
+      QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+                            "Verifique se o IP do servidor foi escrito corretamente.");
+      break;
+    default:
+      showError(db.lastError());
+      break;
     }
 
     return false;
@@ -355,29 +338,32 @@ void MainWindow::initializeTables() {
 
   modelRecebimentosForn->setFilter("tipo = 'FORNECEDOR'");
 
-  ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
-  ui->tableRecebimentosFornecedor->setSelectionBehavior(QAbstractItemView::SelectRows);
-  ui->tableRecebimentosFornecedor->setItemDelegate(doubledelegate);
-  ui->tableRecebimentosFornecedor->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableRecebimentosFornecedor->horizontalHeader()->setResizeContentsPrecision(0);
+  //  ui->tableRecebimentosFornecedor->setModel(modelRecebimentosForn);
+  //  ui->tableRecebimentosFornecedor->setSelectionBehavior(QAbstractItemView::SelectRows);
+  //  ui->tableRecebimentosFornecedor->setItemDelegate(doubledelegate);
+  //  ui->tableRecebimentosFornecedor->verticalHeader()->setResizeContentsPrecision(0);
+  //  ui->tableRecebimentosFornecedor->horizontalHeader()->setResizeContentsPrecision(0);
+
+  ui->frameRecebimentos->hide();
 
   // Pedidos de compra
   modelPedCompra = new QSqlRelationalTableModel(this);
   modelPedCompra->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelPedCompra->setTable("pedido_fornecedor");
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"), QSqlRelation("usuario", "idUsuario", "nome"));
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCliente"),
-                              QSqlRelation("cliente", "idCliente", "nome_razao"));
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
-                              QSqlRelation("cliente_has_endereco", "idEndereco", "logradouro"));
-  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idProfissional"),
-                              QSqlRelation("profissional", "idProfissional", "nome_razao"));
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");
-  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idProfissional"), Qt::Horizontal, "Profissional");
+  //  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
+  //  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idUsuario"), QSqlRelation("usuario", "idUsuario",
+  //  "nome"));
+  //  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idCliente"),
+  //                              QSqlRelation("cliente", "idCliente", "nome_razao"));
+  //  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idEnderecoEntrega"),
+  //                              QSqlRelation("cliente_has_endereco", "idEndereco", "logradouro"));
+  //  modelPedCompra->setRelation(modelPedCompra->fieldIndex("idProfissional"),
+  //                              QSqlRelation("profissional", "idProfissional", "nome_razao"));
+  //  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idLoja"), Qt::Horizontal, "Loja");
+  //  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idUsuario"), Qt::Horizontal, "Vendedor");
+  //  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idCliente"), Qt::Horizontal, "Cliente");
+  //  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idEnderecoEntrega"), Qt::Horizontal, "Endereço");
+  //  modelPedCompra->setHeaderData(modelPedCompra->fieldIndex("idProfissional"), Qt::Horizontal, "Profissional");
 
   if (not modelPedCompra->select()) {
     qDebug() << "Failed to populate TablePedidosCompra:" << modelPedCompra->lastError();
@@ -386,6 +372,8 @@ void MainWindow::initializeTables() {
 
   ui->tablePedidosCompra->setModel(modelPedCompra);
   ui->tablePedidosCompra->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tablePedidosCompra->setColumnHidden(modelPedCompra->fieldIndex("idPedido"), true);
+  ui->tablePedidosCompra->setColumnHidden(modelPedCompra->fieldIndex("idProduto"), true);
   ui->tablePedidosCompra->setItemDelegate(doubledelegate);
   ui->tablePedidosCompra->verticalHeader()->setResizeContentsPrecision(0);
   ui->tablePedidosCompra->horizontalHeader()->setResizeContentsPrecision(0);
@@ -406,6 +394,24 @@ void MainWindow::initializeTables() {
   ui->tableNFE->setItemDelegate(doubledelegate);
   ui->tableNFE->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableNFE->horizontalHeader()->setResizeContentsPrecision(0);
+
+  // Estoque
+  modelEstoque = new QSqlTableModel(this);
+  modelEstoque->setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelEstoque->setTable("estoque");
+
+  if (not modelEstoque->select()) {
+    qDebug() << "Failed to populate TableEstoque: " << modelEstoque->lastError();
+    return;
+  }
+
+  ui->tableEstoque->setModel(modelEstoque);
+  ui->tableEstoque->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableEstoque->setItemDelegate(doubledelegate);
+  ui->tableEstoque->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableEstoque->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableEstoque->setColumnHidden(modelEstoque->fieldIndex("idEstoque"), true);
+  ui->tableEstoque->setColumnHidden(modelEstoque->fieldIndex("idProduto"), true);
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {
@@ -469,6 +475,11 @@ void MainWindow::updateTables() {
     return;
   }
 
+  if (not modelEstoque->select()) {
+    qDebug() << "erro modelEstoque: " << modelEstoque->lastError();
+    return;
+  }
+
   ui->tableContasPagar->resizeColumnsToContents();
   ui->tableContasReceber->resizeColumnsToContents();
   ui->tableRecebimentosFornecedor->resizeColumnsToContents();
@@ -477,6 +488,7 @@ void MainWindow::updateTables() {
   ui->tablePedidosCompra->resizeColumnsToContents();
   ui->tableVendas->resizeColumnsToContents();
   ui->tableNFE->resizeColumnsToContents();
+  ui->tableEstoque->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -707,6 +719,8 @@ void MainWindow::on_tableVendas_activated(const QModelIndex &index) {
 
 void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
   Orcamento *orcamento = new Orcamento(this);
+  // TODO: não sei se me perde no raciocinio do codigo mas me parece que é pego o id pelo index para depois pegar o
+  // index de volta (ver se dá pra passar o index direto e pronto)
   orcamento->viewRegisterById(
         modelOrcamento->data(modelOrcamento->index(index.row(), modelOrcamento->fieldIndex("Código"))));
   orcamento->showMaximized();
@@ -733,7 +747,8 @@ void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
 
 void MainWindow::on_tablePedidosCompra_activated(const QModelIndex &index) {
   PedidosCompra *pedidos = new PedidosCompra(this);
-  pedidos->viewPedido(modelPedCompra->data(modelPedCompra->index(index.row(), 0)).toString());
+  pedidos->viewPedido(
+        modelPedCompra->data(modelPedCompra->index(index.row(), modelPedCompra->fieldIndex("idPedido"))).toString());
 }
 
 void MainWindow::on_tableRecebimentosFornecedor_activated(const QModelIndex &index) {
@@ -751,15 +766,15 @@ void MainWindow::on_tableNFE_activated(const QModelIndex &index) {
 bool MainWindow::event(QEvent *e) {
   switch (e->type()) {
 
-    case QEvent::WindowActivate:
-      updateTables();
-      break;
+  case QEvent::WindowActivate:
+    updateTables();
+    break;
 
-    case QEvent::WindowDeactivate:
-      break;
+  case QEvent::WindowDeactivate:
+    break;
 
-    default:
-      break;
+  default:
+    break;
   };
 
   return QMainWindow::event(e);
@@ -788,3 +803,38 @@ void MainWindow::TestImportacao() {
   importa->TestImportacao();
 }
 #endif
+
+void MainWindow::on_tableEstoque_activated(const QModelIndex &index) {
+  Estoque *estoque = new Estoque(this);
+  estoque->viewRegisterById(
+        modelEstoque->data(modelEstoque->index(index.row(), modelEstoque->fieldIndex("idProduto"))));
+}
+
+void MainWindow::on_pushButtonEntradaEstoque_clicked() {
+  XML xml;
+  xml.importarXML();
+}
+
+void MainWindow::darkTheme() {
+  qApp->setStyle(QStyleFactory::create("Fusion"));
+
+  QPalette darkPalette;
+  darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
+  darkPalette.setColor(QPalette::WindowText, Qt::white);
+  darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+  darkPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+  darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
+  darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+  darkPalette.setColor(QPalette::Text, Qt::white);
+  darkPalette.setColor(QPalette::Button, QColor(53, 53, 53));
+  darkPalette.setColor(QPalette::ButtonText, Qt::white);
+  darkPalette.setColor(QPalette::BrightText, Qt::red);
+  darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+
+  darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+  darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+
+  qApp->setPalette(darkPalette);
+
+  qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+}

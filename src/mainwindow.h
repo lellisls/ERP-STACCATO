@@ -88,12 +88,14 @@ class MainWindow : public QMainWindow {
     void on_tableRecebimentosFornecedor_activated(const QModelIndex &index);
     void on_tableVendas_activated(const QModelIndex &index);
     void on_radioButtonOrcProprios_clicked();
+    void on_tableEstoque_activated(const QModelIndex &index);
+    void on_pushButtonEntradaEstoque_clicked();
 
   private:
     // attributes
     Ui::MainWindow *ui;
     QSqlTableModel *modelOrcamento, *modelCAPagar, *modelCAReceber, *modelEntregasCliente, *modelRecebimentosForn,
-    *modelNFe;
+    *modelNFe, *modelEstoque;
     QSqlRelationalTableModel *modelVendas, *modelPedCompra;
     QString hostname = "localhost";
     QString username = "test";
@@ -102,6 +104,7 @@ class MainWindow : public QMainWindow {
     // Methods
     void initializeTables();
     bool event(QEvent *e);
+    void darkTheme();
 };
 
 #endif // MAINWINDOW_H

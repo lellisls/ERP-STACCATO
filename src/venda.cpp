@@ -26,7 +26,8 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   ui->itemBoxEnderecoFat->setSearchDialog(SearchDialog::enderecoCliente(this));
 
   // TODO: make this runtime changeable
-  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto"};
+  QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto",
+                   "Transf. Banc."};
 
   ui->comboBoxPgt1->insertItems(0, list);
   ui->comboBoxPgt2->insertItems(0, list);
@@ -57,7 +58,7 @@ void Venda::setupTables() {
   modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
   modelItem.setHeaderData(modelItem.fieldIndex("prcUnitario"), Qt::Horizontal, "Preço/Un");
   modelItem.setHeaderData(modelItem.fieldIndex("caixas"), Qt::Horizontal, "Caixas");
-  modelItem.setHeaderData(modelItem.fieldIndex("qte"), Qt::Horizontal, "Quant.");
+  modelItem.setHeaderData(modelItem.fieldIndex("quant"), Qt::Horizontal, "Quant.");
   modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
   modelItem.setHeaderData(modelItem.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Caixa");
   modelItem.setHeaderData(modelItem.fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
@@ -73,12 +74,14 @@ void Venda::setupTables() {
     return;
   }
 
-  modelFluxoCaixa.setTable("venda_has_pagamento");
+  modelFluxoCaixa.setTable("conta_a_receber_has_pagamento");
   modelFluxoCaixa.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("tipo"), Qt::Horizontal, "Tipo");
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("parcela"), Qt::Horizontal, "Parcela");
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("valor"), Qt::Horizontal, "R$");
   modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("data"), Qt::Horizontal, "Data");
+  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("observacao"), Qt::Horizontal, "Obs.");
+  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("status"), Qt::Horizontal, "Status");
 
   if (not modelFluxoCaixa.select()) {
     qDebug() << "erro modelFluxoCaixa: " << modelFluxoCaixa.lastError();
@@ -329,7 +332,7 @@ void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
+    double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("quant"))).toDouble();
     double descItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.;
     double itemBruto = qteItem * prcUnItem;
     subTotalBruto += itemBruto;
@@ -579,9 +582,8 @@ bool Venda::savingProcedures(int row) {
 
   QSqlQuery query;
 
-  query.prepare("SELECT produto.descricao, produto.estoque, venda_has_produto.idVenda FROM venda_has_produto INNER "
-                "JOIN produto ON produto.idProduto = venda_has_produto.idProduto WHERE estoque = 0 AND "
-                "venda_has_produto.idVenda = :idVenda");
+  query.prepare("SELECT * FROM venda_has_produto AS v INNER JOIN produto AS p ON p.idProduto = v.idProduto "
+                "WHERE estoque <= 0 AND v.idVenda = :idVenda");
   query.bindValue(":idVenda", ui->lineEditVenda->text());
 
   if (not query.exec()) {
@@ -589,31 +591,93 @@ bool Venda::savingProcedures(int row) {
     return false;
   }
 
-  if (query.size() > 0) {
-    query.prepare("INSERT INTO pedido_fornecedor (idPedido, idLoja, idUsuario, idCliente, "
-                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-                  "descontoReais, total, validade, status) SELECT idVenda, idLoja, idUsuario, idCliente, "
-                  "idEnderecoEntrega, idProfissional, data, subTotalBru, subTotalLiq, frete, descontoPorc, "
-                  "descontoReais, total, validade, status "
-                  "FROM venda WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", ui->lineEditVenda->text());
+  if (query.size() > 0) { // estoque zero ou negativo
+    query.first();
 
-    if (not query.exec()) {
-      qDebug() << "Erro na criação do pedido fornecedor: " << query.lastError();
-    }
+//    qDebug() << "idProduto: " << query.value("idProduto").toInt();
 
-    query.prepare("INSERT INTO pedido_fornecedor_has_Produto (idPedido, idLoja, item, idProduto, fornecedor, produto, "
-                  "obs, prcUnitario, caixas, qte, un, unCaixa, codComercial, formComercial, parcial, desconto, "
-                  "parcialDesc, descGlobal, total, status) SELECT v.idVenda, v.idLoja, v.item, v.idProduto, "
-                  "v.fornecedor, v.produto, v.obs, v.prcUnitario, v.caixas, v.qte, v.un, v.unCaixa, v.codComercial, "
-                  "v.formComercial, v.parcial, v.desconto, v.parcialDesc, v.descGlobal, v.total, v.status FROM "
-                  "venda_has_produto AS v INNER JOIN produto ON produto.idProduto = v.idProduto WHERE estoque = 0 AND "
-                  "v.idVenda = :idVenda");
-    query.bindValue(":idVenda", ui->lineEditVenda->text());
+    for (int i = 0; i < query.size(); ++i) {
+      QSqlQuery query2;
 
-    if (not query.exec()) {
-      qDebug() << "Erro na inserção de produtos em pedido_fornecedor_has_produto: " << query.lastError();
-      return false;
+      query2.prepare("SELECT * FROM pedido_fornecedor WHERE idProduto = :idProduto");
+      query2.bindValue(":idProduto", query.value("idProduto"));
+
+      if (not query2.exec()) {
+        qDebug() << "Erro buscando produto: " << query2.lastError();
+      }
+
+//      qDebug() << "query2 size: " << query2.size();
+
+      if (query2.first()) {
+//        qDebug() << "idProduto existente, atualizando: " << query.value("idProduto");
+
+        double quant = query2.value("quant").toDouble() + query.value("quant").toDouble();
+
+        query2.prepare("UPDATE pedido_fornecedor SET quant = :quant WHERE idProduto = :idProduto");
+        query2.bindValue(":quant", quant);
+        query2.bindValue(":idProduto", query.value("idProduto"));
+
+        if (not query2.exec()) {
+          qDebug() << "Erro atualizando quant: " << query2.lastError();
+        }
+
+      } else {
+        query2.prepare("INSERT INTO pedido_fornecedor (idProduto, descricao, colecao, quant, un, m2cx, pccx, "
+                       "kgcx, formComercial, codComercial, codBarras) VALUES (:idProduto, :produto, :colecao, :quant, "
+                       ":un, :m2cx, :pccx, :kgcx, :formComercial, :codComercial, :codBarras)");
+        query2.bindValue(":idProduto", query.value("idProduto"));
+        query2.bindValue(":produto", query.value("produto"));
+        query2.bindValue(":colecao", query.value("colecao"));
+        query2.bindValue(":quant", query.value("quant"));
+        query2.bindValue(":un", query.value("un"));
+        query2.bindValue(":m2cx", query.value("m2cx"));
+        query2.bindValue(":pccx", query.value("pccx"));
+        query2.bindValue(":kgcx", query.value("kgcx"));
+        query2.bindValue(":formComercial", query.value("formComercial"));
+        query2.bindValue(":codComercial", query.value("codComercial"));
+        query2.bindValue(":codBarras", query.value("codBarras"));
+
+        if (not query2.exec()) {
+          qDebug() << "Erro na criação do pedido fornecedor: " << query2.lastError();
+        }
+
+//        qDebug() << "query: " << query2.lastQuery();
+
+//        qDebug() << "idProduto novo, cadastrando: " << query.value("idProduto");
+      }
+
+      query2.prepare("INSERT INTO pedido_fornecedor_has_produto (idVenda, idLoja, item, idProduto, fornecedor, "
+                     "produto, obs, prcUnitario, caixas, quant, un, unCaixa, codComercial, formComercial, parcial, "
+                     "desconto, parcialDesc, descGlobal, total, status) VALUES (:idVenda, :idLoja, :item, :idProduto, "
+                     ":fornecedor, :produto, :obs, :prcUnitario, :caixas, :quant, :un, :unCaixa, :codComercial, "
+                     ":formComercial, :parcial, :desconto, :parcialDesc, :descGlobal, :total, :status)");
+      query2.bindValue(":idVenda", query.value("idVenda"));
+      query2.bindValue(":idLoja", query.value("idLoja"));
+      query2.bindValue(":item", query.value("item"));
+      query2.bindValue(":idProduto", query.value("idProduto"));
+      query2.bindValue(":fornecedor", query.value("fornecedor"));
+      query2.bindValue(":produto", query.value("produto"));
+      query2.bindValue(":obs", query.value("obs"));
+      query2.bindValue(":prcUnitario", query.value("prcUnitario"));
+      query2.bindValue(":caixas", query.value("caixas"));
+      query2.bindValue(":quant", query.value("quant"));
+      query2.bindValue(":un", query.value("un"));
+      query2.bindValue(":unCaixa", query.value("unCaixa"));
+      query2.bindValue(":codComercial", query.value("codComercial"));
+      query2.bindValue(":formComercial", query.value("formComercial"));
+      query2.bindValue(":parcial", query.value("parcial"));
+      query2.bindValue(":desconto", query.value("desconto"));
+      query2.bindValue(":parcialDesc", query.value("parcialDesc"));
+      query2.bindValue(":descGlobal", query.value("descGlobal"));
+      query2.bindValue(":total", query.value("total"));
+      query2.bindValue(":status", query.value("status"));
+
+      if (not query2.exec()) {
+        qDebug() << "Erro na inserção de produtos em pedido_fornecedor_has_produto: " << query2.lastError();
+        return false;
+      }
+
+      query.next();
     }
   }
 
@@ -782,6 +846,8 @@ void Venda::montarFluxoCaixa() {
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt1->date().addMonths(i));
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
+                              ui->lineEditPgt1->text());
       ++row;
     }
   }
@@ -811,6 +877,9 @@ void Venda::montarFluxoCaixa() {
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt2->date().addMonths(i));
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
+                              ui->lineEditPgt2->text());
+
       ++row;
     }
   }
@@ -840,6 +909,9 @@ void Venda::montarFluxoCaixa() {
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
                               ui->dateEditPgt3->date().addMonths(i));
+      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
+                              ui->lineEditPgt3->text());
+
       ++row;
     }
   }
@@ -1082,7 +1154,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
   }
 
   if (paramName == "Quant.") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("qte"))).toString();
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("quant"))).toString();
   }
 
   if (paramName == "Unid.") {
@@ -1121,8 +1193,9 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (paramName == "FormaPagamento1") {
     QSqlQuery queryPgt1;
-    if (not queryPgt1.exec("SELECT tipo, COUNT(valor), valor, data FROM mydb.venda_has_pagamento WHERE idVenda = '" +
-                           ui->lineEditVenda->text() + "' AND tipo LIKE '1%';") or
+    if (not queryPgt1.exec(
+          "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+          ui->lineEditVenda->text() + "' AND tipo LIKE '1%';") or
         not queryPgt1.first()) {
       qDebug() << "Erro buscando pagamentos: " << queryPgt1.lastError();
       return;
@@ -1141,8 +1214,9 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (paramName == "FormaPagamento2") {
     QSqlQuery queryPgt2;
-    if (not queryPgt2.exec("SELECT tipo, COUNT(valor), valor, data FROM mydb.venda_has_pagamento WHERE idVenda = '" +
-                           ui->lineEditVenda->text() + "' AND tipo LIKE '2%';") or
+    if (not queryPgt2.exec(
+          "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+          ui->lineEditVenda->text() + "' AND tipo LIKE '2%';") or
         not queryPgt2.first()) {
       qDebug() << "Erro buscando pagamentos: " << queryPgt2.lastError();
       return;
@@ -1165,8 +1239,9 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (paramName == "FormaPagamento3") {
     QSqlQuery queryPgt3;
-    if (not queryPgt3.exec("SELECT tipo, COUNT(valor), valor, data FROM mydb.venda_has_pagamento WHERE idVenda = '" +
-                           ui->lineEditVenda->text() + "' AND tipo LIKE '3%';") or
+    if (not queryPgt3.exec(
+          "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+          ui->lineEditVenda->text() + "' AND tipo LIKE '3%';") or
         not queryPgt3.first()) {
       qDebug() << "Erro buscando pagamentos: " << queryPgt3.lastError();
       return;

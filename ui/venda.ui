@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1103</width>
-    <height>787</height>
+    <width>1225</width>
+    <height>765</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -307,13 +307,41 @@
                <layout class="QGridLayout" name="gridLayout_11">
                 <item row="0" column="0">
                  <layout class="QGridLayout" name="gridLayout_5">
-                  <item row="0" column="0">
-                   <widget class="QComboBox" name="comboBoxPgt1">
+                  <item row="0" column="3">
+                   <widget class="QDateEdit" name="dateEditPgt1">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="displayFormat">
+                     <string>dd/MM/yy</string>
+                    </property>
+                    <property name="calendarPopup">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimumSize">
                      <size>
-                      <width>140</width>
+                      <width>80</width>
                       <height>0</height>
                      </size>
+                    </property>
+                    <property name="showGroupSeparator" stdset="0">
+                     <bool>true</bool>
+                    </property>
+                    <property name="maximum">
+                     <double>999999.989999999990687</double>
                     </property>
                    </widget>
                   </item>
@@ -380,43 +408,18 @@
                     </item>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                  <item row="0" column="0">
+                   <widget class="QComboBox" name="comboBoxPgt1">
                     <property name="minimumSize">
                      <size>
-                      <width>80</width>
+                      <width>140</width>
                       <height>0</height>
                      </size>
                     </property>
-                    <property name="showGroupSeparator" stdset="0">
-                     <bool>true</bool>
-                    </property>
-                    <property name="maximum">
-                     <double>999999.989999999990687</double>
-                    </property>
                    </widget>
                   </item>
-                  <item row="0" column="3">
-                   <widget class="QDateEdit" name="dateEditPgt1">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="displayFormat">
-                     <string>dd/MM/yy</string>
-                    </property>
-                    <property name="calendarPopup">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
+                  <item row="0" column="4">
+                   <widget class="QLineEdit" name="lineEditPgt1"/>
                   </item>
                  </layout>
                 </item>
@@ -437,13 +440,25 @@
                <layout class="QGridLayout" name="gridLayout_12">
                 <item row="0" column="0">
                  <layout class="QGridLayout" name="gridLayout_4">
-                  <item row="0" column="0">
-                   <widget class="QComboBox" name="comboBoxPgt2">
+                  <item row="0" column="2">
+                   <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimumSize">
                      <size>
-                      <width>140</width>
+                      <width>80</width>
                       <height>0</height>
                      </size>
+                    </property>
+                    <property name="showGroupSeparator" stdset="0">
+                     <bool>true</bool>
+                    </property>
+                    <property name="maximum">
+                     <double>999999.989999999990687</double>
                     </property>
                    </widget>
                   </item>
@@ -510,25 +525,13 @@
                     </item>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                  <item row="0" column="0">
+                   <widget class="QComboBox" name="comboBoxPgt2">
                     <property name="minimumSize">
                      <size>
-                      <width>80</width>
+                      <width>140</width>
                       <height>0</height>
                      </size>
-                    </property>
-                    <property name="showGroupSeparator" stdset="0">
-                     <bool>true</bool>
-                    </property>
-                    <property name="maximum">
-                     <double>999999.989999999990687</double>
                     </property>
                    </widget>
                   </item>
@@ -547,6 +550,9 @@
                      <bool>true</bool>
                     </property>
                    </widget>
+                  </item>
+                  <item row="0" column="4">
+                   <widget class="QLineEdit" name="lineEditPgt2"/>
                   </item>
                  </layout>
                 </item>
@@ -567,16 +573,6 @@
                <layout class="QGridLayout" name="gridLayout_13">
                 <item row="0" column="0">
                  <layout class="QGridLayout" name="gridLayout_3">
-                  <item row="0" column="0">
-                   <widget class="QComboBox" name="comboBoxPgt3">
-                    <property name="minimumSize">
-                     <size>
-                      <width>140</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="comboBoxPgt3Parc">
                     <property name="enabled">
@@ -640,6 +636,35 @@
                     </item>
                    </widget>
                   </item>
+                  <item row="0" column="0">
+                   <widget class="QComboBox" name="comboBoxPgt3">
+                    <property name="minimumSize">
+                     <size>
+                      <width>140</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QDateEdit" name="dateEditPgt3">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="currentSection">
+                     <enum>QDateTimeEdit::DaySection</enum>
+                    </property>
+                    <property name="displayFormat">
+                     <string>dd/MM/yy</string>
+                    </property>
+                    <property name="calendarPopup">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="2">
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
                     <property name="sizePolicy">
@@ -668,24 +693,8 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="3">
-                   <widget class="QDateEdit" name="dateEditPgt3">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="currentSection">
-                     <enum>QDateTimeEdit::DaySection</enum>
-                    </property>
-                    <property name="displayFormat">
-                     <string>dd/MM/yy</string>
-                    </property>
-                    <property name="calendarPopup">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
+                  <item row="0" column="4">
+                   <widget class="QLineEdit" name="lineEditPgt3"/>
                   </item>
                  </layout>
                 </item>

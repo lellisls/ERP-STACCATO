@@ -294,7 +294,7 @@ void CadastrarNFe::prepararNFe(const QList<int> items) {
     setItemData(row, "descricao", queryItens.value("produto"));
     setItemData(row, "ncm", queryItens.value("ncm"));
     setItemData(row, "un", queryItens.value("un"));
-    setItemData(row, "qte", queryItens.value("qte"));
+    setItemData(row, "quant", queryItens.value("quant"));
     setItemData(row, "valorUnitario", queryItens.value("prcUnitario"));
 
     const double total = queryItens.value("total").toDouble() * (1.0 - (descontoGlobal / 100.0));
@@ -721,11 +721,17 @@ bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icms
     stream << "NCM = " + clearStr(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("ncm"))).toString())
            << endl;
 
-    if (not queryProd.value("codBarras").toString().isEmpty()) {
-      stream << "Codigo = " + queryProd.value("codBarras").toString() << endl;
-    } else{
+    if (not queryProd.value("codComercial").toString().isEmpty()) {
+      stream << "Codigo = " + queryProd.value("codComercial").toString() << endl;
+    } else {
       stream << "Codigo = 0000000000000" << endl;
       qDebug() << "codigo vazio";
+    }
+
+    if (not queryProd.value("codBarras").toString().isEmpty()) {
+      stream << "EAN = " + queryProd.value("codBarras").toString() << endl;
+    } else {
+      qDebug() << "codBarras vazio";
     }
 
     if (not queryProd.value("descricao").toString().isEmpty()) {
@@ -742,10 +748,10 @@ bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icms
       return false;
     }
 
-    if (not getFromProdModel(row, "qte").toString().isEmpty()) {
-      stream << "Quantidade = " + getFromProdModel(row, "qte").toString() << endl;
+    if (not getFromProdModel(row, "quant").toString().isEmpty()) {
+      stream << "Quantidade = " + getFromProdModel(row, "quant").toString() << endl;
     } else {
-      qDebug() << "qte vazio";
+      qDebug() << "quant vazio";
       return false;
     }
 
@@ -778,11 +784,16 @@ bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icms
            << endl;
     //    stream << "CST = 60" << endl;
     //    stream << "ValorBase = " + getFromProdModel(row, "parcial").toString() << endl;
-    stream << "ValorBase = " + getFromProdModel(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("item"))).toInt() - 1, "parcial").toString() << endl;
+    stream << "ValorBase = " +
+              getFromProdModel(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("item"))).toInt() -
+                               1,
+                               "parcial").toString() << endl;
     stream << "Aliquota = 18.00" << endl; // TODO: get aliquota from model
 
     const double icms =
-        getFromProdModel(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("item"))).toInt() - 1, "parcial").toDouble() * 0.18; // TODO: replace hardcoded icms from value from model
+        getFromProdModel(modelNFeItem.data(modelNFeItem.index(row, modelNFeItem.fieldIndex("item"))).toInt() - 1,
+                         "parcial").toDouble() *
+        0.18; // TODO: replace hardcoded icms from value from model
     icmsTotal += icms;
     stream << "Valor = " + QString::number(icms) << endl;
   }

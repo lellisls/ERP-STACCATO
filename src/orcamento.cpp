@@ -124,7 +124,7 @@ void Orcamento::setupMapper() {
   mapperItem.addMapping(ui->lineEditCodComercial, modelItem.fieldIndex("codComercial"));
   mapperItem.addMapping(ui->lineEditFormComercial, modelItem.fieldIndex("formComercial"));
   mapperItem.addMapping(ui->itemBoxProduto, modelItem.fieldIndex("idProduto"), "value");
-  mapperItem.addMapping(ui->doubleSpinBoxQte, modelItem.fieldIndex("qte"), "value");
+  mapperItem.addMapping(ui->doubleSpinBoxQte, modelItem.fieldIndex("quant"), "value");
   mapperItem.addMapping(ui->doubleSpinBoxDesconto, modelItem.fieldIndex("desconto"), "value");
 }
 
@@ -323,10 +323,10 @@ void Orcamento::calcPrecoItemTotal() {
     return;
   }
 
-  const double qte = ui->doubleSpinBoxQte->value();
+  const double quant = ui->doubleSpinBoxQte->value();
   const double prcUn = ui->lineEditPrecoUn->getValue();
   const double desc = ui->doubleSpinBoxDesconto->value() / 100.0;
-  const double itemBruto = qte * prcUn;
+  const double itemBruto = quant * prcUn;
   const double subTotalItem = itemBruto * (1.0 - desc);
 
   if (not ui->itemBoxProduto->text().isEmpty()) {
@@ -367,7 +367,7 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     const double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    const double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("qte"))).toDouble();
+    const double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("quant"))).toDouble();
     const double descItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.0;
     const double itemBruto = qteItem * prcUnItem;
     subTotalBruto += itemBruto;
@@ -617,7 +617,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   if (paramName == "Quant.") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("qte"))).toString();
+    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("quant"))).toString();
   }
 
   if (paramName == "Unid.") {
@@ -673,7 +673,7 @@ void Orcamento::setupTables() {
   modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
   modelItem.setHeaderData(modelItem.fieldIndex("prcUnitario"), Qt::Horizontal, "Preço/Un.");
   modelItem.setHeaderData(modelItem.fieldIndex("caixas"), Qt::Horizontal, "Caixas");
-  modelItem.setHeaderData(modelItem.fieldIndex("qte"), Qt::Horizontal, "Quant.");
+  modelItem.setHeaderData(modelItem.fieldIndex("quant"), Qt::Horizontal, "Quant.");
   modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
   modelItem.setHeaderData(modelItem.fieldIndex("codComercial"), Qt::Horizontal, "Código");
   modelItem.setHeaderData(modelItem.fieldIndex("formComercial"), Qt::Horizontal, "Formato");
@@ -761,7 +761,7 @@ void Orcamento::adicionarItem(const bool isUpdate) {
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("obs")), ui->lineEditObs->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("prcUnitario")), ui->lineEditPrecoUn->getValue());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("caixas")), ui->spinBoxCaixas->value());
-  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("qte")), ui->doubleSpinBoxQte->value());
+  modelItem.setData(modelItem.index(row, modelItem.fieldIndex("quant")), ui->doubleSpinBoxQte->value());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("unCaixa")), ui->doubleSpinBoxQte->singleStep());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("un")), ui->lineEditUn->text());
   modelItem.setData(modelItem.index(row, modelItem.fieldIndex("codComercial")), ui->lineEditCodComercial->text());
@@ -857,10 +857,10 @@ void Orcamento::on_pushButtonCancelarItem_clicked() { novoItem(); }
 void Orcamento::on_doubleSpinBoxSubTotalLiq_valueChanged(const double) { calcPrecoGlobalTotal(); }
 
 void Orcamento::on_spinBoxCaixas_valueChanged(const int caixas) {
-  const double qte = caixas * ui->doubleSpinBoxQte->singleStep();
+  const double quant = caixas * ui->doubleSpinBoxQte->singleStep();
 
-  if (ui->doubleSpinBoxQte->value() != qte) {
-    ui->doubleSpinBoxQte->setValue(qte);
+  if (ui->doubleSpinBoxQte->value() != quant) {
+    ui->doubleSpinBoxQte->setValue(quant);
   }
 
   calcPrecoItemTotal();
@@ -996,7 +996,7 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   for (int i = 0; i < modelItem.rowCount(); ++i) {
     orcamento->ui->itemBoxProduto->setValue(modelItem.data(modelItem.index(i, modelItem.fieldIndex("idProduto"))));
     orcamento->ui->doubleSpinBoxQte->setValue(
-          modelItem.data(modelItem.index(i, modelItem.fieldIndex("qte"))).toDouble());
+          modelItem.data(modelItem.index(i, modelItem.fieldIndex("quant"))).toDouble());
     orcamento->adicionarItem();
   }
 
@@ -1008,9 +1008,9 @@ void Orcamento::on_doubleSpinBoxPrecoTotal_editingFinished() {
     return;
   }
 
-  double qte = ui->doubleSpinBoxQte->value();
+  double quant = ui->doubleSpinBoxQte->value();
   double prcUn = ui->lineEditPrecoUn->getValue();
-  double itemBruto = qte * prcUn;
+  double itemBruto = quant * prcUn;
   double subTotalItem = ui->doubleSpinBoxPrecoTotal->value();
   double desconto = (itemBruto - subTotalItem) / itemBruto * 100;
 

@@ -27,10 +27,9 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
   mapper.setModel(&model);
   mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 
-  QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
-  connect(shortcut, &QShortcut::activated, this, &QWidget::close);
-  shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
-  connect(shortcut, &QShortcut::activated, this, &RegisterDialog::saveSlot);
+  connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this), &QShortcut::activated, this, &QWidget::close);
+  connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this), &QShortcut::activated, this,
+          &RegisterDialog::saveSlot);
 }
 
 bool RegisterDialog::viewRegisterById(const QVariant id) {
@@ -196,8 +195,8 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 
 bool RegisterDialog::confirmationMessage() {
   if (model.isDirty() or isDirty) {
-    qDebug() << "model is dirty: " << model.isDirty() << "(" << model.tableName() << ")";
-    qDebug() << "isDirty: " << isDirty;
+    //    qDebug() << "model is dirty: " << model.isDirty() << "(" << model.tableName() << ")";
+    //    qDebug() << "isDirty: " << isDirty;
 
     QMessageBox msgBox;
     msgBox.setParent(this);

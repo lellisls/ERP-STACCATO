@@ -400,6 +400,10 @@ QString CadastrarNFe::clearStr(QString str) {
 }
 
 QString CadastrarNFe::removeDiacritics(QString str) {
+  if (str == "M²") {
+    return "M2";
+  }
+
   return str.normalized(QString::NormalizationForm_KD).remove(QRegExp("[^a-zA-Z\\s]"));
 }
 

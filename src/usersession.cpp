@@ -54,6 +54,20 @@ QString UserSession::getSiglaLoja() {
   return QString();
 }
 
+QString UserSession::getFromLoja(QString parameter) {
+  QSqlQuery queryLoja;
+  queryLoja.prepare("SELECT " + parameter + " FROM loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", getLoja());
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
+  } else {
+    return queryLoja.value(parameter).toString();
+  }
+
+  return QString();
+}
+
 QSqlQuery *UserSession::initialize() {
   if (query) {
     query->finish();

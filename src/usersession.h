@@ -15,6 +15,7 @@ class UserSession {
     static QString getTipoUsuario();
     static void logout();
     static void free();
+    static QString getFromLoja(QString parameter);
 
   private:
     // attributes

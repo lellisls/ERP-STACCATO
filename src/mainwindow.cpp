@@ -813,6 +813,7 @@ void MainWindow::on_tableEstoque_activated(const QModelIndex &index) {
 void MainWindow::on_pushButtonEntradaEstoque_clicked() {
   XML xml;
   xml.importarXML();
+  updateTables();
 }
 
 void MainWindow::darkTheme() {

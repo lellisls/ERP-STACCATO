@@ -7,16 +7,16 @@
 
 #include "src/xml.h"
 #include "ui_xml.h"
+#include "usersession.h"
 
 XML::XML(QWidget *parent) : QDialog(parent), ui(new Ui::XML) {
   ui->setupUi(this);
   setWindowFlags(Qt::Window);
 
-  //  darkTheme();
-
   ui->treeView->setModel(&model);
   ui->treeView->setUniformRowHeights(true);
   ui->treeView->setAnimated(true);
+  ui->treeView->setEditTriggers(QTreeView::NoEditTriggers);
 }
 
 XML::~XML() { delete ui; }
@@ -51,6 +51,7 @@ void XML::exibirXML(QString file) {
 
   if (not document.setContent(file)) {
     qDebug() << "erro setContent";
+    return;
   }
 
   QDomElement root = document.firstChildElement();
@@ -159,6 +160,25 @@ void XML::readTree(QStandardItem *item) {
         idNFe = child->text().mid(child->text().indexOf("Id=") + 7, 44);
       }
 
+      if (child->parent()->text() == "emit" and child->text().left(7) == "xFant -") {
+        xFant = child->text().remove(0, 8);
+      }
+
+      if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
+        cnpj = child->text().remove(0, 7);
+
+        if (cnpj != UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-")) {
+          QMessageBox::warning(this, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
+          qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
+          return;
+        }
+      }
+
+      if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
+        QMessageBox::warning(this, "Aviso!", "Destinatário da nota é pessoa física!");
+        return;
+      }
+
       lerDadosProduto(child);
       lerICMSProduto(child);
       lerIPIProduto(child);
@@ -171,7 +191,6 @@ void XML::readTree(QStandardItem *item) {
       }
 
       if (child->text().mid(0, 10) == "det nItem=") {
-        // TODO: adicionar TRANSACTION para caso ocorra um produto não cadastrado, poder dar ROLLBACK
         if (insertProdutoEstoque()) {
           insertEstoque();
         }
@@ -182,33 +201,10 @@ void XML::readTree(QStandardItem *item) {
 
 void XML::saveXML() {
   QStandardItem *modelRoot = model.item(0, 0);
+
   if (modelRoot->hasChildren()) {
     readTree(modelRoot);
   }
-}
-
-void XML::darkTheme() {
-  qApp->setStyle(QStyleFactory::create("Fusion"));
-
-  QPalette darkPalette;
-  darkPalette.setColor(QPalette::Window, QColor(53, 53, 53));
-  darkPalette.setColor(QPalette::WindowText, Qt::white);
-  darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
-  darkPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
-  darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
-  darkPalette.setColor(QPalette::ToolTipText, Qt::white);
-  darkPalette.setColor(QPalette::Text, Qt::white);
-  darkPalette.setColor(QPalette::Button, QColor(53, 53, 53));
-  darkPalette.setColor(QPalette::ButtonText, Qt::white);
-  darkPalette.setColor(QPalette::BrightText, Qt::red);
-  darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
-
-  darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
-  darkPalette.setColor(QPalette::HighlightedText, Qt::black);
-
-  qApp->setPalette(darkPalette);
-
-  qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
 }
 
 void XML::lerDadosProduto(QStandardItem *child) {
@@ -445,15 +441,54 @@ void XML::lerTotais(QStandardItem *child) {
 }
 
 bool XML::insertProdutoEstoque() {
-  qDebug() << "cod: " << codProd;
   QModelIndexList indexList =
       modelProduto.match(modelProduto.index(0, modelProduto.fieldIndex("codComercial")), Qt::DisplayRole, codProd);
-  qDebug() << "size: " << indexList.size();
 
   if (indexList.isEmpty()) {
-//    qDebug() << "produto nao cadastrado";
-    QMessageBox::warning(this, "Aviso!", "Produto não cadastrado!");
-    return false;
+    QSqlQuery queryForn;
+    queryForn.prepare("SELECT * FROM fornecedor WHERE razaoSocial = :razaoSocial");
+    queryForn.bindValue(":razaoSocial", xFant);
+
+    if (not queryForn.exec()) {
+      qDebug() << "Erro buscando fornecedor: " << queryForn.lastError();
+    }
+
+    int idFornecedor = 0;
+
+    if (queryForn.first()) {
+      idFornecedor = queryForn.value("idFornecedor").toInt();
+    } else {
+      queryForn.prepare("INSERT INTO fornecedor (razaoSocial) VALUES (:razaoSocial)");
+      queryForn.bindValue(":razaoSocial", xFant);
+
+      if (not queryForn.exec()) {
+        qDebug() << "Erro cadastrando fornecedor: " << queryForn.lastError();
+      }
+
+      idFornecedor = queryForn.lastInsertId().toInt();
+    }
+
+    QSqlQuery queryProd;
+    queryProd.prepare("INSERT INTO produto (idFornecedor, fornecedor, codComercial, codBarras, descricao, ncm, cfop, "
+                      "un, custo) VALUES (:idFornecedor, :fornecedor, :codComercial, :codBarras, :descricao, :ncm, "
+                      ":cfop, :un, :custo)");
+    queryProd.bindValue(":idFornecedor", idFornecedor);
+    queryProd.bindValue(":fornecedor", xFant);
+    queryProd.bindValue(":codComercial", codProd);
+    queryProd.bindValue(":codBarras", codBarras);
+    queryProd.bindValue(":descricao", descricao);
+    queryProd.bindValue(":ncm", ncm);
+    queryProd.bindValue(":cfop", cfop);
+    queryProd.bindValue(":un", un);
+    queryProd.bindValue(":custo", valorUnid);
+
+    if (not queryProd.exec()) {
+      qDebug() << "Erro cadastrando produto: " << queryProd.lastError();
+    }
+
+    idProduto = queryProd.lastInsertId().toInt();
+
+    QMessageBox::warning(this, "Aviso!", "Produto não cadastrado, cadastrando!");
   } else {
     idProduto =
         modelProduto.data(modelProduto.index(indexList.first().row(), modelProduto.fieldIndex("idProduto"))).toInt();
@@ -469,7 +504,8 @@ bool XML::insertProdutoEstoque() {
   queryEstoque.bindValue(":quant", quant);
 
   if (queryEstoque.exec() and queryEstoque.first()) {
-    qDebug() << "nota já cadastrada";
+    //    qDebug() << "nota já cadastrada";
+    QMessageBox::warning(this, "Aviso!", "Nota já cadastrada!");
     return false;
   }
 
@@ -496,8 +532,8 @@ bool XML::insertProdutoEstoque() {
 }
 
 bool XML::insertEstoque() {
-  qDebug() << "codProd: " << codProd;
-  qDebug() << "idProduto: " << idProduto;
+//  qDebug() << "codProd: " << codProd;
+//  qDebug() << "idProduto: " << idProduto;
 
   QSqlQuery queryProd;
   queryProd.prepare("SELECT * FROM estoque WHERE idProduto = :idProduto");
@@ -583,6 +619,3 @@ bool XML::insertEstoque() {
 
   return true;
 }
-
-// TODO: nao deixar cadastrar uma mesma nota mais de uma vez (guardar o id da nota para comparacao)
-// TODO: criar um lote novo para cada produto existente ao importar uma nota nova

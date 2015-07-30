@@ -28,6 +28,10 @@ class XML : public QDialog
     QSqlTableModel modelProduto;
 
     QString idNFe;
+    //emit
+    QString xFant;
+    //dest
+    QString cnpj;
     //produto
     int idProduto = 0;
     int itemNumero = 0;
@@ -92,7 +96,6 @@ class XML : public QDialog
     double vNF_Total = 0;
 
     // methods
-    void darkTheme();
     void readFile();
     void readChild(QDomElement element, QStandardItem *elementItem);
     void readTree(QStandardItem *item);

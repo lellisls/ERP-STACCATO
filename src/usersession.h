@@ -16,6 +16,7 @@ class UserSession {
     static void logout();
     static void free();
     static QString getFromLoja(QString parameter);
+    static QStringList getTodosCNPJ();
 
   private:
     // attributes

@@ -68,6 +68,25 @@ QString UserSession::getFromLoja(QString parameter) {
   return QString();
 }
 
+QStringList UserSession::getTodosCNPJ() {
+  QSqlQuery queryLoja;
+  queryLoja.prepare("SELECT cnpj FROM loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", getLoja());
+
+  QStringList list;
+
+  if (not queryLoja.exec() or queryLoja.first()) {
+    qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
+  } else {
+    for (int i = 0; i < queryLoja.size(); ++i) {
+      list.append(queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-"));
+      queryLoja.next();
+    }
+  }
+
+  return list;
+}
+
 QSqlQuery *UserSession::initialize() {
   if (query) {
     query->finish();

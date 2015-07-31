@@ -19,6 +19,7 @@ class XML {
     QString idNFe;
     // emit
     QString xFant;
+    QString xNome;
     // dest
     QString cnpj;
     // produto
@@ -85,9 +86,9 @@ class XML {
     double vNF_Total = 0;
 
     // methods
-    void readFile();
+    void readXML();
     void saveXML();
-    void readTree(QStandardItem *item);
+    bool readTree(QStandardItem *item);
     bool insertEstoque();
     bool insertProdutoEstoque();
     void lerCOFINSProduto(QStandardItem *child);

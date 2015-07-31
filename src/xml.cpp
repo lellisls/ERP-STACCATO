@@ -27,11 +27,11 @@ void XML::importarXML() {
     return;
   }
 
-  readFile();
+  readXML();
   saveXML();
 }
 
-void XML::readFile() {
+void XML::readXML() {
   QDomDocument document;
 
   QFile file(fileName);
@@ -109,7 +109,7 @@ void XML::saveXML() {
   }
 }
 
-void XML::readTree(QStandardItem *item) {
+bool XML::readTree(QStandardItem *item) {
   for (int i = 0; i < item->rowCount(); ++i) {
     for (int j = 0; j < item->columnCount(); ++j) {
       QStandardItem *child = item->child(i, j);
@@ -120,6 +120,10 @@ void XML::readTree(QStandardItem *item) {
 
       if (child->parent()->text() == "emit" and child->text().left(7) == "xFant -") {
         xFant = child->text().remove(0, 8);
+      }
+
+      if (child->parent()->text() == "emit" and child->text().left(7) == "xNome -") {
+        xNome = child->text().remove(0, 8);
       }
 
       if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
@@ -137,13 +141,13 @@ void XML::readTree(QStandardItem *item) {
         if (not match) {
           QMessageBox::warning(0, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
           qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
-          return;
+          return false;
         }
       }
 
       if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
         QMessageBox::warning(0, "Aviso!", "Destinatário da nota é pessoa física!");
-        return;
+        return false;
       }
 
       lerDadosProduto(child);
@@ -154,7 +158,9 @@ void XML::readTree(QStandardItem *item) {
       lerTotais(child);
 
       if (child->hasChildren()) {
-        readTree(child);
+        if (not readTree(child)) {
+          return false;
+        }
       }
 
       if (child->text().mid(0, 10) == "det nItem=") {
@@ -164,6 +170,8 @@ void XML::readTree(QStandardItem *item) {
       }
     }
   }
+
+  return true;
 }
 
 void XML::lerDadosProduto(QStandardItem *child) {
@@ -406,7 +414,7 @@ bool XML::insertProdutoEstoque() {
   if (indexList.isEmpty()) {
     QSqlQuery queryForn;
     queryForn.prepare("SELECT * FROM fornecedor WHERE razaoSocial = :razaoSocial");
-    queryForn.bindValue(":razaoSocial", xFant);
+    queryForn.bindValue(":razaoSocial", xFant.isEmpty() ? xNome : xFant);
 
     if (not queryForn.exec()) {
       qDebug() << "Erro buscando fornecedor: " << queryForn.lastError();
@@ -418,7 +426,7 @@ bool XML::insertProdutoEstoque() {
       idFornecedor = queryForn.value("idFornecedor").toInt();
     } else {
       queryForn.prepare("INSERT INTO fornecedor (razaoSocial) VALUES (:razaoSocial)");
-      queryForn.bindValue(":razaoSocial", xFant);
+      queryForn.bindValue(":razaoSocial", xFant.isEmpty() ? xNome : xFant);
 
       if (not queryForn.exec()) {
         qDebug() << "Erro cadastrando fornecedor: " << queryForn.lastError();
@@ -432,7 +440,7 @@ bool XML::insertProdutoEstoque() {
                       "un, custo) VALUES (:idFornecedor, :fornecedor, :codComercial, :codBarras, :descricao, :ncm, "
                       ":cfop, :un, :custo)");
     queryProd.bindValue(":idFornecedor", idFornecedor);
-    queryProd.bindValue(":fornecedor", xFant);
+    queryProd.bindValue(":fornecedor", xFant.isEmpty() ? xNome : xFant);
     queryProd.bindValue(":codComercial", codProd);
     queryProd.bindValue(":codBarras", codBarras);
     queryProd.bindValue(":descricao", descricao);

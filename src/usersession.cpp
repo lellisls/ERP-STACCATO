@@ -70,18 +70,19 @@ QString UserSession::getFromLoja(QString parameter) {
 
 QStringList UserSession::getTodosCNPJ() {
   QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT cnpj FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", getLoja());
-
   QStringList list;
 
-  if (not queryLoja.exec() or queryLoja.first()) {
+  if (not queryLoja.exec("SELECT cnpj FROM loja")) {
     qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
-  } else {
+  }
+
+  if (queryLoja.first()) {
     for (int i = 0; i < queryLoja.size(); ++i) {
       list.append(queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-"));
       queryLoja.next();
     }
+  } else{
+    qDebug() << "Não encontrou lojas";
   }
 
   return list;

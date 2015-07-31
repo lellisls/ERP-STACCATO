@@ -54,8 +54,9 @@ SOURCES += src/apagaorcamento.cpp \
     src/porcentagemdelegate.cpp \
     src/checkboxdelegate.cpp \
     src/registeraddressdialog.cpp \
-    src/xml.cpp \
-    src/estoque.cpp
+    src/estoque.cpp \
+    src/xml_viewer.cpp \
+    src/xml.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/backgroundproxymodel.h \
@@ -100,8 +101,9 @@ HEADERS  += src/apagaorcamento.h \
     src/porcentagemdelegate.h \
     src/checkboxdelegate.h \
     src/registeraddressdialog.h \
-    src/xml.h \
-    src/estoque.h
+    src/estoque.h \
+    src/xml_viewer.h \
+    src/xml.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -126,8 +128,8 @@ FORMS += ui/apagaorcamento.ui \
     ui/validadedialog.ui \
     ui/venda.ui \
     ui/importaprodutos.ui \
-    ui/xml.ui \
-    ui/estoque.ui
+    ui/estoque.ui \
+    ui/xml_viewer.ui
 
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
 QMAKE_CXXFLAGS_DEBUG += -O0

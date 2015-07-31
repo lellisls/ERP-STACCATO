@@ -4,7 +4,7 @@
 
 #include "src/estoque.h"
 #include "ui_estoque.h"
-#include "xml.h"
+#include "xml_viewer.h"
 
 Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   ui->setupUi(this);
@@ -24,7 +24,7 @@ Estoque::~Estoque() { delete ui; }
 void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
   //  qDebug() << "xml: " << modelEstoque.data(modelEstoque.index(index.row(),
   //  modelEstoque.fieldIndex("xml"))).toString();
-  XML *xml = new XML(this);
+  XML_Viewer *xml = new XML_Viewer(this);
   xml->exibirXML(modelEstoque.data(modelEstoque.index(index.row(), modelEstoque.fieldIndex("xml"))).toString());
   xml->show();
 }

@@ -1,28 +1,17 @@
+#include <QDomDocument>
 #include <QFileDialog>
-#include <QStyleFactory>
-#include <QSqlQuery>
+#include <QString>
 #include <QDebug>
 #include <QSqlError>
 #include <QMessageBox>
 
-#include "src/xml.h"
-#include "ui_xml.h"
+#include "xml.h"
 #include "usersession.h"
 
-XML::XML(QWidget *parent) : QDialog(parent), ui(new Ui::XML) {
-  ui->setupUi(this);
-  setWindowFlags(Qt::Window);
-
-  ui->treeView->setModel(&model);
-  ui->treeView->setUniformRowHeights(true);
-  ui->treeView->setAnimated(true);
-  ui->treeView->setEditTriggers(QTreeView::NoEditTriggers);
-}
-
-XML::~XML() { delete ui; }
+XML::XML() {}
 
 void XML::importarXML() {
-  fileName = QFileDialog::getOpenFileName(this, "Importar arquivo XML", QDir::currentPath(), tr("XML (*.xml)"));
+  fileName = QFileDialog::getOpenFileName(0, "Importar arquivo XML", QDir::currentPath(), ("XML (*.xml)"));
 
   if (fileName.isEmpty()) {
     return;
@@ -40,45 +29,6 @@ void XML::importarXML() {
 
   readFile();
   saveXML();
-}
-
-void XML::exibirXML(QString file) {
-  if (file.isEmpty()) {
-    return;
-  }
-
-  QDomDocument document;
-
-  if (not document.setContent(file)) {
-    qDebug() << "erro setContent";
-    return;
-  }
-
-  QDomElement root = document.firstChildElement();
-  QDomNamedNodeMap map = root.attributes();
-  QStandardItem *rootItem;
-
-  if (map.size() > 0) {
-    QString attributes = root.nodeName() + " ";
-
-    for (int i = 0; i < map.size(); ++i) {
-      if (i > 0) {
-        attributes += " ";
-      }
-
-      attributes += map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
-    }
-
-    rootItem = new QStandardItem(attributes);
-  } else {
-    rootItem = new QStandardItem(root.nodeName());
-  }
-
-  model.appendRow(rootItem);
-
-  readChild(root, rootItem);
-
-  ui->treeView->expandAll();
 }
 
 void XML::readFile() {
@@ -151,6 +101,14 @@ void XML::readChild(QDomElement element, QStandardItem *elementItem) {
   }
 }
 
+void XML::saveXML() {
+  QStandardItem *modelRoot = model.item(0, 0);
+
+  if (modelRoot->hasChildren()) {
+    readTree(modelRoot);
+  }
+}
+
 void XML::readTree(QStandardItem *item) {
   for (int i = 0; i < item->rowCount(); ++i) {
     for (int j = 0; j < item->columnCount(); ++j) {
@@ -167,8 +125,6 @@ void XML::readTree(QStandardItem *item) {
       if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
         cnpj = child->text().remove(0, 7);
 
-        // TODO: aceitar qualquer cnpj cadastrado em loja
-
         QStringList list = UserSession::getTodosCNPJ();
         bool match = false;
 
@@ -179,14 +135,14 @@ void XML::readTree(QStandardItem *item) {
         }
 
         if (not match) {
-          QMessageBox::warning(this, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
+          QMessageBox::warning(0, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
           qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
           return;
         }
       }
 
       if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
-        QMessageBox::warning(this, "Aviso!", "Destinatário da nota é pessoa física!");
+        QMessageBox::warning(0, "Aviso!", "Destinatário da nota é pessoa física!");
         return;
       }
 
@@ -207,14 +163,6 @@ void XML::readTree(QStandardItem *item) {
         }
       }
     }
-  }
-}
-
-void XML::saveXML() {
-  QStandardItem *modelRoot = model.item(0, 0);
-
-  if (modelRoot->hasChildren()) {
-    readTree(modelRoot);
   }
 }
 
@@ -499,7 +447,7 @@ bool XML::insertProdutoEstoque() {
 
     idProduto = queryProd.lastInsertId().toInt();
 
-    QMessageBox::warning(this, "Aviso!", "Produto não cadastrado, cadastrando!");
+    QMessageBox::warning(0, "Aviso!", "Produto não cadastrado, cadastrando!");
   } else {
     idProduto =
         modelProduto.data(modelProduto.index(indexList.first().row(), modelProduto.fieldIndex("idProduto"))).toInt();
@@ -516,13 +464,13 @@ bool XML::insertProdutoEstoque() {
 
   if (queryEstoque.exec() and queryEstoque.first()) {
     //    qDebug() << "nota já cadastrada";
-    QMessageBox::warning(this, "Aviso!", "Nota já cadastrada!");
+    QMessageBox::warning(0, "Aviso!", "Nota já cadastrada!");
     return false;
   }
 
   if (queryEstoque.exec("SELECT load_file('" + fileName + "')") and queryEstoque.first()) {
     if (queryEstoque.value(0).toString().isEmpty()) {
-      QMessageBox::warning(this, "Aviso!", "Erro lendo xml no banco de dados.");
+      QMessageBox::warning(0, "Aviso!", "Erro lendo xml no banco de dados.");
       return false;
     }
   }

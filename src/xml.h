@@ -1,38 +1,27 @@
 #ifndef XML_H
 #define XML_H
 
-#include <QDialog>
+#include <QSqlTableModel>
 #include <QStandardItemModel>
 #include <QDomElement>
-#include <QSqlTableModel>
 
-namespace Ui {
-  class XML;
-}
-
-class XML : public QDialog
-{
-    Q_OBJECT
-
+class XML {
   public:
-    explicit XML(QWidget *parent = 0);
-    ~XML();
+    XML();
     void importarXML();
-    void exibirXML(QString file);
+    void readChild(QDomElement element, QStandardItem *elementItem);
 
   private:
-    // attributes
-    Ui::XML *ui;
     QString fileName;
     QStandardItemModel model;
     QSqlTableModel modelProduto;
 
     QString idNFe;
-    //emit
+    // emit
     QString xFant;
-    //dest
+    // dest
     QString cnpj;
-    //produto
+    // produto
     int idProduto = 0;
     int itemNumero = 0;
     QString codProd;
@@ -52,7 +41,7 @@ class XML : public QDialog
     bool compoeTotal;
     QString numeroPedido;
     int itemPedido = 0;
-    //icms
+    // icms
     QString tipoICMS;
     int orig = 0;
     int cstICMS = 0;
@@ -65,20 +54,20 @@ class XML : public QDialog
     double vBCST = 0;
     double pICMSST = 0;
     double vICMSST = 0;
-    //ipi
+    // ipi
     int cEnq = 0;
     int cstIPI = 0;
-    //pis
+    // pis
     int cstPIS = 0;
     double vBCPIS = 0;
     double pPIS = 0;
     double vPIS = 0;
-    //cofins
+    // cofins
     int cstCOFINS = 0;
     double vBCCOFINS = 0;
     double pCOFINS = 0;
     double vCOFINS = 0;
-    //total
+    // total
     double vBC_Total = 0;
     double vICMS_Total = 0;
     double vICMSDeson_Total = 0;
@@ -97,17 +86,16 @@ class XML : public QDialog
 
     // methods
     void readFile();
-    void readChild(QDomElement element, QStandardItem *elementItem);
-    void readTree(QStandardItem *item);
     void saveXML();
-    void lerTotais(QStandardItem *child);
+    void readTree(QStandardItem *item);
+    bool insertEstoque();
+    bool insertProdutoEstoque();
+    void lerCOFINSProduto(QStandardItem *child);
     void lerPISProduto(QStandardItem *child);
     void lerIPIProduto(QStandardItem *child);
     void lerICMSProduto(QStandardItem *child);
     void lerDadosProduto(QStandardItem *child);
-    void lerCOFINSProduto(QStandardItem *child);
-    bool insertEstoque();
-    bool insertProdutoEstoque();
+    void lerTotais(QStandardItem *child);
 };
 
 #endif // XML_H

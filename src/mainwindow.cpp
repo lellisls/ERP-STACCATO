@@ -26,8 +26,9 @@
 #include "recebimentosfornecedor.h"
 #include "usersession.h"
 #include "venda.h"
-#include "xml.h"
+#include "xml_viewer.h"
 #include "estoque.h"
+#include "xml.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);

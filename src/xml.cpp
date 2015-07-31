@@ -167,7 +167,18 @@ void XML::readTree(QStandardItem *item) {
       if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
         cnpj = child->text().remove(0, 7);
 
-        if (cnpj != UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-")) {
+        // TODO: aceitar qualquer cnpj cadastrado em loja
+
+        QStringList list = UserSession::getTodosCNPJ();
+        bool match = false;
+
+        foreach (QString cnpjLoja, list) {
+          if (cnpj == cnpjLoja) {
+            match = true;
+          }
+        }
+
+        if (not match) {
           QMessageBox::warning(this, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
           qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
           return;
@@ -532,9 +543,6 @@ bool XML::insertProdutoEstoque() {
 }
 
 bool XML::insertEstoque() {
-//  qDebug() << "codProd: " << codProd;
-//  qDebug() << "idProduto: " << idProduto;
-
   QSqlQuery queryProd;
   queryProd.prepare("SELECT * FROM estoque WHERE idProduto = :idProduto");
   queryProd.bindValue(":idProduto", idProduto);

@@ -79,6 +79,7 @@ bool Orcamento::viewRegister(const QModelIndex index) {
 
   if (time.addDays(data("validade").toInt()).date() < QDateTime::currentDateTime().date()) {
     ui->pushButtonGerarVenda->hide();
+    ui->pushButtonAtualizarOrcamento->hide();
     ui->pushButtonReplicar->show();
   } else {
     ui->pushButtonGerarVenda->show();
@@ -1090,4 +1091,9 @@ bool Orcamento::save(const bool isUpdate) {
   }
 
   return true;
+}
+
+void Orcamento::on_pushButtonGerarExcel_clicked()
+{
+  // TODO: exportar excel
 }

@@ -63,9 +63,7 @@ void CadastroLoja::clearFields() {
   foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
 }
 
-bool CadastroLoja::verifyFields(const int row) {
-  Q_UNUSED(row);
-
+bool CadastroLoja::verifyFields() {
   if (not RegisterDialog::verifyFields({ui->lineEditDescricao, ui->lineEditRazaoSocial, ui->lineEditNomeFantasia,
                                        ui->lineEditSIGLA, ui->lineEditCNPJ, ui->lineEditInscEstadual,
                                        ui->lineEditTel})) {

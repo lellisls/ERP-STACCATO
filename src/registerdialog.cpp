@@ -254,6 +254,10 @@ bool RegisterDialog::newRegister() {
 }
 
 bool RegisterDialog::save(const bool isUpdate) {
+  if (not verifyFields()) {
+    return false;
+  }
+
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
@@ -266,11 +270,6 @@ bool RegisterDialog::save(const bool isUpdate) {
 
   if (not isUpdate) {
     model.insertRow(row);
-  }
-
-  if (not verifyFields(row)) {
-    QSqlQuery("ROLLBACK").exec();
-    return false;
   }
 
   if (not savingProcedures(row)) {

@@ -208,9 +208,7 @@ void Orcamento::updateId() {
   }
 }
 
-bool Orcamento::verifyFields(const int row) {
-  Q_UNUSED(row)
-
+bool Orcamento::verifyFields() {
   return true;
 }
 

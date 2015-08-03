@@ -43,9 +43,7 @@ void CadastroTransportadora::clearFields() {
   setupUi();
 }
 
-bool CadastroTransportadora::verifyFields(const int row) {
-  Q_UNUSED(row);
-
+bool CadastroTransportadora::verifyFields() {
   if (not RegisterDialog::verifyFields({ui->lineEditANTT, ui->lineEditCNPJ, ui->lineEditInscEstadual,
                                        ui->lineEditNomeFantasia, ui->lineEditPlaca, ui->lineEditRazaoSocial,
                                        ui->lineEditTel})) {

@@ -29,7 +29,7 @@ class CadastroProduto : public RegisterDialog {
 * \brief Função padrão para verificar campos obrigatórios
 * \return
 */
-    virtual bool verifyFields(const int row);
+    virtual bool verifyFields();
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */

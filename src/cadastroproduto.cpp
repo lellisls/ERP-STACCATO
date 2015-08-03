@@ -58,9 +58,7 @@ void CadastroProduto::registerMode() {
   ui->pushButtonRemover->hide();
 }
 
-bool CadastroProduto::verifyFields(const int row) {
-  Q_UNUSED(row);
-
+bool CadastroProduto::verifyFields() {
   // TODO: see what to do with these
   //  if (not RegisterDialog::verifyFields({ui->lineEditUI,
   //                                       ui->lineEditColecao, ui->lineEditDescricao, ui->lineEditFormComer,

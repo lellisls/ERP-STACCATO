@@ -56,7 +56,7 @@ class Venda : public RegisterDialog {
     Ui::Venda *ui;
     QSqlTableModel modelItem, modelFluxoCaixa;
     // methods
-    bool verifyFields(const int row);
+    bool verifyFields();
     bool verifyRequiredField(QLineEdit *line);
     QString requiredStyle();
     void calcPrecoGlobalTotal(const bool ajusteTotal = false);

@@ -93,7 +93,7 @@ class RegisterDialog : public QDialog {
 * \brief Função padrão para verificar campos obrigatórios.
 * \return
 */
-    virtual bool verifyFields(int row) = 0;
+    virtual bool verifyFields() = 0;
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
@@ -195,6 +195,7 @@ class RegisterDialog : public QDialog {
   protected:
     bool isDirty = false;
     bool silent = false;
+    bool incompleto = false;
 
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);

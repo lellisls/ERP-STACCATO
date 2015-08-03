@@ -52,9 +52,7 @@ void CadastroUsuario::setupTablePermissoes() {
   }
 }
 
-bool CadastroUsuario::verifyFields(const int row) {
-  Q_UNUSED(row);
-
+bool CadastroUsuario::verifyFields() {
   if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd})) {
     return false;
   }

@@ -152,46 +152,40 @@ bool CadastroProfissional::verifyRequiredField(QLineEdit *line, const bool silen
   return true;
 }
 
-bool CadastroProfissional::verifyFields(const int row) {
+bool CadastroProfissional::verifyFields() {
   if (modelEnd.rowCount() == 0) {
-    setData(row, "incompleto", true);
+    incompleto = true;
     qDebug() << "Faltou endereço!";
     return true;
-  } else {
-    setData(row, "incompleto", false);
   }
 
   int ok = 0;
 
   foreach (QLineEdit *line, ui->groupBoxContatos->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line, true)) {
-      qDebug() << "Faltou " << line->objectName();
-    } else {
+    if (verifyRequiredField(line, true)) {
       ok++;
+    } else {
+      qDebug() << "Faltou " << line->objectName();
     }
   }
 
-  if (ok == ui->groupBoxContatos->findChildren<QLineEdit *>().size()) {
-    setData(row, "incompleto", false);
-  } else {
-    setData(row, "incompleto", true);
+  if (ok != ui->groupBoxContatos->findChildren<QLineEdit *>().size()) {
+    incompleto = true;
     return true;
   }
 
   ok = 0;
 
   foreach (QLineEdit *line, ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line, true)) {
-      qDebug() << "Faltou " << line->objectName();
-    } else {
+    if (verifyRequiredField(line, true)) {
       ok++;
+    } else {
+      qDebug() << "Faltou " << line->objectName();
     }
   }
 
-  if (ok == ui->groupBoxPJuridica->findChildren<QLineEdit *>().size()) {
-    setData(row, "incompleto", false);
-  } else {
-    setData(row, "incompleto", true);
+  if (ok != ui->groupBoxPJuridica->findChildren<QLineEdit *>().size()) {
+    incompleto = true;
     return true;
   }
 
@@ -316,6 +310,11 @@ bool CadastroProfissional::savingProcedures(const int row) {
       qDebug() << "Erro setando cpfBanco";
       return false;
     }
+  }
+
+  if (not setData(row, "incompleto", incompleto)) {
+    qDebug() << "erro setando incompleto";
+    return false;
   }
 
   return true;

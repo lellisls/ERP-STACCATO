@@ -43,7 +43,7 @@ class CadastroFornecedor : public RegisterAddressDialog {
     // methods
     bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     void novoEndereco();
-    virtual bool verifyFields(const int row);
+    virtual bool verifyFields();
     virtual bool savingProcedures(const int row);
     virtual void clearFields();
     virtual void setupMapper();

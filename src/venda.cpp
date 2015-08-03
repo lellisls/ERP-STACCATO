@@ -269,9 +269,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->tableVenda->resizeColumnsToContents();
 }
 
-bool Venda::verifyFields(const int row) {
-  Q_UNUSED(row);
-
+bool Venda::verifyFields() {
   if (ui->spinBoxPrazoEntrega->value() == 0) {
     QMessageBox::warning(this, "Aviso!", "Por favor preencha o prazo de entrega.");
     return false;

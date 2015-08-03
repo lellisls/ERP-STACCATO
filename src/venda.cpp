@@ -12,6 +12,7 @@
 #include "checkboxdelegate.h"
 #include "qtrpt.h"
 #include "cadastrocliente.h"
+#include "xlsxdocument.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -1265,4 +1266,74 @@ void Venda::successMessage() {
   QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!", QMessageBox::Ok, QMessageBox::NoButton);
 
   close();
+}
+
+void Venda::on_pushButtonGerarExcel_clicked() {
+  QXlsx::Document xlsx;
+
+  xlsx.write("C2", "Orçamento:");
+  xlsx.write("D2", model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString());
+  xlsx.write("C3", "Cliente:");
+  xlsx.write("D3", model.data(model.index(mapper.currentIndex(), model.fieldIndex("idCliente"))).toString());
+  xlsx.write("C4", "E-mail:");
+  xlsx.write("D4", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("C5", "End. Fiscal");
+  xlsx.write("D5", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("C6", "End. Entrega:");
+  xlsx.write("D6", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("C7", "Profissional:");
+  xlsx.write("D7", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("C8", "Vendedor:");
+  xlsx.write("D8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("E8", "E-mail:");
+  xlsx.write("F8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("H2", "Pedido:");
+  xlsx.write("I2", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("L2", "Data:");
+  xlsx.write("M2", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("L3", "CPF/CNPJ:");
+  xlsx.write("M3", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("L4", "Tel:");
+  xlsx.write("M4", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("L5", "CEP:");
+  xlsx.write("M5", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("L6", "CEP:");
+  xlsx.write("M6", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("G7", "Tel:");
+  xlsx.write("H7", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("J7", "E-mail");
+  xlsx.write("K7", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("J8", "Estoque:");
+  xlsx.write("K8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("M8", "Data:");
+  xlsx.write("N8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
+  xlsx.write("A11", "Marca");
+  xlsx.write("B11", "Código");
+  xlsx.write("C11", "Nome do produto");
+  xlsx.write("H11", "Ambiente");
+  xlsx.write("K11", "Preço-R$");
+  xlsx.write("L11", "Quant");
+  xlsx.write("M11", "Unid");
+  xlsx.write("N11", "Total");
+
+  for (int i = 0; i < modelItem.rowCount(); ++i) {
+    xlsx.write("A" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("fornecedor"))).toString());
+    xlsx.write("B" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("codComercial"))).toString());
+    xlsx.write("C" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("produto"))).toString());
+    xlsx.write("H" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("obs"))).toString());
+    xlsx.write("K" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("prcUnitario"))).toString());
+    xlsx.write("L" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("quant"))).toString());
+    xlsx.write("M" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("un"))).toString());
+    xlsx.write("N" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("total"))).toString());
+  }
+
+  xlsx.save();
 }

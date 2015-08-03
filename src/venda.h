@@ -41,6 +41,7 @@ class Venda : public RegisterDialog {
     void on_pushButtonVoltar_clicked();
     void on_pushButtonImprimir_clicked();
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
+    void on_pushButtonGerarExcel_clicked();
 
   signals:
     void finished();

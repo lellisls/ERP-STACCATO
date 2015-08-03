@@ -1269,52 +1269,89 @@ void Venda::successMessage() {
 }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
-  QXlsx::Document xlsx;
+  QXlsx::Document xlsx("modelo.xlsx");
 
-  xlsx.write("C2", "Orçamento:");
-  xlsx.write("D2", model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString());
-  xlsx.write("C3", "Cliente:");
-  xlsx.write("D3", model.data(model.index(mapper.currentIndex(), model.fieldIndex("idCliente"))).toString());
-  xlsx.write("C4", "E-mail:");
-  xlsx.write("D4", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("C5", "End. Fiscal");
-  xlsx.write("D5", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("C6", "End. Entrega:");
-  xlsx.write("D6", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("C7", "Profissional:");
-  xlsx.write("D7", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("C8", "Vendedor:");
-  xlsx.write("D8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("E8", "E-mail:");
-  xlsx.write("F8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("H2", "Pedido:");
-  xlsx.write("I2", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("L2", "Data:");
-  xlsx.write("M2", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("L3", "CPF/CNPJ:");
-  xlsx.write("M3", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("L4", "Tel:");
-  xlsx.write("M4", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("L5", "CEP:");
-  xlsx.write("M5", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("L6", "CEP:");
-  xlsx.write("M6", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("G7", "Tel:");
-  xlsx.write("H7", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("J7", "E-mail");
-  xlsx.write("K7", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("J8", "Estoque:");
-  xlsx.write("K8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("M8", "Data:");
-  xlsx.write("N8", model.data(model.index(mapper.currentIndex(), model.fieldIndex(""))).toString());
-  xlsx.write("A11", "Marca");
-  xlsx.write("B11", "Código");
-  xlsx.write("C11", "Nome do produto");
-  xlsx.write("H11", "Ambiente");
-  xlsx.write("K11", "Preço-R$");
-  xlsx.write("L11", "Quant");
-  xlsx.write("M11", "Unid");
-  xlsx.write("N11", "Total");
+  QString idVenda = model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString();
+
+  QSqlQuery queryVenda;
+  queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
+  queryVenda.bindValue(":idVenda", idVenda);
+
+  if (not queryVenda.exec() or not queryVenda.first()) {
+    qDebug() << "Erro buscando dados da venda:" << queryVenda.lastError();
+  }
+
+  QSqlQuery queryLoja;
+  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = (SELECT idLoja FROM venda WHERE idVenda = :idVenda)");
+  queryLoja.bindValue(":idVenda", idVenda);
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    qDebug() << "Erro buscando dados da loja:" << queryLoja.lastError();
+  }
+
+  QSqlQuery queryUsuario;
+  queryUsuario.prepare(
+        "SELECT * FROM usuario WHERE idUsuario = (SELECT idUsuario FROM venda WHERE idVenda = :idVenda)");
+  queryUsuario.bindValue(":idVenda", idVenda);
+
+  if (not queryUsuario.exec() or not queryUsuario.first()) {
+    qDebug() << "Erro buscando dados do usuario: " << queryUsuario.lastError();
+  }
+
+  QSqlQuery queryCliente;
+  queryCliente.prepare(
+        "SELECT * FROM cliente WHERE idCliente = (SELECT idCliente FROM venda WHERE idVenda = :idVenda)");
+  queryCliente.bindValue(":idVenda", idVenda);
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    qDebug() << "Erro buscando dados do cliente: " << queryCliente.lastError();
+  }
+
+  QSqlQuery queryEndEnt;
+  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = (SELECT idEnderecoEntrega FROM venda "
+                      "WHERE idVenda = :idVenda)");
+  queryEndEnt.bindValue(":idVenda", idVenda);
+
+  if (not queryEndEnt.exec() or not queryEndEnt.first()) {
+    qDebug() << "Erro buscando dados do endereco: " << queryEndEnt.lastError();
+  }
+
+  QSqlQuery queryEndFat;
+  queryEndFat.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = (SELECT idEnderecoFaturamento FROM venda "
+                      "WHERE idVenda = :idVenda)");
+  queryEndFat.bindValue(":idVenda", idVenda);
+
+  if (not queryEndFat.exec() or not queryEndFat.first()) {
+    qDebug() << "Erro buscando dados do endereco: " << queryEndFat.lastError();
+  }
+
+  QSqlQuery queryProf;
+  queryProf.prepare(
+        "SELECT * FROM profissional WHERE idProfissional = (SELECT idProfissional FROM venda WHERE idVenda = :idVenda)");
+  queryProf.bindValue(":idVenda", idVenda);
+
+  if (not queryProf.exec() or not queryProf.first()) {
+    qDebug() << "Erro buscando dados do profissional: " << queryProf.lastError();
+  }
+
+  xlsx.write("D2", queryVenda.value("idVenda"));
+  xlsx.write("D3", queryCliente.value("nome_razao"));
+  xlsx.write("D4", queryCliente.value("email"));
+  xlsx.write("D5", queryEndFat.value("logradouro").toString() + " " + queryEndFat.value("numero").toString() + " - " +
+             queryEndFat.value("bairro").toString() + queryEndFat.value("cidade").toString());
+  xlsx.write("D6", queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() + " - " +
+             queryEndEnt.value("bairro").toString() + queryEndEnt.value("cidade").toString());
+  xlsx.write("D7", queryProf.value("nome_razao").toString());
+  xlsx.write("D8", queryUsuario.value("nome").toString());
+  xlsx.write("F8", queryUsuario.value("email").toString());
+  xlsx.write("M2", queryVenda.value("data").toDateTime().toString("dd/MM/yyyy hh:mm"));
+  xlsx.write("M3", queryCliente.value("pfpj").toString() == "PF" ? queryCliente.value("cpf").toString()
+                                                                 : queryCliente.value("cnpj").toString());
+  xlsx.write("M4", queryCliente.value("tel").toString());
+  xlsx.write("M5", queryEndFat.value("cep").toString());
+  xlsx.write("M6", queryEndEnt.value("cep").toString());
+  xlsx.write("H7", queryProf.value("tel").toString());
+  xlsx.write("K7", queryProf.value("email").toString());
 
   for (int i = 0; i < modelItem.rowCount(); ++i) {
     xlsx.write("A" + QString::number(12 + i),
@@ -1326,14 +1363,19 @@ void Venda::on_pushButtonGerarExcel_clicked() {
     xlsx.write("H" + QString::number(12 + i),
                modelItem.data(modelItem.index(i, modelItem.fieldIndex("obs"))).toString());
     xlsx.write("K" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("prcUnitario"))).toString());
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("prcUnitario"))).toDouble());
     xlsx.write("L" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("quant"))).toString());
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("quant"))).toDouble());
     xlsx.write("M" + QString::number(12 + i),
                modelItem.data(modelItem.index(i, modelItem.fieldIndex("un"))).toString());
-    xlsx.write("N" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("total"))).toString());
   }
 
-  xlsx.save();
+  if (xlsx.saveAs(model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString() + ".xlsx")) {
+    QMessageBox::information(
+          this, "Ok!", "Arquivo salvo como " +
+          model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString() +
+          ".xlsx");
+  } else {
+    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
+  }
 }

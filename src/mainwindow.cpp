@@ -59,6 +59,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
   setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipoUsuario());
 
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+    ui->actionGerenciar_Lojas->setDisabled(true);
+    ui->actionGerenciar_Transportadoras->setDisabled(true);
+    ui->actionImportaProdutos->setDisabled(true);
+    ui->actionCadastrarUsuario->setDisabled(true);
+    ui->actionCadastrarProfissional->setDisabled(true);
+    ui->actionCadastrarFornecedor->setDisabled(true);
+  }
+
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
     ui->tableContasPagar->hide();
     ui->labelContasPagar->hide();

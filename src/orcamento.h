@@ -18,14 +18,13 @@ class Orcamento : public RegisterDialog {
 
   private slots:
     void on_checkBoxFreteManual_clicked(const bool checked);
-    void on_spinBoxCaixas_valueChanged(const int caixas);
     void on_doubleSpinBoxDesconto_valueChanged(const double);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
-    void on_doubleSpinBoxTotal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
+    void on_doubleSpinBoxPrecoTotal_editingFinished();
     void on_doubleSpinBoxQte_valueChanged(const double);
     void on_doubleSpinBoxSubTotalLiq_valueChanged(const double);
-    void on_doubleSpinBoxPrecoTotal_editingFinished();
+    void on_doubleSpinBoxTotal_editingFinished();
     void on_itemBoxCliente_textChanged(const QString &text);
     void on_itemBoxProduto_textChanged(const QString &text);
     void on_pushButtonAdicionarItem_clicked();
@@ -35,12 +34,14 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonCadastrarOrcamento_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonCancelarItem_clicked();
+    void on_pushButtonGerarExcel_clicked();
     void on_pushButtonGerarVenda_clicked();
     void on_pushButtonImprimir_clicked();
     void on_pushButtonLimparSelecao_clicked();
     void on_pushButtonRemoverItem_clicked();
-    void on_tableProdutos_clicked(const QModelIndex &index);
     void on_pushButtonReplicar_clicked();
+    void on_spinBoxCaixas_valueChanged(const int caixas);
+    void on_tableProdutos_clicked(const QModelIndex &index);
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
 
   signals:

@@ -147,6 +147,16 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonGerarExcel">
+       <property name="text">
+        <string>Gerar Excel</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonApagarOrc">
        <property name="text">
         <string>Apagar</string>

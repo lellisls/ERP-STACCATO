@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
+#include <xlsxdocument.h>
 
 #include "orcamento.h"
 #include "ui_orcamento.h"
@@ -209,9 +210,7 @@ void Orcamento::updateId() {
   }
 }
 
-bool Orcamento::verifyFields() {
-  return true;
-}
+bool Orcamento::verifyFields() { return true; }
 
 bool Orcamento::savingProcedures(const int row) {
   updateId();
@@ -1093,7 +1092,117 @@ bool Orcamento::save(const bool isUpdate) {
   return true;
 }
 
-void Orcamento::on_pushButtonGerarExcel_clicked()
-{
-  // TODO: exportar excel
+void Orcamento::on_pushButtonGerarExcel_clicked() {
+  QXlsx::Document xlsx("modelo.xlsx");
+
+  QString idOrcamento = model.data(model.index(mapper.currentIndex(), model.fieldIndex("idOrcamento"))).toString();
+
+  QSqlQuery queryOrc;
+  queryOrc.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
+  queryOrc.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryOrc.exec() or not queryOrc.first()) {
+    qDebug() << "Erro buscando dados do orcamento:" << queryOrc.lastError();
+  }
+
+  QSqlQuery queryLoja;
+  queryLoja.prepare(
+        "SELECT * FROM loja WHERE idLoja = (SELECT idLoja FROM orcamento WHERE idOrcamento = :idOrcamento)");
+  queryLoja.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    qDebug() << "Erro buscando dados da loja:" << queryLoja.lastError();
+  }
+
+  QSqlQuery queryUsuario;
+  queryUsuario.prepare(
+        "SELECT * FROM usuario WHERE idUsuario = (SELECT idUsuario FROM orcamento WHERE idOrcamento = :idOrcamento)");
+  queryUsuario.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryUsuario.exec() or not queryUsuario.first()) {
+    qDebug() << "Erro buscando dados do usuario: " << queryUsuario.lastError();
+  }
+
+  QSqlQuery queryCliente;
+  queryCliente.prepare(
+        "SELECT * FROM cliente WHERE idCliente = (SELECT idCliente FROM orcamento WHERE idOrcamento = :idOrcamento)");
+  queryCliente.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    qDebug() << "Erro buscando dados do cliente: " << queryCliente.lastError();
+  }
+
+  QSqlQuery queryEndEnt;
+  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = (SELECT idEnderecoEntrega FROM orcamento "
+                      "WHERE idOrcamento = :idOrcamento)");
+  queryEndEnt.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryEndEnt.exec() or not queryEndEnt.first()) {
+    qDebug() << "Erro buscando dados do endereco: " << queryEndEnt.lastError();
+  }
+
+  QSqlQuery queryEndFat;
+  queryEndFat.prepare(
+        "SELECT * FROM cliente_has_endereco WHERE idEndereco = (SELECT idEnderecoFaturamento FROM orcamento "
+        "WHERE idOrcamento = :idOrcamento)");
+  queryEndFat.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryEndFat.exec() or not queryEndFat.first()) {
+    qDebug() << "Erro buscando dados do endereco: " << queryEndFat.lastError();
+  }
+
+  QSqlQuery queryProf;
+  queryProf.prepare("SELECT * FROM profissional WHERE idProfissional = (SELECT idProfissional FROM orcamento WHERE "
+                    "idOrcamento = :idOrcamento)");
+  queryProf.bindValue(":idOrcamento", idOrcamento);
+
+  if (not queryProf.exec() or not queryProf.first()) {
+    qDebug() << "Erro buscando dados do profissional: " << queryProf.lastError();
+  }
+
+  xlsx.write("D2", queryOrc.value("idOrcamento"));
+  xlsx.write("D3", queryCliente.value("nome_razao"));
+  xlsx.write("D4", queryCliente.value("email"));
+  xlsx.write("D5", queryEndFat.value("logradouro").toString() + " " + queryEndFat.value("numero").toString() + " - " +
+             queryEndFat.value("bairro").toString() + ", " + queryEndFat.value("cidade").toString());
+  xlsx.write("D6", queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() + " - " +
+             queryEndEnt.value("bairro").toString() + ", " + queryEndEnt.value("cidade").toString());
+  xlsx.write("D7", queryProf.value("nome_razao").toString());
+  xlsx.write("D8", queryUsuario.value("nome").toString());
+  xlsx.write("F8", queryUsuario.value("email").toString());
+  xlsx.write("M2", queryOrc.value("data").toDateTime().toString("dd/MM/yyyy hh:mm"));
+  xlsx.write("M3", queryCliente.value("pfpj").toString() == "PF" ? queryCliente.value("cpf").toString()
+                                                                 : queryCliente.value("cnpj").toString());
+  xlsx.write("M4", queryCliente.value("tel").toString());
+  xlsx.write("M5", queryEndFat.value("cep").toString());
+  xlsx.write("M6", queryEndEnt.value("cep").toString());
+  xlsx.write("H7", queryProf.value("tel").toString());
+  xlsx.write("K7", queryProf.value("email").toString());
+
+  for (int i = 0; i < modelItem.rowCount(); ++i) {
+    xlsx.write("A" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("fornecedor"))).toString());
+    xlsx.write("B" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("codComercial"))).toString());
+    xlsx.write("C" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("produto"))).toString());
+    xlsx.write("H" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("obs"))).toString());
+    xlsx.write("K" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("prcUnitario"))).toDouble());
+    xlsx.write("L" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("quant"))).toDouble());
+    xlsx.write("M" + QString::number(12 + i),
+               modelItem.data(modelItem.index(i, modelItem.fieldIndex("un"))).toString());
+  }
+
+  if (xlsx.saveAs(model.data(model.index(mapper.currentIndex(), model.fieldIndex("idOrcamento"))).toString() +
+                  ".xlsx")) {
+    QMessageBox::information(
+          this, "Ok!", "Arquivo salvo como " +
+          model.data(model.index(mapper.currentIndex(), model.fieldIndex("idOrcamento"))).toString() +
+          ".xlsx");
+  } else {
+    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
+  }
 }

@@ -267,6 +267,10 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->itemBoxEndereco->setValue(queryOrc.value("idEnderecoEntrega"));
   ui->itemBoxEnderecoFat->setValue(queryOrc.value("idEnderecoFaturamento"));
 
+  ui->dateTimeEditOrc->setDateTime(
+        model.data(model.index(mapper.currentIndex(), model.fieldIndex("data"))).toDateTime());
+  ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
+
   ui->tableVenda->resizeColumnsToContents();
 }
 
@@ -560,7 +564,8 @@ bool Venda::savingProcedures(int row) {
   setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
   setData(row, "idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
   setData(row, "status", "ABERTO");
-  setData(row, "data", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  setData(row, "data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  setData(row, "dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
   setData(row, "prazoEntrega", ui->spinBoxPrazoEntrega->value());
   setData(row, "observacao", ui->textEdit->toPlainText());
 

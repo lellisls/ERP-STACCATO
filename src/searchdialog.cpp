@@ -516,7 +516,9 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
     }
   }
 
-  ui->tableBusca->resizeColumnsToContents();
+  if (isVisible()) {
+    ui->tableBusca->resizeColumnsToContents();
+  }
 }
 
 void SearchDialog::on_tableBusca_entered(const QModelIndex &index)

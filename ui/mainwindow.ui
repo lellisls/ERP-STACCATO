@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../qrs/resources.qrc">
-    <normaloff>:/logo.svg</normaloff>:/logo.svg</iconset>
+    <normaloff>:/Staccato.ico</normaloff>:/Staccato.ico</iconset>
   </property>
   <property name="locale">
    <locale language="Portuguese" country="Brazil"/>

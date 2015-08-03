@@ -824,6 +824,12 @@ void Venda::montarFluxoCaixa() {
     const int parcelas = ui->comboBoxPgt1Parc->currentIndex() + 1;
     const double valor = ui->doubleSpinBoxPgt1->value();
 
+    int temp2 = 0;
+
+    if (ui->comboBoxPgt1->currentText() == "Cartão de crédito") {
+      temp2 = 1;
+    }
+
     const float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
     const double resto = static_cast<double>(valor - (temp * parcelas));
     const double parcela = static_cast<double>(temp);
@@ -844,7 +850,7 @@ void Venda::montarFluxoCaixa() {
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
-                              ui->dateEditPgt1->date().addMonths(i));
+                              ui->dateEditPgt1->date().addMonths(i + temp2));
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
                               ui->lineEditPgt1->text());
       ++row;
@@ -854,6 +860,12 @@ void Venda::montarFluxoCaixa() {
   if (ui->comboBoxPgt2->currentText() != "Escolha uma opção!") {
     const int parcelas = ui->comboBoxPgt2Parc->currentIndex() + 1;
     const double valor = ui->doubleSpinBoxPgt2->value();
+
+    int temp2 = 0;
+
+    if (ui->comboBoxPgt2->currentText() == "Cartão de crédito") {
+      temp2 = 1;
+    }
 
     const float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
     const double resto = static_cast<double>(valor - (temp * parcelas));
@@ -875,7 +887,7 @@ void Venda::montarFluxoCaixa() {
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
-                              ui->dateEditPgt2->date().addMonths(i));
+                              ui->dateEditPgt2->date().addMonths(i + temp2));
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
                               ui->lineEditPgt2->text());
 
@@ -886,6 +898,12 @@ void Venda::montarFluxoCaixa() {
   if (ui->comboBoxPgt3->currentText() != "Escolha uma opção!") {
     const int parcelas = ui->comboBoxPgt3Parc->currentIndex() + 1;
     const double valor = ui->doubleSpinBoxPgt3->value();
+
+    int temp2 = 0;
+
+    if (ui->comboBoxPgt3->currentText() == "Cartão de crédito") {
+      temp2 = 1;
+    }
 
     const float temp = static_cast<float>(static_cast<int>(static_cast<float>(valor / parcelas) * 100)) / 100;
     const double resto = static_cast<double>(valor - (temp * parcelas));
@@ -907,7 +925,7 @@ void Venda::montarFluxoCaixa() {
       }
 
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
-                              ui->dateEditPgt3->date().addMonths(i));
+                              ui->dateEditPgt3->date().addMonths(i + temp2));
       modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
                               ui->lineEditPgt3->text());
 

@@ -416,9 +416,14 @@ void Venda::fillTotals() {
 void Venda::clearFields() {}
 
 void Venda::setupMapper() {
+  addMapping(ui->lineEditVenda, "idVenda");
   addMapping(ui->itemBoxCliente, "idCliente", "value");
   addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
   addMapping(ui->itemBoxEnderecoFat, "idEnderecoFaturamento", "value");
+  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
+  addMapping(ui->itemBoxProfissional, "idProfissional", "value");
+  addMapping(ui->dateTimeEditOrc, "dataOrc");
+  addMapping(ui->dateTimeEdit, "data");
   addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
   addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
   addMapping(ui->doubleSpinBoxFrete, "frete");
@@ -748,8 +753,6 @@ bool Venda::viewRegister(const QModelIndex index) {
     return false;
   }
 
-  ui->lineEditVenda->setText(data(primaryKey).toString());
-
   modelItem.setFilter("idVenda = '" + ui->lineEditVenda->text() + "'");
 
   if (not modelItem.select()) {
@@ -771,33 +774,6 @@ bool Venda::viewRegister(const QModelIndex index) {
   }
 
   fillTotals();
-
-  QSqlQuery query;
-  query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", ui->lineEditVenda->text());
-
-  if (not query.exec()) {
-    qDebug() << "Erro buscando orçamento: " << query.lastError();
-    qDebug() << "query: " << query.lastQuery();
-  }
-
-  if (not query.first()) {
-    query.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", ui->lineEditVenda->text());
-
-    if (not query.exec() or not query.first()) {
-      qDebug() << "Erro buscando venda: " << query.lastError();
-      qDebug() << "Não achou venda: " << query.size();
-      qDebug() << "query: " << query.lastQuery();
-    }
-  }
-
-  ui->lineEditVenda->setText(query.value("idVenda").toString());
-  ui->itemBoxVendedor->setValue(query.value("idUsuario"));
-  ui->itemBoxCliente->setValue(query.value("idCliente"));
-  ui->dateTimeEdit->setDateTime(query.value("data").toDateTime());
-  ui->itemBoxProfissional->setValue(query.value("idProfissional"));
-  ui->itemBoxEndereco->setValue(query.value("idEnderecoEntrega"));
 
   calcPrecoGlobalTotal();
 

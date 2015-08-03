@@ -593,7 +593,7 @@ bool Venda::savingProcedures(int row) {
   if (query.size() > 0) { // estoque zero ou negativo
     query.first();
 
-//    qDebug() << "idProduto: " << query.value("idProduto").toInt();
+    //    qDebug() << "idProduto: " << query.value("idProduto").toInt();
 
     for (int i = 0; i < query.size(); ++i) {
       QSqlQuery query2;
@@ -605,10 +605,10 @@ bool Venda::savingProcedures(int row) {
         qDebug() << "Erro buscando produto: " << query2.lastError();
       }
 
-//      qDebug() << "query2 size: " << query2.size();
+      //      qDebug() << "query2 size: " << query2.size();
 
       if (query2.first()) {
-//        qDebug() << "idProduto existente, atualizando: " << query.value("idProduto");
+        //        qDebug() << "idProduto existente, atualizando: " << query.value("idProduto");
 
         double quant = query2.value("quant").toDouble() + query.value("quant").toDouble();
 
@@ -640,9 +640,9 @@ bool Venda::savingProcedures(int row) {
           qDebug() << "Erro na criação do pedido fornecedor: " << query2.lastError();
         }
 
-//        qDebug() << "query: " << query2.lastQuery();
+        //        qDebug() << "query: " << query2.lastQuery();
 
-//        qDebug() << "idProduto novo, cadastrando: " << query.value("idProduto");
+        //        qDebug() << "idProduto novo, cadastrando: " << query.value("idProduto");
       }
 
       query2.prepare("INSERT INTO pedido_fornecedor_has_produto (idVenda, idLoja, item, idProduto, fornecedor, "

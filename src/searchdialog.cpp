@@ -521,8 +521,7 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
   }
 }
 
-void SearchDialog::on_tableBusca_entered(const QModelIndex &index)
-{
+void SearchDialog::on_tableBusca_entered(const QModelIndex &index) {
   Q_UNUSED(index);
 
   ui->tableBusca->resizeColumnsToContents();

@@ -1356,9 +1356,9 @@ void Venda::on_pushButtonGerarExcel_clicked() {
   xlsx.write("D3", queryCliente.value("nome_razao"));
   xlsx.write("D4", queryCliente.value("email"));
   xlsx.write("D5", queryEndFat.value("logradouro").toString() + " " + queryEndFat.value("numero").toString() + " - " +
-             queryEndFat.value("bairro").toString() + queryEndFat.value("cidade").toString());
+             queryEndFat.value("bairro").toString() + ", " + queryEndFat.value("cidade").toString());
   xlsx.write("D6", queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() + " - " +
-             queryEndEnt.value("bairro").toString() + queryEndEnt.value("cidade").toString());
+             queryEndEnt.value("bairro").toString() + ", " + queryEndEnt.value("cidade").toString());
   xlsx.write("D7", queryProf.value("nome_razao").toString());
   xlsx.write("D8", queryUsuario.value("nome").toString());
   xlsx.write("F8", queryUsuario.value("email").toString());

@@ -414,3 +414,6 @@ bool CadastroLoja::viewRegister(const QModelIndex index) {
 
   return true;
 }
+
+// TODO: parametrizar pasta excel
+// TODO: parametrizar taxa cartao credito

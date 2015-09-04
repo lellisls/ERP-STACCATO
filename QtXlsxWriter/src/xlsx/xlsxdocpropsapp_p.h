@@ -47,26 +47,24 @@ class QIODevice;
 
 namespace QXlsx {
 
-class XLSX_AUTOTEST_EXPORT DocPropsApp : public AbstractOOXmlFile
-{
-public:
-    DocPropsApp(CreateFlag flag);
-    
-    void addPartTitle(const QString &title);
-    void addHeadingPair(const QString &name, int value);
+  class XLSX_AUTOTEST_EXPORT DocPropsApp : public AbstractOOXmlFile {
+    public:
+      DocPropsApp(CreateFlag flag);
 
-    bool setProperty(const QString &name, const QString &value);
-    QString property(const QString &name) const;
-    QStringList propertyNames() const;
+      void addPartTitle(const QString &title);
+      void addHeadingPair(const QString &name, int value);
 
-    void saveToXmlFile(QIODevice *device) const;
-    bool loadFromXmlFile(QIODevice *device);
+      bool setProperty(const QString &name, const QString &value);
+      QString property(const QString &name) const;
+      QStringList propertyNames() const;
 
-private:
-    QStringList m_titlesOfPartsList;
-    QList<QPair<QString, int> > m_headingPairsList;
-    QMap<QString, QString> m_properties;
-};
+      void saveToXmlFile(QIODevice *device) const;
+      bool loadFromXmlFile(QIODevice *device);
 
+    private:
+      QStringList m_titlesOfPartsList;
+      QList<QPair<QString, int>> m_headingPairsList;
+      QMap<QString, QString> m_properties;
+  };
 }
 #endif // XLSXDOCPROPSAPP_H

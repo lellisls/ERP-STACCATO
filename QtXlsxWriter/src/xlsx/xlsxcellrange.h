@@ -29,9 +29,8 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
-class Q_XLSX_EXPORT CellRange
-{
-public:
+class Q_XLSX_EXPORT CellRange {
+  public:
     CellRange();
     CellRange(int firstRow, int firstColumn, int lastRow, int lastColumn);
     CellRange(const CellReference &topLeft, const CellReference &bottomRight);
@@ -40,7 +39,7 @@ public:
     CellRange(const CellRange &other);
     ~CellRange();
 
-    QString toString(bool row_abs=false, bool col_abs=false) const;
+    QString toString(bool row_abs = false, bool col_abs = false) const;
     bool isValid() const;
     inline void setFirstRow(int row) { top = row; }
     inline void setLastRow(int row) { bottom = row; }
@@ -57,17 +56,14 @@ public:
     inline CellReference bottomLeft() const { return CellReference(bottom, left); }
     inline CellReference bottomRight() const { return CellReference(bottom, right); }
 
-    inline bool operator ==(const CellRange &other) const
-    {
-        return top==other.top && bottom==other.bottom
-                && left == other.left && right == other.right;
+    inline bool operator==(const CellRange &other) const {
+      return top == other.top and bottom == other.bottom and left == other.left and right == other.right;
     }
-    inline bool operator !=(const CellRange &other) const
-    {
-        return top!=other.top || bottom!=other.bottom
-                || left != other.left || right != other.right;
+    inline bool operator!=(const CellRange &other) const {
+      return top != other.top or bottom != other.bottom or left != other.left or right != other.right;
     }
-private:
+
+  private:
     void init(const QString &range);
     int top, left, bottom, right;
 };

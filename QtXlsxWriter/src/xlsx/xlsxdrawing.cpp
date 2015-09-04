@@ -33,55 +33,50 @@
 
 namespace QXlsx {
 
-Drawing::Drawing(AbstractSheet *sheet, CreateFlag flag)
-    :AbstractOOXmlFile(flag), sheet(sheet)
-{
+  Drawing::Drawing(AbstractSheet *sheet, CreateFlag flag) : AbstractOOXmlFile(flag), sheet(sheet) {
     workbook = sheet->workbook();
-}
+  }
 
-Drawing::~Drawing()
-{
-    qDeleteAll(anchors);
-}
+  Drawing::~Drawing() { qDeleteAll(anchors); }
 
-void Drawing::saveToXmlFile(QIODevice *device) const
-{
+  void Drawing::saveToXmlFile(QIODevice *device) const {
     relationships()->clear();
 
     QXmlStreamWriter writer(device);
 
     writer.writeStartDocument(QStringLiteral("1.0"), true);
     writer.writeStartElement(QStringLiteral("xdr:wsDr"));
-    writer.writeAttribute(QStringLiteral("xmlns:xdr"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"));
-    writer.writeAttribute(QStringLiteral("xmlns:a"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/main"));
+    writer.writeAttribute(QStringLiteral("xmlns:xdr"),
+                          QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"));
+    writer.writeAttribute(QStringLiteral("xmlns:a"),
+                          QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/main"));
 
-    foreach (DrawingAnchor *anchor, anchors)
-        anchor->saveToXml(writer);
+    for (auto *anchor : anchors)
+      anchor->saveToXml(writer);
 
-    writer.writeEndElement();//xdr:wsDr
+    writer.writeEndElement(); // xdr:wsDr
     writer.writeEndDocument();
-}
+  }
 
-bool Drawing::loadFromXmlFile(QIODevice *device)
-{
+  bool Drawing::loadFromXmlFile(QIODevice *device) {
     QXmlStreamReader reader(device);
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("absoluteAnchor")) {
-                DrawingAbsoluteAnchor * anchor = new DrawingAbsoluteAnchor(this);
-                anchor->loadFromXml(reader);
-            } else if (reader.name() == QLatin1String("oneCellAnchor")) {
-                DrawingOneCellAnchor * anchor = new DrawingOneCellAnchor(this);
-                anchor->loadFromXml(reader);
-            } else if (reader.name() == QLatin1String("twoCellAnchor")) {
-                DrawingTwoCellAnchor * anchor = new DrawingTwoCellAnchor(this);
-                anchor->loadFromXml(reader);
-            }
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("absoluteAnchor")) {
+          DrawingAbsoluteAnchor *anchor = new DrawingAbsoluteAnchor(this);
+          anchor->loadFromXml(reader);
+        } else if (reader.name() == QLatin1String("oneCellAnchor")) {
+          DrawingOneCellAnchor *anchor = new DrawingOneCellAnchor(this);
+          anchor->loadFromXml(reader);
+        } else if (reader.name() == QLatin1String("twoCellAnchor")) {
+          DrawingTwoCellAnchor *anchor = new DrawingTwoCellAnchor(this);
+          anchor->loadFromXml(reader);
         }
+      }
     }
 
     return true;
-}
+  }
 
 } // namespace QXlsx

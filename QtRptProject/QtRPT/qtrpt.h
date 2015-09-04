@@ -34,17 +34,9 @@ limitations under the License.
 #include <RptBandObject.h>
 #include <RptPageObject.h>
 
-
 using namespace QtRptName;
 
-enum HiType {
-    FntBold,
-    FntItalic,
-    FntUnderline,
-    FntStrikeout,
-    FntColor,
-    BgColor
-};
+enum HiType { FntBold, FntItalic, FntUnderline, FntStrikeout, FntColor, BgColor };
 
 struct AggregateValues {
     QString paramName;
@@ -66,24 +58,25 @@ static QList<AggregateValues> listOfPair;
 static QList<int> listIdxOfGroup;
 
 #ifndef QTRPT_LIBRARY
-    class QtRPT : public QObject
-#else
-    #include <qtrpt_global.h>
-    class QTRPTSHARED_EXPORT QtRPT : public QObject
-#endif
+class QtRPT : public QObject
+    #else
+#include <qtrpt_global.h>
+class QTRPTSHARED_EXPORT QtRPT : public QObject
+    #endif
 
 {
     Q_OBJECT
     friend class RptFieldObject;
     friend class RptBandObject;
-public:
+
+  public:
     QList<int> recordCount;
     explicit QtRPT(QObject *parent = 0);
     bool loadReport(QString fileName);
     bool loadReport(QDomDocument xmlDoc);
     void clearObject();
     void printExec(bool maximum = false, bool direct = false, QString printerName = QString());
-    //void setCallbackFunc(void (*func)(int &recNo, QString &paramName, QVariant &paramValue));
+    // void setCallbackFunc(void (*func)(int &recNo, QString &paramName, QVariant &paramValue));
     void setBackgroundImage(QPixmap &image);
     void setBackgroundImage(QPixmap image);
     void printPDF(const QString &filePath, bool open = true);
@@ -94,10 +87,10 @@ public:
     static QString getFieldTypeName(FieldType type);
     static QList<FieldType> getDrawingFields();
     static Qt::PenStyle getPenStyle(QString value);
-    QList<RptPageObject*> pageList;
+    QList<RptPageObject *> pageList;
     ~QtRPT();
 
-private:    
+  private:
     QPixmap *m_backgroundImage;
     QPainter painter;
     int m_recNo;
@@ -131,7 +124,7 @@ private:
     void processPFooter(bool draw);
     void processMFooter(QPrinter *printer, int &y, bool draw);
     void processRSummary(QPrinter *printer, int &y, bool draw);
-    //void (*callbackFunc)(int &recNo, QString &paramName, QVariant &paramValue);
+    // void (*callbackFunc)(int &recNo, QString &paramName, QVariant &paramValue);
     void processReport(QPrinter *printer, bool draw, int pageReport);
     void processRTitle(int &y, bool draw);
     void processMHeader(int &y, bool draw);
@@ -158,33 +151,27 @@ private:
     QString m_HTML;
 
     void makeReportObjectStructure();
-    enum PrintMode {
-        Printer = 0,
-        Pdf = 1,
-        Html = 2,
-        Odt = 3
-    };
+    enum PrintMode { Printer = 0, Pdf = 1, Html = 2, Odt = 3 };
     PrintMode m_printMode;
 
-protected:
+  protected:
     bool eventFilter(QObject *obj, QEvent *e);
 
-signals:
+  signals:
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
     void setField(RptFieldObject &fieldObject);
     void setValueImage(const int recNo, const QString paramName, QImage &paramValue, const int reportPage);
     void setValueDiagram(Chart &chart);
 
-public slots:
+  public slots:
     void printPreview(QPrinter *printer);
 
-private slots:
+  private slots:
     void exportTo();
-
 };
 
 #ifdef QTRPT_LIBRARY
-    extern "C" QTRPTSHARED_EXPORT QtRPT* createQtRPT();
+extern "C" QTRPTSHARED_EXPORT QtRPT *createQtRPT();
 #endif
 
 #endif // QTRPT_H

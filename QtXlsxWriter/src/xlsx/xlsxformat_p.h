@@ -43,11 +43,9 @@
 
 namespace QXlsx {
 
-class FormatPrivate : public QSharedData
-{
-public:
-    enum FormatType
-    {
+  class FormatPrivate : public QSharedData {
+    public:
+      enum FormatType {
         FT_Invalid = 0,
         FT_NumFmt = 0x01,
         FT_Font = 0x02,
@@ -55,16 +53,16 @@ public:
         FT_Border = 0x08,
         FT_Fill = 0x10,
         FT_Protection = 0x20
-    };
+      };
 
-    enum Property {
+      enum Property {
         P_STARTID,
 
-        //numFmt
+        // numFmt
         P_NumFmt_Id,
         P_NumFmt_FormatCode,
 
-        //font
+        // font
         P_Font_STARTID,
         P_Font_Size = P_Font_STARTID,
         P_Font_Italic,
@@ -83,7 +81,7 @@ public:
         P_Font_Extend,
         P_Font_ENDID,
 
-        //border
+        // border
         P_Border_STARTID,
         P_Border_LeftStyle = P_Border_STARTID,
         P_Border_RightStyle,
@@ -98,14 +96,14 @@ public:
         P_Border_DiagonalType,
         P_Border_ENDID,
 
-        //fill
+        // fill
         P_Fill_STARTID,
         P_Fill_Pattern = P_Fill_STARTID,
         P_Fill_BgColor,
         P_Fill_FgColor,
         P_Fill_ENDID,
 
-        //alignment
+        // alignment
         P_Alignment_STARTID,
         P_Alignment_AlignH = P_Alignment_STARTID,
         P_Alignment_AlignV,
@@ -115,47 +113,46 @@ public:
         P_Alignment_ShinkToFit,
         P_Alignment_ENDID,
 
-        //protection
+        // protection
         P_Protection_Locked,
         P_Protection_Hidden,
 
         P_ENDID
-    };
+      };
 
-    FormatPrivate();
-    FormatPrivate(const FormatPrivate &other);
-    ~FormatPrivate();
+      FormatPrivate();
+      FormatPrivate(const FormatPrivate &other);
+      ~FormatPrivate();
 
-    bool dirty; //The key re-generation is need.
-    QByteArray formatKey;
+      bool dirty; // The key re-generation is need.
+      QByteArray formatKey;
 
-    bool font_dirty;
-    bool font_index_valid;
-    QByteArray font_key;
-    int font_index;
+      bool font_dirty;
+      bool font_index_valid;
+      QByteArray font_key;
+      int font_index;
 
-    bool fill_dirty;
-    bool fill_index_valid;
-    QByteArray fill_key;
-    int fill_index;
+      bool fill_dirty;
+      bool fill_index_valid;
+      QByteArray fill_key;
+      int fill_index;
 
-    bool border_dirty;
-    bool border_index_valid;
-    QByteArray border_key;
-    int border_index;
+      bool border_dirty;
+      bool border_index_valid;
+      QByteArray border_key;
+      int border_index;
 
-    int xf_index;
-    bool xf_indexValid;
+      int xf_index;
+      bool xf_indexValid;
 
-    bool is_dxf_fomat;
-    int dxf_index;
-    bool dxf_indexValid;
+      bool is_dxf_fomat;
+      int dxf_index;
+      bool dxf_indexValid;
 
-    int theme;
+      int theme;
 
-    QMap<int, QVariant> properties;
-};
-
+      QMap<int, QVariant> properties;
+  };
 }
 
 #endif // XLSXFORMAT_P_H

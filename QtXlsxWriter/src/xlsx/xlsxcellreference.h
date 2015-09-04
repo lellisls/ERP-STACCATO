@@ -28,9 +28,8 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
-class Q_XLSX_EXPORT CellReference
-{
-public:
+class Q_XLSX_EXPORT CellReference {
+  public:
     CellReference();
     CellReference(int row, int column);
     CellReference(const QString &cell);
@@ -38,7 +37,7 @@ public:
     CellReference(const CellReference &other);
     ~CellReference();
 
-    QString toString(bool row_abs=false, bool col_abs=false) const;
+    QString toString(bool row_abs = false, bool col_abs = false) const;
     static CellReference fromString(const QString &cell);
     bool isValid() const;
     inline void setRow(int row) { _row = row; }
@@ -46,15 +45,10 @@ public:
     inline int row() const { return _row; }
     inline int column() const { return _column; }
 
-    inline bool operator ==(const CellReference &other) const
-    {
-        return _row==other._row && _column==other._column;
-    }
-    inline bool operator !=(const CellReference &other) const
-    {
-        return _row!=other._row || _column!=other._column;
-    }
-private:
+    inline bool operator==(const CellReference &other) const { return _row == other._row and _column == other._column; }
+    inline bool operator!=(const CellReference &other) const { return _row != other._row or _column != other._column; }
+
+  private:
     void init(const QString &cell);
     int _row, _column;
 };

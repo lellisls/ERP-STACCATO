@@ -37,7 +37,7 @@
 
 namespace QXlsx {
 
-/*
+  /*
      The vertices that define the position of a graphical object
      within the worksheet in pixels.
 
@@ -68,22 +68,16 @@ namespace QXlsx {
      variable and have to be taken into account.
 */
 
-//anchor
+  // anchor
 
-DrawingAnchor::DrawingAnchor(Drawing *drawing, ObjectType objectType)
-    :m_drawing(drawing), m_objectType(objectType)
-{
+  DrawingAnchor::DrawingAnchor(Drawing *drawing, ObjectType objectType) : m_drawing(drawing), m_objectType(objectType) {
     m_drawing->anchors.append(this);
-    m_id = m_drawing->anchors.size();//must be unique in one drawing{x}.xml file.
-}
+    m_id = m_drawing->anchors.size(); // must be unique in one drawing{x}.xml file.
+  }
 
-DrawingAnchor::~DrawingAnchor()
-{
+  DrawingAnchor::~DrawingAnchor() {}
 
-}
-
-void DrawingAnchor::setObjectPicture(const QImage &img)
-{
+  void DrawingAnchor::setObjectPicture(const QImage &img) {
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
@@ -93,18 +87,16 @@ void DrawingAnchor::setObjectPicture(const QImage &img)
     m_drawing->workbook->addMediaFile(m_pictureFile);
 
     m_objectType = Picture;
-}
+  }
 
-void DrawingAnchor::setObjectGraphicFrame(QSharedPointer<Chart> chart)
-{
+  void DrawingAnchor::setObjectGraphicFrame(QSharedPointer<Chart> chart) {
     m_chartFile = chart;
     m_drawing->workbook->addChartFile(chart);
 
     m_objectType = GraphicFrame;
-}
+  }
 
-QPoint DrawingAnchor::loadXmlPos(QXmlStreamReader &reader)
-{
+  QPoint DrawingAnchor::loadXmlPos(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("pos"));
 
     QPoint pos;
@@ -112,10 +104,9 @@ QPoint DrawingAnchor::loadXmlPos(QXmlStreamReader &reader)
     pos.setX(attrs.value(QLatin1String("x")).toString().toInt());
     pos.setY(attrs.value(QLatin1String("y")).toString().toInt());
     return pos;
-}
+  }
 
-QSize DrawingAnchor::loadXmlExt(QXmlStreamReader &reader)
-{
+  QSize DrawingAnchor::loadXmlExt(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("ext"));
 
     QSize size;
@@ -123,232 +114,208 @@ QSize DrawingAnchor::loadXmlExt(QXmlStreamReader &reader)
     size.setWidth(attrs.value(QLatin1String("cx")).toString().toInt());
     size.setHeight(attrs.value(QLatin1String("cy")).toString().toInt());
     return size;
-}
+  }
 
-XlsxMarker DrawingAnchor::loadXmlMarker(QXmlStreamReader &reader, const QString &node)
-{
+  XlsxMarker DrawingAnchor::loadXmlMarker(QXmlStreamReader &reader, const QString &node) {
     Q_ASSERT(reader.name() == node);
 
     int col = 0;
     int colOffset = 0;
     int row = 0;
     int rowOffset = 0;
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("col")) {
-                col = reader.readElementText().toInt();
-            } else if (reader.name() == QLatin1String("colOff")) {
-                colOffset = reader.readElementText().toInt();
-            } else if (reader.name() == QLatin1String("row")) {
-                row = reader.readElementText().toInt();
-            } else if (reader.name() == QLatin1String("rowOff")) {
-                rowOffset = reader.readElementText().toInt();
-            }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == node) {
-            break;
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("col")) {
+          col = reader.readElementText().toInt();
+        } else if (reader.name() == QLatin1String("colOff")) {
+          colOffset = reader.readElementText().toInt();
+        } else if (reader.name() == QLatin1String("row")) {
+          row = reader.readElementText().toInt();
+        } else if (reader.name() == QLatin1String("rowOff")) {
+          rowOffset = reader.readElementText().toInt();
         }
+      } else if (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == node) {
+        break;
+      }
     }
 
     return XlsxMarker(row, col, rowOffset, colOffset);
-}
+  }
 
-void DrawingAnchor::loadXmlObject(QXmlStreamReader &reader)
-{
+  void DrawingAnchor::loadXmlObject(QXmlStreamReader &reader) {
     if (reader.name() == QLatin1String("sp")) {
-        //Shape
-        m_objectType = Shape;
-        loadXmlObjectShape(reader);
+      // Shape
+      m_objectType = Shape;
+      loadXmlObjectShape(reader);
     } else if (reader.name() == QLatin1String("grpSp")) {
-        //Group Shape
-        m_objectType = GroupShape;
-        loadXmlObjectGroupShape(reader);
+      // Group Shape
+      m_objectType = GroupShape;
+      loadXmlObjectGroupShape(reader);
     } else if (reader.name() == QLatin1String("graphicFrame")) {
-        //Graphic Frame
-        m_objectType = GraphicFrame;
-        loadXmlObjectGraphicFrame(reader);
+      // Graphic Frame
+      m_objectType = GraphicFrame;
+      loadXmlObjectGraphicFrame(reader);
     } else if (reader.name() == QLatin1String("cxnSp")) {
-        //Connection Shape
-        m_objectType = ConnectionShape;
-        loadXmlObjectConnectionShape(reader);
+      // Connection Shape
+      m_objectType = ConnectionShape;
+      loadXmlObjectConnectionShape(reader);
     } else if (reader.name() == QLatin1String("pic")) {
-        //Picture
-        m_objectType = Picture;
-        loadXmlObjectPicture(reader);
+      // Picture
+      m_objectType = Picture;
+      loadXmlObjectPicture(reader);
     }
-}
+  }
 
-void DrawingAnchor::loadXmlObjectConnectionShape(QXmlStreamReader &reader)
-{
-    Q_UNUSED(reader)
-}
+  void DrawingAnchor::loadXmlObjectConnectionShape(QXmlStreamReader &reader) { Q_UNUSED(reader) }
 
-void DrawingAnchor::loadXmlObjectGraphicFrame(QXmlStreamReader &reader)
-{
+  void DrawingAnchor::loadXmlObjectGraphicFrame(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("graphicFrame"));
 
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("chart")) {
-                QString rId = reader.attributes().value(QLatin1String("r:id")).toString();
-                QString name = m_drawing->relationships()->getRelationshipById(rId).target;
-                QString path = QDir::cleanPath(splitPath(m_drawing->filePath())[0] + QLatin1String("/") + name);
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("chart")) {
+          QString rId = reader.attributes().value(QLatin1String("r:id")).toString();
+          QString name = m_drawing->relationships()->getRelationshipById(rId).target;
+          QString path = QDir::cleanPath(splitPath(m_drawing->filePath())[0] + QLatin1String("/") + name);
 
-                bool exist = false;
-                QList<QSharedPointer<Chart> > cfs = m_drawing->workbook->chartFiles();
-                for (int i=0; i<cfs.size(); ++i) {
-                    if (cfs[i]->filePath() == path) {
-                        //already exist
-                        exist = true;
-                        m_chartFile = cfs[i];
-                    }
-                }
-                if (!exist) {
-                    m_chartFile = QSharedPointer<Chart> (new Chart(m_drawing->sheet, Chart::F_LoadFromExists));
-                    m_chartFile->setFilePath(path);
-                    m_drawing->workbook->addChartFile(m_chartFile);
-                }
+          bool exist = false;
+          QList<QSharedPointer<Chart>> cfs = m_drawing->workbook->chartFiles();
+          for (int i = 0; i < cfs.size(); ++i) {
+            if (cfs[i]->filePath() == path) {
+              // already exist
+              exist = true;
+              m_chartFile = cfs[i];
             }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == QLatin1String("graphicFrame")) {
-            break;
+          }
+          if (not exist) {
+            m_chartFile = QSharedPointer<Chart>(new Chart(m_drawing->sheet, Chart::F_LoadFromExists));
+            m_chartFile->setFilePath(path);
+            m_drawing->workbook->addChartFile(m_chartFile);
+          }
         }
+      } else if (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("graphicFrame")) {
+        break;
+      }
     }
 
     return;
-}
+  }
 
-void DrawingAnchor::loadXmlObjectGroupShape(QXmlStreamReader &reader)
-{
-    Q_UNUSED(reader)
-}
+  void DrawingAnchor::loadXmlObjectGroupShape(QXmlStreamReader &reader) { Q_UNUSED(reader) }
 
-void DrawingAnchor::loadXmlObjectPicture(QXmlStreamReader &reader)
-{
+  void DrawingAnchor::loadXmlObjectPicture(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("pic"));
 
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("blip")) {
-                QString rId = reader.attributes().value(QLatin1String("r:embed")).toString();
-                QString name = m_drawing->relationships()->getRelationshipById(rId).target;
-                QString path = QDir::cleanPath(splitPath(m_drawing->filePath())[0] + QLatin1String("/") + name);
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("blip")) {
+          QString rId = reader.attributes().value(QLatin1String("r:embed")).toString();
+          QString name = m_drawing->relationships()->getRelationshipById(rId).target;
+          QString path = QDir::cleanPath(splitPath(m_drawing->filePath())[0] + QLatin1String("/") + name);
 
-                bool exist = false;
-                QList<QSharedPointer<MediaFile> > mfs = m_drawing->workbook->mediaFiles();
-                for (int i=0; i<mfs.size(); ++i) {
-                    if (mfs[i]->fileName() == path) {
-                        //already exist
-                        exist = true;
-                        m_pictureFile = mfs[i];
-                    }
-                }
-                if (!exist) {
-                    m_pictureFile = QSharedPointer<MediaFile> (new MediaFile(path));
-                    m_drawing->workbook->addMediaFile(m_pictureFile, true);
-                }
+          bool exist = false;
+          QList<QSharedPointer<MediaFile>> mfs = m_drawing->workbook->mediaFiles();
+          for (int i = 0; i < mfs.size(); ++i) {
+            if (mfs[i]->fileName() == path) {
+              // already exist
+              exist = true;
+              m_pictureFile = mfs[i];
             }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == QLatin1String("pic")) {
-            break;
+          }
+          if (not exist) {
+            m_pictureFile = QSharedPointer<MediaFile>(new MediaFile(path));
+            m_drawing->workbook->addMediaFile(m_pictureFile, true);
+          }
         }
+      } else if (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("pic")) {
+        break;
+      }
     }
 
     return;
-}
+  }
 
-void DrawingAnchor::loadXmlObjectShape(QXmlStreamReader &reader)
-{
-    Q_UNUSED(reader)
-}
+  void DrawingAnchor::loadXmlObjectShape(QXmlStreamReader &reader) { Q_UNUSED(reader) }
 
-void DrawingAnchor::saveXmlPos(QXmlStreamWriter &writer, const QPoint &pos) const
-{
+  void DrawingAnchor::saveXmlPos(QXmlStreamWriter &writer, const QPoint &pos) const {
     writer.writeEmptyElement(QStringLiteral("xdr:pos"));
     writer.writeAttribute(QStringLiteral("x"), QString::number(pos.x()));
     writer.writeAttribute(QStringLiteral("y"), QString::number(pos.y()));
-}
+  }
 
-void DrawingAnchor::saveXmlExt(QXmlStreamWriter &writer, const QSize &ext) const
-{
+  void DrawingAnchor::saveXmlExt(QXmlStreamWriter &writer, const QSize &ext) const {
     writer.writeStartElement(QStringLiteral("xdr:ext"));
     writer.writeAttribute(QStringLiteral("cx"), QString::number(ext.width()));
     writer.writeAttribute(QStringLiteral("cy"), QString::number(ext.height()));
-    writer.writeEndElement(); //xdr:ext
-}
+    writer.writeEndElement(); // xdr:ext
+  }
 
-void DrawingAnchor::saveXmlMarker(QXmlStreamWriter &writer, const XlsxMarker &marker, const QString &node) const
-{
-    writer.writeStartElement(node); //xdr:from or xdr:to
+  void DrawingAnchor::saveXmlMarker(QXmlStreamWriter &writer, const XlsxMarker &marker, const QString &node) const {
+    writer.writeStartElement(node); // xdr:from or xdr:to
     writer.writeTextElement(QStringLiteral("xdr:col"), QString::number(marker.col()));
     writer.writeTextElement(QStringLiteral("xdr:colOff"), QString::number(marker.colOff()));
     writer.writeTextElement(QStringLiteral("xdr:row"), QString::number(marker.row()));
     writer.writeTextElement(QStringLiteral("xdr:rowOff"), QString::number(marker.rowOff()));
     writer.writeEndElement();
-}
+  }
 
-void DrawingAnchor::saveXmlObject(QXmlStreamWriter &writer) const
-{
+  void DrawingAnchor::saveXmlObject(QXmlStreamWriter &writer) const {
     if (m_objectType == Picture)
-        saveXmlObjectPicture(writer);
+      saveXmlObjectPicture(writer);
     else if (m_objectType == ConnectionShape)
-        saveXmlObjectConnectionShape(writer);
+      saveXmlObjectConnectionShape(writer);
     else if (m_objectType == GraphicFrame)
-        saveXmlObjectGraphicFrame(writer);
+      saveXmlObjectGraphicFrame(writer);
     else if (m_objectType == GroupShape)
-        saveXmlObjectGroupShape(writer);
+      saveXmlObjectGroupShape(writer);
     else if (m_objectType == Shape)
-        saveXmlObjectShape(writer);
-}
+      saveXmlObjectShape(writer);
+  }
 
-void DrawingAnchor::saveXmlObjectConnectionShape(QXmlStreamWriter &writer) const
-{
-    Q_UNUSED(writer)
-}
+  void DrawingAnchor::saveXmlObjectConnectionShape(QXmlStreamWriter &writer) const { Q_UNUSED(writer) }
 
-void DrawingAnchor::saveXmlObjectGraphicFrame(QXmlStreamWriter &writer) const
-{
+  void DrawingAnchor::saveXmlObjectGraphicFrame(QXmlStreamWriter &writer) const {
     writer.writeStartElement(QStringLiteral("xdr:graphicFrame"));
     writer.writeAttribute(QStringLiteral("macro"), QString());
 
     writer.writeStartElement(QStringLiteral("xdr:nvGraphicFramePr"));
     writer.writeEmptyElement(QStringLiteral("xdr:cNvPr"));
     writer.writeAttribute(QStringLiteral("id"), QString::number(m_id));
-    writer.writeAttribute(QStringLiteral("name"),QStringLiteral("Chart %1").arg(m_id));
+    writer.writeAttribute(QStringLiteral("name"), QStringLiteral("Chart %1").arg(m_id));
     writer.writeEmptyElement(QStringLiteral("xdr:cNvGraphicFramePr"));
-    writer.writeEndElement();//xdr:nvGraphicFramePr
+    writer.writeEndElement(); // xdr:nvGraphicFramePr
 
     writer.writeStartElement(QStringLiteral("xdr:xfrm"));
-    writer.writeEndElement(); //xdr:xfrm
+    writer.writeEndElement(); // xdr:xfrm
 
     writer.writeStartElement(QStringLiteral("a:graphic"));
     writer.writeStartElement(QStringLiteral("a:graphicData"));
-    writer.writeAttribute(QStringLiteral("uri"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
+    writer.writeAttribute(QStringLiteral("uri"),
+                          QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
 
     int idx = m_drawing->workbook->chartFiles().indexOf(m_chartFile);
-    m_drawing->relationships()->addDocumentRelationship(QStringLiteral("/chart"), QStringLiteral("../charts/chart%1.xml").arg(idx+1));
+    m_drawing->relationships()->addDocumentRelationship(QStringLiteral("/chart"),
+                                                        QStringLiteral("../charts/chart%1.xml").arg(idx + 1));
 
     writer.writeEmptyElement(QStringLiteral("c:chart"));
-    writer.writeAttribute(QStringLiteral("xmlns:c"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
-    writer.writeAttribute(QStringLiteral("xmlns:r"), QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
+    writer.writeAttribute(QStringLiteral("xmlns:c"),
+                          QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
+    writer.writeAttribute(QStringLiteral("xmlns:r"),
+                          QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
     writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(m_drawing->relationships()->count()));
 
-    writer.writeEndElement(); //a:graphicData
-    writer.writeEndElement(); //a:graphic
-    writer.writeEndElement(); //xdr:graphicFrame
-}
+    writer.writeEndElement(); // a:graphicData
+    writer.writeEndElement(); // a:graphic
+    writer.writeEndElement(); // xdr:graphicFrame
+  }
 
-void DrawingAnchor::saveXmlObjectGroupShape(QXmlStreamWriter &writer) const
-{
-    Q_UNUSED(writer)
-}
+  void DrawingAnchor::saveXmlObjectGroupShape(QXmlStreamWriter &writer) const { Q_UNUSED(writer) }
 
-void DrawingAnchor::saveXmlObjectPicture(QXmlStreamWriter &writer) const
-{
-    Q_ASSERT(m_objectType == Picture && !m_pictureFile.isNull());
+  void DrawingAnchor::saveXmlObjectPicture(QXmlStreamWriter &writer) const {
+    Q_ASSERT(m_objectType == Picture and !m_pictureFile.isNull());
 
     writer.writeStartElement(QStringLiteral("xdr:pic"));
 
@@ -360,72 +327,65 @@ void DrawingAnchor::saveXmlObjectPicture(QXmlStreamWriter &writer) const
     writer.writeStartElement(QStringLiteral("xdr:cNvPicPr"));
     writer.writeEmptyElement(QStringLiteral("a:picLocks"));
     writer.writeAttribute(QStringLiteral("noChangeAspect"), QStringLiteral("1"));
-    writer.writeEndElement(); //xdr:cNvPicPr
+    writer.writeEndElement(); // xdr:cNvPicPr
 
-    writer.writeEndElement(); //xdr:nvPicPr
+    writer.writeEndElement(); // xdr:nvPicPr
 
-    m_drawing->relationships()->addDocumentRelationship(QStringLiteral("/image"), QStringLiteral("../media/image%1.%2")
-                                                     .arg(m_pictureFile->index()+1)
-                                                     .arg(m_pictureFile->suffix()));
+    m_drawing->relationships()->addDocumentRelationship(
+          QStringLiteral("/image"),
+          QStringLiteral("../media/image%1.%2").arg(m_pictureFile->index() + 1).arg(m_pictureFile->suffix()));
 
     writer.writeStartElement(QStringLiteral("xdr:blipFill"));
     writer.writeEmptyElement(QStringLiteral("a:blip"));
-    writer.writeAttribute(QStringLiteral("xmlns:r"), QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
+    writer.writeAttribute(QStringLiteral("xmlns:r"),
+                          QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
     writer.writeAttribute(QStringLiteral("r:embed"), QStringLiteral("rId%1").arg(m_drawing->relationships()->count()));
     writer.writeStartElement(QStringLiteral("a:stretch"));
     writer.writeEmptyElement(QStringLiteral("a:fillRect"));
-    writer.writeEndElement(); //a:stretch
-    writer.writeEndElement();//xdr:blipFill
+    writer.writeEndElement(); // a:stretch
+    writer.writeEndElement(); // xdr:blipFill
 
     writer.writeStartElement(QStringLiteral("xdr:spPr"));
 
     writer.writeStartElement(QStringLiteral("a:prstGeom"));
     writer.writeAttribute(QStringLiteral("prst"), QStringLiteral("rect"));
     writer.writeEmptyElement(QStringLiteral("a:avLst"));
-    writer.writeEndElement(); //a:prstGeom
+    writer.writeEndElement(); // a:prstGeom
 
-    writer.writeEndElement(); //xdr:spPr
+    writer.writeEndElement(); // xdr:spPr
 
-    writer.writeEndElement(); //xdr:pic
-}
+    writer.writeEndElement(); // xdr:pic
+  }
 
-void DrawingAnchor::saveXmlObjectShape(QXmlStreamWriter &writer) const
-{
-    Q_UNUSED(writer)
-}
+  void DrawingAnchor::saveXmlObjectShape(QXmlStreamWriter &writer) const { Q_UNUSED(writer) }
 
-//absolute anchor
+  // absolute anchor
 
-DrawingAbsoluteAnchor::DrawingAbsoluteAnchor(Drawing *drawing, ObjectType objectType)
-    :DrawingAnchor(drawing, objectType)
-{
+  DrawingAbsoluteAnchor::DrawingAbsoluteAnchor(Drawing *drawing, ObjectType objectType)
+    : DrawingAnchor(drawing, objectType) {}
 
-}
-
-bool DrawingAbsoluteAnchor::loadFromXml(QXmlStreamReader &reader)
-{
+  bool DrawingAbsoluteAnchor::loadFromXml(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("absoluteAnchor"));
 
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("pos")) {
-                pos = loadXmlPos(reader);
-            } else if (reader.name() == QLatin1String("ext")) {
-                ext = loadXmlExt(reader);
-            } else {
-                loadXmlObject(reader);
-            }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == QLatin1String("absoluteAnchor")) {
-            break;
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("pos")) {
+          pos = loadXmlPos(reader);
+        } else if (reader.name() == QLatin1String("ext")) {
+          ext = loadXmlExt(reader);
+        } else {
+          loadXmlObject(reader);
         }
+      } else if (reader.tokenType() == QXmlStreamReader::EndElement and
+                 reader.name() == QLatin1String("absoluteAnchor")) {
+        break;
+      }
     }
     return true;
-}
+  }
 
-void DrawingAbsoluteAnchor::saveToXml(QXmlStreamWriter &writer) const
-{
+  void DrawingAbsoluteAnchor::saveToXml(QXmlStreamWriter &writer) const {
     writer.writeStartElement(QStringLiteral("xdr:absoluteAnchor"));
     saveXmlPos(writer, pos);
     saveXmlExt(writer, ext);
@@ -433,40 +393,34 @@ void DrawingAbsoluteAnchor::saveToXml(QXmlStreamWriter &writer) const
     saveXmlObject(writer);
 
     writer.writeEmptyElement(QStringLiteral("xdr:clientData"));
-    writer.writeEndElement(); //xdr:absoluteAnchor
-}
+    writer.writeEndElement(); // xdr:absoluteAnchor
+  }
 
-//one cell anchor
+  // one cell anchor
 
-DrawingOneCellAnchor::DrawingOneCellAnchor(Drawing *drawing, ObjectType objectType)
-    :DrawingAnchor(drawing, objectType)
-{
+  DrawingOneCellAnchor::DrawingOneCellAnchor(Drawing *drawing, ObjectType objectType)
+    : DrawingAnchor(drawing, objectType) {}
 
-}
-
-bool DrawingOneCellAnchor::loadFromXml(QXmlStreamReader &reader)
-{
+  bool DrawingOneCellAnchor::loadFromXml(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("oneCellAnchor"));
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("from")) {
-                from = loadXmlMarker(reader, QLatin1String("from"));
-            } else if (reader.name() == QLatin1String("ext")) {
-                ext = loadXmlExt(reader);
-            } else {
-                loadXmlObject(reader);
-            }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == QLatin1String("oneCellAnchor")) {
-            break;
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("from")) {
+          from = loadXmlMarker(reader, QLatin1String("from"));
+        } else if (reader.name() == QLatin1String("ext")) {
+          ext = loadXmlExt(reader);
+        } else {
+          loadXmlObject(reader);
         }
+      } else if (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("oneCellAnchor")) {
+        break;
+      }
     }
     return true;
-}
+  }
 
-void DrawingOneCellAnchor::saveToXml(QXmlStreamWriter &writer) const
-{
+  void DrawingOneCellAnchor::saveToXml(QXmlStreamWriter &writer) const {
     writer.writeStartElement(QStringLiteral("xdr:oneCellAnchor"));
 
     saveXmlMarker(writer, from, QStringLiteral("xdr:from"));
@@ -475,45 +429,39 @@ void DrawingOneCellAnchor::saveToXml(QXmlStreamWriter &writer) const
     saveXmlObject(writer);
 
     writer.writeEmptyElement(QStringLiteral("xdr:clientData"));
-    writer.writeEndElement(); //xdr:oneCellAnchor
-}
+    writer.writeEndElement(); // xdr:oneCellAnchor
+  }
 
-/*
+  /*
    Two cell anchor
 
    This class specifies a two cell anchor placeholder for a group
    , a shape, or a drawing element. It moves with
    cells and its extents are in EMU units.
 */
-DrawingTwoCellAnchor::DrawingTwoCellAnchor(Drawing *drawing, ObjectType objectType)
-    :DrawingAnchor(drawing, objectType)
-{
+  DrawingTwoCellAnchor::DrawingTwoCellAnchor(Drawing *drawing, ObjectType objectType)
+    : DrawingAnchor(drawing, objectType) {}
 
-}
-
-bool DrawingTwoCellAnchor::loadFromXml(QXmlStreamReader &reader)
-{
+  bool DrawingTwoCellAnchor::loadFromXml(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("twoCellAnchor"));
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("from")) {
-                from = loadXmlMarker(reader, QLatin1String("from"));
-            } else if (reader.name() == QLatin1String("to")) {
-                to = loadXmlMarker(reader, QLatin1String("to"));
-            } else {
-                loadXmlObject(reader);
-            }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == QLatin1String("twoCellAnchor")) {
-            break;
+    while (not reader.atEnd()) {
+      reader.readNextStartElement();
+      if (reader.tokenType() == QXmlStreamReader::StartElement) {
+        if (reader.name() == QLatin1String("from")) {
+          from = loadXmlMarker(reader, QLatin1String("from"));
+        } else if (reader.name() == QLatin1String("to")) {
+          to = loadXmlMarker(reader, QLatin1String("to"));
+        } else {
+          loadXmlObject(reader);
         }
+      } else if (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("twoCellAnchor")) {
+        break;
+      }
     }
     return true;
-}
+  }
 
-void DrawingTwoCellAnchor::saveToXml(QXmlStreamWriter &writer) const
-{
+  void DrawingTwoCellAnchor::saveToXml(QXmlStreamWriter &writer) const {
     writer.writeStartElement(QStringLiteral("xdr:twoCellAnchor"));
     writer.writeAttribute(QStringLiteral("editAs"), QStringLiteral("oneCell"));
 
@@ -523,7 +471,7 @@ void DrawingTwoCellAnchor::saveToXml(QXmlStreamWriter &writer) const
     saveXmlObject(writer);
 
     writer.writeEmptyElement(QStringLiteral("xdr:clientData"));
-    writer.writeEndElement(); //xdr:twoCellAnchor
-}
+    writer.writeEndElement(); // xdr:twoCellAnchor
+  }
 
 } // namespace QXlsx

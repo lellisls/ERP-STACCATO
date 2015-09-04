@@ -46,12 +46,11 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
-class CellPrivate
-{
+class CellPrivate {
     Q_DECLARE_PUBLIC(Cell)
-public:
+  public:
     CellPrivate(Cell *p);
-    CellPrivate(const CellPrivate * const cp);
+    CellPrivate(const CellPrivate *const cp);
 
     QVariant value;
     CellFormula formula;

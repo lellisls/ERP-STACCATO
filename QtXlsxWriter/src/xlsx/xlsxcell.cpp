@@ -33,18 +33,11 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
-CellPrivate::CellPrivate(Cell *p) :
-    q_ptr(p)
-{
+CellPrivate::CellPrivate(Cell *p) : q_ptr(p) {}
 
-}
-
-CellPrivate::CellPrivate(const CellPrivate * const cp)
-    : value(cp->value), formula(cp->formula), cellType(cp->cellType)
-    , format(cp->format), richString(cp->richString), parent(cp->parent)
-{
-
-}
+CellPrivate::CellPrivate(const CellPrivate *const cp)
+  : value(cp->value), formula(cp->formula), cellType(cp->cellType), format(cp->format), richString(cp->richString),
+    parent(cp->parent) {}
 
 /*!
   \class Cell
@@ -67,112 +60,92 @@ CellPrivate::CellPrivate(const CellPrivate * const cp)
  * \internal
  * Created by Worksheet only.
  */
-Cell::Cell(const QVariant &data, CellType type, const Format &format, Worksheet *parent) :
-    d_ptr(new CellPrivate(this))
-{
-    d_ptr->value = data;
-    d_ptr->cellType = type;
-    d_ptr->format = format;
-    d_ptr->parent = parent;
+Cell::Cell(const QVariant &data, CellType type, const Format &format, Worksheet *parent)
+  : d_ptr(new CellPrivate(this)) {
+  d_ptr->value = data;
+  d_ptr->cellType = type;
+  d_ptr->format = format;
+  d_ptr->parent = parent;
 }
 
 /*!
  * \internal
  */
-Cell::Cell(const Cell * const cell):
-    d_ptr(new CellPrivate(cell->d_ptr))
-{
-    d_ptr->q_ptr = this;
-}
+Cell::Cell(const Cell *const cell) : d_ptr(new CellPrivate(cell->d_ptr)) { d_ptr->q_ptr = this; }
 
 /*!
  * Destroys the Cell and cleans up.
  */
-Cell::~Cell()
-{
-    delete d_ptr;
-}
+Cell::~Cell() { delete d_ptr; }
 
 /*!
  * Return the dataType of this Cell
  */
-Cell::CellType Cell::cellType() const
-{
-    Q_D(const Cell);
-    return d->cellType;
+Cell::CellType Cell::cellType() const {
+  Q_D(const Cell);
+  return d->cellType;
 }
 
 /*!
  * Return the data content of this Cell
  */
-QVariant Cell::value() const
-{
-    Q_D(const Cell);
-    return d->value;
+QVariant Cell::value() const {
+  Q_D(const Cell);
+  return d->value;
 }
 
 /*!
  * Return the style used by this Cell. If no style used, 0 will be returned.
  */
-Format Cell::format() const
-{
-    Q_D(const Cell);
-    return d->format;
+Format Cell::format() const {
+  Q_D(const Cell);
+  return d->format;
 }
 
 /*!
  * Returns true if the cell has one formula.
  */
-bool Cell::hasFormula() const
-{
-    Q_D(const Cell);
-    return d->formula.isValid();
+bool Cell::hasFormula() const {
+  Q_D(const Cell);
+  return d->formula.isValid();
 }
 
 /*!
  * Return the formula contents if the dataType is Formula
  */
-CellFormula Cell::formula() const
-{
-    Q_D(const Cell);
-    return d->formula;
+CellFormula Cell::formula() const {
+  Q_D(const Cell);
+  return d->formula;
 }
 
 /*!
  * Returns whether the value is probably a dateTime or not
  */
-bool Cell::isDateTime() const
-{
-    Q_D(const Cell);
-    if (d->cellType == NumberType && d->value.toDouble() >=0
-            && d->format.isValid() && d->format.isDateTimeFormat()) {
-        return true;
-    }
-    return false;
+bool Cell::isDateTime() const {
+  Q_D(const Cell);
+  if (d->cellType == NumberType and d->value.toDouble() >= 0 and d->format.isValid() and d->format.isDateTimeFormat()) {
+    return true;
+  }
+  return false;
 }
 
 /*!
  * Return the data time value.
  */
-QDateTime Cell::dateTime() const
-{
-    Q_D(const Cell);
-    if (!isDateTime())
-        return QDateTime();
-    return datetimeFromNumber(d->value.toDouble(), d->parent->workbook()->isDate1904());
+QDateTime Cell::dateTime() const {
+  Q_D(const Cell);
+  if (not isDateTime()) return QDateTime();
+  return datetimeFromNumber(d->value.toDouble(), d->parent->workbook()->isDate1904());
 }
 
 /*!
  * Returns whether the cell is probably a rich string or not
  */
-bool Cell::isRichString() const
-{
-    Q_D(const Cell);
-    if (d->cellType != SharedStringType && d->cellType != InlineStringType
-            && d->cellType != StringType)
-        return false;
+bool Cell::isRichString() const {
+  Q_D(const Cell);
+  if (d->cellType != SharedStringType and d->cellType != InlineStringType and d->cellType != StringType) return false;
 
-    return d->richString.isRichString();
+  return d->richString.isRichString();
 }
 
 QT_END_NAMESPACE_XLSX

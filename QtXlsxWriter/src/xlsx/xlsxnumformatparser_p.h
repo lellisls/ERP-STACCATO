@@ -40,11 +40,10 @@
 
 namespace QXlsx {
 
-class NumFormatParser
-{
-public:
-    static bool isDateTime(const QString &formatCode);
-};
+  class NumFormatParser {
+    public:
+      static bool isDateTime(const QString &formatCode);
+  };
 
 } // namespace QXlsx
 

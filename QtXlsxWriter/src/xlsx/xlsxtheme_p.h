@@ -42,18 +42,16 @@ class QIODevice;
 
 namespace QXlsx {
 
-class Theme : public AbstractOOXmlFile
-{
-public:
-    Theme(CreateFlag flag);
+  class Theme : public AbstractOOXmlFile {
+    public:
+      Theme(CreateFlag flag);
 
-    void saveToXmlFile(QIODevice *device) const;
-    QByteArray saveToXmlData() const;
-    bool loadFromXmlData(const QByteArray &data);
-    bool loadFromXmlFile(QIODevice *device);
+      void saveToXmlFile(QIODevice *device) const;
+      QByteArray saveToXmlData() const;
+      bool loadFromXmlData(const QByteArray &data);
+      bool loadFromXmlFile(QIODevice *device);
 
-    QByteArray xmlData;
-};
-
+      QByteArray xmlData;
+  };
 }
 #endif // XLSXTHEME_H

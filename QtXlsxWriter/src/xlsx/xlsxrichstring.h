@@ -37,9 +37,8 @@ class RichString;
 // qHash is a friend, but we can't use default arguments for friends (§8.3.6.4)
 Q_XLSX_EXPORT uint qHash(const RichString &rs, uint seed = 0) Q_DECL_NOTHROW;
 
-class Q_XLSX_EXPORT RichString
-{
-public:
+class Q_XLSX_EXPORT RichString {
+  public:
     RichString();
     explicit RichString(const QString text);
     RichString(const RichString &other);
@@ -60,7 +59,8 @@ public:
     operator QVariant() const;
 
     RichString &operator=(const RichString &other);
-private:
+
+  private:
     friend Q_XLSX_EXPORT uint qHash(const RichString &rs, uint seed) Q_DECL_NOTHROW;
     friend Q_XLSX_EXPORT bool operator==(const RichString &rs1, const RichString &rs2);
     friend Q_XLSX_EXPORT bool operator!=(const RichString &rs1, const RichString &rs2);

@@ -45,21 +45,19 @@ class QIODevice;
 
 namespace QXlsx {
 
-class XLSX_AUTOTEST_EXPORT DocPropsCore : public AbstractOOXmlFile
-{
-public:
-    explicit DocPropsCore(CreateFlag flag);
+  class XLSX_AUTOTEST_EXPORT DocPropsCore : public AbstractOOXmlFile {
+    public:
+      explicit DocPropsCore(CreateFlag flag);
 
-    bool setProperty(const QString &name, const QString &value);
-    QString property(const QString &name) const;
-    QStringList propertyNames() const;
-        
-    void saveToXmlFile(QIODevice *device) const;
-    bool loadFromXmlFile(QIODevice *device);
+      bool setProperty(const QString &name, const QString &value);
+      QString property(const QString &name) const;
+      QStringList propertyNames() const;
 
-private:
-    QMap<QString, QString> m_properties;
-};
+      void saveToXmlFile(QIODevice *device) const;
+      bool loadFromXmlFile(QIODevice *device);
 
+    private:
+      QMap<QString, QString> m_properties;
+  };
 }
 #endif // XLSXDOCPROPSCORE_H

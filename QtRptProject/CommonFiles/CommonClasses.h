@@ -27,9 +27,9 @@ limitations under the License.
 #include <QMetaEnum>
 #include <QEvent>
 #if QT_VERSION >= 0x50000
-    #include <QtMath>
+#include <QtMath>
 #else
-    #include <QtCore/qmath.h>
+#include <QtCore/qmath.h>
 #endif
 #include <QObject>
 #include <QWidget>

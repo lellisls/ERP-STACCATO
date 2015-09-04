@@ -42,15 +42,13 @@
 
 namespace QXlsx {
 
-class XLSX_AUTOTEST_EXPORT ChartsheetPrivate : public AbstractSheetPrivate
-{
-    Q_DECLARE_PUBLIC(Chartsheet)
-public:
-    ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag);
-    ~ChartsheetPrivate();
+  class XLSX_AUTOTEST_EXPORT ChartsheetPrivate : public AbstractSheetPrivate {
+      Q_DECLARE_PUBLIC(Chartsheet)
+    public:
+      ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag);
+      ~ChartsheetPrivate();
 
-    Chart *chart;
-};
-
+      Chart *chart;
+  };
 }
 #endif // XLSXCHARTSHEET_P_H

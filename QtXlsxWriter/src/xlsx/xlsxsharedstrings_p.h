@@ -49,50 +49,44 @@ class QXmlStreamWriter;
 
 namespace QXlsx {
 
-class XlsxSharedStringInfo
-{
-public:
-    XlsxSharedStringInfo(int index=0, int count = 1) :
-        index(index), count(count)
-    {
-    }
+  class XlsxSharedStringInfo {
+    public:
+      XlsxSharedStringInfo(int index = 0, int count = 1) : index(index), count(count) {}
 
-    int index;
-    int count;
-};
+      int index;
+      int count;
+  };
 
-class XLSX_AUTOTEST_EXPORT SharedStrings : public AbstractOOXmlFile
-{
-public:
-    SharedStrings(CreateFlag flag);
-    int count() const;
-    bool isEmpty() const;
-    
-    int addSharedString(const QString &string);
-    int addSharedString(const RichString &string);
-    void removeSharedString(const QString &string);
-    void removeSharedString(const RichString &string);
-    void incRefByStringIndex(int idx);
+  class XLSX_AUTOTEST_EXPORT SharedStrings : public AbstractOOXmlFile {
+    public:
+      SharedStrings(CreateFlag flag);
+      int count() const;
+      bool isEmpty() const;
 
-    int getSharedStringIndex(const QString &string) const;
-    int getSharedStringIndex(const RichString &string) const;
-    RichString getSharedString(int index) const;
-    QList<RichString> getSharedStrings() const;
+      int addSharedString(const QString &string);
+      int addSharedString(const RichString &string);
+      void removeSharedString(const QString &string);
+      void removeSharedString(const RichString &string);
+      void incRefByStringIndex(int idx);
 
-    void saveToXmlFile(QIODevice *device) const;
-    bool loadFromXmlFile(QIODevice *device);
+      int getSharedStringIndex(const QString &string) const;
+      int getSharedStringIndex(const RichString &string) const;
+      RichString getSharedString(int index) const;
+      QList<RichString> getSharedStrings() const;
 
-private:
-    void readString(QXmlStreamReader &reader); // <si>
-    void readRichStringPart(QXmlStreamReader &reader, RichString &rich); // <r>
-    void readPlainStringPart(QXmlStreamReader &reader, RichString &rich); // <v>
-    Format readRichStringPart_rPr(QXmlStreamReader &reader);
-    void writeRichStringPart_rPr(QXmlStreamWriter &writer, const Format &format) const;
+      void saveToXmlFile(QIODevice *device) const;
+      bool loadFromXmlFile(QIODevice *device);
 
-    QHash<RichString, XlsxSharedStringInfo> m_stringTable; //for fast lookup
-    QList<RichString> m_stringList;
-    int m_stringCount;
-};
+    private:
+      void readString(QXmlStreamReader &reader);                            // <si>
+      void readRichStringPart(QXmlStreamReader &reader, RichString &rich);  // <r>
+      void readPlainStringPart(QXmlStreamReader &reader, RichString &rich); // <v>
+      Format readRichStringPart_rPr(QXmlStreamReader &reader);
+      void writeRichStringPart_rPr(QXmlStreamWriter &writer, const Format &format) const;
 
+      QHash<RichString, XlsxSharedStringInfo> m_stringTable; // for fast lookup
+      QList<RichString> m_stringList;
+      int m_stringCount;
+  };
 }
 #endif // XLSXSHAREDSTRINGS_H

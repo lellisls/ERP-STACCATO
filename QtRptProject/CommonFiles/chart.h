@@ -33,13 +33,13 @@ limitations under the License.
 #include <CommonClasses.h>
 
 enum ChartParam {
-    DrawGrid = 0,
-    ShowCaption = 1,
-    ShowLegend = 2,
-    ShowGraphCaption = 3,
-    ShowPercent = 4,
-    Caption = 5,
-    AutoFillData = 6
+  DrawGrid = 0,
+  ShowCaption = 1,
+  ShowLegend = 2,
+  ShowGraphCaption = 3,
+  ShowPercent = 4,
+  Caption = 5,
+  AutoFillData = 6
 };
 
 struct GraphParam {
@@ -57,11 +57,12 @@ Q_DECLARE_METATYPE(GraphParamList)
 Q_DECLARE_METATYPE(QDomElement)
 
 class Chart : public QWidget {
-    Q_OBJECT    
-public:
+    Q_OBJECT
+  public:
     explicit Chart(QWidget *parent = 0);
-    void setParams(bool drawGrid, bool drawHistory, bool drawCaption, bool drawGraphCaption, bool showPercent, QString caption, bool autoFillData);
-    void setData(GraphParam param, float value100Percent=0);
+    void setParams(bool drawGrid, bool drawHistory, bool drawCaption, bool drawGraphCaption, bool showPercent,
+                   QString caption, bool autoFillData);
+    void setData(GraphParam param, float value100Percent = 0);
     QVariant getParam(ChartParam param);
     GraphParamList getGraphParamList();
     void paintChart(QPainter *painter);
@@ -72,11 +73,11 @@ public:
     friend QDataStream &operator<<(QDataStream &stream, const Chart &obj);
     friend QDataStream &operator>>(QDataStream &stream, Chart &obj);
 
-protected:
-    void paintEvent(QPaintEvent * event);
+  protected:
+    void paintEvent(QPaintEvent *event);
     void setParamFromProperties();
 
-private:
+  private:
     QList<GraphParam> listOfGraph;
     QString m_caption;
     bool m_drawGrid;
@@ -94,11 +95,9 @@ private:
     float m_left;
     float m_top;
 
-signals:
+  signals:
 
-public slots:
-
+  public slots:
 };
-
 
 #endif // CHART_H

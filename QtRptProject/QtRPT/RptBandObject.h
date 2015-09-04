@@ -32,11 +32,11 @@ class QtRPT;
 class RptPageObject;
 class RptFieldObject;
 
-class RptBandObject
-{
+class RptBandObject {
     friend class QtRPT;
     friend class RptPageObject;
-public:
+
+  public:
     RptBandObject() {}
     ~RptBandObject();
     QString name;
@@ -51,14 +51,13 @@ public:
     int right;
     BandType type;
     void addField(RptFieldObject *field);
-    QList<RptFieldObject*> fieldList;
+    QList<RptFieldObject *> fieldList;
     RptPageObject *parentReportPage;
 
-private:
+  private:
     void setProperty(QtRPT *qtrpt, QDomElement docElem);
 };
 Q_DECLARE_METATYPE(RptBandObject)
 QDebug operator<<(QDebug dbg, const RptBandObject &obj);
-
 
 #endif // RPTBANDOBJECT_H

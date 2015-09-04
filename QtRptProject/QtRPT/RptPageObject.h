@@ -34,10 +34,10 @@ class QtRPT;
 class RptBandObject;
 class RptFieldObject;
 
-class RptPageObject
-{
+class RptPageObject {
     friend class QtRPT;
-public:
+
+  public:
     RptPageObject();
     ~RptPageObject();
     int pageNo;
@@ -51,8 +51,9 @@ public:
     void addBand(RptBandObject *band);
     RptBandObject *getBand(BandType type);
     RptFieldObject *findFieldObjectByName(QString name);
-    QList<RptBandObject*> bandList;
-private:
+    QList<RptBandObject *> bandList;
+
+  private:
     void setProperty(QtRPT *qtrpt, QDomElement docElem);
 };
 Q_DECLARE_METATYPE(RptPageObject)

@@ -27,23 +27,22 @@ limitations under the License.
 #include <QObject>
 #include <QSqlQuery>
 
-class RptSql : public QObject
-{
+class RptSql : public QObject {
     Q_OBJECT
-public:
-    explicit RptSql(QString dbType, QString dbName, QString dbHost, QString dbUser, QString dbPassword, int dbPort, QString dbConnectionName, QObject *parent = 0);
+  public:
+    explicit RptSql(QString dbType, QString dbName, QString dbHost, QString dbUser, QString dbPassword, int dbPort,
+                    QString dbConnectionName, QObject *parent = 0);
     bool openQuery(QString sql, QString dbCoding, QString charsetCoding);
     int getRecordCount();
     QString getFieldValue(QString fieldName, int recNo);
 
-private:
+  private:
     QSqlDatabase db;
     QSqlQuery *query;
 
-signals:
+  signals:
 
-public slots:
-
+  public slots:
 };
 
 #endif // RPTSQL_H

@@ -35,15 +35,10 @@ QT_BEGIN_NAMESPACE_XLSX
 class Relationships;
 class AbstractOOXmlFilePrivate;
 
-class Q_XLSX_EXPORT AbstractOOXmlFile
-{
+class Q_XLSX_EXPORT AbstractOOXmlFile {
     Q_DECLARE_PRIVATE(AbstractOOXmlFile)
-public:
-    enum CreateFlag
-    {
-        F_NewFromScratch,
-        F_LoadFromExists
-    };
+  public:
+    enum CreateFlag { F_NewFromScratch, F_LoadFromExists };
 
     virtual ~AbstractOOXmlFile();
 
@@ -58,7 +53,7 @@ public:
     void setFilePath(const QString path);
     QString filePath() const;
 
-protected:
+  protected:
     AbstractOOXmlFile(CreateFlag flag);
     AbstractOOXmlFile(AbstractOOXmlFilePrivate *d);
 

@@ -47,78 +47,60 @@ class QXmlStreamWriter;
 
 namespace QXlsx {
 
-class XlsxSeries
-{
-public:
-    //At present, we care about number cell ranges only!
-    QString numberDataSource_numRef; //yval, val
-    QString axDataSource_numRef; //xval, cat
-};
+  class XlsxSeries {
+    public:
+      // At present, we care about number cell ranges only!
+      QString numberDataSource_numRef; // yval, val
+      QString axDataSource_numRef; // xval, cat
+  };
 
-class XlsxAxis
-{
-public:
-    enum Type
-    {
-        T_Cat,
-        T_Val,
-        T_Date,
-        T_Ser
-    };
+  class XlsxAxis {
+    public:
+      enum Type { T_Cat, T_Val, T_Date, T_Ser };
 
-    enum Pos
-    {
-        Left,
-        Right,
-        Top,
-        Bottom
-    };
+      enum Pos { Left, Right, Top, Bottom };
 
-    XlsxAxis(){}
+      XlsxAxis() {}
 
-    XlsxAxis(Type t, Pos p, int id, int crossId)
-        :type(t), axisPos(p), axisId(id), crossAx(crossId)
-    {
-    }
+      XlsxAxis(Type t, Pos p, int id, int crossId) : type(t), axisPos(p), axisId(id), crossAx(crossId) {}
 
-    Type type;
-    Pos axisPos; //l,r,b,t
-    int axisId;
-    int crossAx;
-};
+      Type type;
+      Pos axisPos; // l,r,b,t
+      int axisId;
+      int crossAx;
+  };
 
-class ChartPrivate : public AbstractOOXmlFilePrivate
-{
-    Q_DECLARE_PUBLIC(Chart)
+  class ChartPrivate : public AbstractOOXmlFilePrivate {
+      Q_DECLARE_PUBLIC(Chart)
 
-public:
-    ChartPrivate(Chart *q, Chart::CreateFlag flag);
-    ~ChartPrivate();
+    public:
+      ChartPrivate(Chart *q, Chart::CreateFlag flag);
+      ~ChartPrivate();
 
-    bool loadXmlChart(QXmlStreamReader &reader);
-    bool loadXmlPlotArea(QXmlStreamReader &reader);
-    bool loadXmlXxxChart(QXmlStreamReader &reader);
-    bool loadXmlSer(QXmlStreamReader &reader);
-    QString loadXmlNumRef(QXmlStreamReader &reader);
-    bool loadXmlAxis(QXmlStreamReader &reader);
+      bool loadXmlChart(QXmlStreamReader &reader);
+      bool loadXmlPlotArea(QXmlStreamReader &reader);
+      bool loadXmlXxxChart(QXmlStreamReader &reader);
+      bool loadXmlSer(QXmlStreamReader &reader);
+      QString loadXmlNumRef(QXmlStreamReader &reader);
+      bool loadXmlAxis(QXmlStreamReader &reader);
 
-    void saveXmlChart(QXmlStreamWriter &writer) const;
-    void saveXmlPieChart(QXmlStreamWriter &writer) const;
-    void saveXmlBarChart(QXmlStreamWriter &writer) const;
-    void saveXmlLineChart(QXmlStreamWriter &writer) const;
-    void saveXmlScatterChart(QXmlStreamWriter &writer) const;
-    void saveXmlAreaChart(QXmlStreamWriter &writer) const;
-    void saveXmlDoughnutChart(QXmlStreamWriter &writer) const;
-    void saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id) const;
-    void saveXmlAxes(QXmlStreamWriter &writer) const;
+      void saveXmlChart(QXmlStreamWriter &writer) const;
+      void saveXmlPieChart(QXmlStreamWriter &writer) const;
+      void saveXmlBarChart(QXmlStreamWriter &writer) const;
+      void saveXmlLineChart(QXmlStreamWriter &writer) const;
+      void saveXmlScatterChart(QXmlStreamWriter &writer) const;
+      void saveXmlAreaChart(QXmlStreamWriter &writer) const;
+      void saveXmlDoughnutChart(QXmlStreamWriter &writer) const;
+      void saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id) const;
+      void saveXmlAxes(QXmlStreamWriter &writer) const;
 
-    Chart::ChartType chartType;
+      Chart::ChartType chartType;
 
-    QList<QSharedPointer<XlsxSeries> > seriesList;
-    QList<QSharedPointer<XlsxAxis> > axisList;
+      QList<QSharedPointer<XlsxSeries>> seriesList;
+      QList<QSharedPointer<XlsxAxis>> axisList;
 
-    AbstractSheet *sheet;
-};
+      AbstractSheet *sheet;
+  };
 
 } // namespace QXlsx
 

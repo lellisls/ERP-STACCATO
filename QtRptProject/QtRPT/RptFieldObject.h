@@ -32,11 +32,11 @@ using namespace QtRptName;
 class QtRPT;
 class RptBandObject;
 
-class RptFieldObject
-{
+class RptFieldObject {
     friend class QtRPT;
     friend class RptBandObject;
-public:
+
+  public:
     RptFieldObject();
     QString name;
     QString value;
@@ -87,13 +87,13 @@ public:
     QString caption;
     QList<GraphParam> graphList;
 
-    int recNo() {return m_recNo;}
-    int reportPage() {return m_reportPage;}
+    int recNo() { return m_recNo; }
+    int reportPage() { return m_reportPage; }
     void setTop(int top);
 
     QString getHTMLStyle();
 
-private:
+  private:
     QColor m_fontColor;
     QColor m_backgroundColor;
     int m_recNo;
@@ -103,7 +103,6 @@ private:
     void setProperty(QtRPT *qtrpt, QDomElement e);
     void updateDiagramValue();
     void updateHighlightingParam();
-
 };
 Q_DECLARE_METATYPE(RptFieldObject)
 QDebug operator<<(QDebug dbg, const RptFieldObject &obj);

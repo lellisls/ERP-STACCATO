@@ -2,7 +2,8 @@
 #define CONTASARECEBER_H
 
 #include <QDialog>
-#include <QSqlTableModel>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class ContasAReceber;
@@ -24,7 +25,7 @@ class ContasAReceber : public QDialog {
   private:
     // attributes
     Ui::ContasAReceber *ui;
-    QSqlTableModel modelContas;
+    SqlTableModel modelContas;
     QString idVenda;
 };
 

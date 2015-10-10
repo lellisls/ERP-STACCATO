@@ -2,6 +2,7 @@
 #define ORCAMENTO_H
 
 #include "registerdialog.h"
+#include "sqltablemodel.h"
 
 namespace Ui {
   class Orcamento;
@@ -42,7 +43,8 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonReplicar_clicked();
     void on_spinBoxCaixas_valueChanged(const int caixas);
     void on_tableProdutos_clicked(const QModelIndex &index);
-    void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
+    void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);    
+    void on_checkBoxRepresentacao_clicked(bool checked);
 
   signals:
     void finished();
@@ -95,7 +97,7 @@ class Orcamento : public RegisterDialog {
   private:
     // attributes
     Ui::Orcamento *ui;
-    QSqlTableModel modelItem;
+    SqlTableModel modelItem;
     QDataWidgetMapper mapperItem;
     // methods
     void removeItem();
@@ -104,7 +106,6 @@ class Orcamento : public RegisterDialog {
     void calcPrecoItemTotal();
     void novoItem();
     void updateId();
-    QString itemData(const int row, const QString key);
     void setupTables();
     bool verificaCampos();
 

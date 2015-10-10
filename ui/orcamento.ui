@@ -266,6 +266,9 @@
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Código de Orçamento:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;O código de orçamento é composto de:&lt;/p&gt;&lt;p&gt; * Sigla da loja &lt;/p&gt;&lt;p&gt; * Sigla do Vendedor&lt;/p&gt;&lt;p&gt; * Data (AAAAMMDD)&lt;/p&gt;&lt;p&gt; * Numero de Sequência (Hexadecimal) de 3 dígitos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
+                <property name="text">
+                 <string/>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -377,6 +380,13 @@
                 </property>
                 <property name="calendarPopup">
                  <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="checkBoxRepresentacao">
+                <property name="text">
+                 <string>Representação</string>
                 </property>
                </widget>
               </item>

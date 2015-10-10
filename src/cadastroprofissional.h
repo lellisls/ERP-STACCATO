@@ -13,7 +13,6 @@ class CadastroProfissional : public RegisterAddressDialog {
   public:
     explicit CadastroProfissional(QWidget *parent = 0);
     ~CadastroProfissional();
-    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -76,6 +75,7 @@ class CadastroProfissional : public RegisterAddressDialog {
     void clearEndereco();
     bool cadastrarEndereco(const bool isUpdate);
     void setupTables();
+    bool viewRegister(const QModelIndex index);
 };
 
 #endif // CADASTROPROFISSIONAL_H

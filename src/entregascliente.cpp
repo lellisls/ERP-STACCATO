@@ -1,74 +1,98 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QMessageBox>
 
+#include "cadastrarnfe.h"
 #include "entregascliente.h"
 #include "ui_entregascliente.h"
+#include "checkboxdelegate.h"
 
 EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::EntregasCliente) {
   ui->setupUi(this);
 
-  modelEntregas.setTable("pedido_transportadora");
-  modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  setWindowFlags(Qt::Window);
 
-  if (not modelEntregas.select()) {
-    qDebug() << "Failed to populate TableEntregas:" << modelEntregas.lastError();
-    return;
-  }
-
-  ui->tableEntregasCliente->setModel(&modelEntregas);
-
-  ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
+  setupTables();
 
   show();
 }
 
 EntregasCliente::~EntregasCliente() { delete ui; }
 
-void EntregasCliente::on_pushButtonSalvar_clicked() {
-  QSqlQuery query;
+void EntregasCliente::setupTables() {
+  modelProdutos.setTable("venda_has_produto");
+  modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (ui->checkBoxEntregue->isChecked()) {
-    query.prepare(
-          "UPDATE pedido_transportadora SET status = 'ENTREGUE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
-    query.bindValue(":idPedido", idPedido);
+  modelProdutos.setHeaderData(modelProdutos.fieldIndex("selecionado"), Qt::Horizontal, "");
 
-    if (not query.exec()) {
-      qDebug() << "Erro ao marcar como entregue: " << query.lastError();
+  if (not modelProdutos.select()) {
+    qDebug() << "Failed to populate modelProdutos: " << modelProdutos.lastError();
+    return;
+  }
+
+  ui->tableProdutos->setModel(&modelProdutos);
+  ui->tableProdutos->setItemDelegateForColumn(modelProdutos.fieldIndex("selecionado"), new CheckBoxDelegate(this));
+  ui->tableProdutos->setColumnHidden(modelProdutos.fieldIndex("idVendaProduto"), true);
+  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+
+  modelEntregas.setTable("pedido_transportadora");
+  modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not modelEntregas.select()) {
+    qDebug() << "Failed to populate modelEntregas:" << modelEntregas.lastError();
+    return;
+  }
+
+  ui->tableEntregas->setModel(&modelEntregas);
+  ui->tableEntregas->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableEntregas->horizontalHeader()->setResizeContentsPrecision(0);
+}
+
+void EntregasCliente::on_pushButtonNFe_clicked() {
+  QList<int> lista;
+
+  for (const auto index :
+       modelProdutos.match(modelProdutos.index(0, modelProdutos.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
+                           Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
+    lista.append(modelProdutos.data(index.row(), "idVendaProduto").toInt());
+
+    if (modelProdutos.data(index.row(), "idNfeSaida").toInt() != 0) {
+      QMessageBox::warning(this, "Aviso!", "Produto já possui nota emitida!");
+      return;
     }
 
-    query.prepare("UPDATE venda SET status = 'FECHADO' WHERE idVenda = :idPedido");
-    query.bindValue(":idPedido", idPedido);
-
-    if (not query.exec()) {
-      qDebug() << "Erro ao concluir a venda:" << query.lastError();
-    }
-
-  } else {
-    query.prepare(
-          "UPDATE pedido_transportadora SET status = 'PENDENTE' WHERE idPedido = :idPedido AND tipo = 'cliente'");
-    query.bindValue(":idPedido", idPedido);
-
-    if (not query.exec()) {
-      qDebug() << "Erro ao marcar como não entregue: " << query.lastError();
-    }
-
-    query.prepare("UPDATE venda SET status = 'ABERTO' WHERE idVenda = :idVenda");
-    query.bindValue("idVenda", idPedido);
-
-    if (not query.exec()) {
-      qDebug() << "Erro ao marcar venda como não concluída: " << query.lastError();
+    if (modelProdutos.data(index.row(), "status").toString() != "ESTOQUE") {
+      QMessageBox::warning(this, "Aviso!", "Produto não está em estoque!");
+      return;
     }
   }
 
-  close();
+  if (lista.size() == 0) {
+    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    return;
+  }
+
+  CadastrarNFe *nfe = new CadastrarNFe(idVenda, this);
+  nfe->prepararNFe(lista);
+  nfe->show();
 }
 
 void EntregasCliente::on_pushButtonCancelar_clicked() { close(); }
 
-void EntregasCliente::on_checkBoxEntregue_clicked() {}
+void EntregasCliente::viewEntrega(const QString idVenda) {
+  this->idVenda = idVenda;
+  modelProdutos.setFilter("idVenda = '" + idVenda + "'");
 
-void EntregasCliente::viewEntrega(const QString idPedido) {
-  this->idPedido = idPedido;
-  modelEntregas.setFilter("idPedido = '" + idPedido + "' AND tipo = 'cliente'");
+  if (not modelProdutos.select()) {
+    qDebug() << "Failed to populate modelProdutos: " << modelProdutos.lastError();
+  }
+
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
+  }
+
+  ui->tableProdutos->resizeColumnsToContents();
+  ui->tableEntregas->resizeColumnsToContents();
 }

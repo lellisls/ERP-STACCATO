@@ -25,7 +25,7 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 }

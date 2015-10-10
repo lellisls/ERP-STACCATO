@@ -13,9 +13,6 @@ class CadastroTransportadora : public RegisterAddressDialog {
   public:
     explicit CadastroTransportadora(QWidget *parent = 0);
     ~CadastroTransportadora();
-    void clearEndereco();
-    void setupUi();
-    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -72,6 +69,9 @@ class CadastroTransportadora : public RegisterAddressDialog {
     bool cadastrarEndereco(const bool isUpdate);
     void novoEndereco();
     void setupTables();
+    void clearEndereco();
+    void setupUi();
+    bool viewRegister(const QModelIndex index);
 };
 
 #endif // CADASTROTRANSPORTADORA_H

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Configurações</string>
   </property>
   <property name="locale">
    <locale language="Portuguese" country="Brazil"/>
@@ -75,6 +75,13 @@
       <widget class="QLabel" name="labelPort">
        <property name="text">
         <string>Port:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" colspan="2">
+      <widget class="QCheckBox" name="checkBoxHomologacao">
+       <property name="text">
+        <string>Homologação</string>
        </property>
       </widget>
      </item>

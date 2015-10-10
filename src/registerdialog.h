@@ -2,9 +2,10 @@
 #define REGISTERDIALOG_H
 
 #include <QDataWidgetMapper>
-#include <QSqlTableModel>
 #include <QLineEdit>
 #include <QDialog>
+
+#include "sqltablemodel.h"
 
 /*!
   \brief A Classe RegisterDialog é base para todas as janelas de cadastro.
@@ -29,8 +30,6 @@ class RegisterDialog : public QDialog {
 * \return
 */
     virtual bool viewRegister(const QModelIndex index);
-    QStringList getTextKeys() const;
-    void setTextKeys(const QStringList &value);
 
   public slots:
     /*!
@@ -179,10 +178,10 @@ class RegisterDialog : public QDialog {
 */
     QDataWidgetMapper mapper;
     /*!
-* \brief QSqlTableModel que 'conversa' com a tabela, buscando e armazenando as informações. A 'View' seria a
+* \brief SqlTableModel que 'conversa' com a tabela, buscando e armazenando as informações. A 'View' seria a
 * interface gráfica, em geral.
 */
-    QSqlTableModel model;
+    SqlTableModel model;
     /*!
 * \brief Uma forma simples de guardar o nome da chave primária.
 */
@@ -193,15 +192,18 @@ class RegisterDialog : public QDialog {
     QStringList textKeys;
 
   protected:
+    // attributes
     bool isDirty = false;
     bool silent = false;
     bool incompleto = false;
-
+    // methods
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
     bool validaCNPJ(const QString text);
     bool validaCPF(const QString text);
     bool update();
+    QStringList getTextKeys() const;
+    void setTextKeys(const QStringList &value);
 };
 
 #endif // REGISTERDIALOG_H

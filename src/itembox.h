@@ -13,13 +13,12 @@ class ItemBox : public QLineEdit {
   public:
     explicit ItemBox(QWidget *parent);
     ~ItemBox();
-    virtual void resizeEvent(QResizeEvent *event);
     void setSearchDialog(SearchDialog *m_value);
     void setRegisterDialog(RegisterDialog *m_value);
     SearchDialog *searchDialog();
-    RegisterDialog *registerDialog();
     QVariant value() const;
     void setValue(const QVariant &m_value);
+    void setReadOnlyItemBox(bool readOnly);
 
   public slots:
     void changeItem(const QVariant m_value);
@@ -30,13 +29,16 @@ class ItemBox : public QLineEdit {
 
   protected:
     Q_PROPERTY(QVariant value READ value WRITE setValue STORED false)
+    // attributes
     QPushButton *m_searchButton, *m_plusButton;
     SearchDialog *m_searchDialog;
     RegisterDialog *m_registerDialog;
     QVariant m_value;
-
-    // QWidget interface
+    bool readOnlyItemBox = false;
+    // methods
     void mouseDoubleClickEvent(QMouseEvent *event);
+    virtual void resizeEvent(QResizeEvent *event);
+    RegisterDialog *registerDialog();
 };
 
 #endif // ITEMBOX_H

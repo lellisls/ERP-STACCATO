@@ -1,12 +1,15 @@
 #include <QBrush>
 
-#include "backgroundproxymodel.h"
+#include "orcamentoproxymodel.h"
 
-BackgroundProxyModel::BackgroundProxyModel(int column) : column(column) {}
+OrcamentoProxyModel::OrcamentoProxyModel(QSqlQueryModel *model, int column, QObject *parent)
+  : QIdentityProxyModel(parent), column(column) {
+  setSourceModel(model);
+}
 
-BackgroundProxyModel::~BackgroundProxyModel() {}
+OrcamentoProxyModel::~OrcamentoProxyModel() {}
 
-QVariant BackgroundProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
+QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if ((role == Qt::BackgroundRole) and (proxyIndex.column() == column)) {
     int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 

@@ -1,15 +1,18 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QSqlQuery>
 
-#include "src/estoque.h"
+#include "estoque.h"
 #include "ui_estoque.h"
 #include "xml_viewer.h"
 
 Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   ui->setupUi(this);
 
-  modelEstoque.setTable("produto_has_estoque");
+  setWindowFlags(Qt::Window);
+
+  modelEstoque.setTable("estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelEstoque.select()) {
@@ -17,38 +20,40 @@ Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   }
 
   ui->tableEstoque->setModel(&modelEstoque);
+  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idEstoque"), true);
+  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idCompra"), true);
+  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idVendaProduto"), true);
+  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idProduto"), true);
+  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idNFe"), true);
+  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("quantUpd"), true);
 }
 
 Estoque::~Estoque() { delete ui; }
 
 void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
-  //  qDebug() << "xml: " << modelEstoque.data(modelEstoque.index(index.row(),
-  //  modelEstoque.fieldIndex("xml"))).toString();
+  int id = modelEstoque.data(index.row(), "idXML").toInt();
+
+  QSqlQuery query;
+  query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
+  query.bindValue(":idNFe", id);
+
+  if (not query.exec() or not query.first()) {
+    qDebug() << "Erro buscando xml nfe: " << query.lastError();
+    return;
+  }
+
   XML_Viewer *xml = new XML_Viewer(this);
-  xml->exibirXML(modelEstoque.data(modelEstoque.index(index.row(), modelEstoque.fieldIndex("xml"))).toString());
+  xml->exibirXML(query.value(0).toString());
   xml->show();
 }
 
-void Estoque::viewRegisterById(const QVariant id) {
-  //  qDebug() << "id: " << id;
-
-  if (not modelEstoque.select()) {
-    qDebug() << "erro model: " << modelEstoque.lastError();
+void Estoque::viewRegisterById(const QString codComercial) {
+  if (codComercial.isEmpty()) {
+    QMessageBox::warning(this, "Aviso!", "Estoque não encontrado!");
+    return;
   }
 
-  const QModelIndex index =
-      modelEstoque.match(modelEstoque.index(0, modelEstoque.fieldIndex("idProduto")), Qt::DisplayRole, id).first();
-
-  if (not index.isValid()) {
-    QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
-    close();
-  }
-
-  QString idProduto =
-      modelEstoque.data(modelEstoque.index(index.row(), modelEstoque.fieldIndex("idProduto"))).toString();
-  //  qDebug() << "idEstoque: " << idProduto;
-
-  modelEstoque.setFilter("idProduto = '" + idProduto + "'");
+  modelEstoque.setFilter("codComercial = '" + codComercial + "'");
 
   if (not modelEstoque.select()) {
     qDebug() << "erro modelEstoque: " << modelEstoque.lastError();
@@ -63,4 +68,19 @@ void Estoque::viewRegisterById(const QVariant id) {
   }
 
   show();
+}
+
+void Estoque::on_pushButtonExibirNfe_clicked() {
+  QSqlQuery query;
+  query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
+  query.bindValue(":idNFe", modelEstoque.data(0, "idNFe"));
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::warning(this, "Aviso!", "Erro buscando nota fiscal!");
+    return;
+  }
+
+  XML_Viewer *viewer = new XML_Viewer(this);
+  viewer->exibirXML(query.value(0).toString());
+  viewer->show();
 }

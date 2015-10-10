@@ -9,10 +9,12 @@ class DateFormatDelegate : public QStyledItemDelegate {
   public:
     DateFormatDelegate(QString dateFormat, QObject *parent = 0);
     ~DateFormatDelegate();
-    virtual QString displayText(const QVariant &value, const QLocale &locale) const;
 
   private:
+    // attributes
     const QString dateFormat;
+    // methods
+    virtual QString displayText(const QVariant &value, const QLocale &locale) const;
 };
 
 #endif // DATEFORMATDELEGATE_H

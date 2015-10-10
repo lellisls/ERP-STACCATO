@@ -92,12 +92,12 @@ void SearchDialog::sendUpdateMessage() {
     index = ui->tableBusca->selectionModel()->selection().indexes().front();
   }
 
-  selectedId = model.data(model.index(index.row(), model.fieldIndex(primaryKey)));
+  selectedId = model.data(index.row(), primaryKey);
   QString text;
 
-  foreach (QString key, textKeys) {
+  for (auto key : textKeys) {
     if (not key.isEmpty()) {
-      const QVariant val = model.data(model.index(index.row(), model.fieldIndex(key)));
+      const QVariant val = model.data(index.row(), key);
 
       if (val.isValid()) {
         if (not text.isEmpty()) {
@@ -159,7 +159,7 @@ void SearchDialog::setFilter(const QString &value) {
 }
 
 void SearchDialog::hideColumns(const QStringList columns) {
-  foreach (const QString column, columns) { ui->tableBusca->setColumnHidden(model.fieldIndex(column), true); }
+  for (const auto column : columns) { ui->tableBusca->setColumnHidden(model.fieldIndex(column), true); }
 }
 
 void SearchDialog::on_pushButtonSelecionar_clicked() {
@@ -181,10 +181,10 @@ QString SearchDialog::getPrimaryKey() const { return primaryKey; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
-QString SearchDialog::getText(const QVariant index) {
+QString SearchDialog::getText(const QVariant index) const {
   QString queryText;
 
-  foreach (QString key, textKeys) {
+  for (const auto key : textKeys) {
     if (queryText.isEmpty()) {
       queryText += key;
     } else {
@@ -201,7 +201,7 @@ QString SearchDialog::getText(const QVariant index) {
   } else {
     QString res;
 
-    foreach (QString key, textKeys) {
+    for (const auto key : textKeys) {
       const QVariant val = query.value(key);
 
       if (val.isValid()) {
@@ -214,8 +214,8 @@ QString SearchDialog::getText(const QVariant index) {
     }
 
     if (model.tableName().contains("endereco")) {
-      if (query.value("descricao").toString() == "Não há") {
-        return "Não há";
+      if (query.value("descricao").toString() == "Não há/Retira") {
+        return "Não há/Retira";
       }
     }
 
@@ -228,7 +228,7 @@ QString SearchDialog::getText(const QVariant index) {
 }
 
 void SearchDialog::setHeaderData(const QVector<QPair<QString, QString>> headerData) {
-  foreach (auto pair, headerData) { model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second); }
+  for (auto pair : headerData) { model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second); }
 }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
@@ -387,7 +387,8 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
 
-  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
+  // TODO: see what to do with loja relation
+  //  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
 
   return sdUsuario;
 }
@@ -412,29 +413,6 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
   SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "cliente_has_endereco", {}, "idEndereco = 1", parent);
-
-  sdEndereco->setPrimaryKey("idEndereco");
-  sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
-
-  sdEndereco->hideColumns({"idEndereco", "idCliente", "codUF", "desativado"});
-
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
-  headerData.push_back(QPair<QString, QString>("cep", "CEP"));
-  headerData.push_back(QPair<QString, QString>("logradouro", "End."));
-  headerData.push_back(QPair<QString, QString>("numero", "Número"));
-  headerData.push_back(QPair<QString, QString>("complemento", "Comp."));
-  headerData.push_back(QPair<QString, QString>("bairro", "Bairro"));
-  headerData.push_back(QPair<QString, QString>("cidade", "Cidade"));
-  headerData.push_back(QPair<QString, QString>("uf", "UF"));
-  sdEndereco->setHeaderData(headerData);
-
-  return sdEndereco;
-}
-
-SearchDialog *SearchDialog::enderecoFornecedor(QWidget *parent) {
-  SearchDialog *sdEndereco =
-      new SearchDialog("Buscar Endereço", "fornecedor_has_endereco", {}, "idFornecedor = 0", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
   sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});

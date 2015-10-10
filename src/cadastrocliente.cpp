@@ -29,7 +29,7 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -95,7 +95,7 @@ bool CadastroCliente::verifyFields() {
 
   int ok = 0;
 
-  foreach (QLineEdit *line, ui->groupBoxContatos->findChildren<QLineEdit *>()) {
+  for (auto *line : ui->groupBoxContatos->findChildren<QLineEdit *>()) {
     if (verifyRequiredField(line, true)) {
       ok++;
     } else {
@@ -110,7 +110,7 @@ bool CadastroCliente::verifyFields() {
 
   ok = 0;
 
-  foreach (QLineEdit *line, ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
+  for (auto *line : ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
     if (verifyRequiredField(line, true)) {
       ok++;
     } else {
@@ -251,7 +251,7 @@ void CadastroCliente::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  foreach (ItemBox *box, this->findChildren<ItemBox *>()) { box->clear(); }
+  for (auto *box : this->findChildren<ItemBox *>()) { box->clear(); }
 
   setupUi();
 }
@@ -460,6 +460,8 @@ void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
   if (not cadastrarEndereco(false)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
+  } else{
+    novoEndereco();
   }
 }
 
@@ -467,6 +469,8 @@ void CadastroCliente::on_pushButtonAtualizarEnd_clicked() {
   if (not cadastrarEndereco(true)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
+  } else{
+    novoEndereco();
   }
 }
 

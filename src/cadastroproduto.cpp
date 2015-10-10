@@ -24,12 +24,12 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 
   SearchDialog *sdProd = SearchDialog::produto(this);
   connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::viewRegisterById);
-  connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProd, &SearchDialog::showMaximized);
+  connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProd, &SearchDialog::show);
 
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
-  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -41,7 +41,10 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 CadastroProduto::~CadastroProduto() { delete ui; }
 
 void CadastroProduto::clearFields() {
-  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
+  for (auto *line : this->findChildren<QLineEdit *>()) {
+    line->clear();
+  }
+
   ui->radioButtonDesc->setChecked(false);
   ui->radioButtonLote->setChecked(false);
 }
@@ -59,13 +62,6 @@ void CadastroProduto::registerMode() {
 }
 
 bool CadastroProduto::verifyFields() {
-  // TODO: see what to do with these
-  //  if (not RegisterDialog::verifyFields({ui->lineEditUI,
-  //                                       ui->lineEditColecao, ui->lineEditDescricao, ui->lineEditFormComer,
-  //                                       ui->lineEditICMS, ui->lineEditNCM})) {
-  //    return false;
-  //  }
-
   if (ui->doubleSpinBoxCusto->value() == 0) {
     ui->doubleSpinBoxCusto->setFocus();
     QMessageBox::warning(this, "Atenção!", "Custo inválido!", QMessageBox::Ok, QMessageBox::NoButton);

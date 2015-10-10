@@ -53,7 +53,7 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
 
 void ItemBox::search() {
   if (m_searchDialog) {
-    m_searchDialog->showMaximized();
+    m_searchDialog->show();
   }
 }
 
@@ -88,6 +88,22 @@ void ItemBox::setValue(const QVariant &value) {
   }
 }
 
+void ItemBox::setReadOnlyItemBox(bool readOnly) {
+  readOnlyItemBox = readOnly;
+
+  if (readOnly) {
+    m_plusButton->hide();
+    m_plusButton->setDisabled(true);
+    m_searchButton->hide();
+    m_searchButton->setDisabled(true);
+  } else {
+    m_plusButton->show();
+    m_plusButton->setEnabled(true);
+    m_searchButton->show();
+    m_searchButton->setEnabled(true);
+  }
+}
+
 void ItemBox::setSearchDialog(SearchDialog *value) {
   m_searchDialog = value;
   connect(m_searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);
@@ -106,6 +122,8 @@ void ItemBox::changeItem(const QVariant value) {
 }
 
 void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {
-  search();
-  event->accept();
+  if (not readOnlyItemBox) {
+    search();
+    event->accept();
+  }
 }

@@ -9,6 +9,7 @@ class ComboBoxDelegate : public QStyledItemDelegate {
     explicit ComboBoxDelegate(QObject *parent = 0);
     ~ComboBoxDelegate();
 
+  private:
     // QAbstractItemDelegate interface
     virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;

@@ -8,7 +8,15 @@
 #include "xml.h"
 #include "usersession.h"
 
-XML::XML() {}
+XML::XML() {
+  modelProduto.setTable("produto");
+  modelProduto.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not modelProduto.select()) {
+    qDebug() << "erro model produto: " << modelProduto.lastError();
+    return;
+  }
+}
 
 void XML::importarXML() {
   fileName = QFileDialog::getOpenFileName(0, "Importar arquivo XML", QDir::currentPath(), ("XML (*.xml)"));
@@ -18,14 +26,6 @@ void XML::importarXML() {
   }
 
   fileName.replace("/", "\\\\");
-
-  modelProduto.setTable("produto");
-  modelProduto.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelProduto.select()) {
-    qDebug() << "erro model produto: " << modelProduto.lastError();
-    return;
-  }
 
   readXML();
   saveXML();
@@ -115,7 +115,21 @@ bool XML::readTree(QStandardItem *item) {
       QStandardItem *child = item->child(i, j);
 
       if (child->text().left(6) == "infNFe") {
-        idNFe = child->text().mid(child->text().indexOf("Id=") + 7, 44);
+        chaveAcesso = child->text().mid(child->text().indexOf("Id=") + 7, 44);
+
+        QSqlQuery query;
+        query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
+        query.bindValue(":chaveAcesso", chaveAcesso);
+
+        if (not query.exec()) {
+          qDebug() << "Erro verificando se nota já cadastrada: " << query.lastError();
+          return false;
+        }
+
+        if (query.first()) {
+          QMessageBox::warning(0, "Aviso!", "Nota já cadastrada!");
+          return false;
+        }
       }
 
       if (child->parent()->text() == "emit" and child->text().left(7) == "xFant -") {
@@ -128,27 +142,27 @@ bool XML::readTree(QStandardItem *item) {
 
       if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
         cnpj = child->text().remove(0, 7);
+        // TODO: readd these
 
-        QStringList list = UserSession::getTodosCNPJ();
-        bool match = false;
+        //        bool match = false;
 
-        foreach (QString cnpjLoja, list) {
-          if (cnpj == cnpjLoja) {
-            match = true;
-          }
-        }
+        //        for (const auto cnpjLoja : UserSession::getTodosCNPJ()) {
+        //          if (cnpj == cnpjLoja) {
+        //            match = true;
+        //          }
+        //        }
 
-        if (not match) {
-          QMessageBox::warning(0, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
-          qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
-          return false;
-        }
+        //        if (not match) {
+        //          QMessageBox::warning(0, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
+        //          qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
+        //          return false;
+        //        }
       }
 
-      if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
-        QMessageBox::warning(0, "Aviso!", "Destinatário da nota é pessoa física!");
-        return false;
-      }
+      //      if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
+      //        QMessageBox::warning(0, "Aviso!", "Destinatário da nota é pessoa física!");
+      //        return false;
+      //      }
 
       lerDadosProduto(child);
       lerICMSProduto(child);
@@ -162,16 +176,73 @@ bool XML::readTree(QStandardItem *item) {
           return false;
         }
       }
-
-      if (child->text().mid(0, 10) == "det nItem=") {
-        if (insertProdutoEstoque()) {
-          insertEstoque();
-        }
-      }
     }
   }
 
   return true;
+}
+
+void XML::inserirNoModel(QStandardItem *item, SqlTableModel *externalModel) {
+  for (int i = 0; i < item->rowCount(); ++i) {
+    for (int j = 0; j < item->columnCount(); ++j) {
+      QStandardItem *child = item->child(i, j);
+
+      lerDadosProduto(child);
+      lerICMSProduto(child);
+      lerIPIProduto(child);
+      lerIPIProduto(child);
+      lerCOFINSProduto(child);
+      lerTotais(child);
+
+      if (child->text().mid(0, 10) == "det nItem=") {
+        inserirItem(externalModel);
+      }
+
+      if (child->hasChildren()) {
+        inserirNoModel(child, externalModel);
+      }
+    }
+  }
+}
+
+int XML::cadastrarNFe() {
+  QSqlQuery query;
+
+  query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
+  query.bindValue(":chaveAcesso", chaveAcesso);
+
+  if (not query.exec()) {
+    qDebug() << "Erro verificando se nota já cadastrada: " << query.lastError();
+    return false;
+  }
+
+  qDebug() << "fileName: " << fileName;
+
+  QFile file(fileName);
+
+  if (not file.open(QFile::ReadOnly)) {
+    qDebug() << "Erro lendo arquivo: " << file.errorString();
+    return false;
+  }
+
+  QString fileContents = file.readAll();
+
+  if (not query.first()) {
+    query.prepare("INSERT INTO nfe (idVendaCompra, tipo, chaveAcesso, xml) VALUES (:idVendaCompra, 'ENTRADA', "
+                  ":chaveAcesso, :xml)");
+    query.bindValue(":idVendaCompra", "PLACEHOLDER");
+    query.bindValue(":chaveAcesso", chaveAcesso);
+    query.bindValue(":xml", fileContents);
+
+    if (not query.exec()) {
+      qDebug() << "Erro cadastrando xml no estoque: " << query.lastError();
+      return false;
+    }
+
+    idNFe = query.lastInsertId().toInt();
+  }
+
+  return idNFe;
 }
 
 void XML::lerDadosProduto(QStandardItem *child) {
@@ -250,7 +321,6 @@ void XML::lerDadosProduto(QStandardItem *child) {
 
 void XML::lerICMSProduto(QStandardItem *child) {
   if (child->text() == "ICMS") {
-    //    qDebug() << "icms: " << child->child(0, 0)->text();
     tipoICMS = child->child(0, 0)->text();
   }
 
@@ -407,178 +477,324 @@ void XML::lerTotais(QStandardItem *child) {
   }
 }
 
-bool XML::insertProdutoEstoque() {
-  QModelIndexList indexList =
-      modelProduto.match(modelProduto.index(0, modelProduto.fieldIndex("codComercial")), Qt::DisplayRole, codProd);
+bool XML::insertEstoque() {
+  QSqlQuery query;
 
-  if (indexList.isEmpty()) {
-    QSqlQuery queryForn;
-    queryForn.prepare("SELECT * FROM fornecedor WHERE razaoSocial = :razaoSocial");
-    queryForn.bindValue(":razaoSocial", xFant.isEmpty() ? xNome : xFant);
-
-    if (not queryForn.exec()) {
-      qDebug() << "Erro buscando fornecedor: " << queryForn.lastError();
-    }
-
-    int idFornecedor = 0;
-
-    if (queryForn.first()) {
-      idFornecedor = queryForn.value("idFornecedor").toInt();
-    } else {
-      queryForn.prepare("INSERT INTO fornecedor (razaoSocial) VALUES (:razaoSocial)");
-      queryForn.bindValue(":razaoSocial", xFant.isEmpty() ? xNome : xFant);
-
-      if (not queryForn.exec()) {
-        qDebug() << "Erro cadastrando fornecedor: " << queryForn.lastError();
-      }
-
-      idFornecedor = queryForn.lastInsertId().toInt();
-    }
-
-    QSqlQuery queryProd;
-    queryProd.prepare("INSERT INTO produto (idFornecedor, fornecedor, codComercial, codBarras, descricao, ncm, cfop, "
-                      "un, custo) VALUES (:idFornecedor, :fornecedor, :codComercial, :codBarras, :descricao, :ncm, "
-                      ":cfop, :un, :custo)");
-    queryProd.bindValue(":idFornecedor", idFornecedor);
-    queryProd.bindValue(":fornecedor", xFant.isEmpty() ? xNome : xFant);
-    queryProd.bindValue(":codComercial", codProd);
-    queryProd.bindValue(":codBarras", codBarras);
-    queryProd.bindValue(":descricao", descricao);
-    queryProd.bindValue(":ncm", ncm);
-    queryProd.bindValue(":cfop", cfop);
-    queryProd.bindValue(":un", un);
-    queryProd.bindValue(":custo", valorUnid);
-
-    if (not queryProd.exec()) {
-      qDebug() << "Erro cadastrando produto: " << queryProd.lastError();
-    }
-
-    idProduto = queryProd.lastInsertId().toInt();
-
-    QMessageBox::warning(0, "Aviso!", "Produto não cadastrado, cadastrando!");
-  } else {
-    idProduto =
-        modelProduto.data(modelProduto.index(indexList.first().row(), modelProduto.fieldIndex("idProduto"))).toInt();
-  }
-
-  //  qDebug() << "fileName: " << fileName;
-  QSqlQuery queryEstoque;
-
-  queryEstoque.prepare(
-        "SELECT * FROM produto_has_estoque WHERE idNFe = :idNFe AND idProduto = :idProduto AND quant = :quant");
-  queryEstoque.bindValue(":idNFe", idNFe);
-  queryEstoque.bindValue(":idProduto", idProduto);
-  queryEstoque.bindValue(":quant", quant);
-
-  if (queryEstoque.exec() and queryEstoque.first()) {
-    //    qDebug() << "nota já cadastrada";
-    QMessageBox::warning(0, "Aviso!", "Nota já cadastrada!");
+  if (not query.exec("SELECT fornecedor FROM produto WHERE codComercial = '" + codProd + "'")) {
+    qDebug() << "Erro buscando fornecedor: " << query.lastError();
     return false;
   }
 
-  if (queryEstoque.exec("SELECT load_file('" + fileName + "')") and queryEstoque.first()) {
-    if (queryEstoque.value(0).toString().isEmpty()) {
-      QMessageBox::warning(0, "Aviso!", "Erro lendo xml no banco de dados.");
-      return false;
-    }
+  QString fornecedor;
+
+  if (query.first()) {
+    fornecedor = query.value(0).toString();
+  } else {
+    // TODO: cadastrar produto
+    QMessageBox::warning(0, "Aviso!", "Produto não cadastrado, fornecedor em branco.");
   }
 
-  queryEstoque.prepare(
-        "INSERT INTO produto_has_estoque (idProduto, quant, idNFe, xml) VALUES (:idProduto, :quant, :idNFe, load_file('" +
-        fileName + "'))");
-  queryEstoque.bindValue(":idProduto", idProduto);
-  queryEstoque.bindValue(":quant", quant);
-  queryEstoque.bindValue(":idNFe", idNFe);
+  qDebug() << "fornecedor: " << fornecedor;
 
-  if (not queryEstoque.exec()) {
-    qDebug() << "Erro cadastrando xml no estoque: " << queryEstoque.lastError();
+  query.prepare(
+        "INSERT INTO estoque (idProduto, idXML, fornecedor, descricao, quant, un, codBarras, codComercial, ncm, cfop, "
+        "valorUnid, valor, codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
+        "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, cstIPI, "
+        "cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS) VALUES (:idProduto, :idXML, :fornecedor, "
+        ":descricao, :quant, :un, :codBarras, :codComercial, :ncm, :cfop, :valorUnid, :valor, :codBarrasTrib, :unTrib, "
+        ":quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, :itemPedido, :tipoICMS, :orig, :cstICMS, "
+        ":modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST, :vICMSST, :cEnq, :cstIPI, :cstPIS, :vBCPIS, "
+        ":pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS)");
+  query.bindValue(":idProduto", idProduto);
+  query.bindValue(":idXML", idNFe);
+  query.bindValue(":fornecedor", fornecedor);
+  query.bindValue(":descricao", descricao);
+  query.bindValue(":quant", quant);
+  query.bindValue(":un", un);
+  query.bindValue(":codBarras", codBarras);
+  query.bindValue(":codComercial", codProd);
+  query.bindValue(":ncm", ncm);
+  query.bindValue(":cfop", cfop);
+  query.bindValue(":valorUnid", valorUnid);
+  query.bindValue(":valor", valor);
+  query.bindValue(":codBarrasTrib", codBarrasTrib);
+  query.bindValue(":unTrib", unTrib);
+  query.bindValue(":quantTrib", quantTrib);
+  query.bindValue(":valorTrib", valorTrib);
+  query.bindValue(":desconto", desconto);
+  query.bindValue(":compoeTotal", compoeTotal);
+  query.bindValue(":numeroPedido", numeroPedido);
+  query.bindValue(":itemPedido", itemPedido);
+  query.bindValue(":tipoICMS", tipoICMS);
+  query.bindValue(":orig", orig);
+  query.bindValue(":cstICMS", cstICMS);
+  query.bindValue(":modBC", modBC);
+  query.bindValue(":vBC", vBC);
+  query.bindValue(":pICMS", pICMS);
+  query.bindValue(":vICMS", vICMS);
+  query.bindValue(":modBCST", modBCST);
+  query.bindValue(":pMVAST", pMVAST);
+  query.bindValue(":vBCST", vBCST);
+  query.bindValue(":pICMSST", pICMSST);
+  query.bindValue(":vICMSST", vICMSST);
+  query.bindValue(":cEnq", cEnq);
+  query.bindValue(":cstIPI", cstIPI);
+  query.bindValue(":cstPIS", cstPIS);
+  query.bindValue(":vBCPIS", vBCPIS);
+  query.bindValue(":pPIS", pPIS);
+  query.bindValue(":vPIS", vPIS);
+  query.bindValue(":cstCOFINS", cstCOFINS);
+  query.bindValue(":vBCCOFINS", vBCCOFINS);
+  query.bindValue(":pCOFINS", pCOFINS);
+  query.bindValue(":vCOFINS", vCOFINS);
+
+  if (not query.exec()) {
+    qDebug() << "Error: " << query.lastError();
     return false;
   }
 
   return true;
 }
 
-bool XML::insertEstoque() {
-  QSqlQuery queryProd;
-  queryProd.prepare("SELECT * FROM estoque WHERE idProduto = :idProduto");
-  queryProd.bindValue(":idProduto", idProduto);
+void XML::mostrarNoModel(QString file, SqlTableModel &externalModel) {
+  QFile fileXML(file);
 
-  if (not queryProd.exec()) {
-    qDebug() << "Error: " << queryProd.lastError();
+  if (not fileXML.open(QFile::ReadOnly)) {
+    qDebug() << "Erro abrindo arquivo: " << fileXML.errorString();
+    return;
   }
 
-  if (queryProd.first()) {
-    queryProd.prepare("SELECT quant FROM estoque WHERE idProduto = :idProduto");
-    queryProd.bindValue(":idProduto", idProduto);
+  QString fileContent = fileXML.readAll();
 
-    if (not queryProd.exec() or not queryProd.first()) {
-      qDebug() << "Error: " << queryProd.lastError();
+  if (fileContent.isEmpty()) {
+    qDebug() << "is empty";
+    return;
+  }
+
+  QDomDocument document;
+
+  if (not document.setContent(fileContent)) {
+    qDebug() << "erro setContent";
+    qDebug() << "file: " << fileContent;
+    return;
+  }
+
+  QDomElement root = document.firstChildElement();
+  QDomNamedNodeMap map = root.attributes();
+  QStandardItem *rootItem;
+
+  if (map.size() > 0) {
+    QString attributes = root.nodeName() + " ";
+
+    for (int i = 0; i < map.size(); ++i) {
+      if (i > 0) {
+        attributes += " ";
+      }
+
+      attributes += map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
     }
 
-    double old_quant = queryProd.value(0).toDouble();
-
-    queryProd.prepare("UPDATE estoque SET quant = :quant WHERE idProduto = :idProduto");
-    queryProd.bindValue(":quant", old_quant + quant);
-    queryProd.bindValue(":idProduto", idProduto);
-
-    if (not queryProd.exec()) {
-      qDebug() << "Error: " << queryProd.lastError();
-    }
+    rootItem = new QStandardItem(attributes);
   } else {
-    queryProd.prepare(
-          "INSERT INTO estoque (idProduto, descricao, quant, un, codBarras, codComercial, ncm, cfop, valorUnid, valor, "
-          "codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
-          "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, "
-          "cstIPI, cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS) "
-          "VALUES (:idProduto, :descricao, :quant, :un, :codBarras, :codComercial, :ncm, :cfop, :valorUnid, :valor, "
-          ":codBarrasTrib, :unTrib, :quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, :itemPedido, "
-          ":tipoICMS, :orig, :cstICMS, :modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST, :vICMSST, "
-          ":cEnq, :cstIPI, :cstPIS, :vBCPIS, :pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS)");
-    queryProd.bindValue(":idProduto", idProduto);
-    queryProd.bindValue(":descricao", descricao);
-    queryProd.bindValue(":quant", quant);
-    queryProd.bindValue(":un", un);
-    queryProd.bindValue(":codBarras", codBarras);
-    queryProd.bindValue(":codComercial", codProd);
-    queryProd.bindValue(":ncm", ncm);
-    queryProd.bindValue(":cfop", cfop);
-    queryProd.bindValue(":valorUnid", valorUnid);
-    queryProd.bindValue(":valor", valor);
-    queryProd.bindValue(":codBarrasTrib", codBarrasTrib);
-    queryProd.bindValue(":unTrib", unTrib);
-    queryProd.bindValue(":quantTrib", quantTrib);
-    queryProd.bindValue(":valorTrib", valorTrib);
-    queryProd.bindValue(":desconto", desconto);
-    queryProd.bindValue(":compoeTotal", compoeTotal);
-    queryProd.bindValue(":numeroPedido", numeroPedido);
-    queryProd.bindValue(":itemPedido", itemPedido);
-    queryProd.bindValue(":tipoICMS", tipoICMS);
-    queryProd.bindValue(":orig", orig);
-    queryProd.bindValue(":cstICMS", cstICMS);
-    queryProd.bindValue(":modBC", modBC);
-    queryProd.bindValue(":vBC", vBC);
-    queryProd.bindValue(":pICMS", pICMS);
-    queryProd.bindValue(":vICMS", vICMS);
-    queryProd.bindValue(":modBCST", modBCST);
-    queryProd.bindValue(":pMVAST", pMVAST);
-    queryProd.bindValue(":vBCST", vBCST);
-    queryProd.bindValue(":pICMSST", pICMSST);
-    queryProd.bindValue(":vICMSST", vICMSST);
-    queryProd.bindValue(":cEnq", cEnq);
-    queryProd.bindValue(":cstIPI", cstIPI);
-    queryProd.bindValue(":cstPIS", cstPIS);
-    queryProd.bindValue(":vBCPIS", vBCPIS);
-    queryProd.bindValue(":pPIS", pPIS);
-    queryProd.bindValue(":vPIS", vPIS);
-    queryProd.bindValue(":cstCOFINS", cstCOFINS);
-    queryProd.bindValue(":vBCCOFINS", vBCCOFINS);
-    queryProd.bindValue(":pCOFINS", pCOFINS);
-    queryProd.bindValue(":vCOFINS", vCOFINS);
+    rootItem = new QStandardItem(root.nodeName());
+  }
 
-    if (not queryProd.exec()) {
-      qDebug() << "Error: " << queryProd.lastError();
-      return false;
-    }
+  //---------------------
+
+  fileName = file;
+  model.appendRow(rootItem);
+  readChild(root, rootItem);
+
+  QStandardItem *modelRoot = model.item(0, 0);
+
+  if (not readTree(modelRoot)) {
+    return;
+  }
+
+  inserirNoModel(modelRoot, &externalModel);
+}
+
+bool XML::inserirItem(SqlTableModel *externalModel) {
+  int row = externalModel->rowCount();
+
+  if (not externalModel->insertRow(row)) {
+    qDebug() << "Erro inserindo linha na tabela: " << externalModel->lastError();
+  }
+
+  QModelIndexList indexList =
+      modelProduto.match(modelProduto.index(0, modelProduto.fieldIndex("codComercial")), Qt::DisplayRole, codProd, 1,
+                         Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
+
+  int idTemp = 0;
+
+  if (indexList.size() > 0) {
+    idTemp = modelProduto.data(indexList.first().row(), "idProduto").toInt();
+  } else {
+    qDebug() << "Nao encontrou produto: " << codProd;
+  }
+
+  if (not externalModel->setData(row, "fornecedor", xNome)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "idProduto", idTemp)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "descricao", descricao)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "quant", quant)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "un", un)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "codBarras", codBarras)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "codComercial", codProd)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "ncm", ncm)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "cfop", cfop)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "valorUnid", valorUnid)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "valor", valor)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "codBarrasTrib", codBarrasTrib)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "unTrib", unTrib)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "quantTrib", quantTrib)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "valorTrib", valorTrib)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "desconto", desconto)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "compoeTotal", compoeTotal)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "numeroPedido", numeroPedido)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "itemPedido", itemPedido)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "tipoICMS", tipoICMS)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "orig", orig)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "cstICMS", cstICMS)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "modBC", modBC)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "vBC", vBC)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "pICMS", pICMS)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "vICMS", vICMS)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "modBCST", modBCST)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "pMVAST", pMVAST)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "vBCST", vBCST)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "pICMSST", pICMSST)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "vICMSST", vICMSST)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "cEnq", cEnq)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "cstIPI", cstIPI)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "cstPIS", cstPIS)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if (not externalModel->setData(row, "vBCPIS", vBCPIS)) {
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if(not externalModel->setData(row, "pPIS", pPIS)){
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if(not externalModel->setData(row, "vPIS", vPIS)){
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if(not externalModel->setData(row, "cstCOFINS", cstCOFINS)){
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if(not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)){
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if(not externalModel->setData(row, "pCOFINS", pCOFINS)){
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  }
+
+  if(not externalModel->setData(row, "vCOFINS", vCOFINS)){
+    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
   }
 
   return true;

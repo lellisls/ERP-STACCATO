@@ -8,7 +8,7 @@ QSqlQuery *UserSession::query = nullptr;
 
 int UserSession::getLoja() { return (query->value("idLoja").toInt()); }
 
-int UserSession::getId() { return (query->value("idUsuario").toInt()); }
+int UserSession::getIdUsuario() { return (query->value("idUsuario").toInt()); }
 
 QString UserSession::getNome() { return (query->value("nome").toString()); }
 

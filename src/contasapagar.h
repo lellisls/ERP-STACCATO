@@ -2,7 +2,8 @@
 #define CONTASAPAGAR_H
 
 #include <QDialog>
-#include <QSqlRelationalTableModel>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class ContasAPagar;
@@ -24,7 +25,8 @@ class ContasAPagar : public QDialog {
   private:
     // atributes
     Ui::ContasAPagar *ui;
-    QSqlRelationalTableModel modelItensContas, modelContas;
+    SqlTableModel modelItensContas;
+    SqlTableModel modelContas;
     QString idVenda;
 };
 

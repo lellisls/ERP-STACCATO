@@ -2,7 +2,8 @@
 #define ENTREGASCLIENTE_H
 
 #include <QDialog>
-#include <QSqlTableModel>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class EntregasCliente;
@@ -14,18 +15,19 @@ class EntregasCliente : public QDialog {
   public:
     explicit EntregasCliente(QWidget *parent = 0);
     ~EntregasCliente();
-    void viewEntrega(const QString idPedido);
+    void viewEntrega(const QString idVenda);
 
   private slots:
-    void on_checkBoxEntregue_clicked();
     void on_pushButtonCancelar_clicked();
-    void on_pushButtonSalvar_clicked();
+    void on_pushButtonNFe_clicked();
 
   private:
     // attributes
     Ui::EntregasCliente *ui;
-    QSqlTableModel modelEntregas;
-    QString idPedido;
+    SqlTableModel modelProdutos, modelEntregas;
+    QString idVenda;
+    // methods
+    void setupTables();
 };
 
 #endif // ENTREGASCLIENTE_H

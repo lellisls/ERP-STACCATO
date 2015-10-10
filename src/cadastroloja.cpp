@@ -18,7 +18,7 @@ CadastroLoja::CadastroLoja(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -60,7 +60,9 @@ void CadastroLoja::setupTables() {
 }
 
 void CadastroLoja::clearFields() {
-  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
+  for (auto *line : this->findChildren<QLineEdit *>()) {
+    line->clear();
+  }
 }
 
 bool CadastroLoja::verifyFields() {
@@ -149,6 +151,31 @@ bool CadastroLoja::savingProcedures(const int row) {
     return false;
   }
 
+  if (not setData(row, "servidorSMTP", ui->lineEditServidorSMTP->text())) {
+    qDebug() << "erro setando servidorSMTP";
+    return false;
+  }
+
+  if (not setData(row, "portaSMTP", ui->lineEditPortaSMTP->text())) {
+    qDebug() << "erro setando portaSMTP";
+    return false;
+  }
+
+  if (not setData(row, "emailCompra", ui->lineEditEmailCompra->text())) {
+    qDebug() << "erro setando emailCompra";
+    return false;
+  }
+
+  if (not setData(row, "emailSenha", ui->lineEditEmailSenha->text())) {
+    qDebug() << "erro setando emailSenha";
+    return false;
+  }
+
+  if (not setData(row, "pastaCompra", ui->lineEditPastaCompra->text())) {
+    qDebug() << "erro setando pastaCompra";
+    return false;
+  }
+
   return true;
 }
 
@@ -180,6 +207,11 @@ void CadastroLoja::setupMapper() {
   addMapping(ui->lineEditPastaEntACBr, "pastaEntACBr");
   addMapping(ui->lineEditPastaSaiACBr, "pastaSaiACBr");
   addMapping(ui->lineEditPastaXmlACBr, "pastaXmlACBr");
+  addMapping(ui->lineEditServidorSMTP, "servidorSMTP");
+  addMapping(ui->lineEditPortaSMTP, "portaSMTP");
+  addMapping(ui->lineEditEmailCompra, "emailCompra");
+  addMapping(ui->lineEditEmailSenha, "emailSenha");
+  addMapping(ui->lineEditPastaCompra, "pastaCompra");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
@@ -235,6 +267,8 @@ void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {
   if (not cadastrarEndereco(false)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
+  } else {
+    novoEndereco();
   }
 }
 
@@ -242,6 +276,8 @@ void CadastroLoja::on_pushButtonAtualizarEnd_clicked() {
   if (not cadastrarEndereco(true)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
+  } else {
+    novoEndereco();
   }
 }
 
@@ -414,6 +450,24 @@ bool CadastroLoja::viewRegister(const QModelIndex index) {
 
   return true;
 }
+
+void CadastroLoja::on_pushButtonPastaCompra_clicked() {
+  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta Excel Compras", QDir::currentPath());
+
+  if (not dir.isEmpty()) {
+    ui->lineEditPastaCompra->setText(dir);
+  }
+}
+
+void CadastroLoja::on_pushButtonXmlNFe_clicked() {
+  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta xml NFe", QDir::currentPath());
+
+  if (not dir.isEmpty()) {
+    ui->lineEditPastaXmlACBr->setText(dir);
+  }
+}
+
+void CadastroLoja::on_pushButtonPastaExcel_clicked() {}
 
 // TODO: parametrizar pasta excel
 // TODO: parametrizar taxa cartao credito

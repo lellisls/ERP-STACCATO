@@ -8,7 +8,7 @@
 ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::ContasAPagar) {
   ui->setupUi(this);
 
-  modelItensContas.setTable("conta_a_pagar_has_produto");
+  modelItensContas.setTable("conta_a_pagar_has_pagamento");
   modelItensContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelItensContas.select()) {
@@ -27,6 +27,8 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
   ui->tableContas->setModel(&modelItensContas);
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
+
+  ui->tableContas->resizeColumnsToContents();
 
   show();
 }
@@ -66,7 +68,7 @@ void ContasAPagar::viewConta(const QString idVenda) {
   modelItensContas.setFilter("idVenda = '" + idVenda + "'");
   modelContas.setFilter("idVenda = '" + idVenda + "'");
 
-  if (modelContas.data(modelContas.index(0, modelContas.fieldIndex("pago"))).toString() == "SIM") {
+  if (modelContas.data(0, "pago").toString() == "SIM") {
     ui->checkBoxPago->setChecked(true);
   }
 }

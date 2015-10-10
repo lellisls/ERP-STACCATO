@@ -14,8 +14,6 @@ class Venda : public RegisterDialog {
     explicit Venda(QWidget *parent = 0);
     ~Venda();
     void fecharOrcamento(const QString &idVenda);
-    virtual bool viewRegister(const QModelIndex index);
-    void updateValues();
 
   private slots:
     void on_checkBoxFreteManual_clicked(const bool checked);
@@ -37,17 +35,19 @@ class Venda : public RegisterDialog {
     void on_pushButtonLimparPag_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonCadastrarPedido_clicked();
-    void on_pushButtonNFe_clicked();
     void on_pushButtonVoltar_clicked();
     void on_pushButtonImprimir_clicked();
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
     void on_pushButtonGerarExcel_clicked();
+    void on_lineEditPgt1_textChanged(const QString &arg1);
+    void on_lineEditPgt2_textChanged(const QString &arg1);
+    void on_lineEditPgt3_textChanged(const QString &arg1);
 
   signals:
     void finished();
 
   protected:
-    virtual bool savingProcedures(int row);
+    virtual bool savingProcedures(const int row);
     virtual void registerMode();
     virtual void updateMode();
     virtual void successMessage();
@@ -55,21 +55,21 @@ class Venda : public RegisterDialog {
   private:
     // attributes
     Ui::Venda *ui;
-    QSqlTableModel modelItem, modelFluxoCaixa;
+    SqlTableModel modelItem, modelFluxoCaixa;
     // methods
     bool verifyFields();
-    bool verifyRequiredField(QLineEdit *line);
-    QString requiredStyle();
+    bool verifyRequiredField(QLineEdit *line) const;
+    QString requiredStyle() const;
     void calcPrecoGlobalTotal(const bool ajusteTotal = false);
-    void calculoSpinBox1();
-    void calculoSpinBox2();
+    void calculoSpinBox1() const;
+    void calculoSpinBox2() const;
     void clearFields();
-    void fillComboBoxCliente();
-    void fillTotals();
+    void fillTotals() const;
     void montarFluxoCaixa();
     void resetarPagamentos();
     void setupMapper();
     void setupTables();
+    virtual bool viewRegister(const QModelIndex index);
 };
 
 #endif // VENDA_H

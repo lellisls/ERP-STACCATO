@@ -1,22 +1,26 @@
 #ifndef XML_H
 #define XML_H
 
-#include <QSqlTableModel>
 #include <QStandardItemModel>
 #include <QDomElement>
+
+#include "sqltablemodel.h"
 
 class XML {
   public:
     XML();
     void importarXML();
     void readChild(QDomElement element, QStandardItem *elementItem);
+    void mostrarNoModel(QString file, SqlTableModel &externalModel);
+    void inserirNoModel(QStandardItem *item, SqlTableModel *externalModel); //temp
+    int cadastrarNFe();
 
   private:
     QString fileName;
     QStandardItemModel model;
-    QSqlTableModel modelProduto;
+    SqlTableModel modelProduto;
 
-    QString idNFe;
+    QString chaveAcesso;
     // emit
     QString xFant;
     QString xNome;
@@ -85,18 +89,21 @@ class XML {
     double vOutro_Total = 0;
     double vNF_Total = 0;
 
+    //xml
+    int idNFe = 0;
+
     // methods
     void readXML();
     void saveXML();
-    bool readTree(QStandardItem *item);
     bool insertEstoque();
-    bool insertProdutoEstoque();
     void lerCOFINSProduto(QStandardItem *child);
     void lerPISProduto(QStandardItem *child);
     void lerIPIProduto(QStandardItem *child);
     void lerICMSProduto(QStandardItem *child);
     void lerDadosProduto(QStandardItem *child);
     void lerTotais(QStandardItem *child);
+    bool inserirItem(SqlTableModel *externalModel);
+    bool readTree(QStandardItem *item);
 };
 
 #endif // XML_H

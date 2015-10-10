@@ -13,7 +13,6 @@ class LoginDialog : public QDialog {
   public:
     explicit LoginDialog(QWidget *parent = 0);
     ~LoginDialog();
-    bool dbConnect();
 
   private slots:
     void on_buttonBox_accepted();
@@ -25,6 +24,7 @@ class LoginDialog : public QDialog {
     Ui::LoginDialog *ui;
     // methods
     void verify();
+    bool dbConnect();
 };
 
 #endif // LOGINDIALOG_H

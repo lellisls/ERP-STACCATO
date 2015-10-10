@@ -8,7 +8,7 @@ LineEditTel::LineEditTel(QWidget *parent) : QLineEdit(parent) {
 void LineEditTel::processTel(const QString &value) {
   QString nbr, res = value;
 
-  foreach (QChar c, value) {
+  for (const auto c : value) {
     if (c.isNumber()) {
       nbr += c;
     }

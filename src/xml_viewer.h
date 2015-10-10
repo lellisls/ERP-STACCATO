@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QDomElement>
-#include <QSqlTableModel>
 
 namespace Ui {
   class XML_Viewer;
@@ -16,14 +15,14 @@ class XML_Viewer : public QDialog {
   public:
     explicit XML_Viewer(QWidget *parent = 0);
     ~XML_Viewer();
-    void exibirXML(QString file);
+    void exibirXML(QString fileContent);
 
   private:
     // attributes
     Ui::XML_Viewer *ui;
     QString fileName;
     QStandardItemModel model;
-    QSqlTableModel modelProduto;
+    // methods
 };
 
 #endif // XML_VIEWER_H

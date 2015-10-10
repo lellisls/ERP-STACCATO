@@ -2,8 +2,10 @@
 
 #include "importaprodutosproxy.h"
 
-ImportaProdutosProxy::ImportaProdutosProxy(const int column, QObject *parent)
-  : QIdentityProxyModel(parent), column(column) {}
+ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, const int column, QObject *parent)
+  : QIdentityProxyModel(parent), column(column) {
+  setSourceModel(model);
+}
 
 ImportaProdutosProxy::~ImportaProdutosProxy() {}
 

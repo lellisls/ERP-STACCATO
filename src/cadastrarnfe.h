@@ -2,10 +2,9 @@
 #define CADASTRARNFE_H
 
 #include <QDialog>
-#include <QDataWidgetMapper>
 #include <QTextStream>
 
-#include "editablesqlmodel.h"
+#include "sqltablemodel.h"
 
 namespace Ui {
   class CadastrarNFe;
@@ -18,9 +17,6 @@ class CadastrarNFe : public QDialog {
     explicit CadastrarNFe(QString idVenda, QWidget *parent = 0);
     ~CadastrarNFe();
     void prepararNFe(const QList<int> items);
-    void setItemData(const int row, const QString &key, const QVariant &value);
-    QVariant getItemData(const int row, const QString &key) const;
-    void guardarNotaBD();
 
   public slots:
     void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -35,27 +31,25 @@ class CadastrarNFe : public QDialog {
   private:
     // attributes
     Ui::CadastrarNFe *ui;
-    EditableSqlModel modelNFe, modelNFeItem, modelLoja, modelVenda, modelProd;
+    SqlTableModel modelLoja;
+    SqlTableModel modelVenda;
+    SqlTableModel modelProd;
     const QString idVenda;
     QString arquivo;
     QString chaveNum;
     QString chaveAcesso;
-    QDataWidgetMapper mapperNFe;
     // methods
     QString criarChaveAcesso();
-    QString clearStr(QString str);
-    QVariant getFromItemModel(const int row, const QString column) const;
-    QVariant getFromLoja(const QString column) const;
-    QVariant getFromVenda(const QString column) const;
-    QVariant getFromProdModel(const int row, const QString column) const;
-    QString calculaDigitoVerificador(const QString chave);
+    QString clearStr(QString str) const;
+    QString calculaDigitoVerificador(const QString chave) const;
     bool writeTXT();
-    void writeIdentificacao(QTextStream &stream);
-    bool writeEmitente(QTextStream &stream);
-    bool writeDestinatario(QTextStream &stream);
-    bool writeProduto(QTextStream &stream, double &total, double &icmsTotal);
-    void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete);
-    QString removeDiacritics(QString str);
+    void writeIdentificacao(QTextStream &stream) const;
+    bool writeEmitente(QTextStream &stream) const;
+    bool writeDestinatario(QTextStream &stream) const;
+    bool writeProduto(QTextStream &stream, double &total, double &icmsTotal) const;
+    void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete) const;
+    QString removeDiacritics(QString str) const;
+    void guardarNotaBD();
 };
 
 #endif // CADASTRARNFE_H

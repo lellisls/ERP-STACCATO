@@ -29,7 +29,7 @@ class CadastroUsuario : public RegisterDialog {
 
     // methods derived from RegisterDialog
 
-  public:
+  private:
     /*!
 *\brief Utilizada para selecionar um item a partir de um QModelIndex
 *\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
@@ -37,7 +37,6 @@ class CadastroUsuario : public RegisterDialog {
 */
     bool viewRegister(const QModelIndex index);
 
-  private:
     /*!
 *\brief Função padrão para verificar campos obrigatórios
 *\return

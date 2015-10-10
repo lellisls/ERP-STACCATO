@@ -13,8 +13,6 @@ class CadastroFornecedor : public RegisterAddressDialog {
   public:
     explicit CadastroFornecedor(QWidget *parent = 0);
     ~CadastroFornecedor();
-    void setupUi();
-    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -50,6 +48,8 @@ class CadastroFornecedor : public RegisterAddressDialog {
     virtual void registerMode();
     virtual void updateMode();
     bool cadastrarEndereco(const bool isUpdate);
+    void setupUi();
+    bool viewRegister(const QModelIndex index);
 };
 
 #endif // CADASTROFORNECEDOR_H

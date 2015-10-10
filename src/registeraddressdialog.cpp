@@ -112,7 +112,7 @@ bool RegisterAddressDialog::setDataEnd(int row, const QString &key, QVariant val
   }
 
   if (not value.isNull()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex(key)), value)) {
+    if(not modelEnd.setData(row, key, value)){
       qDebug() << "row: " << row;
       qDebug() << "column: " << modelEnd.fieldIndex(key);
       qDebug() << "key: " << key;

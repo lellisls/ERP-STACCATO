@@ -2,8 +2,9 @@
 #define APAGAORCAMENTO_H
 
 #include <QDialog>
-#include <QSqlRelationalTableModel>
 #include <QDataWidgetMapper>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class ApagaOrcamento;
@@ -23,7 +24,7 @@ class ApagaOrcamento : public QDialog {
 
   private:
     Ui::ApagaOrcamento *ui;
-    QSqlRelationalTableModel modelOrc;
+    SqlTableModel modelOrc;
     QDataWidgetMapper mapperOrc;
 };
 

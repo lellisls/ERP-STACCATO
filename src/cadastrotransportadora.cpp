@@ -17,7 +17,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   setupMapper();
   newRegister();
 
-  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -159,6 +159,8 @@ void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {
   if (not cadastrarEndereco(false)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
+  } else{
+    novoEndereco();
   }
 }
 
@@ -166,6 +168,8 @@ void CadastroTransportadora::on_pushButtonAtualizarEnd_clicked() {
   if (not cadastrarEndereco(true)) {
     QMessageBox::warning(this, "Atenção!", "Não foi possível atualizar este endereço.", QMessageBox::Ok,
                          QMessageBox::NoButton);
+  } else{
+    novoEndereco();
   }
 }
 
@@ -219,66 +223,66 @@ bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
     modelEnd.insertRow(row);
   }
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("descricao")), ui->comboBoxTipoEnd->currentText())) {
+  if (not modelEnd.setData(row, "descricao", ui->comboBoxTipoEnd->currentText())) {
     qDebug() << "Erro setData descricao: " << modelEnd.lastError();
     return false;
   }
 
   if (not ui->lineEditCEP->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("CEP")), ui->lineEditCEP->text())) {
+    if (not modelEnd.setData(row, "CEP", ui->lineEditCEP->text())) {
       qDebug() << "Erro setData cep: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditLogradouro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("logradouro")), ui->lineEditLogradouro->text())) {
+    if (not modelEnd.setData(row, "logradouro", ui->lineEditLogradouro->text())) {
       qDebug() << "Erro setData logradouro: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditNro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("numero")), ui->lineEditNro->text())) {
+    if (not modelEnd.setData(row, "numero", ui->lineEditNro->text())) {
       qDebug() << "Erro setData numero: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditComp->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("complemento")), ui->lineEditComp->text())) {
+    if (not modelEnd.setData(row, "complemento", ui->lineEditComp->text())) {
       qDebug() << "Erro setData complemento: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditBairro->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("bairro")), ui->lineEditBairro->text())) {
+    if (not modelEnd.setData(row, "bairro", ui->lineEditBairro->text())) {
       qDebug() << "Erro setData bairro: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditCidade->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("cidade")), ui->lineEditCidade->text())) {
+    if (not modelEnd.setData(row, "cidade", ui->lineEditCidade->text())) {
       qDebug() << "Erro setData cidade: " << modelEnd.lastError();
       return false;
     }
   }
 
   if (not ui->lineEditUF->text().isEmpty()) {
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("uf")), ui->lineEditUF->text())) {
+    if (not modelEnd.setData(row, "uf", ui->lineEditUF->text())) {
       qDebug() << "Erro setData uf: " << modelEnd.lastError();
       return false;
     }
 
-    if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("codUF")), getCodigoUF(ui->lineEditUF->text()))) {
+    if (not modelEnd.setData(row, "codUF", getCodigoUF(ui->lineEditUF->text()))) {
       qDebug() << "Erro setData uf: " << modelEnd.lastError();
       return false;
     }
   }
 
-  if (not modelEnd.setData(modelEnd.index(row, modelEnd.fieldIndex("desativado")), 0)) {
+  if (not modelEnd.setData(row, "desativado", 0)) {
     qDebug() << "Erro setData desativado: " << modelEnd.lastError();
     return false;
   }

@@ -12,6 +12,7 @@
 
 XML_Viewer::XML_Viewer(QWidget *parent) : QDialog(parent), ui(new Ui::XML_Viewer) {
   ui->setupUi(this);
+
   setWindowFlags(Qt::Window);
 
   ui->treeView->setModel(&model);
@@ -22,15 +23,16 @@ XML_Viewer::XML_Viewer(QWidget *parent) : QDialog(parent), ui(new Ui::XML_Viewer
 
 XML_Viewer::~XML_Viewer() { delete ui; }
 
-void XML_Viewer::exibirXML(QString file) {
-  if (file.isEmpty()) {
+void XML_Viewer::exibirXML(QString fileContent) {
+  if (fileContent.isEmpty()) {
     return;
   }
 
   QDomDocument document;
 
-  if (not document.setContent(file)) {
+  if (not document.setContent(fileContent)) {
     qDebug() << "erro setContent";
+    qDebug() << "file: " << fileContent;
     return;
   }
 

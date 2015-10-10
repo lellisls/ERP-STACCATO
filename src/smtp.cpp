@@ -1,22 +1,20 @@
 /*
 Copyright (c) 2013 Raivis Strogonovs
-http://morf.lv
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without
-limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
-Software, and to permit persons to whom the Software is furnished to do so, subject to the following
-conditions:
-The above copyright notice and this permission notice shall be included in all copies or substantial portions
-of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.*/
 
-#include <QFile>
-#include <QFileInfo>
-#include <QMessageBox>
+http://morf.lv
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 
 #include "smtp.h"
 
@@ -49,24 +47,24 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
   message.append("Content-Type: multipart/mixed; boundary=frontier\n\n");
 
   message.append("--frontier\n");
-  // message.append( "Content-Type: text/html\n\n" );  //Uncomment this for HTML formating, coment the line
-  // below
-  //  message.append( "Content-Type: text/plain\n\n" );
-  message.append("Content-Type: text/html; charset=\"ISO-8859-1\";");
-  message.append("Content-Transfer-Encoding: 7bit;");
+  // message.append( "Content-Type: text/html\n\n" );  //Uncomment this for HTML formating, coment the line below
+  message.append("Content-Type: text/plain\n\n");
   message.append(body);
   message.append("\n\n");
 
   if (not files.isEmpty()) {
     qDebug() << "Files to be sent: " << files.size();
-    foreach (QString filePath, files) {
+
+    for (const auto filePath : files) {
       QFile file(filePath);
+
       if (file.exists()) {
         if (not file.open(QIODevice::ReadOnly)) {
           qDebug("Couldn't open the file");
           QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Couldn't open the file\n\n"));
           return;
         }
+
         QByteArray bytes = file.readAll();
         message.append("--frontier\n");
         message.append("Content-Type: application/octet-stream\nContent-Disposition: attachment; filename=" +
@@ -75,8 +73,9 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
         message.append("\n");
       }
     }
-  } else
+  } else {
     qDebug() << "No attachments found";
+  }
 
   message.append("--frontier--\n");
 
@@ -87,6 +86,7 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
   rcpt = to;
   state = Init;
   socket->connectToHostEncrypted(host, port); //"smtp.gmail.com" and 465 for gmail TLS
+
   if (not socket->waitForConnected(timeout)) {
     qDebug() << socket->errorString();
   }
@@ -98,12 +98,19 @@ Smtp::~Smtp() {
   delete t;
   delete socket;
 }
-void Smtp::stateChanged(QAbstractSocket::SocketState socketState) { qDebug() << "stateChanged " << socketState; }
+void Smtp::stateChanged(QAbstractSocket::SocketState socketState) {
+  Q_UNUSED(socketState);
 
-void Smtp::errorReceived(QAbstractSocket::SocketError socketError) { qDebug() << "error " << socketError; }
+  qDebug() << "stateChanged " << socketState;
+}
+
+void Smtp::errorReceived(QAbstractSocket::SocketError socketError) {
+  Q_UNUSED(socketError);
+
+  qDebug() << "error " << socketError;
+}
 
 void Smtp::disconnected() {
-
   qDebug() << "disconneted";
   qDebug() << "error " << socket->errorString();
 }
@@ -111,11 +118,11 @@ void Smtp::disconnected() {
 void Smtp::connected() { qDebug() << "Connected "; }
 
 void Smtp::readyRead() {
-
   qDebug() << "readyRead";
   // SMTP is line-oriented
 
   QString responseLine;
+
   do {
     responseLine = socket->readLine();
     response += responseLine;
@@ -134,6 +141,7 @@ void Smtp::readyRead() {
 
     state = HandShake;
   }
+
   // No need, because I'm using socket->startClienEncryption() which makes the SSL handshake for you
   /*else if (state == Tls and responseLine == "250")
   {
@@ -143,8 +151,10 @@ void Smtp::readyRead() {
       t->flush();
       state = HandShake;
   }*/
+
   else if (state == HandShake and responseLine == "250") {
     socket->startClientEncryption();
+
     if (not socket->waitForEncrypted(timeout)) {
       qDebug() << socket->errorString();
       state = Close;
@@ -159,6 +169,7 @@ void Smtp::readyRead() {
   } else if (state == Auth and responseLine == "250") {
     // Trying AUTH
     qDebug() << "Auth";
+    // TODO: try using AUTH XOAUTH2 as described in the developers.google below
     *t << "AUTH LOGIN"
        << "\r\n";
     t->flush();
@@ -166,8 +177,7 @@ void Smtp::readyRead() {
   } else if (state == User and responseLine == "334") {
     // Trying User
     qDebug() << "Username";
-    // GMAIL is using XOAUTH2 protocol, which basically means that password and username has to be sent in
-    // base64 coding
+    // GMAIL is using XOAUTH2 protocol, which basically means that password and username has to be sent in base64 coding
     // https://developers.google.com/gmail/xoauth2_protocol
     *t << QByteArray().append(user).toBase64() << "\r\n";
     t->flush();
@@ -221,5 +231,6 @@ void Smtp::readyRead() {
     state = Close;
     emit status(tr("Failed to send message"));
   }
+
   response = "";
 }

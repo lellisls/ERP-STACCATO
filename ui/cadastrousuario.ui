@@ -148,12 +148,22 @@
              </item>
              <item>
               <property name="text">
-               <string>GERENTE</string>
+               <string>GERENTE LOJA</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>ADMINISTRADOR</string>
+               <string>GERENTE DEPARTAMENTO</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>DIRETOR</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>ADMINISTRATIVO</string>
               </property>
              </item>
             </widget>

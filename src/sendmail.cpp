@@ -3,32 +3,61 @@
 #include "sendmail.h"
 #include "ui_sendmail.h"
 #include "smtp.h"
+#include "usersession.h"
 
-SendMail::SendMail(QWidget *parent) : QDialog(parent), ui(new Ui::SendMail) {
+SendMail::SendMail(QWidget *parent, QString text, QString arquivo) : QDialog(parent), ui(new Ui::SendMail) {
   ui->setupUi(this);
 
-  setWindowModality(Qt::NonModal);
-  ui->textEdit->insertHtml("<h1>Título</h1><p>Texto</p>");
+  setWindowFlags(Qt::Window);
 
-  exec();
+  ui->textEdit->setText(text);
+
+  files.append(arquivo);
+
+  ui->lineEditAnexo->setText(arquivo);
+
+  QString email = UserSession::getFromLoja("emailCompra");
+  ui->lineEditEmail->setText(email);
+  ui->lineEditServidor->setText("smtp." + email.split("@").at(1));
+  ui->lineEditPasswd->setText(UserSession::getFromLoja("emailSenha"));
 }
 
 SendMail::~SendMail() { delete ui; }
 
 void SendMail::on_pushButtonBuscar_clicked() {
-  ui->lineEditAnexo->setText(QFileDialog::getOpenFileName(this, "Abrir anexo", QDir::homePath(), "*"));
+  files.clear();
+
+  files = QFileDialog::getOpenFileNames(this, "Abrir anexos", QDir::homePath());
+
+  QString fileListString;
+
+  for (const auto file : files) {
+    fileListString.append("\"" + QFileInfo(file).fileName() + "\" ");
+  }
+
+  ui->lineEditAnexo->setText(fileListString);
 }
 
 void SendMail::on_pushButtonEnviar_clicked() {
-  Smtp *smtp = new Smtp(ui->lineEditEmail->text(), ui->lineEditPasswd->text(), "smtp.gmail.com", 465, 30000);
+  Smtp *smtp = new Smtp(ui->lineEditEmail->text(), ui->lineEditPasswd->text(), ui->lineEditServidor->text(),
+                        ui->lineEditPorta->text().toInt());
+  connect(smtp, &Smtp::status, this, &SendMail::mailSent);
 
-  if (ui->lineEditAnexo->text().isEmpty()) {
-    smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
-                   ui->textEdit->toHtml());
-  } else {
-    smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
-                   ui->textEdit->toHtml(), QStringList(ui->lineEditAnexo->text()));
-  }
+  smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
+                 ui->textEdit->toPlainText(), files);
 }
 
-void SendMail::on_pushButtonCancelar_clicked() { close(); }
+void SendMail::on_pushButtonCancelar_clicked() {
+  QDialog::reject();
+  close();
+}
+
+void SendMail::mailSent(QString status) {
+  if (status == "Message sent") {
+    QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Mensagem enviada!"));
+  } else{
+    QMessageBox::warning(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
+  }
+
+  QDialog::accept();
+}

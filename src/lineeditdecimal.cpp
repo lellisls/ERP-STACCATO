@@ -27,7 +27,7 @@ void LineEditDecimal::processDecimal(const QString value) {
     res += '-';
   }
 
-  foreach (QChar c, value) {
+  for (const auto c : value) {
     if (c.isNumber()) {
       nbr += c;
     }

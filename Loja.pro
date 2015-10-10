@@ -12,7 +12,6 @@ TARGET = Loja
 TEMPLATE = app
 
 SOURCES += src/apagaorcamento.cpp \
-    src/backgroundproxymodel.cpp \
     src/cadastrarnfe.cpp \
     src/cadastrocliente.cpp \
     src/cadastrofornecedor.cpp \
@@ -27,8 +26,6 @@ SOURCES += src/apagaorcamento.cpp \
     src/contasapagar.cpp \
     src/contasareceber.cpp \
     src/dateformatdelegate.cpp \
-    src/editablesqlmodel.cpp \
-    src/endereco.cpp \
     src/entregascliente.cpp \
     src/itembox.cpp \
     src/lineeditcep.cpp \
@@ -39,8 +36,6 @@ SOURCES += src/apagaorcamento.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/orcamento.cpp \
-    src/pedidoscompra.cpp \
-    src/recebimentosfornecedor.cpp \
     src/registerdialog.cpp \
     src/searchdialog.cpp \
     src/sendmail.cpp \
@@ -56,10 +51,15 @@ SOURCES += src/apagaorcamento.cpp \
     src/registeraddressdialog.cpp \
     src/estoque.cpp \
     src/xml_viewer.cpp \
-    src/xml.cpp
+    src/xml.cpp \
+    src/produtospendentes.cpp \
+    src/importarxml.cpp \
+    src/inputdialog.cpp \
+    src/estoqueproxymodel.cpp \
+    src/sqltablemodel.cpp \
+    src/orcamentoproxymodel.cpp
 
 HEADERS  += src/apagaorcamento.h \
-    src/backgroundproxymodel.h \
     src/cadastrarnfe.h \
     src/cadastrocliente.h \
     src/cadastrofornecedor.h \
@@ -74,8 +74,6 @@ HEADERS  += src/apagaorcamento.h \
     src/contasapagar.h \
     src/contasareceber.h \
     src/dateformatdelegate.h \
-    src/editablesqlmodel.h \
-    src/endereco.h \
     src/entregascliente.h \
     src/initdb.h \
     src/itembox.h \
@@ -86,8 +84,6 @@ HEADERS  += src/apagaorcamento.h \
     src/logindialog.h \
     src/mainwindow.h \
     src/orcamento.h \
-    src/pedidoscompra.h \
-    src/recebimentosfornecedor.h \
     src/registerdialog.h \
     src/searchdialog.h \
     src/sendmail.h \
@@ -103,7 +99,13 @@ HEADERS  += src/apagaorcamento.h \
     src/registeraddressdialog.h \
     src/estoque.h \
     src/xml_viewer.h \
-    src/xml.h
+    src/xml.h \
+    src/produtospendentes.h \
+    src/importarxml.h \
+    src/inputdialog.h \
+    src/estoqueproxymodel.h \
+    src/sqltablemodel.h \
+    src/orcamentoproxymodel.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -121,23 +123,37 @@ FORMS += ui/apagaorcamento.ui \
     ui/logindialog.ui \
     ui/mainwindow.ui \
     ui/orcamento.ui \
-    ui/pedidoscompra.ui \
-    ui/recebimentosfornecedor.ui \
     ui/searchdialog.ui \
     ui/sendmail.ui \
     ui/validadedialog.ui \
     ui/venda.ui \
     ui/importaprodutos.ui \
     ui/estoque.ui \
-    ui/xml_viewer.ui
+    ui/xml_viewer.ui \
+    ui/produtospendentes.ui \
+    ui/importarxml.ui \
+    ui/inputdialog.ui
 
-QMAKE_CXXFLAGS_RELEASE  = -Ofast
+CONFIG += c++11
+
+QMAKE_CXX = ccache g++
+
 QMAKE_CXXFLAGS_DEBUG += -O0
-QMAKE_CXXFLAGS += -std=c++14
-QMAKE_LFLAGS += -O3
+QMAKE_CXXFLAGS_RELEASE  = -Ofast
+#QMAKE_CXXFLAGS += -std=c++11
+QMAKE_LFLAGS_DEBUG += -O0
+QMAKE_LFLAGS_RELEASE += -O3
+
+#QMAKE_CXXFLAGS_RELEASE  = -O0
+#QMAKE_LFLAGS_RELEASE += -O0
+
+#QMAKE_CXXFLAGS += -flto
+#QMAKE_LFLAGS += -flto -fuse-linker-plugin
 
 RESOURCES += \
     qrs/resources.qrc
+
+RC_ICONS = Staccato.ico
 
 test {
     DEFINES += "TEST"

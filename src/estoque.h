@@ -2,7 +2,8 @@
 #define ESTOQUE_H
 
 #include <QDialog>
-#include <QSqlTableModel>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class Estoque;
@@ -14,14 +15,15 @@ class Estoque : public QDialog {
   public:
     explicit Estoque(QWidget *parent = 0);
     ~Estoque();
-    void viewRegisterById(const QVariant id);
+    void viewRegisterById(const QString codComercial);
 
   private slots:
     void on_tableEstoque_activated(const QModelIndex &index);
+    void on_pushButtonExibirNfe_clicked();
 
   private:
     Ui::Estoque *ui;
-    QSqlTableModel modelEstoque;
+    SqlTableModel modelEstoque;
 };
 
 #endif // ESTOQUE_H

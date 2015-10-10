@@ -8,6 +8,7 @@ class CheckBoxDelegate : public QStyledItemDelegate {
     explicit CheckBoxDelegate(QObject *parent = 0);
     ~CheckBoxDelegate();
 
+  private:
     // QAbstractItemDelegate interface
     virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;

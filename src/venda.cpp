@@ -41,11 +41,16 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   setupMapper();
   newRegister();
 
-  foreach (const QLineEdit *line, findChildren<QLineEdit *>()) {
+  // TODO: verificar essa funcao conectando lineEdits do CadastroCliente aqui
+  for (const auto *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
-  showMaximized();
+  // TODO: make this work
+  ui->splitter->setStretchFactor(0, 1);
+  ui->splitter->setStretchFactor(1, 0);
+
+  show();
 }
 
 Venda::~Venda() { delete ui; }
@@ -69,11 +74,36 @@ void Venda::setupTables() {
   modelItem.setHeaderData(modelItem.fieldIndex("parcialDesc"), Qt::Horizontal, "Desc. Parc.");
   modelItem.setHeaderData(modelItem.fieldIndex("descGlobal"), Qt::Horizontal, "Desc. Glob.");
   modelItem.setHeaderData(modelItem.fieldIndex("total"), Qt::Horizontal, "Total");
+  modelItem.setHeaderData(modelItem.fieldIndex("status"), Qt::Horizontal, "Status");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevCompra"), Qt::Horizontal, "Prev. Compra");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataRealCompra"), Qt::Horizontal, "Data Compra");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevConf"), Qt::Horizontal, "Prev. Confirm.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataRealConf"), Qt::Horizontal, "Data Confirm.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevFat"), Qt::Horizontal, "Prev. Fat.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataRealFat"), Qt::Horizontal, "Data Fat.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevColeta"), Qt::Horizontal, "Prev. Coleta");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataRealColeta"), Qt::Horizontal, "Data Coleta");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevReceb"), Qt::Horizontal, "Prev. Receb.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataRealReceb"), Qt::Horizontal, "Data Receb.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevEnt"), Qt::Horizontal, "Prev. Ent.");
+  modelItem.setHeaderData(modelItem.fieldIndex("dataRealEnt"), Qt::Horizontal, "Data Ent.");
 
   if (not modelItem.select()) {
     qDebug() << "erro modelItem: " << modelItem.lastError();
     return;
   }
+
+  ui->tableVenda->setModel(&modelItem);
+  ui->tableVenda->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idNfeSaida"), true);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVendaProduto"), true);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("selecionado"), true);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVenda"), true);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
+  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
+  ui->tableVenda->setItemDelegate(new DoubleDelegate(this));
+  ui->tableVenda->setItemDelegateForColumn(modelItem.fieldIndex("selecionado"), new CheckBoxDelegate(this));
 
   modelFluxoCaixa.setTable("conta_a_receber_has_pagamento");
   modelFluxoCaixa.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -94,19 +124,7 @@ void Venda::setupTables() {
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idVenda"), true);
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idLoja"), true);
   ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idPagamento"), true);
-
-  ui->tableVenda->setModel(&modelItem);
-  ui->tableVenda->setSelectionBehavior(QAbstractItemView::SelectRows);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVenda"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("status"), true);
-
   ui->tableFluxoCaixa->setItemDelegate(new DoubleDelegate(this));
-  ui->tableVenda->setItemDelegate(new DoubleDelegate(this));
-
-  ui->tableVenda->setItemDelegateForColumn(modelItem.fieldIndex("selecionado"), new CheckBoxDelegate(this));
 }
 
 void Venda::resetarPagamentos() {
@@ -222,30 +240,28 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     const int rowItem = modelItem.rowCount();
     modelItem.insertRow(rowItem);
 
-    if (not modelItem.setData(modelItem.index(rowItem, modelItem.fieldIndex("idVenda")),
-                              queryProdutos.value("idOrcamento"))) {
+    if (not modelItem.setData(rowItem, "idVenda", queryProdutos.value("idOrcamento"))) {
       qDebug() << "Erro setando idVenda: " << modelItem.lastError();
     }
 
     for (int field = 1, fieldCount = queryProdutos.record().count(); field < fieldCount; ++field) {
       if (modelItem.fieldIndex(queryProdutos.record().fieldName(field)) != -1 and
-          not modelItem.setData(modelItem.index(rowItem, modelItem.fieldIndex(queryProdutos.record().fieldName(field))),
+          not modelItem.setData(rowItem, queryProdutos.record().fieldName(field),
                                 queryProdutos.value(queryProdutos.record().fieldName(field)))) {
         qDebug() << "Erro setando itens venda: " << modelItem.lastError();
       }
     }
 
-    modelItem.setData(modelItem.index(rowItem, modelItem.fieldIndex("status")), "PENDENTE");
+    modelItem.setData(rowItem, "status", "PENDENTE");
   }
 
-  if (not model.setData(model.index(row, model.fieldIndex("idVenda")), queryOrc.value("idOrcamento"))) {
+  if (not model.setData(row, "idVenda", queryOrc.value("idOrcamento"))) {
     qDebug() << "erro setando idVenda";
   }
 
   for (int field = 1, columnCount = queryOrc.record().count(); field < columnCount; ++field) {
     if (model.fieldIndex(queryOrc.record().fieldName(field)) != -1 and
-        not model.setData(model.index(mapper.currentIndex(), model.fieldIndex(queryOrc.record().fieldName(field))),
-                          queryOrc.value(field))) {
+        not model.setData(mapper.currentIndex(), queryOrc.record().fieldName(field), queryOrc.value(field))) {
       qDebug() << "erro setando dados venda: " << model.lastError();
     }
   }
@@ -267,8 +283,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->itemBoxEndereco->setValue(queryOrc.value("idEnderecoEntrega"));
   ui->itemBoxEnderecoFat->setValue(queryOrc.value("idEnderecoFaturamento"));
 
-  ui->dateTimeEditOrc->setDateTime(
-        model.data(model.index(mapper.currentIndex(), model.fieldIndex("data"))).toDateTime());
+  ui->dateTimeEditOrc->setDateTime(model.data(mapper.currentIndex(), "data").toDateTime());
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
   ui->tableVenda->resizeColumnsToContents();
@@ -307,13 +322,13 @@ bool Venda::verifyFields() {
   return true;
 }
 
-bool Venda::verifyRequiredField(QLineEdit *line) {
+bool Venda::verifyRequiredField(QLineEdit *line) const {
   Q_UNUSED(line);
 
   return true;
 }
 
-QString Venda::requiredStyle() { return QString(); }
+QString Venda::requiredStyle() const { return QString(); }
 
 void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
   double subTotal = 0.;
@@ -334,15 +349,15 @@ void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
   porcFrete = queryFrete.value("porcentagemFrete").toDouble();
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    double prcUnItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("prcUnitario"))).toDouble();
-    double qteItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("quant"))).toDouble();
-    double descItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("desconto"))).toDouble() / 100.;
+    double prcUnItem = modelItem.data(row, "prcUnitario").toDouble();
+    double qteItem = modelItem.data(row, "quant").toDouble();
+    double descItem = modelItem.data(row, "desconto").toDouble() / 100.0;
     double itemBruto = qteItem * prcUnItem;
     subTotalBruto += itemBruto;
     double stItem = itemBruto * (1. - descItem);
     subTotalItens += stItem;
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcial")), itemBruto);
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("parcialDesc")), stItem);
+    modelItem.setData(row, "parcial", itemBruto);
+    modelItem.setData(row, "parcialDesc", stItem);
   }
 
   double frete = qMax(subTotalBruto * porcFrete / 100., minimoFrete);
@@ -366,10 +381,10 @@ void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
   }
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("descGlobal")), descGlobal * 100.0);
-    double stItem = modelItem.data(modelItem.index(row, modelItem.fieldIndex("parcialDesc"))).toDouble();
+    modelItem.setData(row, "descGlobal", descGlobal * 100.0);
+    double stItem = modelItem.data(row, "parcialDesc").toDouble();
     double totalItem = stItem * (1 - descGlobal);
-    modelItem.setData(modelItem.index(row, modelItem.fieldIndex("total")), totalItem);
+    modelItem.setData(row, "total", totalItem);
   }
 
   // TODO: refatorar para que essa função não seja chamada duas vezes
@@ -385,7 +400,7 @@ void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
   montarFluxoCaixa();
 }
 
-void Venda::fillTotals() {
+void Venda::fillTotals() const {
   QSqlQuery query;
   query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
   query.bindValue(":idOrcamento", ui->lineEditVenda->text());
@@ -437,25 +452,7 @@ void Venda::on_pushButtonCancelar_clicked() { close(); }
 
 void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 
-void Venda::on_pushButtonNFe_clicked() {
-  CadastrarNFe *cadNFe = new CadastrarNFe(ui->lineEditVenda->text(), this);
-
-  QList<int> lista;
-
-  foreach (const QModelIndex index, modelItem.match(modelItem.index(0, 0), Qt::DisplayRole, true, -1)) {
-    lista.append(index.row());
-  }
-
-  if (lista.size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
-    return;
-  }
-
-  cadNFe->prepararNFe(lista);
-  cadNFe->showMaximized();
-}
-
-void Venda::calculoSpinBox1() {
+void Venda::calculoSpinBox1() const {
   const double pgt1 = ui->doubleSpinBoxPgt1->value();
   const double pgt2 = ui->doubleSpinBoxPgt2->value();
   const double pgt3 = ui->doubleSpinBoxPgt3->value();
@@ -484,7 +481,7 @@ void Venda::on_doubleSpinBoxPgt1_editingFinished() {
   montarFluxoCaixa();
 }
 
-void Venda::calculoSpinBox2() {
+void Venda::calculoSpinBox2() const {
   const double pgt1 = ui->doubleSpinBoxPgt1->value();
   const double pgt2 = ui->doubleSpinBoxPgt2->value();
   const double pgt3 = ui->doubleSpinBoxPgt3->value();
@@ -516,11 +513,11 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
     ui->comboBoxPgt1Parc->setDisabled(true);
   }
 
-  if (text == "Cheque" or text == "Boleto") {
-    ui->dateEditPgt1->setEnabled(true);
-  } else {
-    ui->dateEditPgt1->setDisabled(true);
-  }
+  //  if (text == "Cheque" or text == "Boleto") {
+  ui->dateEditPgt1->setEnabled(true);
+  //  } else {
+  //    ui->dateEditPgt1->setDisabled(true);
+  //  }
 
   montarFluxoCaixa();
 }
@@ -536,11 +533,11 @@ void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text) {
     ui->comboBoxPgt2Parc->setDisabled(true);
   }
 
-  if (text == "Cheque" or text == "Boleto") {
-    ui->dateEditPgt2->setEnabled(true);
-  } else {
-    ui->dateEditPgt2->setDisabled(true);
-  }
+  //  if (text == "Cheque" or text == "Boleto") {
+  ui->dateEditPgt2->setEnabled(true);
+  //  } else {
+  //    ui->dateEditPgt2->setDisabled(true);
+  //  }
 
   montarFluxoCaixa();
 }
@@ -556,22 +553,22 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
     ui->comboBoxPgt3Parc->setDisabled(true);
   }
 
-  if (text == "Cheque" or text == "Boleto") {
-    ui->dateEditPgt3->setEnabled(true);
-  } else {
-    ui->dateEditPgt3->setDisabled(true);
-  }
+  //  if (text == "Cheque" or text == "Boleto") {
+  ui->dateEditPgt3->setEnabled(true);
+  //  } else {
+  //    ui->dateEditPgt3->setDisabled(true);
+  //  }
 
   montarFluxoCaixa();
 }
 
-bool Venda::savingProcedures(int row) {
+bool Venda::savingProcedures(const int row) {
   setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
   setData(row, "idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
   setData(row, "status", "ABERTO");
   setData(row, "data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
   setData(row, "dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
-  setData(row, "prazoEntrega", ui->spinBoxPrazoEntrega->value());
+  setData(row, "prazoEntrega", QDate::currentDate().addDays(ui->spinBoxPrazoEntrega->value()));
   setData(row, "observacao", ui->textEdit->toPlainText());
 
   if (not model.submitAll()) {
@@ -590,105 +587,6 @@ bool Venda::savingProcedures(int row) {
   }
 
   QSqlQuery query;
-
-  query.prepare("SELECT * FROM venda_has_produto AS v INNER JOIN produto AS p ON p.idProduto = v.idProduto "
-                "WHERE estoque <= 0 AND v.idVenda = :idVenda");
-  query.bindValue(":idVenda", ui->lineEditVenda->text());
-
-  if (not query.exec()) {
-    qDebug() << "Erro na verificação de estoque: " << query.lastError();
-    return false;
-  }
-
-  if (query.size() > 0) { // estoque zero ou negativo
-    query.first();
-
-    //    qDebug() << "idProduto: " << query.value("idProduto").toInt();
-
-    for (int i = 0; i < query.size(); ++i) {
-      QSqlQuery query2;
-
-      query2.prepare("SELECT * FROM pedido_fornecedor WHERE idProduto = :idProduto");
-      query2.bindValue(":idProduto", query.value("idProduto"));
-
-      if (not query2.exec()) {
-        qDebug() << "Erro buscando produto: " << query2.lastError();
-      }
-
-      //      qDebug() << "query2 size: " << query2.size();
-
-      if (query2.first()) {
-        //        qDebug() << "idProduto existente, atualizando: " << query.value("idProduto");
-
-        double quant = query2.value("quant").toDouble() + query.value("quant").toDouble();
-
-        query2.prepare("UPDATE pedido_fornecedor SET quant = :quant WHERE idProduto = :idProduto");
-        query2.bindValue(":quant", quant);
-        query2.bindValue(":idProduto", query.value("idProduto"));
-
-        if (not query2.exec()) {
-          qDebug() << "Erro atualizando quant: " << query2.lastError();
-        }
-
-      } else {
-        query2.prepare("INSERT INTO pedido_fornecedor (idProduto, descricao, colecao, quant, un, m2cx, pccx, "
-                       "kgcx, formComercial, codComercial, codBarras) VALUES (:idProduto, :produto, :colecao, :quant, "
-                       ":un, :m2cx, :pccx, :kgcx, :formComercial, :codComercial, :codBarras)");
-        query2.bindValue(":idProduto", query.value("idProduto"));
-        query2.bindValue(":produto", query.value("produto"));
-        query2.bindValue(":colecao", query.value("colecao"));
-        query2.bindValue(":quant", query.value("quant"));
-        query2.bindValue(":un", query.value("un"));
-        query2.bindValue(":m2cx", query.value("m2cx"));
-        query2.bindValue(":pccx", query.value("pccx"));
-        query2.bindValue(":kgcx", query.value("kgcx"));
-        query2.bindValue(":formComercial", query.value("formComercial"));
-        query2.bindValue(":codComercial", query.value("codComercial"));
-        query2.bindValue(":codBarras", query.value("codBarras"));
-
-        if (not query2.exec()) {
-          qDebug() << "Erro na criação do pedido fornecedor: " << query2.lastError();
-        }
-
-        //        qDebug() << "query: " << query2.lastQuery();
-
-        //        qDebug() << "idProduto novo, cadastrando: " << query.value("idProduto");
-      }
-
-      query2.prepare("INSERT INTO pedido_fornecedor_has_produto (idVenda, idLoja, item, idProduto, fornecedor, "
-                     "produto, obs, prcUnitario, caixas, quant, un, unCaixa, codComercial, formComercial, parcial, "
-                     "desconto, parcialDesc, descGlobal, total, status) VALUES (:idVenda, :idLoja, :item, :idProduto, "
-                     ":fornecedor, :produto, :obs, :prcUnitario, :caixas, :quant, :un, :unCaixa, :codComercial, "
-                     ":formComercial, :parcial, :desconto, :parcialDesc, :descGlobal, :total, :status)");
-      query2.bindValue(":idVenda", query.value("idVenda"));
-      query2.bindValue(":idLoja", query.value("idLoja"));
-      query2.bindValue(":item", query.value("item"));
-      query2.bindValue(":idProduto", query.value("idProduto"));
-      query2.bindValue(":fornecedor", query.value("fornecedor"));
-      query2.bindValue(":produto", query.value("produto"));
-      query2.bindValue(":obs", query.value("obs"));
-      query2.bindValue(":prcUnitario", query.value("prcUnitario"));
-      query2.bindValue(":caixas", query.value("caixas"));
-      query2.bindValue(":quant", query.value("quant"));
-      query2.bindValue(":un", query.value("un"));
-      query2.bindValue(":unCaixa", query.value("unCaixa"));
-      query2.bindValue(":codComercial", query.value("codComercial"));
-      query2.bindValue(":formComercial", query.value("formComercial"));
-      query2.bindValue(":parcial", query.value("parcial"));
-      query2.bindValue(":desconto", query.value("desconto"));
-      query2.bindValue(":parcialDesc", query.value("parcialDesc"));
-      query2.bindValue(":descGlobal", query.value("descGlobal"));
-      query2.bindValue(":total", query.value("total"));
-      query2.bindValue(":status", query.value("status"));
-
-      if (not query2.exec()) {
-        qDebug() << "Erro na inserção de produtos em pedido_fornecedor_has_produto: " << query2.lastError();
-        return false;
-      }
-
-      query.next();
-    }
-  }
 
   query.prepare("DELETE FROM orcamento_has_produto WHERE idOrcamento = :idVenda");
   query.bindValue(":idVenda", ui->lineEditVenda->text());
@@ -720,7 +618,6 @@ bool Venda::savingProcedures(int row) {
 
 void Venda::registerMode() {
   ui->framePagamentos->show();
-  ui->pushButtonNFe->hide();
   ui->pushButtonImprimir->hide();
   ui->pushButtonCadastrarPedido->show();
   ui->pushButtonVoltar->show();
@@ -735,7 +632,6 @@ void Venda::registerMode() {
 
 void Venda::updateMode() {
   ui->framePagamentos_2->hide();
-  ui->pushButtonNFe->show();
   ui->pushButtonImprimir->show();
   ui->pushButtonCadastrarPedido->hide();
   ui->pushButtonVoltar->hide();
@@ -753,6 +649,11 @@ bool Venda::viewRegister(const QModelIndex index) {
     return false;
   }
 
+  QString idCliente = ui->itemBoxCliente->value().toString();
+
+  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + idCliente + " AND desativado = FALSE");
+  ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + idCliente + " AND desativado = FALSE");
+
   modelItem.setFilter("idVenda = '" + ui->lineEditVenda->text() + "'");
 
   if (not modelItem.select()) {
@@ -769,15 +670,23 @@ bool Venda::viewRegister(const QModelIndex index) {
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
 
-  for (int i = 0; i < modelItem.rowCount(); ++i) {
-    ui->tableVenda->openPersistentEditor(modelItem.index(i, 0));
-  }
-
   fillTotals();
 
-  calcPrecoGlobalTotal();
-
   ui->tableVenda->resizeColumnsToContents();
+
+  ui->itemBoxEndereco->setCursorPosition(0); // TODO: apply this elsewhere where text is too long
+  ui->itemBoxEnderecoFat->setCursorPosition(0);
+
+  int prazo = QDate::currentDate().daysTo(model.data(mapper.currentIndex(), "prazoEntrega").toDate());
+  ui->spinBoxPrazoEntrega->setValue(prazo);
+
+  ui->spinBoxPrazoEntrega->setReadOnly(true);
+
+  ui->itemBoxCliente->setReadOnlyItemBox(true);
+  ui->itemBoxEndereco->setReadOnlyItemBox(true);
+  ui->itemBoxEnderecoFat->setReadOnlyItemBox(true);
+  ui->itemBoxProfissional->setReadOnlyItemBox(true);
+  ui->itemBoxVendedor->setReadOnlyItemBox(true);
 
   return true;
 }
@@ -785,14 +694,14 @@ bool Venda::viewRegister(const QModelIndex index) {
 void Venda::on_pushButtonVoltar_clicked() {
   Orcamento *orcamento = new Orcamento(parentWidget());
   orcamento->viewRegisterById(ui->lineEditVenda->text());
-  orcamento->showMaximized();
+  orcamento->show();
 
   isDirty = false;
   model.select();
   close();
 }
 
-void Venda::montarFluxoCaixa() {
+void Venda::montarFluxoCaixa() { // TODO: tornar essa função genérica para os pagamentos 1, 2 e 3
   if (ui->framePagamentos_2->isHidden()) {
     return;
   }
@@ -817,23 +726,19 @@ void Venda::montarFluxoCaixa() {
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")),
-                              ui->lineEditVenda->text());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
-                              "1. " + ui->comboBoxPgt1->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
+      modelFluxoCaixa.setData(row, "idVenda", ui->lineEditVenda->text());
+      modelFluxoCaixa.setData(row, "idLoja", UserSession::getLoja());
+      modelFluxoCaixa.setData(row, "tipo", "1. " + ui->comboBoxPgt1->currentText());
+      modelFluxoCaixa.setData(row, "parcela", parcelas - z);
 
       if (i == 0) {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela + resto);
+        modelFluxoCaixa.setData(row, "valor", parcela + resto);
       } else {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela);
+        modelFluxoCaixa.setData(row, "valor", parcela);
       }
 
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
-                              ui->dateEditPgt1->date().addMonths(i + temp2));
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
-                              ui->lineEditPgt1->text());
+      modelFluxoCaixa.setData(row, "data", ui->dateEditPgt1->date().addMonths(i + temp2));
+      modelFluxoCaixa.setData(row, "observacao", ui->lineEditPgt1->text());
       ++row;
     }
   }
@@ -854,23 +759,19 @@ void Venda::montarFluxoCaixa() {
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")),
-                              ui->lineEditVenda->text());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
-                              "2. " + ui->comboBoxPgt2->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
+      modelFluxoCaixa.setData(row, "idVenda", ui->lineEditVenda->text());
+      modelFluxoCaixa.setData(row, "idLoja", UserSession::getLoja());
+      modelFluxoCaixa.setData(row, "tipo", "2. " + ui->comboBoxPgt2->currentText());
+      modelFluxoCaixa.setData(row, "parcela", parcelas - z);
 
       if (i == 0) {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela + resto);
+        modelFluxoCaixa.setData(row, "valor", parcela + resto);
       } else {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela);
+        modelFluxoCaixa.setData(row, "valor", parcela);
       }
 
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
-                              ui->dateEditPgt2->date().addMonths(i + temp2));
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
-                              ui->lineEditPgt2->text());
+      modelFluxoCaixa.setData(row, "data", ui->dateEditPgt2->date().addMonths(i + temp2));
+      modelFluxoCaixa.setData(row, "observacao", ui->lineEditPgt2->text());
 
       ++row;
     }
@@ -892,23 +793,19 @@ void Venda::montarFluxoCaixa() {
 
     for (int i = 0, z = parcelas - 1; i < parcelas; ++i, --z) {
       modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idVenda")),
-                              ui->lineEditVenda->text());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("idLoja")), UserSession::getLoja());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("tipo")),
-                              "3. " + ui->comboBoxPgt3->currentText());
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("parcela")), parcelas - z);
+      modelFluxoCaixa.setData(row, "idVenda", ui->lineEditVenda->text());
+      modelFluxoCaixa.setData(row, "idLoja", UserSession::getLoja());
+      modelFluxoCaixa.setData(row, "tipo", "3. " + ui->comboBoxPgt3->currentText());
+      modelFluxoCaixa.setData(row, "parcela", parcelas - z);
 
       if (i == 0) {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela + resto);
+        modelFluxoCaixa.setData(row, "valor", parcela + resto);
       } else {
-        modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("valor")), parcela);
+        modelFluxoCaixa.setData(row, "valor", parcela);
       }
 
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("data")),
-                              ui->dateEditPgt3->date().addMonths(i + temp2));
-      modelFluxoCaixa.setData(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("observacao")),
-                              ui->lineEditPgt3->text());
+      modelFluxoCaixa.setData(row, "data", ui->dateEditPgt3->date().addMonths(i + temp2));
+      modelFluxoCaixa.setData(row, "observacao", ui->lineEditPgt3->text());
 
       ++row;
     }
@@ -1008,14 +905,16 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (not queryCliente.exec() or not queryCliente.first()) {
     qDebug() << "Erro buscando cliente: " << model.fieldIndex("idCliente") << " - " << model.lastError();
+    return;
   }
 
   QSqlQuery queryProduto;
   queryProduto.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
-  queryProduto.bindValue(":idProduto", modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("idProduto"))));
+  queryProduto.bindValue(":idProduto", modelItem.data(recNo, "idProduto"));
 
   if (not queryProduto.exec() or not queryProduto.first()) {
     qDebug() << "Erro buscando produto: " << modelItem.fieldIndex("idProduto") << " - " << modelItem.lastError();
+    return;
   }
 
   QSqlQuery queryProfissional;
@@ -1024,6 +923,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
     qDebug() << "Erro buscando profissional: " << queryProfissional.lastError();
+    return;
   }
 
   QSqlQuery queryVendedor;
@@ -1032,6 +932,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
     qDebug() << "Erro buscando vendedor: " << queryVendedor.lastError();
+    return;
   }
 
   QSqlQuery queryEndereco;
@@ -1040,6 +941,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (not queryEndereco.exec() or not queryEndereco.first()) {
     qDebug() << "Erro buscando endereco: " << queryEndereco.lastError();
+    return;
   }
 
   // REPORT TITLE
@@ -1048,7 +950,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
   }
 
   if (paramName == "data") {
-    paramValue = ui->dateTimeEdit->dateTime().toString("hh:mm dd-MM-yyyy");
+    paramValue = ui->dateTimeEdit->dateTime().toString("dd-MM-yyyy");
   }
 
   if (paramName == "cliente") {
@@ -1074,7 +976,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
   if (paramName == "endfiscal") {
     QString endereco = ui->itemBoxEndereco->text();
 
-    if (endereco != "Não há") {
+    if (endereco != "Não há/Retira") {
       endereco = endereco.remove(0, endereco.indexOf("-") + 2);
     }
 
@@ -1088,7 +990,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
   if (paramName == "endentrega") {
     QString endereco = ui->itemBoxEndereco->text();
 
-    if (endereco != "Não há") {
+    if (endereco != "Não há/Retira") {
       endereco = endereco.remove(0, endereco.indexOf("-") + 2);
     }
 
@@ -1131,7 +1033,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   // MASTER BAND
   if (paramName == "Marca") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("fornecedor"))).toString();
+    paramValue = modelItem.data(recNo, "fornecedor").toString();
   }
 
   if (paramName == "Código") {
@@ -1139,28 +1041,28 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
   }
 
   if (paramName == "Nome do produto") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("produto"))).toString();
+    paramValue = modelItem.data(recNo, "produto").toString();
   }
 
   if (paramName == "Ambiente") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("obs"))).toString();
+    paramValue = modelItem.data(recNo, "obs").toString();
   }
 
   if (paramName == "Preço-R$") {
-    double value = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("prcUnitario"))).toDouble();
+    double value = modelItem.data(recNo, "prcUnitario").toDouble();
     paramValue = "R$ " + locale.toString(value, 'f', 2);
   }
 
   if (paramName == "Quant.") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("quant"))).toString();
+    paramValue = modelItem.data(recNo, "quant").toString();
   }
 
   if (paramName == "Unid.") {
-    paramValue = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("un"))).toString();
+    paramValue = modelItem.data(recNo, "un").toString();
   }
 
   if (paramName == "TotalProd") {
-    double parcial = modelItem.data(modelItem.index(recNo, modelItem.fieldIndex("parcial"))).toDouble();
+    double parcial = modelItem.data(recNo, "parcial").toDouble();
     paramValue = "R$ " + locale.toString(parcial, 'f', 2);
   }
 
@@ -1191,6 +1093,16 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
 
   if (paramName == "FormaPagamento1") {
     QSqlQuery queryPgt1;
+
+    if (not queryPgt1.exec("SELECT data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+                           ui->lineEditVenda->text() + "' AND tipo LIKE '1%'") or
+        not queryPgt1.first()) {
+      qDebug() << "Erro buscando pagamentos: " << queryPgt1.lastError();
+      return;
+    }
+
+    QDate data = queryPgt1.value(0).toDate();
+
     if (not queryPgt1.exec(
           "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
           ui->lineEditVenda->text() + "' AND tipo LIKE '1%';") or
@@ -1202,16 +1114,26 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     if (queryPgt1.value(1) == 1) {
       paramValue = queryPgt1.value(0).toString() + " - " + queryPgt1.value(1).toString() + "x de R$ " +
                    locale.toString(queryPgt1.value(2).toDouble(), 'f', 2) + " - pag. em: " +
-                   queryPgt1.value(3).toString();
+                   data.toString("dd-MM-yyyy");
     } else {
       paramValue = queryPgt1.value(0).toString() + " - " + queryPgt1.value(1).toString() + "x de R$ " +
                    locale.toString(queryPgt1.value(2).toDouble(), 'f', 2) + " - 1° pag. em: " +
-                   queryPgt1.value(3).toString();
+                   data.toString("dd-MM-yyyy");
     }
   }
 
   if (paramName == "FormaPagamento2") {
     QSqlQuery queryPgt2;
+
+    if (not queryPgt2.exec("SELECT data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+                           ui->lineEditVenda->text() + "' AND tipo LIKE '2%'") or
+        not queryPgt2.first()) {
+      qDebug() << "Erro buscando pagamentos: " << queryPgt2.lastError();
+      return;
+    }
+
+    QDate data = queryPgt2.value(0).toDate();
+
     if (not queryPgt2.exec(
           "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
           ui->lineEditVenda->text() + "' AND tipo LIKE '2%';") or
@@ -1227,16 +1149,26 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     if (queryPgt2.value(1) == 1) {
       paramValue = queryPgt2.value(0).toString() + " - " + queryPgt2.value(1).toString() + "x de R$ " +
                    locale.toString(queryPgt2.value(2).toDouble(), 'f', 2) + " - pag. em: " +
-                   queryPgt2.value(3).toString();
+                   data.toString("dd-MM-yyyy");
     } else {
       paramValue = queryPgt2.value(0).toString() + " - " + queryPgt2.value(1).toString() + "x de R$ " +
                    locale.toString(queryPgt2.value(2).toDouble(), 'f', 2) + " - 1° pag. em: " +
-                   queryPgt2.value(3).toString();
+                   data.toString("dd-MM-yyyy");
     }
   }
 
   if (paramName == "FormaPagamento3") {
     QSqlQuery queryPgt3;
+
+    if (not queryPgt3.exec("SELECT data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+                           ui->lineEditVenda->text() + "' AND tipo LIKE '3%'") or
+        not queryPgt3.first()) {
+      qDebug() << "Erro buscando pagamentos: " << queryPgt3.lastError();
+      return;
+    }
+
+    QDate data = queryPgt3.value(0).toDate();
+
     if (not queryPgt3.exec(
           "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
           ui->lineEditVenda->text() + "' AND tipo LIKE '3%';") or
@@ -1252,11 +1184,11 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     if (queryPgt3.value(1) == 1) {
       paramValue = queryPgt3.value(0).toString() + " - " + queryPgt3.value(1).toString() + "x de R$ " +
                    locale.toString(queryPgt3.value(2).toDouble(), 'f', 2) + " - pag. em: " +
-                   queryPgt3.value(3).toString();
+                   data.toString("dd-MM-yyyy");
     } else {
       paramValue = queryPgt3.value(0).toString() + " - " + queryPgt3.value(1).toString() + "x de R$ " +
                    locale.toString(queryPgt3.value(2).toDouble(), 'f', 2) + " - 1° pag. em: " +
-                   queryPgt3.value(3).toString();
+                   data.toString("dd-MM-yyyy");
     }
   }
 }
@@ -1270,7 +1202,7 @@ void Venda::successMessage() {
 void Venda::on_pushButtonGerarExcel_clicked() {
   QXlsx::Document xlsx("modelo.xlsx");
 
-  QString idVenda = model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString();
+  QString idVenda = model.data(mapper.currentIndex(), "idVenda").toString();
 
   QSqlQuery queryVenda;
   queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
@@ -1353,28 +1285,40 @@ void Venda::on_pushButtonGerarExcel_clicked() {
   xlsx.write("K7", queryProf.value("email").toString());
 
   for (int i = 0; i < modelItem.rowCount(); ++i) {
-    xlsx.write("A" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("fornecedor"))).toString());
-    xlsx.write("B" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("codComercial"))).toString());
-    xlsx.write("C" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("produto"))).toString());
-    xlsx.write("H" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("obs"))).toString());
-    xlsx.write("K" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("prcUnitario"))).toDouble());
-    xlsx.write("L" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("quant"))).toDouble());
-    xlsx.write("M" + QString::number(12 + i),
-               modelItem.data(modelItem.index(i, modelItem.fieldIndex("un"))).toString());
+    xlsx.write("A" + QString::number(12 + i), modelItem.data(i, "fornecedor").toString());
+    xlsx.write("B" + QString::number(12 + i), modelItem.data(i, "codComercial").toString());
+    xlsx.write("C" + QString::number(12 + i), modelItem.data(i, "produto").toString());
+    xlsx.write("H" + QString::number(12 + i), modelItem.data(i, "obs").toString());
+    xlsx.write("K" + QString::number(12 + i), modelItem.data(i, "prcUnitario").toDouble());
+    xlsx.write("L" + QString::number(12 + i), modelItem.data(i, "quant").toDouble());
+    xlsx.write("M" + QString::number(12 + i), modelItem.data(i, "un").toString());
   }
 
-  if (xlsx.saveAs(model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString() + ".xlsx")) {
-    QMessageBox::information(
-          this, "Ok!", "Arquivo salvo como " +
-          model.data(model.index(mapper.currentIndex(), model.fieldIndex("idVenda"))).toString() +
-          ".xlsx");
+  if (xlsx.saveAs(model.data(mapper.currentIndex(), "idVenda").toString() + ".xlsx")) {
+    QMessageBox::information(this, "Ok!", "Arquivo salvo como " +
+                             model.data(mapper.currentIndex(), "idVenda").toString() +
+                             //                         model.data(model.index(mapper.currentIndex(),
+                             //                         model.fieldIndex("idVenda"))).toString() +
+                             ".xlsx");
   } else {
     QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
   }
+}
+
+void Venda::on_lineEditPgt1_textChanged(const QString &arg1) {
+  Q_UNUSED(arg1);
+
+  montarFluxoCaixa();
+}
+
+void Venda::on_lineEditPgt2_textChanged(const QString &arg1) {
+  Q_UNUSED(arg1);
+
+  montarFluxoCaixa();
+}
+
+void Venda::on_lineEditPgt3_textChanged(const QString &arg1) {
+  Q_UNUSED(arg1);
+
+  montarFluxoCaixa();
 }

@@ -38,7 +38,7 @@ bool RegisterDialog::viewRegisterById(const QVariant id) {
     return false;
   }
 
-  const QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id);
+  const QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id, 1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
   if (indexList.isEmpty()) {
     QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
@@ -65,7 +65,7 @@ bool RegisterDialog::viewRegister(const QModelIndex index) {
 }
 
 bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
-  foreach (QLineEdit *line, list) {
+  for (auto *line : list) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -78,7 +78,8 @@ void RegisterDialog::setData(const QString &key, QVariant value) {
   if (model.fieldIndex(key) == -1) {
     qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
   }
-  if (not model.setData(model.index(mapper.currentIndex(), model.fieldIndex(key)), value)) {
+
+  if(not model.setData(mapper.currentIndex(), key, value)){
     qDebug() << key << " error - row: " << mapper.currentIndex() << " - value: " << value;
   }
 }
@@ -95,7 +96,7 @@ bool RegisterDialog::setData(int row, const QString &key, QVariant value) {
   }
 
   if (not value.isNull()) {
-    if (not model.setData(model.index(row, model.fieldIndex(key)), value)) {
+    if(not model.setData(row, key, value)){
       qDebug() << key << " error - row: " << row << " - value: " << value;
       return false;
     }
@@ -109,14 +110,15 @@ QVariant RegisterDialog::data(const QString &key) {
     qDebug() << objectName() << " : Key " << key << " not found on model!";
   }
 
-  return (model.data(model.index(mapper.currentIndex(), model.fieldIndex(key))));
+  return model.data(mapper.currentIndex(), key);
 }
 
 QVariant RegisterDialog::data(int row, const QString &key) {
   if (model.fieldIndex(key) == -1) {
     qDebug() << objectName() << " : Key " << key << " not found on model!";
   }
-  return (model.data(model.index(row, model.fieldIndex(key))));
+
+  return model.data(row, key);
 }
 
 void RegisterDialog::addMapping(QWidget *widget, const QString &key) {
@@ -136,7 +138,7 @@ void RegisterDialog::addMapping(QWidget *widget, const QString &key, const QByte
 void RegisterDialog::sendUpdateMessage() {
   QString text;
 
-  foreach (QString key, textKeys) {
+  for (const auto key : textKeys) {
     if (not key.isEmpty()) {
       const QVariant val = data(key);
 
@@ -195,8 +197,6 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 
 bool RegisterDialog::confirmationMessage() {
   if (model.isDirty() or isDirty) {
-    //    qDebug() << "model is dirty: " << model.isDirty() << "(" << model.tableName() << ")";
-    //    qDebug() << "isDirty: " << isDirty;
 
     QMessageBox msgBox;
     msgBox.setParent(this);
@@ -304,7 +304,7 @@ bool RegisterDialog::save(const bool isUpdate) {
 bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
-  foreach (QLineEdit *line, this->findChildren<QLineEdit *>()) { line->clear(); }
+  for (auto *line : this->findChildren<QLineEdit *>()) { line->clear(); }
 }
 
 void RegisterDialog::remove() {
@@ -314,7 +314,7 @@ void RegisterDialog::remove() {
   msgBox.setButtonText(QMessageBox::No, "Não");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    model.setData(model.index(mapper.currentIndex(), model.fieldIndex("desativado")), 1);
+    model.setData(mapper.currentIndex(), "desativado", 1);
 
     if (model.submitAll()) {
       if (not model.select()) {
@@ -332,6 +332,7 @@ void RegisterDialog::remove() {
 }
 
 bool RegisterDialog::validaCNPJ(const QString text) {
+  // TODO: pegar a parte do validaCPF que é igual e separar numa função
   if (text.size() == 14) {
     int digito1;
     int digito2;

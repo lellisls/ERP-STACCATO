@@ -66,7 +66,7 @@ void ContasAReceber::viewConta(const QString idVenda) {
 
   modelContas.setFilter("idVenda = '" + idVenda + "'");
 
-  if (modelContas.data(modelContas.index(0, modelContas.fieldIndex("pago"))).toString() == "SIM") {
+  if(modelContas.data(0, "pago").toString() == "SIM"){
     ui->checkBox->setChecked(true);
   }
 

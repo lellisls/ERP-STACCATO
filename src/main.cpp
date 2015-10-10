@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   app.setOrganizationName("ERP");
   app.setApplicationName("Staccato");
+  app.setWindowIcon(QIcon("Staccato.ico"));
 
   QTranslator qtTranslator;
 

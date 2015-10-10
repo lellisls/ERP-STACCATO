@@ -8,10 +8,6 @@ class LineEditDecimal : public QLineEdit {
 
   public:
     explicit LineEditDecimal(QWidget *parent = 0);
-    double getBottom() const;
-    void setBottom(const double value);
-    double getTop() const;
-    void setTop(const double value);
     double getValue() const;
     void setValue(const double value);
 
@@ -23,6 +19,11 @@ class LineEditDecimal : public QLineEdit {
     // attributes
     double bottom;
     double top;
+    // methods
+    double getBottom() const;
+    void setBottom(const double value);
+    double getTop() const;
+    void setTop(const double value);
 };
 
 #endif // LINEEDITDECIMAL_H

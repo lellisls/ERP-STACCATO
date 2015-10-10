@@ -13,7 +13,6 @@ class CadastroLoja : public RegisterAddressDialog {
   public:
     explicit CadastroLoja(QWidget *parent = 0);
     ~CadastroLoja();
-    bool viewRegister(const QModelIndex index);
 
   public slots:
     void show();
@@ -35,6 +34,9 @@ class CadastroLoja : public RegisterAddressDialog {
     void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
+    void on_pushButtonPastaCompra_clicked();
+    void on_pushButtonXmlNFe_clicked();
+    void on_pushButtonPastaExcel_clicked();
 
   private:
     /*!
@@ -66,13 +68,14 @@ class CadastroLoja : public RegisterAddressDialog {
   private:
     // attributes
     Ui::CadastroLoja *ui;
-    QSqlTableModel modelAlcadas;
+    SqlTableModel modelAlcadas;
     // methods
     void novoEndereco();
     bool cadastrarEndereco(const bool isUpdate);
     void clearEndereco();
     void setupTables();
     void setupUi();
+    bool viewRegister(const QModelIndex index);
 };
 
 #endif // CADASTROLOJA_H

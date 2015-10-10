@@ -8,8 +8,10 @@ class LineEditTel : public QLineEdit {
 
   public:
     explicit LineEditTel(QWidget *parent);
-    void processTel(const QString &value);
     ~LineEditTel();
+
+  private:
+    void processTel(const QString &value);
 };
 
 #endif // LINEEDITTEL_H

@@ -2,8 +2,9 @@
 #define SEARCHDIALOG_H
 
 #include <QDialog>
-#include <QSqlRelationalTableModel>
 #include <QDataWidgetMapper>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class SearchDialog;
@@ -15,31 +16,21 @@ class SearchDialog : public QDialog {
   public:
     explicit SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent = 0);
     ~SearchDialog();
-    QString getFilter() const;
+    void show();
+    void showMaximized();
     void setFilter(const QString &value);
-    void hideColumns(const QStringList columns);
-    QString getPrimaryKey() const;
-    void setPrimaryKey(const QString &value);
-    QStringList getTextKeys() const;
-    void setTextKeys(const QStringList &value);
-    QString getText(const QVariant index);
-    void setHeaderData(const QVector<QPair<QString, QString>> headerData);
+    QString getText(const QVariant index) const;
 
     // Factory Methods
     static SearchDialog *cliente(QWidget *parent);
-    static SearchDialog *loja(QWidget *parent);
-    static SearchDialog *produto(QWidget *parent);
     static SearchDialog *fornecedor(QWidget *parent);
-    static SearchDialog *transportadora(QWidget *parent);
     static SearchDialog *usuario(QWidget *parent);
     static SearchDialog *profissional(QWidget *parent);
     static SearchDialog *enderecoCliente(QWidget *parent);
-    static SearchDialog *enderecoFornecedor(QWidget *parent);
+    static SearchDialog *loja(QWidget *parent);
+    static SearchDialog *produto(QWidget *parent);
+    static SearchDialog *transportadora(QWidget *parent);
     static SearchDialog *vendedor(QWidget *parent);
-    void sendUpdateMessage();
-    void show();
-    void showMaximized();
-    void montarFiltroAtivoDesc(const bool ativo);
 
   signals:
     void itemSelected(QVariant value);
@@ -54,15 +45,26 @@ class SearchDialog : public QDialog {
     void on_tableBusca_entered(const QModelIndex &index);
 
   private:
+    // attributes
     Ui::SearchDialog *ui;
     QDataWidgetMapper mapper;
-    QSqlRelationalTableModel model;
+    SqlTableModel model;
     QStringList indexes;
     QVariant selectedId;
     QString filter;
     QString primaryKey;
     QStringList textKeys;
     QVector<QPair<QString, QString>> headerData;
+    // methods
+    QString getFilter() const;
+    void hideColumns(const QStringList columns);
+    QString getPrimaryKey() const;
+    void setPrimaryKey(const QString &value);
+    QStringList getTextKeys() const;
+    void setTextKeys(const QStringList &value);
+    void setHeaderData(const QVector<QPair<QString, QString>> headerData);
+    void sendUpdateMessage();
+    void montarFiltroAtivoDesc(const bool ativo);
 };
 
 #endif // SEARCHDIALOG_H

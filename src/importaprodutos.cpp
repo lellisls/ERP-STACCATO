@@ -47,6 +47,20 @@ void ImportaProdutos::importar() {
   importarTabela();
 }
 
+void ImportaProdutos::verificaSeRepresentacao() {
+  QSqlQuery queryFornecedor;
+  queryFornecedor.prepare("SELECT representacao FROM fornecedor WHERE razaoSocial = :razaoSocial");
+  queryFornecedor.bindValue(":razaoSocial", fornecedor);
+
+  if (not queryFornecedor.exec()) {
+    qDebug() << "Erro fornecedor: " << queryFornecedor.lastError();
+  }
+
+  if (queryFornecedor.first()) {
+    ui->checkBoxRepresentacao->setChecked(queryFornecedor.value(0).toBool());
+  }
+}
+
 void ImportaProdutos::importarTabela() {
   bool canceled = false;
 
@@ -69,11 +83,10 @@ void ImportaProdutos::importarTabela() {
       return;
     }
 
-    QSqlQuery query("SELECT * FROM [BASE$]", db);
-
-    cadastraFornecedores(query);
+    cadastraFornecedores();
 
     if (fornecedores.size() > 0) {
+      verificaSeRepresentacao();
       mostraApenasEstesFornecedores();
       model.setFilter(ids);
 
@@ -90,6 +103,8 @@ void ImportaProdutos::importarTabela() {
       contaProdutos();
 
       int current = 0;
+
+      QSqlQuery query("SELECT * FROM [BASE$]", db);
 
       query.first();
 
@@ -113,12 +128,18 @@ void ImportaProdutos::importarTabela() {
           if (produto.next()) {
             const QString idProduto = produto.value("idProduto").toString();
             // these are the slow functions
-            atualizaCamposProduto(produto, idProduto);
-            guardaNovoPrecoValidade(produto, idProduto);
-            marcaProdutoNaoDescontinuado(produto, idProduto);
+
+            if (camposForaDoPadrao()) {
+              insereEmErro();
+            } else {
+              atualizaCamposProduto(produto, idProduto);
+              guardaNovoPrecoValidade(produto, idProduto);
+              marcaProdutoNaoDescontinuado(produto, idProduto);
+            }
           } else {
-            verificaSeProdutoJaCadastradoNoModel();
-            cadastraProduto();
+            if (not verificaSeProdutoJaCadastradoNoModel()) {
+              cadastraProduto();
+            }
           }
         }
       } while (query.next());
@@ -363,19 +384,19 @@ void ImportaProdutos::setVariantMap() {
   //  variantMap.insert("descontinuado", QVariant(QVariant::Int));
   //  variantMap.insert("representacao", QVariant(QVariant::String));
   variantMap.insert("ui", QVariant(QVariant::String));
+  variantMap.insert("un2", QVariant(QVariant::String));
 }
 
-void ImportaProdutos::cadastraFornecedores(QSqlQuery &query) {
-  query.first();
+void ImportaProdutos::cadastraFornecedores() {
+  QSqlQuery query("SELECT DISTINCT(fornecedor) FROM [BASE$]", db);
 
-  do {
-    const QString fornecedor = query.value(0).toString();
-
-    if (not fornecedor.isEmpty()) {
+  while (query.next()) {
+    if (not query.value("fornecedor").toString().isEmpty()) {
+      fornecedor = query.value("fornecedor").toString();
       const int id = buscarCadastrarFornecedor(fornecedor);
       fornecedores.insert(fornecedor, id);
     }
-  } while (query.next());
+  }
 }
 
 void ImportaProdutos::mostraApenasEstesFornecedores() {
@@ -392,6 +413,8 @@ void ImportaProdutos::marcaTodosProdutosDescontinuados() {
   for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
     model.setData(row, "descontinuado", true);
   }
+
+  // TODO: colocar um progressDialog "processando arquivo";
 
   itensExpired = model.rowCount();
 }
@@ -507,7 +530,7 @@ void ImportaProdutos::atualizaCamposProduto(const QSqlQuery &produto, const QStr
   for (int i = 0, size = variantMap.keys().size(); i < size; ++i) {
     if (not variantMap.values().at(i).isNull() and
         produto.value(variantMap.keys().at(i)) != variantMap.values().at(i)) {
-      qDebug() << "old: " << produto.value(variantMap.keys().at(i)) << " - new: " << variantMap.values().at(i);
+      //      qDebug() << "old: " << produto.value(variantMap.keys().at(i)) << " - new: " << variantMap.values().at(i);
 
       model.setData(row, variantMap.keys().at(i), variantMap.values().at(i));
       model.setData(row, variantMap.keys().at(i) + "Upd", Yellow);
@@ -516,8 +539,6 @@ void ImportaProdutos::atualizaCamposProduto(const QSqlQuery &produto, const QStr
       model.setData(row, variantMap.keys().at(i) + "Upd", White);
     }
   }
-
-  pintarCamposForaDoPadrao(row);
 
   if (changed) {
     itensUpdated++;
@@ -577,10 +598,17 @@ bool ImportaProdutos::verificaSeProdutoJaCadastradoNoModel() {
       model.match(model.index(0, model.fieldIndex("codComercial")), Qt::DisplayRole, variantMap.value("codComercial"));
 
   if (list.size() > 0) {
-    variantMap.insert("m2cx", -1);
-    variantMap.insert("pccx", -1);
+    if (variantMap.value("ui").toString() == model.data(list.first().row(), "ui")) {
+      //      qDebug() << "repetido: " << list.first().row();
+      //      qDebug() << model.data(list.first().row(), "descricao") << ", " << model.data(list.first()) << ", "
+      //               << model.data(list.first().row(), "ui");
+      //      qDebug() << "--------";
+      // TODO: find other way to show repeated
+      variantMap.insert("m2cx", -1);
+      variantMap.insert("pccx", -1);
 
-    return true;
+      return true;
+    }
   }
 
   return false;
@@ -658,36 +686,39 @@ bool ImportaProdutos::camposForaDoPadrao() {
   return false;
 }
 
+void ImportaProdutos::insereEmErro() {
+  const int row = modelErro.rowCount();
+  modelErro.insertRow(row);
+
+  modelErro.setData(row, "idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
+
+  modelErro.setData(row, "atualizarTabelaPreco", true);
+  modelErro.setData(row, "validade", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+  modelErro.setData(row, "validadeUpd", Green);
+
+  const double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.0;
+  modelErro.setData(row, "markup", markup);
+  modelErro.setData(row, "markupUpd", Green);
+
+  if (variantMap.value("ncm").toString().length() == 10) {
+    modelErro.setData(row, "ncmEx", variantMap.value("ncm").toString().right(2));
+    modelErro.setData(row, "ncmExUpd", Green);
+    variantMap.insert("ncm", variantMap.value("ncm").toString().left(8));
+  } else {
+    modelErro.setData(row, "ncmExUpd", Green);
+  }
+
+  for (int i = 0, size = variantMap.keys().size(); i < size; ++i) {
+    modelErro.setData(row, variantMap.keys().at(i), variantMap.values().at(i));
+    modelErro.setData(row, variantMap.keys().at(i) + "Upd", Green);
+  }
+
+  pintarCamposForaDoPadrao(row);
+}
+
 void ImportaProdutos::cadastraProduto() {
   if (camposForaDoPadrao()) {
-    const int row = modelErro.rowCount();
-    modelErro.insertRow(row);
-
-    modelErro.setData(row, "idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
-
-    modelErro.setData(row, "atualizarTabelaPreco", true);
-    modelErro.setData(row, "validade", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
-    modelErro.setData(row, "validadeUpd", Green);
-
-    const double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.0;
-    modelErro.setData(row, "markup", markup);
-    modelErro.setData(row, "markupUpd", Green);
-
-    if (variantMap.value("ncm").toString().length() == 10) {
-      modelErro.setData(row, "ncmEx", variantMap.value("ncm").toString().right(2));
-      modelErro.setData(row, "ncmExUpd", Green);
-      variantMap.insert("ncm", variantMap.value("ncm").toString().left(8));
-    } else {
-      modelErro.setData(row, "ncmExUpd", Green);
-    }
-
-    for (int i = 0, size = variantMap.keys().size(); i < size; ++i) {
-      modelErro.setData(row, variantMap.keys().at(i), variantMap.values().at(i));
-      modelErro.setData(row, variantMap.keys().at(i) + "Upd", Green);
-    }
-
-    pintarCamposForaDoPadrao(row);
-
+    insereEmErro();
   } else {
     const int row = model.rowCount();
     model.insertRow(row);
@@ -750,12 +781,6 @@ void ImportaProdutos::on_pushButtonCancelar_clicked() {
 }
 
 void ImportaProdutos::salvar() {
-//  for (int row = 0; row < model.rowCount(); ++row) {
-//    for (int col = 1; col < model.columnCount(); col += 2) {
-//      model.setData(row, col, White);
-//    }
-//  }
-
   if (model.submitAll()) {
     QSqlQuery("COMMIT").exec();
 
@@ -816,6 +841,14 @@ bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
 void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool checked) {
   for (int i = 0, rowCount = model.rowCount(); i < rowCount; ++i) {
     model.setData(i, "representacao", checked);
+  }
+
+  QSqlQuery query;
+  query.prepare("UPDATE fornecedor SET representacao = TRUE WHERE razaoSocial = :razaoSocial");
+  query.bindValue(":razaoSocial", fornecedor);
+
+  if (not query.exec()) {
+    qDebug() << "erro setando representacao em fornecedor: " << query.lastError();
   }
 }
 

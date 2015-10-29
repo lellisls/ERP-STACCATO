@@ -32,7 +32,9 @@ class ImportaProdutos : public QDialog {
     Ui::ImportaProdutos *ui;
     SqlTableModel model, modelErro;
     QProgressDialog *progressDialog;
-    QString file, ids;
+    QString file;
+    QString ids;
+    QString fornecedor;
     int validade;
     QMap<QString, int> fornecedores;
     QSqlDatabase db;
@@ -51,7 +53,7 @@ class ImportaProdutos : public QDialog {
     bool verificaTabela(const QSqlRecord &record);
     int buscarCadastrarFornecedor(const QString fornecedor);
     void atualizaCamposProduto(const QSqlQuery &produto, const QString idProduto);
-    void cadastraFornecedores(QSqlQuery &query);
+    void cadastraFornecedores();
     void cadastraProduto();
     void contaProdutos();
     void expiraPrecosAntigos(QSqlQuery &produto, const QString idProduto);
@@ -68,6 +70,8 @@ class ImportaProdutos : public QDialog {
     void setVariantMap();
     void salvar();
     bool camposForaDoPadrao();
+    void insereEmErro();
+    void verificaSeRepresentacao();
 
     enum FieldColors {
       White = 0,  // no change

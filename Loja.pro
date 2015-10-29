@@ -177,3 +177,4 @@ CONFIG -= console
 
 include(QtRptProject/QtRPT/QtRPT.pri)
 include(QtXlsxWriter/src/xlsx/qtxlsx.pri)
+include(QSimpleUpdater/qsimpleupdater.pri)

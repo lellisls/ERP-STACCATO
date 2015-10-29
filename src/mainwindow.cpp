@@ -39,9 +39,22 @@
 #include "xml_viewer.h"
 #include "sendmail.h"
 
+#include "QSimpleUpdater"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
+  qApp->setApplicationVersion("0.1");
+  qDebug() << "version: " << qApp->applicationVersion();
+
+  QSimpleUpdater *updater = new QSimpleUpdater(this);
+  updater->setApplicationVersion(qApp->applicationVersion());
+  updater->setReferenceUrl("http://192.168.2.144/versao.txt");
+  updater->setDownloadUrl("http://192.168.2.144/Loja.exe");
+//  connect(updater, &QSimpleUpdater::checkingFinished, this, &MainWindow::on_actionCadastrarCliente_triggered);
+  updater->setSilent(true);
+  updater->setShowNewestVersionMessage(true);
+  updater->checkForUpdates();
   QSettings settings("ERP", "Staccato");
   settings.beginGroup("Login");
   hostname = settings.value("hostname").toString();

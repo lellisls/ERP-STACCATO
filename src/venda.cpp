@@ -2,6 +2,8 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QSqlQuery>
+#include <QSettings>
+#include <QDir>
 
 #include "venda.h"
 #include "ui_venda.h"
@@ -892,7 +894,18 @@ void Venda::on_pushButtonImprimir_clicked() {
   report->loadReport(file.fileName());
   report->recordCount << ui->tableVenda->model()->rowCount();
   connect(report, &QtRPT::setValue, this, &Venda::setValue);
-  report->printExec();
+
+  QSettings settings("ERP", "Staccato");
+  settings.beginGroup("User");
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  report->printPDF(path + "/" + ui->lineEditVenda->text() + ".pdf");
 }
 
 void Venda::setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage) {
@@ -927,8 +940,8 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
   }
 
   QSqlQuery queryVendedor;
-  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
-  queryVendedor.bindValue(":idUsuario", ui->itemBoxVendedor->value());
+  queryVendedor.prepare("SELECT * FROM usuario WHERE nome = :nome");
+  queryVendedor.bindValue(":nome", ui->itemBoxVendedor->text());
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
     qDebug() << "Erro buscando vendedor: " << queryVendedor.lastError();
@@ -944,7 +957,34 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     return;
   }
 
+  QSqlQuery queryLoja;
+  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", queryVendedor.value("idLoja"));
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    qDebug() << "Erro buscando loja: " << modelItem.fieldIndex("idLoja") << " - " << queryLoja.lastError();
+  }
+
+  QSqlQuery queryLojaEnd;
+  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.bindValue(":idLoja", queryVendedor.value("idLoja"));
+
+  if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
+    qDebug() << "Erro buscando loja end.: " << modelItem.fieldIndex("idLoja") << " - " << queryLojaEnd.lastError();
+  }
+
   // REPORT TITLE
+  if (paramName == "Loja") {
+    paramValue = queryLoja.value("descricao").toString();
+  }
+
+  if (paramName == "Endereco") {
+    paramValue = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() + " - " +
+                 queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() + " - " +
+                 queryLojaEnd.value("uf").toString() + " - CEP: " + queryLojaEnd.value("cep").toString() + "\n" +
+                 queryLoja.value("tel").toString() + " - " + queryLoja.value("tel2").toString();
+  }
+
   if (paramName == "pedido") {
     paramValue = ui->lineEditVenda->text();
   }
@@ -1097,7 +1137,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     if (not queryPgt1.exec("SELECT data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
                            ui->lineEditVenda->text() + "' AND tipo LIKE '1%'") or
         not queryPgt1.first()) {
-      qDebug() << "Erro buscando pagamentos: " << queryPgt1.lastError();
+      qDebug() << "Erro buscando pagamentos 1a: " << queryPgt1.lastError();
       return;
     }
 
@@ -1107,7 +1147,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
           "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
           ui->lineEditVenda->text() + "' AND tipo LIKE '1%';") or
         not queryPgt1.first()) {
-      qDebug() << "Erro buscando pagamentos: " << queryPgt1.lastError();
+      qDebug() << "Erro buscando pagamentos 1b: " << queryPgt1.lastError();
       return;
     }
 
@@ -1126,9 +1166,12 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     QSqlQuery queryPgt2;
 
     if (not queryPgt2.exec("SELECT data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                           ui->lineEditVenda->text() + "' AND tipo LIKE '2%'") or
-        not queryPgt2.first()) {
-      qDebug() << "Erro buscando pagamentos: " << queryPgt2.lastError();
+                           ui->lineEditVenda->text() + "' AND tipo LIKE '2%'")) {
+      qDebug() << "Erro buscando pagamentos 2a: " << queryPgt2.lastError();
+      return;
+    }
+
+    if (not queryPgt2.first()) {
       return;
     }
 
@@ -1138,7 +1181,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
           "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
           ui->lineEditVenda->text() + "' AND tipo LIKE '2%';") or
         not queryPgt2.first()) {
-      qDebug() << "Erro buscando pagamentos: " << queryPgt2.lastError();
+      qDebug() << "Erro buscando pagamentos 2b: " << queryPgt2.lastError();
       return;
     }
 
@@ -1161,9 +1204,12 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
     QSqlQuery queryPgt3;
 
     if (not queryPgt3.exec("SELECT data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                           ui->lineEditVenda->text() + "' AND tipo LIKE '3%'") or
-        not queryPgt3.first()) {
-      qDebug() << "Erro buscando pagamentos: " << queryPgt3.lastError();
+                           ui->lineEditVenda->text() + "' AND tipo LIKE '3%'")) {
+      qDebug() << "Erro buscando pagamentos 3a: " << queryPgt3.lastError();
+      return;
+    }
+
+    if (not queryPgt3.first()) {
       return;
     }
 
@@ -1173,7 +1219,7 @@ void Venda::setValue(const int recNo, const QString paramName, QVariant &paramVa
           "SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
           ui->lineEditVenda->text() + "' AND tipo LIKE '3%';") or
         not queryPgt3.first()) {
-      qDebug() << "Erro buscando pagamentos: " << queryPgt3.lastError();
+      qDebug() << "Erro buscando pagamentos 3b: " << queryPgt3.lastError();
       return;
     }
 
@@ -1200,6 +1246,18 @@ void Venda::successMessage() {
 }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
+  QFile modelo(QDir::currentPath() + "/modelo.xlsx");
+
+  if (not modelo.exists()) {
+    QMessageBox::warning(this, "Aviso!", "Não encontrou o modelo do Excel!");
+    return;
+  }
+
+  if(modelItem.rowCount() > 17){
+    QMessageBox::warning(this, "Aviso!", "Mais itens do que cabe no modelo!");
+    return;
+  }
+
   QXlsx::Document xlsx("modelo.xlsx");
 
   QString idVenda = model.data(mapper.currentIndex(), "idVenda").toString();
@@ -1284,6 +1342,15 @@ void Venda::on_pushButtonGerarExcel_clicked() {
   xlsx.write("H7", queryProf.value("tel").toString());
   xlsx.write("K7", queryProf.value("email").toString());
 
+  xlsx.write("N29", "R$ " + QString::number(queryVenda.value("subTotalLiq").toDouble(), 'f', 2)); // soma
+  xlsx.write("N30", QString::number(queryVenda.value("descontoPorc").toDouble(), 'f', 2) + "%");  // desconto
+  xlsx.write("N31", "R$ " + QString::number(queryVenda.value("subTotalLiq").toDouble() -
+                                            (ui->doubleSpinBoxDescontoGlobal->value() / 100 *
+                                             queryVenda.value("subTotalLiq").toDouble()),
+                                            'f', 2));                                     // total
+  xlsx.write("N32", "R$ " + QString::number(queryVenda.value("frete").toDouble(), 'f', 2)); // frete
+  xlsx.write("N33", "R$ " + QString::number(queryVenda.value("total").toDouble(), 'f', 2)); // total final
+
   for (int i = 0; i < modelItem.rowCount(); ++i) {
     xlsx.write("A" + QString::number(12 + i), modelItem.data(i, "fornecedor").toString());
     xlsx.write("B" + QString::number(12 + i), modelItem.data(i, "codComercial").toString());
@@ -1292,14 +1359,21 @@ void Venda::on_pushButtonGerarExcel_clicked() {
     xlsx.write("K" + QString::number(12 + i), modelItem.data(i, "prcUnitario").toDouble());
     xlsx.write("L" + QString::number(12 + i), modelItem.data(i, "quant").toDouble());
     xlsx.write("M" + QString::number(12 + i), modelItem.data(i, "un").toString());
+    xlsx.write("N" + QString::number(12 + i), "R$ " + QString::number(modelItem.data(i, "total").toDouble(), 'f', 2));
   }
 
-  if (xlsx.saveAs(model.data(mapper.currentIndex(), "idVenda").toString() + ".xlsx")) {
-    QMessageBox::information(this, "Ok!", "Arquivo salvo como " +
-                             model.data(mapper.currentIndex(), "idVenda").toString() +
-                             //                         model.data(model.index(mapper.currentIndex(),
-                             //                         model.fieldIndex("idVenda"))).toString() +
-                             ".xlsx");
+  QSettings settings("ERP", "Staccato");
+  settings.beginGroup("User");
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  if (xlsx.saveAs(path + "/" + ui->lineEditVenda->text() + ".xlsx")) {
+    QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + ui->lineEditVenda->text() + ".xlsx");
   } else {
     QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
   }

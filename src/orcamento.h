@@ -44,7 +44,7 @@ class Orcamento : public RegisterDialog {
     void on_spinBoxCaixas_valueChanged(const int caixas);
     void on_tableProdutos_clicked(const QModelIndex &index);
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);    
-    void on_checkBoxRepresentacao_clicked(bool checked);
+    void on_checkBoxRepresentacao_toggled(bool checked);
 
   signals:
     void finished();

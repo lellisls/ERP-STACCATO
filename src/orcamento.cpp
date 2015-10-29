@@ -3,6 +3,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
+#include <QDir>
+#include <QSettings>
 
 #include "orcamento.h"
 #include "ui_orcamento.h"
@@ -38,11 +40,13 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->checkBoxFreteManual->show();
   } else {
-    ui->checkBoxFreteManual->hide();
+    //    ui->checkBoxFreteManual->hide();
     // NOTE: remove this later
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
   }
+
+  on_checkBoxRepresentacao_toggled(false);
 }
 
 Orcamento::~Orcamento() { delete ui; }
@@ -97,6 +101,15 @@ bool Orcamento::viewRegister(const QModelIndex index) {
 
   ui->tableProdutos->resizeColumnsToContents();
 
+  ui->checkBoxRepresentacao->setDisabled(true);
+
+  if (ui->checkBoxRepresentacao->isChecked()) {
+    // TODO: and desativado = false?
+    ui->itemBoxProduto->searchDialog()->setFilter("representacao = TRUE");
+  } else {
+    ui->itemBoxProduto->searchDialog()->setFilter("representacao = FALSE");
+  }
+
   return true;
 }
 
@@ -124,6 +137,7 @@ void Orcamento::setupMapper() {
   addMapping(ui->textEditObs, "observacao");
   addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
   addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
+  addMapping(ui->checkBoxRepresentacao, "representacao");
 
   mapperItem.setModel(&modelItem);
   mapperItem.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
@@ -179,6 +193,10 @@ bool Orcamento::newRegister() {
 void Orcamento::removeItem() {
   modelItem.removeRow(ui->tableProdutos->currentIndex().row());
   calcPrecoGlobalTotal();
+
+  if (modelItem.rowCount() == 0) {
+    ui->checkBoxRepresentacao->setEnabled(true);
+  }
 }
 
 void Orcamento::updateId() {
@@ -194,7 +212,17 @@ void Orcamento::updateId() {
     return;
   }
 
-  QString id = UserSession::getSiglaLoja() + "-" + QDate::currentDate().toString("yy");
+  query.prepare(
+        "SELECT loja.sigla FROM usuario LEFT JOIN loja ON usuario.idLoja = loja.idLoja WHERE usuario.nome = :nome");
+  query.bindValue(":nome", ui->itemBoxVendedor->text());
+
+  if (not query.exec() or not query.first()) {
+    qDebug() << "Erro na query: " << query.lastError();
+  }
+
+  QString siglaLoja = query.value(0).toString();
+
+  QString id = siglaLoja + "-" + QDate::currentDate().toString("yy");
 
   query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
                 "venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
@@ -322,6 +350,11 @@ bool Orcamento::savingProcedures(const int row) {
     return false;
   }
 
+  if (not setData(row, "representacao", ui->checkBoxRepresentacao->isChecked())) {
+    qDebug() << "erro setando representacao bool";
+    return false;
+  }
+
   return true;
 }
 
@@ -359,7 +392,14 @@ void Orcamento::on_doubleSpinBoxQte_valueChanged(const double) {
   }
 }
 
-void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
+void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
+  if (UserSession::getTipoUsuario() == "ADMINISTRADOR" and UserSession::getNome() == ui->itemBoxVendedor->text()) {
+    QMessageBox::warning(this, "Aviso!", "Administrador não pode cadastrar, escolha outro vendedor.");
+    return;
+  }
+
+  save();
+}
 
 void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
 
@@ -467,7 +507,18 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   report->loadReport(file.fileName());
   report->recordCount << ui->tableProdutos->model()->rowCount();
   connect(report, &QtRPT::setValue, this, &Orcamento::setValue);
-  report->printExec();
+
+  QSettings settings("ERP", "Staccato");
+  settings.beginGroup("User");
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  report->printPDF(path + "/" + ui->lineEditOrcamento->text() + ".pdf");
 }
 
 void Orcamento::setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage) {
@@ -493,8 +544,8 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
   }
 
   QSqlQuery queryVendedor;
-  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
-  queryVendedor.bindValue(":idUsuario", model.data(0, "idUsuario"));
+  queryVendedor.prepare("SELECT * FROM usuario WHERE nome = :nome");
+  queryVendedor.bindValue(":nome", ui->itemBoxVendedor->text());
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
     qDebug() << "Erro buscando vendedor: " << model.fieldIndex("idUsuario") << " - " << queryVendedor.lastError();
@@ -510,7 +561,7 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
 
   QSqlQuery queryLoja;
   queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", UserSession::getLoja());
+  queryLoja.bindValue(":idLoja", queryVendedor.value("idLoja"));
 
   if (not queryLoja.exec() or not queryLoja.first()) {
     qDebug() << "Erro buscando loja: " << modelItem.fieldIndex("idLoja") << " - " << queryLoja.lastError();
@@ -518,15 +569,15 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
 
   QSqlQuery queryLojaEnd;
   queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
-  queryLojaEnd.bindValue(":idLoja", UserSession::getLoja());
+  queryLojaEnd.bindValue(":idLoja", queryVendedor.value("idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
     qDebug() << "Erro buscando loja end.: " << modelItem.fieldIndex("idLoja") << " - " << queryLojaEnd.lastError();
   }
 
   // REPORT TITLE
-  if (paramName == "Unidade") {
-    paramValue = "Unidade " + queryLoja.value("descricao").toString();
+  if (paramName == "Loja") {
+    paramValue = queryLoja.value("descricao").toString();
   }
 
   if (paramName == "Endereco") {
@@ -756,6 +807,8 @@ bool Orcamento::verificaCampos() {
 }
 
 void Orcamento::adicionarItem(const bool isUpdate) {
+  ui->checkBoxRepresentacao->setDisabled(true);
+
   calcPrecoItemTotal();
 
   if (ui->itemBoxProduto->text().isEmpty()) {
@@ -995,11 +1048,6 @@ void Orcamento::successMessage() {
 void Orcamento::on_pushButtonLimparSelecao_clicked() { novoItem(); }
 
 void Orcamento::on_checkBoxFreteManual_clicked(const bool checked) {
-  if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->checkBoxFreteManual->setChecked(false);
-    return;
-  }
-
   ui->doubleSpinBoxFrete->setFrame(checked);
   ui->doubleSpinBoxFrete->setReadOnly(not checked);
 
@@ -1129,6 +1177,18 @@ bool Orcamento::save(const bool isUpdate) {
 }
 
 void Orcamento::on_pushButtonGerarExcel_clicked() {
+  QFile modelo(QDir::currentPath() + "/modelo.xlsx");
+
+  if (not modelo.exists()) {
+    QMessageBox::warning(this, "Aviso!", "Não encontrou o modelo do Excel!");
+    return;
+  }
+
+  if (modelItem.rowCount() > 17) {
+    QMessageBox::warning(this, "Aviso!", "Mais itens do que cabe no modelo!");
+    return;
+  }
+
   QXlsx::Document xlsx("modelo.xlsx");
 
   QString idOrcamento = model.data(mapper.currentIndex(), "idOrcamento").toString();
@@ -1215,6 +1275,15 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
   xlsx.write("H7", queryProf.value("tel").toString());
   xlsx.write("K7", queryProf.value("email").toString());
 
+  xlsx.write("N29", "R$ " + QString::number(queryOrc.value("subTotalLiq").toDouble(), 'f', 2)); // soma
+  xlsx.write("N30", QString::number(queryOrc.value("descontoPorc").toDouble(), 'f', 2) + "%");  // desconto
+  xlsx.write("N31", "R$ " + QString::number(queryOrc.value("subTotalLiq").toDouble() -
+                                            (ui->doubleSpinBoxDescontoGlobal->value() / 100 *
+                                             queryOrc.value("subTotalLiq").toDouble()),
+                                            'f', 2));                                     // total
+  xlsx.write("N32", "R$ " + QString::number(queryOrc.value("frete").toDouble(), 'f', 2)); // frete
+  xlsx.write("N33", "R$ " + QString::number(queryOrc.value("total").toDouble(), 'f', 2)); // total final
+
   for (int i = 0; i < modelItem.rowCount(); ++i) {
     xlsx.write("A" + QString::number(12 + i), modelItem.data(i, "fornecedor").toString());
     xlsx.write("B" + QString::number(12 + i), modelItem.data(i, "codComercial").toString());
@@ -1223,20 +1292,30 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
     xlsx.write("K" + QString::number(12 + i), modelItem.data(i, "prcUnitario").toDouble());
     xlsx.write("L" + QString::number(12 + i), modelItem.data(i, "quant").toDouble());
     xlsx.write("M" + QString::number(12 + i), modelItem.data(i, "un").toString());
+    xlsx.write("N" + QString::number(12 + i), "R$ " + QString::number(modelItem.data(i, "total").toDouble(), 'f', 2));
   }
 
-  if (xlsx.saveAs(model.data(mapper.currentIndex(), "idOrcamento").toString() + ".xlsx")) {
-    QMessageBox::information(this, "Ok!", "Arquivo salvo como " +
-                             model.data(mapper.currentIndex(), "idOrcamento").toString() + ".xlsx");
+  QSettings settings("ERP", "Staccato");
+  settings.beginGroup("User");
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  if (xlsx.saveAs(path + "/" + ui->lineEditOrcamento->text() + ".xlsx")) {
+    QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + ui->lineEditOrcamento->text() + ".xlsx");
   } else {
     QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
   }
 }
 
-void Orcamento::on_checkBoxRepresentacao_clicked(bool checked) {
+void Orcamento::on_checkBoxRepresentacao_toggled(bool checked) {
   if (checked) {
-    ui->itemBoxProduto->searchDialog()->setFilter("representacao = TRUE");
+    ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = TRUE");
   } else {
-    ui->itemBoxProduto->searchDialog()->setFilter("representacao = FALSE");
+    ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = FALSE");
   }
 }

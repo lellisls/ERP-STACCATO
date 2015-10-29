@@ -2,9 +2,9 @@
 #define SQLTABLEMODEL_H
 
 #include <QObject>
-#include <QSqlTableModel>
+#include <QSqlRelationalTableModel>
 
-class SqlTableModel : public QSqlTableModel {
+class SqlTableModel : public QSqlRelationalTableModel {
   public:
     explicit SqlTableModel(QObject *parent = 0);
 
@@ -12,8 +12,10 @@ class SqlTableModel : public QSqlTableModel {
   public:
     QVariant data(const int row, const int column) const;
     QVariant data(const int row, const QString column) const;
+    QVariant data(const QModelIndex index) const;
     bool setData(const int row, const int column, const QVariant &value);
     bool setData(const int row, const QString column, const QVariant &value);
+    bool setData(const QModelIndex index, const QVariant &value);
 };
 
 #endif // SQLTABLEMODEL_H

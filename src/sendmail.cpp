@@ -55,7 +55,7 @@ void SendMail::on_pushButtonCancelar_clicked() {
 void SendMail::mailSent(QString status) {
   if (status == "Message sent") {
     QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Mensagem enviada!"));
-  } else{
+  } else {
     QMessageBox::warning(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
   }
 

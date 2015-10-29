@@ -21,12 +21,11 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 Smtp::Smtp(const QString &user, const QString &pass, const QString &host, int port, int timeout) {
   socket = new QSslSocket(this);
 
-  connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-  connect(socket, SIGNAL(connected()), this, SLOT(connected()));
+  connect(socket, &QIODevice::readyRead, this, &Smtp::readyRead);
+  connect(socket, &QAbstractSocket::connected, this, &Smtp::connected);
   connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorReceived(QAbstractSocket::SocketError)));
-  connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
-          SLOT(stateChanged(QAbstractSocket::SocketState)));
-  connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+  connect(socket, &QAbstractSocket::stateChanged, this, &Smtp::stateChanged);
+  connect(socket, &QAbstractSocket::disconnected, this, &Smtp::disconnected);
 
   this->user = user;
   this->pass = pass;

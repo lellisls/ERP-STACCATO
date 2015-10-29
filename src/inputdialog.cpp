@@ -198,6 +198,7 @@ void InputDialog::setupTables() {
   }
 
   ui->tableView->setModel(&model);
+  ui->tableView->hideColumn(model.fieldIndex("quantUpd"));
   ui->tableView->hideColumn(model.fieldIndex("selecionado"));
   ui->tableView->hideColumn(model.fieldIndex("idPedido"));
   ui->tableView->hideColumn(model.fieldIndex("idProduto"));

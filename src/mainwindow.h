@@ -25,8 +25,6 @@ class MainWindow : public QMainWindow {
     bool TestCadastroClienteEndereco();
     bool TestCadastroClienteCompleto();
     void TestImportacao();
-
-    bool getHomologacao() const;
     void setHomologacao(bool value);
 
   public slots:
@@ -95,6 +93,7 @@ class MainWindow : public QMainWindow {
     void on_pushButtonTodosFornCompras_clicked();
     void on_pushButtonExibirXML_clicked();
     void on_tableNfeEntrada_activated(const QModelIndex &index);
+    void on_tabWidget_currentChanged(int index);
 
   private:
     // attributes

@@ -55,12 +55,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   updater->setSilent(true);
   updater->setShowNewestVersionMessage(true);
   updater->checkForUpdates();
+
+  // TODO: it looks like this is inverted ERP/Staccato
   QSettings settings("ERP", "Staccato");
   settings.beginGroup("Login");
   hostname = settings.value("hostname").toString();
   username = settings.value("username").toString();
   password = settings.value("password").toString();
   port = settings.value("port").toString();
+  homologacao = settings.value("homologacao").toBool();
+  settings.endGroup();
+
+  settings.beginGroup("User");
+
+  if (settings.value("userFolder").toString().isEmpty()) {
+    QMessageBox::warning(this, "Aviso!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
+    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+  }
+
+  settings.endGroup();
 
 #ifdef QT_DEBUG
   //  if (not dbConnect()) {
@@ -146,6 +159,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     on_radioButtonOrcValido_clicked();
   }
 
+  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
+
   ui->radioButtonProdPendPend->click();
 
   updateTables();
@@ -174,6 +189,8 @@ bool MainWindow::dbConnect() {
   db.setUserName(username);
   db.setPassword(password);
   db.setDatabaseName("mysql");
+
+  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
 
   if (db.open()) {
     QSqlQuery query = db.exec("SHOW SCHEMAS");
@@ -381,6 +398,7 @@ void MainWindow::setupTables() {
   }
 
   ui->tablePedidosPend->setModel(modelItemPedidosPend);
+  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("quantUpd"));
   ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("idPedido"));
   ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("idLoja"));
   ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("item"));
@@ -659,92 +677,92 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
 }
 
 void MainWindow::updateTables() {
-  QSqlQuery query;
+  if (ui->tabWidget->currentIndex() == 0) {
+    if (not modelOrcamento->select()) {
+      qDebug() << "erro modelOrcamento: " << modelOrcamento->lastError();
+      return;
+    }
 
-  if (not query.exec("CALL update_venda_status()")) {
-    qDebug() << "Erro atualizando status das vendas: " << query.lastError();
+    ui->tableOrcamentos->resizeColumnsToContents();
   }
 
-  if (not modelCAPagar->select()) {
-    qDebug() << "erro modelCAPagar: " << modelCAPagar->lastError();
-    return;
+  if (ui->tabWidget->currentIndex() == 1) {
+    if (not modelVendas->select()) {
+      qDebug() << "erro modelVendas: " << modelVendas->lastError();
+      return;
+    }
+
+    ui->tableVendas->resizeColumnsToContents();
   }
 
-  if (not modelCAReceber->select()) {
-    qDebug() << "erro modelCAReceber: " << modelCAReceber->lastError();
-    return;
+  if (ui->tabWidget->currentIndex() == 2) {
+    modelProdPend->setQuery(modelProdPend->query().executedQuery());
+    modelPedForn->setQuery(modelPedForn->query().executedQuery());
+
+    modelItemPedidosPend->setFilter("0");
+
+    if (not modelItemPedidosPend->select()) {
+      qDebug() << "erro modelItensPend: " << modelItemPedidosPend->lastError();
+      return;
+    }
+
+    //    for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
+    //      ui->tablePedidosPend->openPersistentEditor(
+    //            modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
+    //    }
+
+    ui->tableProdutosPend->resizeColumnsToContents();
+    ui->tableFornCompras->resizeColumnsToContents();
+    //    ui->tablePedidosPend->resizeColumnsToContents();
   }
 
-  if (not modelOrcamento->select()) {
-    qDebug() << "erro modelOrcamento: " << modelOrcamento->lastError();
-    return;
+  if (ui->tabWidget->currentIndex() == 3) {
+    modelPedForn2->setQuery(modelPedForn2->query().executedQuery());
+
+    if (not modelColeta->select()) {
+      qDebug() << "erro modelColeta: " << modelColeta->lastError();
+      return;
+    }
+
+    for (int i = 0; i < modelColeta->rowCount(); ++i) {
+      ui->tableColeta->openPersistentEditor(modelColeta->index(i, modelColeta->fieldIndex("selecionado")));
+    }
+
+    ui->tableFornLogistica->resizeColumnsToContents();
+    ui->tableColeta->resizeColumnsToContents();
   }
 
-  if (not modelVendas->select()) {
-    qDebug() << "erro modelVendas: " << modelVendas->lastError();
-    return;
+  if (ui->tabWidget->currentIndex() == 4) {
+    if (not modelNfeEntrada->select()) {
+      qDebug() << "erro modelNfeEntrada: " << modelNfeEntrada->lastError();
+      return;
+    }
+
+    ui->tableNfeEntrada->resizeColumnsToContents();
   }
 
-  if (not modelEntregasCliente->select()) {
-    qDebug() << "erro modelEntregasCliente: " << modelEntregasCliente->lastError();
-    return;
+  if (ui->tabWidget->currentIndex() == 5) {
+    if (not modelEstoque->select()) {
+      qDebug() << "erro modelEstoque: " << modelEstoque->lastError();
+      return;
+    }
   }
 
-  if (not modelNfeSaida->select()) {
-    qDebug() << "erro modelNFe: " << modelNfeSaida->lastError();
-    return;
+  if (ui->tabWidget->currentIndex() == 6) {
+    if (not modelCAPagar->select()) {
+      qDebug() << "erro modelCAPagar: " << modelCAPagar->lastError();
+      return;
+    }
+
+    if (not modelCAReceber->select()) {
+      qDebug() << "erro modelCAReceber: " << modelCAReceber->lastError();
+      return;
+    }
   }
 
-  if (not modelEstoque->select()) {
-    qDebug() << "erro modelEstoque: " << modelEstoque->lastError();
-    return;
-  }
-
-  if (not modelColeta->select()) {
-    qDebug() << "Erro modelColeta: " << modelColeta->lastError();
-  }
-
-  if (not modelReceb->select()) {
-    qDebug() << "Erro modelReceb: " << modelReceb->lastError();
-  }
-
-  if (not modelItemPedidosPend->select()) {
-    qDebug() << "Erro modelItemPedidosPend: " << modelItemPedidosPend->lastError();
-  }
-
-  modelItemPedidosComp->setQuery(modelItemPedidosComp->query().executedQuery());
-  modelPedForn->setQuery(modelPedForn->query().executedQuery());
-  modelPedForn2->setQuery(modelPedForn2->query().executedQuery());
-  modelProdPend->setQuery(modelProdPend->query().executedQuery());
-  modelFat->setQuery(modelFat->query().executedQuery());
-
-  for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
-    ui->tablePedidosPend->openPersistentEditor(
-          modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
-  }
-
-  for (int i = 0; i < modelColeta->rowCount(); ++i) {
-    ui->tableColeta->openPersistentEditor(modelColeta->index(i, modelColeta->fieldIndex("selecionado")));
-  }
-
-  for (int i = 0; i < modelReceb->rowCount(); ++i) {
-    ui->tableRecebimento->openPersistentEditor(modelReceb->index(i, modelReceb->fieldIndex("selecionado")));
-  }
-
-  ui->tableColeta->resizeColumnsToContents();
-  ui->tableContasPagar->resizeColumnsToContents();
-  ui->tableContasReceber->resizeColumnsToContents();
-  ui->tableEntregasCliente->resizeColumnsToContents();
-  ui->tableEstoque->resizeColumnsToContents();
-  ui->tableFaturamento->resizeColumnsToContents();
-  ui->tableNfeSaida->resizeColumnsToContents();
-  ui->tableOrcamentos->resizeColumnsToContents();
-  ui->tablePedidosComp->resizeColumnsToContents();
-  ui->tableFornCompras->resizeColumnsToContents();
-  ui->tablePedidosPend->resizeColumnsToContents();
-  ui->tableProdutosPend->resizeColumnsToContents();
-  ui->tableRecebimento->resizeColumnsToContents();
-  ui->tableVendas->resizeColumnsToContents();
+  //  for (int i = 0; i < modelReceb->rowCount(); ++i) {
+  //    ui->tableRecebimento->openPersistentEditor(modelReceb->index(i, modelReceb->fieldIndex("selecionado")));
+  //}
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -968,11 +986,18 @@ void MainWindow::on_tableFornCompras_activated(const QModelIndex &index) {
     qDebug() << "Error: " << modelItemPedidosPend->lastError();
   }
 
+  for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
+    ui->tablePedidosPend->openPersistentEditor(
+          modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
+  }
+
+  ui->tablePedidosPend->resizeColumnsToContents();
+
   // TODO: filter compras e faturamentos?
 
-  updateTables();
+  //  updateTables();
 
-  ui->tableFornCompras->selectRow(row);
+  //  ui->tableFornCompras->selectRow(row);
 }
 
 void MainWindow::on_tableNfeSaida_activated(const QModelIndex &index) {
@@ -1069,11 +1094,25 @@ void MainWindow::on_tableProdutosPend_activated(const QModelIndex &index) {
   produtos->viewProduto(codComercial, status);
 }
 
-void MainWindow::on_pushButtonGerarCompra_clicked() {
-  if (UserSession::getFromLoja("pastaCompra").isEmpty()) {
-    QMessageBox::warning(
-          this, "Aviso!",
-          "Não há uma pasta definida para salvar os arquivos Excel, favor definir nas configurações da loja.");
+void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this function into smaller functions
+  QFile modelo(QDir::currentPath() + "/modelo.xlsx");
+
+  if (not modelo.exists()) {
+    QMessageBox::warning(this, "Aviso!", "Não encontrou o modelo do Excel!");
+    return;
+  }
+
+  //  if(modelItem.rowCount() > 17){
+  //    QMessageBox::warning(this, "Aviso!", "Mais itens do que cabe no modelo!");
+  //    return;
+  //  }
+
+  QSettings settings("ERP", "Staccato");
+  settings.beginGroup("User");
+
+  if (settings.value("userFolder").toString().isEmpty()) {
+    QMessageBox::warning(this, "Aviso!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
+    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
     return;
   }
 
@@ -1110,9 +1149,17 @@ void MainWindow::on_pushButtonGerarCompra_clicked() {
   inputDlg->setFilter(ids);
   QDate dataCompra, dataPrevista;
 
+  QString filtro = modelItemPedidosPend->filter();
+
   if (inputDlg->exec() != InputDialog::Accepted) {
     return;
   }
+
+  dataCompra = inputDlg->getDate();
+  dataPrevista = inputDlg->getNextDate();
+
+  modelItemPedidosPend->setFilter(filtro);
+  modelItemPedidosPend->select();
 
   for (const auto row : lista) {
     QString produto = modelItemPedidosPend->data(row, "descricao").toString() + ", Quant: " +
@@ -1121,11 +1168,9 @@ void MainWindow::on_pushButtonGerarCompra_clicked() {
     produtos.append(produto);
   }
 
-  dataCompra = inputDlg->getDate();
-  dataPrevista = inputDlg->getNextDate();
-
   //------------------------------
-  QXlsx::Document xlsx("MODELO.xlsx");
+  // TODO: refactor this from venda or orcamento
+  QXlsx::Document xlsx("modelo.xlsx");
 
   QSqlQuery queryVenda;
   queryVenda.prepare("SELECT * FROM venda_has_produto WHERE idProduto = :idProduto");
@@ -1167,15 +1212,24 @@ void MainWindow::on_pushButtonGerarCompra_clicked() {
     ++i;
   }
 
-  if (xlsx.saveAs(UserSession::getFromLoja("pastaCompra") + "/" + idVenda + ".xlsx")) {
-    QMessageBox::information(this, "Ok!", "Arquivo salvo como " + idVenda + ".xlsx");
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  if (xlsx.saveAs(path + "/" + idVenda + ".xlsx")) {
+    QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + idVenda + ".xlsx");
   } else {
     QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
   }
 
-  //------------------------------
+  modelItemPedidosPend->setFilter(filtro);
 
-  QString arquivo = UserSession::getFromLoja("pastaCompra") + "/" + idVenda + ".xlsx";
+  //------------------------------
+  QString arquivo = path + "/" + idVenda + ".xlsx";
 
   QFile file(arquivo);
 
@@ -1192,6 +1246,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() {
   for (const auto row : lista) {
     modelItemPedidosPend->setData(row, "selecionado", false);
 
+    // TODO: place this in the beginning
     if (modelItemPedidosPend->data(row, "status").toString() != "PENDENTE") {
       modelItemPedidosPend->select();
       QMessageBox::warning(this, "Aviso!", "Produto não estava pendente!");
@@ -1339,7 +1394,8 @@ void MainWindow::on_pushButtonConfirmarCompra_clicked() {
 void MainWindow::on_radioButtonProdPendTodos_clicked() {
   modelProdPend->setQuery(
         "SELECT v.fornecedor, v.produto, v.formComercial, SUM(v.quant), v.un, v.codComercial, v.idCompra, "
-        "v.status, (SELECT SUM(quant) FROM estoque WHERE codComercial = v.codComercial) AS quant FROM venda_has_produto "
+        "v.status, (SELECT SUM(quant) FROM estoque WHERE codComercial = v.codComercial) AS quant FROM "
+        "venda_has_produto "
         "AS v LEFT "
         "JOIN estoque AS e ON v.idProduto = e.idProduto "
         "GROUP BY v.status, v.codComercial");
@@ -1358,7 +1414,8 @@ void MainWindow::on_radioButtonProdPendTodos_clicked() {
 void MainWindow::on_radioButtonProdPendPend_clicked() {
   modelProdPend->setQuery(
         "SELECT v.fornecedor, v.produto, v.formComercial, SUM(v.quant), v.un, v.codComercial, v.idCompra, "
-        "v.status, (SELECT SUM(quant) FROM estoque WHERE codComercial = v.codComercial) AS quant FROM venda_has_produto "
+        "v.status, (SELECT SUM(quant) FROM estoque WHERE codComercial = v.codComercial) AS quant FROM "
+        "venda_has_produto "
         "AS v LEFT "
         "JOIN estoque AS e ON v.idProduto = e.idProduto "
         "WHERE v.status = 'PENDENTE' GROUP BY v.status, v.codComercial");
@@ -1655,9 +1712,13 @@ void MainWindow::on_tableNfeEntrada_activated(const QModelIndex &index) {
   viewer->show();
 }
 
-bool MainWindow::getHomologacao() const { return homologacao; }
-
 void MainWindow::setHomologacao(bool value) { homologacao = value; }
+
+void MainWindow::on_tabWidget_currentChanged(int index) {
+  Q_UNUSED(index);
+
+  updateTables();
+}
 
 // TODO: substituir qDebug's por QMessageBox's
 // TODO: gerenciar lugares de estoque (cadastro/permissoes)

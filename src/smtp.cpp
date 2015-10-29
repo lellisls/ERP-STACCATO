@@ -132,6 +132,15 @@ void Smtp::readyRead() {
 
   qDebug() << "Server response code:" << responseLine;
   qDebug() << "Server response: " << response;
+  qDebug() << "State: " << state;
+
+  if (state == Close) {
+    return;
+  }
+
+  if (responseLine == "221") {
+    return;
+  }
 
   if (state == Init and responseLine == "220") {
     // banner was okay, let's go on

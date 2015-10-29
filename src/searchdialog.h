@@ -19,6 +19,7 @@ class SearchDialog : public QDialog {
     void show();
     void showMaximized();
     void setFilter(const QString &value);
+    void setRepresentacao(const QString &value);
     QString getText(const QVariant index) const;
 
     // Factory Methods
@@ -53,6 +54,7 @@ class SearchDialog : public QDialog {
     QVariant selectedId;
     QString filter;
     QString primaryKey;
+    QString representacao;
     QStringList textKeys;
     QVector<QPair<QString, QString>> headerData;
     // methods

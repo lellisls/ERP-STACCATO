@@ -27,8 +27,7 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   ui->tableBusca->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableBusca->horizontalHeader()->setResizeContentsPrecision(0);
 
-  DoubleDelegate *doubleDelegate = new DoubleDelegate(this);
-  ui->tableBusca->setItemDelegate(doubleDelegate);
+  ui->tableBusca->setItemDelegate(new DoubleDelegate(this));
 
   if (indexes.isEmpty()) {
     ui->lineEditBusca->hide();
@@ -48,19 +47,14 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
 SearchDialog::~SearchDialog() { delete ui; }
 
 void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
+  if (ui->groupBoxFiltrosProduto->isVisible()) {
+    ui->radioButtonProdAtivos->isChecked() ? montarFiltroAtivoDesc(true) : montarFiltroAtivoDesc(false);
+    return;
+  }
+
   if (text.isEmpty()) {
-    model.setFilter(filter);
+    setFilter(""); // TODO: descontinuado = FALSE?
   } else {
-
-    if (ui->radioButtonProdAtivos->isChecked()) {
-      on_radioButtonProdAtivos_clicked();
-      return;
-    }
-    if (ui->radioButtonProdDesc->isChecked()) {
-      on_radioButtonProdDesc_clicked();
-      return;
-    }
-
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
     for (int i = 0, size = temp.size(); i < size; ++i) {
@@ -76,7 +70,7 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
       searchFilter.append(" AND (" + filter + ")");
     }
 
-    model.setFilter(searchFilter);
+    setFilter(searchFilter);
   }
 
   if (not model.select()) {
@@ -121,6 +115,9 @@ void SearchDialog::show() {
   ui->lineEditBusca->setFocus();
 
   QDialog::show();
+
+  ui->lineEditBusca->clear();
+
   ui->tableBusca->resizeColumnsToContents();
 }
 
@@ -149,17 +146,12 @@ QString SearchDialog::getFilter() const { return filter; }
 void SearchDialog::setFilter(const QString &value) {
   filter = value;
   model.setFilter(filter);
-
-  if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
-    return;
-  }
-
-  ui->tableBusca->resizeColumnsToContents();
 }
 
 void SearchDialog::hideColumns(const QStringList columns) {
-  for (const auto column : columns) { ui->tableBusca->setColumnHidden(model.fieldIndex(column), true); }
+  for (const auto column : columns) {
+    ui->tableBusca->setColumnHidden(model.fieldIndex(column), true);
+  }
 }
 
 void SearchDialog::on_pushButtonSelecionar_clicked() {
@@ -228,7 +220,9 @@ QString SearchDialog::getText(const QVariant index) const {
 }
 
 void SearchDialog::setHeaderData(const QVector<QPair<QString, QString>> headerData) {
-  for (auto pair : headerData) { model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second); }
+  for (auto pair : headerData) {
+    model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second);
+  }
 }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
@@ -288,8 +282,8 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::produto(QWidget *parent) {
-  SearchDialog *sdProd =
-      new SearchDialog("Buscar Produto", "produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "", parent);
+  SearchDialog *sdProd = new SearchDialog(
+                           "Buscar Produto", "produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "idProduto = 0", parent);
 
   sdProd->setPrimaryKey("idProduto");
   sdProd->setTextKeys({"descricao"});
@@ -320,7 +314,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->setHeaderData(headerData);
 
   sdProd->ui->groupBoxFiltrosProduto->show();
-  sdProd->ui->radioButtonProdAtivos->click();
+  sdProd->ui->radioButtonProdAtivos->setChecked(true);
 
   return sdProd;
 }
@@ -387,8 +381,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
   headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
   sdUsuario->setHeaderData(headerData);
 
-  // TODO: see what to do with loja relation
-  //  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
+  sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
 
   return sdUsuario;
 }
@@ -470,11 +463,7 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
   const QString text = ui->lineEditBusca->text();
 
   if (text.isEmpty()) {
-    if (ativo) {
-      model.setFilter("descontinuado = FALSE AND desativado = FALSE");
-    } else {
-      model.setFilter("descontinuado = TRUE AND desativado = FALSE");
-    }
+    setFilter("idProduto = 0");
   } else {
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
@@ -488,9 +477,9 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
     const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
 
     if (ativo) {
-      model.setFilter(searchFilter + " AND descontinuado = FALSE AND desativado = FALSE");
+      setFilter(searchFilter + " AND descontinuado = FALSE AND desativado = FALSE" + representacao);
     } else {
-      model.setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE");
+      setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE" + representacao);
     }
   }
 
@@ -504,3 +493,5 @@ void SearchDialog::on_tableBusca_entered(const QModelIndex &index) {
 
   ui->tableBusca->resizeColumnsToContents();
 }
+
+void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }

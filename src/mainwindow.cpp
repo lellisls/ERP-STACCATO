@@ -748,32 +748,36 @@ void MainWindow::updateTables() {
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
-  modelOrcamento->setFilter("`Dias restantes` > 0 AND status != 'CANCELADO'");
+  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() +
+                            "%') AND `Dias restantes` > 0 AND status != 'CANCELADO'");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonOrcExpirado_clicked() {
-  modelOrcamento->setFilter("`Dias restantes` < 1");
+  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%') AND `Dias restantes` < 1");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonOrcLimpar_clicked() {
-  modelOrcamento->setFilter("");
+  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonVendAberto_clicked() {
-  modelVendas->setFilter("status = 'aberto'");
+  modelVendas->setFilter("(idVenda LIKE '%" + UserSession::getSiglaLoja() + "%') AND status = 'aberto'");
+  //  modelVendas->setFilter("status = 'aberto'");
   ui->tableVendas->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonVendFechado_clicked() {
-  modelVendas->setFilter("status = 'fechado'");
+  modelVendas->setFilter("(idVenda LIKE '%" + UserSession::getSiglaLoja() + "%') AND status = 'fechado'");
+  //  modelVendas->setFilter("status = 'fechado'");
   ui->tableVendas->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonVendLimpar_clicked() {
-  modelVendas->setFilter("");
+  modelVendas->setFilter("(idVenda LIKE '%" + UserSession::getSiglaLoja() + "%')");
+  //  modelVendas->setFilter("");
   ui->tableVendas->resizeColumnsToContents();
 }
 
@@ -838,7 +842,8 @@ void MainWindow::on_radioButtonContaReceberPendente_clicked() {
 }
 
 void MainWindow::on_radioButtonOrcProprios_clicked() {
-  modelOrcamento->setFilter("idUsuario = " + QString::number(UserSession::getIdUsuario()));
+  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%') AND Vendedor = '" +
+                            UserSession::getNome() + "'");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
@@ -846,9 +851,10 @@ void MainWindow::on_pushButtonCriarOrc_clicked() { on_actionCriarOrcamento_trigg
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
   if (text.isEmpty()) {
-    modelOrcamento->setFilter("");
+    modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
   } else {
-    modelOrcamento->setFilter("(Código LIKE '%" + text + "%')");
+    modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%') AND ((Código LIKE '%" + text +
+                              "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%'))");
   }
 }
 
@@ -856,7 +862,8 @@ void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
   if (text.isEmpty()) {
     modelVendas->setFilter("");
   } else {
-    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (cliente LIKE '%" + text + "%')");
+    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
+                           text + "%')");
   }
 }
 

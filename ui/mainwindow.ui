@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>764</width>
-    <height>551</height>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -179,7 +179,7 @@
         <item row="3" column="0">
          <widget class="QLabel" name="label">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Buscar:</string>
@@ -192,7 +192,7 @@
         <item row="3" column="1">
          <widget class="QLineEdit" name="lineEditBuscaOrcamentos">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -218,7 +218,7 @@
           <item row="2" column="1">
            <widget class="QLineEdit" name="lineEditBuscaVendas">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -277,7 +277,7 @@
           <item row="2" column="0">
            <widget class="QLabel" name="label_2">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Buscar:</string>
@@ -1998,12 +1998,12 @@ Importar NFe</string>
   </action>
   <action name="actionCadastrarProdutos">
    <property name="text">
-    <string>Cadastrar produtos</string>
+    <string>Gerenciar produtos</string>
    </property>
   </action>
   <action name="actionCadastrarCliente">
    <property name="text">
-    <string>Cadastrar cliente</string>
+    <string>Gerenciar cliente</string>
    </property>
    <property name="toolTip">
     <string>Cadastrar cliente</string>
@@ -2037,7 +2037,7 @@ Importar NFe</string>
   </action>
   <action name="actionCadastrarFornecedor">
    <property name="text">
-    <string>Cadastrar fornecedor</string>
+    <string>Gerenciar fornecedores</string>
    </property>
    <property name="toolTip">
     <string>Cadastrar fornecedor</string>

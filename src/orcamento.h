@@ -15,7 +15,6 @@ class Orcamento : public RegisterDialog {
     explicit Orcamento(QWidget *parent = 0);
     ~Orcamento();
     void show();
-    void testaOrcamento();
 
   private slots:
     void on_checkBoxFreteManual_clicked(const bool checked);

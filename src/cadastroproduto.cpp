@@ -64,25 +64,25 @@ void CadastroProduto::registerMode() {
 bool CadastroProduto::verifyFields() {
   if (ui->doubleSpinBoxCusto->value() == 0) {
     ui->doubleSpinBoxCusto->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Custo inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::critical(this, "Erro!", "Custo inválido!");
     return false;
   }
 
   if (ui->doubleSpinBoxVenda->value() == 0) {
     ui->doubleSpinBoxVenda->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Preço inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::critical(this, "Erro!", "Preço inválido!");
     return false;
   }
 
   if (ui->itemBoxFornecedor->value().isNull()) {
     ui->itemBoxFornecedor->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Faltou preencher fornecedor", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::warning(this, "Atenção!", "Faltou preencher fornecedor");
     return false;
   }
 
   if (ui->lineEditICMS->text().isEmpty()) {
     ui->lineEditICMS->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Faltou preencher ICMS", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::warning(this, "Atenção!", "Faltou preencher ICMS");
     return false;
   }
 

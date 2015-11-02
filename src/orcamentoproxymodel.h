@@ -2,11 +2,12 @@
 #define ORCAMENTOPROXYMODEL_H
 
 #include <QIdentityProxyModel>
-#include <QSqlTableModel>
+
+#include "sqltablemodel.h"
 
 class OrcamentoProxyModel : public QIdentityProxyModel {
   public:
-    explicit OrcamentoProxyModel(QSqlQueryModel *model, int column, QObject *parent);
+    explicit OrcamentoProxyModel(SqlTableModel *model, int column, QObject *parent);
     ~OrcamentoProxyModel();
     // QAbstractItemModel interface
     QVariant data(const QModelIndex &proxyIndex, const int role) const;

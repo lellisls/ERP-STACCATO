@@ -1,6 +1,7 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QSqlQuery>
+#include <QMessageBox>
 
 #include "searchdialog.h"
 #include "ui_searchdialog.h"
@@ -19,7 +20,7 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
   setFilter(filter);
 
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela " + table + ": " + model.lastError().text());
     return;
   }
 
@@ -74,7 +75,7 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
   }
 
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela " + model.tableName() + ": " + model.lastError().text());
     return;
   }
 }
@@ -108,7 +109,7 @@ void SearchDialog::sendUpdateMessage() {
 
 void SearchDialog::show() {
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela " + model.tableName() + ": " + model.lastError().text());
     return;
   }
 
@@ -123,7 +124,7 @@ void SearchDialog::show() {
 
 void SearchDialog::showMaximized() {
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela " + model.tableName() + ": " + model.lastError().text());
     return;
   }
 
@@ -173,50 +174,38 @@ QString SearchDialog::getPrimaryKey() const { return primaryKey; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
-QString SearchDialog::getText(const QVariant index) const {
+QString SearchDialog::getText(const QVariant index) {
   QString queryText;
 
   for (const auto key : textKeys) {
-    if (queryText.isEmpty()) {
-      queryText += key;
-    } else {
-      queryText += ", " + key;
-    }
+    queryText += queryText.isEmpty() ? key : ", " + key;
   }
 
   queryText =
       "SELECT " + queryText + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + index.toString() + "';";
 
   QSqlQuery query(queryText);
+
   if (not query.exec() or not query.first()) {
-    qDebug() << "Erro na query getText: " << query.lastError();
-  } else {
-    QString res;
-
-    for (const auto key : textKeys) {
-      const QVariant val = query.value(key);
-
-      if (val.isValid()) {
-        if (not res.isEmpty()) {
-          res += " - ";
-        }
-
-        res += val.toString();
-      }
-    }
-
-    if (model.tableName().contains("endereco")) {
-      if (query.value("descricao").toString() == "Não há/Retira") {
-        return "Não há/Retira";
-      }
-    }
-
-    return (res);
+    QMessageBox::critical(this, "Erro!", "Erro na query getText: " + query.lastError().text());
+    return QString();
   }
 
-  qDebug() << objectName() << " : " << __LINE__ << " : " << query.lastError();
+  if (model.tableName().contains("endereco")) {
+    if (query.value("descricao").toString() == "Não há/Retira") {
+      return "Não há/Retira";
+    }
+  }
 
-  return (QString());
+  QString res;
+
+  for (const auto key : textKeys) {
+    if (query.value(key).isValid()) {
+      res += res.isEmpty() ? query.value(key).toString() : " - " + query.value(key).toString();
+    }
+  }
+
+  return res;
 }
 
 void SearchDialog::setHeaderData(const QVector<QPair<QString, QString>> headerData) {
@@ -464,24 +453,21 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
 
   if (text.isEmpty()) {
     setFilter("idProduto = 0");
-  } else {
-    QStringList temp = text.split(" ", QString::SkipEmptyParts);
-
-    for (int i = 0, size = temp.size(); i < size; ++i) {
-      temp[i].prepend("+");
-      temp[i].append("*");
-    }
-
-    const QString regex = temp.join(" ");
-
-    const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
-
-    if (ativo) {
-      setFilter(searchFilter + " AND descontinuado = FALSE AND desativado = FALSE" + representacao);
-    } else {
-      setFilter(searchFilter + " AND descontinuado = TRUE AND desativado = FALSE" + representacao);
-    }
+    return;
   }
+
+  QStringList temp = text.split(" ", QString::SkipEmptyParts);
+
+  for (int i = 0, size = temp.size(); i < size; ++i) {
+    temp[i].prepend("+").append("*");
+  }
+
+  const QString regex = temp.join(" ");
+
+  const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
+
+  setFilter(searchFilter + " AND descontinuado = " + (ativo ? "FALSE" : "TRUE") + " AND desativado = FALSE" +
+            representacao);
 
   if (isVisible()) {
     ui->tableBusca->resizeColumnsToContents();
@@ -495,3 +481,5 @@ void SearchDialog::on_tableBusca_entered(const QModelIndex &index) {
 }
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
+
+// TODO: buscar no projeto pela frase "setFilter("")" e corrigir adicionando desativado = FALSE

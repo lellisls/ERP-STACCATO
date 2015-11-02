@@ -41,12 +41,12 @@ class CadastrarNFe : public QDialog {
     // methods
     QString criarChaveAcesso();
     QString clearStr(QString str) const;
-    QString calculaDigitoVerificador(const QString chave) const;
+    QString calculaDigitoVerificador(const QString chave);
     bool writeTXT();
     void writeIdentificacao(QTextStream &stream) const;
-    bool writeEmitente(QTextStream &stream) const;
-    bool writeDestinatario(QTextStream &stream) const;
-    bool writeProduto(QTextStream &stream, double &total, double &icmsTotal) const;
+    bool writeEmitente(QTextStream &stream);
+    bool writeDestinatario(QTextStream &stream);
+    bool writeProduto(QTextStream &stream, double &total, double &icmsTotal);
     void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete) const;
     QString removeDiacritics(QString str) const;
     void guardarNotaBD();

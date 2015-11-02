@@ -1,5 +1,3 @@
-#include <QSqlDriver>
-#include <QSqlRecord>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
@@ -25,10 +23,8 @@ RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, 
   modelEnd.setFilter("idEndereco = 0");
 
   if (not modelEnd.select()) {
-    qDebug() << objectName() << "Failed to populate " + table + "_has_endereco: " << modelEnd.lastError();
-    QMessageBox::critical(this, "Erro!", "Algum erro ocorreu ao acessar a tabela de endereço.", QMessageBox::Ok,
-                          QMessageBox::NoButton);
-    return;
+    QMessageBox::critical(this, "Erro!",
+                          "Ocorreu um erro ao acessar a tabela de endereço: " + modelEnd.lastError().text());
   }
 
   mapperEnd.setModel(&modelEnd);
@@ -46,7 +42,8 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
   const int row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    qDebug() << "Something went very wrong!";
+    QMessageBox::critical(this, "Erro!", "Erro linha -1");
+    QSqlQuery("ROLLBACK").exec();
     return false;
   }
 
@@ -61,11 +58,7 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
   }
 
   if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << model.lastError();
-    qDebug() << "Last query: "
-             << model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, model.tableName(),
-                                                        model.record(row), false);
-    errorMessage();
+    QMessageBox::critical(this, "Erro!", "Erro: " + model.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
@@ -74,15 +67,14 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     if (not setDataEnd(row, primaryKey, id)) {
-      qDebug() << "erro setando id no endereco";
+      QMessageBox::critical(this, "Erro!", "Erro guardando id no endereço!");
+      QSqlQuery("ROLLBACK").exec();
+      return false;
     }
   }
 
   if (not modelEnd.submitAll()) {
-    qDebug() << objectName() << " : " << __LINE__ << " : Error on modelEnd.submitAll() : " << modelEnd.lastError();
-    qDebug() << "Last query: "
-             << modelEnd.database().driver()->sqlStatement(QSqlDriver::InsertStatement, modelEnd.tableName(),
-                                                           modelEnd.record(row), false);
+    QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return false;
   }
@@ -101,22 +93,20 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
 }
 
 bool RegisterAddressDialog::setDataEnd(int row, const QString &key, QVariant value) {
+  // TODO: substituir pelo setData do SqlTableModel
   if (row == -1) {
-    qDebug() << "Something wrong on the row!";
+    QMessageBox::critical(this, "Erro!", "Erro linha -1");
     return false;
   }
 
   if (modelEnd.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key '" << key << "' not found on table '" << modelEnd.tableName() << "'";
+    QMessageBox::critical(this, "Erro!", "Não encontrou chave " + key + " na tabela " + modelEnd.tableName());
     return false;
   }
 
   if (not value.isNull()) {
-    if(not modelEnd.setData(row, key, value)){
-      qDebug() << "row: " << row;
-      qDebug() << "column: " << modelEnd.fieldIndex(key);
-      qDebug() << "key: " << key;
-      qDebug() << "index: " << modelEnd.index(row, modelEnd.fieldIndex(key)).isValid();
+    if (not modelEnd.setData(row, key, value)) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + modelEnd.lastError().text());
       return false;
     }
   }
@@ -132,14 +122,14 @@ bool RegisterAddressDialog::newRegister() {
   registerMode();
 
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
     return false;
   }
 
   modelEnd.setFilter("idEndereco = 0");
 
   if (not modelEnd.select()) {
-    qDebug() << "erro modelEnd: " << modelEnd.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
     return false;
   }
 
@@ -149,6 +139,8 @@ bool RegisterAddressDialog::newRegister() {
 }
 
 int RegisterAddressDialog::getCodigoUF(QString uf) const {
+  uf = uf.toLower();
+
   if (uf == "ro") return 11;
   if (uf == "ac") return 12;
   if (uf == "am") return 13;
@@ -182,28 +174,13 @@ int RegisterAddressDialog::getCodigoUF(QString uf) const {
 
 bool RegisterAddressDialog::viewRegisterById(const QVariant id) {
   if (not RegisterDialog::viewRegisterById(id)) {
-    qDebug() << "erro";
     return false;
   }
 
-  if (data(primaryKey).isValid()) {
-    modelEnd.setFilter(primaryKey + " = " + data(primaryKey).toString() + " AND desativado = FALSE");
-  } else {
-    qDebug() << "data not valid";
-  }
+  modelEnd.setFilter(primaryKey + " = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
-    qDebug() << modelEnd.lastError();
-    qDebug() << "query: " << modelEnd.query().lastQuery();
-    return false;
-  }
-
-  return true;
-}
-
-bool RegisterAddressDialog::viewRegister(const QModelIndex index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    qDebug() << "erro";
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
     return false;
   }
 

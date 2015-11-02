@@ -17,7 +17,6 @@ class ImportaProdutos : public QDialog {
     explicit ImportaProdutos(QWidget *parent = 0);
     ~ImportaProdutos();
     void importar();
-    void TestImportacao();
 
   private slots:
     void on_pushButtonCancelar_clicked();

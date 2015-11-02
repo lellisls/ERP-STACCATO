@@ -20,7 +20,6 @@ class RegisterAddressDialog : public RegisterDialog {
     int getCodigoUF(const QString uf) const;
     bool save(const bool isUpdate = false);
     bool setDataEnd(int row, const QString &key, QVariant value);
-    bool viewRegister(const QModelIndex index);
 };
 
 #endif // REGISTERADDRESSDIALOG_H

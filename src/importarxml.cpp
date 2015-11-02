@@ -50,7 +50,8 @@ ImportarXML::ImportarXML(QList<int> rows, QWidget *parent) : QDialog(parent), ui
     modelCompra.setFilter(ids);
 
     if (not modelCompra.select()) {
-      qDebug() << "Erro carregando modelCompra: " << modelCompra.lastError();
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela pedido_fornecedor_has_produto: " + modelCompra.lastError().text());
     }
   }
 
@@ -139,11 +140,15 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
       idCompra = modelCompra.data(list.first().row(), "idCompra").toInt();
 
       if (not modelEstoque.setData(row, "idCompra", idCompra)) {
-        qDebug() << "Erro setData idCompra: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando idCompra: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
 
       if (not modelEstoque.setData(row, "idNFe", idNFe)) {
-        qDebug() << "Erro setData idNFe: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando idNFe: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
 
       double quant2 = 0;
@@ -154,19 +159,25 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
 
       // TODO: create enum to use in place of 1 and 2
       if (not modelEstoque.setData(row, "quantUpd", (quant == quant2) ? 1 : 2)) {
-        qDebug() << "Erro marcando quantUpd: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando quantUpd: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
     } else {
       qDebug() << "Não encontrou produto: " << codComercial;
 
       if (not modelEstoque.setData(row, "quantUpd", 3)) {
-        qDebug() << "Erro marcando quantUpd 3: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando quantUpd 3: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
     }
   }
 
   if (not modelEstoque.submitAll()) {
-    qDebug() << "Erro submit estoque: " << modelEstoque.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando tabela estoque: " + modelEstoque.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
+    return;
   }
 
   for (int row = 0, rowCount = modelEstoque.rowCount(); row < rowCount; ++row) {
@@ -180,38 +191,54 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
     query.bindValue(":idCompra", idCompra);
 
     if (not query.exec() or not query.first()) {
-      qDebug() << "Erro buscando em venda_has_produto: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + modelEstoque.lastError().text());
+      QSqlQuery("ROLLBACK").exec();
+      return;
     }
 
     for (int i = 0; i < query.size(); ++i) {
       int newRow = modelEstoque.rowCount();
 
       if (not modelEstoque.insertRow(newRow)) {
-        qDebug() << "Erro criando nova linha no model: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro criando nova linha na tabela: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
 
       for (int column = 0; column < modelEstoque.columnCount(); ++column) {
-        modelEstoque.setData(newRow, column, modelEstoque.data(row, column));
+        if (not modelEstoque.setData(newRow, column, modelEstoque.data(row, column))) {
+          QMessageBox::critical(this, "Erro!", "Erro guardando " + QString::number(column) + ": " + modelEstoque.lastError().text());
+          QSqlQuery("ROLLBACK").exec();
+          return;
+        }
       }
 
       double quant = query.value("quant").toDouble() * -1;
 
       if (not modelEstoque.setData(newRow, "quant", quant)) {
-        qDebug() << "Erro setData quant: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando quant: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
 
       if (not modelEstoque.setData(newRow, "quantUpd", 0)) {
-        qDebug() << "Erro setData quantUpd: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando quantUpd: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
 
       if (not modelEstoque.setData(newRow, "idVendaProduto", query.value("idVendaProduto"))) {
-        qDebug() << "Erro setData idVendaProduto: " << modelEstoque.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro guardando idVendaProduto: " + modelEstoque.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
+        return;
       }
     }
   }
 
   if (not modelEstoque.submitAll()) {
-    qDebug() << "Erro submitAll2 estoque: " << modelEstoque.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela estoque: " + modelEstoque.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
+    return;
   }
 
   ui->tableEstoque->resizeColumnsToContents();

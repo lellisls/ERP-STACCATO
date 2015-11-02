@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -12,7 +13,8 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
   modelItensContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelItensContas.select()) {
-    qDebug() << "Failed to populate TableContas:" << modelItensContas.lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela conta_a_pagar_has_pagamento: " + modelItensContas.lastError().text());
     return;
   }
 
@@ -20,7 +22,7 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
   modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelContas.select()) {
-    qDebug() << "Erro carregando tabela conta_a_pagar: " << modelContas.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar: " + modelContas.lastError().text());
     return;
   }
 
@@ -45,15 +47,16 @@ void ContasAPagar::on_pushButtonSalvar_clicked() {
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {
-      qDebug() << "Erro ao marcar conta como paga: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro ao marcar conta como paga: " + query.lastError().text());
+      return;
     }
-
   } else {
     query.prepare("UPDATE conta_a_pagar SET pago = 'NÃO' WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {
-      qDebug() << "Erro ao marcar conta como não paga: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro ao marcar conta como não paga: " + query.lastError().text());
+      return;
     }
   }
 

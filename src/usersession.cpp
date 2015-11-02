@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QVariant>
 
@@ -20,7 +21,7 @@ bool UserSession::login(const QString user, const QString password) {
   query->bindValue(":password", password);
 
   if (not query->exec()) {
-    qDebug() << "Login query error: " << query->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro no login: " + query->lastError().text());
   }
 
   return query->first();
@@ -46,12 +47,11 @@ QString UserSession::getSiglaLoja() {
   queryLoja.bindValue(":idLoja", getLoja());
 
   if (not queryLoja.exec() or not queryLoja.first()) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
-  } else {
-    return queryLoja.value("sigla").toString();
+    QMessageBox::critical(0, "Erro!", "Erro na query sigla loja: " + queryLoja.lastError().text());
+    return QString();
   }
 
-  return QString();
+  return queryLoja.value("sigla").toString();
 }
 
 QString UserSession::getFromLoja(QString parameter) {
@@ -60,29 +60,25 @@ QString UserSession::getFromLoja(QString parameter) {
   queryLoja.bindValue(":idLoja", getLoja());
 
   if (not queryLoja.exec() or not queryLoja.first()) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
-  } else {
-    return queryLoja.value(parameter).toString();
+    QMessageBox::critical(0, "Erro!", "Erro na query loja: " + queryLoja.lastError().text());
+    return QString();
   }
 
-  return QString();
+  return queryLoja.value(parameter).toString();
 }
 
 QStringList UserSession::getTodosCNPJ() {
   QSqlQuery queryLoja;
   QStringList list;
 
-  if (not queryLoja.exec("SELECT cnpj FROM loja")) {
-    qDebug() << __FILE__ << ": ERROR IN QUERY: " << query->lastError();
+  if (not queryLoja.exec("SELECT cnpj FROM loja") or not queryLoja.first()) {
+    QMessageBox::critical(0, "Erro!", "Erro na query CNPJ: " + queryLoja.lastError().text());
+    return QStringList();
   }
 
-  if (queryLoja.first()) {
-    for (int i = 0; i < queryLoja.size(); ++i) {
-      list.append(queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-"));
-      queryLoja.next();
-    }
-  } else{
-    qDebug() << "Não encontrou lojas";
+  for (int i = 0; i < queryLoja.size(); ++i) {
+    list.append(queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-"));
+    queryLoja.next();
   }
 
   return list;

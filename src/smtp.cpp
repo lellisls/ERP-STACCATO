@@ -60,7 +60,7 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
       if (file.exists()) {
         if (not file.open(QIODevice::ReadOnly)) {
           qDebug("Couldn't open the file");
-          QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Couldn't open the file\n\n"));
+          QMessageBox::critical(0, tr("Qt Simple SMTP client"), tr("Couldn't open the file\n\n"));
           return;
         }
 
@@ -235,7 +235,7 @@ void Smtp::readyRead() {
     return;
   } else {
     // something broke.
-    QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
+    QMessageBox::critical(0, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
     state = Close;
     emit status(tr("Failed to send message"));
   }

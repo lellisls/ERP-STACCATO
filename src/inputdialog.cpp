@@ -93,7 +93,7 @@ void InputDialog::on_pushButtonSalvar_clicked() {
   }
 
   if (not model.submitAll()) {
-    qDebug() << "Erro salvando dados no model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados na tabela: " + model.lastError().text());
     return;
   }
 
@@ -130,8 +130,9 @@ void InputDialog::setFilter(QStringList ids) {
   model.setFilter(filter);
 
   if (not model.select()) {
-    qDebug() << "Erro model: " << model.lastError();
-    qDebug() << "query: " << model.query().executedQuery();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    return;
   }
 
   ui->tableView->resizeColumnsToContents();
@@ -159,8 +160,9 @@ void InputDialog::setFilter(QString ids) {
   model.setFilter("idCompra = " + ids);
 
   if (not model.select()) {
-    qDebug() << "Erro model: " << model.lastError();
-    qDebug() << "query: " << model.query().executedQuery();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    return;
   }
 
   ui->tableView->resizeColumnsToContents();
@@ -193,7 +195,8 @@ void InputDialog::setupTables() {
   model.setHeaderData(model.fieldIndex("obs"), Qt::Horizontal, "Obs.");
 
   if (not model.select()) {
-    qDebug() << "Erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
 
@@ -219,6 +222,5 @@ void InputDialog::setupTables() {
   ui->tableView->hideColumn(model.fieldIndex("dataRealEnt"));
   ui->tableView->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableView->horizontalHeader()->setResizeContentsPrecision(0);
-
   ui->tableView->setItemDelegateForColumn(model.fieldIndex("selecionado"), new CheckBoxDelegate(this));
 }

@@ -29,10 +29,10 @@ void XML_Viewer::exibirXML(QString fileContent) {
   }
 
   QDomDocument document;
+  QString *error = new QString();
 
-  if (not document.setContent(fileContent)) {
-    qDebug() << "erro setContent";
-    qDebug() << "file: " << fileContent;
+  if (not document.setContent(fileContent, error)) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + *error);
     return;
   }
 

@@ -64,7 +64,7 @@ class Venda : public RegisterDialog {
     void calculoSpinBox1() const;
     void calculoSpinBox2() const;
     void clearFields();
-    void fillTotals() const;
+    void fillTotals();
     void montarFluxoCaixa();
     void resetarPagamentos();
     void setupMapper();

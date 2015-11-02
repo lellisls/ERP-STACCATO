@@ -2,7 +2,6 @@
 #define IMPORTAPRODUTOSPROXY_H
 
 #include <QIdentityProxyModel>
-#include <QSqlTableModel>
 
 #include "sqltablemodel.h"
 

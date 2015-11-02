@@ -27,7 +27,7 @@ void EntregasCliente::setupTables() {
   modelProdutos.setHeaderData(modelProdutos.fieldIndex("selecionado"), Qt::Horizontal, "");
 
   if (not modelProdutos.select()) {
-    qDebug() << "Failed to populate modelProdutos: " << modelProdutos.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelProdutos.lastError().text());
     return;
   }
 
@@ -41,7 +41,8 @@ void EntregasCliente::setupTables() {
   modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelEntregas.select()) {
-    qDebug() << "Failed to populate modelEntregas:" << modelEntregas.lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_transportadora: " + modelEntregas.lastError().text());
     return;
   }
 
@@ -86,7 +87,8 @@ void EntregasCliente::viewEntrega(const QString idVenda) {
   modelProdutos.setFilter("idVenda = '" + idVenda + "'");
 
   if (not modelProdutos.select()) {
-    qDebug() << "Failed to populate modelProdutos: " << modelProdutos.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelProdutos.lastError().text());
+    return;
   }
 
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {

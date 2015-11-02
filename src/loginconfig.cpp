@@ -7,7 +7,7 @@
 LoginConfig::LoginConfig(QWidget *parent) : QDialog(parent), ui(new Ui::LoginConfig) {
   ui->setupUi(this);
 
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("Login");
   ui->lineEditHostname->setText(settings.value("hostname").toString());
   ui->lineEditUsername->setText(settings.value("username").toString());
@@ -19,7 +19,7 @@ LoginConfig::LoginConfig(QWidget *parent) : QDialog(parent), ui(new Ui::LoginCon
 LoginConfig::~LoginConfig() { delete ui; }
 
 void LoginConfig::on_pushButtonSalvar_clicked() {
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("Login");
   settings.setValue("hostname", ui->lineEditHostname->text());
   settings.setValue("username", ui->lineEditUsername->text());

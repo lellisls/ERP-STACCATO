@@ -2,7 +2,8 @@
 #define PRODUTOSPENDENTES_H
 
 #include <QDialog>
-#include <QSqlQueryModel>
+
+#include "sqlquerymodel.h"
 
 namespace Ui {
   class ProdutosPendentes;
@@ -22,7 +23,7 @@ class ProdutosPendentes : public QDialog {
 
   private:
     Ui::ProdutosPendentes *ui;
-    QSqlQueryModel modelProdutos;
+    SqlQueryModel modelProdutos;
     QString codComercial;
     // methods
     void setupTables();

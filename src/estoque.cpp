@@ -16,7 +16,7 @@ Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelEstoque.select()) {
-    qDebug() << "Erro carregando estoque: " << modelEstoque.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
   }
 
   ui->tableEstoque->setModel(&modelEstoque);
@@ -38,7 +38,7 @@ void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
   query.bindValue(":idNFe", id);
 
   if (not query.exec() or not query.first()) {
-    qDebug() << "Erro buscando xml nfe: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro buscando XML da NFe: " + query.lastError().text());
     return;
   }
 
@@ -49,14 +49,15 @@ void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
 
 void Estoque::viewRegisterById(const QString codComercial) {
   if (codComercial.isEmpty()) {
-    QMessageBox::warning(this, "Aviso!", "Estoque não encontrado!");
+    QMessageBox::critical(this, "Erro!", "Estoque não encontrado!");
     return;
   }
 
   modelEstoque.setFilter("codComercial = '" + codComercial + "'");
 
   if (not modelEstoque.select()) {
-    qDebug() << "erro modelEstoque: " << modelEstoque.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
+    return;
   }
 
   for (int column = 0; column < modelEstoque.columnCount(); ++column) {
@@ -76,7 +77,7 @@ void Estoque::on_pushButtonExibirNfe_clicked() {
   query.bindValue(":idNFe", modelEstoque.data(0, "idNFe"));
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::warning(this, "Aviso!", "Erro buscando nota fiscal!");
+    QMessageBox::critical(this, "Erro!", "Erro buscando nota fiscal: " + query.lastError().text());
     return;
   }
 

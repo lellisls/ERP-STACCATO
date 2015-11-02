@@ -59,7 +59,7 @@ bool CadastroUsuario::verifyFields() {
 
   if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
     ui->lineEditPasswd->setFocus();
-    QMessageBox::warning(this, "Atenção!", "As senhas não batem!", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::warning(this, "Atenção!", "As senhas não batem!");
     return false;
   }
 

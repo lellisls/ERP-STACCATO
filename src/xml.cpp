@@ -13,8 +13,7 @@ XML::XML() {
   modelProduto.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelProduto.select()) {
-    qDebug() << "erro model produto: " << modelProduto.lastError();
-    return;
+    QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto: " + modelProduto.lastError().text());
   }
 }
 
@@ -36,10 +35,19 @@ void XML::readXML() {
 
   QFile file(fileName);
 
-  if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    document.setContent(&file);
-    file.close();
+  if (not file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    QMessageBox::critical(0, "Erro!", "Erro abrindo arquivo: " + file.errorString());
+    return;
   }
+
+  QString *error = new QString();
+
+  if (not document.setContent(&file, error)) {
+    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
+    return;
+  }
+
+  file.close();
 
   QDomElement root = document.firstChildElement();
   QDomNamedNodeMap map = root.attributes();
@@ -122,7 +130,7 @@ bool XML::readTree(QStandardItem *item) {
         query.bindValue(":chaveAcesso", chaveAcesso);
 
         if (not query.exec()) {
-          qDebug() << "Erro verificando se nota já cadastrada: " << query.lastError();
+          QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " + query.lastError().text());
           return false;
         }
 
@@ -144,25 +152,24 @@ bool XML::readTree(QStandardItem *item) {
         cnpj = child->text().remove(0, 7);
         // TODO: readd these
 
-        //        bool match = false;
+        //                bool match = false;
 
-        //        for (const auto cnpjLoja : UserSession::getTodosCNPJ()) {
-        //          if (cnpj == cnpjLoja) {
-        //            match = true;
-        //          }
-        //        }
+        //                for (const auto cnpjLoja : UserSession::getTodosCNPJ()) {
+        //                  if (cnpj == cnpjLoja) {
+        //                    match = true;
+        //                  }
+        //                }
 
-        //        if (not match) {
-        //          QMessageBox::warning(0, "Aviso!", "CNPJ do destinatário difere do CNPJ da loja!");
-        //          qDebug() << cnpj << " - " << UserSession::getFromLoja("cnpj").remove(".").remove("/").remove("-");
-        //          return false;
-        //        }
+        //                if (not match) {
+        //                  QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
+        //                  return false;
+        //                }
       }
 
-      //      if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
-      //        QMessageBox::warning(0, "Aviso!", "Destinatário da nota é pessoa física!");
-      //        return false;
-      //      }
+      //            if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
+      //              QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
+      //              return false;
+      //            }
 
       lerDadosProduto(child);
       lerICMSProduto(child);
@@ -212,7 +219,7 @@ int XML::cadastrarNFe() {
   query.bindValue(":chaveAcesso", chaveAcesso);
 
   if (not query.exec()) {
-    qDebug() << "Erro verificando se nota já cadastrada: " << query.lastError();
+    QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " + query.lastError().text());
     return false;
   }
 
@@ -221,7 +228,7 @@ int XML::cadastrarNFe() {
   QFile file(fileName);
 
   if (not file.open(QFile::ReadOnly)) {
-    qDebug() << "Erro lendo arquivo: " << file.errorString();
+    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + file.errorString());
     return false;
   }
 
@@ -235,7 +242,7 @@ int XML::cadastrarNFe() {
     query.bindValue(":xml", fileContents);
 
     if (not query.exec()) {
-      qDebug() << "Erro cadastrando xml no estoque: " << query.lastError();
+      QMessageBox::critical(0, "Erro!", "Erro cadastrando XML no estoque: " + query.lastError().text());
       return false;
     }
 
@@ -481,7 +488,7 @@ bool XML::insertEstoque() {
   QSqlQuery query;
 
   if (not query.exec("SELECT fornecedor FROM produto WHERE codComercial = '" + codProd + "'")) {
-    qDebug() << "Erro buscando fornecedor: " << query.lastError();
+    QMessageBox::critical(0, "Erro!", "Erro buscando fornecedor: " + query.lastError().text());
     return false;
   }
 
@@ -549,7 +556,7 @@ bool XML::insertEstoque() {
   query.bindValue(":vCOFINS", vCOFINS);
 
   if (not query.exec()) {
-    qDebug() << "Error: " << query.lastError();
+    QMessageBox::critical(0, "Erro!", "Erro: " + query.lastError().text());
     return false;
   }
 
@@ -560,22 +567,22 @@ void XML::mostrarNoModel(QString file, SqlTableModel &externalModel) {
   QFile fileXML(file);
 
   if (not fileXML.open(QFile::ReadOnly)) {
-    qDebug() << "Erro abrindo arquivo: " << fileXML.errorString();
+    QMessageBox::critical(0, "Erro!", "Erro abrindo arquivo: " + fileXML.errorString());
     return;
   }
 
   QString fileContent = fileXML.readAll();
 
   if (fileContent.isEmpty()) {
-    qDebug() << "is empty";
+    QMessageBox::critical(0, "Erro!", "Arquivo vazio!");
     return;
   }
 
   QDomDocument document;
+  QString *error = new QString();
 
-  if (not document.setContent(fileContent)) {
-    qDebug() << "erro setContent";
-    qDebug() << "file: " << fileContent;
+  if (not document.setContent(fileContent, error)) {
+    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
     return;
   }
 
@@ -618,183 +625,224 @@ bool XML::inserirItem(SqlTableModel *externalModel) {
   int row = externalModel->rowCount();
 
   if (not externalModel->insertRow(row)) {
-    qDebug() << "Erro inserindo linha na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo linha na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   QModelIndexList indexList =
       modelProduto.match(modelProduto.index(0, modelProduto.fieldIndex("codComercial")), Qt::DisplayRole, codProd, 1,
                          Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
-  int idTemp = 0;
-
-  if (indexList.size() > 0) {
-    idTemp = modelProduto.data(indexList.first().row(), "idProduto").toInt();
-  } else {
-    qDebug() << "Nao encontrou produto: " << codProd;
+  if (indexList.size() == 0) {
+    QMessageBox::critical(0, "Erro!", "Não encontrou produto " + codProd);
+    return false;
   }
 
+  int idTemp = modelProduto.data(indexList.first().row(), "idProduto").toInt();
+
   if (not externalModel->setData(row, "fornecedor", xNome)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "idProduto", idTemp)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "descricao", descricao)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "quant", quant)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "un", un)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "codBarras", codBarras)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "codComercial", codProd)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "ncm", ncm)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "cfop", cfop)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "valorUnid", valorUnid)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "valor", valor)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "codBarrasTrib", codBarrasTrib)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "unTrib", unTrib)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "quantTrib", quantTrib)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "valorTrib", valorTrib)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "desconto", desconto)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "compoeTotal", compoeTotal)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "numeroPedido", numeroPedido)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "itemPedido", itemPedido)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "tipoICMS", tipoICMS)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "orig", orig)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "cstICMS", cstICMS)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "modBC", modBC)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "vBC", vBC)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "pICMS", pICMS)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "vICMS", vICMS)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "modBCST", modBCST)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "pMVAST", pMVAST)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "vBCST", vBCST)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "pICMSST", pICMSST)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "vICMSST", vICMSST)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "cEnq", cEnq)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "cstIPI", cstIPI)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "cstPIS", cstPIS)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   if (not externalModel->setData(row, "vBCPIS", vBCPIS)) {
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
-  if(not externalModel->setData(row, "pPIS", pPIS)){
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  if (not externalModel->setData(row, "pPIS", pPIS)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
-  if(not externalModel->setData(row, "vPIS", vPIS)){
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  if (not externalModel->setData(row, "vPIS", vPIS)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
-  if(not externalModel->setData(row, "cstCOFINS", cstCOFINS)){
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  if (not externalModel->setData(row, "cstCOFINS", cstCOFINS)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
-  if(not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)){
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  if (not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
-  if(not externalModel->setData(row, "pCOFINS", pCOFINS)){
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  if (not externalModel->setData(row, "pCOFINS", pCOFINS)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
-  if(not externalModel->setData(row, "vCOFINS", vCOFINS)){
-    qDebug() << "Erro inserindo dados na tabela: " << externalModel->lastError();
+  if (not externalModel->setData(row, "vCOFINS", vCOFINS)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
+    return false;
   }
 
   return true;

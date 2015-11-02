@@ -14,24 +14,9 @@ int main(int argc, char *argv[]) {
 #endif
 
   QApplication app(argc, argv);
-  app.setOrganizationName("ERP");
-  app.setApplicationName("Staccato");
+  app.setOrganizationName("Staccato");
+  app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-
-  QTranslator qtTranslator;
-
-  if (not qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-  }
-
-  app.installTranslator(&qtTranslator);
-
-  QTranslator pt;
-
-  if (not pt.load(":/qt_portuguese.qm")) {
-    qDebug() << "Error loading qt_portuguese.ts";
-  }
-
-  app.installTranslator(&pt);
 
   MainWindow window;
   window.showMaximized();

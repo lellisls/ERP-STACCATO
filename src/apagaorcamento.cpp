@@ -12,8 +12,7 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::Ap
   modelOrc.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelOrc.select()) {
-    qDebug() << "erro modelOrc: " << modelOrc.lastError();
-    return;
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela de orçamentos: " + modelOrc.lastError().text());
   }
 
   mapperOrc.setModel(&modelOrc);
@@ -34,7 +33,8 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
   modelOrc.setData(mapperOrc.currentIndex(), "motivoCancelamento", ui->lineEditMotivo->text());
 
   if (not modelOrc.submitAll()) {
-    qDebug() << "Erro cancelando orçamento: " << modelOrc.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro cancelando orçamento: " + modelOrc.lastError().text());
+    return;
   }
 
   parentWidget()->close();

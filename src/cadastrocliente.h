@@ -13,9 +13,6 @@ class CadastroCliente : public RegisterAddressDialog {
   public:
     explicit CadastroCliente(QWidget *parent = 0);
     ~CadastroCliente();
-    bool TestClienteIncompleto();
-    bool TestClienteEndereco();
-    bool TestClienteCompleto();
 
   public slots:
     void show();

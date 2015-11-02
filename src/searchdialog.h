@@ -20,7 +20,7 @@ class SearchDialog : public QDialog {
     void showMaximized();
     void setFilter(const QString &value);
     void setRepresentacao(const QString &value);
-    QString getText(const QVariant index) const;
+    QString getText(const QVariant index);
 
     // Factory Methods
     static SearchDialog *cliente(QWidget *parent);

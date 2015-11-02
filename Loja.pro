@@ -57,7 +57,8 @@ SOURCES += src/apagaorcamento.cpp \
     src/inputdialog.cpp \
     src/estoqueproxymodel.cpp \
     src/sqltablemodel.cpp \
-    src/orcamentoproxymodel.cpp
+    src/orcamentoproxymodel.cpp \
+    src/sqlquerymodel.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/cadastrarnfe.h \
@@ -75,7 +76,6 @@ HEADERS  += src/apagaorcamento.h \
     src/contasareceber.h \
     src/dateformatdelegate.h \
     src/entregascliente.h \
-    src/initdb.h \
     src/itembox.h \
     src/lineeditcep.h \
     src/lineeditdecimal.h \
@@ -105,7 +105,8 @@ HEADERS  += src/apagaorcamento.h \
     src/inputdialog.h \
     src/estoqueproxymodel.h \
     src/sqltablemodel.h \
-    src/orcamentoproxymodel.h
+    src/orcamentoproxymodel.h \
+    src/sqlquerymodel.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -136,7 +137,7 @@ FORMS += ui/apagaorcamento.ui \
 
 CONFIG += c++11
 
-QMAKE_CXX = ccache g++
+#QMAKE_CXX = ccache g++
 
 QMAKE_CXXFLAGS_DEBUG += -O0
 QMAKE_CXXFLAGS_RELEASE  = -Ofast
@@ -154,24 +155,6 @@ RESOURCES += \
     qrs/resources.qrc
 
 RC_ICONS = Staccato.ico
-
-test {
-    DEFINES += "TEST"
-    message(Test build)
-    QT += testlib
-    TARGET = UnitTests
-
-    SOURCES -= src/main.cpp
-
-    HEADERS += test/testmainwindow.h
-
-
-    SOURCES += test/main.cpp \
-    test/testmainwindow.cpp
-
-} else {
-    message(Normal build)
-}
 
 CONFIG -= console
 

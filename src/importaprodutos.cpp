@@ -3,7 +3,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlRecord>
-#include <QSqlDriver>
 #include <QDebug>
 
 #include "importaprodutos.h"
@@ -31,7 +30,8 @@ void ImportaProdutos::expiraPrecosAntigos(QSqlQuery &produto, const QString idPr
   produto.bindValue(":idProduto", idProduto);
 
   if (not produto.exec()) {
-    qDebug() << "Erro expirando preços antigos: " << produto.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro expirando preços antigos: " + produto.lastError().text());
+    return;
   }
 }
 
@@ -53,7 +53,8 @@ void ImportaProdutos::verificaSeRepresentacao() {
   queryFornecedor.bindValue(":razaoSocial", fornecedor);
 
   if (not queryFornecedor.exec()) {
-    qDebug() << "Erro fornecedor: " << queryFornecedor.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela fornecedor: " + queryFornecedor.lastError().text());
+    return;
   }
 
   if (queryFornecedor.first()) {
@@ -67,11 +68,8 @@ void ImportaProdutos::importarTabela() {
   QSqlQuery("SET AUTOCOMMIT=0").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (QSqlDatabase::contains("Excel Connection")) {
-    db = QSqlDatabase::database("Excel Connection");
-  } else {
-    db = QSqlDatabase::addDatabase("QODBC", "Excel Connection");
-  }
+  db = QSqlDatabase::contains("Excel Connection") ? QSqlDatabase::database("Excel Connection")
+                                                  : QSqlDatabase::addDatabase("QODBC", "Excel Connection");
 
   db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + file);
 
@@ -80,6 +78,7 @@ void ImportaProdutos::importarTabela() {
 
     if (not verificaTabela(record)) {
       db.close();
+      QSqlQuery("ROLLBACK").exec();
       return;
     }
 
@@ -95,7 +94,8 @@ void ImportaProdutos::importarTabela() {
                           red + " OR custoUpd = " + red + " OR precoVendaUpd = " + red + ")");
 
       if (not model.select()) {
-        qDebug() << "erro model: " << model.lastError();
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto: " + model.lastError().text());
+        QSqlQuery("ROLLBACK").exec();
         return;
       }
 
@@ -146,13 +146,14 @@ void ImportaProdutos::importarTabela() {
 
       progressDialog->cancel();
     } else {
-      QMessageBox::warning(this, "Aviso!", "Erro ao cadastrar fornecedores.");
+      QMessageBox::critical(this, "Erro!", "Erro ao cadastrar fornecedores.");
+      QSqlQuery("ROLLBACK").exec();
       return;
     }
 
   } else {
-    qDebug() << "db failed: " << db.lastError();
-    QMessageBox::warning(this, "Aviso!", "Ocorreu um erro ao abrir o arquivo, verifique se o mesmo não está aberto.");
+    QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao abrir o arquivo, verifique se o mesmo não está aberto: " +
+                          db.lastError().text());
     canceled = true;
   }
 
@@ -166,7 +167,7 @@ void ImportaProdutos::importarTabela() {
                               QString::number(itensUpdated) + "\nNão modificados: " + QString::number(itensNotChanged) +
                               "\nDescontinuados: " + QString::number(itensExpired) + "\nCom erro: " +
                               QString::number(itensError);
-    QMessageBox::information(0, "Resultado", resultado);
+    QMessageBox::information(this, "Resultado", resultado);
   }
 }
 
@@ -197,11 +198,11 @@ bool ImportaProdutos::readFile() {
 bool ImportaProdutos::readValidade() {
   ValidadeDialog *validadeDlg = new ValidadeDialog();
 
-  if (validadeDlg->exec()) {
-    validade = validadeDlg->getValidade();
-  } else {
+  if (not validadeDlg->exec()) {
     return false;
   }
+
+  validade = validadeDlg->getValidade();
 
   return true;
 }
@@ -211,7 +212,7 @@ void ImportaProdutos::setupTables() {
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto: " + model.lastError().text());
     return;
   }
 
@@ -290,7 +291,7 @@ void ImportaProdutos::setupTables() {
   modelErro.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelErro.select()) {
-    qDebug() << "erro model: " << modelErro.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto: " + modelErro.lastError().text());
     return;
   }
 
@@ -361,7 +362,6 @@ void ImportaProdutos::setupTables() {
 void ImportaProdutos::setVariantMap() {
   variantMap.insert("fornecedor", QVariant(QVariant::String));
   variantMap.insert("descricao", QVariant(QVariant::String));
-  //  variantMap.insert("estoque", QVariant(QVariant::Int));
   variantMap.insert("un", QVariant(QVariant::String));
   variantMap.insert("colecao", QVariant(QVariant::String));
   variantMap.insert("m2cx", QVariant(QVariant::Double));
@@ -371,18 +371,9 @@ void ImportaProdutos::setVariantMap() {
   variantMap.insert("codComercial", QVariant(QVariant::String));
   variantMap.insert("codBarras", QVariant(QVariant::String));
   variantMap.insert("ncm", QVariant(QVariant::String));
-  //  variantMap.insert("icms", QVariant(QVariant::Double));
-  //  variantMap.insert("cst", QVariant(QVariant::String));
   variantMap.insert("qtdPallet", QVariant(QVariant::Double));
   variantMap.insert("custo", QVariant(QVariant::Double));
-  //  variantMap.insert("ipi", QVariant(QVariant::Double));
-  //  variantMap.insert("st", QVariant(QVariant::Double));
   variantMap.insert("precoVenda", QVariant(QVariant::Double));
-  //  variantMap.insert("comissao", QVariant(QVariant::Double));
-  //  variantMap.insert("observacoes", QVariant(QVariant::String));
-  //  variantMap.insert("origem", QVariant(QVariant::Int));
-  //  variantMap.insert("descontinuado", QVariant(QVariant::Int));
-  //  variantMap.insert("representacao", QVariant(QVariant::String));
   variantMap.insert("ui", QVariant(QVariant::String));
   variantMap.insert("un2", QVariant(QVariant::String));
 }
@@ -401,11 +392,8 @@ void ImportaProdutos::cadastraFornecedores() {
 
 void ImportaProdutos::mostraApenasEstesFornecedores() {
   for (int i = 0, size = fornecedores.size(); i < size; ++i) {
-    if (ids.isEmpty()) {
-      ids.append("idFornecedor = " + QString::number(fornecedores.values().at(i)));
-    } else {
-      ids.append(" OR idFornecedor = " + QString::number(fornecedores.values().at(i)));
-    }
+    ids.append((ids.isEmpty() ? "idFornecedor = " : " OR idFornecedor = ") +
+               QString::number(fornecedores.values().at(i)));
   }
 }
 
@@ -431,22 +419,6 @@ void ImportaProdutos::consistenciaDados() {
       variantMap.insert(variantMap.keys().at(i), variantMap.value(variantMap.keys().at(i)).toString().remove("*"));
     }
   }
-
-  //  if (variantMap.value("estoque").isNull()) {
-  //    variantMap.insert("estoque", 0);
-  //  }
-
-  //  if (variantMap.value("cst").isNull()) {
-  //    variantMap.insert("cst", "000");
-  //  }
-
-  //  if (variantMap.value("representacao").isNull()) {
-  //    variantMap.insert("representacao", 0);
-  //  }
-
-  //  if (variantMap.value("descontinuado").isNull()) {
-  //    variantMap.insert("descontinuado", 0);
-  //  }
 
   if (variantMap.value("ui").isNull()) {
     variantMap.insert("ui", 0);
@@ -540,11 +512,7 @@ void ImportaProdutos::atualizaCamposProduto(const QSqlQuery &produto, const QStr
     }
   }
 
-  if (changed) {
-    itensUpdated++;
-  } else {
-    itensNotChanged++;
-  }
+  changed ? itensUpdated++ : itensNotChanged++;
 }
 
 void ImportaProdutos::marcaProdutoNaoDescontinuado(QSqlQuery &produto, const QString idProduto) {
@@ -552,14 +520,17 @@ void ImportaProdutos::marcaProdutoNaoDescontinuado(QSqlQuery &produto, const QSt
   produto.bindValue(":idProduto", idProduto);
 
   if (not produto.exec()) {
-    qDebug() << "Erro marcando produto atualizado como não descontinuado: " << produto.lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro marcando produto atualizado como não descontiunado: " + produto.lastError().text());
+    return;
   }
 
   const int row = model.match(model.index(0, model.fieldIndex("idProduto")), Qt::DisplayRole, idProduto, 1,
                               Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))
                   .first()
                   .row();
-  model.setData(row, "descontinuado", 0);
+
+  model.setData(row, "descontinuado", false);
 
   itensExpired--;
 }
@@ -576,7 +547,8 @@ void ImportaProdutos::guardaNovoPrecoValidade(QSqlQuery &produto, const QString 
     produto.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
 
     if (not produto.exec()) {
-      qDebug() << "Erro inserindo em Preço: " << produto.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro inserindo dados em produto_has_preco: " + produto.lastError().text());
+      return;
     }
   }
 }
@@ -589,7 +561,8 @@ void ImportaProdutos::verificaSeProdutoJaCadastradoNoBD(QSqlQuery &produto) {
   produto.bindValue(":ui", variantMap.value("ui"));
 
   if (not produto.exec()) {
-    qDebug() << "Erro buscando produto: " << produto.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro buscando produto: " + produto.lastError().text());
+    return;
   }
 }
 
@@ -756,23 +729,23 @@ int ImportaProdutos::buscarCadastrarFornecedor(const QString fornecedor) {
   queryFornecedor.bindValue(":razaoSocial", fornecedor);
 
   if (not queryFornecedor.exec()) {
-    qDebug() << "Erro buscando fornecedor: " << queryFornecedor.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro buscando fornecedor: " + queryFornecedor.lastError().text());
+    return 0;
   }
 
-  if (queryFornecedor.next()) {
-    return queryFornecedor.value("idFornecedor").toInt();
-  } else {
+  if (not queryFornecedor.next()) {
     queryFornecedor.prepare("INSERT INTO fornecedor (razaoSocial) VALUES (:razaoSocial)");
     queryFornecedor.bindValue(":razaoSocial", fornecedor);
 
     if (not queryFornecedor.exec()) {
-      qDebug() << "Erro cadastrando fornecedor: " << queryFornecedor.lastError();
-    } else {
-      return queryFornecedor.lastInsertId().toInt();
+      QMessageBox::critical(this, "Erro!", "Erro cadastrando fornecedor: " + queryFornecedor.lastError().text());
+      return 0;
     }
+
+    return queryFornecedor.lastInsertId().toInt();
   }
 
-  return 0;
+  return queryFornecedor.value("idFornecedor").toInt();
 }
 
 void ImportaProdutos::on_pushButtonCancelar_clicked() {
@@ -781,40 +754,36 @@ void ImportaProdutos::on_pushButtonCancelar_clicked() {
 }
 
 void ImportaProdutos::salvar() {
-  if (model.submitAll()) {
-    QSqlQuery("COMMIT").exec();
-
-    QSqlQuery queryPrecos;
-    queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT "
-                        "idProduto, precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM "
-                        "produto WHERE atualizarTabelaPreco = TRUE");
-    queryPrecos.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
-    queryPrecos.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
-
-    if (queryPrecos.exec()) {
-      queryPrecos.exec("UPDATE produto SET atualizarTabelaPreco = FALSE");
-      queryPrecos.exec("COMMIT");
-    } else {
-      qDebug() << "Erro inserindo preços: " << queryPrecos.lastError();
-      qDebug() << "query: " << queryPrecos.lastQuery();
-    }
-
-    close();
-
-  } else {
-    qDebug() << "Erro submetendo model: " << model.lastError();
-    qDebug() << "query: " << model.query().lastQuery();
-    qDebug() << "Last query: "
-             << model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, model.tableName(), model.record(),
-                                                        false);
-    QMessageBox::warning(this, "Aviso!", "Ocorreu um erro: " + model.lastError().text());
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao salvar os dados: " + model.lastError().text());
     QSqlQuery("ROLLBACK").exec();
+    return;
   }
+
+  QSqlQuery("COMMIT").exec();
+
+  QSqlQuery queryPrecos;
+  queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT "
+                      "idProduto, precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM "
+                      "produto WHERE atualizarTabelaPreco = TRUE");
+  queryPrecos.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
+  queryPrecos.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+
+  if (not queryPrecos.exec()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro inserindo dados em produto_has_preco: " + queryPrecos.lastError().text());
+    return;
+  }
+
+  queryPrecos.exec("UPDATE produto SET atualizarTabelaPreco = FALSE");
+  queryPrecos.exec("COMMIT");
+
+  close();
 }
 
 void ImportaProdutos::on_pushButtonSalvar_clicked() {
   if (hasError) {
-    QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Produtos com erro não serão salvos. Deseja continuar?",
+    QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Produtos com erro não serão salvos. Deseja continuar?",
                        QMessageBox::Yes | QMessageBox::No, this);
     msgBox.setButtonText(QMessageBox::Yes, "Sim");
     msgBox.setButtonText(QMessageBox::No, "Não");
@@ -822,15 +791,17 @@ void ImportaProdutos::on_pushButtonSalvar_clicked() {
     if (msgBox.exec() == QMessageBox::Yes) {
       salvar();
     }
-  } else {
-    salvar();
+
+    return;
   }
+
+  salvar();
 }
 
 bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
   for (int i = 0, size = variantMap.size(); i < size; ++i) {
     if (not record.contains(variantMap.keys().at(i))) {
-      QMessageBox::warning(this, "Aviso!", "Tabela não possui coluna \"" + variantMap.keys().at(i) + "\"");
+      QMessageBox::critical(this, "Erro!", "Tabela não possui coluna \"" + variantMap.keys().at(i) + "\"");
       return false;
     }
   }
@@ -848,21 +819,10 @@ void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool checked) {
   query.bindValue(":razaoSocial", fornecedor);
 
   if (not query.exec()) {
-    qDebug() << "erro setando representacao em fornecedor: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro guardando Representacao em Fornecedor: " + query.lastError().text());
+    return;
   }
 }
-
-#ifdef TEST
-
-void ImportaProdutos::TestImportacao() {
-  file = "C:/temp/build-Loja-Desktop_Qt_5_4_0_MinGW_32bit-Test/Bellinzoni.xlsx";
-  validade = 10;
-
-  importarTabela();
-  on_pushButtonSalvar_clicked();
-}
-
-#endif
 
 void ImportaProdutos::on_tableProdutos_entered(const QModelIndex &index) {
   Q_UNUSED(index);

@@ -16,7 +16,7 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDia
   ui->buttonBox->button(QDialogButtonBox::Ok)->setText("Login");
   ui->buttonBox->button(QDialogButtonBox::Cancel)->setText("Cancelar");
 
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("User");
 
   if (settings.contains("lastuser")) {
@@ -34,7 +34,7 @@ LoginDialog::~LoginDialog() { delete ui; }
 void LoginDialog::on_buttonBox_accepted() {
   verify();
 
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("User");
   settings.setValue("lastuser", QString(ui->lineEditUser->text()));
 }
@@ -51,7 +51,7 @@ void LoginDialog::verify() {
   if (UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text())) {
     accept();
   } else {
-    QMessageBox::warning(this, "Aviso", "Login inválido", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::critical(this, "Erro!", "Login inválido");
     ui->lineEditPass->setFocus();
   }
 }

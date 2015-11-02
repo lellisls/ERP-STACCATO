@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -18,7 +19,8 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
   modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelContas.select()) {
-    qDebug() << "Failed to populate TableContasAReceber:" << modelContas.lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelContas.lastError().text());
     return;
   }
 
@@ -44,15 +46,16 @@ void ContasAReceber::on_pushButtonSalvar_clicked() {
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {
-      qDebug() << "Erro marcando conta como paga: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro marcando conta como paga: " + query.lastError().text());
+      return;
     }
-
   } else {
     query.prepare("UPDATE conta_a_receber SET pago = 'NÃO' WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", idVenda);
 
     if (not query.exec()) {
-      qDebug() << "Erro marcando conta como não paga: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro marcando conta como não paga: " + query.lastError().text());
+      return;
     }
   }
 
@@ -66,7 +69,7 @@ void ContasAReceber::viewConta(const QString idVenda) {
 
   modelContas.setFilter("idVenda = '" + idVenda + "'");
 
-  if(modelContas.data(0, "pago").toString() == "SIM"){
+  if (modelContas.data(0, "pago").toString() == "SIM") {
     ui->checkBox->setChecked(true);
   }
 

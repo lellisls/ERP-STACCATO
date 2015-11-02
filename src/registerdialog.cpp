@@ -1,7 +1,5 @@
 #include <QCloseEvent>
 #include <QShortcut>
-#include <QSqlDriver>
-#include <QSqlRecord>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
@@ -18,9 +16,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not model.select()) {
-    qDebug() << objectName() << "Failed to populate " + table + ": " << model.lastError();
-    QMessageBox::critical(this, "Erro!", "Algum erro ocorreu ao acessar a tabela.", QMessageBox::Ok,
-                          QMessageBox::NoButton);
+    QMessageBox::critical(this, "Erro!", "Erro ao acessar a tabela " + table + ": " + model.lastError().text());
     return;
   }
 
@@ -34,14 +30,16 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
 
 bool RegisterDialog::viewRegisterById(const QVariant id) {
   if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro ao acessar a tabela " + model.tableName() + ": " + model.lastError().text());
     return false;
   }
 
-  const QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id, 1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
+  const QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id, 1,
+                                                Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
   if (indexList.isEmpty()) {
-    QMessageBox::warning(this, "Atenção!", "Item não encontrado.", QMessageBox::Ok, QMessageBox::NoButton);
+    QMessageBox::critical(this, "Erro!", "Item não encontrado.");
     close();
     return false;
   }
@@ -74,40 +72,38 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
   return true;
 }
 
-void RegisterDialog::setData(const QString &key, QVariant value) {
+bool RegisterDialog::setData(const QString &key, QVariant value) {
   if (model.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
+    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
+    return false;
   }
 
-  if(not model.setData(mapper.currentIndex(), key, value)){
-    qDebug() << key << " error - row: " << mapper.currentIndex() << " - value: " << value;
-  }
+  return model.setData(mapper.currentIndex(), key, value);
 }
 
 bool RegisterDialog::setData(int row, const QString &key, QVariant value) {
+  // TODO: replace this with model.setData directly
   if (row == -1) {
-    qDebug() << "Something wrong on the row!";
+    QMessageBox::critical(this, "Erro!", "Erro: linha -1");
     return false;
   }
 
   if (model.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key '" << key << "' not found on table '" << model.tableName() << "'";
+    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
     return false;
   }
 
-  if (not value.isNull()) {
-    if(not model.setData(row, key, value)){
-      qDebug() << key << " error - row: " << row << " - value: " << value;
-      return false;
-    }
+  if (value.isNull()) {
+    return false;
   }
 
-  return true;
+  return model.setData(row, key, value);
 }
 
 QVariant RegisterDialog::data(const QString &key) {
   if (model.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key " << key << " not found on model!";
+    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
+    return QVariant();
   }
 
   return model.data(mapper.currentIndex(), key);
@@ -115,7 +111,8 @@ QVariant RegisterDialog::data(const QString &key) {
 
 QVariant RegisterDialog::data(int row, const QString &key) {
   if (model.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key " << key << " not found on model!";
+    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
+    return QVariant();
   }
 
   return model.data(row, key);
@@ -123,15 +120,19 @@ QVariant RegisterDialog::data(int row, const QString &key) {
 
 void RegisterDialog::addMapping(QWidget *widget, const QString &key) {
   if (model.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key " << key << " not found on model!";
+    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
+    return;
   }
+
   mapper.addMapping(widget, model.fieldIndex(key));
 }
 
 void RegisterDialog::addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName) {
   if (model.fieldIndex(key) == -1) {
-    qDebug() << objectName() << " : Key " << key << " not found on model!";
+    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
+    return;
   }
+
   mapper.addMapping(widget, model.fieldIndex(key), propertyName);
 }
 
@@ -140,14 +141,8 @@ void RegisterDialog::sendUpdateMessage() {
 
   for (const auto key : textKeys) {
     if (not key.isEmpty()) {
-      const QVariant val = data(key);
-
-      if (val.isValid()) {
-        if (not text.isEmpty()) {
-          text.append(" - ");
-        }
-
-        text.append(val.toString());
+      if (data(key).isValid()) {
+        text += text.isEmpty() ? data(key).toString() : " - " + data(key).toString();
       }
     }
   }
@@ -157,21 +152,16 @@ void RegisterDialog::sendUpdateMessage() {
 
 QString RegisterDialog::requiredStyle() { return (QString("background-color: rgb(255, 255, 127);")); }
 
-void RegisterDialog::closeEvent(QCloseEvent *event) {
-  if (confirmationMessage()) {
-    event->accept();
-  } else {
-    event->ignore();
-  }
-}
+void RegisterDialog::closeEvent(QCloseEvent *event) { confirmationMessage() ? event->accept() : event->ignore(); }
 
 void RegisterDialog::keyPressEvent(QKeyEvent *event) {
   if (event->key() == Qt::Key_Escape) {
     event->accept();
     close();
-  } else {
-    QDialog::keyPressEvent(event);
+    return;
   }
+
+  QDialog::keyPressEvent(event);
 }
 
 QStringList RegisterDialog::getTextKeys() const { return textKeys; }
@@ -181,13 +171,11 @@ void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 void RegisterDialog::saveSlot() { save(); }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
-  if ((line->text().isEmpty()) or line->text() == "0,00" or line->text() == "../-" or
-      (line->text().size() < (line->inputMask().remove(";").remove(">").remove("_").size()) or
-       (line->text().size() < line->placeholderText().size() - 1))) {
-    qDebug() << "ObjectName: " << line->parent()->objectName() << ", line: " << line->objectName() << " | "
-             << line->text();
-    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório!", QMessageBox::Ok,
-                         QMessageBox::NoButton);
+  if ((line->text().isEmpty()) or (line->text() == "0,00") or (line->text() == "../-") or
+      (line->text().size() < line->inputMask().remove(";").remove(">").remove("_").size()) or
+      (line->text().size() < line->placeholderText().size() - 1)) {
+    // TODO: colocar nome do campo (usar acessibleName?)
+    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório: " + line->objectName());
     line->setFocus();
     return false;
   }
@@ -197,7 +185,6 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 
 bool RegisterDialog::confirmationMessage() {
   if (model.isDirty() or isDirty) {
-
     QMessageBox msgBox;
     msgBox.setParent(this);
     msgBox.setLocale(QLocale::Portuguese);
@@ -213,12 +200,12 @@ bool RegisterDialog::confirmationMessage() {
     const int ret = msgBox.exec();
 
     if (ret == QMessageBox::Save) {
-      if (not save()) {
-        qDebug() << objectName() << " : "
-                 << " save failed!";
-        return false;
-      }
-    } else if (ret == QMessageBox::Cancel) {
+      return save();
+    }
+
+    // TODO: messagebox::discard?
+
+    if (ret == QMessageBox::Cancel) {
       return false;
     }
   }
@@ -226,14 +213,10 @@ bool RegisterDialog::confirmationMessage() {
   return true;
 }
 
-void RegisterDialog::errorMessage() {
-  QMessageBox::warning(this, "Atenção!", "Não foi possível cadastrar este item.", QMessageBox::Ok,
-                       QMessageBox::NoButton);
-}
+void RegisterDialog::errorMessage() { QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este item."); }
 
 void RegisterDialog::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Cadastro atualizado com sucesso!", QMessageBox::Ok,
-                           QMessageBox::NoButton);
+  QMessageBox::information(this, "Atenção!", "Cadastro atualizado com sucesso!");
 }
 
 bool RegisterDialog::newRegister() {
@@ -242,15 +225,11 @@ bool RegisterDialog::newRegister() {
   }
 
   registerMode();
-
-  if (not model.select()) {
-    qDebug() << "erro model: " << model.lastError();
-    return false;
-  }
-
   clearFields();
 
-  return true;
+  return model.select();
+
+  // TODO: see if it's still working
 }
 
 bool RegisterDialog::save(const bool isUpdate) {
@@ -264,7 +243,8 @@ bool RegisterDialog::save(const bool isUpdate) {
   const int row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    qDebug() << "Something went very wrong!";
+    QMessageBox::critical(this, "Erro!", "Linha errada!");
+    QSqlQuery("ROLLBACK").exec();
     return false;
   }
 
@@ -279,10 +259,8 @@ bool RegisterDialog::save(const bool isUpdate) {
   }
 
   if (not model.submitAll()) {
-    qDebug() << objectName() << " : " << model.lastError();
-    qDebug() << "Last query: "
-             << model.database().driver()->sqlStatement(QSqlDriver::InsertStatement, model.tableName(),
-                                                        model.record(row), false);
+    QMessageBox::critical(this, "Erro!",
+                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
@@ -304,30 +282,29 @@ bool RegisterDialog::save(const bool isUpdate) {
 bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) { line->clear(); }
+  for (auto *line : this->findChildren<QLineEdit *>()) {
+    line->clear();
+  }
 }
 
 void RegisterDialog::remove() {
-  QMessageBox msgBox(QMessageBox::Warning, "Atenção!", "Tem certeza que deseja remover?",
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");
   msgBox.setButtonText(QMessageBox::No, "Não");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    model.setData(mapper.currentIndex(), "desativado", 1);
-
-    if (model.submitAll()) {
-      if (not model.select()) {
-        qDebug() << "erro model: " << model.lastError();
-        return;
-      }
-
-      newRegister();
-    } else {
-      QMessageBox::warning(this, "Atenção!", "Não foi possível remover este item.", QMessageBox::Ok,
-                           QMessageBox::NoButton);
-      qDebug() << "model error: " << model.lastError();
+    if (not model.setData(mapper.currentIndex(), "desativado", true)) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando desativado: " + model.lastError().text());
+      return;
     }
+
+    if (not model.submitAll()) {
+      QMessageBox::critical(this, "Erro!", "Não foi possível remover este item: " + model.lastError().text());
+      return;
+    }
+
+    newRegister();
   }
 }
 
@@ -384,6 +361,8 @@ bool RegisterDialog::validaCNPJ(const QString text) {
     }
   }
 
+  // make this function work only if cnpj is fully inputted
+  // TODO: why this? its valid if its size is incorrect?
   return true;
 }
 
@@ -446,6 +425,7 @@ bool RegisterDialog::validaCPF(const QString text) {
     }
   }
 
+  // same as above
   return true;
 }
 

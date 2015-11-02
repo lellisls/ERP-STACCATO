@@ -2,7 +2,6 @@
 #define IMPORTARXML_H
 
 #include <QDialog>
-#include <QSqlTableModel>
 #include <QStandardItemModel>
 #include <QDataWidgetMapper>
 

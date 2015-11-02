@@ -2,7 +2,7 @@
 
 #include "orcamentoproxymodel.h"
 
-OrcamentoProxyModel::OrcamentoProxyModel(QSqlQueryModel *model, int column, QObject *parent)
+OrcamentoProxyModel::OrcamentoProxyModel(SqlTableModel *model, int column, QObject *parent)
   : QIdentityProxyModel(parent), column(column) {
   setSourceModel(model);
 }

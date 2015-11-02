@@ -646,7 +646,7 @@ QVariant QtRPT::processHighligthing(RptFieldObject *field, HiType type) {
         }
     }
   } else {
-    if (type == BgColor and !field->highlighting.contains("backgroundColor")) {
+    if (type == BgColor and not field->highlighting.contains("backgroundColor")) {
       return colorToString(field->m_backgroundColor);
     }
 
@@ -841,7 +841,7 @@ QString QtRPT::sectionField(RptBandObject *band, QString value, bool exp, bool f
   bool aggregate = false;
 
   for (int i = 0; i < value.size(); ++i) {
-    if (value.at(i) != '[' and value.at(i) != ']' and value.at(i) != '<' and value.at(i) != '>' and !aggregate)
+    if (value.at(i) != '[' and value.at(i) != ']' and value.at(i) != '<' and value.at(i) != '>' and not aggregate)
       tmpStr += value.at(i);
     else if ((value.at(i) == '[' or value.at(i) == ']') and aggregate)
       tmpStr += value.at(i);
@@ -877,7 +877,7 @@ QString QtRPT::sectionField(RptBandObject *band, QString value, bool exp, bool f
 
   tmpStr.clear();
   for (int i = 0; i < res.size(); ++i) {
-    if (res.at(i).contains("[") and res.at(i).contains("]") and !res.at(i).contains("<")) {
+    if (res.at(i).contains("[") and res.at(i).contains("]") and not res.at(i).contains("<")) {
       QString tmp;
       if (rptSql != 0) { // if we have Sql DataSource
         if (res.at(i).contains(rptSql->objectName())) {
@@ -1107,7 +1107,7 @@ void QtRPT::printExec(bool maximum, bool direct, QString printerName) {
 #ifndef QT_NO_PRINTER
   m_printMode = QtRPT::Printer;
   QPrinter printer(QPrinter::HighResolution);
-  if (not printerName.isEmpty() and !printerName.isNull()) {
+  if (not printerName.isEmpty() and not printerName.isNull()) {
     printer.setPrinterName(printerName);
     if (not printer.isValid()) printer.setPrinterName(QPrinterInfo::defaultPrinter().printerName());
   }

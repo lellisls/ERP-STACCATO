@@ -814,7 +814,7 @@ QColor Format::patternForegroundColor() const { return colorProperty(FormatPriva
     Sets the foreground color of the pattern with the given \a color.
 */
 void Format::setPatternForegroundColor(const QColor &color) {
-  if (color.isValid() and !hasProperty(FormatPrivate::P_Fill_Pattern)) setFillPattern(PatternSolid);
+  if (color.isValid() and not hasProperty(FormatPrivate::P_Fill_Pattern)) setFillPattern(PatternSolid);
   setProperty(FormatPrivate::P_Fill_FgColor, XlsxColor(color), XlsxColor());
 }
 
@@ -827,7 +827,7 @@ QColor Format::patternBackgroundColor() const { return colorProperty(FormatPriva
     Sets the background color of the pattern with the given \a color.
 */
 void Format::setPatternBackgroundColor(const QColor &color) {
-  if (color.isValid() and !hasProperty(FormatPrivate::P_Fill_Pattern)) setFillPattern(PatternSolid);
+  if (color.isValid() and not hasProperty(FormatPrivate::P_Fill_Pattern)) setFillPattern(PatternSolid);
   setProperty(FormatPrivate::P_Fill_BgColor, XlsxColor(color), XlsxColor());
 }
 

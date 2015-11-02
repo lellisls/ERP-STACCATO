@@ -41,14 +41,13 @@ DownloadDialog::DownloadDialog(QWidget *parent) : QWidget(parent), ui(new Ui::Do
   m_manager = new QNetworkAccessManager(this);
 
   // Avoid SSL issues
-  connect(m_manager, &QNetworkAccessManager::sslErrors, this,
-          &DownloadDialog::ignoreSslErrors);
+  connect(m_manager, &QNetworkAccessManager::sslErrors, this, &DownloadDialog::ignoreSslErrors);
 }
 
 DownloadDialog::~DownloadDialog(void) { delete ui; }
 
 void DownloadDialog::beginDownload(const QUrl &url) {
-  Q_ASSERT(!url.isEmpty());
+  Q_ASSERT(not url.isEmpty());
 
   // Reset the UI
   ui->progressBar->setValue(0);
@@ -73,16 +72,14 @@ void DownloadDialog::beginDownload(const QUrl &url) {
 void DownloadDialog::installUpdate(void) {
   QMessageBox msg;
   msg.setIcon(QMessageBox::Question);
-  msg.setText("<b>" + tr("Para aplicar as atualizações é necessário fechar o %1").arg(qApp->applicationName()) + "</b>");
-  msg.setInformativeText(tr("Você deseja fechar o %1 agora?").arg(qApp->applicationName()));
+  msg.setText("<b>" + tr("Para aplicar as atualizações é necessário fechar o programa") + "</b>");
+  msg.setInformativeText(tr("Você deseja fechar o programa agora?"));
   msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 
   if (msg.exec() == QMessageBox::Yes) {
     openDownload();
     qApp->closeAllWindows();
-  }
-
-  else {
+  } else {
     ui->openButton->setEnabled(true);
     ui->openButton->setVisible(true);
     ui->timeLabel->setText(tr("Clique no botão \"Abrir\" para aplicar a atualização"));
@@ -90,21 +87,21 @@ void DownloadDialog::installUpdate(void) {
 }
 
 void DownloadDialog::openDownload(void) {
-  if (!m_path.isEmpty()) {
+  if (not m_path.isEmpty()) {
     QString url = m_path;
 
-    if (url.startsWith("/"))
+    if (url.startsWith("/")) {
       url = "file://" + url;
-
-    else
+    } else {
       url = "file:///" + url;
+    }
 
     QDesktopServices::openUrl(url);
   }
 }
 
 void DownloadDialog::cancelDownload(void) {
-  if (!m_reply->isFinished()) {
+  if (not m_reply->isFinished()) {
     QMessageBox _message;
     _message.setWindowTitle(tr("Atualizador"));
     _message.setIcon(QMessageBox::Question);
@@ -115,10 +112,9 @@ void DownloadDialog::cancelDownload(void) {
       hide();
       m_reply->abort();
     }
-  }
-
-  else
+  } else {
     hide();
+  }
 }
 
 void DownloadDialog::downloadFinished(void) {
@@ -128,7 +124,7 @@ void DownloadDialog::downloadFinished(void) {
 
   QByteArray data = m_reply->readAll();
 
-  if (!data.isEmpty()) {
+  if (not data.isEmpty()) {
     QStringList list = m_reply->url().toString().split("/");
     QFile file(QDir::tempPath() + "/" + list.at(list.count() - 1));
     QMutex _mutex;
@@ -147,7 +143,7 @@ void DownloadDialog::downloadFinished(void) {
 
 void DownloadDialog::updateProgress(qint64 received, qint64 total) {
   // We know the size of the download, so we can calculate the progress....
-  if (total > 0 && received > 0) {
+  if (total > 0 and received > 0) {
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(100);
 
@@ -160,28 +156,22 @@ void DownloadDialog::updateProgress(qint64 received, qint64 total) {
     float _total = total;
     float _received = received;
 
-    if (_total < 1024)
+    if (_total < 1024) {
       _total_string = tr("%1 bytes").arg(_total);
-
-    else if (_total < 1024 * 1024) {
+    } else if (_total < 1024 * 1024) {
       _total = roundNumber(_total / 1024);
       _total_string = tr("%1 KB").arg(_total);
-    }
-
-    else {
+    } else {
       _total = roundNumber(_total / (1024 * 1024));
       _total_string = tr("%1 MB").arg(_total);
     }
 
-    if (_received < 1024)
+    if (_received < 1024) {
       _received_string = tr("%1 bytes").arg(_received);
-
-    else if (received < 1024 * 1024) {
+    } else if (received < 1024 * 1024) {
       _received = roundNumber(_received / 1024);
       _received_string = tr("%1 KB").arg(_received);
-    }
-
-    else {
+    } else {
       _received = roundNumber(_received / (1024 * 1024));
       _received_string = tr("%1 MB").arg(_received);
     }
@@ -198,23 +188,15 @@ void DownloadDialog::updateProgress(qint64 received, qint64 total) {
       if (_time_remaining > 7200) {
         _time_remaining /= 3600;
         _time_string = tr("Por volta de %1 horas").arg(int(_time_remaining + 0.5));
-      }
-
-      else if (_time_remaining > 60) {
+      } else if (_time_remaining > 60) {
         _time_remaining /= 60;
         _time_string = tr("Por volta de %1 minutos").arg(int(_time_remaining + 0.5));
-      }
-
-      else if (_time_remaining <= 60)
+      } else if (_time_remaining <= 60)
         _time_string = tr("%1 segundos").arg(int(_time_remaining + 0.5));
 
       ui->timeLabel->setText(tr("Tempo restante") + ": " + _time_string);
     }
-  }
-
-  // We do not know the size of the download, so we avoid scaring the shit out
-  // of the user
-  else {
+  } else { // We do not know the size of the download, so we avoid scaring the shit out of the user
     ui->progressBar->setValue(-1);
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(0);

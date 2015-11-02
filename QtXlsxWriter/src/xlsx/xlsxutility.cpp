@@ -129,7 +129,7 @@ Invalid characters are replaced by one space character ' '.
 */
   QString escapeSheetName(const QString &sheetName) {
     // Already escaped.
-    Q_ASSERT(not sheetName.startsWith(QLatin1Char('\'')) and !sheetName.endsWith(QLatin1Char('\'')));
+    Q_ASSERT(not sheetName.startsWith(QLatin1Char('\'')) and not sheetName.endsWith(QLatin1Char('\'')));
 
     // These is no need to escape
     if (not sheetName.contains(QRegularExpression(QStringLiteral("[ +\\-,%^=<>'&]")))) return sheetName;
@@ -156,7 +156,7 @@ Invalid characters are replaced by one space character ' '.
 */
   bool isSpaceReserveNeeded(const QString &s) {
     QString spaces(QStringLiteral(" \t\n\r"));
-    return !s.isEmpty() and (spaces.contains(s.at(0)) or spaces.contains(s.at(s.length() - 1)));
+    return not s.isEmpty() and (spaces.contains(s.at(0)) or spaces.contains(s.at(s.length() - 1)));
   }
 
   /*

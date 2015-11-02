@@ -116,12 +116,15 @@ QString QSimpleUpdater::changeLog() const { return m_changelog; }
  */
 
 void QSimpleUpdater::checkForUpdates(void) {
-  if (!m_reference_url.isEmpty()) {
+  if (not m_reference_url.isEmpty()) {
     m_manager->get(QNetworkRequest(m_reference_url));
 
-    if (!silent()) m_progressDialog->show();
-  } else
+    if (not silent()) {
+      m_progressDialog->show();
+    }
+  } else {
     qDebug() << "QSimpleUpdater: Invalid reference URL";
+  }
 }
 
 /*!
@@ -131,7 +134,9 @@ void QSimpleUpdater::checkForUpdates(void) {
  */
 
 void QSimpleUpdater::openDownloadLink(void) {
-  if (!m_download_url.isEmpty()) QDesktopServices::openUrl(m_download_url);
+  if (not m_download_url.isEmpty()) {
+    QDesktopServices::openUrl(m_download_url);
+  }
 }
 
 /*!
@@ -158,7 +163,9 @@ QString QSimpleUpdater::installedVersion() const { return m_installed_version; }
  */
 
 void QSimpleUpdater::downloadLatestVersion(void) {
-  if (!m_download_url.isEmpty()) m_downloadDialog->beginDownload(m_download_url);
+  if (not m_download_url.isEmpty()) {
+    m_downloadDialog->beginDownload(m_download_url);
+  }
 }
 
 /*!
@@ -191,7 +198,7 @@ bool QSimpleUpdater::silent() const { return m_silent; }
  */
 
 void QSimpleUpdater::setDownloadUrl(const QString &url) {
-  Q_ASSERT(!url.isEmpty());
+  Q_ASSERT(not url.isEmpty());
   m_download_url.setUrl(url);
 }
 
@@ -214,7 +221,7 @@ void QSimpleUpdater::setDownloadUrl(const QString &url) {
  */
 
 void QSimpleUpdater::setReferenceUrl(const QString &url) {
-  Q_ASSERT(!url.isEmpty());
+  Q_ASSERT(not url.isEmpty());
   m_reference_url.setUrl(url);
 }
 
@@ -229,7 +236,7 @@ void QSimpleUpdater::setReferenceUrl(const QString &url) {
  */
 
 void QSimpleUpdater::setChangelogUrl(const QString &url) {
-  Q_ASSERT(!url.isEmpty());
+  Q_ASSERT(not url.isEmpty());
   m_changelog_url.setUrl(url);
 }
 
@@ -244,7 +251,7 @@ void QSimpleUpdater::setChangelogUrl(const QString &url) {
  */
 
 void QSimpleUpdater::setApplicationVersion(const QString &version) {
-  Q_ASSERT(!version.isEmpty());
+  Q_ASSERT(not version.isEmpty());
   m_installed_version = version;
 }
 
@@ -263,7 +270,9 @@ void QSimpleUpdater::setApplicationVersion(const QString &version) {
 void QSimpleUpdater::setSilent(bool silent) {
   m_silent = silent;
 
-  if (m_silent) setShowNewestVersionMessage(false);
+  if (m_silent) {
+    setShowNewestVersionMessage(false);
+  }
 }
 
 /*!
@@ -302,9 +311,9 @@ void QSimpleUpdater::cancel(void) { m_manager->disconnect(); }
  */
 
 void QSimpleUpdater::showErrorMessage(void) {
-  if (!silent()) {
+  if (not silent()) {
     m_progressDialog->hide();
-    QMessageBox::warning(NULL, tr("Atualizador de Software"),
+    QMessageBox::warning(0, tr("Atualizador de Software"),
                          tr("Um erro desconhecido ocorreu ao checar por atualizações"));
   }
 }
@@ -324,13 +333,15 @@ void QSimpleUpdater::onCheckingFinished(void) {
   QPixmap _icon = qApp->windowIcon().pixmap(qApp->windowIcon().actualSize(QSize(96, 96)));
 
   // If the icon is invalid, use default icon
-  if (_icon.isNull()) _icon = QPixmap(":/icons/update.png");
+  if (_icon.isNull()) {
+    _icon = QPixmap(":/icons/update.png");
+  }
 
   QMessageBox _message;
   _message.setIconPixmap(_icon);
 
   // Ask user if he/she wants to download newer version
-  if (newerVersionAvailable() && m_show_update_available) {
+  if (newerVersionAvailable() and m_show_update_available) {
     _message.setDetailedText(changeLog());
     _message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     _message.setText("<b>" + tr("Uma nova versão de %1 está disponível!").arg(qApp->applicationName()) + "</b>");
@@ -339,11 +350,13 @@ void QSimpleUpdater::onCheckingFinished(void) {
                                 .arg(latestVersion())
                                 .arg(installedVersion()));
 
-    if (_message.exec() == QMessageBox::Yes) downloadLatestVersion();
+    if (_message.exec() == QMessageBox::Yes) {
+      downloadLatestVersion();
+    }
   }
 
   // Tell user that he/she is up to date (only if necessary)
-  else if (!silent() && m_show_newest_version && !m_latest_version.isEmpty()) {
+  else if (not silent() and m_show_newest_version and not m_latest_version.isEmpty()) {
     _message.setStandardButtons(QMessageBox::Ok);
     _message.setText("<b>" + tr("Você está atualizado!") + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>");
     _message.setInformativeText(tr("%1 %2 é a versão mais atual").arg(qApp->applicationName()).arg(installedVersion()));
@@ -369,52 +382,45 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
   _reply.replace(" ", "");
   _reply.replace("\n", "");
 
-  if (!_reply.isEmpty()) {
+  if (not _reply.isEmpty()) {
     m_latest_version = _reply;
 
     QStringList _download = m_latest_version.split(".");
     QStringList _installed = m_installed_version.split(".");
 
     for (int i = 0; i <= _download.count() - 1; ++i) {
-      if (_download.count() - 1 >= i && _installed.count() - 1 >= i) {
+      if (_download.count() - 1 >= i and _installed.count() - 1 >= i) {
         if (_download.at(i) > _installed.at(i)) {
           _new_update = true;
           break;
         }
-      }
-
-      else {
+      } else {
         if (_installed.count() < _download.count()) {
-          if (_installed.at(i - 1) == _download.at(i - 1))
+          if (_installed.at(i - 1) == _download.at(i - 1)) {
             break;
-
-          else {
+          } else {
             _new_update = true;
             break;
           }
         }
       }
     }
-  }
-
-  else {
+  } else {
     showErrorMessage();
   }
 
   m_new_version_available = _new_update;
 
-  if (!m_changelog_url.isEmpty() && newerVersionAvailable()) {
+  if (not m_changelog_url.isEmpty() and newerVersionAvailable()) {
     QNetworkAccessManager *_manager = new QNetworkAccessManager(this);
 
     connect(_manager, &QNetworkAccessManager::finished, this, &QSimpleUpdater::processDownloadedChangelog);
-
     connect(_manager, &QNetworkAccessManager::sslErrors, this, &QSimpleUpdater::ignoreSslErrors);
 
     _manager->get(QNetworkRequest(m_changelog_url));
-  }
-
-  else
+  } else {
     emit checkingFinished();
+  }
 }
 
 /*! \internal
@@ -426,7 +432,9 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
 void QSimpleUpdater::processDownloadedChangelog(QNetworkReply *reply) {
   QString _reply = QString::fromUtf8(reply->readAll());
 
-  if (!_reply.isEmpty()) m_changelog = _reply;
+  if (not _reply.isEmpty()) {
+    m_changelog = _reply;
+  }
 
   emit checkingFinished();
 }

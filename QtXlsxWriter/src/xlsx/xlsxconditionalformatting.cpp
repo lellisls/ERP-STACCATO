@@ -255,7 +255,7 @@ bool ConditionalFormatting::addHighlightCellsRule(HighlightRuleType type, const 
       cfRule->attrs[XlsxCfRuleData::A_bottom] = QStringLiteral("1");
     if (type == Highlight_TopPercent or type == Highlight_BottomPercent)
       cfRule->attrs[XlsxCfRuleData::A_percent] = QStringLiteral("1");
-    cfRule->attrs[XlsxCfRuleData::A_rank] = !formula1.isEmpty() ? formula1 : QStringLiteral("10");
+    cfRule->attrs[XlsxCfRuleData::A_rank] = not formula1.isEmpty() ? formula1 : QStringLiteral("10");
     skipFormula = true;
   } else if (type >= Highlight_AboveAverage and type <= Highlight_BelowStdDev3) {
     cfRule->attrs[XlsxCfRuleData::A_type] = QStringLiteral("aboveAverage");

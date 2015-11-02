@@ -785,7 +785,7 @@ bool Worksheet::writeDateTime(int row, int column, const QDateTime &dt, const Fo
   if (d->checkDimensions(row, column)) return false;
 
   Format fmt = format.isValid() ? format : d->cellFormat(row, column);
-  if (not fmt.isValid() or !fmt.isDateTimeFormat()) fmt.setNumberFormat(d->workbook->defaultDateFormat());
+  if (not fmt.isValid() or not fmt.isDateTimeFormat()) fmt.setNumberFormat(d->workbook->defaultDateFormat());
   d->workbook->styles()->addXfFormat(fmt);
 
   double value = datetimeToNumber(dt, d->workbook->isDate1904());
@@ -815,7 +815,7 @@ bool Worksheet::writeTime(int row, int column, const QTime &t, const Format &for
   if (d->checkDimensions(row, column)) return false;
 
   Format fmt = format.isValid() ? format : d->cellFormat(row, column);
-  if (not fmt.isValid() or !fmt.isDateTimeFormat()) fmt.setNumberFormat(QStringLiteral("hh:mm:ss"));
+  if (not fmt.isValid() or not fmt.isDateTimeFormat()) fmt.setNumberFormat(QStringLiteral("hh:mm:ss"));
   d->workbook->styles()->addXfFormat(fmt);
 
   d->cellTable[row][column] = QSharedPointer<Cell>(new Cell(timeToNumber(t), Cell::NumberType, fmt, this));
@@ -1173,9 +1173,9 @@ void WorksheetPrivate::saveXmlCellData(QXmlStreamWriter &writer, int row, int co
   // Style used by the cell, row or col
   if (not cell->format().isEmpty())
     writer.writeAttribute(QStringLiteral("s"), QString::number(cell->format().xfIndex()));
-  else if (rowsInfo.contains(row) and !rowsInfo[row]->format.isEmpty())
+  else if (rowsInfo.contains(row) and not rowsInfo[row]->format.isEmpty())
     writer.writeAttribute(QStringLiteral("s"), QString::number(rowsInfo[row]->format.xfIndex()));
-  else if (colsInfoHelper.contains(col) and !colsInfoHelper[col]->format.isEmpty())
+  else if (colsInfoHelper.contains(col) and not colsInfoHelper[col]->format.isEmpty())
     writer.writeAttribute(QStringLiteral("s"), QString::number(colsInfoHelper[col]->format.xfIndex()));
 
   if (cell->cellType() == Cell::SharedStringType) {
@@ -1573,7 +1573,7 @@ Format Worksheet::rowFormat(int row) {
 
   int min_col = d->dimension.isValid() ? d->dimension.firstColumn() : 1;
 
-  if (d->checkDimensions(row, min_col, false, true) or !d->rowsInfo.contains(row))
+  if (d->checkDimensions(row, min_col, false, true) or not d->rowsInfo.contains(row))
     return Format(); // return default on invalid row
 
   return d->rowsInfo[row]->format;
@@ -1587,7 +1587,7 @@ bool Worksheet::isRowHidden(int row) {
 
   int min_col = d->dimension.isValid() ? d->dimension.firstColumn() : 1;
 
-  if (d->checkDimensions(row, min_col, false, true) or !d->rowsInfo.contains(row))
+  if (d->checkDimensions(row, min_col, false, true) or not d->rowsInfo.contains(row))
     return false; // return default on invalid row
 
   return d->rowsInfo[row]->hidden;
@@ -1732,7 +1732,7 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("sheetData"));
 
   while (not reader.atEnd() and
-         !(reader.name() == QLatin1String("sheetData") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+         not (reader.name() == QLatin1String("sheetData") and reader.tokenType() == QXmlStreamReader::EndElement)) {
     if (reader.readNextStartElement()) {
       if (reader.name() == QLatin1String("row")) {
         QXmlStreamAttributes attributes = reader.attributes();
@@ -1805,12 +1805,12 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader) {
 
         QSharedPointer<Cell> cell(new Cell(QVariant(), cellType, format, q));
         while (not reader.atEnd() and
-               !(reader.name() == QLatin1String("c") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+               not (reader.name() == QLatin1String("c") and reader.tokenType() == QXmlStreamReader::EndElement)) {
           if (reader.readNextStartElement()) {
             if (reader.name() == QLatin1String("f")) {
               CellFormula &formula = cell->d_func()->formula;
               formula.loadFromXml(reader);
-              if (formula.formulaType() == CellFormula::SharedType and !formula.formulaText().isEmpty()) {
+              if (formula.formulaType() == CellFormula::SharedType and not formula.formulaText().isEmpty()) {
                 sharedFormulaMap[formula.sharedIndex()] = formula;
               }
             } else if (reader.name() == QLatin1String("v")) {
@@ -1830,7 +1830,7 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader) {
               }
             } else if (reader.name() == QLatin1String("is")) {
               while (not reader.atEnd() and
-                     !(reader.name() == QLatin1String("is") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+                     not (reader.name() == QLatin1String("is") and reader.tokenType() == QXmlStreamReader::EndElement)) {
                 if (reader.readNextStartElement()) {
                   //:Todo, add rich text read support
                   if (reader.name() == QLatin1String("t")) {
@@ -1841,8 +1841,8 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader) {
             } else if (reader.name() == QLatin1String("extLst")) {
               // skip extLst element
               while (
-                     !reader.atEnd() and
-                     !(reader.name() == QLatin1String("extLst") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+                     not reader.atEnd() and
+                     not (reader.name() == QLatin1String("extLst") and reader.tokenType() == QXmlStreamReader::EndElement)) {
                 reader.readNextStartElement();
               }
             }
@@ -1858,7 +1858,7 @@ void WorksheetPrivate::loadXmlColumnsInfo(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("cols"));
 
   while (not reader.atEnd() and
-         !(reader.name() == QLatin1String("cols") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+         not (reader.name() == QLatin1String("cols") and reader.tokenType() == QXmlStreamReader::EndElement)) {
     reader.readNextStartElement();
     if (reader.tokenType() == QXmlStreamReader::StartElement) {
       if (reader.name() == QLatin1String("col")) {
@@ -1906,7 +1906,7 @@ void WorksheetPrivate::loadXmlMergeCells(QXmlStreamReader &reader) {
   int count = attributes.value(QLatin1String("count")).toString().toInt();
 
   while (not reader.atEnd() and
-         !(reader.name() == QLatin1String("mergeCells") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+         not (reader.name() == QLatin1String("mergeCells") and reader.tokenType() == QXmlStreamReader::EndElement)) {
     reader.readNextStartElement();
     if (reader.tokenType() == QXmlStreamReader::StartElement) {
       if (reader.name() == QLatin1String("mergeCell")) {
@@ -1926,7 +1926,7 @@ void WorksheetPrivate::loadXmlDataValidations(QXmlStreamReader &reader) {
   int count = attributes.value(QLatin1String("count")).toString().toInt();
 
   while (not reader.atEnd() and
-         !(reader.name() == QLatin1String("dataValidations") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+         not (reader.name() == QLatin1String("dataValidations") and reader.tokenType() == QXmlStreamReader::EndElement)) {
     reader.readNextStartElement();
     if (reader.tokenType() == QXmlStreamReader::StartElement and reader.name() == QLatin1String("dataValidation")) {
       dataValidationsList.append(DataValidation::loadFromXml(reader));
@@ -1940,7 +1940,7 @@ void WorksheetPrivate::loadXmlSheetViews(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("sheetViews"));
 
   while (not reader.atEnd() and
-         !(reader.name() == QLatin1String("sheetViews") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+         not (reader.name() == QLatin1String("sheetViews") and reader.tokenType() == QXmlStreamReader::EndElement)) {
     reader.readNextStartElement();
     if (reader.tokenType() == QXmlStreamReader::StartElement and reader.name() == QLatin1String("sheetView")) {
       QXmlStreamAttributes attrs = reader.attributes();
@@ -2002,7 +2002,7 @@ void WorksheetPrivate::loadXmlHyperlinks(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("hyperlinks"));
 
   while (not reader.atEnd() and
-         !(reader.name() == QLatin1String("hyperlinks") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+         not (reader.name() == QLatin1String("hyperlinks") and reader.tokenType() == QXmlStreamReader::EndElement)) {
     reader.readNextStartElement();
     if (reader.tokenType() == QXmlStreamReader::StartElement and reader.name() == QLatin1String("hyperlink")) {
       QXmlStreamAttributes attrs = reader.attributes();
@@ -2107,7 +2107,7 @@ bool Worksheet::loadFromXmlFile(QIODevice *device) {
       } else if (reader.name() == QLatin1String("extLst")) {
         // Todo: add extLst support
         while (not reader.atEnd() and
-               !(reader.name() == QLatin1String("extLst") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+               not (reader.name() == QLatin1String("extLst") and reader.tokenType() == QXmlStreamReader::EndElement)) {
           reader.readNextStartElement();
         }
       }

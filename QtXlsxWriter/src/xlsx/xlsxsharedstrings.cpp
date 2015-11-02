@@ -228,7 +228,7 @@ namespace QXlsx {
     RichString richString;
 
     while (not reader.atEnd() and
-           !(reader.name() == QLatin1String("si") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+           not (reader.name() == QLatin1String("si") and reader.tokenType() == QXmlStreamReader::EndElement)) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("r"))
@@ -249,7 +249,7 @@ namespace QXlsx {
     QString text;
     Format format;
     while (not reader.atEnd() and
-           !(reader.name() == QLatin1String("r") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+           not (reader.name() == QLatin1String("r") and reader.tokenType() == QXmlStreamReader::EndElement)) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("rPr")) {
@@ -275,7 +275,7 @@ namespace QXlsx {
     Q_ASSERT(reader.name() == QLatin1String("rPr"));
     Format format;
     while (not reader.atEnd() and
-           !(reader.name() == QLatin1String("rPr") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+           not (reader.name() == QLatin1String("rPr") and reader.tokenType() == QXmlStreamReader::EndElement)) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         QXmlStreamAttributes attributes = reader.attributes();

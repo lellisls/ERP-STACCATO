@@ -9,15 +9,19 @@ BarCode::BarCode(QWidget *parent) : QWidget(parent) {
 #ifndef NO_BARCODE
   bc = 0;
   QLibrary library("QtZint");
-  if (not library.load()) qDebug() << library.errorString();
+  if (not library.load()) {
+    qDebug() << library.errorString();
+  }
 
   typedef Zint::QZint *(*CreateZint)();
   CreateZint cwf = (CreateZint)library.resolve("createWidget");
+
   if (cwf) {
     bc = cwf();
   } else {
     qDebug() << "Could not create Zint from the loaded library";
   }
+
 #endif
   m_value = "QtRPT";
   m_BarcodeType = CODE128; // CODE128
@@ -44,6 +48,7 @@ void BarCode::drawBarcode(QPainter *painter, qreal x, qreal y, qreal width, qrea
     painter->drawText(QRectF(x, y, width, height), Qt::AlignCenter, "Zint library not found");
     return;
   }
+
   bc->setSymbol(m_BarcodeType);
 
   // bc.setPrimaryMessage("dprimaryMessage");  //???
@@ -68,7 +73,11 @@ void BarCode::setBarcodeType(BarcodeTypes value) {
   Q_UNUSED(value);
 #ifndef NO_BARCODE
   m_BarcodeType = value;
-  if (bc != 0) bc->setSymbol(value);
+
+  if (bc != 0) {
+    bc->setSymbol(value);
+  }
+
   repaint();
 #endif
 }
@@ -77,7 +86,10 @@ void BarCode::setFrameType(FrameTypes value) {
   m_FrameType = value;
   Q_UNUSED(value);
 #ifndef NO_BARCODE
-  if (bc != 0) bc->setBorderType((Zint::QZint::BorderType)m_FrameType);
+  if (bc != 0) {
+    bc->setBorderType((Zint::QZint::BorderType)m_FrameType);
+  }
+
   repaint();
 #endif
 }
@@ -85,20 +97,24 @@ void BarCode::setFrameType(FrameTypes value) {
 BarCode::BarcodeTypePairList BarCode::getTypeList() {
   BarcodeTypePairList list;
   const QMetaObject &mo = staticMetaObject;
+
   for (int i = 0; i < mo.enumerator(0).keyCount(); i++) {
     QPair<BarcodeTypes, QString> pair;
     pair.first = (BarcodeTypes)mo.enumerator(0).value(i);
     pair.second = getTypeNameList()[i];
     list.append(pair);
   }
+
   return list;
 }
 
 QString BarCode::getTypeName(BarcodeTypes type) {
   BarcodeTypePairList list = getTypeList();
+
   for (int i = 0; i < list.size(); i++) {
     if (list.at(i).first == type) return list.at(i).second;
   }
+
   return QString();
 }
 
@@ -175,26 +191,31 @@ const QStringList BarCode::getTypeNameList() {
   bstyle_text << "RSS14STACK_CC";
   bstyle_text << "RSS14_OMNI_CC";
   bstyle_text << "RSS_EXPSTACK_CC";
+
   return bstyle_text;
 }
 
 BarCode::FrameTypePairList BarCode::getFrameTypeList() {
   FrameTypePairList list;
   const QMetaObject &mo = staticMetaObject;
+
   for (int i = 0; i < mo.enumerator(1).keyCount(); i++) {
     QPair<FrameTypes, QString> pair;
     pair.first = (FrameTypes)mo.enumerator(1).value(i);
     pair.second = mo.enumerator(1).key(i);
     list.append(pair);
   }
+
   return list;
 }
 
 QString BarCode::getFrameTypeName(FrameTypes type) {
   const QMetaObject &mo = staticMetaObject;
+
   for (int i = 0; i < mo.enumerator(1).keyCount(); i++) {
     if (mo.enumerator(1).value(i) == type) return mo.enumerator(1).key(i);
   }
+
   return QString();
 }
 
@@ -228,27 +249,35 @@ QDataStream &operator<<(QDataStream &stream, const BarCode &obj) {
       stream << obj.metaObject()->property(i).read(&obj);
     }
   }
+
   QList<QByteArray> list = obj.dynamicPropertyNames();
+
   for (int i = 0; i < list.size(); i++) {
     stream << obj.property(list.at(i));
   }
+
   return stream;
 }
 
 QDataStream &operator>>(QDataStream &stream, BarCode &obj) {
   QVariant var;
+
   for (int i = 0; i < obj.metaObject()->propertyCount(); ++i) {
     if (obj.metaObject()->property(i).isStored(&obj)) {
       stream >> var;
       if (not var.isNull()) obj.metaObject()->property(i).write(&obj, var);
     }
   }
+
   obj.setProperties();
   QList<QByteArray> list = obj.dynamicPropertyNames();
+
   for (int i = 0; i < list.size(); i++) {
     stream >> var;
     obj.setProperty(list.at(i), QVariant(var));
   }
+
   obj.setParamFromProperties();
+
   return stream;
 }

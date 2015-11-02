@@ -139,7 +139,7 @@ bool AbstractSheet::isHidden() const {
 /*!
  * Returns true if the sheet is visible.
  */
-bool AbstractSheet::isVisible() const { return !isHidden(); }
+bool AbstractSheet::isVisible() const { return not isHidden(); }
 
 /*!
  * Make the sheet hiden or visible based on \a hidden.

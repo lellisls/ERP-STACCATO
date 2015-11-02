@@ -130,7 +130,7 @@ void RichString::setHtml(const QString &text) {
   doc.setHtml(text);
   QTextBlock block = doc.firstBlock();
   QTextBlock::iterator it;
-  for (it = block.begin(); !(it.atEnd()); ++it) {
+  for (it = block.begin(); not (it.atEnd()); ++it) {
     QTextFragment textFragment = it.fragment();
     if (textFragment.isValid()) {
       Format fmt;

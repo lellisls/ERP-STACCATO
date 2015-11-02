@@ -280,23 +280,23 @@ bool ChartPrivate::loadXmlSer(QXmlStreamReader &reader) {
   seriesList.append(series);
 
   while (not reader.atEnd() and
-         !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("ser"))) {
+         not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("ser"))) {
     if (reader.readNextStartElement()) {
       QStringRef name = reader.name();
       if (name == QLatin1String("cat") or name == QLatin1String("xVal")) {
-        while (not reader.atEnd() and !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
+        while (not reader.atEnd() and not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
           if (reader.readNextStartElement()) {
             if (reader.name() == QLatin1String("numRef")) series->axDataSource_numRef = loadXmlNumRef(reader);
           }
         }
       } else if (name == QLatin1String("val") or name == QLatin1String("yVal")) {
-        while (not reader.atEnd() and !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
+        while (not reader.atEnd() and not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
           if (reader.readNextStartElement()) {
             if (reader.name() == QLatin1String("numRef")) series->numberDataSource_numRef = loadXmlNumRef(reader);
           }
         }
       } else if (name == QLatin1String("extLst")) {
-        while (not reader.atEnd() and !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
+        while (not reader.atEnd() and not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
           reader.readNextStartElement();
         }
       }
@@ -310,7 +310,7 @@ QString ChartPrivate::loadXmlNumRef(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("numRef"));
 
   while (not reader.atEnd() and
-         !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("numRef"))) {
+         not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("numRef"))) {
     if (reader.readNextStartElement()) {
       if (reader.name() == QLatin1String("f")) return reader.readElementText();
     }

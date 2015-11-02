@@ -894,8 +894,13 @@ bool Document::save() const {
  * Returns true if saved successfully.
  */
 bool Document::saveAs(const QString &name) const {
+  // TODO: add a second string to put error
   QFile file(name);
-  if (file.open(QIODevice::WriteOnly)) return saveAs(&file);
+
+  if (file.open(QIODevice::WriteOnly)) {
+    return saveAs(&file);
+  }
+
   return false;
 }
 

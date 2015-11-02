@@ -415,11 +415,11 @@ DataValidation DataValidation::loadFromXml(QXmlStreamReader &reader) {
 
   QString et = attrs.value(QLatin1String("errorTitle")).toString();
   QString e = attrs.value(QLatin1String("error")).toString();
-  if (not e.isEmpty() or !et.isEmpty()) validation.setErrorMessage(e, et);
+  if (not e.isEmpty() or not et.isEmpty()) validation.setErrorMessage(e, et);
 
   QString pt = attrs.value(QLatin1String("promptTitle")).toString();
   QString p = attrs.value(QLatin1String("prompt")).toString();
-  if (not p.isEmpty() or !pt.isEmpty()) validation.setPromptMessage(p, pt);
+  if (not p.isEmpty() or not pt.isEmpty()) validation.setPromptMessage(p, pt);
 
   // find the end
   while (not(reader.name() == QLatin1String("dataValidation") and reader.tokenType() == QXmlStreamReader::EndElement)) {

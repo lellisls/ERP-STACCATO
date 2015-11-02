@@ -85,7 +85,7 @@ otherwise, default formats should be added.
     if (not format.hasNumFmtData()) return;
 
     if (format.hasProperty(FormatPrivate::P_NumFmt_Id) and
-        !format.stringProperty(FormatPrivate::P_NumFmt_FormatCode).isEmpty()) {
+        not format.stringProperty(FormatPrivate::P_NumFmt_FormatCode).isEmpty()) {
       return;
     }
 
@@ -184,15 +184,15 @@ This is useful when reading existing .xlsx files which may contains duplicated f
   void Styles::addXfFormat(const Format &format, bool force) {
     if (format.isEmpty()) {
       // Try do something for empty Format.
-      if (m_emptyFormatAdded and !force) return;
+      if (m_emptyFormatAdded and not force) return;
       m_emptyFormatAdded = true;
     }
 
     // numFmt
-    if (format.hasNumFmtData() and !format.hasProperty(FormatPrivate::P_NumFmt_Id)) fixNumFmt(format);
+    if (format.hasNumFmtData() and not format.hasProperty(FormatPrivate::P_NumFmt_Id)) fixNumFmt(format);
 
     // Font
-    if (format.hasFontData() and !format.fontIndexValid()) {
+    if (format.hasFontData() and not format.fontIndexValid()) {
       // Assign proper font index, if has font data.
       if (not m_fontsHash.contains(format.fontKey()))
         const_cast<Format *>(&format)->setFontIndex(m_fontsList.size());
@@ -206,7 +206,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     }
 
     // Fill
-    if (format.hasFillData() and !format.fillIndexValid()) {
+    if (format.hasFillData() and not format.fillIndexValid()) {
       // Assign proper fill index, if has fill data.
       if (not m_fillsHash.contains(format.fillKey()))
         const_cast<Format *>(&format)->setFillIndex(m_fillsList.size());
@@ -220,7 +220,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     }
 
     // Border
-    if (format.hasBorderData() and !format.borderIndexValid()) {
+    if (format.hasBorderData() and not format.borderIndexValid()) {
       // Assign proper border index, if has border data.
       if (not m_bordersHash.contains(format.borderKey()))
         const_cast<Format *>(&format)->setBorderIndex(m_bordersList.size());
@@ -234,7 +234,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     }
 
     // Format
-    if (not format.isEmpty() and !format.xfIndexValid()) {
+    if (not format.isEmpty() and not format.xfIndexValid()) {
       if (m_xf_formatsHash.contains(format.formatKey()))
         const_cast<Format *>(&format)->setXfIndex(m_xf_formatsHash[format.formatKey()].xfIndex());
       else
@@ -250,7 +250,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     // numFmt
     if (format.hasNumFmtData()) fixNumFmt(format);
 
-    if (not format.isEmpty() and !format.dxfIndexValid()) {
+    if (not format.isEmpty() and not format.dxfIndexValid()) {
       if (m_dxf_formatsHash.contains(format.formatKey()))
         const_cast<Format *>(&format)->setDxfIndex(m_dxf_formatsHash[format.formatKey()].dxfIndex());
       else
@@ -340,11 +340,11 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     writer.writeStartElement(QStringLiteral("font"));
 
     // The condense and extend elements are mainly used in dxf format
-    if (format.hasProperty(FormatPrivate::P_Font_Condense) and !format.boolProperty(FormatPrivate::P_Font_Condense)) {
+    if (format.hasProperty(FormatPrivate::P_Font_Condense) and not format.boolProperty(FormatPrivate::P_Font_Condense)) {
       writer.writeEmptyElement(QStringLiteral("condense"));
       writer.writeAttribute(QStringLiteral("val"), QStringLiteral("0"));
     }
-    if (format.hasProperty(FormatPrivate::P_Font_Extend) and !format.boolProperty(FormatPrivate::P_Font_Extend)) {
+    if (format.hasProperty(FormatPrivate::P_Font_Extend) and not format.boolProperty(FormatPrivate::P_Font_Extend)) {
       writer.writeEmptyElement(QStringLiteral("extend"));
       writer.writeAttribute(QStringLiteral("val"), QStringLiteral("0"));
     }
@@ -673,7 +673,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
 
     // Read utill we find the numFmts end tag or ....
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("numFmts"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("numFmts"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("numFmt")) {
@@ -701,7 +701,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("fonts"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("fonts"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("font")) {
@@ -722,7 +722,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
   bool Styles::readFont(QXmlStreamReader &reader, Format &format) {
     Q_ASSERT(reader.name() == QLatin1String("font"));
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("font"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("font"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         QXmlStreamAttributes attributes = reader.attributes();
@@ -784,7 +784,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("fills"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("fills"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("fill")) {
@@ -829,7 +829,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     }
 
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("fill"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("fill"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("patternFill")) {
@@ -840,8 +840,8 @@ This is useful when reading existing .xlsx files which may contains duplicated f
 
             // parse foreground and background colors if they exist
             while (
-                   !reader.atEnd() and
-                   !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("patternFill"))) {
+                   not reader.atEnd() and
+                   not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("patternFill"))) {
               reader.readNextStartElement();
               if (reader.tokenType() == QXmlStreamReader::StartElement) {
                 if (reader.name() == QLatin1String("fgColor")) {
@@ -876,7 +876,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("borders"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("borders"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("border")) {
@@ -910,7 +910,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
       border.setDiagonalBorderType(Format::DiagonalBorderDown);
 
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("border"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("border"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("left") or reader.name() == QLatin1String("right") or
@@ -973,7 +973,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
       if (stylesStringsMap.contains(styleString)) {
         // get style
         style = stylesStringsMap[styleString];
-        while (not reader.atEnd() and !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
+        while (not reader.atEnd() and not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == name)) {
           reader.readNextStartElement();
           if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("color")) color.loadFromXml(reader);
@@ -991,7 +991,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("cellXfs"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("cellXfs"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("xf")) {
@@ -1125,7 +1125,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (not reader.atEnd() and
-           !(reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("dxfs"))) {
+           not (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("dxfs"))) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("dxf")) readDxf(reader);
@@ -1166,7 +1166,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
   bool Styles::readColors(QXmlStreamReader &reader) {
     Q_ASSERT(reader.name() == QLatin1String("colors"));
     while (not reader.atEnd() and
-           !(reader.name() == QLatin1String("colors") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+           not (reader.name() == QLatin1String("colors") and reader.tokenType() == QXmlStreamReader::EndElement)) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("indexedColors")) {
@@ -1182,7 +1182,7 @@ This is useful when reading existing .xlsx files which may contains duplicated f
     Q_ASSERT(reader.name() == QLatin1String("indexedColors"));
     m_indexedColors.clear();
     while (not reader.atEnd() and
-           !(reader.name() == QLatin1String("indexedColors") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+           not (reader.name() == QLatin1String("indexedColors") and reader.tokenType() == QXmlStreamReader::EndElement)) {
       reader.readNextStartElement();
       if (reader.tokenType() == QXmlStreamReader::StartElement) {
         if (reader.name() == QLatin1String("rgbColor")) {

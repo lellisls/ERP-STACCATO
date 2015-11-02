@@ -30,7 +30,7 @@
 #define QT_END_NAMESPACE_XLSX }
 #define QTXLSX_USE_NAMESPACE using namespace QXlsx;
 
-#if !defined(QT_STATIC) and !defined(XLSX_NO_LIB)
+#if not defined(QT_STATIC) and not defined(XLSX_NO_LIB)
 #if defined(QT_BUILD_XLSX_LIB)
 #define Q_XLSX_EXPORT Q_DECL_EXPORT
 #else

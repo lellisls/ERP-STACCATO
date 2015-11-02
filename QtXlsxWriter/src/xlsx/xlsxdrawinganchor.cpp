@@ -315,7 +315,7 @@ namespace QXlsx {
   void DrawingAnchor::saveXmlObjectGroupShape(QXmlStreamWriter &writer) const { Q_UNUSED(writer) }
 
   void DrawingAnchor::saveXmlObjectPicture(QXmlStreamWriter &writer) const {
-    Q_ASSERT(m_objectType == Picture and !m_pictureFile.isNull());
+    Q_ASSERT(m_objectType == Picture and not m_pictureFile.isNull());
 
     writer.writeStartElement(QStringLiteral("xdr:pic"));
 

@@ -16,7 +16,7 @@
 #ifndef Q_SIMPLE_UPDATER_H
 #define Q_SIMPLE_UPDATER_H
 
-#define SUPPORTS_SSL !defined(Q_OS_IOS)
+#define SUPPORTS_SSL not defined(Q_OS_IOS)
 
 #include <QUrl>
 #include <QIcon>

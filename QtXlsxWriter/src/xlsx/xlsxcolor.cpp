@@ -26,7 +26,7 @@ namespace QXlsx {
 
   bool XlsxColor::isThemeColor() const { return val.userType() == QMetaType::QStringList; }
 
-  bool XlsxColor::isInvalid() const { return !val.isValid(); }
+  bool XlsxColor::isInvalid() const { return not val.isValid(); }
 
   QColor XlsxColor::rgbColor() const {
     if (isRgbColor()) return val.value<QColor>();
@@ -99,7 +99,7 @@ namespace QXlsx {
     return color;
   }
 
-#if !defined(QT_NO_DATASTREAM)
+#if not defined(QT_NO_DATASTREAM)
   QDataStream &operator<<(QDataStream &s, const XlsxColor &color) {
     if (color.isInvalid())
       s << 0;

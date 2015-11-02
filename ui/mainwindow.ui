@@ -156,7 +156,7 @@
               <string>Todos</string>
              </property>
              <property name="checked">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -169,7 +169,7 @@
               <string>Próprios</string>
              </property>
              <property name="checked">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -225,7 +225,7 @@
           <item row="0" column="0" rowspan="2">
            <widget class="QGroupBox" name="groupBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="title">
              <string>Filtros:</string>
@@ -234,14 +234,135 @@
              <bool>false</bool>
             </property>
             <layout class="QGridLayout" name="gridLayout_8">
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButtonVendFechado">
-               <property name="text">
-                <string>Fechados</string>
+             <item row="3" column="0">
+              <widget class="QGroupBox" name="groupBoxStatusVenda">
+               <property name="title">
+                <string>Status</string>
                </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_40">
+                <item row="1" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaIniciado">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Iniciado</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaEmCompra">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Em Compra</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaEmFaturamento">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Em Faturamento</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaEmColeta">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Em Coleta</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaEmRecebimento">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Em Recebimento</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaPendente">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Pendente</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaEstoque">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Estoque</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="7" column="0">
+                 <widget class="QCheckBox" name="checkBoxVendaFinalizado">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Finalizado</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
-             <item row="3" column="0">
+             <item row="4" column="0">
+              <widget class="QGroupBox" name="groupBoxLojas">
+               <property name="title">
+                <string>Loja</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_46">
+                <item row="2" column="0">
+                 <widget class="ComboBox" name="comboBoxLojas"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="5" column="0">
               <spacer name="verticalSpacer">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -254,22 +375,41 @@
                </property>
               </spacer>
              </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButtonVendAberto">
-               <property name="text">
-                <string>Abertos</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="0">
               <widget class="QRadioButton" name="radioButtonVendLimpar">
                <property name="text">
                 <string>Todos</string>
                </property>
                <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButtonVendProprios">
+               <property name="text">
+                <string>Próprios</string>
+               </property>
+               <property name="checked">
                 <bool>true</bool>
                </property>
               </widget>
+             </item>
+             <item row="2" column="0">
+              <spacer name="verticalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>5</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>
@@ -1957,14 +2097,23 @@ Importar NFe</string>
      <x>0</x>
      <y>0</y>
      <width>764</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOp_es">
     <property name="title">
      <string>Opções</string>
     </property>
+    <widget class="QMenu" name="menuTema">
+     <property name="title">
+      <string>Tema</string>
+     </property>
+     <addaction name="actionClaro"/>
+     <addaction name="actionEscuro"/>
+    </widget>
     <addaction name="actionImportaProdutos"/>
+    <addaction name="menuTema"/>
+    <addaction name="actionConfigura_es"/>
    </widget>
    <widget class="QMenu" name="menuAdministra_o">
     <property name="title">
@@ -1984,9 +2133,16 @@ Importar NFe</string>
     <addaction name="actionCriarOrcamento"/>
     <addaction name="actionCadastrarCliente"/>
    </widget>
+   <widget class="QMenu" name="menuAjuda">
+    <property name="title">
+     <string>Ajuda</string>
+    </property>
+    <addaction name="actionSobre"/>
+   </widget>
    <addaction name="menuVenda"/>
    <addaction name="menuAdministra_o"/>
    <addaction name="menuOp_es"/>
+   <addaction name="menuAjuda"/>
   </widget>
   <action name="actionCriarOrcamento">
    <property name="text">
@@ -2048,8 +2204,35 @@ Importar NFe</string>
     <string>Importar tabela fornecedor</string>
    </property>
   </action>
+  <action name="actionSobre">
+   <property name="text">
+    <string>Sobre o ERP Staccato</string>
+   </property>
+  </action>
+  <action name="actionClaro">
+   <property name="text">
+    <string>Claro</string>
+   </property>
+  </action>
+  <action name="actionEscuro">
+   <property name="text">
+    <string>Escuro</string>
+   </property>
+  </action>
+  <action name="actionConfigura_es">
+   <property name="text">
+    <string>Configurações</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>src/combobox.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>radioButtonOrcLimpar</tabstop>
   <tabstop>radioButtonOrcValido</tabstop>
@@ -2057,8 +2240,6 @@ Importar NFe</string>
   <tabstop>tableOrcamentos</tabstop>
   <tabstop>lineEditBuscaOrcamentos</tabstop>
   <tabstop>radioButtonVendLimpar</tabstop>
-  <tabstop>radioButtonVendAberto</tabstop>
-  <tabstop>radioButtonVendFechado</tabstop>
   <tabstop>tableVendas</tabstop>
   <tabstop>lineEditBuscaVendas</tabstop>
   <tabstop>radioButtonEntregaLimpar</tabstop>

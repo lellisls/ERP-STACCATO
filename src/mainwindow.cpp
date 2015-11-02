@@ -4,13 +4,12 @@
 #include <QFileDialog>
 #include <QSqlRecord>
 #include <QDate>
-#include <QSqlDriver>
 #include <QTimer>
-#include <xlsxdocument.h>
+#include <QInputDialog>
+#include <QSqlError>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "orcamentoproxymodel.h"
 #include "cadastrocliente.h"
 #include "cadastrofornecedor.h"
 #include "cadastroloja.h"
@@ -27,43 +26,55 @@
 #include "estoque.h"
 #include "importaprodutos.h"
 #include "importarxml.h"
-#include "initdb.h"
 #include "inputdialog.h"
 #include "logindialog.h"
 #include "orcamento.h"
+#include "orcamentoproxymodel.h"
 #include "porcentagemdelegate.h"
 #include "produtospendentes.h"
+#include "QSimpleUpdater"
+#include "sendmail.h"
 #include "usersession.h"
 #include "venda.h"
+#include "xlsxdocument.h"
 #include "xml.h"
 #include "xml_viewer.h"
-#include "sendmail.h"
-
-#include "QSimpleUpdater"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
+  defaultStyle = this->style()->objectName();
+  defautPalette = qApp->palette();
+
   qApp->setApplicationVersion("0.1");
-  qDebug() << "version: " << qApp->applicationVersion();
 
-  QSimpleUpdater *updater = new QSimpleUpdater(this);
-  updater->setApplicationVersion(qApp->applicationVersion());
-  updater->setReferenceUrl("http://192.168.2.144/versao.txt");
-  updater->setDownloadUrl("http://192.168.2.144/Loja.exe");
-//  connect(updater, &QSimpleUpdater::checkingFinished, this, &MainWindow::on_actionCadastrarCliente_triggered);
-  updater->setSilent(true);
-  updater->setShowNewestVersionMessage(true);
-  updater->checkForUpdates();
-
-  // TODO: it looks like this is inverted ERP/Staccato
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("Login");
   hostname = settings.value("hostname").toString();
   username = settings.value("username").toString();
   password = settings.value("password").toString();
   port = settings.value("port").toString();
   homologacao = settings.value("homologacao").toBool();
+
+  if (hostname.isEmpty()) {
+    QStringList items;
+    items << "Alphaville"
+          << "Gabriel";
+    QString loja = QInputDialog::getItem(this, "Escolha a loja", "Qual a sua loja?", items, 0, false);
+
+    if (loja == "Alphaville") {
+      settings.setValue("hostname", "192.168.2.144");
+    } else if (loja == "Gabriel") {
+      settings.setValue("hostname", "192.168.1.101");
+    }
+
+    settings.setValue("username", "user");
+    settings.setValue("password", "1234");
+    settings.setValue("port", "3306");
+    settings.setValue("homologacao", false);
+  }
+  //  settings.setValue("hostname", ""); to test store selection
+
   settings.endGroup();
 
   settings.beginGroup("User");
@@ -75,11 +86,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
   settings.endGroup();
 
+  QSimpleUpdater *updater = new QSimpleUpdater(this);
+  updater->setApplicationVersion(qApp->applicationVersion());
+  updater->setReferenceUrl("http://" + hostname + "/versao.txt");
+  updater->setDownloadUrl("http://" + hostname + "/Instalador.exe");
+  updater->setSilent(true);
+  updater->setShowNewestVersionMessage(true);
+  updater->checkForUpdates();
+
 #ifdef QT_DEBUG
   //  if (not dbConnect()) {
   //    exit(1);
   //  } else if (not UserSession::login("admin", "1234")) {
-  //    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+  //    QMessageBox::critical(this, "Atenção!", "Login inválido!");
   //    exit(1);
   //  }
 
@@ -97,7 +116,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   //  if (not dbConnect()) {
   //    exit(1);
   //  } else if (not UserSession::login("admin", "1234")) {
-  //    QMessageBox::critical(this, "Atenção!", "Login inválido!", QMessageBox::Ok, QMessageBox::NoButton);
+  //    QMessageBox::critical(this, "Atenção!", "Login inválido!");
   //    exit(1);
   //  }
 #endif
@@ -110,13 +129,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
   setWindowIcon(QIcon("Staccato.ico"));
 
-  //  darkTheme();
+  darkTheme();
 
   setWindowTitle("ERP Staccato");
   readSettings();
-
-  // TODO: instead of auto updating (disrupt user selections) put a button for updating, so the user can update when he
-  // wants
 
   QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
   connect(shortcut, &QShortcut::activated, this, &QWidget::close);
@@ -126,6 +142,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipoUsuario() + " - " +
                  hostname + (homologacao ? " - HOMOLOGACAO" : ""));
 
+  ui->radioButtonOrcLimpar->click();
+  ui->radioButtonVendLimpar->click();
+
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->actionGerenciar_Lojas->setDisabled(true);
     ui->actionGerenciar_Transportadoras->setDisabled(true);
@@ -133,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->actionCadastrarUsuario->setDisabled(true);
     ui->actionCadastrarProfissional->setDisabled(true);
     ui->actionCadastrarFornecedor->setDisabled(true);
+    ui->groupBoxLojas->hide();
   }
 
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
@@ -155,19 +175,40 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->labelPedidosCompra->hide();
     ui->actionCadastrarUsuario->setVisible(false);
 
-    ui->radioButtonOrcValido->setChecked(true);
-    on_radioButtonOrcValido_clicked();
+    //    ui->radioButtonOrcValido->setChecked(true);
+    //    on_radioButtonOrcValido_clicked();
+    ui->radioButtonOrcProprios->click();
+    ui->radioButtonVendProprios->click();
   }
 
-  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
+  //  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
 
   ui->radioButtonProdPendPend->click();
 
   updateTables();
 
-  // TODO: sort directly in setupTables
-  //  ui->tableOrcamentos->sortByColumn(modelOrcamento->fieldIndex("Código"));
-  //  ui->tableVendas->sortByColumn(modelVendas->fieldIndex("idVenda"));
+  connect(ui->radioButtonVendLimpar, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->radioButtonVendProprios, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaPendente, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaIniciado, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaEmCompra, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaEmFaturamento, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaEmColeta, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaEmRecebimento, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaEstoque, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+  connect(ui->checkBoxVendaFinalizado, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
+
+  montaFiltroVendas();
+
+  QSqlQuery query("SELECT * FROM loja WHERE descricao != 'Geral'");
+
+  ui->comboBoxLojas->addItem("");
+
+  while (query.next()) {
+    ui->comboBoxLojas->addItem(query.value("sigla").toString(), query.value("idLoja"));
+  }
+
+  ui->comboBoxLojas->setCurrentValue(UserSession::getLoja());
 }
 
 bool MainWindow::dbConnect() {
@@ -177,13 +218,7 @@ bool MainWindow::dbConnect() {
     exit(1);
   }
 
-  QSqlDatabase db;
-
-  if (QSqlDatabase::contains()) {
-    db = QSqlDatabase::database();
-  } else {
-    db = QSqlDatabase::addDatabase("QMYSQL");
-  }
+  QSqlDatabase db = QSqlDatabase::contains() ? QSqlDatabase::database() : QSqlDatabase::addDatabase("QMYSQL");
 
   db.setHostName(hostname);
   db.setUserName(username);
@@ -192,81 +227,68 @@ bool MainWindow::dbConnect() {
 
   db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
 
-  if (db.open()) {
-    QSqlQuery query = db.exec("SHOW SCHEMAS");
-    bool hasMydb = false;
-
-    while (query.next()) {
-      if (query.value(0).toString() == "mydb") {
-        hasMydb = true;
-      }
-    }
-
-    if (not hasMydb) {
-      QMessageBox::warning(
-            this, "Aviso!",
-            "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
-      return false;
-    }
-
-    db.close();
-
-    if (not homologacao) {
-      db.setDatabaseName("mydb");
-    } else {
-      db.setDatabaseName("mydb_test");
-    }
-
-    if (db.open()) {
-      QSqlQuery query;
-
-      if (not query.exec("CALL invalidate_expired()")) {
-        qDebug() << "Erro executando procedure InvalidateExpired: " << query.lastError();
-      }
-
-      return true;
-
-    } else {
-      showError(db.lastError());
-      return false;
-    }
-
-  } else {
+  if (not db.open()) {
     switch (db.lastError().number()) {
       case 1045:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
                               "Verifique se o usuário e senha do banco de dados estão corretos.");
         break;
       case 2002:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
                               "Verifique se o servidor está ligado, e acessível pela rede.");
         break;
       case 2003:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
                               "Verifique se o servidor está ligado, e acessível pela rede.");
         break;
       case 2005:
-        QMessageBox::critical(this, "ERRO: Banco de dados inacessível!",
+        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
                               "Verifique se o IP do servidor foi escrito corretamente.");
         break;
       default:
-        showError(db.lastError());
+        QMessageBox::critical(this, "Erro", "Erro conectando no banco de dados: " + db.lastError().text());
         break;
     }
 
     return false;
   }
 
-  return false;
+  QSqlQuery query = db.exec("SHOW SCHEMAS");
+  bool hasMydb = false;
+
+  while (query.next()) {
+    if (query.value(0).toString() == "mydb") {
+      hasMydb = true;
+    }
+  }
+
+  if (not hasMydb) {
+    QMessageBox::critical(
+          this, "Erro!",
+          "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
+    return false;
+  }
+
+  db.close();
+
+  db.setDatabaseName(homologacao ? "mydb_test" : "mydb");
+
+  if (not db.open()) {
+    QMessageBox::critical(this, "Erro", "Erro conectando no banco de dados: " + db.lastError().text());
+    return false;
+  }
+
+  if (not query.exec("CALL invalidate_expired()")) {
+    QMessageBox::critical(this, "Erro!", "Erro executando InvalidarExpirados: " + query.lastError().text());
+    return false;
+  }
+
+  return true;
 }
 
 MainWindow::~MainWindow() {
   delete ui;
   UserSession::free();
-}
-
-void MainWindow::showError(const QSqlError &err) {
-  QMessageBox::critical(this, "Erro", "Erro inicializando o banco de dados: " + err.text());
 }
 
 void MainWindow::on_actionCriarOrcamento_triggered() {
@@ -308,7 +330,7 @@ void MainWindow::setupTables() {
   modelOrcamento->setTable("view_orcamento");
 
   if (not modelOrcamento->select()) {
-    qDebug() << "Failed to populate TableOrcamento: " << modelOrcamento->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela orçamento: " + modelOrcamento->lastError().text());
     return;
   }
 
@@ -317,6 +339,7 @@ void MainWindow::setupTables() {
   ui->tableOrcamentos->setItemDelegate(doubledelegate);
   ui->tableOrcamentos->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableOrcamentos->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableOrcamentos->sortByColumn(modelOrcamento->fieldIndex("Código"));
 
   // Vendas ------------------------------------------------------------------------------------------------------------
   modelVendas = new SqlTableModel(this);
@@ -325,7 +348,7 @@ void MainWindow::setupTables() {
   modelVendas->setSort(modelVendas->fieldIndex("Dias restantes"), Qt::DescendingOrder);
 
   if (not modelVendas->select()) {
-    qDebug() << "Failed to populate TableVendas: " << modelVendas->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelVendas->lastError().text());
     return;
   }
 
@@ -336,9 +359,10 @@ void MainWindow::setupTables() {
   ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("Total R$"), doubledelegate);
   ui->tableVendas->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableVendas->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableVendas->sortByColumn(modelVendas->fieldIndex("Código"));
 
   // Produtos Pendentes ------------------------------------------------------------------------------------------------
-  modelProdPend = new QSqlQueryModel(this);
+  modelProdPend = new SqlQueryModel(this);
 
   // TODO: convert this to view to be able to set filters properly
   // model is set by the filter buttons
@@ -348,7 +372,7 @@ void MainWindow::setupTables() {
   ui->tableProdutosPend->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Fornecedores Compras ----------------------------------------------------------------------------------------------
-  modelPedForn = new QSqlQueryModel(this);
+  modelPedForn = new SqlQueryModel(this);
   modelPedForn->setQuery("SELECT fornecedor, COUNT(fornecedor) FROM pedido_fornecedor_has_produto WHERE status != "
                          "'FINALIZADO' GROUP BY fornecedor");
   modelPedForn->setHeaderData(modelPedForn->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
@@ -359,7 +383,7 @@ void MainWindow::setupTables() {
   ui->tableFornCompras->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Fornecedores Logística --------------------------------------------------------------------------------------------
-  modelPedForn2 = new QSqlQueryModel(this);
+  modelPedForn2 = new SqlQueryModel(this);
   modelPedForn2->setQuery("SELECT fornecedor, COUNT(fornecedor) FROM pedido_fornecedor_has_produto WHERE status != "
                           "'FINALIZADO' GROUP BY fornecedor");
   modelPedForn2->setHeaderData(modelPedForn2->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
@@ -393,7 +417,8 @@ void MainWindow::setupTables() {
   modelItemPedidosPend->setFilter("status = 'PENDENTE'");
 
   if (not modelItemPedidosPend->select()) {
-    qDebug() << "Failed to populate pedido_fornecedor_has_produto pend: " << modelItemPedidosPend->lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo pedido_fornecedor_has_produto: " + modelItemPedidosPend->lastError().text());
     return;
   }
 
@@ -426,7 +451,7 @@ void MainWindow::setupTables() {
                                                  new CheckBoxDelegate(this));
 
   // Compras - A Confirmar ---------------------------------------------------------------------------------------------
-  modelItemPedidosComp = new QSqlQueryModel(this);
+  modelItemPedidosComp = new SqlQueryModel(this);
   modelItemPedidosComp->setQuery("SELECT fornecedor, idCompra, COUNT(idProduto), SUM(preco), status FROM "
                                  "pedido_fornecedor_has_produto WHERE status = 'EM COMPRA' GROUP BY idCompra");
 
@@ -443,7 +468,7 @@ void MainWindow::setupTables() {
   ui->tablePedidosComp->verticalHeader()->setResizeContentsPrecision(0);
 
   // Faturamentos ------------------------------------------------------------------------------------------------------
-  modelFat = new QSqlQueryModel(this);
+  modelFat = new SqlQueryModel(this);
   modelFat->setQuery("SELECT fornecedor, idCompra, COUNT(idProduto), SUM(preco), status FROM "
                      "pedido_fornecedor_has_produto WHERE status = 'EM FATURAMENTO' GROUP BY idCompra");
 
@@ -480,7 +505,9 @@ void MainWindow::setupTables() {
   modelColeta->setFilter("status = 'EM COLETA'");
 
   if (not modelColeta->select()) {
-    qDebug() << "Failed to populate pedido_fornecedor_has_produto coleta: " << modelColeta->lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta->lastError().text());
+    return;
   }
 
   ui->tableColeta->setModel(modelColeta);
@@ -532,7 +559,9 @@ void MainWindow::setupTables() {
   modelReceb->setFilter("status = 'EM RECEBIMENTO'");
 
   if (not modelReceb->select()) {
-    qDebug() << "Failed to populate pedido_fornecedor_has_produto: " << modelReceb->lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb->lastError().text());
+    return;
   }
 
   ui->tableRecebimento->setModel(modelReceb);
@@ -567,7 +596,7 @@ void MainWindow::setupTables() {
   modelEntregasCliente->setTable("view_venda");
 
   if (not modelEntregasCliente->select()) {
-    qDebug() << "Failed to populate TableEntregasCliente: " << modelEntregasCliente->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelEntregasCliente->lastError().text());
     return;
   }
 
@@ -583,7 +612,7 @@ void MainWindow::setupTables() {
   modelNfeEntrada->setFilter("tipo = 'ENTRADA'");
 
   if (not modelNfeEntrada->select()) {
-    qDebug() << "Failed to populate TableNFe: " << modelNfeEntrada->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeEntrada->lastError().text());
     return;
   }
 
@@ -600,7 +629,7 @@ void MainWindow::setupTables() {
   modelNfeSaida->setFilter("tipo = 'SAIDA'");
 
   if (not modelNfeSaida->select()) {
-    qDebug() << "Failed to populate TableNFe: " << modelNfeSaida->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeSaida->lastError().text());
     return;
   }
 
@@ -616,7 +645,7 @@ void MainWindow::setupTables() {
   modelEstoque->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelEstoque->select()) {
-    qDebug() << "Failed to populate TableEstoque: " << modelEstoque->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque->lastError().text());
     return;
   }
 
@@ -631,7 +660,7 @@ void MainWindow::setupTables() {
   modelCAPagar->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelCAPagar->select()) {
-    qDebug() << "Failed to populate TableContasPagar: " << modelCAPagar->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar: " + modelCAPagar->lastError().text());
     return;
   }
 
@@ -646,7 +675,7 @@ void MainWindow::setupTables() {
   modelCAReceber->setTable("conta_a_receber");
 
   if (not modelCAReceber->select()) {
-    qDebug() << "Failed to populate TableContasReceber: " << modelCAReceber->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber: " + modelCAReceber->lastError().text());
     return;
   }
 
@@ -677,92 +706,143 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
 }
 
 void MainWindow::updateTables() {
-  if (ui->tabWidget->currentIndex() == 0) {
+  if (ui->tabWidget->currentIndex() == 0) { // Orcamentos
     if (not modelOrcamento->select()) {
-      qDebug() << "erro modelOrcamento: " << modelOrcamento->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela orçamento: " + modelOrcamento->lastError().text());
       return;
     }
 
     ui->tableOrcamentos->resizeColumnsToContents();
   }
 
-  if (ui->tabWidget->currentIndex() == 1) {
+  if (ui->tabWidget->currentIndex() == 1) { // Vendas
     if (not modelVendas->select()) {
-      qDebug() << "erro modelVendas: " << modelVendas->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelVendas->lastError().text());
       return;
     }
 
     ui->tableVendas->resizeColumnsToContents();
   }
 
-  if (ui->tabWidget->currentIndex() == 2) {
+  if (ui->tabWidget->currentIndex() == 2) { // Compras
     modelProdPend->setQuery(modelProdPend->query().executedQuery());
     modelPedForn->setQuery(modelPedForn->query().executedQuery());
 
-    modelItemPedidosPend->setFilter("0");
-
-    if (not modelItemPedidosPend->select()) {
-      qDebug() << "erro modelItensPend: " << modelItemPedidosPend->lastError();
-      return;
-    }
-
-    //    for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
-    //      ui->tablePedidosPend->openPersistentEditor(
-    //            modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
-    //    }
-
     ui->tableProdutosPend->resizeColumnsToContents();
     ui->tableFornCompras->resizeColumnsToContents();
-    //    ui->tablePedidosPend->resizeColumnsToContents();
+
+    if (ui->tabWidget_2->currentIndex() == 0) { // Gerar Compra
+      modelItemPedidosPend->setFilter("0");
+
+      if (not modelItemPedidosPend->select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " +
+                              modelItemPedidosPend->lastError().text());
+        return;
+      }
+
+      for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
+        ui->tablePedidosPend->openPersistentEditor(
+              modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
+      }
+
+      ui->tablePedidosPend->resizeColumnsToContents();
+    }
+
+    if (ui->tabWidget_2->currentIndex() == 1) { // Confirmar Compra
+      modelItemPedidosComp->setQuery(modelItemPedidosComp->query().executedQuery());
+
+      ui->tablePedidosComp->resizeColumnsToContents();
+    }
+
+    if (ui->tabWidget_2->currentIndex() == 2) { // Faturamento
+      modelFat->setQuery(modelFat->query().executedQuery());
+
+      ui->tableFaturamento->resizeColumnsToContents();
+    }
   }
 
-  if (ui->tabWidget->currentIndex() == 3) {
+  if (ui->tabWidget->currentIndex() == 3) { // Logistica
     modelPedForn2->setQuery(modelPedForn2->query().executedQuery());
 
-    if (not modelColeta->select()) {
-      qDebug() << "erro modelColeta: " << modelColeta->lastError();
-      return;
-    }
-
-    for (int i = 0; i < modelColeta->rowCount(); ++i) {
-      ui->tableColeta->openPersistentEditor(modelColeta->index(i, modelColeta->fieldIndex("selecionado")));
-    }
-
     ui->tableFornLogistica->resizeColumnsToContents();
-    ui->tableColeta->resizeColumnsToContents();
-  }
 
-  if (ui->tabWidget->currentIndex() == 4) {
-    if (not modelNfeEntrada->select()) {
-      qDebug() << "erro modelNfeEntrada: " << modelNfeEntrada->lastError();
-      return;
+    if (ui->tabWidget_3->currentIndex() == 0) { // Coleta
+      // TODO: set filter = 0? (for when no manufacturer is selected)
+      if (not modelColeta->select()) {
+        QMessageBox::critical(this, "Erro!",
+                              "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta->lastError().text());
+        return;
+      }
+
+      for (int i = 0; i < modelColeta->rowCount(); ++i) {
+        ui->tableColeta->openPersistentEditor(modelColeta->index(i, modelColeta->fieldIndex("selecionado")));
+      }
+
+      ui->tableColeta->resizeColumnsToContents();
     }
 
-    ui->tableNfeEntrada->resizeColumnsToContents();
+    if (ui->tabWidget_3->currentIndex() == 1) { // Recebimento
+      if (not modelReceb->select()) {
+        QMessageBox::critical(this, "Erro!",
+                              "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb->lastError().text());
+        return;
+      }
+
+      for (int i = 0; i < modelReceb->rowCount(); ++i) {
+        ui->tableRecebimento->openPersistentEditor(modelReceb->index(i, modelReceb->fieldIndex("selecionado")));
+      }
+
+      ui->tableRecebimento->resizeColumnsToContents();
+    }
+
+    if (ui->tabWidget_3->currentIndex() == 2) { // Entregas
+      if (not modelEntregasCliente->select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelEntregasCliente->lastError().text());
+        return;
+      }
+
+      ui->tableEntregasCliente->resizeColumnsToContents();
+    }
   }
 
-  if (ui->tabWidget->currentIndex() == 5) {
+  if (ui->tabWidget->currentIndex() == 4) {     // NFe
+    if (ui->tabWidget_4->currentIndex() == 0) { // Entrada
+      if (not modelNfeEntrada->select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeEntrada->lastError().text());
+        return;
+      }
+
+      ui->tableNfeEntrada->resizeColumnsToContents();
+    }
+
+    if (ui->tabWidget_4->currentIndex() == 1) { // Saida
+      if (not modelNfeSaida->select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeSaida->lastError().text());
+        return;
+      }
+
+      ui->tableNfeSaida->resizeColumnsToContents();
+    }
+  }
+
+  if (ui->tabWidget->currentIndex() == 5) { // Estoque
     if (not modelEstoque->select()) {
-      qDebug() << "erro modelEstoque: " << modelEstoque->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque->lastError().text());
       return;
     }
   }
 
-  if (ui->tabWidget->currentIndex() == 6) {
+  if (ui->tabWidget->currentIndex() == 6) { // Contas
     if (not modelCAPagar->select()) {
-      qDebug() << "erro modelCAPagar: " << modelCAPagar->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar: " + modelCAPagar->lastError().text());
       return;
     }
 
     if (not modelCAReceber->select()) {
-      qDebug() << "erro modelCAReceber: " << modelCAReceber->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber: " + modelCAReceber->lastError().text());
       return;
     }
   }
-
-  //  for (int i = 0; i < modelReceb->rowCount(); ++i) {
-  //    ui->tableRecebimento->openPersistentEditor(modelReceb->index(i, modelReceb->fieldIndex("selecionado")));
-  //}
 }
 
 void MainWindow::on_radioButtonOrcValido_clicked() {
@@ -779,24 +859,6 @@ void MainWindow::on_radioButtonOrcExpirado_clicked() {
 void MainWindow::on_radioButtonOrcLimpar_clicked() {
   modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
   ui->tableOrcamentos->resizeColumnsToContents();
-}
-
-void MainWindow::on_radioButtonVendAberto_clicked() {
-  modelVendas->setFilter("(idVenda LIKE '%" + UserSession::getSiglaLoja() + "%') AND status = 'aberto'");
-  //  modelVendas->setFilter("status = 'aberto'");
-  ui->tableVendas->resizeColumnsToContents();
-}
-
-void MainWindow::on_radioButtonVendFechado_clicked() {
-  modelVendas->setFilter("(idVenda LIKE '%" + UserSession::getSiglaLoja() + "%') AND status = 'fechado'");
-  //  modelVendas->setFilter("status = 'fechado'");
-  ui->tableVendas->resizeColumnsToContents();
-}
-
-void MainWindow::on_radioButtonVendLimpar_clicked() {
-  modelVendas->setFilter("(idVenda LIKE '%" + UserSession::getSiglaLoja() + "%')");
-  //  modelVendas->setFilter("");
-  ui->tableVendas->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonNFeAutorizado_clicked() {
@@ -868,55 +930,53 @@ void MainWindow::on_radioButtonOrcProprios_clicked() {
 void MainWindow::on_pushButtonCriarOrc_clicked() { on_actionCriarOrcamento_triggered(); }
 
 void MainWindow::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  if (text.isEmpty()) {
-    modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
-  } else {
-    modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%') AND ((Código LIKE '%" + text +
-                              "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" + text + "%'))");
-  }
+  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')" +
+                            (text.isEmpty() ? "" : " AND ((Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text +
+                                              "%') OR (Cliente LIKE '%" + text + "%'))"));
+
+  ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void MainWindow::on_lineEditBuscaVendas_textChanged(const QString &text) {
   if (text.isEmpty()) {
-    modelVendas->setFilter("");
+    montaFiltroVendas();
+    //    modelVendas->setFilter("");
   } else {
-    modelVendas->setFilter("(idVenda LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
+    // TODO: append this to montaFiltroVendas?
+    modelVendas->setFilter("(Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
                            text + "%')");
   }
+
+  // TODO: refactor to conditional operator
+
+  ui->tableVendas->resizeColumnsToContents();
 }
 
 void MainWindow::on_lineEditBuscaContasPagar_textChanged(const QString &text) {
-  if (text.isEmpty()) {
-    modelCAPagar->setFilter("");
-  } else {
-    modelCAPagar->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
-  }
+  modelCAPagar->setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+
+  ui->tableContasPagar->resizeColumnsToContents();
 }
 
 void MainWindow::on_lineEditBuscaContasReceber_textChanged(const QString &text) {
-  if (text.isEmpty()) {
-    modelCAReceber->setFilter("");
-  } else {
-    modelCAReceber->setFilter("(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
-  }
+  modelCAReceber->setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (pago LIKE '%" + text + "%')");
+
+  ui->tableContasReceber->resizeColumnsToContents();
 }
 
 void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
-  if (text.isEmpty()) {
-    modelEntregasCliente->setFilter("");
-  } else {
-    modelEntregasCliente->setFilter("(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
-  }
+  modelEntregasCliente->setFilter(text.isEmpty() ? "" : "(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text +
+                                                   "%')");
+
+  ui->tableEntregasCliente->resizeColumnsToContents();
 }
 
 void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) { Q_UNUSED(text); }
 
 void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
-  if (text.isEmpty()) {
-    modelNfeSaida->setFilter("");
-  } else {
-    modelNfeSaida->setFilter("(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
-  }
+  modelNfeSaida->setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+
+  ui->tableProdutosPend->resizeColumnsToContents();
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
@@ -925,15 +985,8 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
 }
 
 void MainWindow::readSettings() {
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("Login");
-
-  if (not settings.contains("hostname")) {
-    settings.setValue("hostname", QString("localhost"));
-    settings.setValue("username", QString("test"));
-    settings.setValue("password", QString("1234"));
-    settings.setValue("port", QString("3306"));
-  }
 
   hostname = settings.value("hostname").toString();
   username = settings.value("username").toString();
@@ -950,7 +1003,7 @@ void MainWindow::on_actionImportaProdutos_triggered() {
 
 void MainWindow::on_tableVendas_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
-  vendas->viewRegisterById(modelVendas->data(index.row(), "idVenda"));
+  vendas->viewRegisterById(modelVendas->data(index.row(), "Código"));
 }
 
 void MainWindow::on_tableOrcamentos_activated(const QModelIndex &index) {
@@ -977,13 +1030,14 @@ void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
 void MainWindow::on_tableFornCompras_activated(const QModelIndex &index) {
   int row = index.row();
 
-  QString fornecedor =
-      modelPedForn->data(modelPedForn->index(row, modelPedForn->record().indexOf("fornecedor"))).toString();
+  QString fornecedor = modelPedForn->data(row, "fornecedor").toString();
 
   modelItemPedidosPend->setFilter("fornecedor = '" + fornecedor + "' AND status = 'PENDENTE'");
 
   if (not modelItemPedidosPend->select()) {
-    qDebug() << "Error: " << modelItemPedidosPend->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " +
+                          modelItemPedidosPend->lastError().text());
+    return;
   }
 
   for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
@@ -1007,7 +1061,6 @@ void MainWindow::on_tableNfeSaida_activated(const QModelIndex &index) {
 
 bool MainWindow::event(QEvent *e) {
   switch (e->type()) {
-
     case QEvent::WindowActivate:
       updateTables();
       break;
@@ -1021,30 +1074,6 @@ bool MainWindow::event(QEvent *e) {
 
   return QMainWindow::event(e);
 }
-
-#ifdef TEST
-bool MainWindow::TestInitDB() { return initDb(); }
-
-bool MainWindow::TestCadastroClienteIncompleto() {
-  CadastroCliente *cliente = new CadastroCliente(this);
-  return cliente->TestClienteIncompleto();
-}
-
-bool MainWindow::TestCadastroClienteEndereco() {
-  CadastroCliente *cliente = new CadastroCliente(this);
-  return cliente->TestClienteEndereco();
-}
-
-bool MainWindow::TestCadastroClienteCompleto() {
-  CadastroCliente *cliente = new CadastroCliente(this);
-  return cliente->TestClienteCompleto();
-}
-
-void MainWindow::TestImportacao() {
-  ImportaProdutos *importa = new ImportaProdutos(this);
-  importa->TestImportacao();
-}
-#endif
 
 void MainWindow::on_tableEstoque_activated(const QModelIndex &index) {
   Estoque *estoque = new Estoque(this);
@@ -1084,12 +1113,8 @@ void MainWindow::darkTheme() {
 void MainWindow::on_tableProdutosPend_activated(const QModelIndex &index) {
   ProdutosPendentes *produtos = new ProdutosPendentes(this);
 
-  QString codComercial =
-      modelProdPend->data(modelProdPend->index(index.row(), modelProdPend->record().indexOf("codComercial")))
-      .toString();
-
-  QString status =
-      modelProdPend->data(modelProdPend->index(index.row(), modelProdPend->record().indexOf("status"))).toString();
+  QString codComercial = modelProdPend->data(index.row(), "codComercial").toString();
+  QString status = modelProdPend->data(index.row(), "status").toString();
 
   produtos->viewProduto(codComercial, status);
 }
@@ -1098,16 +1123,16 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   QFile modelo(QDir::currentPath() + "/modelo.xlsx");
 
   if (not modelo.exists()) {
-    QMessageBox::warning(this, "Aviso!", "Não encontrou o modelo do Excel!");
+    QMessageBox::critical(this, "Erro!", "Não encontrou o modelo do Excel!");
     return;
   }
 
   //  if(modelItem.rowCount() > 17){
-  //    QMessageBox::warning(this, "Aviso!", "Mais itens do que cabe no modelo!");
+  //    QMessageBox::critical(this, "Erro!", "Mais itens do que cabe no modelo!");
   //    return;
   //  }
 
-  QSettings settings("ERP", "Staccato");
+  QSettings settings("Staccato", "ERP");
   settings.beginGroup("User");
 
   if (settings.value("userFolder").toString().isEmpty()) {
@@ -1117,6 +1142,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   }
 
   if (UserSession::getFromLoja("emailCompra").isEmpty()) {
+    // TODO: set value here or open window to set
     QMessageBox::warning(this, "Aviso!",
                          "Não há um email de compras definido, favor cadastrar nas configurações da loja.");
     return;
@@ -1177,7 +1203,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   queryVenda.bindValue(":idProduto", modelItemPedidosPend->data(lista.first(), "idProduto"));
 
   if (not queryVenda.exec() or not queryVenda.first()) {
-    qDebug() << "Erro buscando dados da venda: " << queryVenda.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro buscando dados da venda:" + queryVenda.lastError().text());
     return;
   }
 
@@ -1189,7 +1215,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   queryForn.bindValue(":idVenda", idVenda);
 
   if (not queryForn.exec() or not queryForn.first()) {
-    qDebug() << "Erro buscando dados do fornecedor: " << queryForn.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro buscando dados do fornecedor: " + queryForn.lastError().text());
     return;
   }
 
@@ -1223,7 +1249,8 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   if (xlsx.saveAs(path + "/" + idVenda + ".xlsx")) {
     QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + idVenda + ".xlsx");
   } else {
-    QMessageBox::warning(this, "Aviso!", "Ocorreu algum erro ao salvar o arquivo.");
+    // TODO: get error from saveAs
+    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
   }
 
   modelItemPedidosPend->setFilter(filtro);
@@ -1234,7 +1261,8 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   QFile file(arquivo);
 
   if (not file.exists()) {
-    qDebug() << "arquivo não encontrado";
+    QMessageBox::critical(this, "Erro!", "Arquivo não encontrado");
+    return;
   }
 
   SendMail *mail = new SendMail(this, produtos.join("\n"), arquivo);
@@ -1249,19 +1277,21 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     // TODO: place this in the beginning
     if (modelItemPedidosPend->data(row, "status").toString() != "PENDENTE") {
       modelItemPedidosPend->select();
-      QMessageBox::warning(this, "Aviso!", "Produto não estava pendente!");
+      QMessageBox::critical(this, "Erro!", "Produto não estava pendente!");
       return;
     }
 
     if (not modelItemPedidosPend->setData(row, "status", "EM COMPRA")) {
-      qDebug() << "Erro marcando status EM COMPRA: " << modelItemPedidosPend->lastError();
+      QMessageBox::critical(this, "Erro!",
+                            "Erro marcando status EM COMPRA: " + modelItemPedidosPend->lastError().text());
+      return;
     }
 
     // TODO: gerar e guardar idCompra
     QSqlQuery queryId;
 
     if (not queryId.exec("SELECT idCompra FROM pedido_fornecedor_has_produto ORDER BY idCompra DESC")) {
-      qDebug() << "Erro buscando idCompra: " << queryId.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro buscando idCompra: " + queryId.lastError().text());
       return;
     }
 
@@ -1272,7 +1302,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     }
 
     if (not modelItemPedidosPend->setData(row, "idCompra", id)) {
-      qDebug() << "Erro guardando idCompra: " << modelItemPedidosPend->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro guardando idCompra: " + modelItemPedidosPend->lastError().text());
       return;
     }
 
@@ -1287,16 +1317,20 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     query.bindValue(":idProduto", modelItemPedidosPend->data(row, "idProduto"));
 
     if (not query.exec()) {
-      qDebug() << "Erro atualizando status da venda: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
+      return;
     }
     //
 
     if (not modelItemPedidosPend->setData(row, "dataRealCompra", dataCompra.toString("yyyy-MM-dd"))) {
-      qDebug() << "Erro guardando data da compra: " << modelItemPedidosPend->lastError();
+      QMessageBox::critical(this, "Erro!",
+                            "Erro guardando data da compra: " + modelItemPedidosPend->lastError().text());
+      return;
     }
 
     if (not modelItemPedidosPend->setData(row, "dataPrevConf", dataPrevista.toString("yyyy-MM-dd"))) {
-      qDebug() << "Erro guardando data prevista: " << modelItemPedidosPend->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + modelItemPedidosPend->lastError().text());
+      return;
     }
   }
 
@@ -1308,7 +1342,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   query.bindValue(":pago", "NÃO");
 
   if (not query.exec()) {
-    qDebug() << "Erro guardando conta a pagar: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro guardando conta a pagar: " + query.lastError().text());
     return;
   }
 
@@ -1327,13 +1361,15 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     query.bindValue(":status", "PENDENTE");
 
     if (not query.exec()) {
-      qDebug() << "Erro guardando conta a pagar pagamento: " << query.lastError();
+      QMessageBox::critical(this, "Erro!", "Erro guardando conta a pagar pagamento: " + query.lastError().text());
       return;
     }
   }
 
   if (not modelItemPedidosPend->submitAll()) {
-    qDebug() << "Erro salvando dados: " << modelItemPedidosPend->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
+                          modelItemPedidosPend->lastError().text());
+    return;
   }
 
   updateTables();
@@ -1348,9 +1384,7 @@ void MainWindow::on_pushButtonConfirmarCompra_clicked() {
   }
 
   int row = ui->tablePedidosComp->selectionModel()->selectedRows().first().row();
-  idCompra =
-      modelItemPedidosComp->data(modelItemPedidosComp->index(row, modelItemPedidosComp->record().indexOf("idCompra")))
-      .toString();
+  idCompra = modelItemPedidosComp->data(row, "idCompra").toString();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::ConfirmarCompra, this);
   inputDlg->setFilter(idCompra);
@@ -1371,7 +1405,8 @@ void MainWindow::on_pushButtonConfirmarCompra_clicked() {
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
-    qDebug() << "Erro atualizando status da compra: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
+    return;
   }
 
   // salvar status na venda
@@ -1382,7 +1417,8 @@ void MainWindow::on_pushButtonConfirmarCompra_clicked() {
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
-    qDebug() << "Erro salvando status da venda: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    return;
   }
   //
 
@@ -1482,7 +1518,8 @@ void MainWindow::on_pushButtonMarcarColetado_clicked() {
     }
 
     if (not modelColeta->setData(row, "status", "EM RECEBIMENTO")) {
-      qDebug() << "Erro marcando status EM RECEBIMENTO: " << modelColeta->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro marcando status EM RECEBIMENTO: " + modelColeta->lastError().text());
+      return;
     }
 
     // salvar status na venda
@@ -1495,21 +1532,26 @@ void MainWindow::on_pushButtonMarcarColetado_clicked() {
     query.bindValue(":idCompra", modelColeta->data(row, "idCompra"));
 
     if (not query.exec()) {
-      qDebug() << "Erro atualizando status da venda: " << query.last();
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
+      return;
     }
     //
 
     if (not modelColeta->setData(row, "dataRealColeta", dataColeta.toString("yyyy-MM-dd"))) {
-      qDebug() << "Erro guardando data da coleta: " << modelColeta->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro guardando data da coleta: " + modelColeta->lastError().text());
+      return;
     }
 
     if (not modelColeta->setData(row, "dataPrevReceb", dataPrevista.toString("yyyy-MM-dd"))) {
-      qDebug() << "Erro guardando data prevista: " << modelColeta->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + modelColeta->lastError().text());
+      return;
     }
   }
 
   if (not modelColeta->submitAll()) {
-    qDebug() << "Erro salvando dados: " << modelColeta->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
+                          modelColeta->lastError().text());
+    return;
   }
 
   updateTables();
@@ -1532,25 +1574,25 @@ void MainWindow::on_pushButtonMarcarRecebido_clicked() {
   }
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Recebimento, this);
-  QDate dataReceb;
 
-  if (inputDlg->exec() == InputDialog::Accepted) {
-    dataReceb = inputDlg->getDate();
-  } else {
+  if (inputDlg->exec() != InputDialog::Accepted) {
     return;
   }
+
+  QDate dataReceb = inputDlg->getDate();
 
   for (const auto row : lista) {
     modelReceb->setData(row, "selecionado", false);
 
     if (modelReceb->data(row, "status").toString() != "EM RECEBIMENTO") {
       modelReceb->select();
-      QMessageBox::warning(this, "Aviso!", "Produto não estava em recebimento!");
+      QMessageBox::critical(this, "Erro!", "Produto não estava em recebimento!");
       return;
     }
 
     if (not modelReceb->setData(row, "status", "FINALIZADO")) {
-      qDebug() << "Erro marcando status ESTOQUE: " << modelReceb->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro marcando status ESTOQUE: " + modelReceb->lastError().text());
+      return;
     }
 
     // salvar status na venda
@@ -1562,19 +1604,23 @@ void MainWindow::on_pushButtonMarcarRecebido_clicked() {
     query.bindValue(":idCompra", modelReceb->data(row, "idCompra"));
 
     if (not query.exec()) {
-      qDebug() << "Erro atualizando status da venda: " << query.last();
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
+      return;
     }
     //
 
     if (not modelReceb->setData(row, "dataRealReceb", dataReceb.toString("yyyy-MM-dd"))) {
-      qDebug() << "Erro guardando data de recebimento: " << modelReceb->lastError();
+      QMessageBox::critical(this, "Erro!", "Erro guardando data de recebimento: " + modelReceb->lastError().text());
+      return;
     }
   }
 
   // TODO: marcar flag no estoque de produto disponivel
 
   if (not modelReceb->submitAll()) {
-    qDebug() << "Erro salvando dados: " << modelReceb->lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
+                          modelReceb->lastError().text());
+    return;
   }
 
   updateTables();
@@ -1592,11 +1638,11 @@ void MainWindow::on_pushButtonMarcarFaturado_clicked() {
   }
 
   for (auto index : ui->tableFaturamento->selectionModel()->selectedRows()) {
-    rows.append(modelFat->data(modelFat->index(index.row(), modelFat->record().indexOf("idCompra"))).toInt());
+    rows.append(modelFat->data(index.row(), "idCompra").toInt());
   }
 
   int row = ui->tableFaturamento->selectionModel()->selectedRows().first().row();
-  idCompra = modelFat->data(modelFat->index(row, modelFat->record().indexOf("idCompra"))).toString();
+  idCompra = modelFat->data(row, "idCompra").toString();
 
   ImportarXML *import = new ImportarXML(rows, this);
   import->show();
@@ -1609,14 +1655,13 @@ void MainWindow::on_pushButtonMarcarFaturado_clicked() {
 
   InputDialog *inputDlg = new InputDialog(InputDialog::ConfirmarCompra, this);
   inputDlg->setFilter(idCompra);
-  QDate dataFat, dataPrevista;
 
   if (inputDlg->exec() != InputDialog::Accepted) {
     return;
   }
 
-  dataFat = inputDlg->getDate();
-  dataPrevista = inputDlg->getNextDate();
+  QDate dataFat = inputDlg->getDate();
+  QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
   query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealFat = :dataRealFat, dataPrevColeta = "
@@ -1626,7 +1671,8 @@ void MainWindow::on_pushButtonMarcarFaturado_clicked() {
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
-    qDebug() << "Erro atualizando status da compra: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
+    return;
   }
 
   // salvar status na venda
@@ -1637,7 +1683,8 @@ void MainWindow::on_pushButtonMarcarFaturado_clicked() {
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
-    qDebug() << "Erro salvando status na venda: " << query.lastError();
+    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    return;
   }
   //
 
@@ -1653,19 +1700,22 @@ void MainWindow::on_pushButtonTesteFaturamento_clicked() {
 }
 
 void MainWindow::on_tableFornLogistica_activated(const QModelIndex &index) {
-  QString fornecedor =
-      modelPedForn->data(modelPedForn->index(index.row(), modelPedForn->record().indexOf("fornecedor"))).toString();
+  QString fornecedor = modelPedForn->data(index.row(), "fornecedor").toString();
 
   modelColeta->setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM COLETA'");
 
   if (not modelColeta->select()) {
-    qDebug() << "Error: " << modelColeta->lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta->lastError().text());
+    return;
   }
 
   modelReceb->setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM RECEBIMENTO'");
 
   if (not modelReceb->select()) {
-    qDebug() << "Error: " << modelReceb->lastError();
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb->lastError().text());
+    return;
   }
 
   updateTables();
@@ -1694,7 +1744,7 @@ void MainWindow::on_pushButtonExibirXML_clicked() {
   QFile file(xml);
 
   if (not file.open(QFile::ReadOnly)) {
-    qDebug() << "Erro abrindo arquivo: " << file.errorString();
+    QMessageBox::critical(this, "Erro!", "Erro abrindo arquivo: " + file.errorString());
     return;
   }
 
@@ -1720,8 +1770,115 @@ void MainWindow::on_tabWidget_currentChanged(int index) {
   updateTables();
 }
 
-// TODO: substituir qDebug's por QMessageBox's
+void MainWindow::on_tabWidget_2_currentChanged(int index) {
+  Q_UNUSED(index);
+
+  updateTables();
+}
+
+void MainWindow::on_tabWidget_3_currentChanged(int index) {
+  Q_UNUSED(index);
+
+  updateTables();
+}
+
+void MainWindow::on_tabWidget_4_currentChanged(int index) {
+  Q_UNUSED(index);
+
+  updateTables();
+}
+
+void MainWindow::on_groupBoxStatusVenda_toggled(bool enabled) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+    child->setEnabled(true);
+  }
+
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+    child->setChecked(enabled);
+  }
+}
+
+void MainWindow::montaFiltroVendas() {
+  QString loja = ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getSiglaLoja();
+
+  int counter = 0;
+
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+    if (not child->isChecked()) {
+      counter++;
+    }
+  }
+
+  if (counter == ui->groupBoxStatusVenda->findChildren<QCheckBox *>().size()) {
+    if (ui->radioButtonVendLimpar->isChecked()) {
+      modelVendas->setFilter("(Código LIKE '%" + loja + "%')");
+    }
+
+    if (ui->radioButtonVendProprios->isChecked()) {
+      modelVendas->setFilter("(Código LIKE '%" + loja + "%') AND Vendedor = '" + UserSession::getNome() + "'");
+    }
+
+    ui->tableVendas->resizeColumnsToContents();
+
+    return;
+  }
+
+  QString filtro;
+
+  if (ui->radioButtonVendLimpar->isChecked()) {
+    filtro = "(Código LIKE '%" + loja + "%')";
+  }
+
+  if (ui->radioButtonVendProprios->isChecked()) {
+    filtro = "(Código LIKE '%" + loja + "%') AND Vendedor = '" + UserSession::getNome() + "'";
+  }
+
+  QString filtro2;
+
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+    if (child->isChecked()) {
+      if (filtro2.isEmpty()) {
+        filtro2 = "status = '" + child->text().toUpper() + "'";
+      } else {
+        filtro2 += " OR status = '" + child->text().toUpper() + "'";
+      }
+    }
+  }
+
+  if (not filtro2.isEmpty()) {
+    //    qDebug() << "filtro = " << filtro + " AND (" + filtro2 + ")";
+    modelVendas->setFilter(filtro + " AND (" + filtro2 + ")");
+  }
+
+  ui->tableVendas->resizeColumnsToContents();
+}
+
+void MainWindow::on_comboBoxLojas_currentTextChanged(const QString &text) {
+  Q_UNUSED(text);
+
+  montaFiltroVendas();
+}
+
+void MainWindow::on_actionSobre_triggered() {
+  // TODO: adicionar informacoes de contato do desenvolvedor (telefone/email)
+  QMessageBox::about(this, "Sobre ERP Staccato", "Versão " + qApp->applicationVersion());
+}
+
+void MainWindow::on_actionClaro_triggered() {
+  qApp->setStyle(defaultStyle);
+  qApp->setPalette(defautPalette);
+  qApp->setStyleSheet(styleSheet());
+}
+
+void MainWindow::on_actionEscuro_triggered() { darkTheme(); }
+
+void MainWindow::on_actionConfigura_es_triggered()
+{
+    // TODO: put screen to change user variables (userFolder etc)
+}
+
 // TODO: gerenciar lugares de estoque (cadastro/permissoes)
 // TODO: a tabela de fornecedores em compra deve mostrar apenas os pedidos que estejam pendente/confirmar/faturar
 // TODO: try making most functions const (hint is if there is no red text or no 'this' it problably should be const)
 // TODO: verify if rows should be resized to contents too
+// TODO: mandar QSettings para dentro do UserSession

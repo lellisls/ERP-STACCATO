@@ -1114,7 +1114,21 @@ bool Orcamento::save(const bool isUpdate) {
   QSqlQuery("COMMIT").exec();
   isDirty = false;
 
-  viewRegister(model.index(row, 0));
+  QSqlQuery queryOrc;
+  queryOrc.prepare("SELECT * FROM view_orcamento WHERE Vendedor = :Vendedor AND Cliente = :Cliente AND Total = :Total "
+                   "AND `Data de emissão` LIKE :Data");
+  queryOrc.bindValue(":Vendedor", ui->itemBoxVendedor->text());
+  queryOrc.bindValue(":Cliente", ui->itemBoxCliente->text());
+  queryOrc.bindValue(":Total", ui->doubleSpinBoxTotal->value());
+  queryOrc.bindValue(":Data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm%"));
+
+  if (not queryOrc.exec() or not queryOrc.first()) {
+    QMessageBox::critical(this, "Erro!", "Não encontrou orçamento!");
+    return false;
+  }
+
+  viewRegisterById(queryOrc.value(0));
+
   sendUpdateMessage();
 
   if (not silent) {

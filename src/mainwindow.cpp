@@ -50,16 +50,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
   QSettings settings("Staccato", "ERP");
   settings.beginGroup("Login");
-  hostname = settings.value("hostname").toString();
-  username = settings.value("username").toString();
-  password = settings.value("password").toString();
-  port = settings.value("port").toString();
-  homologacao = settings.value("homologacao").toBool();
 
-  if (hostname.isEmpty()) {
+  //  settings.setValue("hostname", ""); //to test store selection
+
+  if (settings.value("hostname").toString().isEmpty()) {
     QStringList items;
     items << "Alphaville"
           << "Gabriel";
+
     QString loja = QInputDialog::getItem(this, "Escolha a loja", "Qual a sua loja?", items, 0, false);
 
     if (loja == "Alphaville") {
@@ -73,7 +71,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     settings.setValue("port", "3306");
     settings.setValue("homologacao", false);
   }
-  //  settings.setValue("hostname", ""); to test store selection
+
+  hostname = settings.value("hostname").toString();
+  username = settings.value("username").toString();
+  password = settings.value("password").toString();
+  port = settings.value("port").toString();
+  homologacao = settings.value("homologacao").toBool();
 
   settings.endGroup();
 

@@ -813,6 +813,12 @@ bool Orcamento::verificaCampos() {
     return false;
   }
 
+  if (ui->itemBoxEndereco->text().isEmpty()) {
+    ui->itemBoxEndereco->setFocus();
+    QMessageBox::critical(this, "Erro!", "Endereço inválido! Se não possui endereço, escolha \"Não há\".");
+    return false;
+  }
+
   if (modelItem.rowCount() == 0) {
     ui->itemBoxProduto->setFocus();
     QMessageBox::critical(this, "Erro!", "Você não pode cadastrar um orçamento sem itens!");

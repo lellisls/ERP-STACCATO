@@ -1190,6 +1190,25 @@ void Venda::successMessage() {
 }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
+  QSettings settings("Staccato", "ERP");
+  settings.beginGroup("User");
+
+  if (settings.value("userFolder").toString().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
+    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    return;
+  }
+
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  settings.endGroup();
+
   QFile modelo(QDir::currentPath() + "/modelo.xlsx");
 
   if (not modelo.exists()) {
@@ -1310,16 +1329,6 @@ void Venda::on_pushButtonGerarExcel_clicked() {
     xlsx.write("L" + QString::number(12 + i), modelItem.data(i, "quant").toDouble());
     xlsx.write("M" + QString::number(12 + i), modelItem.data(i, "un").toString());
     xlsx.write("N" + QString::number(12 + i), "R$ " + QString::number(modelItem.data(i, "total").toDouble(), 'f', 2));
-  }
-
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("User");
-  QString path = settings.value("userFolder").toString();
-
-  QDir dir(path);
-
-  if (not dir.exists()) {
-    dir.mkdir(path);
   }
 
   if (not xlsx.saveAs(path + "/" + ui->lineEditVenda->text() + ".xlsx")) {

@@ -29,7 +29,7 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento
   setupMapper();
   newRegister();
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 

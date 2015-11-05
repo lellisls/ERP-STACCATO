@@ -282,7 +282,7 @@ bool RegisterDialog::save(const bool isUpdate) {
 bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) {
+  for (auto *line : this->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     line->clear();
   }
 }

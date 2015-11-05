@@ -1789,11 +1789,11 @@ void MainWindow::on_tabWidget_4_currentChanged(int index) {
 }
 
 void MainWindow::on_groupBoxStatusVenda_toggled(bool enabled) {
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
     child->setEnabled(true);
   }
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
     child->setChecked(enabled);
   }
 }
@@ -1803,13 +1803,13 @@ void MainWindow::montaFiltroVendas() {
 
   int counter = 0;
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
     if (not child->isChecked()) {
       counter++;
     }
   }
 
-  if (counter == ui->groupBoxStatusVenda->findChildren<QCheckBox *>().size()) {
+  if (counter == ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly).size()) {
     if (ui->radioButtonVendLimpar->isChecked()) {
       modelVendas->setFilter("(Código LIKE '%" + loja + "%')");
     }
@@ -1835,7 +1835,7 @@ void MainWindow::montaFiltroVendas() {
 
   QString filtro2;
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
     if (child->isChecked()) {
       if (filtro2.isEmpty()) {
         filtro2 = "status = '" + child->text().toUpper() + "'";

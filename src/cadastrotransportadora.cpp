@@ -17,7 +17,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
   setupMapper();
   newRegister();
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 

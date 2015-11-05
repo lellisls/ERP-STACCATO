@@ -19,7 +19,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   setupMapper();
   newRegister();
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -158,22 +158,22 @@ bool CadastroProfissional::verifyFields() {
 
   int ok = 0;
 
-  for (auto *line : ui->groupBoxContatos->findChildren<QLineEdit *>()) {
+  for (auto *line : ui->groupBoxContatos->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     verifyRequiredField(line, true) ? ok++ : QMessageBox::critical(this, "Erro!", "Faltou: " + line->objectName());
   }
 
-  if (ok != ui->groupBoxContatos->findChildren<QLineEdit *>().size()) {
+  if (ok != ui->groupBoxContatos->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly).size()) {
     incompleto = true;
     return true;
   }
 
   ok = 0;
 
-  for (auto *line : ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
+  for (auto *line : ui->groupBoxPJuridica->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     verifyRequiredField(line, true) ? ok++ : QMessageBox::critical(this, "Erro!", "Faltou: " + line->objectName());
   }
 
-  if (ok != ui->groupBoxPJuridica->findChildren<QLineEdit *>().size()) {
+  if (ok != ui->groupBoxPJuridica->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly).size()) {
     incompleto = true;
     return true;
   }
@@ -326,7 +326,7 @@ void CadastroProfissional::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  for (auto *box : this->findChildren<ItemBox *>()) {
+  for (auto *box : this->findChildren<ItemBox *>(QString() , Qt::FindDirectChildrenOnly)) {
     box->clear();
   }
 

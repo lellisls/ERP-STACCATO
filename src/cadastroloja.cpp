@@ -18,7 +18,7 @@ CadastroLoja::CadastroLoja(QWidget *parent)
   setupMapper();
   newRegister();
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -60,7 +60,7 @@ void CadastroLoja::setupTables() {
 }
 
 void CadastroLoja::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) {
+  for (auto *line : this->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     line->clear();
   }
 }

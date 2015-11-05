@@ -43,8 +43,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   setupMapper();
   newRegister();
 
-  // TODO: verificar essa funcao conectando lineEdits do CadastroCliente aqui
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>(QString(), Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 

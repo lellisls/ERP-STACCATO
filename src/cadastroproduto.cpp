@@ -29,7 +29,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
-  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
+  for (const QLineEdit *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -41,7 +41,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 CadastroProduto::~CadastroProduto() { delete ui; }
 
 void CadastroProduto::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) {
+  for (auto *line : this->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     line->clear();
   }
 

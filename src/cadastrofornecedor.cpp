@@ -17,7 +17,7 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   setupMapper();
   newRegister();
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -77,7 +77,7 @@ bool CadastroFornecedor::verifyFields() {
 
   int ok = 0;
 
-  for (auto *line : ui->groupBoxContatos->findChildren<QLineEdit *>()) {
+  for (auto *line : ui->groupBoxContatos->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     if (verifyRequiredField(line, true)) {
       ok++;
     } else {
@@ -86,14 +86,14 @@ bool CadastroFornecedor::verifyFields() {
     }
   }
 
-  if (ok != ui->groupBoxContatos->findChildren<QLineEdit *>().size()) {
+  if (ok != ui->groupBoxContatos->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly).size()) {
     incompleto = true;
     return true;
   }
 
   ok = 0;
 
-  for (auto *line : ui->groupBoxPJuridica->findChildren<QLineEdit *>()) {
+  for (auto *line : ui->groupBoxPJuridica->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
     if (verifyRequiredField(line, true)) {
       ok++;
     } else {
@@ -102,7 +102,7 @@ bool CadastroFornecedor::verifyFields() {
     }
   }
 
-  if (ok != ui->groupBoxPJuridica->findChildren<QLineEdit *>().size()) {
+  if (ok != ui->groupBoxPJuridica->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly).size()) {
     incompleto = true;
     return true;
   }

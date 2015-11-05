@@ -1260,5 +1260,5 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
 }
 
 void Orcamento::on_checkBoxRepresentacao_toggled(bool checked) {
-  ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = " + checked ? "TRUE" : "FALSE");
+  ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = " + QString(checked ? "TRUE" : "FALSE"));
 }

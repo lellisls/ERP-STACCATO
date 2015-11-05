@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QSettings>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 #include "orcamento.h"
 #include "ui_orcamento.h"
@@ -481,6 +483,46 @@ void Orcamento::on_pushButtonImprimir_clicked() {
     return;
   }
 
+  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + queryCliente.lastError().text());
+    return;
+  }
+
+  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.bindValue(":idProfissional", model.data(0, "idProfissional"));
+
+  if (not queryProfissional.exec() or not queryProfissional.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
+    return;
+  }
+
+  queryVendedor.prepare("SELECT * FROM usuario WHERE nome = :nome");
+  queryVendedor.bindValue(":nome", ui->itemBoxVendedor->text());
+
+  if (not queryVendedor.exec() or not queryVendedor.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
+    return;
+  }
+
+  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", queryVendedor.value("idLoja"));
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando loja: " + queryLoja.lastError().text());
+    return;
+  }
+
+  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.bindValue(":idLoja", queryVendedor.value("idLoja"));
+
+  if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando endereço loja: " + queryLojaEnd.lastError().text());
+    return;
+  }
+
   report->loadReport(file.fileName());
   report->recordCount << ui->tableProdutos->model()->rowCount();
   connect(report, &QtRPT::setValue, this, &Orcamento::setValue);
@@ -503,63 +545,20 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
 
   QLocale locale;
 
-  QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
+  if (modelItem.data(recNo, "idProduto") != queryProduto.boundValue(":idProduto")) {
+    queryProduto.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
+    queryProduto.bindValue(":idProduto", modelItem.data(recNo, "idProduto"));
 
-  if (not queryCliente.exec() or not queryCliente.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + queryCliente.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryProfissional;
-  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
-  queryProfissional.bindValue(":idProfissional", model.data(0, "idProfissional"));
-
-  if (not queryProfissional.exec() or not queryProfissional.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryVendedor;
-  queryVendedor.prepare("SELECT * FROM usuario WHERE nome = :nome");
-  queryVendedor.bindValue(":nome", ui->itemBoxVendedor->text());
-
-  if (not queryVendedor.exec() or not queryVendedor.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryProduto;
-  queryProduto.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
-  queryProduto.bindValue(":idProduto", modelItem.data(recNo, "idProduto"));
-
-  if (not queryProduto.exec() or not queryProduto.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando produto: " + queryProduto.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", queryVendedor.value("idLoja"));
-
-  if (not queryLoja.exec() or not queryLoja.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando loja: " + queryLoja.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryLojaEnd;
-  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
-  queryLojaEnd.bindValue(":idLoja", queryVendedor.value("idLoja"));
-
-  if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando endereço loja: " + queryLojaEnd.lastError().text());
-    return;
+    if (not queryProduto.exec() or not queryProduto.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando produto: " + queryProduto.lastError().text());
+      return;
+    }
   }
 
   // REPORT TITLE
   if (paramName == "Loja") {
     paramValue = queryLoja.value("descricao").toString();
+    return;
   }
 
   if (paramName == "Endereco") {
@@ -567,76 +566,92 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
                  queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() + " - " +
                  queryLojaEnd.value("uf").toString() + " - CEP: " + queryLojaEnd.value("cep").toString() + "\n" +
                  queryLoja.value("tel").toString() + " - " + queryLoja.value("tel2").toString();
+    return;
   }
 
   if (paramName == "orcamento") {
     paramValue = ui->lineEditOrcamento->text();
+    return;
   }
 
   if (paramName == "data") {
     paramValue = ui->dateTimeEdit->dateTime().toString("hh:mm dd-MM-yyyy");
+    return;
   }
 
   if (paramName == "validade") {
     paramValue = QString::number(ui->spinBoxValidade->value()) + " dias";
+    return;
   }
 
   if (paramName == "cliente") {
-    paramValue = ui->itemBoxCliente->text();
+    paramValue = ui->itemBoxCliente->text().left(30);
+    return;
   }
 
   if (paramName == "cpfcnpj") {
-    QString pessoa = queryCliente.value("pfpj").toString();
-
-    paramValue = queryCliente.value(pessoa == "PF" ? "cpf" : "cnpj").toString();
+    paramValue = queryCliente.value(queryCliente.value("pfpj").toString() == "PF" ? "cpf" : "cnpj").toString();
+    return;
   }
 
   if (paramName == "email") {
     paramValue = queryCliente.value("email").toString();
+    return;
   }
 
   if (paramName == "tel1") {
     paramValue = queryCliente.value("tel").toString();
+    return;
   }
 
   if (paramName == "tel2") {
     paramValue = queryCliente.value("telCel").toString();
+    return;
   }
 
   if (paramName == "profissional") {
     QString profissional = ui->itemBoxProfissional->text();
 
     paramValue = profissional.isEmpty() ? "Não há" : profissional;
+    return;
   }
 
   if (paramName == "telprofissional") {
     paramValue = queryProfissional.value("tel").toString();
+    return;
   }
 
   if (paramName == "emailprofissional") {
     paramValue = queryProfissional.value("email").toString();
+    return;
   }
 
   if (paramName == "vendedor") {
     paramValue = ui->itemBoxVendedor->text();
+    return;
   }
 
   if (paramName == "emailvendedor") {
+    return;
   }
 
   if (paramName == "estoque") {
+    return;
   }
 
   if (paramName == "dataestoque") {
+    return;
   }
 
   // MASTER BAND
   if (paramName == "Marca") {
     paramValue = modelItem.data(recNo, "fornecedor").toString();
+    return;
   }
 
   if (paramName == "Código") {
     paramValue = queryProduto.value("codComercial").toString();
+    return;
   }
 
   if (paramName == "Nome do produto") {
@@ -644,66 +659,88 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
 
     paramValue =
         modelItem.data(recNo, "produto").toString() + (formComercial.isEmpty() ? "" : " (" + formComercial + ")");
+    return;
   }
 
   if (paramName == "Ambiente") {
     paramValue = modelItem.data(recNo, "obs").toString();
+    return;
   }
 
   if (paramName == "Preço-R$") {
     double desconto = modelItem.data(recNo, "desconto").toDouble();
     double value = modelItem.data(recNo, "prcUnitario").toDouble();
 
-    if (desconto == 0) {
-      paramValue = "R$ " + locale.toString(value, 'f', 2);
-    } else {
+    if (desconto > 0) {
       paramValue = "(R$ " + locale.toString(value, 'f', 2) + " -" + locale.toString(desconto, 'f', 1) + "%)\n" + "R$ " +
                    locale.toString(value * (1 - (desconto / 100)), 'f', 2);
+      return;
     }
+
+    paramValue = "R$ " + locale.toString(value, 'f', 2);
+    return;
   }
 
   if (paramName == "Quant.") {
     paramValue = modelItem.data(recNo, "quant").toString();
+    return;
   }
 
   if (paramName == "Unid.") {
     paramValue = modelItem.data(recNo, "un").toString();
+    return;
   }
 
   if (paramName == "TotalProd") {
     double parcial = modelItem.data(recNo, "parcialDesc").toDouble();
     paramValue = "R$ " + locale.toString(parcial, 'f', 2);
+    return;
   }
 
   // REPORT SUMMARY
   if (paramName == "Soma") {
     double value = ui->doubleSpinBoxSubTotalLiq->value();
     paramValue = locale.toString(value, 'f', 2);
+    return;
   }
 
   if (paramName == "Desconto") {
     double value = ui->doubleSpinBoxDescontoGlobal->value();
     paramValue = locale.toString(value, 'f', 2);
+    return;
   }
 
   if (paramName == "Total") {
     double value = ui->doubleSpinBoxSubTotalLiq->value() -
                    (ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100);
     paramValue = locale.toString(value, 'f', 2);
+    return;
   }
 
   if (paramName == "Frete") {
     double value = ui->doubleSpinBoxFrete->value();
     paramValue = locale.toString(value, 'f', 2);
+    return;
   }
 
   if (paramName == "TotalFinal") {
     double value = ui->doubleSpinBoxTotal->value();
     paramValue = locale.toString(value, 'f', 2);
+    return;
   }
 
   if (paramName == "Observacao") {
     paramValue = ui->textEditObs->toPlainText();
+    return;
+  }
+
+  if (paramName == "Disclaimer") {
+    paramValue =
+        "1- O prazo de entrega deve ser consultado no momento da compra;\n2- Não aceitamos devolução de produtos "
+        "calculados com percetual de perda, cortes/rodapés de porcelanatos ou mosaicos especiais;\n3- Produtos com "
+        "classificação comercial \"C\" podem apresentar algum tipo de defeito, tendo valor especial por este motivo,  "
+        "e devoluções não serão aceitas.";
+    return;
   }
 }
 

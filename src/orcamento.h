@@ -1,6 +1,8 @@
 #ifndef ORCAMENTO_H
 #define ORCAMENTO_H
 
+#include <QSqlQuery>
+
 #include "registerdialog.h"
 #include "sqltablemodel.h"
 
@@ -98,6 +100,12 @@ class Orcamento : public RegisterDialog {
     Ui::Orcamento *ui;
     SqlTableModel modelItem;
     QDataWidgetMapper mapperItem;
+    QSqlQuery queryCliente;
+    QSqlQuery queryProfissional;
+    QSqlQuery queryVendedor;
+    QSqlQuery queryProduto;
+    QSqlQuery queryLoja;
+    QSqlQuery queryLojaEnd;
     // methods
     void removeItem();
     void adicionarItem(const bool isUpdate = false);

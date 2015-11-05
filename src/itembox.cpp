@@ -2,10 +2,9 @@
 
 #include "itembox.h"
 
-ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), m_searchDialog(nullptr), m_registerDialog(nullptr) {
+ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent) {
   setReadOnly(true);
 
-  // TODO: make a function to disable search and register (read-only)
   m_searchButton = new QPushButton(this);
   m_searchButton->setIcon(QIcon(":/search.png"));
   m_searchButton->setAutoDefault(false);
@@ -22,6 +21,7 @@ ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent), m_searchDialog(nullptr), 
 
   connect(m_searchButton, &QAbstractButton::clicked, this, &ItemBox::search);
   connect(m_plusButton, &QAbstractButton::clicked, this, &ItemBox::edit);
+  connect(this, &QLineEdit::cursorPositionChanged, this, &ItemBox::resetCursor);
 }
 
 ItemBox::~ItemBox() {}
@@ -66,6 +66,8 @@ void ItemBox::edit() {
     m_registerDialog->show();
   }
 }
+
+void ItemBox::resetCursor() { setCursorPosition(0); }
 
 void ItemBox::setRegisterDialog(RegisterDialog *value) {
   m_registerDialog = value;

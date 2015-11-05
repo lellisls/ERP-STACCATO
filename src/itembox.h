@@ -26,13 +26,14 @@ class ItemBox : public QLineEdit {
   protected slots:
     virtual void search();
     virtual void edit();
+    void resetCursor();
 
   protected:
     Q_PROPERTY(QVariant value READ value WRITE setValue STORED false)
     // attributes
     QPushButton *m_searchButton, *m_plusButton;
-    SearchDialog *m_searchDialog;
-    RegisterDialog *m_registerDialog;
+    SearchDialog *m_searchDialog = nullptr;
+    RegisterDialog *m_registerDialog = nullptr;
     QVariant m_value;
     bool readOnlyItemBox = false;
     // methods

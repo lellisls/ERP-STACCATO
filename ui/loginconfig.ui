@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>123</height>
+    <height>127</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="labelUsername">
        <property name="text">
-        <string>Username:</string>
+        <string>Usuário:</string>
        </property>
       </widget>
      </item>
@@ -36,7 +36,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="labelPassword">
        <property name="text">
-        <string>Password:</string>
+        <string>Senha:</string>
        </property>
       </widget>
      </item>
@@ -53,7 +53,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="labelHostname">
        <property name="text">
-        <string>Hostname:</string>
+        <string>Servidor:</string>
        </property>
       </widget>
      </item>
@@ -74,7 +74,7 @@
      <item row="0" column="2">
       <widget class="QLabel" name="labelPort">
        <property name="text">
-        <string>Port:</string>
+        <string>Porta:</string>
        </property>
       </widget>
      </item>

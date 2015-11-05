@@ -797,8 +797,9 @@ bool CadastrarNFe::writeTXT() {
 
   writeTotal(stream, total, icmsTotal, frete);
 
-  stream << "\",1,1)";
-  stream << "\",0)";
+  stream << "\")";
+//  stream << "\",1,1)";
+//  stream << "\",0)";
 
   stream.flush();
   file.close();

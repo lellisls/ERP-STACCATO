@@ -446,7 +446,7 @@ void ImportaProdutos::leituraProduto(const QSqlQuery &query, const QSqlRecord &r
     QVariant value = query.value(record.indexOf(variantMap.keys().at(i)));
 
     if (value.type() == QVariant::Double) {
-      value = QString::number(value.toDouble(), 'f', 2).toDouble();
+      value = QString::number(value.toDouble(), 'f', 4).toDouble();
     }
 
     variantMap.insert(variantMap.keys().at(i), value);

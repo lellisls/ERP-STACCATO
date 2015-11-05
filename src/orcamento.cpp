@@ -1125,6 +1125,25 @@ bool Orcamento::save(const bool isUpdate) {
 }
 
 void Orcamento::on_pushButtonGerarExcel_clicked() {
+  QSettings settings("Staccato", "ERP");
+  settings.beginGroup("User");
+
+  if (settings.value("userFolder").toString().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
+    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    return;
+  }
+
+  QString path = settings.value("userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
+  settings.endGroup();
+
   QFile modelo(QDir::currentPath() + "/modelo.xlsx");
 
   if (not modelo.exists()) {

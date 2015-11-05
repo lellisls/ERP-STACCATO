@@ -72,9 +72,11 @@ void DownloadDialog::beginDownload(const QUrl &url) {
 void DownloadDialog::installUpdate(void) {
   QMessageBox msg;
   msg.setIcon(QMessageBox::Question);
-  msg.setText("<b>" + tr("Para aplicar as atualizações é necessário fechar o programa") + "</b>");
+  msg.setText("<b>" + tr("Para aplicar as atualizações é necessário fechar o programa.") + "</b>");
   msg.setInformativeText(tr("Você deseja fechar o programa agora?"));
   msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+  msg.setButtonText(QMessageBox::Yes, "Sim");
+  msg.setButtonText(QMessageBox::No, "Não");
 
   if (msg.exec() == QMessageBox::Yes) {
     openDownload();

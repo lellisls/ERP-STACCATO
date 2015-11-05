@@ -349,6 +349,8 @@ void QSimpleUpdater::onCheckingFinished(void) {
                                 .arg(qApp->applicationName())
                                 .arg(latestVersion())
                                 .arg(installedVersion()));
+    _message.setButtonText(QMessageBox::Yes, "Sim");
+    _message.setButtonText(QMessageBox::No, "Não");
 
     if (_message.exec() == QMessageBox::Yes) {
       downloadLatestVersion();

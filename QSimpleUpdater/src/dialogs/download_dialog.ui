@@ -92,7 +92,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Downloading updates</string>
+            <string>Baixando atualizações</string>
            </property>
           </widget>
          </item>
@@ -115,7 +115,7 @@
          <item>
           <widget class="QLabel" name="timeLabel">
            <property name="text">
-            <string>Time remaining: 0 minutes</string>
+            <string>Tempo restante: 0 minutos</string>
            </property>
           </widget>
          </item>
@@ -156,14 +156,14 @@
       <item>
        <widget class="QPushButton" name="openButton">
         <property name="text">
-         <string>Open</string>
+         <string>Abrir</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="stopButton">
         <property name="text">
-         <string>Stop</string>
+         <string>Parar</string>
         </property>
        </widget>
       </item>

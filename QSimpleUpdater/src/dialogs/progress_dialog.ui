@@ -45,7 +45,7 @@
       <item>
        <widget class="QLabel" name="ui_progress_bar">
         <property name="text">
-         <string>Checking for updates...</string>
+         <string>Verificando por atualizações</string>
         </property>
        </widget>
       </item>
@@ -102,7 +102,7 @@
          <item>
           <widget class="QPushButton" name="ui_cancel_button">
            <property name="text">
-            <string>Cancel</string>
+            <string>Cancelar</string>
            </property>
           </widget>
          </item>

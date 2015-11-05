@@ -391,14 +391,7 @@ void Orcamento::on_doubleSpinBoxQte_valueChanged(const double) {
   }
 }
 
-void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
-  if (UserSession::getTipoUsuario() == "ADMINISTRADOR" and UserSession::getNome() == ui->itemBoxVendedor->text()) {
-    QMessageBox::critical(this, "Erro!", "Administrador não pode cadastrar, escolha outro vendedor.");
-    return;
-  }
-
-  save();
-}
+void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
 
 void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
 
@@ -760,6 +753,11 @@ void Orcamento::setupTables() {
 }
 
 bool Orcamento::verificaCampos() {
+  if (UserSession::getTipoUsuario() == "ADMINISTRADOR" and UserSession::getNome() == ui->itemBoxVendedor->text()) {
+    QMessageBox::critical(this, "Erro!", "Administrador não pode cadastrar, escolha outro vendedor.");
+    return false;
+  }
+
   if (ui->itemBoxCliente->text().isEmpty()) {
     ui->itemBoxCliente->setFocus();
     QMessageBox::critical(this, "Erro!", "Cliente inválido!");

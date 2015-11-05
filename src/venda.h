@@ -1,6 +1,8 @@
 #ifndef VENDA_H
 #define VENDA_H
 
+#include <QSqlQuery>
+
 #include "registerdialog.h"
 
 namespace Ui {
@@ -55,7 +57,15 @@ class Venda : public RegisterDialog {
   private:
     // attributes
     Ui::Venda *ui;
-    SqlTableModel modelItem, modelFluxoCaixa;
+    SqlTableModel modelItem;
+    SqlTableModel modelFluxoCaixa;
+    QSqlQuery queryCliente;
+    QSqlQuery queryEndereco;
+    QSqlQuery queryProfissional;
+    QSqlQuery queryVendedor;
+    QSqlQuery queryProduto;
+    QSqlQuery queryLoja;
+    QSqlQuery queryLojaEnd;
     // methods
     bool verifyFields();
     bool verifyRequiredField(QLineEdit *line) const;

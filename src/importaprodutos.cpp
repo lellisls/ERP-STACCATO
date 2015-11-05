@@ -392,8 +392,7 @@ void ImportaProdutos::cadastraFornecedores() {
 
 void ImportaProdutos::mostraApenasEstesFornecedores() {
   for (int i = 0, size = fornecedores.size(); i < size; ++i) {
-    ids.append((ids.isEmpty() ? "idFornecedor = " : " OR idFornecedor = ") +
-               QString::number(fornecedores.values().at(i)));
+    ids.append(QString(ids.isEmpty() ? "" : " OR ") + "idFornecedor = " + QString::number(fornecedores.values().at(i)));
   }
 }
 

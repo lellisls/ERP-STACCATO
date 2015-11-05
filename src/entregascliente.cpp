@@ -71,7 +71,7 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
   }
 
   if (lista.size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 

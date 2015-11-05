@@ -187,7 +187,7 @@ void CadastrarNFe::prepararNFe(const QList<int> items) {
   QString filter;
 
   for (auto item : items) {
-    filter = (filter.isEmpty() ? "idVendaProduto = " : " OR idVendaProduto = ") + QString::number(item);
+    filter += QString(filter.isEmpty() ? "" : " OR ") + "idVendaProduto = " + QString::number(item);
   }
 
   modelProd.setFilter(filter);
@@ -329,7 +329,6 @@ QString CadastrarNFe::criarChaveAcesso() {
 
   QStringList listChave;
 
-  // TODO: verify if it's working
   listChave.push_back(modelLoja.data(0, "codUF").toString());
 
   listChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
@@ -789,7 +788,7 @@ bool CadastrarNFe::writeTXT() {
   double total = 0.;
   double icmsTotal = 0.;
   //  double frete = ui->doubleSpinBoxFrete->value();
-  double frete = 0;
+  double frete = 0.;
 
   if (not writeProduto(stream, total, icmsTotal)) {
     return false;

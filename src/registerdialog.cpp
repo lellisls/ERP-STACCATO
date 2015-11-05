@@ -140,11 +140,11 @@ void RegisterDialog::sendUpdateMessage() {
   QString text;
 
   for (const auto key : textKeys) {
-    if (not key.isEmpty()) {
-      if (data(key).isValid()) {
-        text += text.isEmpty() ? data(key).toString() : " - " + data(key).toString();
-      }
+    if (key.isEmpty() or not data(key).isValid()) {
+      continue;
     }
+
+    text += (text.isEmpty() ? "" : " - ") + data(key).toString();
   }
 
   emit registerUpdated(data(primaryKey), text);
@@ -310,122 +310,101 @@ void RegisterDialog::remove() {
 
 bool RegisterDialog::validaCNPJ(const QString text) {
   // TODO: pegar a parte do validaCPF que é igual e separar numa função
-  if (text.size() == 14) {
-    int digito1;
-    int digito2;
-
-    const QString sub = text.left(12);
-
-    QVector<int> sub2;
-
-    for (int i = 0, size = sub.size(); i < size; ++i) {
-      sub2.push_back(sub.at(i).digitValue());
-    }
-
-    const QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-
-    int soma = 0;
-
-    for (int i = 0; i < 12; ++i) {
-      soma += sub2.at(i) * multiplicadores.at(i);
-    }
-
-    int resto = soma % 11;
-
-    if (resto < 2) {
-      digito1 = 0;
-    } else {
-      digito1 = 11 - resto;
-    }
-
-    sub2.push_back(digito1);
-
-    const QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-    soma = 0;
-
-    for (int i = 0; i < 13; ++i) {
-      soma += sub2.at(i) * multiplicadores2.at(i);
-    }
-
-    resto = soma % 11;
-
-    if (resto < 2) {
-      digito2 = 0;
-    } else {
-      digito2 = 11 - resto;
-    }
-
-    if (digito1 != text.at(12).digitValue() or digito2 != text.at(13).digitValue()) {
-      QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
-      return false;
-    }
+  if (text.size() != 14) {
+    return false;
   }
 
-  // make this function work only if cnpj is fully inputted
-  // TODO: why this? its valid if its size is incorrect?
+  const QString sub = text.left(12);
+
+  QVector<int> sub2;
+
+  for (int i = 0, size = sub.size(); i < size; ++i) {
+    sub2.push_back(sub.at(i).digitValue());
+  }
+
+  const QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
+  int soma = 0;
+
+  for (int i = 0; i < 12; ++i) {
+    soma += sub2.at(i) * multiplicadores.at(i);
+  }
+
+  int resto = soma % 11;
+
+  int digito1 = resto < 2 ? 0 : 11 - resto;
+
+  sub2.push_back(digito1);
+
+  const QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+  soma = 0;
+
+  for (int i = 0; i < 13; ++i) {
+    soma += sub2.at(i) * multiplicadores2.at(i);
+  }
+
+  resto = soma % 11;
+
+  int digito2 = resto < 2 ? 0 : 11 - resto;
+
+  if (digito1 != text.at(12).digitValue() or digito2 != text.at(13).digitValue()) {
+    QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
+    return false;
+  }
+
   return true;
 }
 
 bool RegisterDialog::validaCPF(const QString text) {
-  if (text.size() == 11) {
-    if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
-        text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or
-        text == "88888888888" or text == "99999999999") {
-      QMessageBox::warning(this, "Aviso!", "CPF inválido!");
-      return false;
-    }
-
-    int digito1;
-    int digito2;
-
-    const QString sub = text.left(9);
-
-    QVector<int> sub2;
-
-    for (int i = 0, size = sub.size(); i < size; ++i) {
-      sub2.push_back(sub.at(i).digitValue());
-    }
-
-    const QVector<int> multiplicadores = {10, 9, 8, 7, 6, 5, 4, 3, 2};
-
-    int soma = 0;
-
-    for (int i = 0; i < 9; ++i) {
-      soma += sub2.at(i) * multiplicadores.at(i);
-    }
-
-    int resto = soma % 11;
-
-    if (resto < 2) {
-      digito1 = 0;
-    } else {
-      digito1 = 11 - resto;
-    }
-
-    sub2.push_back(digito1);
-
-    const QVector<int> multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
-    soma = 0;
-
-    for (int i = 0; i < 10; ++i) {
-      soma += sub2.at(i) * multiplicadores2.at(i);
-    }
-
-    resto = soma % 11;
-
-    if (resto < 2) {
-      digito2 = 0;
-    } else {
-      digito2 = 11 - resto;
-    }
-
-    if (digito1 != text.at(9).digitValue() or digito2 != text.at(10).digitValue()) {
-      QMessageBox::warning(this, "Aviso!", "CPF inválido!");
-      return false;
-    }
+  if (text.size() != 11) {
+    return false;
   }
 
-  // same as above
+  if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
+      text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or
+      text == "88888888888" or text == "99999999999") {
+    QMessageBox::warning(this, "Aviso!", "CPF inválido!");
+    return false;
+  }
+
+  const QString sub = text.left(9);
+
+  QVector<int> sub2;
+
+  for (int i = 0, size = sub.size(); i < size; ++i) {
+    sub2.push_back(sub.at(i).digitValue());
+  }
+
+  const QVector<int> multiplicadores = {10, 9, 8, 7, 6, 5, 4, 3, 2};
+
+  int soma = 0;
+
+  for (int i = 0; i < 9; ++i) {
+    soma += sub2.at(i) * multiplicadores.at(i);
+  }
+
+  int resto = soma % 11;
+
+  const int digito1 = resto < 2 ? 0 : 11 - resto;
+
+  sub2.push_back(digito1);
+
+  const QVector<int> multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
+  soma = 0;
+
+  for (int i = 0; i < 10; ++i) {
+    soma += sub2.at(i) * multiplicadores2.at(i);
+  }
+
+  resto = soma % 11;
+
+  const int digito2 = resto < 2 ? 0 : 11 - resto;
+
+  if (digito1 != text.at(9).digitValue() or digito2 != text.at(10).digitValue()) {
+    QMessageBox::warning(this, "Aviso!", "CPF inválido!");
+    return false;
+  }
+
   return true;
 }
 

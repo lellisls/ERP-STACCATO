@@ -1150,7 +1150,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
 
   if (modelPedForn->rowCount() > 1) {
     if (not modelItemPedidosPend->filter().contains("fornecedor")) {
-      QMessageBox::warning(this, "Aviso!", "Selecione o fornecedor na tabela à esquerda.");
+      QMessageBox::critical(this, "Erro!", "Selecione o fornecedor na tabela à esquerda.");
       return;
     }
   }
@@ -1246,12 +1246,11 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     dir.mkdir(path);
   }
 
-  if (xlsx.saveAs(path + "/" + idVenda + ".xlsx")) {
-    QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + idVenda + ".xlsx");
-  } else {
-    // TODO: get error from saveAs
-    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
+  if (not xlsx.saveAs(path + "/" + idVenda + ".xlsx")) {
+    return;
   }
+
+  QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + idVenda + ".xlsx");
 
   modelItemPedidosPend->setFilter(filtro);
 
@@ -1379,7 +1378,7 @@ void MainWindow::on_pushButtonConfirmarCompra_clicked() {
   QString idCompra;
 
   if (ui->tablePedidosComp->selectionModel()->selectedRows().size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
@@ -1494,7 +1493,7 @@ void MainWindow::on_pushButtonMarcarColetado_clicked() {
   }
 
   if (lista.size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
@@ -1569,7 +1568,7 @@ void MainWindow::on_pushButtonMarcarRecebido_clicked() {
   }
 
   if (lista.size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
@@ -1633,7 +1632,7 @@ void MainWindow::on_pushButtonMarcarFaturado_clicked() {
   QList<int> rows;
 
   if (ui->tableFaturamento->selectionModel()->selectedRows().size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado.");
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado.");
     return;
   }
 

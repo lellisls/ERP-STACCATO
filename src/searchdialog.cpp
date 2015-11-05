@@ -201,7 +201,7 @@ QString SearchDialog::getText(const QVariant index) {
 
   for (const auto key : textKeys) {
     if (query.value(key).isValid()) {
-      res += res.isEmpty() ? query.value(key).toString() : " - " + query.value(key).toString();
+      res += (res.isEmpty() ? "" : " - ") + query.value(key).toString();
     }
   }
 

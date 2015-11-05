@@ -322,15 +322,7 @@ bool CadastroCliente::viewRegister(const QModelIndex index) {
                                              query.value("nomeFantasia").toString() + "\n");
   }
 
-  tipoPFPJ = data("pfpj").toString();
-
-  if (tipoPFPJ == "PJ") {
-    ui->radioButtonPJ->setChecked(true);
-  }
-
-  if (tipoPFPJ == "PF") {
-    ui->radioButtonPF->setChecked(true);
-  }
+  data("pfpj").toString() == "PF" ? ui->radioButtonPF->setChecked(true) : ui->radioButtonPJ->setChecked(true);
 
   ui->tableEndereco->resizeColumnsToContents();
 

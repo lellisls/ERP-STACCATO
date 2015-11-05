@@ -403,11 +403,6 @@ void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
 void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
 
 void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
-  double subTotal = 0.;
-  double subTotalItens = 0.;
-  double subTotalBruto = 0.;
-  double minimoFrete = 0., porcFrete = 0.;
-
   QSqlQuery queryFrete;
   queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::getLoja());
@@ -417,44 +412,41 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
     return;
   }
 
-  minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
-  porcFrete = queryFrete.value("porcentagemFrete").toDouble();
+  const double minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
+  const double porcFrete = queryFrete.value("porcentagemFrete").toDouble();
+
+  double subTotalItens = 0.;
+  double subTotalBruto = 0.;
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    const double prcUnItem = modelItem.data(row, "prcUnitario").toDouble();
-    const double qteItem = modelItem.data(row, "quant").toDouble();
+    const double itemBruto = modelItem.data(row, "quant").toDouble() * modelItem.data(row, "prcUnitario").toDouble();
     const double descItem = modelItem.data(row, "desconto").toDouble() / 100.0;
-    const double itemBruto = qteItem * prcUnItem;
-    subTotalBruto += itemBruto;
     const double stItem = itemBruto * (1.0 - descItem);
+    subTotalBruto += itemBruto;
     subTotalItens += stItem;
     modelItem.setData(row, "parcial", itemBruto);
     modelItem.setData(row, "parcialDesc", stItem);
   }
 
-  double frete = ui->checkBoxFreteManual->isChecked() ? ui->doubleSpinBoxFrete->value()
-                                                      : qMax(subTotalBruto * porcFrete / 100.0, minimoFrete);
+  const double frete = ui->checkBoxFreteManual->isChecked() ? ui->doubleSpinBoxFrete->value()
+                                                            : qMax(subTotalBruto * porcFrete / 100., minimoFrete);
 
-  double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.0;
-  subTotal = subTotalItens * (1.0 - descGlobal);
+  double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.;
+  double subTotal = subTotalItens * (1. - descGlobal);
 
   if (ajusteTotal) {
-    const double final = ui->doubleSpinBoxTotal->value();
-    subTotal = final - frete;
-    descGlobal = subTotalItens == 0. ? 0 : 1 - (subTotal / subTotalItens);
+    subTotal = ui->doubleSpinBoxTotal->value() - frete;
+    descGlobal = subTotalItens == 0. ? 0. : 1. - (subTotal / subTotalItens);
   }
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    const double stItem = modelItem.data(row, "parcialDesc").toDouble();
-    modelItem.setData(row, "descGlobal", descGlobal * 100.0);
-
-    const double totalItem = stItem * (1 - descGlobal);
-    modelItem.setData(row, "total", totalItem);
+    modelItem.setData(row, "descGlobal", descGlobal * 100.);
+    modelItem.setData(row, "total", modelItem.data(row, "parcialDesc").toDouble() * (1. - descGlobal));
   }
 
   ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
   ui->doubleSpinBoxSubTotalLiq->setValue(subTotalItens);
-  ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100);
+  ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100.);
   ui->doubleSpinBoxDescontoGlobal->setPrefix("- R$ " + QString::number(subTotalItens - subTotal, 'f', 2) + " - ");
 
   if (ui->doubleSpinBoxFrete->value() == 0) {
@@ -1233,8 +1225,7 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
   xlsx.write("D8", queryUsuario.value("nome").toString());
   xlsx.write("F8", queryUsuario.value("email").toString());
   xlsx.write("M2", queryOrc.value("data").toDateTime().toString("dd/MM/yyyy hh:mm"));
-  xlsx.write("M3", queryCliente.value("pfpj").toString() == "PF" ? queryCliente.value("cpf").toString()
-                                                                 : queryCliente.value("cnpj").toString());
+  xlsx.write("M3", queryCliente.value(queryCliente.value("pfpj").toString() == "PF" ? "cpf" : "cnpj").toString());
   xlsx.write("M4", queryCliente.value("tel").toString());
   xlsx.write("M5", queryEndFat.value("cep").toString());
   xlsx.write("M6", queryEndEnt.value("cep").toString());
@@ -1261,21 +1252,13 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
     xlsx.write("N" + QString::number(12 + i), "R$ " + QString::number(modelItem.data(i, "total").toDouble(), 'f', 2));
   }
 
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("User");
-  QString path = settings.value("userFolder").toString();
-
-  QDir dir(path);
-
-  if (not dir.exists()) {
-    dir.mkdir(path);
-  }
-
-  if (xlsx.saveAs(path + "/" + ui->lineEditOrcamento->text() + ".xlsx")) {
-    QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + ui->lineEditOrcamento->text() + ".xlsx");
-  } else {
+  if (not xlsx.saveAs(path + "/" + ui->lineEditOrcamento->text() + ".xlsx")) {
     QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
+    return;
   }
+
+  QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + ui->lineEditOrcamento->text() + ".xlsx");
+  QDesktopServices::openUrl(QUrl::fromLocalFile(path + "/" + ui->lineEditOrcamento->text() + ".xlsx"));
 }
 
 void Orcamento::on_checkBoxRepresentacao_toggled(bool checked) {

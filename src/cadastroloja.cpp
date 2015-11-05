@@ -262,18 +262,20 @@ void CadastroLoja::on_pushButtonSaidaNFe_clicked() {
 
 void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {
   if (not cadastrarEndereco(false)) {
-    QMessageBox::critical(this, "Atenção!", "Não foi possível cadastrar este endereço.");
-  } else {
-    novoEndereco();
+    QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço.");
+    return;
   }
+
+  novoEndereco();
 }
 
 void CadastroLoja::on_pushButtonAtualizarEnd_clicked() {
   if (not cadastrarEndereco(true)) {
-    QMessageBox::critical(this, "Atenção!", "Não foi possível atualizar este endereço.");
-  } else {
-    novoEndereco();
+    QMessageBox::critical(this, "Erro!", "Não foi possível atualizar este endereço.");
+    return;
   }
+
+  novoEndereco();
 }
 
 void CadastroLoja::on_pushButtonEndLimpar_clicked() { novoEndereco(); }

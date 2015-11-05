@@ -484,7 +484,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   }
 
   queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
+  queryCliente.bindValue(":idCliente", model.data(mapper.currentIndex(), "idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + queryCliente.lastError().text());
@@ -492,7 +492,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   }
 
   queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
-  queryProfissional.bindValue(":idProfissional", model.data(0, "idProfissional"));
+  queryProfissional.bindValue(":idProfissional", model.data(mapper.currentIndex(), "idProfissional"));
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());

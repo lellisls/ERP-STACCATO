@@ -432,7 +432,6 @@ QString CadastrarNFe::calculaDigitoVerificador(const QString chave) {
     cDV = 0;
   }
 
-  qDebug() << "digito: " << cDV;
   return QString::number(cDV);
 }
 
@@ -797,8 +796,8 @@ bool CadastrarNFe::writeTXT() {
   writeTotal(stream, total, icmsTotal, frete);
 
   stream << "\")";
-//  stream << "\",1,1)";
-//  stream << "\",0)";
+  //  stream << "\",1,1)";
+  //  stream << "\",0)";
 
   stream.flush();
   file.close();

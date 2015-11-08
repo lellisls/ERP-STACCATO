@@ -22,6 +22,7 @@ class MainWindow : public QMainWindow {
     void setPort(const QString &value);
     bool dbConnect();
     void setHomologacao(bool value);
+    void readSettings();
 
   public slots:
     void updateTables();
@@ -122,6 +123,8 @@ class MainWindow : public QMainWindow {
     QString password;
     QString port;
     bool homologacao;
+    QString defaultStyle;
+    QPalette defautPalette;
     // methods
     void setupTables();
     bool event(QEvent *e);
@@ -130,9 +133,8 @@ class MainWindow : public QMainWindow {
     QString getUsername() const;
     QString getPassword() const;
     QString getPort() const;
-    void readSettings();
-    QString defaultStyle;
-    QPalette defautPalette;
+    QVariant settings(QString key) const;
+    void setSettings(QString key, QVariant value) const;
 };
 
 #endif // MAINWINDOW_H

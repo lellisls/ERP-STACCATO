@@ -28,7 +28,6 @@ void EntregasCliente::setupTables() {
 
   if (not modelProdutos.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelProdutos.lastError().text());
-    return;
   }
 
   ui->tableProdutos->setModel(&modelProdutos);
@@ -43,7 +42,6 @@ void EntregasCliente::setupTables() {
   if (not modelEntregas.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro lendo tabela pedido_transportadora: " + modelEntregas.lastError().text());
-    return;
   }
 
   ui->tableEntregas->setModel(&modelEntregas);
@@ -57,17 +55,18 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
   for (const auto index :
        modelProdutos.match(modelProdutos.index(0, modelProdutos.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
                            Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
+    // NOTE: readd these
+    //    if (modelProdutos.data(index.row(), "idNfeSaida").toInt() != 0) {
+    //      QMessageBox::critical(this, "Erro!", "Produto já possui nota emitida!");
+    //      return;
+    //    }
+
+    //    if (modelProdutos.data(index.row(), "status").toString() != "ESTOQUE") {
+    //      QMessageBox::critical(this, "Erro!", "Produto não está em estoque!");
+    //      return;
+    //    }
+
     lista.append(modelProdutos.data(index.row(), "idVendaProduto").toInt());
-
-    if (modelProdutos.data(index.row(), "idNfeSaida").toInt() != 0) {
-      QMessageBox::warning(this, "Aviso!", "Produto já possui nota emitida!");
-      return;
-    }
-
-    if (modelProdutos.data(index.row(), "status").toString() != "ESTOQUE") {
-      QMessageBox::warning(this, "Aviso!", "Produto não está em estoque!");
-      return;
-    }
   }
 
   if (lista.size() == 0) {
@@ -84,6 +83,7 @@ void EntregasCliente::on_pushButtonCancelar_clicked() { close(); }
 
 void EntregasCliente::viewEntrega(const QString idVenda) {
   this->idVenda = idVenda;
+
   modelProdutos.setFilter("idVenda = '" + idVenda + "'");
 
   if (not modelProdutos.select()) {

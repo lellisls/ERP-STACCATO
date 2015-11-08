@@ -55,7 +55,7 @@ class CadastroCliente : public RegisterAddressDialog {
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     /*!
 * \brief Limpar os campos da tela
 */
@@ -78,7 +78,6 @@ class CadastroCliente : public RegisterAddressDialog {
     Ui::CadastroCliente *ui;
     QString tipoPFPJ;
     // methods
-    bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     bool cadastrarEndereco(const bool isUpdate);
     void novoEndereco();
     void setupUi();

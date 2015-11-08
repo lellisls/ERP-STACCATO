@@ -85,7 +85,10 @@ void ItemBox::setValue(const QVariant &value) {
 
   if (value.isNull()) {
     setText("");
-  } else if (m_searchDialog) {
+    return;
+  }
+
+  if (m_searchDialog) {
     setText(m_searchDialog->getText(value));
   }
 }

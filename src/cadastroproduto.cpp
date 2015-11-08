@@ -9,6 +9,10 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
+  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
 
@@ -29,10 +33,6 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
   ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
 
-  for (const QLineEdit *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
-
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
   }
@@ -41,7 +41,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 CadastroProduto::~CadastroProduto() { delete ui; }
 
 void CadastroProduto::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
+  for (auto *line : this->findChildren<QLineEdit *>()) {
     line->clear();
   }
 
@@ -76,13 +76,13 @@ bool CadastroProduto::verifyFields() {
 
   if (ui->itemBoxFornecedor->value().isNull()) {
     ui->itemBoxFornecedor->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Faltou preencher fornecedor");
+    QMessageBox::critical(this, "Erro!", "Faltou preencher fornecedor!");
     return false;
   }
 
   if (ui->lineEditICMS->text().isEmpty()) {
     ui->lineEditICMS->setFocus();
-    QMessageBox::warning(this, "Atenção!", "Faltou preencher ICMS");
+    QMessageBox::critical(this, "Erro!", "Faltou preencher ICMS!");
     return false;
   }
 
@@ -119,35 +119,35 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->radioButtonLote, "temLote");
 }
 
-bool CadastroProduto::savingProcedures(const int row) {
-  setData(row, "codBarras", ui->lineEditCodBarras->text());
-  setData(row, "codComercial", ui->lineEditCodComer->text());
-  setData(row, "colecao", ui->lineEditColecao->text());
-  setData(row, "comissao", ui->doubleSpinBoxComissao->value());
-  setData(row, "custo", ui->doubleSpinBoxCusto->value());
-  setData(row, "descontinuado", ui->radioButtonDesc->isChecked());
-  setData(row, "descricao", ui->lineEditDescricao->text());
-  setData(row, "estoque", ui->doubleSpinBoxEstoque->value());
-  setData(row, "formComercial", ui->lineEditFormComer->text());
-  setData(row, "Fornecedor", ui->itemBoxFornecedor->text());
-  setData(row, "icms", ui->lineEditICMS->text());
-  setData(row, "idFornecedor", ui->itemBoxFornecedor->value());
-  setData(row, "ipi", ui->doubleSpinBoxIPI->value());
-  setData(row, "m2cx", ui->doubleSpinBoxM2Cx->value());
-  setData(row, "markup", ui->doubleSpinBoxMarkup->value());
-  setData(row, "ncm", ui->lineEditNCM->text());
-  setData(row, "observacoes", ui->textEditObserv->toPlainText());
-  setData(row, "origem", ui->comboBoxOrigem->currentData());
-  setData(row, "pccx", ui->doubleSpinBoxPcCx->value());
-  setData(row, "precoVenda", ui->doubleSpinBoxVenda->value());
-  setData(row, "qtdPallet", ui->doubleSpinBoxQtePallet->value());
-  setData(row, "cst", ui->comboBoxCST->currentText());
-  setData(row, "st", ui->doubleSpinBoxST->value());
-  setData(row, "temLote", ui->radioButtonLote->isChecked());
-  setData(row, "ui", ui->lineEditUI->text());
-  setData(row, "un", ui->comboBoxUn->currentText());
+bool CadastroProduto::savingProcedures() {
+  setData("codBarras", ui->lineEditCodBarras->text());
+  setData("codComercial", ui->lineEditCodComer->text());
+  setData("colecao", ui->lineEditColecao->text());
+  setData("comissao", ui->doubleSpinBoxComissao->value());
+  setData("custo", ui->doubleSpinBoxCusto->value());
+  setData("descontinuado", ui->radioButtonDesc->isChecked());
+  setData("descricao", ui->lineEditDescricao->text());
+  setData("estoque", ui->doubleSpinBoxEstoque->value());
+  setData("formComercial", ui->lineEditFormComer->text());
+  setData("Fornecedor", ui->itemBoxFornecedor->text());
+  setData("icms", ui->lineEditICMS->text());
+  setData("idFornecedor", ui->itemBoxFornecedor->value());
+  setData("ipi", ui->doubleSpinBoxIPI->value());
+  setData("m2cx", ui->doubleSpinBoxM2Cx->value());
+  setData("markup", ui->doubleSpinBoxMarkup->value());
+  setData("ncm", ui->lineEditNCM->text());
+  setData("observacoes", ui->textEditObserv->toPlainText());
+  setData("origem", ui->comboBoxOrigem->currentData());
+  setData("pccx", ui->doubleSpinBoxPcCx->value());
+  setData("precoVenda", ui->doubleSpinBoxVenda->value());
+  setData("qtdPallet", ui->doubleSpinBoxQtePallet->value());
+  setData("cst", ui->comboBoxCST->currentText());
+  setData("st", ui->doubleSpinBoxST->value());
+  setData("temLote", ui->radioButtonLote->isChecked());
+  setData("ui", ui->lineEditUI->text());
+  setData("un", ui->comboBoxUn->currentText());
 
-  return true;
+  return isOk;
 }
 
 void CadastroProduto::on_pushButtonCadastrar_clicked() { save(); }

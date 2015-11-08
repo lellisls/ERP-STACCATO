@@ -25,6 +25,9 @@ class LoginDialog : public QDialog {
     // methods
     void verify();
     bool dbConnect();
+    QVariant settings(QString key) const;
+    void setSettings(QString key, QVariant value) const;
+    bool settingsContains(const QString &key) const;
 };
 
 #endif // LOGINDIALOG_H

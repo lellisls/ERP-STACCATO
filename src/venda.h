@@ -49,7 +49,7 @@ class Venda : public RegisterDialog {
     void finished();
 
   protected:
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     virtual void registerMode();
     virtual void updateMode();
     virtual void successMessage();
@@ -80,6 +80,8 @@ class Venda : public RegisterDialog {
     void setupMapper();
     void setupTables();
     virtual bool viewRegister(const QModelIndex index);
+    QVariant settings(QString key) const;
+    void setSettings(QString key, QVariant value) const;
 };
 
 #endif // VENDA_H

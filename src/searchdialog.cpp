@@ -7,6 +7,8 @@
 #include "ui_searchdialog.h"
 #include "doubledelegate.h"
 
+typedef QPair<QString, QString> Pair;
+
 SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
   : QDialog(parent), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
@@ -48,13 +50,13 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
 SearchDialog::~SearchDialog() { delete ui; }
 
 void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
-  if (ui->groupBoxFiltrosProduto->isVisible()) {
-    ui->radioButtonProdAtivos->isChecked() ? montarFiltroAtivoDesc(true) : montarFiltroAtivoDesc(false);
+  if (model.tableName() == "produto") {
+    montarFiltroAtivoDesc(ui->radioButtonProdAtivos->isChecked() ? true : false);
     return;
   }
 
   if (text.isEmpty()) {
-    setFilter(""); // TODO: descontinuado = FALSE?
+    setFilter("desativado = FALSE");
   } else {
     QStringList temp = text.split(" ", QString::SkipEmptyParts);
 
@@ -208,7 +210,7 @@ QString SearchDialog::getText(const QVariant index) {
   return res;
 }
 
-void SearchDialog::setHeaderData(const QVector<QPair<QString, QString>> headerData) {
+void SearchDialog::setHeaderData(const QVector<Pair> headerData) {
   for (auto pair : headerData) {
     model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second);
   }
@@ -225,23 +227,24 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
                           "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto",
                           "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("nome_razao", "Cliente"));
-  headerData.push_back(QPair<QString, QString>("cpf", "CPF"));
-  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
-  headerData.push_back(QPair<QString, QString>("contatoNome", "Nome - Contato"));
-  headerData.push_back(QPair<QString, QString>("contatoCPF", "CPF - Contato"));
-  headerData.push_back(QPair<QString, QString>("contatoApelido", "Apelido - Contato"));
-  headerData.push_back(QPair<QString, QString>("contatoRG", "RG - Contato"));
-  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Fantasia/Apelido"));
-  headerData.push_back(QPair<QString, QString>("tel", "Tel."));
-  headerData.push_back(QPair<QString, QString>("telCel", "Tel. Cel."));
-  headerData.push_back(QPair<QString, QString>("telCom", "Tel. Com."));
-  headerData.push_back(QPair<QString, QString>("idNextel", "id Nextel"));
-  headerData.push_back(QPair<QString, QString>("nextel", "Nextel"));
-  headerData.push_back(QPair<QString, QString>("email", "E-mail"));
-  sdCliente->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"pfpj", "Tipo"});
+  header.push_back({"nome_razao", "Cliente"});
+  header.push_back({"cpf", "CPF"});
+  header.push_back({"cnpj", "CNPJ"});
+  header.push_back({"dataNasc", "Data Nasc."});
+  header.push_back({"contatoNome", "Nome - Contato"});
+  header.push_back({"contatoCPF", "CPF - Contato"});
+  header.push_back({"contatoApelido", "Apelido - Contato"});
+  header.push_back({"contatoRG", "RG - Contato"});
+  header.push_back({"nomeFantasia", "Fantasia/Apelido"});
+  header.push_back({"tel", "Tel."});
+  header.push_back({"telCel", "Tel. Cel."});
+  header.push_back({"telCom", "Tel. Com."});
+  header.push_back({"idNextel", "id Nextel"});
+  header.push_back({"nextel", "Nextel"});
+  header.push_back({"email", "E-mail"});
+  sdCliente->setHeaderData(header);
 
   return sdCliente;
 }
@@ -255,17 +258,17 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
 
   sdLoja->hideColumns({"idLoja", "idEndereco", "codUF", "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
-  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));
-  headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
-  headerData.push_back(QPair<QString, QString>("tel", "Tel."));
-  headerData.push_back(QPair<QString, QString>("inscEstadual", "Insc. Est."));
-  headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
-  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
-  headerData.push_back(QPair<QString, QString>("porcentagemFrete", "% Frete"));
-  headerData.push_back(QPair<QString, QString>("valorMinimoFrete", "R$ Mínimo Frete"));
-  sdLoja->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"descricao", "Descrição"});
+  header.push_back({"nomeFantasia", "Nome Fantasia"});
+  header.push_back({"razaoSocial", "Razão Social"});
+  header.push_back({"tel", "Tel."});
+  header.push_back({"inscEstadual", "Insc. Est."});
+  header.push_back({"sigla", "Sigla"});
+  header.push_back({"cnpj", "CNPJ"});
+  header.push_back({"porcentagemFrete", "% Frete"});
+  header.push_back({"valorMinimoFrete", "R$ Mínimo Frete"});
+  sdLoja->setHeaderData(header);
 
   return sdLoja;
 }
@@ -285,22 +288,23 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
     sdProd->ui->tableBusca->setColumnHidden(i, true); // this hides *Upd fields
   }
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("fornecedor", "Fornecedor"));
-  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
-  headerData.push_back(QPair<QString, QString>("estoque", "Estoque"));
-  headerData.push_back(QPair<QString, QString>("un", "Un."));
-  headerData.push_back(QPair<QString, QString>("colecao", "Coleção"));
-  headerData.push_back(QPair<QString, QString>("tipo", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("m2cx", "M/Cx."));
-  headerData.push_back(QPair<QString, QString>("pccx", "Pç./Cx."));
-  headerData.push_back(QPair<QString, QString>("kgcx", "Kg./Cx."));
-  headerData.push_back(QPair<QString, QString>("formComercial", "Form. Com."));
-  headerData.push_back(QPair<QString, QString>("codComercial", "Cód. Com."));
-  headerData.push_back(QPair<QString, QString>("precoVenda", "R$"));
-  headerData.push_back(QPair<QString, QString>("validade", "Validade"));
-  headerData.push_back(QPair<QString, QString>("ui", "UI"));
-  sdProd->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"fornecedor", "Fornecedor"});
+  header.push_back({"descricao", "Descrição"});
+  header.push_back({"estoque", "Estoque"});
+  header.push_back({"un", "Un."});
+  header.push_back({"un2", "Un.2"});
+  header.push_back({"colecao", "Coleção"});
+  header.push_back({"tipo", "Tipo"});
+  header.push_back({"m2cx", "M/Cx."});
+  header.push_back({"pccx", "Pç./Cx."});
+  header.push_back({"kgcx", "Kg./Cx."});
+  header.push_back({"formComercial", "Form. Com."});
+  header.push_back({"codComercial", "Cód. Com."});
+  header.push_back({"precoVenda", "R$"});
+  header.push_back({"validade", "Validade"});
+  header.push_back({"ui", "UI"});
+  sdProd->setHeaderData(header);
 
   sdProd->ui->groupBoxFiltrosProduto->show();
   sdProd->ui->radioButtonProdAtivos->setChecked(true);
@@ -319,15 +323,15 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
                              "idEnderecoEntrega", "tel", "telCel", "telCom", "idNextel", "nextel", "email",
                              "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto", "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
-  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));
-  headerData.push_back(QPair<QString, QString>("contatoNome", "Nome do Contato"));
-  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
-  headerData.push_back(QPair<QString, QString>("contatoCPF", "CPF do Contato"));
-  headerData.push_back(QPair<QString, QString>("contatoApelido", "Apelido do Contato"));
-  headerData.push_back(QPair<QString, QString>("contatoRG", "RG do Contato"));
-  sdFornecedor->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"razaoSocial", "Razão Social"});
+  header.push_back({"nomeFantasia", "Nome Fantasia"});
+  header.push_back({"contatoNome", "Nome do Contato"});
+  header.push_back({"cnpj", "CNPJ"});
+  header.push_back({"contatoCPF", "CPF do Contato"});
+  header.push_back({"contatoApelido", "Apelido do Contato"});
+  header.push_back({"contatoRG", "RG do Contato"});
+  sdFornecedor->setHeaderData(header);
 
   return sdFornecedor;
 }
@@ -341,15 +345,15 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
 
   sdTransportadora->hideColumns({"idTransportadora", "idEndereco", "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("razaoSocial", "Razão Social"));
-  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Nome Fantasia"));
-  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
-  headerData.push_back(QPair<QString, QString>("inscEstadual", "Insc. Est."));
-  headerData.push_back(QPair<QString, QString>("placaVeiculo", "Placa"));
-  headerData.push_back(QPair<QString, QString>("antt", "ANTT"));
-  headerData.push_back(QPair<QString, QString>("tel", "Tel."));
-  sdTransportadora->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"razaoSocial", "Razão Social"});
+  header.push_back({"nomeFantasia", "Nome Fantasia"});
+  header.push_back({"cnpj", "CNPJ"});
+  header.push_back({"inscEstadual", "Insc. Est."});
+  header.push_back({"placaVeiculo", "Placa"});
+  header.push_back({"antt", "ANTT"});
+  header.push_back({"tel", "Tel."});
+  sdTransportadora->setHeaderData(header);
 
   return sdTransportadora;
 }
@@ -363,12 +367,12 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
 
   sdUsuario->hideColumns({"idUsuario", "user", "passwd", "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("idLoja", "Loja"));
-  headerData.push_back(QPair<QString, QString>("tipo", "Função"));
-  headerData.push_back(QPair<QString, QString>("nome", "Nome"));
-  headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
-  sdUsuario->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"idLoja", "Loja"});
+  header.push_back({"tipo", "Função"});
+  header.push_back({"nome", "Nome"});
+  header.push_back({"sigla", "Sigla"});
+  sdUsuario->setHeaderData(header);
 
   sdUsuario->model.setRelation(sdUsuario->model.fieldIndex("idLoja"), QSqlRelation("loja", "idLoja", "descricao"));
 
@@ -384,11 +388,12 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 
   sdVendedor->hideColumns({"idUsuario", "idLoja", "user", "passwd", "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("tipo", "Função"));
-  headerData.push_back(QPair<QString, QString>("nome", "Nome"));
-  headerData.push_back(QPair<QString, QString>("sigla", "Sigla"));
-  sdVendedor->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"tipo", "Função"});
+  header.push_back({"nome", "Nome"});
+  header.push_back({"sigla", "Sigla"});
+  header.push_back({"email", "E-mail"});
+  sdVendedor->setHeaderData(header);
 
   return sdVendedor;
 }
@@ -401,15 +406,15 @@ SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
 
   sdEndereco->hideColumns({"idEndereco", "idCliente", "codUF", "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("descricao", "Descrição"));
-  headerData.push_back(QPair<QString, QString>("cep", "CEP"));
-  headerData.push_back(QPair<QString, QString>("logradouro", "End."));
-  headerData.push_back(QPair<QString, QString>("numero", "Número"));
-  headerData.push_back(QPair<QString, QString>("complemento", "Comp."));
-  headerData.push_back(QPair<QString, QString>("bairro", "Bairro"));
-  headerData.push_back(QPair<QString, QString>("cidade", "Cidade"));
-  headerData.push_back(QPair<QString, QString>("uf", "UF"));
+  QVector<Pair> headerData;
+  headerData.push_back({"descricao", "Descrição"});
+  headerData.push_back({"cep", "CEP"});
+  headerData.push_back({"logradouro", "End."});
+  headerData.push_back({"numero", "Número"});
+  headerData.push_back({"complemento", "Comp."});
+  headerData.push_back({"bairro", "Bairro"});
+  headerData.push_back({"cidade", "Cidade"});
+  headerData.push_back({"uf", "UF"});
   sdEndereco->setHeaderData(headerData);
 
   return sdEndereco;
@@ -426,20 +431,20 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
                                "contatoRG", "banco", "agencia", "cc", "nomeBanco", "cpfBanco", "incompleto",
                                "desativado"});
 
-  QVector<QPair<QString, QString>> headerData;
-  headerData.push_back(QPair<QString, QString>("pfpj", "Tipo"));
-  headerData.push_back(QPair<QString, QString>("nome_razao", "Profissional"));
-  headerData.push_back(QPair<QString, QString>("nomeFantasia", "Fantasia/Apelido"));
-  headerData.push_back(QPair<QString, QString>("cpf", "CPF"));
-  headerData.push_back(QPair<QString, QString>("cnpj", "CNPJ"));
-  headerData.push_back(QPair<QString, QString>("tel", "Tel."));
-  headerData.push_back(QPair<QString, QString>("telCel", "Tel. Cel."));
-  headerData.push_back(QPair<QString, QString>("telCom", "Tel. Com."));
-  headerData.push_back(QPair<QString, QString>("idNextel", "id Nextel"));
-  headerData.push_back(QPair<QString, QString>("nextel", "Nextel"));
-  headerData.push_back(QPair<QString, QString>("email", "E-mail"));
-  headerData.push_back(QPair<QString, QString>("tipoProf", "Profissão"));
-  sdProfissional->setHeaderData(headerData);
+  QVector<Pair> header;
+  header.push_back({"pfpj", "Tipo"});
+  header.push_back({"nome_razao", "Profissional"});
+  header.push_back({"nomeFantasia", "Fantasia/Apelido"});
+  header.push_back({"cpf", "CPF"});
+  header.push_back({"cnpj", "CNPJ"});
+  header.push_back({"tel", "Tel."});
+  header.push_back({"telCel", "Tel. Cel."});
+  header.push_back({"telCom", "Tel. Com."});
+  header.push_back({"idNextel", "id Nextel"});
+  header.push_back({"nextel", "Nextel"});
+  header.push_back({"email", "E-mail"});
+  header.push_back({"tipoProf", "Profissão"});
+  sdProfissional->setHeaderData(header);
 
   return sdProfissional;
 }
@@ -481,5 +486,3 @@ void SearchDialog::on_tableBusca_entered(const QModelIndex &index) {
 }
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
-
-// TODO: buscar no projeto pela frase "setFilter("")" e corrigir adicionando desativado = FALSE

@@ -11,9 +11,6 @@ class LineEditDecimal : public QLineEdit {
     double getValue() const;
     void setValue(const double value);
 
-  private slots:
-    void processDecimal(const QString value);
-
   private:
     Q_PROPERTY(double value READ getValue WRITE setValue STORED false)
     // attributes

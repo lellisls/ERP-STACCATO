@@ -272,7 +272,7 @@
         </layout>
        </item>
        <item row="2" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="groupBoxEndereco">
          <property name="title">
           <string>Endereço</string>
          </property>

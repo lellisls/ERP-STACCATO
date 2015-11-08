@@ -6,12 +6,6 @@ bool LineEditCEP::isValid() const { return (text().size() == 9); }
 
 LineEditCEP::~LineEditCEP() {}
 
-QString LineEditCEP::getValue() const {
-  if (not isValid()) {
-    return QString();
-  }
-
-  return text();
-}
+QString LineEditCEP::getValue() const { return isValid() ? text() : QString(); }
 
 void LineEditCEP::setValue(const QString value) { setText(value); }

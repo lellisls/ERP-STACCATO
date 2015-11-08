@@ -12,14 +12,14 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
   : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
+  for (const auto *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   setupTables();
   setupUi();
   setupMapper();
   newRegister();
-
-  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
 
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
@@ -69,122 +69,33 @@ void CadastroFornecedor::novoEndereco() {
 }
 
 bool CadastroFornecedor::verifyFields() {
-  if (modelEnd.rowCount() == 0) {
-    incompleto = true;
-    QMessageBox::critical(this, "Erro!", "Faltou endereço!");
-    return true;
-  }
-
-  int ok = 0;
-
-  for (auto *line : ui->groupBoxContatos->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
-    if (verifyRequiredField(line, true)) {
-      ok++;
-    } else {
-      QMessageBox::critical(this, "Erro!", "Faltou: " + line->objectName());
-      // TODO: return?
+  for (auto *line : ui->frameCadastro->findChildren<QLineEdit *>()) {
+    if (not verifyRequiredField(line)) {
+      return false;
     }
-  }
-
-  if (ok != ui->groupBoxContatos->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly).size()) {
-    incompleto = true;
-    return true;
-  }
-
-  ok = 0;
-
-  for (auto *line : ui->groupBoxPJuridica->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
-    if (verifyRequiredField(line, true)) {
-      ok++;
-    } else {
-      QMessageBox::critical(this, "Erro!", "Faltou: " + line->objectName());
-      // TODO: return?
-    }
-  }
-
-  if (ok != ui->groupBoxPJuridica->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly).size()) {
-    incompleto = true;
-    return true;
   }
 
   return true;
 }
 
-bool CadastroFornecedor::savingProcedures(const int row) {
-  if (not setData(row, "razaoSocial", ui->lineEditFornecedor->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Razão Social!");
-    return false;
-  }
+bool CadastroFornecedor::savingProcedures() {
+  setData("razaoSocial", ui->lineEditFornecedor->text());
+  setData("nomeFantasia", ui->lineEditNomeFantasia->text());
+  setData("contatoNome", ui->lineEditContatoNome->text());
+  setData("contatoCPF", ui->lineEditContatoCPF->text().remove(".").remove("-"));
+  setData("contatoApelido", ui->lineEditContatoApelido->text());
+  setData("contatoRG", ui->lineEditContatoRG->text().remove(".").remove("-"));
+  setData("cnpj", ui->lineEditCNPJ->text().remove(".").remove("/").remove("-"));
+  setData("inscEstadual", ui->lineEditInscEstadual->text());
+  setData("tel", ui->lineEditTel_Res->text());
+  setData("telCel", ui->lineEditTel_Cel->text());
+  setData("telCom", ui->lineEditTel_Com->text());
+  setData("nextel", ui->lineEditNextel->text());
+  setData("email", ui->lineEditEmail->text());
+  // TODO: fornecedor usa incompleto?
+  //  setData("incompleto", incompleto);
 
-  if (not setData(row, "nomeFantasia", ui->lineEditNomeFantasia->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Nome Fantasia!");
-    return false;
-  }
-
-  if (not setData(row, "contatoNome", ui->lineEditContatoNome->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Nome Contato!");
-    return false;
-  }
-
-  if (not ui->lineEditContatoCPF->text().remove(".").remove("-").isEmpty() and
-      not setData(row, "contatoCPF", ui->lineEditContatoCPF->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando CPF Contato!");
-    return false;
-  }
-
-  if (not setData(row, "contatoApelido", ui->lineEditContatoApelido->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Apelido Contato!");
-    return false;
-  }
-
-  if (not ui->lineEditContatoRG->text().remove(".").remove("-").isEmpty() and
-      not setData(row, "contatoRG", ui->lineEditContatoRG->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando RG Contato!");
-    return false;
-  }
-
-  if (not ui->lineEditCNPJ->text().remove(".").remove("/").remove("-").isEmpty() and
-      not setData(row, "cnpj", ui->lineEditCNPJ->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando CNPJ!");
-    return false;
-  }
-
-  if (not setData(row, "inscEstadual", ui->lineEditInscEstadual->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Insc. Estadual!");
-    return false;
-  }
-
-  if (not setData(row, "tel", ui->lineEditTel_Res->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Telefone!");
-    return false;
-  }
-
-  if (not setData(row, "telCel", ui->lineEditTel_Cel->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Celular!");
-    return false;
-  }
-
-  if (not setData(row, "telCom", ui->lineEditTel_Com->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Tel. Comercial!");
-    return false;
-  }
-
-  if (not setData(row, "nextel", ui->lineEditNextel->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Nextel!");
-    return false;
-  }
-
-  if (not setData(row, "email", ui->lineEditEmail->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando E-mail!");
-    return false;
-  }
-
-  if (not setData(row, "incompleto", incompleto)) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Incompleto!");
-    return false;
-  }
-
-  return true;
+  return isOk;
 }
 
 void CadastroFornecedor::clearFields() {
@@ -247,8 +158,7 @@ bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, const bool silent)
       (line->text().size() < line->inputMask().remove(";").remove(">").remove("_").size()) or
       (line->text().size() < line->placeholderText().size() - 1)) {
     if (not silent) {
-      // TODO: usar accesibleName?
-      QMessageBox::critical(this, "Erro!", "Você não preencheu um campo obrigatório: " + line->objectName());
+      QMessageBox::critical(this, "Erro!", "Você não preencheu um campo obrigatório: " + line->accessibleName());
       line->setFocus();
     }
 
@@ -291,76 +201,38 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
 }
 
 bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
-  if (not RegisterDialog::verifyFields({ui->lineEditCEP, ui->lineEditEndereco, ui->lineEditNro, ui->lineEditBairro,
-                                       ui->lineEditCidade, ui->lineEditUF})) {
-    return false;
+  for (auto *line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
+    if (not verifyRequiredField(line)) {
+      return false;
+    }
   }
 
   if (not ui->lineEditCEP->isValid()) {
     ui->lineEditCEP->setFocus();
-    QMessageBox::warning(this, "Atenção!", "CEP inválido!");
+    QMessageBox::critical(this, "Erro!", "CEP inválido!");
     return false;
   }
 
-  const int row = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  rowEnd = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
   if (not isUpdate) {
-    modelEnd.insertRow(row);
+    modelEnd.insertRow(rowEnd);
   }
 
-  if (not setDataEnd(row, "descricao", ui->comboBoxTipoEnd->currentText())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando descrição: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditCEP->text().isEmpty() and not setDataEnd(row, "cep", ui->lineEditCEP->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando CEP: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditEndereco->text().isEmpty() and not setDataEnd(row, "logradouro", ui->lineEditEndereco->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando logradouro: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditNro->text().isEmpty() and not setDataEnd(row, "numero", ui->lineEditNro->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando número: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditComp->text().isEmpty() and not setDataEnd(row, "complemento", ui->lineEditComp->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando complemento: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditBairro->text().isEmpty() and not setDataEnd(row, "bairro", ui->lineEditBairro->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando bairro: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditCidade->text().isEmpty() and not setDataEnd(row, "cidade", ui->lineEditCidade->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando cidade: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not ui->lineEditUF->text().isEmpty() and not setDataEnd(row, "uf", ui->lineEditUF->text())) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando UF: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not setDataEnd(row, "codUF", getCodigoUF(ui->lineEditUF->text()))) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando codUF: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  if (not setDataEnd(row, "desativado", false)) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando desativado: " + modelEnd.lastError().text());
-    return false;
-  }
+  setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
+  setDataEnd("cep", ui->lineEditCEP->text());
+  setDataEnd("logradouro", ui->lineEditEndereco->text());
+  setDataEnd("numero", ui->lineEditNro->text());
+  setDataEnd("complemento", ui->lineEditComp->text());
+  setDataEnd("bairro", ui->lineEditBairro->text());
+  setDataEnd("cidade", ui->lineEditCidade->text());
+  setDataEnd("uf", ui->lineEditUF->text());
+  setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()));
+  setDataEnd("desativado", false);
 
   ui->tableEndereco->resizeColumnsToContents();
 
-  return true;
+  return isOk;
 }
 
 void CadastroFornecedor::on_lineEditCEP_textChanged(const QString &cep) {
@@ -373,14 +245,15 @@ void CadastroFornecedor::on_lineEditCEP_textChanged(const QString &cep) {
 
   CepCompleter cc;
 
-  if (cc.buscaCEP(cep)) {
-    ui->lineEditUF->setText(cc.getUf());
-    ui->lineEditCidade->setText(cc.getCidade());
-    ui->lineEditEndereco->setText(cc.getEndereco());
-    ui->lineEditBairro->setText(cc.getBairro());
-  } else {
+  if (not cc.buscaCEP(cep)) {
     QMessageBox::warning(this, "Aviso!", "CEP não encontrado!");
+    return;
   }
+
+  ui->lineEditUF->setText(cc.getUf());
+  ui->lineEditCidade->setText(cc.getCidade());
+  ui->lineEditEndereco->setText(cc.getEndereco());
+  ui->lineEditBairro->setText(cc.getBairro());
 }
 
 void CadastroFornecedor::on_pushButtonAtualizarEnd_clicked() {
@@ -410,4 +283,22 @@ bool CadastroFornecedor::viewRegister(const QModelIndex index) {
   ui->tableEndereco->resizeColumnsToContents();
 
   return true;
+}
+
+void CadastroFornecedor::on_pushButtonRemoverEnd_clicked() {
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
+                     QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Sim");
+  msgBox.setButtonText(QMessageBox::No, "Não");
+
+  if (msgBox.exec() == QMessageBox::Yes) {
+    setDataEnd("desativado", true);
+
+    if (not modelEnd.submitAll()) {
+      QMessageBox::critical(this, "Erro!", "Não foi possível remover este item: " + modelEnd.lastError().text());
+      return;
+    }
+
+    novoEndereco();
+  }
 }

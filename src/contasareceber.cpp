@@ -21,7 +21,6 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
   if (not modelContas.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro lendo tabela conta_a_receber_has_pagamento: " + modelContas.lastError().text());
-    return;
   }
 
   ui->tableView->setModel(&modelContas);
@@ -40,23 +39,13 @@ void ContasAReceber::on_checkBox_toggled(const bool checked) { Q_UNUSED(checked)
 
 void ContasAReceber::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
+  query.prepare("UPDATE conta_a_receber SET pago = '" + QString(ui->checkBox->isChecked() ? "SIM" : "NÃO") +
+                "' WHERE idVenda = :idVenda");
+  query.bindValue(":idVenda", idVenda);
 
-  if (ui->checkBox->isChecked()) {
-    query.prepare("UPDATE conta_a_receber SET pago = 'SIM' WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", idVenda);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro marcando conta como paga: " + query.lastError().text());
-      return;
-    }
-  } else {
-    query.prepare("UPDATE conta_a_receber SET pago = 'NÃO' WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", idVenda);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro marcando conta como não paga: " + query.lastError().text());
-      return;
-    }
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro marcando conta: " + query.lastError().text());
+    return;
   }
 
   close();
@@ -69,9 +58,7 @@ void ContasAReceber::viewConta(const QString idVenda) {
 
   modelContas.setFilter("idVenda = '" + idVenda + "'");
 
-  if (modelContas.data(0, "pago").toString() == "SIM") {
-    ui->checkBox->setChecked(true);
-  }
+  ui->checkBox->setChecked(modelContas.data(0, "pago").toString() == "SIM" ? true : false);
 
   ui->tableView->resizeColumnsToContents();
 

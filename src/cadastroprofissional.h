@@ -46,7 +46,7 @@ class CadastroProfissional : public RegisterAddressDialog {
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     /*!
 *\brief Limpar os campos da tela
 */
@@ -70,7 +70,6 @@ class CadastroProfissional : public RegisterAddressDialog {
     QString tipoPFPJ;
     // methods
     void setupUi();
-    bool verifyRequiredField(QLineEdit *line, const bool silent);
     void novoEndereco();
     void clearEndereco();
     bool cadastrarEndereco(const bool isUpdate);

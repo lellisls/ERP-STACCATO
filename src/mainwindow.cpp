@@ -1,5 +1,4 @@
 #include <QShortcut>
-#include <QSettings>
 #include <QStyleFactory>
 #include <QFileDialog>
 #include <QSqlRecord>
@@ -46,14 +45,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   defaultStyle = this->style()->objectName();
   defautPalette = qApp->palette();
 
-  qApp->setApplicationVersion("0.1");
+  qApp->setApplicationVersion("0.4");
 
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("Login");
+  //  setSettings("Login/hostname", ""); //to test store selection
 
-  //  settings.setValue("hostname", ""); //to test store selection
-
-  if (settings.value("hostname").toString().isEmpty()) {
+  if (settings("Login/hostname").toString().isEmpty()) {
     QStringList items;
     items << "Alphaville"
           << "Gabriel";
@@ -61,33 +57,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QString loja = QInputDialog::getItem(this, "Escolha a loja", "Qual a sua loja?", items, 0, false);
 
     if (loja == "Alphaville") {
-      settings.setValue("hostname", "192.168.2.144");
+      setSettings("Login/hostname", "192.168.2.144");
     } else if (loja == "Gabriel") {
-      settings.setValue("hostname", "192.168.1.101");
+      setSettings("Login/hostname", "192.168.1.101");
     }
 
-    settings.setValue("username", "user");
-    settings.setValue("password", "1234");
-    settings.setValue("port", "3306");
-    settings.setValue("homologacao", false);
+    setSettings("Login/username", "user");
+    setSettings("Login/password", "1234");
+    setSettings("Login/port", "3306");
+    setSettings("Login/homologacao", false);
   }
 
-  hostname = settings.value("hostname").toString();
-  username = settings.value("username").toString();
-  password = settings.value("password").toString();
-  port = settings.value("port").toString();
-  homologacao = settings.value("homologacao").toBool();
+  hostname = settings("Login/hostname").toString();
+  username = settings("Login/username").toString();
+  password = settings("Login/password").toString();
+  port = settings("Login/port").toString();
+  homologacao = settings("Login/homologacao").toBool();
 
-  settings.endGroup();
-
-  settings.beginGroup("User");
-
-  if (settings.value("userFolder").toString().isEmpty()) {
+  if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::warning(this, "Aviso!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
-    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
   }
-
-  settings.endGroup();
 
   QSimpleUpdater *updater = new QSimpleUpdater(this);
   updater->setApplicationVersion(qApp->applicationVersion());
@@ -132,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
   setWindowIcon(QIcon("Staccato.ico"));
 
-  darkTheme();
+  //  darkTheme();
 
   setWindowTitle("ERP Staccato");
   readSettings();
@@ -221,6 +211,7 @@ bool MainWindow::dbConnect() {
     exit(1);
   }
 
+  // TODO: if parameters change, connection dont making errors possible
   QSqlDatabase db = QSqlDatabase::contains() ? QSqlDatabase::database() : QSqlDatabase::addDatabase("QMYSQL");
 
   db.setHostName(hostname);
@@ -534,6 +525,7 @@ void MainWindow::setupTables() {
   ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealEnt"));
   ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataPrevReceb"));
   ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealReceb"));
+  ui->tableColeta->hideColumn(modelColeta->fieldIndex("quantUpd"));
   ui->tableColeta->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableColeta->horizontalHeader()->setResizeContentsPrecision(0);
 
@@ -588,6 +580,7 @@ void MainWindow::setupTables() {
   ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealEnt"));
   ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataPrevColeta"));
   ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealReceb"));
+  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("quantUpd"));
   ui->tableRecebimento->verticalHeader()->setResizeContentsPrecision(0);
   ui->tableRecebimento->horizontalHeader()->setResizeContentsPrecision(0);
 
@@ -988,16 +981,16 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
 }
 
 void MainWindow::readSettings() {
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("Login");
-
-  hostname = settings.value("hostname").toString();
-  username = settings.value("username").toString();
-  password = settings.value("password").toString();
-  port = settings.value("port").toString();
-  homologacao = settings.value("homologacao").toBool();
-  settings.endGroup();
+  hostname = settings("Login/hostname").toString();
+  username = settings("Login/username").toString();
+  password = settings("Login/password").toString();
+  port = settings("Login/port").toString();
+  homologacao = settings("Login/homologacao").toBool();
 }
+
+QVariant MainWindow::settings(QString key) const { return UserSession::getSettings(key); }
+
+void MainWindow::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
 
 void MainWindow::on_actionImportaProdutos_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);
@@ -1027,7 +1020,7 @@ void MainWindow::on_tableContasReceber_activated(const QModelIndex &index) {
 
 void MainWindow::on_tableEntregasCliente_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
-  entregas->viewEntrega(modelEntregasCliente->data(index.row(), "idVenda").toString());
+  entregas->viewEntrega(modelEntregasCliente->data(index.row(), "Código").toString());
 }
 
 void MainWindow::on_tableFornCompras_activated(const QModelIndex &index) {
@@ -1090,6 +1083,7 @@ void MainWindow::on_pushButtonEntradaEstoque_clicked() {
 }
 
 void MainWindow::darkTheme() {
+  // TODO: texto no campo amarelo nao visivel
   qApp->setStyle(QStyleFactory::create("Fusion"));
 
   QPalette darkPalette;
@@ -1123,6 +1117,7 @@ void MainWindow::on_tableProdutosPend_activated(const QModelIndex &index) {
 }
 
 void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this function into smaller functions
+  // TODO: colocar uma transaction
   QFile modelo(QDir::currentPath() + "/modelo.xlsx");
 
   if (not modelo.exists()) {
@@ -1135,12 +1130,9 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   //    return;
   //  }
 
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("User");
-
-  if (settings.value("userFolder").toString().isEmpty()) {
+  if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::warning(this, "Aviso!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
-    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
     return;
   }
 
@@ -1241,7 +1233,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     ++i;
   }
 
-  QString path = settings.value("userFolder").toString();
+  QString path = settings("User/userFolder").toString();
 
   QDir dir(path);
 
@@ -1470,6 +1462,7 @@ void MainWindow::on_radioButtonProdPendPend_clicked() {
 }
 
 void MainWindow::on_radioButtonProdPendEmCompra_clicked() {
+  // TODO: mostrar caixas e un2
   modelProdPend->setQuery(
         "SELECT v.fornecedor, v.produto, v.formComercial, SUM(v.quant), v.un, v.codComercial, v.idCompra, "
         "v.status, p.quant FROM venda_has_produto AS v LEFT JOIN estoque AS p ON "
@@ -1489,8 +1482,13 @@ void MainWindow::on_radioButtonProdPendEmCompra_clicked() {
 void MainWindow::on_pushButtonMarcarColetado_clicked() {
   QList<int> lista;
 
+  for (int i = 0; i < modelColeta->rowCount(); ++i) {
+    qDebug() << "selecionado: " << modelColeta->data(i, "selecionado");
+  }
+
+  // TODO: see why the hell this wont work with true while others tables do
   for (const auto index :
-       modelColeta->match(modelColeta->index(0, modelColeta->fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
+       modelColeta->match(modelColeta->index(0, modelColeta->fieldIndex("selecionado")), Qt::DisplayRole, 1, -1,
                           Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
     lista.append(index.row());
   }
@@ -1791,11 +1789,11 @@ void MainWindow::on_tabWidget_4_currentChanged(int index) {
 }
 
 void MainWindow::on_groupBoxStatusVenda_toggled(bool enabled) {
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
   }
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setChecked(enabled);
   }
 }
@@ -1805,13 +1803,13 @@ void MainWindow::montaFiltroVendas() {
 
   int counter = 0;
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     if (not child->isChecked()) {
       counter++;
     }
   }
 
-  if (counter == ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly).size()) {
+  if (counter == ui->groupBoxStatusVenda->findChildren<QCheckBox *>().size()) {
     if (ui->radioButtonVendLimpar->isChecked()) {
       modelVendas->setFilter("(Código LIKE '%" + loja + "%')");
     }
@@ -1837,7 +1835,7 @@ void MainWindow::montaFiltroVendas() {
 
   QString filtro2;
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>(QString(), Qt::FindDirectChildrenOnly)) {
+  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     if (child->isChecked()) {
       if (filtro2.isEmpty()) {
         filtro2 = "status = '" + child->text().toUpper() + "'";
@@ -1874,13 +1872,16 @@ void MainWindow::on_actionClaro_triggered() {
 
 void MainWindow::on_actionEscuro_triggered() { darkTheme(); }
 
-void MainWindow::on_actionConfigura_es_triggered()
-{
-    // TODO: put screen to change user variables (userFolder etc)
+void MainWindow::on_actionConfigura_es_triggered() {
+  // TODO: put screen to change user variables (userFolder etc)
 }
 
 // TODO: gerenciar lugares de estoque (cadastro/permissoes)
 // TODO: a tabela de fornecedores em compra deve mostrar apenas os pedidos que estejam pendente/confirmar/faturar
+// TODO: a tabela de fornecedores em logistica deve mostrar apenas os pedidos que estejam coleta/recebimento/entrega
 // TODO: try making most functions const (hint is if there is no red text or no 'this' it problably should be const)
-// TODO: verify if rows should be resized to contents too
-// TODO: mandar QSettings para dentro do UserSession
+// TODO: colocar logo da staccato na mainwindow
+// TODO: add 'AND desativado = false' in filters everywhere?
+// TODO: renomear "Mostrar inativos" para mostrar removidos e adicionar esse checkbox na searchdialog
+// TODO: buscar no projeto pela frase "setFilter("")" e corrigir adicionando desativado = FALSE
+// TODO: colocar accessibleName em todas as telas de cadastro

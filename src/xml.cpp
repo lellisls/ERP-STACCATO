@@ -257,72 +257,74 @@ void XML::lerDadosProduto(QStandardItem *child) {
     itemNumero = child->text().right(child->text().size() - 10).remove("\"").toInt();
   }
 
-  if (child->parent()->text() == "prod" and child->text().left(7) == "cProd -") {
-    codProd = child->text().remove(0, 8);
-  }
+  if (child->parent()->text() == "prod") {
+    if (child->text().left(7) == "cProd -") {
+      codProd = child->text().remove(0, 8);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(6) == "cEAN -") {
-    codBarras = child->text().remove(0, 7);
-  }
+    if (child->text().left(6) == "cEAN -") {
+      codBarras = child->text().remove(0, 7);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(7) == "xProd -") {
-    descricao = child->text().remove(0, 8);
-  }
+    if (child->text().left(7) == "xProd -") {
+      descricao = child->text().remove(0, 8);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(5) == "NCM -") {
-    ncm = child->text().remove(0, 6);
-  }
+    if (child->text().left(5) == "NCM -") {
+      ncm = child->text().remove(0, 6);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(6) == "CFOP -") {
-    cfop = child->text().remove(0, 7);
-  }
+    if (child->text().left(6) == "CFOP -") {
+      cfop = child->text().remove(0, 7);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(6) == "uCom -") {
-    un = child->text().remove(0, 7);
-  }
+    if (child->text().left(6) == "uCom -") {
+      un = child->text().remove(0, 7);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(6) == "qCom -") {
-    quant = child->text().remove(0, 7).toDouble();
-  }
+    if (child->text().left(6) == "qCom -") {
+      quant = child->text().remove(0, 7).toDouble();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(8) == "vUnCom -") {
-    valorUnid = child->text().remove(0, 9).toDouble();
-  }
+    if (child->text().left(8) == "vUnCom -") {
+      valorUnid = child->text().remove(0, 9).toDouble();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(7) == "vProd -") {
-    valor = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vProd -") {
+      valor = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(10) == "cEANTrib -") {
-    codBarrasTrib = child->text().remove(0, 11);
-  }
+    if (child->text().left(10) == "cEANTrib -") {
+      codBarrasTrib = child->text().remove(0, 11);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(7) == "uTrib -") {
-    unTrib = child->text().remove(0, 8);
-  }
+    if (child->text().left(7) == "uTrib -") {
+      unTrib = child->text().remove(0, 8);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(7) == "qTrib -") {
-    quantTrib = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "qTrib -") {
+      quantTrib = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(9) == "vUnTrib -") {
-    valorTrib = child->text().remove(0, 10).toDouble();
-  }
+    if (child->text().left(9) == "vUnTrib -") {
+      valorTrib = child->text().remove(0, 10).toDouble();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(7) == "vDesc -") {
-    desconto = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vDesc -") {
+      desconto = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(8) == "indTot -") {
-    compoeTotal = child->text().remove(0, 9).toInt();
-  }
+    if (child->text().left(8) == "indTot -") {
+      compoeTotal = child->text().remove(0, 9).toInt();
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(6) == "xPed -") {
-    numeroPedido = child->text().remove(0, 7);
-  }
+    if (child->text().left(6) == "xPed -") {
+      numeroPedido = child->text().remove(0, 7);
+    }
 
-  if (child->parent()->text() == "prod" and child->text().left(10) == "nItemPed -") {
-    itemPedido = child->text().remove(0, 11).toDouble();
+    if (child->text().left(10) == "nItemPed -") {
+      itemPedido = child->text().remove(0, 11).toDouble();
+    }
   }
 }
 
@@ -331,156 +333,166 @@ void XML::lerICMSProduto(QStandardItem *child) {
     tipoICMS = child->child(0, 0)->text();
   }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(6) == "orig -") {
-    orig = child->text().remove(0, 7).toInt();
-  }
+  if (child->parent()->text() == tipoICMS) {
+    if (child->text().left(6) == "orig -") {
+      orig = child->text().remove(0, 7).toInt();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(5) == "CST -") {
-    cstICMS = child->text().remove(0, 6).toInt();
-  }
+    if (child->text().left(5) == "CST -") {
+      cstICMS = child->text().remove(0, 6).toInt();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(7) == "modBC -") {
-    modBC = child->text().remove(0, 8).toInt();
-  }
+    if (child->text().left(7) == "modBC -") {
+      modBC = child->text().remove(0, 8).toInt();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(5) == "vBC -") {
-    vBC = child->text().remove(0, 6).toDouble();
-  }
+    if (child->text().left(5) == "vBC -") {
+      vBC = child->text().remove(0, 6).toDouble();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(7) == "pICMS -") {
-    pICMS = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "pICMS -") {
+      pICMS = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(7) == "vICMS -") {
-    vICMS = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vICMS -") {
+      vICMS = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(9) == "modBCST -") {
-    modBCST = child->text().remove(0, 10).toInt();
-  }
+    if (child->text().left(9) == "modBCST -") {
+      modBCST = child->text().remove(0, 10).toInt();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(8) == "pMVAST -") {
-    pMVAST = child->text().remove(0, 9).toDouble();
-  }
+    if (child->text().left(8) == "pMVAST -") {
+      pMVAST = child->text().remove(0, 9).toDouble();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(7) == "vBCST -") {
-    vBCST = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vBCST -") {
+      vBCST = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(9) == "pICMSST -") {
-    pICMSST = child->text().remove(0, 10).toDouble();
-  }
+    if (child->text().left(9) == "pICMSST -") {
+      pICMSST = child->text().remove(0, 10).toDouble();
+    }
 
-  if (child->parent()->text() == tipoICMS and child->text().left(9) == "vICMSST -") {
-    vICMSST = child->text().remove(0, 10).toDouble();
+    if (child->text().left(9) == "vICMSST -") {
+      vICMSST = child->text().remove(0, 10).toDouble();
+    }
   }
 }
 
 void XML::lerIPIProduto(QStandardItem *child) {
-  if (child->parent()->text() == "IPI" and child->text().left(6) == "cEnq -") {
-    cEnq = child->text().remove(0, 7).toInt();
-  }
+  if (child->parent()->text() == "IPI") {
+    if (child->text().left(6) == "cEnq -") {
+      cEnq = child->text().remove(0, 7).toInt();
+    }
 
-  if (child->parent()->text() == "IPINT" and child->text().left(5) == "CST -") {
-    cstIPI = child->text().remove(0, 6).toInt();
+    if (child->text().left(5) == "CST -") {
+      cstIPI = child->text().remove(0, 6).toInt();
+    }
   }
 }
 
 void XML::lerPISProduto(QStandardItem *child) {
-  if (child->parent()->text() == "PISAliq" and child->text().left(5) == "CST -") {
-    cstPIS = child->text().remove(0, 6).toInt();
-  }
+  if (child->parent()->text() == "PISAliq") {
+    if (child->text().left(5) == "CST -") {
+      cstPIS = child->text().remove(0, 6).toInt();
+    }
 
-  if (child->parent()->text() == "PISAliq" and child->text().left(5) == "vBC -") {
-    vBCPIS = child->text().remove(0, 6).toDouble();
-  }
+    if (child->text().left(5) == "vBC -") {
+      vBCPIS = child->text().remove(0, 6).toDouble();
+    }
 
-  if (child->parent()->text() == "PISAliq" and child->text().left(6) == "pPIS -") {
-    pPIS = child->text().remove(0, 7).toDouble();
-  }
+    if (child->text().left(6) == "pPIS -") {
+      pPIS = child->text().remove(0, 7).toDouble();
+    }
 
-  if (child->parent()->text() == "PISAliq" and child->text().left(6) == "vPIS -") {
-    vPIS = child->text().remove(0, 7).toDouble();
+    if (child->text().left(6) == "vPIS -") {
+      vPIS = child->text().remove(0, 7).toDouble();
+    }
   }
 }
 
 void XML::lerCOFINSProduto(QStandardItem *child) {
-  if (child->parent()->text() == "COFINSAliq" and child->text().left(5) == "CST -") {
-    cstCOFINS = child->text().remove(0, 6).toInt();
-  }
+  if (child->parent()->text() == "COFINSAliq") {
+    if (child->text().left(5) == "CST -") {
+      cstCOFINS = child->text().remove(0, 6).toInt();
+    }
 
-  if (child->parent()->text() == "COFINSAliq" and child->text().left(5) == "vBC -") {
-    vBCCOFINS = child->text().remove(0, 6).toDouble();
-  }
+    if (child->text().left(5) == "vBC -") {
+      vBCCOFINS = child->text().remove(0, 6).toDouble();
+    }
 
-  if (child->parent()->text() == "COFINSAliq" and child->text().left(9) == "pCOFINS -") {
-    pCOFINS = child->text().remove(0, 10).toDouble();
-  }
+    if (child->text().left(9) == "pCOFINS -") {
+      pCOFINS = child->text().remove(0, 10).toDouble();
+    }
 
-  if (child->parent()->text() == "COFINSAliq" and child->text().left(9) == "vCOFINS -") {
-    vCOFINS = child->text().remove(0, 10).toDouble();
+    if (child->text().left(9) == "vCOFINS -") {
+      vCOFINS = child->text().remove(0, 10).toDouble();
+    }
   }
 }
 
 void XML::lerTotais(QStandardItem *child) {
-  if (child->parent()->text() == "ICMSTot" and child->text().left(5) == "vBC -") {
-    vBC_Total = child->text().remove(0, 6).toDouble();
-  }
+  if (child->parent()->text() == "ICMSTot") {
+    if (child->text().left(5) == "vBC -") {
+      vBC_Total = child->text().remove(0, 6).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(7) == "vICMS -") {
-    vICMS_Total = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vICMS -") {
+      vICMS_Total = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(12) == "vICMSDeson -") {
-    vICMSDeson_Total = child->text().remove(0, 13).toDouble();
-  }
+    if (child->text().left(12) == "vICMSDeson -") {
+      vICMSDeson_Total = child->text().remove(0, 13).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(7) == "vBCST -") {
-    vBCST_Total = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vBCST -") {
+      vBCST_Total = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(5) == "vST -") {
-    vST_Total = child->text().remove(0, 6).toDouble();
-  }
+    if (child->text().left(5) == "vST -") {
+      vST_Total = child->text().remove(0, 6).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(7) == "vProd -") {
-    vProd_Total = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vProd -") {
+      vProd_Total = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(8) == "vFrete -") {
-    vFrete_Total = child->text().remove(0, 9).toDouble();
-  }
+    if (child->text().left(8) == "vFrete -") {
+      vFrete_Total = child->text().remove(0, 9).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(6) == "vSeg -") {
-    vSeg_Total = child->text().remove(0, 7).toDouble();
-  }
+    if (child->text().left(6) == "vSeg -") {
+      vSeg_Total = child->text().remove(0, 7).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(7) == "vDesc -") {
-    vDesc_Total = child->text().remove(0, 8).toDouble();
-  }
+    if (child->text().left(7) == "vDesc -") {
+      vDesc_Total = child->text().remove(0, 8).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(5) == "vII -") {
-    vII_Total = child->text().remove(0, 6).toDouble();
-  }
+    if (child->text().left(5) == "vII -") {
+      vII_Total = child->text().remove(0, 6).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(6) == "vIPI -") {
-    vPIS_Total = child->text().remove(0, 7).toDouble();
-  }
+    if (child->text().left(6) == "vIPI -") {
+      vPIS_Total = child->text().remove(0, 7).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(6) == "vPIS -") {
-    vPIS_Total = child->text().remove(0, 7).toDouble();
-  }
+    if (child->text().left(6) == "vPIS -") {
+      vPIS_Total = child->text().remove(0, 7).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(9) == "vCOFINS -") {
-    vCOFINS_Total = child->text().remove(0, 10).toDouble();
-  }
+    if (child->text().left(9) == "vCOFINS -") {
+      vCOFINS_Total = child->text().remove(0, 10).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(8) == "vOutro -") {
-    vOutro_Total = child->text().remove(0, 9).toDouble();
-  }
+    if (child->text().left(8) == "vOutro -") {
+      vOutro_Total = child->text().remove(0, 9).toDouble();
+    }
 
-  if (child->parent()->text() == "ICMSTot" and child->text().left(5) == "vNF -") {
-    vNF_Total = child->text().remove(0, 6).toDouble();
+    if (child->text().left(5) == "vNF -") {
+      vNF_Total = child->text().remove(0, 6).toDouble();
+    }
   }
 }
 
@@ -494,12 +506,13 @@ bool XML::insertEstoque() {
 
   QString fornecedor;
 
-  if (query.first()) {
-    fornecedor = query.value(0).toString();
-  } else {
-    // TODO: cadastrar produto
+  // TODO: cadastrar produto
+  if (not query.first()) {
     QMessageBox::warning(0, "Aviso!", "Produto não cadastrado, fornecedor em branco.");
+    return false;
   }
+
+  fornecedor = query.value(0).toString();
 
   qDebug() << "fornecedor: " << fornecedor;
 
@@ -571,17 +584,10 @@ void XML::mostrarNoModel(QString file, SqlTableModel &externalModel) {
     return;
   }
 
-  QString fileContent = fileXML.readAll();
-
-  if (fileContent.isEmpty()) {
-    QMessageBox::critical(0, "Erro!", "Arquivo vazio!");
-    return;
-  }
-
   QDomDocument document;
   QString *error = new QString();
 
-  if (not document.setContent(fileContent, error)) {
+  if (not document.setContent(fileXML.readAll(), error)) {
     QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
     return;
   }
@@ -640,210 +646,26 @@ bool XML::inserirItem(SqlTableModel *externalModel) {
 
   int idTemp = modelProduto.data(indexList.first().row(), "idProduto").toInt();
 
-  if (not externalModel->setData(row, "fornecedor", xNome)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "idProduto", idTemp)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "descricao", descricao)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "quant", quant)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "un", un)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "codBarras", codBarras)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "codComercial", codProd)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "ncm", ncm)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "cfop", cfop)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "valorUnid", valorUnid)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "valor", valor)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "codBarrasTrib", codBarrasTrib)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "unTrib", unTrib)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "quantTrib", quantTrib)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "valorTrib", valorTrib)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "desconto", desconto)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "compoeTotal", compoeTotal)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "numeroPedido", numeroPedido)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "itemPedido", itemPedido)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "tipoICMS", tipoICMS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "orig", orig)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "cstICMS", cstICMS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "modBC", modBC)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vBC", vBC)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "pICMS", pICMS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vICMS", vICMS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "modBCST", modBCST)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "pMVAST", pMVAST)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vBCST", vBCST)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "pICMSST", pICMSST)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vICMSST", vICMSST)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "cEnq", cEnq)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "cstIPI", cstIPI)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "cstPIS", cstPIS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vBCPIS", vBCPIS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "pPIS", pPIS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vPIS", vPIS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "cstCOFINS", cstCOFINS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "pCOFINS", pCOFINS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  if (not externalModel->setData(row, "vCOFINS", vCOFINS)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo dados na tabela: " + externalModel->lastError().text());
-    return false;
-  }
-
-  return true;
+  return externalModel->setData(row, "fornecedor", xNome) and externalModel->setData(row, "idProduto", idTemp) and
+      externalModel->setData(row, "descricao", descricao) and externalModel->setData(row, "quant", quant) and
+      externalModel->setData(row, "un", un) and externalModel->setData(row, "codBarras", codBarras) and
+      externalModel->setData(row, "codComercial", codProd) and externalModel->setData(row, "ncm", ncm) and
+      externalModel->setData(row, "cfop", cfop) and externalModel->setData(row, "valorUnid", valorUnid) and
+      externalModel->setData(row, "valor", valor) and externalModel->setData(row, "codBarrasTrib", codBarrasTrib) and
+      externalModel->setData(row, "unTrib", unTrib) and externalModel->setData(row, "quantTrib", quantTrib) and
+      externalModel->setData(row, "valorTrib", valorTrib) and externalModel->setData(row, "desconto", desconto) and
+      externalModel->setData(row, "compoeTotal", compoeTotal) and
+      externalModel->setData(row, "numeroPedido", numeroPedido) and
+      externalModel->setData(row, "itemPedido", itemPedido) and externalModel->setData(row, "tipoICMS", tipoICMS) and
+      externalModel->setData(row, "orig", orig) and externalModel->setData(row, "cstICMS", cstICMS) and
+      externalModel->setData(row, "modBC", modBC) and externalModel->setData(row, "vBC", vBC) and
+      externalModel->setData(row, "pICMS", pICMS) and externalModel->setData(row, "vICMS", vICMS) and
+      externalModel->setData(row, "modBCST", modBCST) and externalModel->setData(row, "pMVAST", pMVAST) and
+      externalModel->setData(row, "vBCST", vBCST) and externalModel->setData(row, "pICMSST", pICMSST) and
+      externalModel->setData(row, "vICMSST", vICMSST) and externalModel->setData(row, "cEnq", cEnq) and
+      externalModel->setData(row, "cstIPI", cstIPI) and externalModel->setData(row, "cstPIS", cstPIS) and
+      externalModel->setData(row, "vBCPIS", vBCPIS) and externalModel->setData(row, "pPIS", pPIS) and
+      externalModel->setData(row, "vPIS", vPIS) and externalModel->setData(row, "cstCOFINS", cstCOFINS) and
+      externalModel->setData(row, "vBCCOFINS", vBCCOFINS) and externalModel->setData(row, "pCOFINS", pCOFINS) and
+      externalModel->setData(row, "vCOFINS", vCOFINS);
 }

@@ -11,6 +11,10 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
+  for (const auto *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
+
   setupTablePermissoes();
   fillCombobox();
 
@@ -24,10 +28,6 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
 
   setupMapper();
   newRegister();
-
-  for (const auto *line : findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }
@@ -53,13 +53,15 @@ void CadastroUsuario::setupTablePermissoes() {
 }
 
 bool CadastroUsuario::verifyFields() {
-  if (not RegisterDialog::verifyFields({ui->lineEditNome, ui->lineEditUser, ui->lineEditSigla, ui->lineEditPasswd})) {
-    return false;
+  for (auto *line : ui->gridLayout_2->findChildren<QLineEdit *>()) {
+    if (not verifyRequiredField(line)) {
+      return false;
+    }
   }
 
   if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
     ui->lineEditPasswd->setFocus();
-    QMessageBox::warning(this, "Atenção!", "As senhas não batem!");
+    QMessageBox::critical(this, "Erro!", "As senhas não batem!");
     return false;
   }
 
@@ -88,21 +90,21 @@ void CadastroUsuario::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroUsuario::savingProcedures(const int row) {
-  setData(row, "nome", ui->lineEditNome->text());
-  setData(row, "idLoja", ui->comboBoxLoja->getCurrentValue());
-  setData(row, "tipo", ui->comboBoxTipo->currentText());
-  setData(row, "user", ui->lineEditUser->text());
-  setData(row, "sigla", ui->lineEditSigla->text());
-  setData(row, "user", ui->lineEditUser->text());
+bool CadastroUsuario::savingProcedures() {
+  setData("nome", ui->lineEditNome->text());
+  setData("idLoja", ui->comboBoxLoja->getCurrentValue());
+  setData("tipo", ui->comboBoxTipo->currentText());
+  setData("user", ui->lineEditUser->text());
+  setData("sigla", ui->lineEditSigla->text());
+  setData("user", ui->lineEditUser->text());
 
   if (ui->lineEditPasswd->text() != "********") {
     QSqlQuery query("SELECT PASSWORD('" + ui->lineEditPasswd->text() + "')");
     query.first();
-    setData(row, "passwd", query.value(0));
+    setData("passwd", query.value(0));
   }
 
-  return true;
+  return isOk;
 }
 
 bool CadastroUsuario::viewRegister(const QModelIndex index) {

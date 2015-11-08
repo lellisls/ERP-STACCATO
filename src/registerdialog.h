@@ -55,7 +55,7 @@ class RegisterDialog : public QDialog {
 * \param line QLineEdit a ser analisado.
 * \return
 */
-    virtual bool verifyRequiredField(QLineEdit *line);
+    virtual bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     /*!
 * \brief Mensagem de confirmação padrão, para evitar que o trabalho seja perdido.
 * \return
@@ -96,7 +96,7 @@ class RegisterDialog : public QDialog {
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(int row) = 0;
+    virtual bool savingProcedures() = 0;
     /*!
 * \brief Limpar os campos da tela.
 */
@@ -121,16 +121,8 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \param value Valor a ser atualizado.
 */
-    bool setData(const QString &key, QVariant value);
+    void setData(const QString &key, QVariant value);
 
-    /*!
-* \brief Acelerador para diminuir um pouco a verbosidade do código.
-*        Equivate ao setData do model.
-* \param row Linha.
-* \param key Chave da coluna.
-* \param value Valor a ser atualizado.
-*/
-    bool setData(int row, const QString &key, QVariant value);
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
 *        Equivale à função 'data' do model, e usa o currentIndex do mapper.
@@ -193,6 +185,9 @@ class RegisterDialog : public QDialog {
 
   protected:
     // attributes
+    int row = 0;
+    int rowEnd = 0;
+    bool isOk = true;
     bool isDirty = false;
     bool silent = false;
     bool incompleto = false;

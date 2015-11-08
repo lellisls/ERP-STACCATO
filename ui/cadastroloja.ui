@@ -34,7 +34,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="groupBoxEndereco">
          <property name="title">
           <string>Endereço</string>
          </property>
@@ -63,7 +63,7 @@
           <item row="0" column="3">
            <widget class="QLabel" name="labelNro">
             <property name="text">
-             <string>Nro.</string>
+             <string>Número</string>
             </property>
            </widget>
           </item>
@@ -143,6 +143,9 @@
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;O sistema preenche o endereço automaticamente a partir do CEP&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
+            <property name="accessibleName">
+             <string>CEP</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="2">
@@ -152,6 +155,9 @@
               <width>150</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>Logradouro</string>
             </property>
            </widget>
           </item>
@@ -169,6 +175,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Número</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="4">
@@ -185,6 +194,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Complemento</string>
+            </property>
             <property name="styleSheet">
              <string notr="true"/>
             </property>
@@ -198,6 +210,9 @@
               <height>0</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Bairro/Distrito</string>
+            </property>
            </widget>
           </item>
           <item row="1" column="6">
@@ -207,6 +222,9 @@
               <width>150</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>Cidade</string>
             </property>
            </widget>
           </item>
@@ -223,6 +241,9 @@
               <width>16777215</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>UF</string>
             </property>
            </widget>
           </item>
@@ -310,7 +331,7 @@
         </layout>
        </item>
        <item row="0" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_7">
+        <widget class="QGroupBox" name="groupBoxCadastro">
          <property name="title">
           <string>Info. Loja</string>
          </property>
@@ -337,6 +358,9 @@
               <height>0</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Razão Social</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
             </property>
@@ -355,6 +379,9 @@
               <width>110</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>CNPJ</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
@@ -376,6 +403,9 @@
               <height>0</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Descrição</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
             </property>
@@ -388,6 +418,9 @@
               <width>120</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>Nome Fantasia</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
@@ -415,6 +448,9 @@
               <width>40</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>Sigla</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
@@ -449,6 +485,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Insc. Estadual</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
             </property>
@@ -462,6 +501,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="accessibleName">
+             <string>Telefone</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
             </property>
@@ -474,6 +516,9 @@
               <width>90</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="accessibleName">
+             <string>Telefone 2</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);</string>
@@ -511,7 +556,7 @@
             <x>0</x>
             <y>0</y>
             <width>1125</width>
-            <height>675</height>
+            <height>626</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_13">
@@ -589,6 +634,22 @@
              <layout class="QGridLayout" name="gridLayout_8">
               <item row="0" column="0">
                <widget class="QTableView" name="tableAlcadas"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="title">
+              <string>Cartão de crédito</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>Taxas do cartao</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -706,78 +767,12 @@
              </layout>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QGroupBox" name="groupBox_2">
-             <property name="title">
-              <string>Excel</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_11">
-              <item row="1" column="2">
-               <widget class="QPushButton" name="pushButtonPastaExcel">
-                <property name="text">
-                 <string>Navegar...</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEditPastaExcel">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="labelPastaExcel">
-                <property name="text">
-                 <string>Pasta:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <spacer name="verticalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </item>
            <item row="4" column="0">
-            <widget class="QGroupBox" name="groupBox_3">
-             <property name="title">
-              <string>Cartão de crédito</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_10">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>Taxas do cartao</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="5" column="0">
             <widget class="QGroupBox" name="groupBox_4">
              <property name="title">
               <string>E-mail Compra</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
-              <item row="4" column="0">
-               <widget class="QLabel" name="labelPastaExcel_6">
-                <property name="text">
-                 <string>Pasta Excel:</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="labelPastaExcel_2">
                 <property name="text">
@@ -785,20 +780,10 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
-               <widget class="QLineEdit" name="lineEditPastaCompra"/>
-              </item>
               <item row="1" column="0">
                <widget class="QLabel" name="labelPastaExcel_3">
                 <property name="text">
                  <string>Porta:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="labelPastaExcel_4">
-                <property name="text">
-                 <string>E-mail:</string>
                 </property>
                </widget>
               </item>
@@ -809,11 +794,12 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEditPortaSMTP"/>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEditEmailCompra"/>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelPastaExcel_4">
+                <property name="text">
+                 <string>E-mail:</string>
+                </property>
+               </widget>
               </item>
               <item row="3" column="1">
                <widget class="QLineEdit" name="lineEditEmailSenha">
@@ -825,23 +811,20 @@
               <item row="0" column="1">
                <widget class="QLineEdit" name="lineEditServidorSMTP"/>
               </item>
-              <item row="4" column="2">
-               <widget class="QPushButton" name="pushButtonPastaCompra">
-                <property name="text">
-                 <string>Navegar...</string>
-                </property>
-               </widget>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="lineEditEmailCompra"/>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="lineEditPortaSMTP"/>
               </item>
              </layout>
             </widget>
            </item>
           </layout>
           <zorder>groupBoxFrete</zorder>
-          <zorder>groupBoxFrete</zorder>
           <zorder>groupBox_3</zorder>
           <zorder>groupBox_4</zorder>
           <zorder>groupBoxACBr</zorder>
-          <zorder>groupBox_2</zorder>
           <zorder>groupBoxAlcadas</zorder>
          </widget>
         </widget>

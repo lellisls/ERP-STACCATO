@@ -24,24 +24,25 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 
 void ComboBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
   if (QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
-    const QString currentText = index.data(Qt::EditRole).toString();
-    const int cbIndex = cb->findText(currentText);
+    const int cbIndex = cb->findText(index.data(Qt::EditRole).toString());
 
     if (cbIndex >= 0) {
       cb->setCurrentIndex(cbIndex);
     }
 
-  } else {
-    QStyledItemDelegate::setEditorData(editor, index);
+    return;
   }
+
+  QStyledItemDelegate::setEditorData(editor, index);
 }
 
 void ComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
   if (QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
     model->setData(index, cb->currentText(), Qt::EditRole);
-  } else {
-    QStyledItemDelegate::setModelData(editor, model, index);
+    return;
   }
+
+  QStyledItemDelegate::setModelData(editor, model, index);
 }
 
 void ComboBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,

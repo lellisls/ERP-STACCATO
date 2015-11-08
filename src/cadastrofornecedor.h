@@ -31,6 +31,8 @@ class CadastroFornecedor : public RegisterAddressDialog {
     void on_pushButtonAtualizarEnd_clicked();
     void on_tableEndereco_clicked(const QModelIndex &index);
 
+    void on_pushButtonRemoverEnd_clicked();
+
   public:
     void clearEndereco();
     void setupTables();
@@ -42,7 +44,7 @@ class CadastroFornecedor : public RegisterAddressDialog {
     bool verifyRequiredField(QLineEdit *line, const bool silent = false);
     void novoEndereco();
     virtual bool verifyFields();
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     virtual void clearFields();
     virtual void setupMapper();
     virtual void registerMode();

@@ -64,12 +64,14 @@ class ImportaProdutos : public QDialog {
     void setupTables();
     void setProgressDialog();
     void verificaSeProdutoJaCadastradoNoBD(QSqlQuery &produto);
-    bool verificaSeProdutoJaCadastradoNoModel();
+    void verificaSeProdutoJaCadastradoNoModel();
     void pintarCamposForaDoPadrao(const int row);
     void setVariantMap();
     void salvar();
     bool camposForaDoPadrao();
     void insereEmErro();
+    void insereEmOk();
+    void atualizaProduto(QSqlQuery produto);
     void verificaSeRepresentacao();
 
     enum FieldColors {

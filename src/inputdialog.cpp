@@ -115,17 +115,12 @@ void InputDialog::on_dateEditEvento_dateChanged(const QDate &date) {
 void InputDialog::setFilter(QStringList ids) {
   if (ids.isEmpty() or ids.first().isEmpty()) {
     model.setFilter("idPedido = 0");
-    QMessageBox::warning(this, "Aviso!", "ids vazio!");
+    QMessageBox::critical(this, "Erro!", "ids vazio!");
     return;
   }
 
-  QString filter;
-
-  if (type == ConfirmarCompra) {
-    filter = "idCompra = " + ids.first();
-  } else {
-    filter = "idPedido = " + ids.join(" OR idPedido = ");
-  }
+  const QString filter =
+      type == ConfirmarCompra ? "idCompra = " + ids.first() : "idPedido = " + ids.join(" OR idPedido = ");
 
   model.setFilter(filter);
 
@@ -153,7 +148,7 @@ void InputDialog::setFilter(QStringList ids) {
 void InputDialog::setFilter(QString ids) {
   if (ids.isEmpty()) {
     model.setFilter("idPedido = 0");
-    QMessageBox::warning(this, "Aviso!", "ids vazio!");
+    QMessageBox::critical(this, "Erro!", "ids vazio!");
     return;
   }
 

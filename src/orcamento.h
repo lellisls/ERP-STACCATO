@@ -68,7 +68,7 @@ class Orcamento : public RegisterDialog {
     /*!
 * \brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     /*!
 *\brief Limpar os campos da tela
 */
@@ -114,7 +114,8 @@ class Orcamento : public RegisterDialog {
     void novoItem();
     void updateId();
     void setupTables();
-    bool verificaCampos();
+    QVariant settings(QString key) const;
+    void setSettings(QString key, QVariant value) const;
 
     // RegisterDialog interface
   protected:

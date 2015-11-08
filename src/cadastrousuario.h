@@ -45,7 +45,7 @@ class CadastroUsuario : public RegisterDialog {
     /*!
 *\brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     /*!
 *\brief Limpar os campos da tela
 */

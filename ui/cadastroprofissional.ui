@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1163</width>
-    <height>607</height>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,7 +65,7 @@
            </widget>
           </item>
           <item row="0" column="0" colspan="2">
-           <widget class="QGroupBox" name="groupBox">
+           <widget class="QGroupBox" name="groupBoxEndereco">
             <property name="title">
              <string/>
             </property>

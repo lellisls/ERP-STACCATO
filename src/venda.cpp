@@ -2,7 +2,6 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QSqlQuery>
-#include <QSettings>
 #include <QDir>
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -20,6 +19,10 @@
 
 Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
+
+  for (const auto *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   setupTables();
 
@@ -44,10 +47,6 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
 
   setupMapper();
   newRegister();
-
-  for (const auto *line : findChildren<QLineEdit *>(QString(), Qt::FindDirectChildrenOnly)) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
 
   // TODO: make this work
   ui->splitter->setStretchFactor(0, 1);
@@ -239,7 +238,6 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     modelItem.insertRow(rowItem);
 
     if (not modelItem.setData(rowItem, "idVenda", queryProdutos.value("idOrcamento"))) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando idVenda: " + modelItem.lastError().text());
       return;
     }
 
@@ -247,26 +245,23 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
       if (modelItem.fieldIndex(queryProdutos.record().fieldName(field)) != -1 and
           not modelItem.setData(rowItem, queryProdutos.record().fieldName(field),
                                 queryProdutos.value(queryProdutos.record().fieldName(field)))) {
-        QMessageBox::critical(this, "Erro!", "Erro guardando itens venda: " + modelItem.lastError().text());
         return;
       }
     }
 
     if (not modelItem.setData(rowItem, "status", "PENDENTE")) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando status PENDENTE: " + modelItem.lastError().text());
       return;
     }
   }
 
   if (not model.setData(row, "idVenda", queryOrc.value("idOrcamento"))) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando idVenda: " + model.lastError().text());
     return;
   }
 
+  // TODO: fieldIndex != -1 ???
   for (int field = 1, columnCount = queryOrc.record().count(); field < columnCount; ++field) {
     if (model.fieldIndex(queryOrc.record().fieldName(field)) != -1 and
         not model.setData(mapper.currentIndex(), queryOrc.record().fieldName(field), queryOrc.value(field))) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando dados venda: " + model.lastError().text());
       return;
     }
   }
@@ -296,7 +291,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
 bool Venda::verifyFields() {
   if (ui->spinBoxPrazoEntrega->value() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Por favor preencha o prazo de entrega.");
+    QMessageBox::critical(this, "Erro!", "Por favor preencha o prazo de entrega.");
     return false;
   }
 
@@ -307,20 +302,20 @@ bool Venda::verifyFields() {
   }
 
   if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
-    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 1.");
+    QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 1.");
     return false;
   }
   if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
-    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 2.");
+    QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 2.");
     return false;
   }
   if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
-    QMessageBox::warning(this, "Aviso!", "Por favor escolha a forma de pagamento 3.");
+    QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 3.");
     return false;
   }
 
   if (ui->itemBoxEnderecoFat->text().isEmpty()) {
-    QMessageBox::warning(this, "Aviso!", "Deve selecionar um endereço de faturamento.");
+    QMessageBox::critical(this, "Erro!", "Deve selecionar um endereço de faturamento!");
     return false;
   }
 
@@ -454,12 +449,12 @@ void Venda::calculoSpinBox1() const {
     ui->doubleSpinBoxPgt2->setMaximum(restante + pgt2);
     ui->doubleSpinBoxPgt2->setValue(restante + pgt2);
     ui->doubleSpinBoxPgt3->setMaximum(pgt3);
-    restante = 0;
+    restante = 0.;
   } else if (pgt3 == 0.) {
     ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
     ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
     ui->doubleSpinBoxPgt2->setMaximum(pgt2);
-    restante = 0;
+    restante = 0.;
   }
 }
 
@@ -494,11 +489,8 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
     return;
   }
 
-  if (text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") {
-    ui->comboBoxPgt1Parc->setEnabled(true);
-  } else {
-    ui->comboBoxPgt1Parc->setDisabled(true);
-  }
+  ui->comboBoxPgt1Parc->setEnabled((text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") ? true
+                                                                                                         : false);
 
   ui->dateEditPgt1->setEnabled(true);
 
@@ -510,11 +502,8 @@ void Venda::on_comboBoxPgt2_currentTextChanged(const QString &text) {
     return;
   }
 
-  if (text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") {
-    ui->comboBoxPgt2Parc->setEnabled(true);
-  } else {
-    ui->comboBoxPgt2Parc->setDisabled(true);
-  }
+  ui->comboBoxPgt2Parc->setEnabled((text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") ? true
+                                                                                                         : false);
 
   ui->dateEditPgt2->setEnabled(true);
 
@@ -526,25 +515,22 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
     return;
   }
 
-  if (text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") {
-    ui->comboBoxPgt3Parc->setEnabled(true);
-  } else {
-    ui->comboBoxPgt3Parc->setDisabled(true);
-  }
+  ui->comboBoxPgt3Parc->setEnabled((text == "Cartão de crédito" or text == "Cheque" or text == "Boleto") ? true
+                                                                                                         : false);
 
   ui->dateEditPgt3->setEnabled(true);
 
   montarFluxoCaixa();
 }
 
-bool Venda::savingProcedures(const int row) {
-  setData(row, "idEnderecoEntrega", ui->itemBoxEndereco->value());
-  setData(row, "idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
-  setData(row, "status", "PENDENTE");
-  setData(row, "data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
-  setData(row, "dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
-  setData(row, "prazoEntrega", QDate::currentDate().addDays(ui->spinBoxPrazoEntrega->value()));
-  setData(row, "observacao", ui->textEdit->toPlainText());
+bool Venda::savingProcedures() {
+  setData("idEnderecoEntrega", ui->itemBoxEndereco->value());
+  setData("idEnderecoFaturamento", ui->itemBoxEnderecoFat->value());
+  setData("status", "PENDENTE");
+  setData("data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  setData("dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
+  setData("prazoEntrega", QDate::currentDate().addDays(ui->spinBoxPrazoEntrega->value()));
+  setData("observacao", ui->textEdit->toPlainText());
 
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados na tabela venda: " + model.lastError().text());
@@ -595,6 +581,7 @@ bool Venda::savingProcedures(const int row) {
 
 void Venda::registerMode() {
   ui->framePagamentos->show();
+  ui->pushButtonGerarExcel->hide();
   ui->pushButtonImprimir->hide();
   ui->pushButtonCadastrarPedido->show();
   ui->pushButtonVoltar->show();
@@ -609,6 +596,7 @@ void Venda::registerMode() {
 
 void Venda::updateMode() {
   ui->framePagamentos_2->hide();
+  ui->pushButtonGerarExcel->show();
   ui->pushButtonImprimir->show();
   ui->pushButtonCadastrarPedido->hide();
   ui->pushButtonVoltar->hide();
@@ -785,13 +773,28 @@ void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) { calcPrecoGlobalTotal(); }
 
 void Venda::on_pushButtonImprimir_clicked() {
-  QtRPT *report = new QtRPT(this);
+  if (settings("User/userFolder").toString().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
+    setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    return;
+  }
+
+  QString path = settings("User/userFolder").toString();
+
+  QDir dir(path);
+
+  if (not dir.exists()) {
+    dir.mkdir(path);
+  }
+
   QFile file(qApp->applicationDirPath() + "/venda.xml");
 
   if (not file.exists()) {
     QMessageBox::critical(this, "Erro!", "XML da impressão não encontrado!");
     return;
   }
+
+  QtRPT *report = new QtRPT(this);
 
   queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
@@ -809,8 +812,8 @@ void Venda::on_pushButtonImprimir_clicked() {
     return;
   }
 
-  queryVendedor.prepare("SELECT * FROM usuario WHERE nome = :nome");
-  queryVendedor.bindValue(":nome", ui->itemBoxVendedor->text());
+  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.bindValue(":idUsuario", ui->itemBoxVendedor->value());
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
@@ -844,16 +847,6 @@ void Venda::on_pushButtonImprimir_clicked() {
   report->loadReport(file.fileName());
   report->recordCount << ui->tableVenda->model()->rowCount();
   connect(report, &QtRPT::setValue, this, &Venda::setValue);
-
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("User");
-  QString path = settings.value("userFolder").toString();
-
-  QDir dir(path);
-
-  if (not dir.exists()) {
-    dir.mkdir(path);
-  }
 
   report->printPDF(path + "/" + ui->lineEditVenda->text() + ".pdf");
 }
@@ -1190,24 +1183,20 @@ void Venda::successMessage() {
 }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
-  QSettings settings("Staccato", "ERP");
-  settings.beginGroup("User");
-
-  if (settings.value("userFolder").toString().isEmpty()) {
+  // TODO: unificar com orcamento?
+  if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
-    settings.setValue("userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
     return;
   }
 
-  QString path = settings.value("userFolder").toString();
+  QString path = settings("User/userFolder").toString();
 
   QDir dir(path);
 
   if (not dir.exists()) {
     dir.mkdir(path);
   }
-
-  settings.endGroup();
 
   QFile modelo(QDir::currentPath() + "/modelo.xlsx");
 
@@ -1357,3 +1346,10 @@ void Venda::on_lineEditPgt3_textChanged(const QString &arg1) {
 
   montarFluxoCaixa();
 }
+
+QVariant Venda::settings(QString key) const { return UserSession::getSettings(key); }
+
+void Venda::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
+
+// TODO: colocar status mais a esquerda para ficar visivel
+// TODO: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal

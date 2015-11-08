@@ -53,11 +53,8 @@ void SendMail::on_pushButtonCancelar_clicked() {
 }
 
 void SendMail::mailSent(QString status) {
-  if (status == "Message sent") {
-    QMessageBox::information(0, tr("Qt Simple SMTP client"), tr("Mensagem enviada!"));
-  } else {
-    QMessageBox::critical(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
-  }
+  status == "Message sent" ? QMessageBox::information(0, tr("Qt Simple SMTP client"), tr("Mensagem enviada!"))
+                           : QMessageBox::critical(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
 
   QDialog::accept();
 }

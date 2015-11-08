@@ -1,11 +1,14 @@
 #include <QDebug>
 #include <QMessageBox>
+#include <QSettings>
 #include <QSqlError>
 #include <QVariant>
 
 #include "usersession.h"
 
 QSqlQuery *UserSession::query = nullptr;
+
+QSettings settings("Staccato", "ERP");
 
 int UserSession::getLoja() { return (query->value("idLoja").toInt()); }
 
@@ -54,7 +57,7 @@ QString UserSession::getSiglaLoja() {
   return queryLoja.value("sigla").toString();
 }
 
-QString UserSession::getFromLoja(QString parameter) {
+QString UserSession::getFromLoja(const QString parameter) {
   QSqlQuery queryLoja;
   queryLoja.prepare("SELECT " + parameter + " FROM loja WHERE idLoja = :idLoja");
   queryLoja.bindValue(":idLoja", getLoja());
@@ -66,6 +69,12 @@ QString UserSession::getFromLoja(QString parameter) {
 
   return queryLoja.value(parameter).toString();
 }
+
+QVariant UserSession::getSettings(const QString key) { return settings.value(key); }
+
+void UserSession::setSettings(const QString key, const QVariant value) { settings.setValue(key, value); }
+
+bool UserSession::settingsContains(const QString &key) { return settings.contains(key); }
 
 QStringList UserSession::getTodosCNPJ() {
   QSqlQuery queryLoja;

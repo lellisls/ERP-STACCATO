@@ -12,7 +12,10 @@ class UserSession {
     static QString getSiglaLoja();
     static QString getTipoUsuario();
     static QStringList getTodosCNPJ();
-    static QString getFromLoja(QString parameter);
+    static QString getFromLoja(const QString parameter);
+    static QVariant getSettings(const QString key);
+    static void setSettings(const QString key, const QVariant value);
+    static bool settingsContains(const QString &key);
     static void free();
 
   private:

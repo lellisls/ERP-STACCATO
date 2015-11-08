@@ -72,51 +72,25 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
   return true;
 }
 
-bool RegisterDialog::setData(const QString &key, QVariant value) {
-  if (model.fieldIndex(key) == -1) {
-    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
-    return false;
+void RegisterDialog::setData(const QString &key, QVariant value) {
+  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
+    return;
   }
 
-  return model.setData(mapper.currentIndex(), key, value);
+  if (value.type() == QVariant::String and value.toString().remove(".").remove("/").remove("-").isEmpty()) {
+    return;
+  }
+
+  if (value.type() == QVariant::String and value.toString() == "1900-01-01") {
+    return;
+  }
+
+  isOk = model.setData(row, key, value);
 }
 
-bool RegisterDialog::setData(int row, const QString &key, QVariant value) {
-  // TODO: replace this with model.setData directly
-  if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro: linha -1");
-    return false;
-  }
+QVariant RegisterDialog::data(const QString &key) { return model.data(mapper.currentIndex(), key); }
 
-  if (model.fieldIndex(key) == -1) {
-    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
-    return false;
-  }
-
-  if (value.isNull()) {
-    return false;
-  }
-
-  return model.setData(row, key, value);
-}
-
-QVariant RegisterDialog::data(const QString &key) {
-  if (model.fieldIndex(key) == -1) {
-    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
-    return QVariant();
-  }
-
-  return model.data(mapper.currentIndex(), key);
-}
-
-QVariant RegisterDialog::data(int row, const QString &key) {
-  if (model.fieldIndex(key) == -1) {
-    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
-    return QVariant();
-  }
-
-  return model.data(row, key);
-}
+QVariant RegisterDialog::data(int row, const QString &key) { return model.data(row, key); }
 
 void RegisterDialog::addMapping(QWidget *widget, const QString &key) {
   if (model.fieldIndex(key) == -1) {
@@ -170,13 +144,23 @@ void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void RegisterDialog::saveSlot() { save(); }
 
-bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
+bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool silent) {
+  if (line->styleSheet() != requiredStyle()) {
+    return true;
+  }
+
+  if (not line->isVisible()) {
+    return true;
+  }
+
   if ((line->text().isEmpty()) or (line->text() == "0,00") or (line->text() == "../-") or
       (line->text().size() < line->inputMask().remove(";").remove(">").remove("_").size()) or
       (line->text().size() < line->placeholderText().size() - 1)) {
-    // TODO: colocar nome do campo (usar acessibleName?)
-    QMessageBox::warning(this, "Atenção!", "Você não preencheu um campo obrigatório: " + line->objectName());
-    line->setFocus();
+    if (not silent) {
+      QMessageBox::critical(this, "Erro!", "Você não preencheu um campo obrigatório: " + line->accessibleName());
+      line->setFocus();
+    }
+
     return false;
   }
 
@@ -184,33 +168,25 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if (model.isDirty() or isDirty) {
-    QMessageBox msgBox;
-    msgBox.setParent(this);
-    msgBox.setLocale(QLocale::Portuguese);
-    msgBox.setText("<strong>O cadastro foi alterado!</strong>");
-    msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
-    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    msgBox.setWindowModality(Qt::WindowModal);
-    msgBox.setButtonText(QMessageBox::Save, "Salvar");
-    msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
-    msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
-    msgBox.setDefaultButton(QMessageBox::Save);
-
-    const int ret = msgBox.exec();
-
-    if (ret == QMessageBox::Save) {
-      return save();
-    }
-
-    // TODO: messagebox::discard?
-
-    if (ret == QMessageBox::Cancel) {
-      return false;
-    }
+  if (not model.isDirty() and not isDirty) {
+    return true;
   }
 
-  return true;
+  QMessageBox msgBox;
+  msgBox.setParent(this);
+  msgBox.setLocale(QLocale::Portuguese);
+  msgBox.setText("<strong>O cadastro foi alterado!</strong>");
+  msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
+  msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  msgBox.setWindowModality(Qt::WindowModal);
+  msgBox.setButtonText(QMessageBox::Save, "Salvar");
+  msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
+  msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+  msgBox.setDefaultButton(QMessageBox::Save);
+
+  const int ret = msgBox.exec();
+
+  return ret == QMessageBox::Save ? save() : ret == QMessageBox::Discard ? true : false;
 }
 
 void RegisterDialog::errorMessage() { QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este item."); }
@@ -224,12 +200,10 @@ bool RegisterDialog::newRegister() {
     return false;
   }
 
-  registerMode();
   clearFields();
+  registerMode();
 
   return model.select();
-
-  // TODO: see if it's still working
 }
 
 bool RegisterDialog::save(const bool isUpdate) {
@@ -240,7 +214,7 @@ bool RegisterDialog::save(const bool isUpdate) {
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  const int row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
+  row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Linha errada!");
@@ -252,7 +226,7 @@ bool RegisterDialog::save(const bool isUpdate) {
     model.insertRow(row);
   }
 
-  if (not savingProcedures(row)) {
+  if (not savingProcedures()) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
@@ -268,6 +242,7 @@ bool RegisterDialog::save(const bool isUpdate) {
 
   QSqlQuery("COMMIT").exec();
   isDirty = false;
+  isOk = true;
 
   viewRegister(model.index(row, 0));
   sendUpdateMessage();
@@ -282,7 +257,7 @@ bool RegisterDialog::save(const bool isUpdate) {
 bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>(QString() , Qt::FindDirectChildrenOnly)) {
+  for (auto *line : this->findChildren<QLineEdit *>()) {
     line->clear();
   }
 }
@@ -294,10 +269,7 @@ void RegisterDialog::remove() {
   msgBox.setButtonText(QMessageBox::No, "Não");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    if (not model.setData(mapper.currentIndex(), "desativado", true)) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando desativado: " + model.lastError().text());
-      return;
-    }
+    setData("desativado", true);
 
     if (not model.submitAll()) {
       QMessageBox::critical(this, "Erro!", "Não foi possível remover este item: " + model.lastError().text());
@@ -309,7 +281,6 @@ void RegisterDialog::remove() {
 }
 
 bool RegisterDialog::validaCNPJ(const QString text) {
-  // TODO: pegar a parte do validaCPF que é igual e separar numa função
   if (text.size() != 14) {
     return false;
   }
@@ -348,7 +319,7 @@ bool RegisterDialog::validaCNPJ(const QString text) {
   int digito2 = resto < 2 ? 0 : 11 - resto;
 
   if (digito1 != text.at(12).digitValue() or digito2 != text.at(13).digitValue()) {
-    QMessageBox::warning(this, "Aviso!", "CNPJ inválido!");
+    QMessageBox::critical(this, "Erro!", "CNPJ inválido!");
     return false;
   }
 
@@ -401,7 +372,7 @@ bool RegisterDialog::validaCPF(const QString text) {
   const int digito2 = resto < 2 ? 0 : 11 - resto;
 
   if (digito1 != text.at(9).digitValue() or digito2 != text.at(10).digitValue()) {
-    QMessageBox::warning(this, "Aviso!", "CPF inválido!");
+    QMessageBox::critical(this, "Erro!", "CPF inválido!");
     return false;
   }
 
@@ -409,3 +380,5 @@ bool RegisterDialog::validaCPF(const QString text) {
 }
 
 void RegisterDialog::marcarDirty() { isDirty = true; }
+
+// TODO: alguma forma de operar com cadastros desativados

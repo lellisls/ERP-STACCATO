@@ -19,7 +19,7 @@ class RegisterAddressDialog : public RegisterDialog {
     bool newRegister();
     int getCodigoUF(const QString uf) const;
     bool save(const bool isUpdate = false);
-    bool setDataEnd(int row, const QString &key, QVariant value);
+    void setDataEnd(const QString &key, QVariant value);
 };
 
 #endif // REGISTERADDRESSDIALOG_H

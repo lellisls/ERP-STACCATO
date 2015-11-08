@@ -39,12 +39,8 @@ ImportarXML::ImportarXML(QList<int> rows, QWidget *parent) : QDialog(parent), ui
   if (not rows.isEmpty()) {
     QString ids;
 
-    for (const int row : rows) {
-      if (ids.isEmpty()) {
-        ids = "idCompra = '" + QString::number(row) + "'";
-      } else {
-        ids += " OR idCompra = '" + QString::number(row) + "'";
-      }
+    for (const auto row : rows) {
+      ids = QString(ids.isEmpty() ? "" : " OR ") + "idCompra = '" + QString::number(row) + "'";
     }
 
     modelCompra.setFilter(ids);
@@ -92,8 +88,12 @@ void ImportarXML::on_pushButtonImportar_clicked() {
   }
 
   if (not ok) {
-    if (QMessageBox::question(this, "Continuar?", "Nem todos os produtos estão ok. Deseja continuar?") !=
-        QMessageBox::Yes) {
+    QMessageBox msgBox(QMessageBox::Question, "Continuar?", "Nem todos os produtos estão ok. Deseja continuar?",
+                       QMessageBox::Yes | QMessageBox::No, this);
+    msgBox.setButtonText(QMessageBox::Yes, "Sim");
+    msgBox.setButtonText(QMessageBox::No, "Não");
+
+    if (msgBox.exec() == QMessageBox::No) {
       return;
     }
   }
@@ -133,37 +133,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
         modelCompra.match(modelCompra.index(0, modelCompra.fieldIndex("codComercial")), Qt::DisplayRole, codComercial,
                           -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
-    if (list.size() > 0) {
-      qDebug() << "Encontrou produto: " << codComercial;
-
-      // TODO: improve this
-      idCompra = modelCompra.data(list.first().row(), "idCompra").toInt();
-
-      if (not modelEstoque.setData(row, "idCompra", idCompra)) {
-        QMessageBox::critical(this, "Erro!", "Erro guardando idCompra: " + modelEstoque.lastError().text());
-        QSqlQuery("ROLLBACK").exec();
-        return;
-      }
-
-      if (not modelEstoque.setData(row, "idNFe", idNFe)) {
-        QMessageBox::critical(this, "Erro!", "Erro guardando idNFe: " + modelEstoque.lastError().text());
-        QSqlQuery("ROLLBACK").exec();
-        return;
-      }
-
-      double quant2 = 0;
-
-      for (auto index : list) {
-        quant2 += modelCompra.data(index.row(), "quant").toDouble();
-      }
-
-      // TODO: create enum to use in place of 1 and 2
-      if (not modelEstoque.setData(row, "quantUpd", (quant == quant2) ? 1 : 2)) {
-        QMessageBox::critical(this, "Erro!", "Erro guardando quantUpd: " + modelEstoque.lastError().text());
-        QSqlQuery("ROLLBACK").exec();
-        return;
-      }
-    } else {
+    if (list.size() == 0) {
       qDebug() << "Não encontrou produto: " << codComercial;
 
       if (not modelEstoque.setData(row, "quantUpd", 3)) {
@@ -171,6 +141,36 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
         QSqlQuery("ROLLBACK").exec();
         return;
       }
+    }
+
+    qDebug() << "Encontrou produto: " << codComercial;
+
+    // TODO: improve this
+    idCompra = modelCompra.data(list.first().row(), "idCompra").toInt();
+
+    if (not modelEstoque.setData(row, "idCompra", idCompra)) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando idCompra: " + modelEstoque.lastError().text());
+      QSqlQuery("ROLLBACK").exec();
+      return;
+    }
+
+    if (not modelEstoque.setData(row, "idNFe", idNFe)) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando idNFe: " + modelEstoque.lastError().text());
+      QSqlQuery("ROLLBACK").exec();
+      return;
+    }
+
+    double quant2 = 0;
+
+    for (auto index : list) {
+      quant2 += modelCompra.data(index.row(), "quant").toDouble();
+    }
+
+    // TODO: create enum to use in place of 1 and 2 (copy from ImportarProdutos
+    if (not modelEstoque.setData(row, "quantUpd", (quant == quant2) ? 1 : 2)) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando quantUpd: " + modelEstoque.lastError().text());
+      QSqlQuery("ROLLBACK").exec();
+      return;
     }
   }
 
@@ -207,7 +207,8 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
 
       for (int column = 0; column < modelEstoque.columnCount(); ++column) {
         if (not modelEstoque.setData(newRow, column, modelEstoque.data(row, column))) {
-          QMessageBox::critical(this, "Erro!", "Erro guardando " + QString::number(column) + ": " + modelEstoque.lastError().text());
+          QMessageBox::critical(this, "Erro!",
+                                "Erro guardando " + QString::number(column) + ": " + modelEstoque.lastError().text());
           QSqlQuery("ROLLBACK").exec();
           return;
         }
@@ -221,7 +222,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
         return;
       }
 
-      if (not modelEstoque.setData(newRow, "quantUpd", 0)) {
+      if (not modelEstoque.setData(newRow, "quantUpd", false)) {
         QMessageBox::critical(this, "Erro!", "Erro guardando quantUpd: " + modelEstoque.lastError().text());
         QSqlQuery("ROLLBACK").exec();
         return;
@@ -245,3 +246,5 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
 }
 
 void ImportarXML::on_tableEstoque_clicked(const QModelIndex &index) { mapper.setCurrentModelIndex(index); }
+
+// TODO: remover QMessageBox extras nos setData's

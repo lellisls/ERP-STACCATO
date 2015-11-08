@@ -34,9 +34,7 @@ class CadastroLoja : public RegisterAddressDialog {
     void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
-    void on_pushButtonPastaCompra_clicked();
     void on_pushButtonXmlNFe_clicked();
-    void on_pushButtonPastaExcel_clicked();
 
   private:
     /*!
@@ -47,7 +45,7 @@ class CadastroLoja : public RegisterAddressDialog {
     /*!
 *\brief Onde ocorre o model.setData(), baseada nas informações da view.
 */
-    virtual bool savingProcedures(const int row);
+    virtual bool savingProcedures();
     /*!
 *\brief Limpar os campos da tela
 */

@@ -27,7 +27,7 @@ unix:!android {
 }
 
 win32* {
-    LIBS += -LC:/OpenSSL-Win32 -llibeay32
+    LIBS += -L$$_PRO_FILE_PWD_/OpenSSL-Win32 -llibeay32
 }
 
 RESOURCES += $$PWD/res/qsu_resources.qrc

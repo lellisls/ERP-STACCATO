@@ -145,14 +145,14 @@ void InputDialog::setFilter(QStringList ids) {
   QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
 }
 
-void InputDialog::setFilter(QString ids) {
-  if (ids.isEmpty()) {
+void InputDialog::setFilter(QString id) {
+  if (id.isEmpty()) {
     model.setFilter("idPedido = 0");
     QMessageBox::critical(this, "Erro!", "ids vazio!");
     return;
   }
 
-  model.setFilter("idCompra = " + ids);
+  model.setFilter("idCompra = " + id);
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",

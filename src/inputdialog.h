@@ -20,7 +20,7 @@ class InputDialog : public QDialog {
     QDate getDate();
     QDate getNextDate();
     void setFilter(QStringList ids);
-    void setFilter(QString ids);
+    void setFilter(QString id);
 
   private slots:
     void on_pushButtonSalvar_clicked();

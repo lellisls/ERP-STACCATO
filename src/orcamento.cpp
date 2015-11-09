@@ -459,7 +459,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   QtRPT *report = new QtRPT(this);
 
   queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", model.data(mapper.currentIndex(), "idCliente"));
+  queryCliente.bindValue(":idCliente", data("idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + queryCliente.lastError().text());
@@ -467,7 +467,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   }
 
   queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
-  queryProfissional.bindValue(":idProfissional", model.data(mapper.currentIndex(), "idProfissional"));
+  queryProfissional.bindValue(":idProfissional", data("idProfissional"));
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
@@ -475,7 +475,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   }
 
   queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
-  queryVendedor.bindValue(":idUsuario", ui->itemBoxVendedor->value());
+  queryVendedor.bindValue(":idUsuario", data("idUsuario"));
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
@@ -483,7 +483,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   }
 
   queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", queryVendedor.value("idLoja"));
+  queryLoja.bindValue(":idLoja", data("idLoja"));
 
   if (not queryLoja.exec() or not queryLoja.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando loja: " + queryLoja.lastError().text());
@@ -491,7 +491,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   }
 
   queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
-  queryLojaEnd.bindValue(":idLoja", queryVendedor.value("idLoja"));
+  queryLojaEnd.bindValue(":idLoja", data("idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando endereço loja: " + queryLojaEnd.lastError().text());

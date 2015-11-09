@@ -1837,11 +1837,8 @@ void MainWindow::montaFiltroVendas() {
 
   for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     if (child->isChecked()) {
-      if (filtro2.isEmpty()) {
-        filtro2 = "status = '" + child->text().toUpper() + "'";
-      } else {
-        filtro2 += " OR status = '" + child->text().toUpper() + "'";
-      }
+      filtro2 += filtro2.isEmpty() ? "status = '" + child->text().toUpper() + "'"
+                                   : " OR status = '" + child->text().toUpper() + "'";
     }
   }
 

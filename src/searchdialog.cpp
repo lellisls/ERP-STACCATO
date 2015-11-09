@@ -76,28 +76,13 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 }
 
 void SearchDialog::sendUpdateMessage() {
-  QModelIndex index = model.index(0, 0);
+  auto selection = ui->tableBusca->selectionModel()->selection().indexes();
 
-  if (not ui->tableBusca->selectionModel()->selection().indexes().isEmpty()) {
-    index = ui->tableBusca->selectionModel()->selection().indexes().front();
+  if (selection.isEmpty()) {
+    return;
   }
 
-  selectedId = model.data(index.row(), primaryKey);
-  QString text;
-
-  for (auto key : textKeys) {
-    if (not key.isEmpty()) {
-      const QVariant val = model.data(index.row(), key);
-
-      if (val.isValid()) {
-        if (not text.isEmpty()) {
-          text.append(" - ");
-        }
-
-        text.append(val.toString());
-      }
-    }
-  }
+  selectedId = model.data(selection.first().row(), primaryKey);
 
   emit itemSelected(selectedId);
 }

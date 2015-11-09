@@ -51,35 +51,28 @@ SearchDialog::~SearchDialog() { delete ui; }
 
 void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
   if (model.tableName() == "produto") {
-    montarFiltroAtivoDesc(ui->radioButtonProdAtivos->isChecked() ? true : false);
+    montarFiltroAtivoDesc(ui->radioButtonProdAtivos->isChecked());
     return;
   }
 
   if (text.isEmpty()) {
-    setFilter("desativado = FALSE");
-  } else {
-    QStringList temp = text.split(" ", QString::SkipEmptyParts);
-
-    for (int i = 0, size = temp.size(); i < size; ++i) {
-      temp[i].prepend("+");
-      temp[i].append("*");
-    }
-
-    const QString regex = temp.join(" ");
-
-    QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
-
-    if (not filter.isEmpty()) {
-      searchFilter.append(" AND (" + filter + ")");
-    }
-
-    setFilter(searchFilter);
-  }
-
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela " + model.tableName() + ": " + model.lastError().text());
+    setFilter(filter);
     return;
   }
+
+  QStringList strings = text.split(" ", QString::SkipEmptyParts);
+
+  for (auto &string : strings) {
+    string.prepend("+").append("*");
+  }
+
+  QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + strings.join(" ") + "' IN BOOLEAN MODE)";
+
+  if (not filter.isEmpty()) {
+    searchFilter.append(" AND (" + filter + ")");
+  }
+
+  model.setFilter(searchFilter);
 }
 
 void SearchDialog::sendUpdateMessage() {
@@ -461,15 +454,13 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
     return;
   }
 
-  QStringList temp = text.split(" ", QString::SkipEmptyParts);
+  QStringList strings = text.split(" ", QString::SkipEmptyParts);
 
-  for (int i = 0, size = temp.size(); i < size; ++i) {
-    temp[i].prepend("+").append("*");
+  for (auto &string : strings) {
+    string.prepend("+").append("*");
   }
 
-  const QString regex = temp.join(" ");
-
-  const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + regex + "' IN BOOLEAN MODE)";
+  const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + strings.join(" ") + "' IN BOOLEAN MODE)";
 
   setFilter(searchFilter + " AND descontinuado = " + (ativo ? "FALSE" : "TRUE") + " AND desativado = FALSE" +
             representacao);

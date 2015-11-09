@@ -51,7 +51,7 @@ namespace QXlsx {
     writer.writeAttribute(QStringLiteral("xmlns:a"),
                           QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/main"));
 
-    for (auto *anchor : anchors)
+    for (auto const &anchor : anchors)
       anchor->saveToXml(writer);
 
     writer.writeEndElement(); // xdr:wsDr

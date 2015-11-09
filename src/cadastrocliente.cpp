@@ -66,7 +66,7 @@ bool CadastroCliente::verifyFields() {
     incompleto = true;
   }
 
-  for (auto *line : ui->frame->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->frame->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -106,7 +106,7 @@ void CadastroCliente::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  for (auto *box : this->findChildren<ItemBox *>()) {
+  for (auto const &box : this->findChildren<ItemBox *>()) {
     box->clear();
   }
 
@@ -255,7 +255,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
 }
 
 bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
-  for (auto *line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }

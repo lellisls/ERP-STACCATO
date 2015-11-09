@@ -162,7 +162,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
 
     double quant2 = 0;
 
-    for (auto index : list) {
+    for (auto const &index : list) {
       quant2 += modelCompra.data(index.row(), "quant").toDouble();
     }
 

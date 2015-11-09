@@ -69,7 +69,7 @@ void CadastroFornecedor::novoEndereco() {
 }
 
 bool CadastroFornecedor::verifyFields() {
-  for (auto *line : ui->frameCadastro->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->frameCadastro->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -201,7 +201,7 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
 }
 
 bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
-  for (auto *line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }

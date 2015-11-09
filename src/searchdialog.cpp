@@ -204,7 +204,7 @@ QString SearchDialog::getText(const QVariant index) {
 }
 
 void SearchDialog::setHeaderData(const QVector<Pair> headerData) {
-  for (auto pair : headerData) {
+  for (auto const &pair : headerData) {
     model.setHeaderData(model.fieldIndex(pair.first), Qt::Horizontal, pair.second);
   }
 }

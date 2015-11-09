@@ -63,7 +63,7 @@ bool RegisterDialog::viewRegister(const QModelIndex index) {
 }
 
 bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
-  for (auto *line : list) {
+  for (auto const &line : list) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -257,7 +257,7 @@ bool RegisterDialog::save(const bool isUpdate) {
 bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) {
+  for (auto const &line : this->findChildren<QLineEdit *>()) {
     line->clear();
   }
 }

@@ -179,7 +179,7 @@ Invalid characters are replaced by one space character ' '.
     enum RefState { INVALID, PRE_AZ, AZ, PRE_09, _09 };
     RefState refState = INVALID;
     int refFlag = 0; // 0x00, 0x01, 0x02, 0x03 ==> A1, $A1, A$1, $A$1
-    for (auto ch : rootFormula) {
+    for (auto const &ch : rootFormula) {
       if (inQuote) {
         segment.append(ch);
         if (ch == QLatin1Char('"')) inQuote = false;
@@ -231,7 +231,7 @@ Invalid characters are replaced by one space character ' '.
 
     // Replace "A1", "$A1", "A$1" segment with proper one.
     QStringList result;
-    for (auto p : segments) {
+    for (auto const &p : segments) {
       // qDebug()<<p.first<<p.second;
       if (p.second != -1 and p.second != 3) {
         CellReference oldRef(p.first);

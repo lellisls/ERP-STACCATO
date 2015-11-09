@@ -81,7 +81,7 @@ namespace QXlsx {
     writer.writeStartElement(vt, QStringLiteral("vector"));
     writer.writeAttribute(QStringLiteral("size"), QString::number(m_headingPairsList.size() * 2));
     writer.writeAttribute(QStringLiteral("baseType"), QStringLiteral("variant"));
-    for (auto pair : m_headingPairsList) {
+    for (auto const &pair : m_headingPairsList) {
       writer.writeStartElement(vt, QStringLiteral("variant"));
       writer.writeTextElement(vt, QStringLiteral("lpstr"), pair.first);
       writer.writeEndElement(); // vt:variant
@@ -96,7 +96,7 @@ namespace QXlsx {
     writer.writeStartElement(vt, QStringLiteral("vector"));
     writer.writeAttribute(QStringLiteral("size"), QString::number(m_titlesOfPartsList.size()));
     writer.writeAttribute(QStringLiteral("baseType"), QStringLiteral("lpstr"));
-    for (auto title : m_titlesOfPartsList)
+    for (auto const &title : m_titlesOfPartsList)
       writer.writeTextElement(vt, QStringLiteral("lpstr"), title);
     writer.writeEndElement(); // vt:vector
     writer.writeEndElement(); // TitlesOfParts

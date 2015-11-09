@@ -333,7 +333,7 @@ bool DataValidation::saveToXml(QXmlStreamWriter &writer) const {
   if (not promptMessage().isEmpty()) writer.writeAttribute(QStringLiteral("prompt"), promptMessage());
 
   QStringList sqref;
-  for (auto range : ranges())
+  for (auto const &range : ranges())
     sqref.append(range.toString());
   writer.writeAttribute(QStringLiteral("sqref"), sqref.join(QLatin1Char(' ')));
 
@@ -382,7 +382,7 @@ DataValidation DataValidation::loadFromXml(QXmlStreamReader &reader) {
   QXmlStreamAttributes attrs = reader.attributes();
 
   QString sqref = attrs.value(QLatin1String("sqref")).toString();
-  for (auto range : sqref.split(QLatin1Char(' ')))
+  for (auto const &range : sqref.split(QLatin1Char(' ')))
     validation.addRange(range);
 
   if (attrs.hasAttribute(QLatin1String("type"))) {

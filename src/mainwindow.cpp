@@ -1219,7 +1219,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
   xlsx.write("E8", queryForn.value("contatoNome"));
   xlsx.write("D10", "Data: " + QDate::currentDate().toString("dd/MM/yy"));
 
-  for (auto row : lista) {
+  for (auto const &row : lista) {
     static int i = 0;
 
     xlsx.write("A" + QString::number(13 + i), i + 1);
@@ -1340,7 +1340,7 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     return;
   }
 
-  for (auto row : lista) {
+  for (auto const &row : lista) {
     query.prepare("INSERT INTO conta_a_pagar_has_pagamento (idVenda, idLoja, tipo, parcela, valor, data, observacao, "
                   "status) VALUES (:idVenda, :idLoja, :tipo, :parcela, :valor, :data, :observacao, :status)");
     query.bindValue(":idVenda", idVenda);
@@ -1637,7 +1637,7 @@ void MainWindow::on_pushButtonMarcarFaturado_clicked() {
     return;
   }
 
-  for (auto index : ui->tableFaturamento->selectionModel()->selectedRows()) {
+  for (auto const &index : ui->tableFaturamento->selectionModel()->selectedRows()) {
     rows.append(modelFat->data(index.row(), "idCompra").toInt());
   }
 
@@ -1789,11 +1789,11 @@ void MainWindow::on_tabWidget_4_currentChanged(int index) {
 }
 
 void MainWindow::on_groupBoxStatusVenda_toggled(bool enabled) {
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
   }
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setChecked(enabled);
   }
 }
@@ -1803,7 +1803,7 @@ void MainWindow::montaFiltroVendas() {
 
   int counter = 0;
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     if (not child->isChecked()) {
       counter++;
     }
@@ -1835,7 +1835,7 @@ void MainWindow::montaFiltroVendas() {
 
   QString filtro2;
 
-  for (auto child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     if (child->isChecked()) {
       if (filtro2.isEmpty()) {
         filtro2 = "status = '" + child->text().toUpper() + "'";

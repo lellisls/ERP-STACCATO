@@ -118,7 +118,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device) {
 
     DocPropsCore props(DocPropsCore::F_LoadFromExists);
     props.loadFromXmlData(zipReader.fileData(docPropsCore_Name));
-    for (auto name : props.propertyNames())
+    for (auto const &name : props.propertyNames())
       q->setDocumentProperty(name, props.property(name));
   }
 
@@ -131,7 +131,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device) {
 
     DocPropsApp props(DocPropsApp::F_LoadFromExists);
     props.loadFromXmlData(zipReader.fileData(docPropsApp_Name));
-    for (auto name : props.propertyNames())
+    for (auto const &name : props.propertyNames())
       q->setDocumentProperty(name, props.property(name));
   }
 
@@ -304,7 +304,7 @@ bool DocumentPrivate::savePackage(QIODevice *device) const {
   }
 
   // save docProps app/core xml file
-  for (auto name : q->documentPropertyNames()) {
+  for (auto const &name : q->documentPropertyNames()) {
     docPropsApp.setProperty(name, q->documentProperty(name));
     docPropsCore.setProperty(name, q->documentProperty(name));
   }

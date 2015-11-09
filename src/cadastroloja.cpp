@@ -60,13 +60,13 @@ void CadastroLoja::setupTables() {
 }
 
 void CadastroLoja::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) {
+  for (auto const &line : this->findChildren<QLineEdit *>()) {
     line->clear();
   }
 }
 
 bool CadastroLoja::verifyFields() {
-  for (auto *line : ui->groupBoxCadastro->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBoxCadastro->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -230,7 +230,7 @@ void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool checked) {
 }
 
 bool CadastroLoja::cadastrarEndereco(const bool isUpdate) {
-  for (auto *line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }

@@ -73,7 +73,7 @@ namespace QXlsx {
 
   QList<XlsxRelationship> Relationships::relationships(const QString &type) const {
     QList<XlsxRelationship> res;
-    for (auto ship : m_relationships) {
+    for (auto const &ship : m_relationships) {
       if (ship.type == type) res.append(ship);
     }
     return res;
@@ -96,7 +96,7 @@ namespace QXlsx {
     writer.writeStartElement(QStringLiteral("Relationships"));
     writer.writeAttribute(QStringLiteral("xmlns"),
                           QStringLiteral("http://schemas.openxmlformats.org/package/2006/relationships"));
-    for (auto relation : m_relationships) {
+    for (auto const &relation : m_relationships) {
       writer.writeStartElement(QStringLiteral("Relationship"));
       writer.writeAttribute(QStringLiteral("Id"), relation.id);
       writer.writeAttribute(QStringLiteral("Type"), relation.type);
@@ -147,7 +147,7 @@ namespace QXlsx {
   }
 
   XlsxRelationship Relationships::getRelationshipById(const QString &id) const {
-    for (auto ship : m_relationships) {
+    for (auto const &ship : m_relationships) {
       if (ship.id == id) return ship;
     }
     return XlsxRelationship();

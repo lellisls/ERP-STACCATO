@@ -41,7 +41,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 CadastroProduto::~CadastroProduto() { delete ui; }
 
 void CadastroProduto::clearFields() {
-  for (auto *line : this->findChildren<QLineEdit *>()) {
+  for (auto const &line : this->findChildren<QLineEdit *>()) {
     line->clear();
   }
 

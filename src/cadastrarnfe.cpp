@@ -186,7 +186,7 @@ void CadastrarNFe::prepararNFe(const QList<int> items) {
 
   QString filter;
 
-  for (auto item : items) {
+  for (auto const &item : items) {
     filter += QString(filter.isEmpty() ? "" : " OR ") + "idVendaProduto = " + QString::number(item);
   }
 

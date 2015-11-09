@@ -121,7 +121,7 @@ bool CadastroProfissional::viewRegister(const QModelIndex index) {
 }
 
 bool CadastroProfissional::verifyFields() {
-  for (auto *line : ui->frame->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->frame->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -173,7 +173,7 @@ void CadastroProfissional::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  for (auto *box : this->findChildren<ItemBox *>()) {
+  for (auto const &box : this->findChildren<ItemBox *>()) {
     box->clear();
   }
 
@@ -223,7 +223,7 @@ void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
 }
 
 bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
-  for (auto *line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }

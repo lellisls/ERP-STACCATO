@@ -608,7 +608,7 @@ bool ConditionalFormatting::loadFromXml(QXmlStreamReader &reader, Styles *styles
   d->cfRules.clear();
   QXmlStreamAttributes attrs = reader.attributes();
   QString sqref = attrs.value(QLatin1String("sqref")).toString();
-  for (auto range : sqref.split(QLatin1Char(' ')))
+  for (auto const &range : sqref.split(QLatin1Char(' ')))
     this->addRange(range);
 
   while (not reader.atEnd()) {
@@ -632,7 +632,7 @@ bool ConditionalFormatting::loadFromXml(QXmlStreamReader &reader, Styles *styles
 bool ConditionalFormatting::saveToXml(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("conditionalFormatting"));
   QStringList sqref;
-  for (auto range : ranges())
+  for (auto const &range : ranges())
     sqref.append(range.toString());
   writer.writeAttribute(QStringLiteral("sqref"), sqref.join(QLatin1Char(' ')));
 

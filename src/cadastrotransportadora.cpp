@@ -44,7 +44,7 @@ void CadastroTransportadora::clearFields() {
 }
 
 bool CadastroTransportadora::verifyFields() {
-  for (auto *line : ui->groupBox_7->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBox_7->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }
@@ -160,7 +160,7 @@ void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool check
 }
 
 bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
-  for (auto *line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }

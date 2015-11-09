@@ -53,7 +53,7 @@ void CadastroUsuario::setupTablePermissoes() {
 }
 
 bool CadastroUsuario::verifyFields() {
-  for (auto *line : ui->gridLayout_2->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->gridLayout_2->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
     }

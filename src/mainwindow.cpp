@@ -174,8 +174,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->radioButtonVendProprios->click();
   }
 
-  //  modelOrcamento->setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
-
   ui->radioButtonProdPendPend->click();
 
   updateTables();
@@ -1328,7 +1326,6 @@ void MainWindow::on_pushButtonGerarCompra_clicked() { // TODO: refactor this fun
     }
   }
 
-  // TODO: guardar valores no contas a pagar
   QSqlQuery query;
   query.prepare("INSERT INTO conta_a_pagar (idVenda, dataEmissao, pago) VALUES (:idVenda, :dataEmissao, :pago)");
   query.bindValue(":idVenda", idVenda);
@@ -1876,9 +1873,7 @@ void MainWindow::on_actionConfigura_es_triggered() {
 // TODO: gerenciar lugares de estoque (cadastro/permissoes)
 // TODO: a tabela de fornecedores em compra deve mostrar apenas os pedidos que estejam pendente/confirmar/faturar
 // TODO: a tabela de fornecedores em logistica deve mostrar apenas os pedidos que estejam coleta/recebimento/entrega
-// TODO: try making most functions const (hint is if there is no red text or no 'this' it problably should be const)
 // TODO: colocar logo da staccato na mainwindow
-// TODO: add 'AND desativado = false' in filters everywhere?
 // TODO: renomear "Mostrar inativos" para mostrar removidos e adicionar esse checkbox na searchdialog
-// TODO: buscar no projeto pela frase "setFilter("")" e corrigir adicionando desativado = FALSE
+// TODO: add 'AND desativado = false' in tables where there is desativado
 // TODO: colocar accessibleName em todas as telas de cadastro

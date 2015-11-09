@@ -455,7 +455,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
     QMessageBox::critical(this, "Erro!", "XML da impressão não encontrado!");
     return;
   }
-  // TODO: verificar possibilidade de unificar essa funcao com a da venda
+
   QtRPT *report = new QtRPT(this);
 
   queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
@@ -1112,7 +1112,6 @@ bool Orcamento::save(const bool isUpdate) {
 
 void Orcamento::on_pushButtonGerarExcel_clicked() {
   // TODO: endereco ficando como "-;"
-  // TODO: verificar a possibilidade de unificar essa funcao com a da venda
   if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
     setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));

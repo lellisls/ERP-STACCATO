@@ -258,7 +258,6 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     return;
   }
 
-  // TODO: fieldIndex != -1 ???
   for (int field = 1, columnCount = queryOrc.record().count(); field < columnCount; ++field) {
     if (model.fieldIndex(queryOrc.record().fieldName(field)) != -1 and
         not model.setData(mapper.currentIndex(), queryOrc.record().fieldName(field), queryOrc.value(field))) {
@@ -1183,7 +1182,6 @@ void Venda::successMessage() {
 }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
-  // TODO: unificar com orcamento?
   if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
     setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));

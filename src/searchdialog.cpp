@@ -432,6 +432,8 @@ void SearchDialog::on_radioButtonProdAtivos_clicked() { montarFiltroAtivoDesc(tr
 void SearchDialog::on_radioButtonProdDesc_clicked() { montarFiltroAtivoDesc(false); }
 
 void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
+  ui->lineEditBusca->setFocus();
+
   const QString text = ui->lineEditBusca->text();
 
   if (text.isEmpty()) {

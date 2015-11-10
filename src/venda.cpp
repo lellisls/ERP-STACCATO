@@ -778,6 +778,10 @@ void Venda::on_pushButtonImprimir_clicked() {
     return;
   }
 
+  if (settings("User/userFolder").toString().isEmpty()) {
+    return;
+  }
+
   QString path = settings("User/userFolder").toString();
 
   QDir dir(path);
@@ -1185,6 +1189,10 @@ void Venda::on_pushButtonGerarExcel_clicked() {
   if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
     setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    return;
+  }
+
+  if (settings("User/userFolder").toString().isEmpty()) {
     return;
   }
 

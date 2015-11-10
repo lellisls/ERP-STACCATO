@@ -441,6 +441,10 @@ void Orcamento::on_pushButtonImprimir_clicked() {
     return;
   }
 
+  if (settings("User/userFolder").toString().isEmpty()) {
+    return;
+  }
+
   QString path = settings("User/userFolder").toString();
 
   QDir dir(path);

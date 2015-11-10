@@ -1033,6 +1033,7 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   replica->ui->doubleSpinBoxFrete->setValue(model.data(row, "frete").toDouble());
   replica->ui->doubleSpinBoxTotal->setValue(model.data(row, "total").toDouble());
   replica->ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
+  replica->ui->checkBoxRepresentacao->setChecked(ui->checkBoxRepresentacao->isChecked());
 
   for (int i = 0; i < modelItem.rowCount(); ++i) {
     replica->ui->itemBoxProduto->setValue(modelItem.data(i, "idProduto"));

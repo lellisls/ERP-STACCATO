@@ -109,6 +109,12 @@ void ItemBox::setReadOnlyItemBox(bool readOnly) {
   }
 }
 
+void ItemBox::clear() {
+  m_value = QVariant();
+
+  QLineEdit::clear();
+}
+
 void ItemBox::setSearchDialog(SearchDialog *value) {
   m_searchDialog = value;
   connect(m_searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);

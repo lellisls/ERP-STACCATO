@@ -19,6 +19,7 @@ class ItemBox : public QLineEdit {
     QVariant value() const;
     void setValue(const QVariant &m_value);
     void setReadOnlyItemBox(bool readOnly);
+    void clear();
 
   public slots:
     void changeItem(const QVariant m_value);

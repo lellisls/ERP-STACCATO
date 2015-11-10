@@ -40,7 +40,7 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento
     ui->checkBoxFreteManual->show();
   } else {
     //    ui->checkBoxFreteManual->hide();
-    // NOTE: remove this later
+    // NOTE: bloquear edição de data posteriormente
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
   }
@@ -779,8 +779,6 @@ void Orcamento::adicionarItem(const bool isUpdate) {
     modelItem.insertRow(row);
   }
 
-  // TODO: put second model on registerDialog for tables with auxiliary tables?
-  // TODO: check setData's (AND them all in a bool?)
   modelItem.setData(row, "idOrcamento", ui->lineEditOrcamento->text());
   modelItem.setData(row, "idLoja", UserSession::getLoja());
   modelItem.setData(row, "idProduto", ui->itemBoxProduto->value().toInt());
@@ -934,9 +932,7 @@ void Orcamento::on_pushButtonApagarOrc_clicked() {
   apaga->apagar(mapper.currentIndex());
 }
 
-void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
-  Q_UNUSED(text);
-
+void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
   ui->doubleSpinBoxQte->setValue(0.);
   ui->spinBoxCaixas->setValue(0.);
   ui->doubleSpinBoxDesconto->setValue(0.);
@@ -989,9 +985,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &text) {
   ui->doubleSpinBoxQte->setValue(0);
 }
 
-void Orcamento::on_itemBoxCliente_textChanged(const QString &text) {
-  Q_UNUSED(text);
-
+void Orcamento::on_itemBoxCliente_textChanged(const QString &) {
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
                                                  " AND desativado = FALSE OR idEndereco = 1");
 
@@ -1022,7 +1016,6 @@ void Orcamento::on_checkBoxFreteManual_clicked(const bool checked) {
 }
 
 void Orcamento::on_pushButtonReplicar_clicked() {
-  // TODO: setar parametros de representacao
   Orcamento *replica = new Orcamento(parentWidget());
   replica->ui->pushButtonReplicar->hide();
 
@@ -1141,7 +1134,6 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
     return;
   }
 
-  // TODO: add this elsewhere
   if (settings("User/userFolder").toString().isEmpty()) {
     return;
   }

@@ -42,14 +42,13 @@ class MainWindow : public QMainWindow {
     void on_actionGerenciar_Transportadoras_triggered();
     void on_actionImportaProdutos_triggered();
     void on_actionSobre_triggered();
-    void on_comboBoxLojas_currentTextChanged(const QString &arg1);
+    void on_comboBoxLojas_currentTextChanged(const QString &);
     void on_groupBoxStatusVenda_toggled(bool enabled);
     void on_lineEditBuscaContasPagar_textChanged(const QString &text);
     void on_lineEditBuscaContasReceber_textChanged(const QString &text);
     void on_lineEditBuscaEntregas_textChanged(const QString &arg1);
     void on_lineEditBuscaNFe_textChanged(const QString &text);
     void on_lineEditBuscaOrcamentos_textChanged(const QString &text);
-    void on_lineEditBuscaProdutosPend_textChanged(const QString &text);
     void on_lineEditBuscaVendas_textChanged(const QString &text);
     void on_pushButtonComprar_clicked();
     void on_pushButtonConfirmarCompra_clicked();
@@ -93,10 +92,10 @@ class MainWindow : public QMainWindow {
     void on_tableOrcamentos_activated(const QModelIndex &index);
     void on_tableProdutosPend_activated(const QModelIndex &index);
     void on_tableVendas_activated(const QModelIndex &index);
-    void on_tabWidget_2_currentChanged(int index);
-    void on_tabWidget_3_currentChanged(int index);
-    void on_tabWidget_4_currentChanged(int index);
-    void on_tabWidget_currentChanged(int index);
+    void on_tabWidget_2_currentChanged(int);
+    void on_tabWidget_3_currentChanged(int);
+    void on_tabWidget_4_currentChanged(int);
+    void on_tabWidget_currentChanged(int);
 
   private:
     // attributes

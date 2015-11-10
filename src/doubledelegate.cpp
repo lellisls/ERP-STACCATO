@@ -7,10 +7,6 @@ DoubleDelegate::DoubleDelegate(double decimais, QObject *parent) : QStyledItemDe
 DoubleDelegate::~DoubleDelegate() {}
 
 QString DoubleDelegate::displayText(const QVariant &value, const QLocale &locale) const {
-  Q_UNUSED(locale);
-
-  const QLocale local;
-
-  return value.userType() == QVariant::Double ? local.toString(value.toDouble(), 'f', decimais)
-                                              : QStyledItemDelegate::displayText(value, local);
+  return value.userType() == QVariant::Double ? locale.toString(value.toDouble(), 'f', decimais)
+                                              : QStyledItemDelegate::displayText(value, locale);
 }

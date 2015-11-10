@@ -7,14 +7,13 @@
 class DateFormatDelegate : public QStyledItemDelegate {
 
   public:
-    DateFormatDelegate(QString dateFormat, QObject *parent = 0);
+    DateFormatDelegate(QObject *parent = 0);
     ~DateFormatDelegate();
 
   private:
     // attributes
-    const QString dateFormat;
     // methods
-    virtual QString displayText(const QVariant &value, const QLocale &locale) const;
+    virtual QString displayText(const QVariant &value, const QLocale &) const;
 };
 
 #endif // DATEFORMATDELEGATE_H

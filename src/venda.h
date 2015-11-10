@@ -20,11 +20,11 @@ class Venda : public RegisterDialog {
   private slots:
     void on_checkBoxFreteManual_clicked(const bool checked);
     void on_comboBoxPgt1_currentTextChanged(const QString &text);
-    void on_comboBoxPgt1Parc_currentTextChanged(const QString &text);
+    void on_comboBoxPgt1Parc_currentTextChanged(const QString &);
     void on_comboBoxPgt2_currentTextChanged(const QString &text);
-    void on_comboBoxPgt2Parc_currentTextChanged(const QString &text);
+    void on_comboBoxPgt2Parc_currentTextChanged(const QString &);
     void on_comboBoxPgt3_currentTextChanged(const QString &text);
-    void on_comboBoxPgt3Parc_currentTextChanged(const QString &text);
+    void on_comboBoxPgt3Parc_currentTextChanged(const QString &);
     void on_dateEditPgt1_dateChanged(const QDate &date);
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
@@ -41,9 +41,9 @@ class Venda : public RegisterDialog {
     void on_pushButtonImprimir_clicked();
     void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
     void on_pushButtonGerarExcel_clicked();
-    void on_lineEditPgt1_textChanged(const QString &arg1);
-    void on_lineEditPgt2_textChanged(const QString &arg1);
-    void on_lineEditPgt3_textChanged(const QString &arg1);
+    void on_lineEditPgt1_textChanged(const QString &);
+    void on_lineEditPgt2_textChanged(const QString &);
+    void on_lineEditPgt3_textChanged(const QString &);
 
   signals:
     void finished();
@@ -68,7 +68,6 @@ class Venda : public RegisterDialog {
     QSqlQuery queryLojaEnd;
     // methods
     bool verifyFields();
-    bool verifyRequiredField(QLineEdit *line) const;
     QString requiredStyle() const;
     void calcPrecoGlobalTotal(const bool ajusteTotal = false);
     void calculoSpinBox1() const;

@@ -6,11 +6,7 @@ CheckBoxDelegate::CheckBoxDelegate(QObject *parent) : QStyledItemDelegate(parent
 
 CheckBoxDelegate::~CheckBoxDelegate() {}
 
-QWidget *CheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                                        const QModelIndex &index) const {
-  Q_UNUSED(option);
-  Q_UNUSED(index);
-
+QWidget *CheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
   QCheckBox *editor = new QCheckBox(parent);
   editor->setAutoFillBackground(true);
 
@@ -36,8 +32,6 @@ void CheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 }
 
 void CheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
-                                            const QModelIndex &index) const {
-  Q_UNUSED(index);
-
+                                            const QModelIndex &) const {
   editor->setGeometry(option.rect);
 }

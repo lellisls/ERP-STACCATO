@@ -278,7 +278,7 @@ void ImportaProdutos::setupTables() {
   ui->tableProdutos->setColumnHidden(model.fieldIndex("ipi"), true);
   ui->tableProdutos->setColumnHidden(model.fieldIndex("st"), true);
 
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
+  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate(this));
 
   DoubleDelegate *doubledelegate = new DoubleDelegate(4, this);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("m2cx"), doubledelegate);
@@ -287,7 +287,7 @@ void ImportaProdutos::setupTables() {
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("custo"), doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("precoVenda"), doubledelegate);
 
-  PorcentagemDelegate *porcDelegate = new PorcentagemDelegate(true, this);
+  PorcentagemDelegate *porcDelegate = new PorcentagemDelegate(this);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("icms"), porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("ipi"), porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("markup"), porcDelegate);
@@ -353,7 +353,7 @@ void ImportaProdutos::setupTables() {
   ui->tableErro->setColumnHidden(modelErro.fieldIndex("origem"), true);
   ui->tableErro->setColumnHidden(modelErro.fieldIndex("representacao"), true);
 
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("validade"), new DateFormatDelegate("dd-MM-yyyy", this));
+  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("validade"), new DateFormatDelegate(this));
 
   ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("m2cx"), doubledelegate);
   ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("kgcx"), doubledelegate);

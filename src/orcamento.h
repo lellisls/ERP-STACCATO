@@ -27,8 +27,8 @@ class Orcamento : public RegisterDialog {
     void on_doubleSpinBoxQte_valueChanged(const double);
     void on_doubleSpinBoxSubTotalLiq_valueChanged(const double);
     void on_doubleSpinBoxTotal_editingFinished();
-    void on_itemBoxCliente_textChanged(const QString &text);
-    void on_itemBoxProduto_textChanged(const QString &text);
+    void on_itemBoxCliente_textChanged(const QString &);
+    void on_itemBoxProduto_textChanged(const QString &);
     void on_pushButtonAdicionarItem_clicked();
     void on_pushButtonApagarOrc_clicked();
     void on_pushButtonAtualizarItem_clicked();

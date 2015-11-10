@@ -18,7 +18,6 @@ class ContasAReceber : public QDialog {
     void viewConta(const QString idVenda);
 
   private slots:
-    void on_checkBox_toggled(const bool checked);
     void on_pushButtonSalvar_clicked();
     void on_pushButtonCancelar_clicked();
 

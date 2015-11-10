@@ -32,6 +32,8 @@ RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, 
 }
 
 bool RegisterAddressDialog::save(const bool isUpdate) {
+  // TODO: converter campos para maiusculo
+
   if (not verifyFields()) {
     return false;
   }
@@ -63,7 +65,6 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
     return false;
   }
 
-  // TODO: put these into a savingProceduresEnd()?
   const int id = data(row, primaryKey).isValid() ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
@@ -96,27 +97,11 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
 }
 
 void RegisterAddressDialog::setDataEnd(const QString &key, QVariant value) {
-  if (rowEnd == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro linha -1");
-    isOk = false;
-    return;
-  }
-
-  if (modelEnd.fieldIndex(key) == -1) {
-    QMessageBox::critical(this, "Erro!", "Não encontrou chave " + key + " na tabela " + modelEnd.tableName());
-    isOk = false;
-    return;
-  }
-
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
     return;
   }
 
-  if (not modelEnd.setData(rowEnd, key, value)) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando " + key + ": " + modelEnd.lastError().text());
-    isOk = false;
-    return;
-  }
+  isOk = modelEnd.setData(rowEnd, key, value);
 }
 
 bool RegisterAddressDialog::newRegister() {

@@ -321,12 +321,6 @@ bool Venda::verifyFields() {
   return true;
 }
 
-bool Venda::verifyRequiredField(QLineEdit *line) const {
-  Q_UNUSED(line);
-
-  return true;
-}
-
 QString Venda::requiredStyle() const { return QString(); }
 
 void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
@@ -710,23 +704,11 @@ void Venda::montarFluxoCaixa() {
   ui->tableFluxoCaixa->resizeColumnsToContents();
 }
 
-void Venda::on_comboBoxPgt1Parc_currentTextChanged(const QString &text) {
-  Q_UNUSED(text);
+void Venda::on_comboBoxPgt1Parc_currentTextChanged(const QString &) { montarFluxoCaixa(); }
 
-  montarFluxoCaixa();
-}
+void Venda::on_comboBoxPgt2Parc_currentTextChanged(const QString &) { montarFluxoCaixa(); }
 
-void Venda::on_comboBoxPgt2Parc_currentTextChanged(const QString &text) {
-  Q_UNUSED(text);
-
-  montarFluxoCaixa();
-}
-
-void Venda::on_comboBoxPgt3Parc_currentTextChanged(const QString &text) {
-  Q_UNUSED(text);
-
-  montarFluxoCaixa();
-}
+void Venda::on_comboBoxPgt3Parc_currentTextChanged(const QString &) { montarFluxoCaixa(); }
 
 void Venda::on_dateEditPgt1_dateChanged(const QDate &) { montarFluxoCaixa(); }
 
@@ -1335,23 +1317,11 @@ void Venda::on_pushButtonGerarExcel_clicked() {
   QDesktopServices::openUrl(QUrl::fromLocalFile(path + "/" + ui->lineEditVenda->text() + ".xlsx"));
 }
 
-void Venda::on_lineEditPgt1_textChanged(const QString &arg1) {
-  Q_UNUSED(arg1);
+void Venda::on_lineEditPgt1_textChanged(const QString &) { montarFluxoCaixa(); }
 
-  montarFluxoCaixa();
-}
+void Venda::on_lineEditPgt2_textChanged(const QString &) { montarFluxoCaixa(); }
 
-void Venda::on_lineEditPgt2_textChanged(const QString &arg1) {
-  Q_UNUSED(arg1);
-
-  montarFluxoCaixa();
-}
-
-void Venda::on_lineEditPgt3_textChanged(const QString &arg1) {
-  Q_UNUSED(arg1);
-
-  montarFluxoCaixa();
-}
+void Venda::on_lineEditPgt3_textChanged(const QString &) { montarFluxoCaixa(); }
 
 QVariant Venda::settings(QString key) const { return UserSession::getSettings(key); }
 

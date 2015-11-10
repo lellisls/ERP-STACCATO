@@ -97,17 +97,9 @@ Smtp::~Smtp() {
   delete t;
   delete socket;
 }
-void Smtp::stateChanged(QAbstractSocket::SocketState socketState) {
-  Q_UNUSED(socketState);
+void Smtp::stateChanged(QAbstractSocket::SocketState socketState) { qDebug() << "stateChanged " << socketState; }
 
-  qDebug() << "stateChanged " << socketState;
-}
-
-void Smtp::errorReceived(QAbstractSocket::SocketError socketError) {
-  Q_UNUSED(socketError);
-
-  qDebug() << "error " << socketError;
-}
+void Smtp::errorReceived(QAbstractSocket::SocketError socketError) { qDebug() << "error " << socketError; }
 
 void Smtp::disconnected() {
   qDebug() << "disconneted";

@@ -6,11 +6,7 @@ ComboBoxDelegate::ComboBoxDelegate(QObject *parent) : QStyledItemDelegate(parent
 
 ComboBoxDelegate::~ComboBoxDelegate() {}
 
-QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                                        const QModelIndex &index) const {
-  Q_UNUSED(option);
-  Q_UNUSED(index);
-
+QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
   QComboBox *editor = new QComboBox(parent);
   QStringList list;
   list << "Pendente"
@@ -46,8 +42,6 @@ void ComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 }
 
 void ComboBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
-                                            const QModelIndex &index) const {
-  Q_UNUSED(index);
-
+                                            const QModelIndex &) const {
   editor->setGeometry(option.rect);
 }

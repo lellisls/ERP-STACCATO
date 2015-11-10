@@ -35,8 +35,6 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
 
 ContasAReceber::~ContasAReceber() { delete ui; }
 
-void ContasAReceber::on_checkBox_toggled(const bool checked) { Q_UNUSED(checked) }
-
 void ContasAReceber::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
   query.prepare("UPDATE conta_a_receber SET pago = '" + QString(ui->checkBox->isChecked() ? "SIM" : "NÃO") +

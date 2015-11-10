@@ -38,8 +38,8 @@ SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QS
     ui->tableBusca->setFocus();
   } else {
     this->indexes = indexes;
-    textKeys.append(indexes.front());
-    primaryKey = indexes.front();
+    textKeys.append(indexes.first());
+    primaryKey = indexes.first();
     ui->lineEditBusca->setFocus();
   }
 
@@ -114,9 +114,7 @@ void SearchDialog::showMaximized() {
   ui->tableBusca->resizeColumnsToContents();
 }
 
-void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &index) {
-  Q_UNUSED(index);
-
+void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &) {
   sendUpdateMessage();
   ui->lineEditBusca->clear();
   close();
@@ -427,10 +425,6 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   return sdProfissional;
 }
 
-void SearchDialog::on_radioButtonProdAtivos_clicked() { montarFiltroAtivoDesc(true); }
-
-void SearchDialog::on_radioButtonProdDesc_clicked() { montarFiltroAtivoDesc(false); }
-
 void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
   ui->lineEditBusca->setFocus();
 
@@ -457,10 +451,10 @@ void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
   }
 }
 
-void SearchDialog::on_tableBusca_entered(const QModelIndex &index) {
-  Q_UNUSED(index);
-
-  ui->tableBusca->resizeColumnsToContents();
-}
+void SearchDialog::on_tableBusca_entered(const QModelIndex &) { ui->tableBusca->resizeColumnsToContents(); }
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
+
+void SearchDialog::on_radioButtonProdAtivos_toggled(bool) { montarFiltroAtivoDesc(true); }
+
+void SearchDialog::on_radioButtonProdDesc_toggled(bool) { montarFiltroAtivoDesc(false); }

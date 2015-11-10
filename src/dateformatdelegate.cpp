@@ -1,12 +1,11 @@
 #include "dateformatdelegate.h"
 
-DateFormatDelegate::DateFormatDelegate(QString dateFormat, QObject *parent)
-  : QStyledItemDelegate(parent), dateFormat(dateFormat) {}
+DateFormatDelegate::DateFormatDelegate(QObject *parent)
+  : QStyledItemDelegate(parent) {}
 
 DateFormatDelegate::~DateFormatDelegate() {}
 
-QString DateFormatDelegate::displayText(const QVariant &value, const QLocale &locale) const {
-  Q_UNUSED(locale);
+QString DateFormatDelegate::displayText(const QVariant &value, const QLocale &) const {
 
-  return value.toDate().toString(dateFormat);
+  return value.toDate().toString("dd-MM-yyyy");
 }

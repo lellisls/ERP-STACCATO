@@ -38,12 +38,12 @@ class SearchDialog : public QDialog {
 
   private slots:
     void on_lineEditBusca_textChanged(const QString &text);
-    void on_tableBusca_doubleClicked(const QModelIndex &index);
+    void on_tableBusca_doubleClicked(const QModelIndex &);
     void on_pushButtonSelecionar_clicked();
     void on_pushButtonCancelar_clicked();
-    void on_radioButtonProdAtivos_clicked();
-    void on_radioButtonProdDesc_clicked();
-    void on_tableBusca_entered(const QModelIndex &index);
+    void on_tableBusca_entered(const QModelIndex &);
+    void on_radioButtonProdAtivos_toggled(bool);
+    void on_radioButtonProdDesc_toggled(bool);
 
   private:
     // attributes

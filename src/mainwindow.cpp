@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   defaultStyle = this->style()->objectName();
   defautPalette = qApp->palette();
 
-  qApp->setApplicationVersion("0.4");
+  qApp->setApplicationVersion("0.6");
 
   //  setSettings("Login/hostname", ""); //to test store selection
 
@@ -209,7 +209,6 @@ bool MainWindow::dbConnect() {
     exit(1);
   }
 
-  // TODO: if parameters change, connection dont making errors possible
   QSqlDatabase db = QSqlDatabase::contains() ? QSqlDatabase::database() : QSqlDatabase::addDatabase("QMYSQL");
 
   db.setHostName(hostname);
@@ -964,8 +963,6 @@ void MainWindow::on_lineEditBuscaEntregas_textChanged(const QString &text) {
 
   ui->tableEntregasCliente->resizeColumnsToContents();
 }
-
-void MainWindow::on_lineEditBuscaProdutosPend_textChanged(const QString &text) { Q_UNUSED(text); }
 
 void MainWindow::on_lineEditBuscaNFe_textChanged(const QString &text) {
   modelNfeSaida->setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
@@ -1761,29 +1758,13 @@ void MainWindow::on_tableNfeEntrada_activated(const QModelIndex &index) {
 
 void MainWindow::setHomologacao(bool value) { homologacao = value; }
 
-void MainWindow::on_tabWidget_currentChanged(int index) {
-  Q_UNUSED(index);
+void MainWindow::on_tabWidget_currentChanged(int) { updateTables(); }
 
-  updateTables();
-}
+void MainWindow::on_tabWidget_2_currentChanged(int) { updateTables(); }
 
-void MainWindow::on_tabWidget_2_currentChanged(int index) {
-  Q_UNUSED(index);
+void MainWindow::on_tabWidget_3_currentChanged(int) { updateTables(); }
 
-  updateTables();
-}
-
-void MainWindow::on_tabWidget_3_currentChanged(int index) {
-  Q_UNUSED(index);
-
-  updateTables();
-}
-
-void MainWindow::on_tabWidget_4_currentChanged(int index) {
-  Q_UNUSED(index);
-
-  updateTables();
-}
+void MainWindow::on_tabWidget_4_currentChanged(int) { updateTables(); }
 
 void MainWindow::on_groupBoxStatusVenda_toggled(bool enabled) {
   for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
@@ -1847,11 +1828,7 @@ void MainWindow::montaFiltroVendas() {
   ui->tableVendas->resizeColumnsToContents();
 }
 
-void MainWindow::on_comboBoxLojas_currentTextChanged(const QString &text) {
-  Q_UNUSED(text);
-
-  montaFiltroVendas();
-}
+void MainWindow::on_comboBoxLojas_currentTextChanged(const QString &) { montaFiltroVendas(); }
 
 void MainWindow::on_actionSobre_triggered() {
   // TODO: adicionar informacoes de contato do desenvolvedor (telefone/email)
@@ -1877,3 +1854,4 @@ void MainWindow::on_actionConfigura_es_triggered() {
 // TODO: renomear "Mostrar inativos" para mostrar removidos e adicionar esse checkbox na searchdialog
 // TODO: add 'AND desativado = false' in tables where there is desativado
 // TODO: colocar accessibleName em todas as telas de cadastro
+// TODO: adicionar Qt::WA_deleteOnClose? para nao ficar segurando recursos??

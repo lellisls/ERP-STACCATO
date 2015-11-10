@@ -302,17 +302,9 @@ void CadastrarNFe::prepararNFe(const QList<int> items) {
   //  ui->lineEditFormatoPagina->setText("0");
 }
 
-void CadastrarNFe::on_tableItens_activated(const QModelIndex &index) {
-  Q_UNUSED(index);
+void CadastrarNFe::on_tableItens_activated(const QModelIndex &) { updateImpostos(); }
 
-  updateImpostos();
-}
-
-void CadastrarNFe::on_tableItens_pressed(const QModelIndex &index) {
-  Q_UNUSED(index);
-
-  updateImpostos();
-}
+void CadastrarNFe::on_tableItens_pressed(const QModelIndex &) { updateImpostos(); }
 
 QString CadastrarNFe::criarChaveAcesso() {
   QSqlQuery query;

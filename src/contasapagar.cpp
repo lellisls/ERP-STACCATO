@@ -34,8 +34,6 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
 
 ContasAPagar::~ContasAPagar() { delete ui; }
 
-void ContasAPagar::on_checkBoxPago_toggled(const bool checked) { Q_UNUSED(checked;) }
-
 void ContasAPagar::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
   query.prepare("UPDATE conta_a_pagar SET pago = '" + QString(ui->checkBoxPago->isChecked() ? "SIM" : "NÃO") +

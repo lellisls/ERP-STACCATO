@@ -11,6 +11,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
   : QDialog(parent), model(this), primaryKey(primaryKey) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);

@@ -22,8 +22,8 @@ class ImportaProdutos : public QDialog {
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
     void on_checkBoxRepresentacao_clicked(const bool checked);
-    void on_tableProdutos_entered(const QModelIndex &index);
-    void on_tableErro_entered(const QModelIndex &index);
+    void on_tableProdutos_entered(const QModelIndex &);
+    void on_tableErro_entered(const QModelIndex &);
     void on_tabWidget_currentChanged(int index);
 
   private:
@@ -38,6 +38,8 @@ class ImportaProdutos : public QDialog {
     QMap<QString, int> fornecedores;
     QSqlDatabase db;
     QVariantMap variantMap;
+    QHash<QString, int> hash;
+    int row = 0;
     bool hasError = false;
     int itensImported = 0;
     int itensUpdated = 0;
@@ -51,19 +53,19 @@ class ImportaProdutos : public QDialog {
     bool readValidade();
     bool verificaTabela(const QSqlRecord &record);
     int buscarCadastrarFornecedor(const QString fornecedor);
-    void atualizaCamposProduto(const QSqlQuery &produto, const QString idProduto);
+    void atualizaCamposProduto();
     void cadastraFornecedores();
     void cadastraProduto();
     void contaProdutos();
-    void expiraPrecosAntigos(QSqlQuery &produto, const QString idProduto);
-    void guardaNovoPrecoValidade(QSqlQuery &produto, const QString idProduto);
+    void expiraPrecosAntigos();
+    void guardaNovoPrecoValidade();
     void leituraProduto(const QSqlQuery &query, const QSqlRecord &record);
-    void marcaProdutoNaoDescontinuado(QSqlQuery &produto, const QString idProduto);
+    void marcaProdutoNaoDescontinuado();
     void marcaTodosProdutosDescontinuados();
     void mostraApenasEstesFornecedores();
     void setupTables();
     void setProgressDialog();
-    void verificaSeProdutoJaCadastradoNoBD(QSqlQuery &produto);
+    bool verificaSeProdutoJaCadastrado();
     void verificaSeProdutoJaCadastradoNoModel();
     void pintarCamposForaDoPadrao(const int row);
     void setVariantMap();
@@ -71,7 +73,7 @@ class ImportaProdutos : public QDialog {
     bool camposForaDoPadrao();
     void insereEmErro();
     void insereEmOk();
-    void atualizaProduto(QSqlQuery produto);
+    void atualizaProduto();
     void verificaSeRepresentacao();
 
     enum FieldColors {

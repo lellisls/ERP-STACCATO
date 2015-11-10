@@ -199,7 +199,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
                                              "desativado = FALSE", parent);
 
   sdCliente->setPrimaryKey("idCliente");
-  sdCliente->setTextKeys({"nomeFantasia", "nome_razao"});
+  sdCliente->setTextKeys({"nome_razao"});
 
   sdCliente->hideColumns({"idCliente", "rg", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca",
                           "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto",

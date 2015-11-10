@@ -843,6 +843,24 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
 
   const int idCliente = ui->itemBoxCliente->value().toInt();
 
+  QSqlQuery queryCliente;
+  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", idCliente);
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro verificando se cliente possui CPF/CNPJ: " + queryCliente.lastError().text());
+    return;
+  }
+
+  if (queryCliente.value("cpf").toString().isEmpty() and queryCliente.value("cnpj").toString().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Cliente não possui CPF/CNPJ cadastrado!");
+    CadastroCliente *cadCliente = new CadastroCliente(this);
+    cadCliente->viewRegisterById(idCliente);
+    cadCliente->show();
+    return;
+  }
+
   QSqlQuery queryCadastro;
   queryCadastro.prepare("SELECT * FROM cliente_has_endereco WHERE idCliente = :idCliente");
   queryCadastro.bindValue(":idCliente", idCliente);

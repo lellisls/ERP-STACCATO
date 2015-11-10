@@ -164,6 +164,11 @@ bool CadastroCliente::viewRegister(const QModelIndex index) {
     return false;
   }
 
+  if (data(primaryKey).toString().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "idCliente vazio!");
+    return false;
+  }
+
   modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {

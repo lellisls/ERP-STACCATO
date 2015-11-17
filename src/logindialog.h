@@ -13,6 +13,8 @@ class LoginDialog : public QDialog {
   public:
     explicit LoginDialog(QWidget *parent = 0);
     ~LoginDialog();
+    bool dbConnect();
+    void readSettings();
 
   private slots:
     void on_buttonBox_accepted();
@@ -22,9 +24,13 @@ class LoginDialog : public QDialog {
   private:
     // attributes
     Ui::LoginDialog *ui;
+    QString hostname;
+    QString username;
+    QString password;
+    QString port;
+    bool homologacao;
     // methods
     void verify();
-    bool dbConnect();
     QVariant settings(QString key) const;
     void setSettings(QString key, QVariant value) const;
     bool settingsContains(const QString &key) const;

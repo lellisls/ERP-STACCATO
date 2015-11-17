@@ -15,13 +15,6 @@ class MainWindow : public QMainWindow {
   public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setHostname(const QString &value);
-    void setUsername(const QString &value);
-    void setPassword(const QString &value);
-    void setPort(const QString &value);
-    bool dbConnect();
-    void setHomologacao(bool value);
-    void readSettings();
 
   public slots:
     void updateTables();
@@ -45,11 +38,6 @@ class MainWindow : public QMainWindow {
   private:
     // attributes
     Ui::MainWindow *ui;
-    QString hostname;
-    QString username;
-    QString password;
-    QString port;
-    bool homologacao;
     QString defaultStyle;
     QPalette defautPalette;
     // methods

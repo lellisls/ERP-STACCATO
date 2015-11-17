@@ -64,37 +64,9 @@ void WidgetVenda::setupTables() {
 void WidgetVenda::montaFiltroVendas() {
   QString loja = ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getSiglaLoja();
 
-  int counter = 0;
-
-  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
-    if (not child->isChecked()) {
-      counter++;
-    }
-  }
-
-  if (counter == ui->groupBoxStatusVenda->findChildren<QCheckBox *>().size()) {
-    if (ui->radioButtonVendLimpar->isChecked()) {
-      modelVendas->setFilter("(Código LIKE '%" + loja + "%')");
-    }
-
-    if (ui->radioButtonVendProprios->isChecked()) {
-      modelVendas->setFilter("(Código LIKE '%" + loja + "%') AND Vendedor = '" + UserSession::getNome() + "'");
-    }
-
-    ui->tableVendas->resizeColumnsToContents();
-
-    return;
-  }
-
-  QString filtro;
-
-  if (ui->radioButtonVendLimpar->isChecked()) {
-    filtro = "(Código LIKE '%" + loja + "%')";
-  }
-
-  if (ui->radioButtonVendProprios->isChecked()) {
-    filtro = "(Código LIKE '%" + loja + "%') AND Vendedor = '" + UserSession::getNome() + "'";
-  }
+  const QString filtro = ui->radioButtonVendLimpar->isChecked()
+                         ? "(Código LIKE '%" + loja + "%')"
+                         : "(Código LIKE '%" + loja + "%') AND Vendedor = '" + UserSession::getNome() + "'";
 
   QString filtro2;
 
@@ -105,10 +77,7 @@ void WidgetVenda::montaFiltroVendas() {
     }
   }
 
-  if (not filtro2.isEmpty()) {
-    //    qDebug() << "filtro = " << filtro + " AND (" + filtro2 + ")";
-    modelVendas->setFilter(filtro + " AND (" + filtro2 + ")");
-  }
+  modelVendas->setFilter(filtro2.isEmpty() ? filtro : filtro + " AND (" + filtro2 + ")");
 
   ui->tableVendas->resizeColumnsToContents();
 }
@@ -137,15 +106,11 @@ void WidgetVenda::updateTables() {
 void WidgetVenda::on_lineEditBuscaVendas_textChanged(const QString &text) {
   if (text.isEmpty()) {
     montaFiltroVendas();
-    //    modelVendas->setFilter("");
     return;
   }
 
-  // TODO: append this to montaFiltroVendas?
   modelVendas->setFilter("(Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
                          text + "%')");
-
-  // TODO: refactor to conditional operator
 
   ui->tableVendas->resizeColumnsToContents();
 }

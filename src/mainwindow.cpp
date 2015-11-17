@@ -1,8 +1,6 @@
+#include <QMessageBox>
 #include <QShortcut>
 #include <QStyleFactory>
-#include <QFileDialog>
-#include <QInputDialog>
-#include <QSqlError>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -14,75 +12,24 @@
 #include "cadastrotransportadora.h"
 #include "cadastrousuario.h"
 #include "importaprodutos.h"
-#include "logindialog.h"
 #include "orcamento.h"
-#include "QSimpleUpdater"
 #include "usersession.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+  ui->setupUi(this);
+
   defaultStyle = this->style()->objectName();
   defautPalette = qApp->palette();
 
-  qApp->setApplicationVersion("0.6");
-
-  //  setSettings("Login/hostname", ""); //to test store selection
-
-  if (settings("Login/hostname").toString().isEmpty()) {
-    QStringList items;
-    items << "Alphaville"
-          << "Gabriel";
-
-    QString loja = QInputDialog::getItem(this, "Escolha a loja", "Qual a sua loja?", items, 0, false);
-
-    // TODO: add granja
-    if (loja == "Alphaville") {
-      setSettings("Login/hostname", "192.168.2.144");
-    } else if (loja == "Gabriel") {
-      setSettings("Login/hostname", "192.168.1.101");
-    }
-
-    setSettings("Login/username", "user");
-    setSettings("Login/password", "1234");
-    setSettings("Login/port", "3306");
-    setSettings("Login/homologacao", false);
-  }
-
-  hostname = settings("Login/hostname").toString();
-  username = settings("Login/username").toString();
-  password = settings("Login/password").toString();
-  port = settings("Login/port").toString();
-  homologacao = settings("Login/homologacao").toBool();
-
-  if (settings("User/userFolder").toString().isEmpty()) {
-    QMessageBox::warning(this, "Aviso!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
-    setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
-  }
-
-  QSimpleUpdater *updater = new QSimpleUpdater(this);
-  updater->setApplicationVersion(qApp->applicationVersion());
-  updater->setReferenceUrl("http://" + hostname + "/versao.txt");
-  updater->setDownloadUrl("http://" + hostname + "/Instalador.exe");
-  updater->setSilent(true);
-  updater->setShowNewestVersionMessage(true);
-  updater->checkForUpdates();
-
-  LoginDialog *dialog = new LoginDialog(this);
-
-  if (dialog->exec() == QDialog::Rejected) {
-    exit(1);
-  }
-
-  ui->setupUi(this);
-
   setWindowIcon(QIcon("Staccato.ico"));
   setWindowTitle("ERP Staccato");
-  readSettings();
 
   QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
   connect(shortcut, &QShortcut::activated, this, &QWidget::close);
 
   setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipoUsuario() + " - " +
-                 hostname + (homologacao ? " - HOMOLOGACAO" : ""));
+                 settings("Login/hostname").toString() +
+                 (settings("Login/homologacao").toBool() ? " - HOMOLOGACAO" : ""));
 
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->actionGerenciar_Lojas->setDisabled(true);
@@ -94,94 +41,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   }
 
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    //    ui->tableRecebimentosFornecedor->hide();
-    //    ui->labelRecebimentosFornecedor->hide();
     ui->tabWidget->setTabEnabled(2, false);
     ui->tabWidget->setTabEnabled(3, false);
     ui->tabWidget->setTabEnabled(4, false);
     ui->tabWidget->setTabEnabled(5, false);
     ui->tabWidget->setTabEnabled(6, false);
-    // ui->tablePedidosCompra->hide();
     ui->actionCadastrarUsuario->setVisible(false);
-
-    //    ui->radioButtonOrcValido->setChecked(true);
-    //    on_radioButtonOrcValido_clicked();
   }
-}
-
-bool MainWindow::dbConnect() {
-  if (not QSqlDatabase::drivers().contains("QMYSQL")) {
-    QMessageBox::critical(this, "Não foi possível carregar o banco de dados.",
-                          "Este aplicativo requer o driver QMYSQL.");
-    exit(1);
-  }
-
-  QSqlDatabase db = QSqlDatabase::contains() ? QSqlDatabase::database() : QSqlDatabase::addDatabase("QMYSQL");
-
-  db.setHostName(hostname);
-  db.setUserName(username);
-  db.setPassword(password);
-  db.setDatabaseName("mysql");
-
-  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
-
-  if (not db.open()) {
-    QString message;
-
-    switch (db.lastError().number()) {
-      case 1045:
-        message = "Verifique se o usuário e senha do banco de dados estão corretos.";
-        break;
-      case 2002:
-        message = "Verifique se o servidor está ligado, e acessível pela rede.";
-        break;
-      case 2003:
-        message = "Verifique se o servidor está ligado, e acessível pela rede.";
-        break;
-      case 2005:
-        message = "Verifique se o IP do servidor foi escrito corretamente.";
-        break;
-      default:
-        message = "Erro conectando no banco de dados: " + db.lastError().text();
-        break;
-    }
-
-    QMessageBox::critical(this, "Erro: Banco de dados inacessível!", message);
-
-    return false;
-  }
-
-  QSqlQuery query = db.exec("SHOW SCHEMAS");
-  bool hasMydb = false;
-
-  while (query.next()) {
-    if (query.value(0).toString() == "mydb") {
-      hasMydb = true;
-    }
-  }
-
-  if (not hasMydb) {
-    QMessageBox::critical(
-          this, "Erro!",
-          "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
-    return false;
-  }
-
-  db.close();
-
-  db.setDatabaseName(homologacao ? "mydb_test" : "mydb");
-
-  if (not db.open()) {
-    QMessageBox::critical(this, "Erro", "Erro conectando no banco de dados: " + db.lastError().text());
-    return false;
-  }
-
-  if (not query.exec("CALL invalidate_expired()")) {
-    QMessageBox::critical(this, "Erro!", "Erro executando InvalidarExpirados: " + query.lastError().text());
-    return false;
-  }
-
-  return true;
 }
 
 MainWindow::~MainWindow() {
@@ -193,14 +59,6 @@ void MainWindow::on_actionCriarOrcamento_triggered() {
   Orcamento *orcamento = new Orcamento(this);
   orcamento->show();
 }
-
-void MainWindow::setPort(const QString &value) { port = value; }
-
-void MainWindow::setPassword(const QString &value) { password = value; }
-
-void MainWindow::setUsername(const QString &value) { username = value; }
-
-void MainWindow::setHostname(const QString &value) { hostname = value; }
 
 void MainWindow::on_actionCadastrarProdutos_triggered() {
   CadastroProduto *cad = new CadastroProduto(this);
@@ -272,14 +130,6 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   cad->show();
 }
 
-void MainWindow::readSettings() {
-  hostname = settings("Login/hostname").toString();
-  username = settings("Login/username").toString();
-  password = settings("Login/password").toString();
-  port = settings("Login/port").toString();
-  homologacao = settings("Login/homologacao").toBool();
-}
-
 QVariant MainWindow::settings(QString key) const { return UserSession::getSettings(key); }
 
 void MainWindow::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
@@ -330,8 +180,6 @@ void MainWindow::darkTheme() {
 
   qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
 }
-
-void MainWindow::setHomologacao(bool value) { homologacao = value; }
 
 void MainWindow::on_tabWidget_currentChanged(int) { updateTables(); }
 

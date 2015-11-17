@@ -18,6 +18,8 @@ WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
     ui->radioButtonOrcProprios->click();
+    ui->radioButtonOrcValido->setChecked(true);
+    on_radioButtonOrcValido_clicked();
   }
 }
 

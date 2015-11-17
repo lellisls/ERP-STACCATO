@@ -1,9 +1,18 @@
 #include <QApplication>
-#include <QTranslator>
-#include <QLibraryInfo>
-#include <QDebug>
+#include <QInputDialog>
 
+#include "QSimpleUpdater"
+#include "logindialog.h"
 #include "mainwindow.h"
+#include "usersession.h"
+
+QVariant settings(QString key) { return UserSession::getSettings(key); }
+
+void setSettings(QString key, QVariant value) { UserSession::setSettings(key, value); }
+
+void update();
+
+void storeSelection();
 
 int main(int argc, char *argv[]) {
 
@@ -17,8 +26,53 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
+  app.setApplicationVersion("0.6");
+
+  //    setSettings("Login/hostname", ""); //to test store selection
+  storeSelection();
+
+  update();
+
+  LoginDialog *dialog = new LoginDialog();
+
+  if (dialog->exec() == QDialog::Rejected) {
+    exit(1);
+  }
 
   MainWindow window;
   window.showMaximized();
+
   return app.exec();
+}
+
+void update() {
+  QSimpleUpdater *updater = new QSimpleUpdater();
+  updater->setApplicationVersion(qApp->applicationVersion());
+  updater->setReferenceUrl("http://" + settings("Login/hostname").toString() + "/versao.txt");
+  updater->setDownloadUrl("http://" + settings("Login/hostname").toString() + "/Instalador.exe");
+  updater->setSilent(true);
+  updater->setShowNewestVersionMessage(true);
+  updater->checkForUpdates();
+}
+
+void storeSelection() {
+  if (settings("Login/hostname").toString().isEmpty()) {
+    QStringList items;
+    items << "Alphaville"
+          << "Gabriel";
+
+    QString loja = QInputDialog::getItem(0, "Escolha a loja", "Qual a sua loja?", items, 0, false);
+
+    // TODO: add granja
+    if (loja == "Alphaville") {
+      setSettings("Login/hostname", "192.168.2.144");
+    } else if (loja == "Gabriel") {
+      setSettings("Login/hostname", "192.168.1.101");
+    }
+
+    setSettings("Login/username", "user");
+    setSettings("Login/password", "1234");
+    setSettings("Login/port", "3306");
+    setSettings("Login/homologacao", false);
+  }
 }

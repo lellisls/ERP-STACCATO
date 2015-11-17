@@ -1,7 +1,7 @@
 #include "loginconfig.h"
 #include "ui_loginconfig.h"
-#include "mainwindow.h"
 #include "usersession.h"
+#include "logindialog.h"
 
 LoginConfig::LoginConfig(QWidget *parent) : QDialog(parent), ui(new Ui::LoginConfig) {
   ui->setupUi(this);
@@ -22,10 +22,10 @@ void LoginConfig::on_pushButtonSalvar_clicked() {
   setSettings("Login/port", ui->lineEditPort->text());
   setSettings("Login/homologacao", ui->checkBoxHomologacao->isChecked());
 
-  if (MainWindow *window = qobject_cast<MainWindow *>(parentWidget()->parentWidget())) {
-    window->readSettings();
+  if (LoginDialog *dialog = qobject_cast<LoginDialog *>(parentWidget())) {
+    dialog->readSettings();
 
-    if (not window->dbConnect()) {
+    if (not dialog->dbConnect()) {
       return;
     }
   }

@@ -59,7 +59,14 @@ SOURCES += src/apagaorcamento.cpp \
     src/sqltablemodel.cpp \
     src/orcamentoproxymodel.cpp \
     src/sqlquerymodel.cpp \
-    src/tableview.cpp
+    src/tableview.cpp \
+    src/widgetorcamento.cpp \
+    src/widgetvenda.cpp \
+    src/widgetcompra.cpp \
+    src/widgetlogistica.cpp \
+    src/widgetnfe.cpp \
+    src/widgetestoque.cpp \
+    src/widgetconta.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/cadastrarnfe.h \
@@ -108,7 +115,14 @@ HEADERS  += src/apagaorcamento.h \
     src/sqltablemodel.h \
     src/orcamentoproxymodel.h \
     src/sqlquerymodel.h \
-    src/tableview.h
+    src/tableview.h \
+    src/widgetorcamento.h \
+    src/widgetvenda.h \
+    src/widgetcompra.h \
+    src/widgetlogistica.h \
+    src/widgetnfe.h \
+    src/widgetestoque.h \
+    src/widgetconta.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -135,7 +149,14 @@ FORMS += ui/apagaorcamento.ui \
     ui/xml_viewer.ui \
     ui/produtospendentes.ui \
     ui/importarxml.ui \
-    ui/inputdialog.ui
+    ui/inputdialog.ui \
+    ui/widgetorcamento.ui \
+    ui/widgetvenda.ui \
+    ui/widgetcompra.ui \
+    ui/widgetlogistica.ui \
+    ui/widgetnfe.ui \
+    ui/widgetestoque.ui \
+    ui/widgetconta.ui
 
 CONFIG += c++11
 

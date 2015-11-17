@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0">
-    <widget class="QTableView" name="tableProdutos">
+    <widget class="TableView" name="tableProdutos">
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::AdjustToContents</enum>
      </property>
@@ -105,6 +105,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -24,7 +24,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QTableView" name="tableProdutos"/>
+       <widget class="TableView" name="tableProdutos"/>
       </item>
      </layout>
     </widget>
@@ -36,7 +36,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
-       <widget class="QTableView" name="tableEntregas"/>
+       <widget class="TableView" name="tableEntregas"/>
       </item>
      </layout>
     </widget>
@@ -74,6 +74,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>pushButtonNFe</tabstop>
   <tabstop>pushButtonCancelar</tabstop>

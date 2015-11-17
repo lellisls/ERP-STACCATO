@@ -32,7 +32,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="3">
-    <widget class="QTableView" name="tableEstoque">
+    <widget class="TableView" name="tableEstoque">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -82,7 +82,7 @@
     </layout>
    </item>
    <item row="2" column="0" colspan="3">
-    <widget class="QTableView" name="tableCompra">
+    <widget class="TableView" name="tableCompra">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -97,6 +97,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
+  </customwidget>
   <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>803</width>
-    <height>288</height>
+    <width>812</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -521,7 +521,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QTableView" name="tableItens">
+           <widget class="TableView" name="tableItens">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -934,6 +934,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tableItens</tabstop>
   <tabstop>pushButtonGerarNFE</tabstop>

@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 
-#include "sqlquerymodel.h"
 #include "sqltablemodel.h"
 
 namespace Ui {
@@ -111,12 +110,11 @@ class MainWindow : public QMainWindow {
     SqlTableModel *modelColeta;
     SqlTableModel *modelReceb;
     SqlTableModel *modelItemPedidosPend;
-    // TODO: transformar em views
-    SqlQueryModel *modelPedForn;
-    SqlQueryModel *modelPedForn2;
-    SqlQueryModel *modelProdPend;
-    SqlQueryModel *modelItemPedidosComp;
-    SqlQueryModel *modelFat;
+    SqlTableModel *modelPedForn;
+    SqlTableModel *modelPedForn2;
+    SqlTableModel *modelProdPend;
+    SqlTableModel *modelItemPedidosComp;
+    SqlTableModel *modelFat;
     QString hostname;
     QString username;
     QString password;

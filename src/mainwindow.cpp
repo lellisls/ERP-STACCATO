@@ -87,32 +87,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   updater->setShowNewestVersionMessage(true);
   updater->checkForUpdates();
 
-#ifdef QT_DEBUG
-  //  if (not dbConnect()) {
-  //    exit(1);
-  //  } else if (not UserSession::login("admin", "1234")) {
-  //    QMessageBox::critical(this, "Atenção!", "Login inválido!");
-  //    exit(1);
-  //  }
-
   LoginDialog *dialog = new LoginDialog(this);
 
   if (dialog->exec() == QDialog::Rejected) {
     exit(1);
   }
-#else
-  LoginDialog *dialog = new LoginDialog(this);
-
-  if (dialog->exec() == QDialog::Rejected) {
-    exit(1);
-  }
-  //  if (not dbConnect()) {
-  //    exit(1);
-  //  } else if (not UserSession::login("admin", "1234")) {
-  //    QMessageBox::critical(this, "Atenção!", "Login inválido!");
-  //    exit(1);
-  //  }
-#endif
 
   ui->splitter_5->setStretchFactor(0, 0);
   ui->splitter_5->setStretchFactor(1, 1);
@@ -121,9 +100,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   ui->splitter_6->setStretchFactor(1, 1);
 
   setWindowIcon(QIcon("Staccato.ico"));
-
-  //  darkTheme();
-
   setWindowTitle("ERP Staccato");
   readSettings();
 
@@ -176,8 +152,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
   ui->radioButtonProdPendPend->click();
 
-  updateTables();
-
   connect(ui->radioButtonVendLimpar, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
   connect(ui->radioButtonVendProprios, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
   connect(ui->checkBoxVendaPendente, &QAbstractButton::toggled, this, &MainWindow::montaFiltroVendas);
@@ -219,27 +193,27 @@ bool MainWindow::dbConnect() {
   db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
 
   if (not db.open()) {
+    QString message;
+
     switch (db.lastError().number()) {
       case 1045:
-        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
-                              "Verifique se o usuário e senha do banco de dados estão corretos.");
+        message = "Verifique se o usuário e senha do banco de dados estão corretos.";
         break;
       case 2002:
-        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
-                              "Verifique se o servidor está ligado, e acessível pela rede.");
+        message = "Verifique se o servidor está ligado, e acessível pela rede.";
         break;
       case 2003:
-        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
-                              "Verifique se o servidor está ligado, e acessível pela rede.");
+        message = "Verifique se o servidor está ligado, e acessível pela rede.";
         break;
       case 2005:
-        QMessageBox::critical(this, "Erro: Banco de dados inacessível!",
-                              "Verifique se o IP do servidor foi escrito corretamente.");
+        message = "Verifique se o IP do servidor foi escrito corretamente.";
         break;
       default:
-        QMessageBox::critical(this, "Erro", "Erro conectando no banco de dados: " + db.lastError().text());
+        message = "Erro conectando no banco de dados: " + db.lastError().text();
         break;
     }
+
+    QMessageBox::critical(this, "Erro: Banco de dados inacessível!", message);
 
     return false;
   }
@@ -320,362 +294,262 @@ void MainWindow::setupTables() {
   modelOrcamento = new SqlTableModel(this);
   modelOrcamento->setTable("view_orcamento");
 
-  if (not modelOrcamento->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela orçamento: " + modelOrcamento->lastError().text());
-    return;
-  }
-
-  ui->tableOrcamentos->setModel(
-        new OrcamentoProxyModel(modelOrcamento, modelOrcamento->fieldIndex("Dias restantes"), this));
+  ui->tableOrcamentos->setModel(new OrcamentoProxyModel(modelOrcamento, "Dias restantes", this));
   ui->tableOrcamentos->setItemDelegate(doubledelegate);
-  ui->tableOrcamentos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableOrcamentos->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableOrcamentos->sortByColumn(modelOrcamento->fieldIndex("Código"));
+  ui->tableOrcamentos->sortByColumn("Código");
 
   // Vendas ------------------------------------------------------------------------------------------------------------
   modelVendas = new SqlTableModel(this);
   modelVendas->setTable("view_venda");
-  modelVendas->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelVendas->setSort(modelVendas->fieldIndex("Dias restantes"), Qt::DescendingOrder);
 
-  if (not modelVendas->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelVendas->lastError().text());
-    return;
-  }
-
-  ui->tableVendas->setModel(new OrcamentoProxyModel(modelVendas, modelVendas->fieldIndex("Dias restantes"), this));
-  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("Bruto"), doubledelegate);
-  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("Líquido"), doubledelegate);
-  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("Frete"), doubledelegate);
-  ui->tableVendas->setItemDelegateForColumn(modelVendas->fieldIndex("Total R$"), doubledelegate);
-  ui->tableVendas->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableVendas->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableVendas->sortByColumn(modelVendas->fieldIndex("Código"));
+  ui->tableVendas->setModel(new OrcamentoProxyModel(modelVendas, "Dias restantes", this));
+  ui->tableVendas->setItemDelegateForColumn("Bruto", doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn("Líquido", doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn("Frete", doubledelegate);
+  ui->tableVendas->setItemDelegateForColumn("Total R$", doubledelegate);
+  ui->tableVendas->sortByColumn("Código");
 
   // Produtos Pendentes ------------------------------------------------------------------------------------------------
-  modelProdPend = new SqlQueryModel(this);
+  modelProdPend = new SqlTableModel(this);
+  modelProdPend->setTable("view_produtos_pendentes");
 
-  // TODO: convert this to view to be able to set filters properly
-  // model is set by the filter buttons
+  modelProdPend->setHeaderData("Form", "Form.");
+  modelProdPend->setHeaderData("Quant", "Quant.");
+  modelProdPend->setHeaderData("Un", "Un.");
+  modelProdPend->setHeaderData("Cód Com", "Cód. Com.");
 
   ui->tableProdutosPend->setModel(modelProdPend);
-  ui->tableProdutosPend->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutosPend->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Fornecedores Compras ----------------------------------------------------------------------------------------------
-  modelPedForn = new SqlQueryModel(this);
-  modelPedForn->setQuery("SELECT fornecedor, COUNT(fornecedor) FROM pedido_fornecedor_has_produto WHERE status != "
-                         "'FINALIZADO' GROUP BY fornecedor");
-  modelPedForn->setHeaderData(modelPedForn->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelPedForn->setHeaderData(modelPedForn->record().indexOf("COUNT(fornecedor)"), Qt::Horizontal, "Itens");
+  modelPedForn = new SqlTableModel(this);
+  modelPedForn->setTable("view_fornecedor_compra");
+
+  modelPedForn->setHeaderData("fornecedor", "Fornecedor");
+  modelPedForn->setHeaderData("COUNT(fornecedor)", "Itens");
 
   ui->tableFornCompras->setModel(modelPedForn);
-  ui->tableFornCompras->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableFornCompras->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Fornecedores Logística --------------------------------------------------------------------------------------------
-  modelPedForn2 = new SqlQueryModel(this);
-  modelPedForn2->setQuery("SELECT fornecedor, COUNT(fornecedor) FROM pedido_fornecedor_has_produto WHERE status != "
-                          "'FINALIZADO' GROUP BY fornecedor");
-  modelPedForn2->setHeaderData(modelPedForn2->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelPedForn2->setHeaderData(modelPedForn2->record().indexOf("COUNT(fornecedor)"), Qt::Horizontal, "Itens");
+  modelPedForn2 = new SqlTableModel(this);
+  modelPedForn2->setTable("view_fornecedor_logistica");
+
+  modelPedForn2->setHeaderData("fornecedor", "Fornecedor");
+  modelPedForn2->setHeaderData("COUNT(fornecedor)", "Itens");
 
   ui->tableFornLogistica->setModel(modelPedForn2);
-  ui->tableFornLogistica->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableFornLogistica->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Compras - Pendentes -----------------------------------------------------------------------------------------------
   modelItemPedidosPend = new SqlTableModel(this);
   modelItemPedidosPend->setTable("pedido_fornecedor_has_produto");
   modelItemPedidosPend->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("selecionado"), Qt::Horizontal, "");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("colecao"), Qt::Horizontal, "Coleção");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("quant"), Qt::Horizontal, "Quant.");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("preco"), Qt::Horizontal, "Preço");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("codBarras"), Qt::Horizontal, "Cód. Bar.");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("idCompra"), Qt::Horizontal, "Compra");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("dataPrevCompra"), Qt::Horizontal,
-                                      "Prev. Compra");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("dataCompra"), Qt::Horizontal, "Data Compra");
-  modelItemPedidosPend->setHeaderData(modelItemPedidosPend->fieldIndex("status"), Qt::Horizontal, "Status");
+  modelItemPedidosPend->setHeaderData("selecionado", "");
+  modelItemPedidosPend->setHeaderData("fornecedor", "Fornecedor");
+  modelItemPedidosPend->setHeaderData("descricao", "Descrição");
+  modelItemPedidosPend->setHeaderData("colecao", "Coleção");
+  modelItemPedidosPend->setHeaderData("quant", "Quant.");
+  modelItemPedidosPend->setHeaderData("un", "Un.");
+  modelItemPedidosPend->setHeaderData("preco", "Preço");
+  modelItemPedidosPend->setHeaderData("formComercial", "Form. Com.");
+  modelItemPedidosPend->setHeaderData("codComercial", "Cód. Com.");
+  modelItemPedidosPend->setHeaderData("codBarras", "Cód. Bar.");
+  modelItemPedidosPend->setHeaderData("idCompra", "Compra");
+  modelItemPedidosPend->setHeaderData("dataPrevCompra", "Prev. Compra");
+  modelItemPedidosPend->setHeaderData("dataCompra", "Data Compra");
+  modelItemPedidosPend->setHeaderData("status", "Status");
 
   modelItemPedidosPend->setFilter("status = 'PENDENTE'");
 
-  if (not modelItemPedidosPend->select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo pedido_fornecedor_has_produto: " + modelItemPedidosPend->lastError().text());
-    return;
-  }
-
   ui->tablePedidosPend->setModel(modelItemPedidosPend);
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("quantUpd"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("idPedido"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("idLoja"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("item"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("idProduto"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("prcUnitario"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("parcial"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("desconto"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("parcialDesc"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("descGlobal"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataRealCompra"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataPrevConf"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataRealConf"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataPrevFat"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataRealFat"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataPrevColeta"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataRealColeta"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataPrevEnt"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataRealEnt"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataPrevReceb"));
-  ui->tablePedidosPend->hideColumn(modelItemPedidosPend->fieldIndex("dataRealReceb"));
-  ui->tablePedidosPend->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tablePedidosPend->verticalHeader()->setResizeContentsPrecision(0);
-
-  ui->tablePedidosPend->setItemDelegateForColumn(modelItemPedidosPend->fieldIndex("selecionado"),
-                                                 new CheckBoxDelegate(this));
+  ui->tablePedidosPend->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->tablePedidosPend->hideColumn("quantUpd");
+  ui->tablePedidosPend->hideColumn("idPedido");
+  ui->tablePedidosPend->hideColumn("idLoja");
+  ui->tablePedidosPend->hideColumn("item");
+  ui->tablePedidosPend->hideColumn("idProduto");
+  ui->tablePedidosPend->hideColumn("prcUnitario");
+  ui->tablePedidosPend->hideColumn("parcial");
+  ui->tablePedidosPend->hideColumn("desconto");
+  ui->tablePedidosPend->hideColumn("parcialDesc");
+  ui->tablePedidosPend->hideColumn("descGlobal");
+  ui->tablePedidosPend->hideColumn("dataRealCompra");
+  ui->tablePedidosPend->hideColumn("dataPrevConf");
+  ui->tablePedidosPend->hideColumn("dataRealConf");
+  ui->tablePedidosPend->hideColumn("dataPrevFat");
+  ui->tablePedidosPend->hideColumn("dataRealFat");
+  ui->tablePedidosPend->hideColumn("dataPrevColeta");
+  ui->tablePedidosPend->hideColumn("dataRealColeta");
+  ui->tablePedidosPend->hideColumn("dataPrevEnt");
+  ui->tablePedidosPend->hideColumn("dataRealEnt");
+  ui->tablePedidosPend->hideColumn("dataPrevReceb");
+  ui->tablePedidosPend->hideColumn("dataRealReceb");
 
   // Compras - A Confirmar ---------------------------------------------------------------------------------------------
-  modelItemPedidosComp = new SqlQueryModel(this);
-  modelItemPedidosComp->setQuery("SELECT fornecedor, idCompra, COUNT(idProduto), SUM(preco), status FROM "
-                                 "pedido_fornecedor_has_produto WHERE status = 'EM COMPRA' GROUP BY idCompra");
+  modelItemPedidosComp = new SqlTableModel(this);
+  modelItemPedidosComp->setTable("view_compras");
 
-  modelItemPedidosComp->setHeaderData(modelItemPedidosComp->record().indexOf("fornecedor"), Qt::Horizontal,
-                                      "Fornecedor");
-  modelItemPedidosComp->setHeaderData(modelItemPedidosComp->record().indexOf("idCompra"), Qt::Horizontal, "Compra");
-  modelItemPedidosComp->setHeaderData(modelItemPedidosComp->record().indexOf("COUNT(idProduto)"), Qt::Horizontal,
-                                      "Itens");
-  modelItemPedidosComp->setHeaderData(modelItemPedidosComp->record().indexOf("SUM(preco)"), Qt::Horizontal, "Preço");
-  modelItemPedidosComp->setHeaderData(modelItemPedidosComp->record().indexOf("status"), Qt::Horizontal, "Status");
+  modelItemPedidosComp->setHeaderData("fornecedor", "Fornecedor");
+  modelItemPedidosComp->setHeaderData("idCompra", "Compra");
+  modelItemPedidosComp->setHeaderData("COUNT(idProduto)", "Itens");
+  modelItemPedidosComp->setHeaderData("SUM(preco)", "Preço");
+  modelItemPedidosComp->setHeaderData("status", "Status");
 
   ui->tablePedidosComp->setModel(modelItemPedidosComp);
-  ui->tablePedidosComp->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tablePedidosComp->verticalHeader()->setResizeContentsPrecision(0);
 
   // Faturamentos ------------------------------------------------------------------------------------------------------
-  modelFat = new SqlQueryModel(this);
-  modelFat->setQuery("SELECT fornecedor, idCompra, COUNT(idProduto), SUM(preco), status FROM "
-                     "pedido_fornecedor_has_produto WHERE status = 'EM FATURAMENTO' GROUP BY idCompra");
+  modelFat = new SqlTableModel(this);
+  modelFat->setTable("view_faturamento");
 
-  modelFat->setHeaderData(modelFat->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelFat->setHeaderData(modelFat->record().indexOf("idCompra"), Qt::Horizontal, "Compra");
-  modelFat->setHeaderData(modelFat->record().indexOf("COUNT(idProduto)"), Qt::Horizontal, "Itens");
-  modelFat->setHeaderData(modelFat->record().indexOf("SUM(preco)"), Qt::Horizontal, "Preço");
-  modelFat->setHeaderData(modelFat->record().indexOf("status"), Qt::Horizontal, "Status");
+  modelFat->setHeaderData("fornecedor", "Fornecedor");
+  modelFat->setHeaderData("idCompra", "Compra");
+  modelFat->setHeaderData("COUNT(idProduto)", "Itens");
+  modelFat->setHeaderData("SUM(preco)", "Preço");
+  modelFat->setHeaderData("status", "Status");
 
   ui->tableFaturamento->setModel(modelFat);
-  ui->tableFaturamento->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableFaturamento->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Coletas -----------------------------------------------------------------------------------------------------------
   modelColeta = new SqlTableModel(this);
   modelColeta->setTable("pedido_fornecedor_has_produto");
   modelColeta->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelColeta->setHeaderData(modelColeta->fieldIndex("selecionado"), Qt::Horizontal, "");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("colecao"), Qt::Horizontal, "Coleção");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("quant"), Qt::Horizontal, "Quant.");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("preco"), Qt::Horizontal, "Preço");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("codBarras"), Qt::Horizontal, "Cód. Bar.");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("idCompra"), Qt::Horizontal, "Compra");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("dataRealFat"), Qt::Horizontal, "Data Fat.");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("dataPrevColeta"), Qt::Horizontal, "Prev. Coleta");
-  modelColeta->setHeaderData(modelColeta->fieldIndex("status"), Qt::Horizontal, "Status");
+  modelColeta->setHeaderData("selecionado", "");
+  modelColeta->setHeaderData("fornecedor", "Fornecedor");
+  modelColeta->setHeaderData("descricao", "Descrição");
+  modelColeta->setHeaderData("colecao", "Coleção");
+  modelColeta->setHeaderData("quant", "Quant.");
+  modelColeta->setHeaderData("un", "Un.");
+  modelColeta->setHeaderData("preco", "Preço");
+  modelColeta->setHeaderData("formComercial", "Form. Com.");
+  modelColeta->setHeaderData("codComercial", "Cód. Com.");
+  modelColeta->setHeaderData("codBarras", "Cód. Bar.");
+  modelColeta->setHeaderData("idCompra", "Compra");
+  modelColeta->setHeaderData("dataRealFat", "Data Fat.");
+  modelColeta->setHeaderData("dataPrevColeta", "Prev. Coleta");
+  modelColeta->setHeaderData("status", "Status");
 
   modelColeta->setFilter("status = 'EM COLETA'");
 
-  if (not modelColeta->select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta->lastError().text());
-    return;
-  }
-
   ui->tableColeta->setModel(modelColeta);
-  ui->tableColeta->setItemDelegateForColumn(modelColeta->fieldIndex("status"), new ComboBoxDelegate(this));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("idPedido"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("idLoja"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("item"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("idProduto"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("prcUnitario"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("parcial"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("desconto"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("parcialDesc"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("descGlobal"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataPrevCompra"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealCompra"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataPrevConf"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealConf"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataPrevFat"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealColeta"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataPrevEnt"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealEnt"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataPrevReceb"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("dataRealReceb"));
-  ui->tableColeta->hideColumn(modelColeta->fieldIndex("quantUpd"));
-  ui->tableColeta->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableColeta->horizontalHeader()->setResizeContentsPrecision(0);
-
-  ui->tableColeta->setItemDelegateForColumn(modelColeta->fieldIndex("selecionado"), new CheckBoxDelegate(this));
+  ui->tableColeta->setItemDelegateForColumn("status", new ComboBoxDelegate(this));
+  ui->tableColeta->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->tableColeta->hideColumn("idPedido");
+  ui->tableColeta->hideColumn("idLoja");
+  ui->tableColeta->hideColumn("item");
+  ui->tableColeta->hideColumn("idProduto");
+  ui->tableColeta->hideColumn("prcUnitario");
+  ui->tableColeta->hideColumn("parcial");
+  ui->tableColeta->hideColumn("desconto");
+  ui->tableColeta->hideColumn("parcialDesc");
+  ui->tableColeta->hideColumn("descGlobal");
+  ui->tableColeta->hideColumn("dataPrevCompra");
+  ui->tableColeta->hideColumn("dataRealCompra");
+  ui->tableColeta->hideColumn("dataPrevConf");
+  ui->tableColeta->hideColumn("dataRealConf");
+  ui->tableColeta->hideColumn("dataPrevFat");
+  ui->tableColeta->hideColumn("dataRealColeta");
+  ui->tableColeta->hideColumn("dataPrevEnt");
+  ui->tableColeta->hideColumn("dataRealEnt");
+  ui->tableColeta->hideColumn("dataPrevReceb");
+  ui->tableColeta->hideColumn("dataRealReceb");
+  ui->tableColeta->hideColumn("quantUpd");
 
   // Recebimentos fornecedor -------------------------------------------------------------------------------------------
   modelReceb = new SqlTableModel(this);
   modelReceb->setTable("pedido_fornecedor_has_produto");
   modelReceb->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelReceb->setHeaderData(modelReceb->fieldIndex("selecionado"), Qt::Horizontal, "");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("colecao"), Qt::Horizontal, "Coleção");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("quant"), Qt::Horizontal, "Quant.");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("preco"), Qt::Horizontal, "Preço");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("codBarras"), Qt::Horizontal, "Cód. Bar.");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("idCompra"), Qt::Horizontal, "Compra");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("dataRealColeta"), Qt::Horizontal, "Data Coleta");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("dataPrevReceb"), Qt::Horizontal, "Prev. Receb.");
-  modelReceb->setHeaderData(modelReceb->fieldIndex("status"), Qt::Horizontal, "Status");
+  modelReceb->setHeaderData("selecionado", "");
+  modelReceb->setHeaderData("fornecedor", "Fornecedor");
+  modelReceb->setHeaderData("descricao", "Descrição");
+  modelReceb->setHeaderData("colecao", "Coleção");
+  modelReceb->setHeaderData("quant", "Quant.");
+  modelReceb->setHeaderData("un", "Un.");
+  modelReceb->setHeaderData("preco", "Preço");
+  modelReceb->setHeaderData("formComercial", "Form. Com.");
+  modelReceb->setHeaderData("codComercial", "Cód. Com.");
+  modelReceb->setHeaderData("codBarras", "Cód. Bar.");
+  modelReceb->setHeaderData("idCompra", "Compra");
+  modelReceb->setHeaderData("dataRealColeta", "Data Coleta");
+  modelReceb->setHeaderData("dataPrevReceb", "Prev. Receb.");
+  modelReceb->setHeaderData("status", "Status");
 
   modelReceb->setFilter("status = 'EM RECEBIMENTO'");
 
-  if (not modelReceb->select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb->lastError().text());
-    return;
-  }
-
   ui->tableRecebimento->setModel(modelReceb);
-  ui->tableRecebimento->setItemDelegateForColumn(modelReceb->fieldIndex("status"), new ComboBoxDelegate(this));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("idPedido"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("idLoja"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("item"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("idProduto"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("prcUnitario"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("parcial"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("desconto"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("parcialDesc"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("descGlobal"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataPrevCompra"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealCompra"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataPrevConf"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealConf"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataPrevFat"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealFat"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataPrevEnt"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealEnt"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataPrevColeta"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("dataRealReceb"));
-  ui->tableRecebimento->hideColumn(modelReceb->fieldIndex("quantUpd"));
-  ui->tableRecebimento->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableRecebimento->horizontalHeader()->setResizeContentsPrecision(0);
-
-  ui->tableRecebimento->setItemDelegateForColumn(modelReceb->fieldIndex("selecionado"), new CheckBoxDelegate(this));
+  ui->tableRecebimento->setItemDelegateForColumn("status", new ComboBoxDelegate(this));
+  ui->tableRecebimento->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->tableRecebimento->hideColumn("idPedido");
+  ui->tableRecebimento->hideColumn("idLoja");
+  ui->tableRecebimento->hideColumn("item");
+  ui->tableRecebimento->hideColumn("idProduto");
+  ui->tableRecebimento->hideColumn("prcUnitario");
+  ui->tableRecebimento->hideColumn("parcial");
+  ui->tableRecebimento->hideColumn("desconto");
+  ui->tableRecebimento->hideColumn("parcialDesc");
+  ui->tableRecebimento->hideColumn("descGlobal");
+  ui->tableRecebimento->hideColumn("dataPrevCompra");
+  ui->tableRecebimento->hideColumn("dataRealCompra");
+  ui->tableRecebimento->hideColumn("dataPrevConf");
+  ui->tableRecebimento->hideColumn("dataRealConf");
+  ui->tableRecebimento->hideColumn("dataPrevFat");
+  ui->tableRecebimento->hideColumn("dataRealFat");
+  ui->tableRecebimento->hideColumn("dataPrevEnt");
+  ui->tableRecebimento->hideColumn("dataRealEnt");
+  ui->tableRecebimento->hideColumn("dataPrevColeta");
+  ui->tableRecebimento->hideColumn("dataRealReceb");
+  ui->tableRecebimento->hideColumn("quantUpd");
 
   // Entregas cliente --------------------------------------------------------------------------------------------------
   modelEntregasCliente = new SqlTableModel(this);
-  modelEntregasCliente->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEntregasCliente->setTable("view_venda");
-
-  if (not modelEntregasCliente->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelEntregasCliente->lastError().text());
-    return;
-  }
 
   ui->tableEntregasCliente->setModel(modelEntregasCliente);
   ui->tableEntregasCliente->setItemDelegate(doubledelegate);
-  ui->tableEntregasCliente->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableEntregasCliente->horizontalHeader()->setResizeContentsPrecision(0);
 
   // NFe Entrada -------------------------------------------------------------------------------------------------------
   modelNfeEntrada = new SqlTableModel(this);
-  modelNfeEntrada->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelNfeEntrada->setTable("nfe");
+  modelNfeEntrada->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelNfeEntrada->setFilter("tipo = 'ENTRADA'");
 
-  if (not modelNfeEntrada->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeEntrada->lastError().text());
-    return;
-  }
-
   ui->tableNfeEntrada->setModel(modelNfeEntrada);
-  ui->tableNfeEntrada->setColumnHidden(modelNfeEntrada->fieldIndex("NFe"), true);
+  ui->tableNfeEntrada->hideColumn("NFe");
   ui->tableNfeEntrada->setItemDelegate(doubledelegate);
-  ui->tableNfeEntrada->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableNfeEntrada->horizontalHeader()->setResizeContentsPrecision(0);
 
   // NFe Saida ---------------------------------------------------------------------------------------------------------
   modelNfeSaida = new SqlTableModel(this);
-  modelNfeSaida->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelNfeSaida->setTable("nfe");
+  modelNfeSaida->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelNfeSaida->setFilter("tipo = 'SAIDA'");
 
-  if (not modelNfeSaida->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeSaida->lastError().text());
-    return;
-  }
-
   ui->tableNfeSaida->setModel(modelNfeSaida);
-  ui->tableNfeSaida->setColumnHidden(modelNfeSaida->fieldIndex("NFe"), true);
+  ui->tableNfeSaida->hideColumn("NFe");
   ui->tableNfeSaida->setItemDelegate(doubledelegate);
-  ui->tableNfeSaida->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableNfeSaida->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Estoque -----------------------------------------------------------------------------------------------------------
   modelEstoque = new SqlTableModel(this);
   modelEstoque->setTable("view_estoque");
   modelEstoque->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not modelEstoque->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque->lastError().text());
-    return;
-  }
-
   ui->tableEstoque->setModel(modelEstoque);
   ui->tableEstoque->setItemDelegate(doubledelegate);
-  ui->tableEstoque->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableEstoque->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Contas a pagar ----------------------------------------------------------------------------------------------------
   modelCAPagar = new SqlTableModel(this);
   modelCAPagar->setTable("conta_a_pagar");
   modelCAPagar->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not modelCAPagar->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar: " + modelCAPagar->lastError().text());
-    return;
-  }
-
   ui->tableContasPagar->setModel(modelCAPagar);
   ui->tableContasPagar->setItemDelegate(doubledelegate);
-  ui->tableContasPagar->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableContasPagar->horizontalHeader()->setResizeContentsPrecision(0);
 
   // Contas a receber --------------------------------------------------------------------------------------------------
   modelCAReceber = new SqlTableModel(this);
-  modelCAReceber->setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelCAReceber->setTable("conta_a_receber");
-
-  if (not modelCAReceber->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber: " + modelCAReceber->lastError().text());
-    return;
-  }
+  modelCAReceber->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   ui->tableContasReceber->setModel(modelCAReceber);
   ui->tableContasReceber->setItemDelegate(doubledelegate);
-  ui->tableContasReceber->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableContasReceber->horizontalHeader()->setResizeContentsPrecision(0);
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {
@@ -718,8 +592,17 @@ void MainWindow::updateTables() {
   }
 
   if (ui->tabWidget->currentIndex() == 2) { // Compras
-    modelProdPend->setQuery(modelProdPend->query().executedQuery());
-    modelPedForn->setQuery(modelPedForn->query().executedQuery());
+    if (not modelProdPend->select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela produtos pendentes: " + modelProdPend->lastError().text());
+      return;
+    }
+
+    if (not modelPedForn->select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela fornecedores compra: " + modelPedForn->lastError().text());
+      return;
+    }
 
     ui->tableProdutosPend->resizeColumnsToContents();
     ui->tableFornCompras->resizeColumnsToContents();
@@ -742,20 +625,29 @@ void MainWindow::updateTables() {
     }
 
     if (ui->tabWidget_2->currentIndex() == 1) { // Confirmar Compra
-      modelItemPedidosComp->setQuery(modelItemPedidosComp->query().executedQuery());
+      if (not modelItemPedidosComp->select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela compras: " + modelItemPedidosComp->lastError().text());
+        return;
+      }
 
       ui->tablePedidosComp->resizeColumnsToContents();
     }
 
     if (ui->tabWidget_2->currentIndex() == 2) { // Faturamento
-      modelFat->setQuery(modelFat->query().executedQuery());
+      if (not modelFat->select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela faturamento: " + modelFat->lastError().text());
+        return;
+      }
 
       ui->tableFaturamento->resizeColumnsToContents();
     }
   }
 
   if (ui->tabWidget->currentIndex() == 3) { // Logistica
-    modelPedForn2->setQuery(modelPedForn2->query().executedQuery());
+    if (not modelPedForn2->select()) {
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelPedForn2->lastError().text());
+      return;
+    }
 
     ui->tableFornLogistica->resizeColumnsToContents();
 
@@ -1051,6 +943,7 @@ void MainWindow::on_tableNfeSaida_activated(const QModelIndex &index) {
 }
 
 bool MainWindow::event(QEvent *e) {
+  // TODO: usar um bool para verificar se deu erro e nao entrar em ciclo de updateTables
   switch (e->type()) {
     case QEvent::WindowActivate:
       updateTables();
@@ -1416,59 +1309,20 @@ void MainWindow::on_pushButtonConfirmarCompra_clicked() {
 }
 
 void MainWindow::on_radioButtonProdPendTodos_clicked() {
-  modelProdPend->setQuery(
-        "SELECT v.fornecedor, v.produto, v.formComercial, SUM(v.quant), v.un, v.codComercial, v.idCompra, "
-        "v.status, (SELECT SUM(quant) FROM estoque WHERE codComercial = v.codComercial) AS quant FROM "
-        "venda_has_produto "
-        "AS v LEFT "
-        "JOIN estoque AS e ON v.idProduto = e.idProduto "
-        "GROUP BY v.status, v.codComercial");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("produto"), Qt::Horizontal, "Descrição");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("formComercial"), Qt::Horizontal, "Form.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("SUM(v.quant)"), Qt::Horizontal, "Quant.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("un"), Qt::Horizontal, "Un.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("status"), Qt::Horizontal, "Status");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("quant"), Qt::Horizontal, "Estoque");
+  modelProdPend->setFilter("");
 
   ui->tableProdutosPend->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonProdPendPend_clicked() {
-  modelProdPend->setQuery(
-        "SELECT v.fornecedor, v.produto, v.formComercial, SUM(v.quant), v.un, v.codComercial, v.idCompra, "
-        "v.status, (SELECT SUM(quant) FROM estoque WHERE codComercial = v.codComercial) AS quant FROM "
-        "venda_has_produto "
-        "AS v LEFT "
-        "JOIN estoque AS e ON v.idProduto = e.idProduto "
-        "WHERE v.status = 'PENDENTE' GROUP BY v.status, v.codComercial");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("produto"), Qt::Horizontal, "Descrição");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("formComercial"), Qt::Horizontal, "Form.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("SUM(v.quant)"), Qt::Horizontal, "Quant.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("un"), Qt::Horizontal, "Un.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("status"), Qt::Horizontal, "Status");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("quant"), Qt::Horizontal, "Estoque");
+  modelProdPend->setFilter("status = 'PENDENTE'");
 
   ui->tableProdutosPend->resizeColumnsToContents();
 }
 
 void MainWindow::on_radioButtonProdPendEmCompra_clicked() {
   // TODO: mostrar caixas e un2
-  modelProdPend->setQuery(
-        "SELECT v.fornecedor, v.produto, v.formComercial, SUM(v.quant), v.un, v.codComercial, v.idCompra, "
-        "v.status, p.quant FROM venda_has_produto AS v LEFT JOIN estoque AS p ON "
-        "v.idProduto = p.idProduto WHERE v.status != 'PENDENTE' GROUP BY v.status, v.codComercial");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("produto"), Qt::Horizontal, "Descrição");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("formComercial"), Qt::Horizontal, "Form.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("SUM(v.quant)"), Qt::Horizontal, "Quant.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("un"), Qt::Horizontal, "Un.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("status"), Qt::Horizontal, "Status");
-  modelProdPend->setHeaderData(modelProdPend->record().indexOf("quant"), Qt::Horizontal, "Estoque");
+  modelProdPend->setFilter("status != 'PENDENTE'");
 
   ui->tableProdutosPend->resizeColumnsToContents();
 }

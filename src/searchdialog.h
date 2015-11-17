@@ -64,7 +64,7 @@ class SearchDialog : public QDialog {
     void setPrimaryKey(const QString &value);
     QStringList getTextKeys() const;
     void setTextKeys(const QStringList &value);
-    void setHeaderData(const QVector<QPair<QString, QString>> headerData);
+    void setHeaderData(const QString column, const QString value);
     void sendUpdateMessage();
     void montarFiltroAtivoDesc(const bool ativo);
 };

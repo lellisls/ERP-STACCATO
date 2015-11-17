@@ -92,8 +92,6 @@ bool CadastroFornecedor::savingProcedures() {
   setData("telCom", ui->lineEditTel_Com->text());
   setData("nextel", ui->lineEditNextel->text());
   setData("email", ui->lineEditEmail->text());
-  // TODO: fornecedor usa incompleto?
-  //  setData("incompleto", incompleto);
 
   return isOk;
 }

@@ -153,8 +153,6 @@ bool CadastroProfissional::savingProcedures() {
   setData("cc", ui->lineEditCC->text());
   setData("nomeBanco", ui->lineEditNomeBancario->text());
   setData("cpfBanco", ui->lineEditCPFBancario->text());
-  // TODO: profissional usa incompleto?
-  //  setData("incompleto", incompleto);
 
   return isOk;
 }

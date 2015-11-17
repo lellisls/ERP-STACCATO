@@ -32,11 +32,11 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   modelProd.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   ui->tableItens->setModel(&modelProd);
-  ui->tableItens->setColumnHidden(modelProd.fieldIndex("idNfeSaida"), true);
-  ui->tableItens->setColumnHidden(modelProd.fieldIndex("selecionado"), true);
-  ui->tableItens->setColumnHidden(modelProd.fieldIndex("idVendaProduto"), true);
-  ui->tableItens->setColumnHidden(modelProd.fieldIndex("idLoja"), true);
-  ui->tableItens->setColumnHidden(modelProd.fieldIndex("item"), true);
+  ui->tableItens->hideColumn("idNfeSaida");
+  ui->tableItens->hideColumn("selecionado");
+  ui->tableItens->hideColumn("idVendaProduto");
+  ui->tableItens->hideColumn("idLoja");
+  ui->tableItens->hideColumn("item");
 
   modelLoja.setTable("loja");
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);

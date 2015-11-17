@@ -223,75 +223,72 @@ void ImportaProdutos::setupTables() {
     return;
   }
 
-  model.setHeaderData(model.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  model.setHeaderData(model.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  model.setHeaderData(model.fieldIndex("un"), Qt::Horizontal, "Un.");
-  model.setHeaderData(model.fieldIndex("un2"), Qt::Horizontal, "Un.2");
-  model.setHeaderData(model.fieldIndex("colecao"), Qt::Horizontal, "Coleção");
-  model.setHeaderData(model.fieldIndex("tipo"), Qt::Horizontal, "Tipo");
-  model.setHeaderData(model.fieldIndex("m2cx"), Qt::Horizontal, "M./Cx.");
-  model.setHeaderData(model.fieldIndex("pccx"), Qt::Horizontal, "Pç./Cx.");
-  model.setHeaderData(model.fieldIndex("kgcx"), Qt::Horizontal, "Kg./Cx.");
-  model.setHeaderData(model.fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
-  model.setHeaderData(model.fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  model.setHeaderData(model.fieldIndex("codBarras"), Qt::Horizontal, "Cód. Barras");
-  model.setHeaderData(model.fieldIndex("ncm"), Qt::Horizontal, "NCM");
-  model.setHeaderData(model.fieldIndex("ncmEx"), Qt::Horizontal, "NCM EX");
-  model.setHeaderData(model.fieldIndex("icms"), Qt::Horizontal, "ICMS");
-  model.setHeaderData(model.fieldIndex("cst"), Qt::Horizontal, "CST");
-  model.setHeaderData(model.fieldIndex("qtdPallet"), Qt::Horizontal, "Qt. Pallet");
-  model.setHeaderData(model.fieldIndex("custo"), Qt::Horizontal, "Custo");
-  model.setHeaderData(model.fieldIndex("ipi"), Qt::Horizontal, "IPI");
-  model.setHeaderData(model.fieldIndex("st"), Qt::Horizontal, "ST");
-  model.setHeaderData(model.fieldIndex("precoVenda"), Qt::Horizontal, "Preço Venda");
-  model.setHeaderData(model.fieldIndex("comissao"), Qt::Horizontal, "Comissão");
-  model.setHeaderData(model.fieldIndex("observacoes"), Qt::Horizontal, "Obs.");
-  model.setHeaderData(model.fieldIndex("origem"), Qt::Horizontal, "Origem");
-  model.setHeaderData(model.fieldIndex("ui"), Qt::Horizontal, "UI");
-  model.setHeaderData(model.fieldIndex("validade"), Qt::Horizontal, "Validade");
-  model.setHeaderData(model.fieldIndex("markup"), Qt::Horizontal, "Markup");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("descricao", "Descrição");
+  model.setHeaderData("un", "Un.");
+  model.setHeaderData("un2", "Un.2");
+  model.setHeaderData("colecao", "Coleção");
+  model.setHeaderData("tipo", "Tipo");
+  model.setHeaderData("m2cx", "M./Cx.");
+  model.setHeaderData("pccx", "Pç./Cx.");
+  model.setHeaderData("kgcx", "Kg./Cx.");
+  model.setHeaderData("formComercial", "Form. Com.");
+  model.setHeaderData("codComercial", "Cód. Com.");
+  model.setHeaderData("codBarras", "Cód. Barras");
+  model.setHeaderData("ncm", "NCM");
+  model.setHeaderData("ncmEx", "NCM EX");
+  model.setHeaderData("icms", "ICMS");
+  model.setHeaderData("cst", "CST");
+  model.setHeaderData("qtdPallet", "Qt. Pallet");
+  model.setHeaderData("custo", "Custo");
+  model.setHeaderData("ipi", "IPI");
+  model.setHeaderData("st", "ST");
+  model.setHeaderData("precoVenda", "Preço Venda");
+  model.setHeaderData("comissao", "Comissão");
+  model.setHeaderData("observacoes", "Obs.");
+  model.setHeaderData("origem", "Origem");
+  model.setHeaderData("ui", "UI");
+  model.setHeaderData("validade", "Validade");
+  model.setHeaderData("markup", "Markup");
 
   ui->tableProdutos->setModel(new ImportaProdutosProxy(&model, model.fieldIndex("descontinuado"), this));
-
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
 
   for (int i = 1, fieldIndex = model.fieldIndex("descontinuadoUpd"); i <= fieldIndex; i += 2) {
     ui->tableProdutos->setColumnHidden(i, true);
   }
 
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("idProduto"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("idFornecedor"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("desativado"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("descontinuado"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("estoque"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("cfop"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("atualizarTabelaPreco"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("temLote"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("tipo"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("comissao"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("observacoes"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("origem"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("representacao"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("icms"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("cst"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("ipi"), true);
-  ui->tableProdutos->setColumnHidden(model.fieldIndex("st"), true);
+  ui->tableProdutos->hideColumn("idProduto");
+  ui->tableProdutos->hideColumn("idFornecedor");
+  ui->tableProdutos->hideColumn("desativado");
+  ui->tableProdutos->hideColumn("descontinuado");
+  ui->tableProdutos->hideColumn("estoque");
+  ui->tableProdutos->hideColumn("cfop");
+  ui->tableProdutos->hideColumn("atualizarTabelaPreco");
+  ui->tableProdutos->hideColumn("temLote");
+  ui->tableProdutos->hideColumn("tipo");
+  ui->tableProdutos->hideColumn("comissao");
+  ui->tableProdutos->hideColumn("observacoes");
+  ui->tableProdutos->hideColumn("origem");
+  ui->tableProdutos->hideColumn("representacao");
+  ui->tableProdutos->hideColumn("icms");
+  ui->tableProdutos->hideColumn("cst");
+  ui->tableProdutos->hideColumn("ipi");
+  ui->tableProdutos->hideColumn("st");
 
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("validade"), new DateFormatDelegate(this));
+  ui->tableProdutos->setItemDelegateForColumn("validade", new DateFormatDelegate(this));
 
   DoubleDelegate *doubledelegate = new DoubleDelegate(4, this);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("m2cx"), doubledelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("kgcx"), doubledelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("qtdPallet"), doubledelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("custo"), doubledelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("precoVenda"), doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn("m2cx", doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn("kgcx", doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn("qtdPallet", doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn("custo", doubledelegate);
+  ui->tableProdutos->setItemDelegateForColumn("precoVenda", doubledelegate);
 
   PorcentagemDelegate *porcDelegate = new PorcentagemDelegate(this);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("icms"), porcDelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("ipi"), porcDelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("markup"), porcDelegate);
-  ui->tableProdutos->setItemDelegateForColumn(model.fieldIndex("st"), porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn("icms", porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn("ipi", porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn("markup", porcDelegate);
+  ui->tableProdutos->setItemDelegateForColumn("st", porcDelegate);
 
   //-------------------------------------------------------------//
 
@@ -303,68 +300,65 @@ void ImportaProdutos::setupTables() {
     return;
   }
 
-  modelErro.setHeaderData(modelErro.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelErro.setHeaderData(modelErro.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelErro.setHeaderData(modelErro.fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelErro.setHeaderData(modelErro.fieldIndex("colecao"), Qt::Horizontal, "Coleção");
-  modelErro.setHeaderData(modelErro.fieldIndex("tipo"), Qt::Horizontal, "Tipo");
-  modelErro.setHeaderData(modelErro.fieldIndex("m2cx"), Qt::Horizontal, "M./Cx.");
-  modelErro.setHeaderData(modelErro.fieldIndex("pccx"), Qt::Horizontal, "Pç./Cx.");
-  modelErro.setHeaderData(modelErro.fieldIndex("kgcx"), Qt::Horizontal, "Kg./Cx.");
-  modelErro.setHeaderData(modelErro.fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
-  modelErro.setHeaderData(modelErro.fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelErro.setHeaderData(modelErro.fieldIndex("codBarras"), Qt::Horizontal, "Cód. Barras");
-  modelErro.setHeaderData(modelErro.fieldIndex("ncm"), Qt::Horizontal, "NCM");
-  modelErro.setHeaderData(modelErro.fieldIndex("ncmEx"), Qt::Horizontal, "NCM EX");
-  modelErro.setHeaderData(modelErro.fieldIndex("icms"), Qt::Horizontal, "ICMS");
-  modelErro.setHeaderData(modelErro.fieldIndex("cst"), Qt::Horizontal, "CST");
-  modelErro.setHeaderData(modelErro.fieldIndex("qtdPallet"), Qt::Horizontal, "Qt. Pallet");
-  modelErro.setHeaderData(modelErro.fieldIndex("custo"), Qt::Horizontal, "Custo");
-  modelErro.setHeaderData(modelErro.fieldIndex("ipi"), Qt::Horizontal, "IPI");
-  modelErro.setHeaderData(modelErro.fieldIndex("st"), Qt::Horizontal, "ST");
-  modelErro.setHeaderData(modelErro.fieldIndex("precoVenda"), Qt::Horizontal, "Preço Venda");
-  modelErro.setHeaderData(modelErro.fieldIndex("comissao"), Qt::Horizontal, "Comissão");
-  modelErro.setHeaderData(modelErro.fieldIndex("observacoes"), Qt::Horizontal, "Obs.");
-  modelErro.setHeaderData(modelErro.fieldIndex("origem"), Qt::Horizontal, "Origem");
-  modelErro.setHeaderData(modelErro.fieldIndex("ui"), Qt::Horizontal, "UI");
-  modelErro.setHeaderData(modelErro.fieldIndex("validade"), Qt::Horizontal, "Validade");
-  modelErro.setHeaderData(modelErro.fieldIndex("markup"), Qt::Horizontal, "Markup");
+  modelErro.setHeaderData("fornecedor", "Fornecedor");
+  modelErro.setHeaderData("descricao", "Descrição");
+  modelErro.setHeaderData("un", "Un.");
+  modelErro.setHeaderData("colecao", "Coleção");
+  modelErro.setHeaderData("tipo", "Tipo");
+  modelErro.setHeaderData("m2cx", "M./Cx.");
+  modelErro.setHeaderData("pccx", "Pç./Cx.");
+  modelErro.setHeaderData("kgcx", "Kg./Cx.");
+  modelErro.setHeaderData("formComercial", "Form. Com.");
+  modelErro.setHeaderData("codComercial", "Cód. Com.");
+  modelErro.setHeaderData("codBarras", "Cód. Barras");
+  modelErro.setHeaderData("ncm", "NCM");
+  modelErro.setHeaderData("ncmEx", "NCM EX");
+  modelErro.setHeaderData("icms", "ICMS");
+  modelErro.setHeaderData("cst", "CST");
+  modelErro.setHeaderData("qtdPallet", "Qt. Pallet");
+  modelErro.setHeaderData("custo", "Custo");
+  modelErro.setHeaderData("ipi", "IPI");
+  modelErro.setHeaderData("st", "ST");
+  modelErro.setHeaderData("precoVenda", "Preço Venda");
+  modelErro.setHeaderData("comissao", "Comissão");
+  modelErro.setHeaderData("observacoes", "Obs.");
+  modelErro.setHeaderData("origem", "Origem");
+  modelErro.setHeaderData("ui", "UI");
+  modelErro.setHeaderData("validade", "Validade");
+  modelErro.setHeaderData("markup", "Markup");
 
   ui->tableErro->setModel(new ImportaProdutosProxy(&modelErro, modelErro.fieldIndex("descontinuado"), this));
-
-  ui->tableErro->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableErro->horizontalHeader()->setResizeContentsPrecision(0);
 
   for (int i = 1, fieldIndex = modelErro.fieldIndex("descontinuadoUpd"); i <= fieldIndex; i += 2) {
     ui->tableErro->setColumnHidden(i, true);
   }
 
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("idProduto"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("idFornecedor"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("desativado"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("descontinuado"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("estoque"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("cfop"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("atualizarTabelaPreco"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("temLote"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("tipo"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("comissao"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("observacoes"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("origem"), true);
-  ui->tableErro->setColumnHidden(modelErro.fieldIndex("representacao"), true);
+  ui->tableErro->hideColumn("idProduto");
+  ui->tableErro->hideColumn("idFornecedor");
+  ui->tableErro->hideColumn("desativado");
+  ui->tableErro->hideColumn("descontinuado");
+  ui->tableErro->hideColumn("estoque");
+  ui->tableErro->hideColumn("cfop");
+  ui->tableErro->hideColumn("atualizarTabelaPreco");
+  ui->tableErro->hideColumn("temLote");
+  ui->tableErro->hideColumn("tipo");
+  ui->tableErro->hideColumn("comissao");
+  ui->tableErro->hideColumn("observacoes");
+  ui->tableErro->hideColumn("origem");
+  ui->tableErro->hideColumn("representacao");
 
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("validade"), new DateFormatDelegate(this));
+  ui->tableErro->setItemDelegateForColumn("validade", new DateFormatDelegate(this));
 
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("m2cx"), doubledelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("kgcx"), doubledelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("qtdPallet"), doubledelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("custo"), doubledelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("precoVenda"), doubledelegate);
+  ui->tableErro->setItemDelegateForColumn("m2cx", doubledelegate);
+  ui->tableErro->setItemDelegateForColumn("kgcx", doubledelegate);
+  ui->tableErro->setItemDelegateForColumn("qtdPallet", doubledelegate);
+  ui->tableErro->setItemDelegateForColumn("custo", doubledelegate);
+  ui->tableErro->setItemDelegateForColumn("precoVenda", doubledelegate);
 
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("icms"), porcDelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("ipi"), porcDelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("markup"), porcDelegate);
-  ui->tableErro->setItemDelegateForColumn(modelErro.fieldIndex("st"), porcDelegate);
+  ui->tableErro->setItemDelegateForColumn("icms", porcDelegate);
+  ui->tableErro->setItemDelegateForColumn("ipi", porcDelegate);
+  ui->tableErro->setItemDelegateForColumn("markup", porcDelegate);
+  ui->tableErro->setItemDelegateForColumn("st", porcDelegate);
 }
 
 void ImportaProdutos::setVariantMap() {

@@ -27,14 +27,12 @@ ImportarXML::ImportarXML(QList<int> rows, QWidget *parent) : QDialog(parent), ui
 
   ui->lineEdit_2->setSearchDialog(SearchDialog::produto(this));
 
-  ui->tableEstoque->setModel(new EstoqueProxyModel(&modelEstoque, modelEstoque.fieldIndex("quantUpd"), this));
-  ui->tableEstoque->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableEstoque->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableEstoque->setModel(new EstoqueProxyModel(&modelEstoque, "quantUpd", this));
 
   modelCompra.setTable("pedido_fornecedor_has_produto");
   modelCompra.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelCompra.setHeaderData(modelCompra.fieldIndex("selecionado"), Qt::Horizontal, "");
+  modelCompra.setHeaderData("selecionado", "");
 
   if (not rows.isEmpty()) {
     QString ids;
@@ -52,9 +50,7 @@ ImportarXML::ImportarXML(QList<int> rows, QWidget *parent) : QDialog(parent), ui
   }
 
   ui->tableCompra->setModel(&modelCompra);
-  ui->tableCompra->setItemDelegateForColumn(modelCompra.fieldIndex("selecionado"), new CheckBoxDelegate(this));
-  ui->tableCompra->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableCompra->verticalHeader()->setResizeContentsPrecision(0);
+  ui->tableCompra->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
 
   ui->tableCompra->resizeColumnsToContents();
 }

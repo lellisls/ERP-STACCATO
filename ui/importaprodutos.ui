@@ -25,7 +25,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
-        <widget class="QTableView" name="tableProdutos">
+        <widget class="TableView" name="tableProdutos">
          <property name="minimumSize">
           <size>
            <width>691</width>
@@ -51,7 +51,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <widget class="QTableView" name="tableErro">
+        <widget class="TableView" name="tableErro">
          <property name="minimumSize">
           <size>
            <width>691</width>
@@ -280,6 +280,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>pushButtonSalvar</tabstop>
   <tabstop>pushButtonCancelar</tabstop>

@@ -86,16 +86,6 @@ bool CadastroLoja::savingProcedures() {
   setData("tel2", ui->lineEditTel2->text());
   setData("valorMinimoFrete", ui->doubleSpinBoxValorMinimoFrete->value());
   setData("porcentagemFrete", ui->doubleSpinBoxPorcFrete->value());
-  setData("servidorACBr", ui->lineEditServidorACBr->text());
-  setData("portaACBr", ui->lineEditPortaACBr->text().toInt());
-  setData("pastaEntACBr", ui->lineEditPastaEntACBr->text());
-  setData("pastaSaiACBr", ui->lineEditPastaSaiACBr->text());
-  setData("pastaXmlACBr", ui->lineEditPastaXmlACBr->text());
-  setData("servidorSMTP", ui->lineEditServidorSMTP->text());
-  setData("portaSMTP", ui->lineEditPortaSMTP->text());
-  setData("emailCompra", ui->lineEditEmailCompra->text());
-  // TODO: remove this
-  setData("emailSenha", ui->lineEditEmailSenha->text());
 
   return isOk;
 }
@@ -123,15 +113,6 @@ void CadastroLoja::setupMapper() {
   addMapping(ui->lineEditSIGLA, "sigla");
   addMapping(ui->doubleSpinBoxValorMinimoFrete, "valorMinimoFrete");
   addMapping(ui->doubleSpinBoxPorcFrete, "porcentagemFrete");
-  addMapping(ui->lineEditServidorACBr, "servidorACBr");
-  addMapping(ui->lineEditPortaACBr, "portaACBr");
-  addMapping(ui->lineEditPastaEntACBr, "pastaEntACBr");
-  addMapping(ui->lineEditPastaSaiACBr, "pastaSaiACBr");
-  addMapping(ui->lineEditPastaXmlACBr, "pastaXmlACBr");
-  addMapping(ui->lineEditServidorSMTP, "servidorSMTP");
-  addMapping(ui->lineEditPortaSMTP, "portaSMTP");
-  addMapping(ui->lineEditEmailCompra, "emailCompra");
-  addMapping(ui->lineEditEmailSenha, "emailSenha");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
@@ -162,26 +143,6 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
 void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
         validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
-}
-
-void CadastroLoja::on_pushButtonEntradaNFe_clicked() {
-  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta entrada NFe", QDir::currentPath());
-
-  if (dir.isEmpty()) {
-    return;
-  }
-
-  ui->lineEditPastaEntACBr->setText(dir);
-}
-
-void CadastroLoja::on_pushButtonSaidaNFe_clicked() {
-  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta saída NFe", QDir::currentPath());
-
-  if (dir.isEmpty()) {
-    return;
-  }
-
-  ui->lineEditPastaSaiACBr->setText(dir);
 }
 
 void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {
@@ -330,16 +291,6 @@ bool CadastroLoja::viewRegister(const QModelIndex index) {
   return true;
 }
 
-void CadastroLoja::on_pushButtonXmlNFe_clicked() {
-  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta xml NFe", QDir::currentPath());
-
-  if (dir.isEmpty()) {
-    return;
-  }
-
-  ui->lineEditPastaXmlACBr->setText(dir);
-}
-
 // TODO: parametrizar taxa cartao credito
-// TODO: guardar a senha do email no QSettings (já que uma só pessoa vai usar?)
+// TODO: guardar dados do email no QSettings (já que uma só pessoa vai usar?)
 // TODO: transformar pastas do ACBr em QSettings

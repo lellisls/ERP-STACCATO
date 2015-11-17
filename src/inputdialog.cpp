@@ -178,16 +178,16 @@ void InputDialog::setFilter(QString id) {
 void InputDialog::setupTables() {
   model.setTable("pedido_fornecedor_has_produto");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  model.setHeaderData(model.fieldIndex("selecionado"), Qt::Horizontal, "");
-  model.setHeaderData(model.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  model.setHeaderData(model.fieldIndex("descricao"), Qt::Horizontal, "Produto");
-  model.setHeaderData(model.fieldIndex("colecao"), Qt::Horizontal, "Coleção");
-  model.setHeaderData(model.fieldIndex("quant"), Qt::Horizontal, "Quant.");
-  model.setHeaderData(model.fieldIndex("un"), Qt::Horizontal, "Un.");
-  model.setHeaderData(model.fieldIndex("formComercial"), Qt::Horizontal, "Formato");
-  model.setHeaderData(model.fieldIndex("codComercial"), Qt::Horizontal, "Código");
-  model.setHeaderData(model.fieldIndex("preco"), Qt::Horizontal, "Preço");
-  model.setHeaderData(model.fieldIndex("obs"), Qt::Horizontal, "Obs.");
+  model.setHeaderData("selecionado", "");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("descricao", "Produto");
+  model.setHeaderData("colecao", "Coleção");
+  model.setHeaderData("quant", "Quant.");
+  model.setHeaderData("un", "Un.");
+  model.setHeaderData("formComercial", "Formato");
+  model.setHeaderData("codComercial", "Código");
+  model.setHeaderData("preco", "Preço");
+  model.setHeaderData("obs", "Obs.");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
@@ -196,26 +196,24 @@ void InputDialog::setupTables() {
   }
 
   ui->tableView->setModel(&model);
-  ui->tableView->hideColumn(model.fieldIndex("quantUpd"));
-  ui->tableView->hideColumn(model.fieldIndex("selecionado"));
-  ui->tableView->hideColumn(model.fieldIndex("idPedido"));
-  ui->tableView->hideColumn(model.fieldIndex("idProduto"));
-  ui->tableView->hideColumn(model.fieldIndex("codBarras"));
-  ui->tableView->hideColumn(model.fieldIndex("idCompra"));
-  ui->tableView->hideColumn(model.fieldIndex("status"));
-  ui->tableView->hideColumn(model.fieldIndex("dataPrevCompra"));
-  ui->tableView->hideColumn(model.fieldIndex("dataRealCompra"));
-  ui->tableView->hideColumn(model.fieldIndex("dataPrevConf"));
-  ui->tableView->hideColumn(model.fieldIndex("dataRealConf"));
-  ui->tableView->hideColumn(model.fieldIndex("dataPrevFat"));
-  ui->tableView->hideColumn(model.fieldIndex("dataRealFat"));
-  ui->tableView->hideColumn(model.fieldIndex("dataPrevColeta"));
-  ui->tableView->hideColumn(model.fieldIndex("dataRealColeta"));
-  ui->tableView->hideColumn(model.fieldIndex("dataPrevReceb"));
-  ui->tableView->hideColumn(model.fieldIndex("dataRealReceb"));
-  ui->tableView->hideColumn(model.fieldIndex("dataPrevEnt"));
-  ui->tableView->hideColumn(model.fieldIndex("dataRealEnt"));
-  ui->tableView->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableView->horizontalHeader()->setResizeContentsPrecision(0);
-  ui->tableView->setItemDelegateForColumn(model.fieldIndex("selecionado"), new CheckBoxDelegate(this));
+  ui->tableView->hideColumn("quantUpd");
+  ui->tableView->hideColumn("selecionado");
+  ui->tableView->hideColumn("idPedido");
+  ui->tableView->hideColumn("idProduto");
+  ui->tableView->hideColumn("codBarras");
+  ui->tableView->hideColumn("idCompra");
+  ui->tableView->hideColumn("status");
+  ui->tableView->hideColumn("dataPrevCompra");
+  ui->tableView->hideColumn("dataRealCompra");
+  ui->tableView->hideColumn("dataPrevConf");
+  ui->tableView->hideColumn("dataRealConf");
+  ui->tableView->hideColumn("dataPrevFat");
+  ui->tableView->hideColumn("dataRealFat");
+  ui->tableView->hideColumn("dataPrevColeta");
+  ui->tableView->hideColumn("dataRealColeta");
+  ui->tableView->hideColumn("dataPrevReceb");
+  ui->tableView->hideColumn("dataRealReceb");
+  ui->tableView->hideColumn("dataPrevEnt");
+  ui->tableView->hideColumn("dataRealEnt");
+  ui->tableView->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
 }

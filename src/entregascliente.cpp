@@ -24,17 +24,15 @@ void EntregasCliente::setupTables() {
   modelProdutos.setTable("venda_has_produto");
   modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelProdutos.setHeaderData(modelProdutos.fieldIndex("selecionado"), Qt::Horizontal, "");
+  modelProdutos.setHeaderData("selecionado", "");
 
   if (not modelProdutos.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelProdutos.lastError().text());
   }
 
   ui->tableProdutos->setModel(&modelProdutos);
-  ui->tableProdutos->setItemDelegateForColumn(modelProdutos.fieldIndex("selecionado"), new CheckBoxDelegate(this));
-  ui->tableProdutos->setColumnHidden(modelProdutos.fieldIndex("idVendaProduto"), true);
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+  ui->tableProdutos->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->tableProdutos->hideColumn("idVendaProduto");
 
   modelEntregas.setTable("pedido_transportadora");
   modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -45,8 +43,6 @@ void EntregasCliente::setupTables() {
   }
 
   ui->tableEntregas->setModel(&modelEntregas);
-  ui->tableEntregas->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableEntregas->horizontalHeader()->setResizeContentsPrecision(0);
 }
 
 void EntregasCliente::on_pushButtonNFe_clicked() {

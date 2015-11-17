@@ -716,19 +716,19 @@ void Orcamento::setValue(const int recNo, const QString paramName, QVariant &par
 void Orcamento::setupTables() {
   modelItem.setTable("orcamento_has_produto");
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
-  modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
-  modelItem.setHeaderData(modelItem.fieldIndex("prcUnitario"), Qt::Horizontal, "Preço/Un.");
-  modelItem.setHeaderData(modelItem.fieldIndex("caixas"), Qt::Horizontal, "Caixas");
-  modelItem.setHeaderData(modelItem.fieldIndex("quant"), Qt::Horizontal, "Quant.");
-  modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelItem.setHeaderData(modelItem.fieldIndex("codComercial"), Qt::Horizontal, "Código");
-  modelItem.setHeaderData(modelItem.fieldIndex("formComercial"), Qt::Horizontal, "Formato");
-  modelItem.setHeaderData(modelItem.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Caixa");
-  modelItem.setHeaderData(modelItem.fieldIndex("parcial"), Qt::Horizontal, "Subtotal");
-  modelItem.setHeaderData(modelItem.fieldIndex("desconto"), Qt::Horizontal, "Desc. %");
-  modelItem.setHeaderData(modelItem.fieldIndex("parcialDesc"), Qt::Horizontal, "Total");
+  modelItem.setHeaderData("produto", "Produto");
+  modelItem.setHeaderData("fornecedor", "Fornecedor");
+  modelItem.setHeaderData("obs", "Obs.");
+  modelItem.setHeaderData("prcUnitario", "Preço/Un.");
+  modelItem.setHeaderData("caixas", "Caixas");
+  modelItem.setHeaderData("quant", "Quant.");
+  modelItem.setHeaderData("un", "Un.");
+  modelItem.setHeaderData("codComercial", "Código");
+  modelItem.setHeaderData("formComercial", "Formato");
+  modelItem.setHeaderData("unCaixa", "Un./Caixa");
+  modelItem.setHeaderData("parcial", "Subtotal");
+  modelItem.setHeaderData("desconto", "Desc. %");
+  modelItem.setHeaderData("parcialDesc", "Total");
 
   modelItem.setFilter("idOrcamento = '" + ui->lineEditOrcamento->text() + "'");
 
@@ -738,24 +738,23 @@ void Orcamento::setupTables() {
   }
 
   ui->tableProdutos->setModel(&modelItem);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("idOrcamento"), true);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("item"), true);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("unCaixa"), true);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("descGlobal"), true);
-  ui->tableProdutos->setColumnHidden(modelItem.fieldIndex("total"), true);
+  ui->tableProdutos->hideColumn("idProduto");
+  ui->tableProdutos->hideColumn("idOrcamento");
+  ui->tableProdutos->hideColumn("idLoja");
+  ui->tableProdutos->hideColumn("item");
+  ui->tableProdutos->hideColumn("unCaixa");
+  ui->tableProdutos->hideColumn("descGlobal");
+  ui->tableProdutos->hideColumn("total");
 
   DoubleDelegate *delegate = new DoubleDelegate(this);
 
   for (int col = 0; col < modelItem.columnCount(); ++col) {
-    if (col != modelItem.fieldIndex("desconto")) {
-      ui->tableProdutos->setItemDelegateForColumn(col, delegate);
+    if (col == modelItem.fieldIndex("desconto")) {
+      continue;
     }
-  }
 
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
+    ui->tableProdutos->setItemDelegateForColumn(col, delegate);
+  }
 }
 
 void Orcamento::adicionarItem(const bool isUpdate) {

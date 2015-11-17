@@ -150,7 +150,7 @@ bool XML::readTree(QStandardItem *item) {
 
       if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
         cnpj = child->text().remove(0, 7);
-        // TODO: readicionar verificação de destinatario nfe
+        // NOTE: readicionar verificação de destinatario nfe
 
         //                bool match = false;
 

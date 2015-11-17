@@ -66,7 +66,7 @@
          </widget>
         </item>
         <item row="1" column="1" rowspan="2">
-         <widget class="QTableView" name="tableOrcamentos">
+         <widget class="TableView" name="tableOrcamentos">
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
@@ -428,7 +428,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QTableView" name="tableVendas">
+           <widget class="TableView" name="tableVendas">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -601,7 +601,7 @@
                </widget>
               </item>
               <item row="1" column="1" colspan="2">
-               <widget class="QTableView" name="tableProdutosPend">
+               <widget class="TableView" name="tableProdutosPend">
                 <property name="editTriggers">
                  <set>QAbstractItemView::NoEditTriggers</set>
                 </property>
@@ -676,7 +676,7 @@
                  </layout>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QTableView" name="tableFornCompras">
+                 <widget class="TableView" name="tableFornCompras">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -802,7 +802,7 @@
                          </widget>
                         </item>
                         <item row="1" column="0" colspan="4">
-                         <widget class="QTableView" name="tablePedidosPend">
+                         <widget class="TableView" name="tablePedidosPend">
                           <property name="editTriggers">
                            <set>QAbstractItemView::NoEditTriggers</set>
                           </property>
@@ -908,7 +908,7 @@
                     </widget>
                    </item>
                    <item row="1" column="0" colspan="3">
-                    <widget class="QTableView" name="tablePedidosComp">
+                    <widget class="TableView" name="tablePedidosComp">
                      <property name="editTriggers">
                       <set>QAbstractItemView::NoEditTriggers</set>
                      </property>
@@ -1011,7 +1011,7 @@ Importar NFe</string>
                          </widget>
                         </item>
                         <item row="1" column="0" colspan="3">
-                         <widget class="QTableView" name="tableFaturamento">
+                         <widget class="TableView" name="tableFaturamento">
                           <property name="editTriggers">
                            <set>QAbstractItemView::NoEditTriggers</set>
                           </property>
@@ -1123,7 +1123,7 @@ Importar NFe</string>
              </layout>
             </item>
             <item row="1" column="0">
-             <widget class="QTableView" name="tableFornLogistica">
+             <widget class="TableView" name="tableFornLogistica">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1276,7 +1276,7 @@ Importar NFe</string>
                 </widget>
                </item>
                <item row="0" column="1" rowspan="2">
-                <widget class="QTableView" name="tableColeta">
+                <widget class="TableView" name="tableColeta">
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
@@ -1385,7 +1385,7 @@ Importar NFe</string>
                 </widget>
                </item>
                <item row="0" column="1" rowspan="2">
-                <widget class="QTableView" name="tableRecebimento">
+                <widget class="TableView" name="tableRecebimento">
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
@@ -1477,7 +1477,7 @@ Importar NFe</string>
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QTableView" name="tableEntregasCliente">
+                <widget class="TableView" name="tableEntregasCliente">
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
@@ -1615,7 +1615,7 @@ Importar NFe</string>
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QTableView" name="tableNfeEntrada">
+               <widget class="TableView" name="tableNfeEntrada">
                 <property name="editTriggers">
                  <set>QAbstractItemView::NoEditTriggers</set>
                 </property>
@@ -1745,7 +1745,7 @@ Importar NFe</string>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QTableView" name="tableNfeSaida">
+               <widget class="TableView" name="tableNfeSaida">
                 <property name="editTriggers">
                  <set>QAbstractItemView::NoEditTriggers</set>
                 </property>
@@ -1826,7 +1826,7 @@ Importar NFe</string>
          </spacer>
         </item>
         <item row="0" column="1" rowspan="3">
-         <widget class="QTableView" name="tableEstoque">
+         <widget class="TableView" name="tableEstoque">
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
@@ -1923,7 +1923,7 @@ Importar NFe</string>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QTableView" name="tableContasReceber">
+           <widget class="TableView" name="tableContasReceber">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -2028,7 +2028,7 @@ Importar NFe</string>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QTableView" name="tableContasPagar">
+           <widget class="TableView" name="tableContasPagar">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -2231,6 +2231,11 @@ Importar NFe</string>
    <class>ComboBox</class>
    <extends>QComboBox</extends>
    <header>src/combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

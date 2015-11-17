@@ -2,8 +2,8 @@
 
 #include "estoqueproxymodel.h"
 
-EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, const int column, QObject *parent)
-  : QIdentityProxyModel(parent), column(column) {
+EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, const QString column, QObject *parent)
+  : QIdentityProxyModel(parent), column(model->fieldIndex(column)) {
   setSourceModel(model);
 }
 

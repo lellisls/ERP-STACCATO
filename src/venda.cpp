@@ -60,35 +60,35 @@ Venda::~Venda() { delete ui; }
 void Venda::setupTables() {
   modelItem.setTable("venda_has_produto");
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelItem.setHeaderData(modelItem.fieldIndex("selecionado"), Qt::Horizontal, "");
-  modelItem.setHeaderData(modelItem.fieldIndex("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelItem.setHeaderData(modelItem.fieldIndex("produto"), Qt::Horizontal, "Produto");
-  modelItem.setHeaderData(modelItem.fieldIndex("obs"), Qt::Horizontal, "Obs.");
-  modelItem.setHeaderData(modelItem.fieldIndex("prcUnitario"), Qt::Horizontal, "Preço/Un");
-  modelItem.setHeaderData(modelItem.fieldIndex("caixas"), Qt::Horizontal, "Caixas");
-  modelItem.setHeaderData(modelItem.fieldIndex("quant"), Qt::Horizontal, "Quant.");
-  modelItem.setHeaderData(modelItem.fieldIndex("un"), Qt::Horizontal, "Un.");
-  modelItem.setHeaderData(modelItem.fieldIndex("unCaixa"), Qt::Horizontal, "Un./Caixa");
-  modelItem.setHeaderData(modelItem.fieldIndex("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelItem.setHeaderData(modelItem.fieldIndex("formComercial"), Qt::Horizontal, "Form. Com.");
-  modelItem.setHeaderData(modelItem.fieldIndex("parcial"), Qt::Horizontal, "Parcial");
-  modelItem.setHeaderData(modelItem.fieldIndex("desconto"), Qt::Horizontal, "Desconto");
-  modelItem.setHeaderData(modelItem.fieldIndex("parcialDesc"), Qt::Horizontal, "Desc. Parc.");
-  modelItem.setHeaderData(modelItem.fieldIndex("descGlobal"), Qt::Horizontal, "Desc. Glob.");
-  modelItem.setHeaderData(modelItem.fieldIndex("total"), Qt::Horizontal, "Total");
-  modelItem.setHeaderData(modelItem.fieldIndex("status"), Qt::Horizontal, "Status");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevCompra"), Qt::Horizontal, "Prev. Compra");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataRealCompra"), Qt::Horizontal, "Data Compra");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevConf"), Qt::Horizontal, "Prev. Confirm.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataRealConf"), Qt::Horizontal, "Data Confirm.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevFat"), Qt::Horizontal, "Prev. Fat.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataRealFat"), Qt::Horizontal, "Data Fat.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevColeta"), Qt::Horizontal, "Prev. Coleta");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataRealColeta"), Qt::Horizontal, "Data Coleta");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevReceb"), Qt::Horizontal, "Prev. Receb.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataRealReceb"), Qt::Horizontal, "Data Receb.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataPrevEnt"), Qt::Horizontal, "Prev. Ent.");
-  modelItem.setHeaderData(modelItem.fieldIndex("dataRealEnt"), Qt::Horizontal, "Data Ent.");
+  modelItem.setHeaderData("selecionado", "");
+  modelItem.setHeaderData("fornecedor", "Fornecedor");
+  modelItem.setHeaderData("produto", "Produto");
+  modelItem.setHeaderData("obs", "Obs.");
+  modelItem.setHeaderData("prcUnitario", "Preço/Un");
+  modelItem.setHeaderData("caixas", "Caixas");
+  modelItem.setHeaderData("quant", "Quant.");
+  modelItem.setHeaderData("un", "Un.");
+  modelItem.setHeaderData("unCaixa", "Un./Caixa");
+  modelItem.setHeaderData("codComercial", "Cód. Com.");
+  modelItem.setHeaderData("formComercial", "Form. Com.");
+  modelItem.setHeaderData("parcial", "Parcial");
+  modelItem.setHeaderData("desconto", "Desconto");
+  modelItem.setHeaderData("parcialDesc", "Desc. Parc.");
+  modelItem.setHeaderData("descGlobal", "Desc. Glob.");
+  modelItem.setHeaderData("total", "Total");
+  modelItem.setHeaderData("status", "Status");
+  modelItem.setHeaderData("dataPrevCompra", "Prev. Compra");
+  modelItem.setHeaderData("dataRealCompra", "Data Compra");
+  modelItem.setHeaderData("dataPrevConf", "Prev. Confirm.");
+  modelItem.setHeaderData("dataRealConf", "Data Confirm.");
+  modelItem.setHeaderData("dataPrevFat", "Prev. Fat.");
+  modelItem.setHeaderData("dataRealFat", "Data Fat.");
+  modelItem.setHeaderData("dataPrevColeta", "Prev. Coleta");
+  modelItem.setHeaderData("dataRealColeta", "Data Coleta");
+  modelItem.setHeaderData("dataPrevReceb", "Prev. Receb.");
+  modelItem.setHeaderData("dataRealReceb", "Data Receb.");
+  modelItem.setHeaderData("dataPrevEnt", "Prev. Ent.");
+  modelItem.setHeaderData("dataRealEnt", "Data Ent.");
 
   if (not modelItem.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelItem.lastError().text());
@@ -97,24 +97,24 @@ void Venda::setupTables() {
 
   ui->tableVenda->setModel(&modelItem);
   ui->tableVenda->setSelectionBehavior(QAbstractItemView::SelectRows);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idNfeSaida"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVendaProduto"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("selecionado"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idVenda"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idLoja"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("idProduto"), true);
-  ui->tableVenda->setColumnHidden(modelItem.fieldIndex("item"), true);
+  ui->tableVenda->hideColumn("idNfeSaida");
+  ui->tableVenda->hideColumn("idVendaProduto");
+  ui->tableVenda->hideColumn("selecionado");
+  ui->tableVenda->hideColumn("idVenda");
+  ui->tableVenda->hideColumn("idLoja");
+  ui->tableVenda->hideColumn("idProduto");
+  ui->tableVenda->hideColumn("item");
   ui->tableVenda->setItemDelegate(new DoubleDelegate(this));
-  ui->tableVenda->setItemDelegateForColumn(modelItem.fieldIndex("selecionado"), new CheckBoxDelegate(this));
+  ui->tableVenda->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
 
   modelFluxoCaixa.setTable("conta_a_receber_has_pagamento");
   modelFluxoCaixa.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("tipo"), Qt::Horizontal, "Tipo");
-  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("parcela"), Qt::Horizontal, "Parcela");
-  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("valor"), Qt::Horizontal, "R$");
-  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("data"), Qt::Horizontal, "Data");
-  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("observacao"), Qt::Horizontal, "Obs.");
-  modelFluxoCaixa.setHeaderData(modelFluxoCaixa.fieldIndex("status"), Qt::Horizontal, "Status");
+  modelFluxoCaixa.setHeaderData("tipo", "Tipo");
+  modelFluxoCaixa.setHeaderData("parcela", "Parcela");
+  modelFluxoCaixa.setHeaderData("valor", "R$");
+  modelFluxoCaixa.setHeaderData("data", "Data");
+  modelFluxoCaixa.setHeaderData("observacao", "Obs.");
+  modelFluxoCaixa.setHeaderData("status", "Status");
 
   if (not modelFluxoCaixa.select()) {
     QMessageBox::critical(this, "Erro!",
@@ -124,9 +124,9 @@ void Venda::setupTables() {
 
   ui->tableFluxoCaixa->setModel(&modelFluxoCaixa);
   ui->tableFluxoCaixa->setSelectionBehavior(QAbstractItemView::SelectRows);
-  ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idVenda"), true);
-  ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idLoja"), true);
-  ui->tableFluxoCaixa->setColumnHidden(modelFluxoCaixa.fieldIndex("idPagamento"), true);
+  ui->tableFluxoCaixa->hideColumn("idVenda");
+  ui->tableFluxoCaixa->hideColumn("idLoja");
+  ui->tableFluxoCaixa->hideColumn("idPagamento");
   ui->tableFluxoCaixa->setItemDelegate(new DoubleDelegate(this));
 }
 

@@ -24,6 +24,7 @@ ProdutosPendentes::~ProdutosPendentes() { delete ui; }
 void ProdutosPendentes::viewProduto(const QString codComercial, const QString status) {
   this->codComercial = codComercial;
 
+  // TODO: convert this to view? make a view that filters this data for each item and filter to show only one
   modelProdutos.setQuery(
         "SELECT v.fornecedor, v.idVenda, v.idProduto, v.produto, p.colecao, v.formComercial, v.quant "
         "AS quant, v.un, v.codComercial, p.codBarras, v.idCompra, v.status, (SELECT SUM(quant) FROM "
@@ -33,14 +34,14 @@ void ProdutosPendentes::viewProduto(const QString codComercial, const QString st
         "AS p ON v.idProduto = p.idProduto WHERE v.codComercial = '" +
         codComercial + "' AND v.status = '" + status + "' GROUP BY idVenda");
 
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("fornecedor"), Qt::Horizontal, "Fornecedor");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("produto"), Qt::Horizontal, "Descrição");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("formComercial"), Qt::Horizontal, "Form. Com.");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("quant"), Qt::Horizontal, "Quant.");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("un"), Qt::Horizontal, "Un.");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("codComercial"), Qt::Horizontal, "Cód. Com.");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("status"), Qt::Horizontal, "Status");
-  modelProdutos.setHeaderData(modelProdutos.record().indexOf("estoque"), Qt::Horizontal, "Estoque");
+  modelProdutos.setHeaderData("fornecedor", "Fornecedor");
+  modelProdutos.setHeaderData("produto", "Descrição");
+  modelProdutos.setHeaderData("formComercial", "Form. Com.");
+  modelProdutos.setHeaderData("quant", "Quant.");
+  modelProdutos.setHeaderData("un", "Un.");
+  modelProdutos.setHeaderData("codComercial", "Cód. Com.");
+  modelProdutos.setHeaderData("status", "Status");
+  modelProdutos.setHeaderData("estoque", "Estoque");
 
   double quant = 0;
 
@@ -79,9 +80,6 @@ void ProdutosPendentes::viewProduto(const QString codComercial, const QString st
 
 void ProdutosPendentes::setupTables() {
   ui->tableProdutos->setModel(&modelProdutos);
-
-  ui->tableProdutos->verticalHeader()->setResizeContentsPrecision(0);
-  ui->tableProdutos->horizontalHeader()->setResizeContentsPrecision(0);
 }
 
 void ProdutosPendentes::on_pushButtonComprar_clicked() {

@@ -58,7 +58,8 @@ SOURCES += src/apagaorcamento.cpp \
     src/estoqueproxymodel.cpp \
     src/sqltablemodel.cpp \
     src/orcamentoproxymodel.cpp \
-    src/sqlquerymodel.cpp
+    src/sqlquerymodel.cpp \
+    src/tableview.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/cadastrarnfe.h \
@@ -106,7 +107,8 @@ HEADERS  += src/apagaorcamento.h \
     src/estoqueproxymodel.h \
     src/sqltablemodel.h \
     src/orcamentoproxymodel.h \
-    src/sqlquerymodel.h
+    src/sqlquerymodel.h \
+    src/tableview.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \

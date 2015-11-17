@@ -12,14 +12,14 @@ RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, 
 
   modelEnd.setTable(table + "_has_endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEnd.setHeaderData(modelEnd.fieldIndex("descricao"), Qt::Horizontal, "Descrição");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cep"), Qt::Horizontal, "CEP");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("logradouro"), Qt::Horizontal, "Logradouro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("numero"), Qt::Horizontal, "Número");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("complemento"), Qt::Horizontal, "Compl.");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("bairro"), Qt::Horizontal, "Bairro");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("cidade"), Qt::Horizontal, "Cidade");
-  modelEnd.setHeaderData(modelEnd.fieldIndex("uf"), Qt::Horizontal, "UF");
+  modelEnd.setHeaderData("descricao", "Descrição");
+  modelEnd.setHeaderData("cep", "CEP");
+  modelEnd.setHeaderData("logradouro", "Logradouro");
+  modelEnd.setHeaderData("numero", "Número");
+  modelEnd.setHeaderData("complemento", "Compl.");
+  modelEnd.setHeaderData("bairro", "Bairro");
+  modelEnd.setHeaderData("cidade", "Cidade");
+  modelEnd.setHeaderData("uf", "UF");
   modelEnd.setFilter("idEndereco = 0");
 
   if (not modelEnd.select()) {

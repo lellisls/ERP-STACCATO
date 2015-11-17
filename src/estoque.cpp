@@ -20,12 +20,12 @@ Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   }
 
   ui->tableEstoque->setModel(&modelEstoque);
-  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idEstoque"), true);
-  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idCompra"), true);
-  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idVendaProduto"), true);
-  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idProduto"), true);
-  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("idNFe"), true);
-  ui->tableEstoque->setColumnHidden(modelEstoque.fieldIndex("quantUpd"), true);
+  ui->tableEstoque->hideColumn("idEstoque");
+  ui->tableEstoque->hideColumn("idCompra");
+  ui->tableEstoque->hideColumn("idVendaProduto");
+  ui->tableEstoque->hideColumn("idProduto");
+  ui->tableEstoque->hideColumn("idNFe");
+  ui->tableEstoque->hideColumn("quantUpd");
 }
 
 Estoque::~Estoque() { delete ui; }

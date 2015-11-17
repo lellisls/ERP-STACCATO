@@ -822,7 +822,7 @@
            </layout>
           </item>
           <item row="1" column="0">
-           <widget class="QTableView" name="tableProdutos">
+           <widget class="TableView" name="tableProdutos">
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustIgnored</enum>
             </property>
@@ -1259,6 +1259,11 @@
    <class>LineEditDecimal</class>
    <extends>QLineEdit</extends>
    <header>src/lineeditdecimal.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

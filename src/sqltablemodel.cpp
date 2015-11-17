@@ -47,3 +47,7 @@ bool SqlTableModel::setData(const int row, const QString column, const QVariant 
 
   return true;
 }
+
+bool SqlTableModel::setHeaderData(QString column, const QVariant &value) {
+  return QSqlTableModel::setHeaderData(QSqlTableModel::fieldIndex(column), Qt::Horizontal, value);
+}

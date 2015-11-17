@@ -21,10 +21,8 @@ class CadastroLoja : public RegisterAddressDialog {
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
-    void on_pushButtonEntradaNFe_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
-    void on_pushButtonSaidaNFe_clicked();
     void on_pushButtonBuscar_clicked();
     void on_lineEditCNPJ_textEdited(const QString &text);
     void on_pushButtonAdicionarEnd_clicked();
@@ -34,7 +32,6 @@ class CadastroLoja : public RegisterAddressDialog {
     void on_checkBoxMostrarInativos_clicked(const bool checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
-    void on_pushButtonXmlNFe_clicked();
 
   private:
     /*!

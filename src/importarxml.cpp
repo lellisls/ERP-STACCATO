@@ -118,8 +118,12 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
   xml = new XML();
   xml->mostrarNoModel(file, modelEstoque);
 
-  // TODO: retornar da funçao se cadastrarNFe emitir erro (nota ja cadastrada)
   int idNFe = xml->cadastrarNFe();
+
+  if (idNFe == false) {
+    return;
+  }
+
   int idCompra = 0;
 
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {

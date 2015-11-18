@@ -140,10 +140,10 @@ void WidgetLogistica::setupTables() {
   ui->tableEntregasCliente->setItemDelegate(doubledelegate);
 }
 
-void WidgetLogistica::updateTables() {
+bool WidgetLogistica::updateTables() {
   if (not modelPedForn2->select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelPedForn2->lastError().text());
-    return;
+    return false;
   }
 
   ui->tableFornLogistica->resizeColumnsToContents();
@@ -154,7 +154,7 @@ void WidgetLogistica::updateTables() {
       if (not modelColeta->select()) {
         QMessageBox::critical(this, "Erro!",
                               "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta->lastError().text());
-        return;
+        return false;
       }
 
       for (int i = 0; i < modelColeta->rowCount(); ++i) {
@@ -168,7 +168,7 @@ void WidgetLogistica::updateTables() {
       if (not modelReceb->select()) {
         QMessageBox::critical(this, "Erro!",
                               "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb->lastError().text());
-        return;
+        return false;
       }
 
       for (int i = 0; i < modelReceb->rowCount(); ++i) {
@@ -181,15 +181,17 @@ void WidgetLogistica::updateTables() {
     case 2: // Entregas
       if (not modelEntregasCliente->select()) {
         QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelEntregasCliente->lastError().text());
-        return;
+        return false;
       }
 
       ui->tableEntregasCliente->resizeColumnsToContents();
       break;
 
     default:
-      break;
+      return true;
   }
+
+  return true;
 }
 
 void WidgetLogistica::on_radioButtonEntregaLimpar_clicked() {

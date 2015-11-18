@@ -43,16 +43,18 @@ void WidgetConta::setupTables() {
   ui->tableContasReceber->setItemDelegate(doubledelegate);
 }
 
-void WidgetConta::updateTables() {
+bool WidgetConta::updateTables() {
   if (not modelCAPagar->select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar: " + modelCAPagar->lastError().text());
-    return;
+    return false;
   }
 
   if (not modelCAReceber->select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber: " + modelCAReceber->lastError().text());
-    return;
+    return false;
   }
+
+  return true;
 }
 
 void WidgetConta::on_radioButtonContaPagarLimpar_clicked() {

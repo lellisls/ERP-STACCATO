@@ -47,12 +47,12 @@ void WidgetNfe::setupTables() {
   ui->tableNfeSaida->setItemDelegate(doubledelegate);
 }
 
-void WidgetNfe::updateTables() {
+bool WidgetNfe::updateTables() {
   switch (ui->tabWidgetNfe->currentIndex()) {
     case 0: // Entrada
       if (not modelNfeEntrada->select()) {
         QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeEntrada->lastError().text());
-        return;
+        return false;
       }
 
       ui->tableNfeEntrada->resizeColumnsToContents();
@@ -61,14 +61,16 @@ void WidgetNfe::updateTables() {
     case 1: // Saida
       if (not modelNfeSaida->select()) {
         QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeSaida->lastError().text());
-        return;
+        return false;
       }
 
       ui->tableNfeSaida->resizeColumnsToContents();
       break;
     default:
-      break;
+      return true;
   }
+
+  return true;
 }
 
 void WidgetNfe::on_radioButtonNFeAutorizado_clicked() {

@@ -28,11 +28,13 @@ void WidgetEstoque::setupTables() {
   ui->tableEstoque->setItemDelegate(doubledelegate);
 }
 
-void WidgetEstoque::updateTables() {
+bool WidgetEstoque::updateTables() {
   if (not modelEstoque->select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque->lastError().text());
-    return;
+    return false;
   }
+
+  return true;
 }
 
 void WidgetEstoque::on_tableEstoque_activated(const QModelIndex &index) {

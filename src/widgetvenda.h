@@ -15,7 +15,7 @@ class WidgetVenda : public QWidget {
   public:
     explicit WidgetVenda(QWidget *parent = 0);
     ~WidgetVenda();
-    void updateTables();
+    bool updateTables();
 
   private slots:
     void montaFiltroVendas();

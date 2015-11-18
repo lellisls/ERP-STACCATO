@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
 
   public slots:
-    void updateTables();
+    bool updateTables();
 
   private slots:
     void on_actionCadastrarCliente_triggered();

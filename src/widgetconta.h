@@ -15,7 +15,7 @@ class WidgetConta : public QWidget {
   public:
     explicit WidgetConta(QWidget *parent = 0);
     ~WidgetConta();
-    void updateTables();
+    bool updateTables();
 
   private slots:
     void on_radioButtonContaPagarLimpar_clicked();

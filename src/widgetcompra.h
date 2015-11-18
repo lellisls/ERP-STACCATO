@@ -15,7 +15,7 @@ class WidgetCompra : public QWidget {
   public:
     explicit WidgetCompra(QWidget *parent = 0);
     ~WidgetCompra();
-    void updateTables();
+    bool updateTables();
 
   private slots:
     void on_tableFornCompras_activated(const QModelIndex &index);

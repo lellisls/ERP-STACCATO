@@ -36,13 +36,15 @@ void WidgetOrcamento::setupTables() {
   ui->tableOrcamentos->sortByColumn("Código");
 }
 
-void WidgetOrcamento::updateTables() {
+bool WidgetOrcamento::updateTables() {
   if (not modelOrcamento->select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela orçamento: " + modelOrcamento->lastError().text());
-    return;
+    return false;
   }
 
   ui->tableOrcamentos->resizeColumnsToContents();
+
+  return true;
 }
 
 void WidgetOrcamento::on_radioButtonOrcValido_clicked() {

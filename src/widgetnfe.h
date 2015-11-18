@@ -15,7 +15,7 @@ class WidgetNfe : public QWidget {
   public:
     explicit WidgetNfe(QWidget *parent = 0);
     ~WidgetNfe();
-    void updateTables();
+    bool updateTables();
 
   private slots:
     void on_radioButtonNFeAutorizado_clicked();

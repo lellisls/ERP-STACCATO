@@ -90,39 +90,34 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
   cad->show();
 }
 
-void MainWindow::updateTables() {
+bool MainWindow::updateTables() {
   switch (ui->tabWidget->currentIndex()) {
     case 0: // Orcamentos
-      ui->widgetOrcamento->updateTables();
-      break;
+      return ui->widgetOrcamento->updateTables();
 
     case 1: // Vendas
-      ui->widgetVenda->updateTables();
-      break;
+      return ui->widgetVenda->updateTables();
 
     case 2: // Compras
-      ui->widgetCompra->updateTables();
-      break;
+      return ui->widgetCompra->updateTables();
 
     case 3: // Logistica
-      ui->widgetLogistica->updateTables();
-      break;
+      return ui->widgetLogistica->updateTables();
 
     case 4: // NFe
-      ui->widgetNfe->updateTables();
-      break;
+      return ui->widgetNfe->updateTables();
 
     case 5: // Estoque
-      ui->widgetEstoque->updateTables();
-      break;
+      return ui->widgetEstoque->updateTables();
 
     case 6: // Contas
-      ui->widgetConta->updateTables();
-      break;
+      return ui->widgetConta->updateTables();
 
     default:
-      break;
+      return true;
   }
+
+  return true;
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
@@ -140,10 +135,12 @@ void MainWindow::on_actionImportaProdutos_triggered() {
 }
 
 bool MainWindow::event(QEvent *e) {
-  // TODO: usar um bool para verificar se deu erro e nao entrar em ciclo de updateTables
   switch (e->type()) {
     case QEvent::WindowActivate:
-      updateTables();
+      if (not updateTables()) {
+        exit(1);
+      }
+
       break;
 
     case QEvent::WindowDeactivate:

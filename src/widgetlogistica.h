@@ -15,7 +15,7 @@ class WidgetLogistica : public QWidget {
   public:
     explicit WidgetLogistica(QWidget *parent = 0);
     ~WidgetLogistica();
-    void updateTables();
+    bool updateTables();
 
   private slots:
     void on_radioButtonEntregaLimpar_clicked();

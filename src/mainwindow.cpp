@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                  settings("Login/hostname").toString() +
                  (settings("Login/homologacao").toBool() ? " - HOMOLOGACAO" : ""));
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR" and UserSession::getTipoUsuario() != "GERENTE LOJA") {
     ui->actionGerenciar_Lojas->setDisabled(true);
     ui->actionGerenciar_Transportadoras->setDisabled(true);
     ui->actionImportaProdutos->setDisabled(true);

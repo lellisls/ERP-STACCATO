@@ -9,6 +9,7 @@ SendMail::SendMail(QWidget *parent, QString text, QString arquivo) : QDialog(par
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   ui->textEdit->setText(text);
 

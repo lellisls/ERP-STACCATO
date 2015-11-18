@@ -12,6 +12,7 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   setupTables();
 

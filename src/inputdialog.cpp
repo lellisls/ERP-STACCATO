@@ -10,6 +10,9 @@
 InputDialog::InputDialog(Type type, QWidget *parent) : QDialog(parent), type(type), ui(new Ui::InputDialog) {
   ui->setupUi(this);
 
+  setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
+
   setupTables();
 
   ui->groupBoxData->hide();

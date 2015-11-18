@@ -9,6 +9,9 @@
 ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::ContasAPagar) {
   ui->setupUi(this);
 
+  setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
+
   modelItensContas.setTable("conta_a_pagar_has_pagamento");
   modelItensContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 

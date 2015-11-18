@@ -12,6 +12,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 

@@ -6,6 +6,8 @@
 LoginConfig::LoginConfig(QWidget *parent) : QDialog(parent), ui(new Ui::LoginConfig) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   ui->lineEditHostname->setText(settings("Login/hostname").toString());
   ui->lineEditUsername->setText(settings("Login/username").toString());
   ui->lineEditPassword->setText(settings("Login/password").toString());

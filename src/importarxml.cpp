@@ -15,6 +15,7 @@ ImportarXML::ImportarXML(QList<int> rows, QWidget *parent) : QDialog(parent), ui
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   modelEstoque.setTable("estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);

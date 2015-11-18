@@ -4,6 +4,8 @@
 ValidadeDialog::ValidadeDialog(QWidget *parent) : QDialog(parent), ui(new Ui::ValidadeDialog) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   ui->dateEdit->setDate(QDate::currentDate());
 }
 

@@ -17,6 +17,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   connect(&modelProd, &QAbstractItemModel::dataChanged, this, &CadastrarNFe::onDataChanged);
 

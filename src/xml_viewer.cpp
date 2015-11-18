@@ -14,6 +14,7 @@ XML_Viewer::XML_Viewer(QWidget *parent) : QDialog(parent), ui(new Ui::XML_Viewer
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   ui->treeView->setModel(&model);
   ui->treeView->setUniformRowHeights(true);

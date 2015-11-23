@@ -78,6 +78,9 @@
                  <height>0</height>
                 </size>
                </property>
+               <property name="accessibleName">
+                <string>Bairro/Distrito</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="6">
@@ -87,6 +90,9 @@
                  <width>150</width>
                  <height>0</height>
                 </size>
+               </property>
+               <property name="accessibleName">
+                <string>Cidade</string>
                </property>
               </widget>
              </item>
@@ -104,6 +110,9 @@
                  <height>16777215</height>
                 </size>
                </property>
+               <property name="accessibleName">
+                <string>UF</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="4">
@@ -119,6 +128,9 @@
                  <width>16777215</width>
                  <height>16777215</height>
                 </size>
+               </property>
+               <property name="accessibleName">
+                <string>Complemento</string>
                </property>
                <property name="styleSheet">
                 <string notr="true"/>
@@ -139,6 +151,9 @@
                  <height>16777215</height>
                 </size>
                </property>
+               <property name="accessibleName">
+                <string>Número</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="2">
@@ -148,6 +163,9 @@
                  <width>200</width>
                  <height>0</height>
                 </size>
+               </property>
+               <property name="accessibleName">
+                <string>Logradouro</string>
                </property>
               </widget>
              </item>
@@ -173,6 +191,9 @@
                </property>
                <property name="toolTip">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;O sistema preenche o endereço automaticamente a partir do CEP&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="accessibleName">
+                <string>CEP</string>
                </property>
               </widget>
              </item>
@@ -239,7 +260,7 @@
              <item row="0" column="3">
               <widget class="QLabel" name="labelNro">
                <property name="text">
-                <string>Nro.</string>
+                <string>Número</string>
                </property>
               </widget>
              </item>
@@ -374,6 +395,9 @@
                       <height>0</height>
                      </size>
                     </property>
+                    <property name="accessibleName">
+                     <string>Nome/Razão Social</string>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 255, 127);</string>
                     </property>
@@ -386,6 +410,9 @@
                       <width>120</width>
                       <height>0</height>
                      </size>
+                    </property>
+                    <property name="accessibleName">
+                     <string>Apelido/Nome Fantasia</string>
                     </property>
                    </widget>
                   </item>
@@ -403,6 +430,9 @@
                       <height>16777215</height>
                      </size>
                     </property>
+                    <property name="accessibleName">
+                     <string>CNPJ</string>
+                    </property>
                    </widget>
                   </item>
                   <item row="1" column="4">
@@ -418,6 +448,9 @@
                       <width>135</width>
                       <height>16777215</height>
                      </size>
+                    </property>
+                    <property name="accessibleName">
+                     <string>Insc. Estadual</string>
                     </property>
                    </widget>
                   </item>
@@ -435,6 +468,9 @@
                       <height>16777215</height>
                      </size>
                     </property>
+                    <property name="accessibleName">
+                     <string>CPF</string>
+                    </property>
                    </widget>
                   </item>
                   <item row="0" column="2">
@@ -446,6 +482,9 @@
                   </item>
                   <item row="1" column="5">
                    <widget class="QComboBox" name="comboBoxTipo">
+                    <property name="accessibleName">
+                     <string>Tipo</string>
+                    </property>
                     <item>
                      <property name="text">
                       <string>ARQUITETO</string>
@@ -538,6 +577,9 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>CPF Repr.</string>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="4">
@@ -568,6 +610,9 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>Apelido Repr.</string>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="5">
@@ -584,6 +629,9 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>RG Repr.</string>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="1">
@@ -596,6 +644,9 @@
                  </property>
                  <property name="toolTip">
                   <string/>
+                 </property>
+                 <property name="accessibleName">
+                  <string>Nome Repr.</string>
                  </property>
                 </widget>
                </item>
@@ -624,6 +675,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>Celular</string>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="4">
@@ -650,7 +704,7 @@
                <item row="0" column="0">
                 <widget class="QLabel" name="label_18">
                  <property name="text">
-                  <string>Telefone Principal</string>
+                  <string>Telefone principal</string>
                  </property>
                 </widget>
                </item>
@@ -661,6 +715,9 @@
                    <width>100</width>
                    <height>0</height>
                   </size>
+                 </property>
+                 <property name="accessibleName">
+                  <string>Telefone principal</string>
                  </property>
                 </widget>
                </item>
@@ -686,6 +743,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>Nextel</string>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="2">
@@ -695,6 +755,9 @@
                    <width>100</width>
                    <height>0</height>
                   </size>
+                 </property>
+                 <property name="accessibleName">
+                  <string>Telefone comercial</string>
                  </property>
                 </widget>
                </item>
@@ -706,6 +769,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>ID Nextel</string>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="6">
@@ -715,6 +781,9 @@
                    <width>120</width>
                    <height>0</height>
                   </size>
+                 </property>
+                 <property name="accessibleName">
+                  <string>E-mail</string>
                  </property>
                  <property name="inputMethodHints">
                   <set>Qt::ImhEmailCharactersOnly</set>

@@ -91,6 +91,9 @@
                  <property name="whatsThis">
                   <string/>
                  </property>
+                 <property name="accessibleName">
+                  <string>Fornecedor</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(255, 255, 127);</string>
                  </property>
@@ -160,6 +163,9 @@
                  <property name="whatsThis">
                   <string/>
                  </property>
+                 <property name="accessibleName">
+                  <string>Descrição</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(255, 255, 127);</string>
                  </property>
@@ -192,6 +198,9 @@
                </item>
                <item row="3" column="1">
                 <widget class="QComboBox" name="comboBoxUn">
+                 <property name="accessibleName">
+                  <string>Un.</string>
+                 </property>
                  <property name="editable">
                   <bool>true</bool>
                  </property>
@@ -218,6 +227,9 @@
               <layout class="QGridLayout" name="gridLayout_7">
                <item row="1" column="1">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxM2Cx">
+                 <property name="accessibleName">
+                  <string>M2/Cx</string>
+                 </property>
                  <property name="maximum">
                   <double>9999999999.000000000000000</double>
                  </property>
@@ -243,10 +255,16 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>Formato comercial</string>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="3">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxPcCx">
+                 <property name="accessibleName">
+                  <string>Pç/Cx</string>
+                 </property>
                  <property name="maximum">
                   <double>9999999999.000000000000000</double>
                  </property>
@@ -278,6 +296,9 @@
                  <property name="whatsThis">
                   <string/>
                  </property>
+                 <property name="accessibleName">
+                  <string>Coleção</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -305,6 +326,9 @@
                    <width>16777215</width>
                    <height>16777215</height>
                   </size>
+                 </property>
+                 <property name="accessibleName">
+                  <string>UI</string>
                  </property>
                 </widget>
                </item>
@@ -347,6 +371,9 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="accessibleName">
+                  <string>Código comercial</string>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="1">
@@ -362,6 +389,9 @@
                    <width>16777215</width>
                    <height>16777215</height>
                   </size>
+                 </property>
+                 <property name="accessibleName">
+                  <string/>
                  </property>
                  <property name="text">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;M&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;/Cx&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -468,6 +498,9 @@
               <layout class="QGridLayout" name="gridLayout_11">
                <item row="2" column="0">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxCusto">
+                 <property name="accessibleName">
+                  <string>Custo</string>
+                 </property>
                  <property name="prefix">
                   <string>R$ </string>
                  </property>
@@ -524,6 +557,9 @@
                  </item>
                  <item row="2" column="6">
                   <widget class="QDoubleSpinBox" name="doubleSpinBoxQtePallet">
+                   <property name="accessibleName">
+                    <string>Quant. pallet</string>
+                   </property>
                    <property name="suffix">
                     <string/>
                    </property>
@@ -554,6 +590,9 @@
                    </property>
                    <property name="toolTip">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif'; font-weight:600;&quot;&gt;TABELA B - TRIBUTAÇÃO PELO ICMS &lt;/span&gt;&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;00 Tributada integralmente&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;10 Tributada e com cobrança do ICMS por substituição tributária&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;20 Com redução de base de cálculo&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;30 Isenta ou não tributada e com cobrança do ICMS por substituição tributária&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;40 Isenta&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;41 Não tributada&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;50 Suspensão&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;51 Diferimento&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;60 ICMS cobrado anteriormente por substituição tributária&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;70 Com redução de base de cálculo e cobrança do ICMS por substituição tributária&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;90 Outras&lt;br/&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="accessibleName">
+                    <string>Tributação</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">background-color: rgb(255, 255, 127);</string>
@@ -736,6 +775,9 @@
                      <height>16777215</height>
                     </size>
                    </property>
+                   <property name="accessibleName">
+                    <string>ICMS</string>
+                   </property>
                   </widget>
                  </item>
                  <item row="2" column="0">
@@ -757,6 +799,9 @@
                      <width>16777215</width>
                      <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="accessibleName">
+                    <string>Código de barras</string>
                    </property>
                    <property name="clearButtonEnabled">
                     <bool>true</bool>
@@ -789,6 +834,9 @@
                    <property name="whatsThis">
                     <string/>
                    </property>
+                   <property name="accessibleName">
+                    <string>NCM</string>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">background-color: rgb(255, 255, 127);</string>
                    </property>
@@ -817,6 +865,9 @@
                    <property name="toolTip">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif'; font-weight:600;&quot;&gt;TABELA A - ORIGEM DA MERCADORIA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;0 - Nacional &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;1  - Estrangeira - Importação direta &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'sans-serif';&quot;&gt;2 - Estrangeira - Adquirida no mercado interno &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
+                   <property name="accessibleName">
+                    <string>Origem</string>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">background-color: rgb(255, 255, 127);</string>
                    </property>
@@ -824,6 +875,9 @@
                  </item>
                  <item row="2" column="7">
                   <widget class="QDoubleSpinBox" name="doubleSpinBoxComissao">
+                   <property name="accessibleName">
+                    <string>Comissão</string>
+                   </property>
                    <property name="suffix">
                     <string> %</string>
                    </property>
@@ -855,6 +909,9 @@
                </item>
                <item row="2" column="5">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxEstoque">
+                 <property name="accessibleName">
+                  <string>Estoque</string>
+                 </property>
                  <property name="suffix">
                   <string/>
                  </property>
@@ -922,6 +979,9 @@
                </item>
                <item row="2" column="3">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxMarkup">
+                 <property name="accessibleName">
+                  <string>Markup</string>
+                 </property>
                  <property name="suffix">
                   <string> %</string>
                  </property>
@@ -932,6 +992,9 @@
                </item>
                <item row="2" column="1">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxIPI">
+                 <property name="accessibleName">
+                  <string>IPI</string>
+                 </property>
                  <property name="suffix">
                   <string> %</string>
                  </property>
@@ -980,6 +1043,9 @@
                </item>
                <item row="2" column="2">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxST">
+                 <property name="accessibleName">
+                  <string>ST</string>
+                 </property>
                  <property name="suffix">
                   <string> %</string>
                  </property>
@@ -990,6 +1056,9 @@
                </item>
                <item row="2" column="4">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxVenda">
+                 <property name="accessibleName">
+                  <string>Venda</string>
+                 </property>
                  <property name="prefix">
                   <string>R$ </string>
                  </property>
@@ -1400,6 +1469,9 @@
                 <width>250</width>
                 <height>0</height>
                </size>
+              </property>
+              <property name="accessibleName">
+               <string>observações</string>
               </property>
              </widget>
             </item>

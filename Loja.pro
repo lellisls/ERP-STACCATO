@@ -66,7 +66,8 @@ SOURCES += src/apagaorcamento.cpp \
     src/widgetlogistica.cpp \
     src/widgetnfe.cpp \
     src/widgetestoque.cpp \
-    src/widgetconta.cpp
+    src/widgetconta.cpp \
+    src/userconfig.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/cadastrarnfe.h \
@@ -122,7 +123,8 @@ HEADERS  += src/apagaorcamento.h \
     src/widgetlogistica.h \
     src/widgetnfe.h \
     src/widgetestoque.h \
-    src/widgetconta.h
+    src/widgetconta.h \
+    src/userconfig.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -156,7 +158,8 @@ FORMS += ui/apagaorcamento.ui \
     ui/widgetlogistica.ui \
     ui/widgetnfe.ui \
     ui/widgetestoque.ui \
-    ui/widgetconta.ui
+    ui/widgetconta.ui \
+    ui/userconfig.ui
 
 CONFIG += c++11
 

@@ -16,7 +16,7 @@ class CadastrarNFe : public QDialog {
   public:
     explicit CadastrarNFe(QString idVenda, QWidget *parent = 0);
     ~CadastrarNFe();
-    void prepararNFe(const QList<int> items);
+    void prepararNFe(const QList<int> &items);
 
   public slots:
     void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
@@ -40,15 +40,15 @@ class CadastrarNFe : public QDialog {
     QString chaveAcesso;
     // methods
     QString criarChaveAcesso();
-    QString clearStr(QString str) const;
-    QString calculaDigitoVerificador(const QString chave);
+    QString clearStr(const QString &str) const;
+    QString calculaDigitoVerificador(const QString &chave);
     bool writeTXT();
     void writeIdentificacao(QTextStream &stream) const;
     bool writeEmitente(QTextStream &stream);
     bool writeDestinatario(QTextStream &stream);
     bool writeProduto(QTextStream &stream, double &total, double &icmsTotal);
     void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete) const;
-    QString removeDiacritics(QString str) const;
+    QString removeDiacritics(const QString &str) const;
     void guardarNotaBD();
 };
 

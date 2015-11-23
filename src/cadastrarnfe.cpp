@@ -178,7 +178,7 @@ void CadastrarNFe::updateImpostos() {
   // TODO: guardar texto na 'obs' da nfe
 }
 
-void CadastrarNFe::prepararNFe(const QList<int> items) {
+void CadastrarNFe::prepararNFe(const QList<int> &items) {
   // TODO: make a query using idVenda to get info for cliente and loja
   // TODO: calcular frete proporcional
 
@@ -345,12 +345,12 @@ QString CadastrarNFe::criarChaveAcesso() {
   return chave;
 }
 
-QString CadastrarNFe::clearStr(QString str) const {
-  return str.remove(".").remove("/").remove("-").remove(" ").remove("(").remove(")");
+QString CadastrarNFe::clearStr(const QString &str) const {
+  return QString(str).remove(".").remove("/").remove("-").remove(" ").remove("(").remove(")");
 }
 
-QString CadastrarNFe::removeDiacritics(QString str) const {
-  return str == "M²" ? "M2" : str.normalized(QString::NormalizationForm_KD).remove(QRegExp("[^a-zA-Z\\s]"));
+QString CadastrarNFe::removeDiacritics(const QString &str) const {
+  return str == "M²" ? "M2" : QString(str).normalized(QString::NormalizationForm_KD).remove(QRegExp("[^a-zA-Z\\s]"));
 }
 
 void CadastrarNFe::onDataChanged(const QModelIndex &topLeft,
@@ -399,7 +399,7 @@ void CadastrarNFe::onDataChanged(const QModelIndex &topLeft,
   }
 }
 
-QString CadastrarNFe::calculaDigitoVerificador(const QString chave) {
+QString CadastrarNFe::calculaDigitoVerificador(const QString &chave) {
   if (chave.size() != 43) {
     QMessageBox::critical(this, "Erro!", "Erro na chave: " + chave);
     return QString();
@@ -699,7 +699,7 @@ bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icms
       return false;
     }
 
-    if (not queryProd.value("precoVenda").toDouble() == 0) {
+    if (queryProd.value("precoVenda").toDouble() != 0) {
       const double preco = queryProd.value("precoVenda").toDouble();
       const double rounded_number = static_cast<double>(static_cast<int>(preco * 100 + 0.5)) / 100.0;
       stream << "ValorUnitario = " + QString::number(rounded_number) << endl;

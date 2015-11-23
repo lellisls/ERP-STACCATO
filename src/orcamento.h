@@ -19,13 +19,14 @@ class Orcamento : public RegisterDialog {
     void show();
 
   private slots:
-    void on_checkBoxFreteManual_clicked(const bool checked);
-    void on_doubleSpinBoxDesconto_valueChanged(const double);
-    void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
+    void on_checkBoxFreteManual_clicked(const bool &checked);
+    void on_checkBoxRepresentacao_toggled(const bool &checked);
+    void on_doubleSpinBoxDesconto_valueChanged(const double &);
+    void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
     void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxPrecoTotal_editingFinished();
-    void on_doubleSpinBoxQte_valueChanged(const double);
-    void on_doubleSpinBoxSubTotalLiq_valueChanged(const double);
+    void on_doubleSpinBoxQte_valueChanged(const double &);
+    void on_doubleSpinBoxSubTotalLiq_valueChanged(const double &);
     void on_doubleSpinBoxTotal_editingFinished();
     void on_itemBoxCliente_textChanged(const QString &);
     void on_itemBoxProduto_textChanged(const QString &);
@@ -42,10 +43,9 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonLimparSelecao_clicked();
     void on_pushButtonRemoverItem_clicked();
     void on_pushButtonReplicar_clicked();
-    void on_spinBoxCaixas_valueChanged(const int caixas);
+    void on_spinBoxCaixas_valueChanged(const int &caixas);
     void on_tableProdutos_clicked(const QModelIndex &index);
-    void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);    
-    void on_checkBoxRepresentacao_toggled(bool checked);
+    void setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage);
 
   signals:
     void finished();
@@ -57,7 +57,7 @@ class Orcamento : public RegisterDialog {
 *\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    virtual bool viewRegister(const QModelIndex index);
+    virtual bool viewRegister(const QModelIndex &index);
 
   private:
     /*!
@@ -108,18 +108,18 @@ class Orcamento : public RegisterDialog {
     QSqlQuery queryLojaEnd;
     // methods
     void removeItem();
-    void adicionarItem(const bool isUpdate = false);
-    void calcPrecoGlobalTotal(const bool ajusteTotal = false);
+    void adicionarItem(const bool &isUpdate = false);
+    void calcPrecoGlobalTotal(const bool &ajusteTotal = false);
     void calcPrecoItemTotal();
     void novoItem();
     void updateId();
     void setupTables();
-    QVariant settings(QString key) const;
-    void setSettings(QString key, QVariant value) const;
+    QVariant settings(const QString &key) const;
+    void setSettings(const QString &key, const QVariant &value) const;
 
     // RegisterDialog interface
   protected:
-    bool save(const bool isUpdate = false);
+    bool save(const bool &isUpdate = false);
 };
 
 #endif // ORCAMENTO_H

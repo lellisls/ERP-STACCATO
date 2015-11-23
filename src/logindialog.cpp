@@ -64,9 +64,9 @@ void LoginDialog::on_pushButtonConfig_clicked() {
   config->show();
 }
 
-QVariant LoginDialog::settings(QString key) const { return UserSession::getSettings(key); }
+QVariant LoginDialog::settings(const QString &key) const { return UserSession::getSettings(key); }
 
-void LoginDialog::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
+void LoginDialog::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 bool LoginDialog::settingsContains(const QString &key) const { return UserSession::settingsContains(key); }
 

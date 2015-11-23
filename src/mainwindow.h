@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow {
     void on_actionGerenciar_Transportadoras_triggered();
     void on_actionImportaProdutos_triggered();
     void on_actionSobre_triggered();
-    void on_tabWidget_currentChanged(int);
+    void on_tabWidget_currentChanged(const int &);
 
   private:
     // attributes
@@ -43,8 +43,8 @@ class MainWindow : public QMainWindow {
     // methods
     bool event(QEvent *e);
     void darkTheme();
-    QVariant settings(QString key) const;
-    void setSettings(QString key, QVariant value) const;
+    QVariant settings(const QString &key) const;
+    void setSettings(const QString &key, const QVariant &value) const;
 };
 
 #endif // MAINWINDOW_H

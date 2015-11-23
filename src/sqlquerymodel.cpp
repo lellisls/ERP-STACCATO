@@ -4,10 +4,10 @@
 
 SqlQueryModel::SqlQueryModel(QObject *parent) : QSqlQueryModel(parent) {}
 
-QVariant SqlQueryModel::data(int row, QString column) const {
+QVariant SqlQueryModel::data(const int &row, const QString &column) const {
   return QSqlQueryModel::data(QSqlQueryModel::index(row, QSqlQueryModel::record().indexOf(column)));
 }
 
-bool SqlQueryModel::setHeaderData(QString column, const QVariant &value) {
+bool SqlQueryModel::setHeaderData(const QString &column, const QVariant &value) {
   return QSqlQueryModel::setHeaderData(QSqlQueryModel::record().indexOf(column), Qt::Horizontal, value);
 }

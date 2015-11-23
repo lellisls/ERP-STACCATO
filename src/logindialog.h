@@ -31,8 +31,8 @@ class LoginDialog : public QDialog {
     bool homologacao;
     // methods
     void verify();
-    QVariant settings(QString key) const;
-    void setSettings(QString key, QVariant value) const;
+    QVariant settings(const QString &key) const;
+    void setSettings(const QString &key, const QVariant &value) const;
     bool settingsContains(const QString &key) const;
 };
 

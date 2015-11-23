@@ -7,7 +7,7 @@
 
 #include "registerdialog.h"
 
-RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *parent = 0)
+RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, QWidget *parent = 0)
   : QDialog(parent), model(this), primaryKey(primaryKey) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
@@ -29,7 +29,7 @@ RegisterDialog::RegisterDialog(QString table, QString primaryKey, QWidget *paren
           &RegisterDialog::saveSlot);
 }
 
-bool RegisterDialog::viewRegisterById(const QVariant id) {
+bool RegisterDialog::viewRegisterById(const QVariant &id) {
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro ao acessar a tabela " + model.tableName() + ": " + model.lastError().text());
@@ -50,7 +50,7 @@ bool RegisterDialog::viewRegisterById(const QVariant id) {
   return true;
 }
 
-bool RegisterDialog::viewRegister(const QModelIndex index) {
+bool RegisterDialog::viewRegister(const QModelIndex &index) {
   if (not confirmationMessage()) {
     return false;
   }
@@ -63,7 +63,7 @@ bool RegisterDialog::viewRegister(const QModelIndex index) {
   return true;
 }
 
-bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
+bool RegisterDialog::verifyFields(const QList<QLineEdit *> &list) {
   for (auto const &line : list) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -73,7 +73,7 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> list) {
   return true;
 }
 
-void RegisterDialog::setData(const QString &key, QVariant value) {
+void RegisterDialog::setData(const QString &key, const QVariant value) {
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
     return;
   }
@@ -91,7 +91,7 @@ void RegisterDialog::setData(const QString &key, QVariant value) {
 
 QVariant RegisterDialog::data(const QString &key) { return model.data(mapper.currentIndex(), key); }
 
-QVariant RegisterDialog::data(int row, const QString &key) { return model.data(row, key); }
+QVariant RegisterDialog::data(const int &row, const QString &key) { return model.data(row, key); }
 
 void RegisterDialog::addMapping(QWidget *widget, const QString &key) {
   if (model.fieldIndex(key) == -1) {
@@ -145,7 +145,7 @@ void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void RegisterDialog::saveSlot() { save(); }
 
-bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool silent) {
+bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
   }
@@ -207,7 +207,7 @@ bool RegisterDialog::newRegister() {
   return model.select();
 }
 
-bool RegisterDialog::save(const bool isUpdate) {
+bool RegisterDialog::save(const bool &isUpdate) {
   if (not verifyFields()) {
     return false;
   }
@@ -281,7 +281,7 @@ void RegisterDialog::remove() {
   }
 }
 
-bool RegisterDialog::validaCNPJ(const QString text) {
+bool RegisterDialog::validaCNPJ(const QString &text) {
   if (text.size() != 14) {
     return false;
   }
@@ -327,7 +327,7 @@ bool RegisterDialog::validaCNPJ(const QString text) {
   return true;
 }
 
-bool RegisterDialog::validaCPF(const QString text) {
+bool RegisterDialog::validaCPF(const QString &text) {
   if (text.size() != 11) {
     return false;
   }

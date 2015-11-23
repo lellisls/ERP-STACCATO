@@ -6,12 +6,12 @@
 class TableView : public QTableView {
   public:
     explicit TableView(QWidget *parent = 0);
-    void hideColumn(QString column);
-    void setItemDelegateForColumn(QString column, QAbstractItemDelegate *delegate);
-    void setItemDelegateForColumn(int column, QAbstractItemDelegate *delegate);
+    void hideColumn(const QString column);
+    void setItemDelegateForColumn(const QString column, QAbstractItemDelegate *delegate);
+    void setItemDelegateForColumn(const int &column, QAbstractItemDelegate *delegate);
 
   public slots:
-    void sortByColumn(QString column);
+    void sortByColumn(const QString &column);
 };
 
 #endif // TABLEVIEW_H

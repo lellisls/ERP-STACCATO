@@ -1,14 +1,14 @@
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSqlError>
+
 #include "widgetnfe.h"
 #include "ui_widgetnfe.h"
 #include "doubledelegate.h"
 #include "usersession.h"
 #include "venda.h"
 #include "xml_viewer.h"
-
-#include <QFile>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QSqlError>
 
 WidgetNfe::WidgetNfe(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfe) {
   ui->setupUi(this);
@@ -66,6 +66,7 @@ bool WidgetNfe::updateTables() {
 
       ui->tableNfeSaida->resizeColumnsToContents();
       break;
+
     default:
       return true;
   }
@@ -106,7 +107,7 @@ void WidgetNfe::on_tableNfeEntrada_activated(const QModelIndex &index) {
   viewer->show();
 }
 
-void WidgetNfe::on_tabWidgetNfe_currentChanged(int) { updateTables(); }
+void WidgetNfe::on_tabWidgetNfe_currentChanged(const int &) { updateTables(); }
 
 void WidgetNfe::on_pushButtonExibirXML_clicked() {
   QString xml = QFileDialog::getOpenFileName(this, "Arquivo XML", QDir::currentPath(), "*.xml");
@@ -124,7 +125,7 @@ void WidgetNfe::on_pushButtonExibirXML_clicked() {
 
   xml = file.readAll();
 
-  XML_Viewer *viewer = new XML_Viewer;
+  XML_Viewer *viewer = new XML_Viewer(this);
   viewer->exibirXML(xml);
   viewer->show();
 }

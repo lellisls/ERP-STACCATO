@@ -15,7 +15,7 @@ class ContasAPagar : public QDialog {
   public:
     explicit ContasAPagar(QWidget *parent = 0);
     ~ContasAPagar();
-    void viewConta(const QString idVenda);
+    void viewConta(const QString &idVenda);
 
   private slots:
     void on_pushButtonCancelar_clicked();

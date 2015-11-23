@@ -15,7 +15,7 @@ class XML_Viewer : public QDialog {
   public:
     explicit XML_Viewer(QWidget *parent = 0);
     ~XML_Viewer();
-    void exibirXML(QString fileContent);
+    void exibirXML(const QString &fileContent);
 
   private:
     // attributes

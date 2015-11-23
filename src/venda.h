@@ -18,7 +18,7 @@ class Venda : public RegisterDialog {
     void fecharOrcamento(const QString &idVenda);
 
   private slots:
-    void on_checkBoxFreteManual_clicked(const bool checked);
+    void on_checkBoxFreteManual_clicked(const bool &checked);
     void on_comboBoxPgt1_currentTextChanged(const QString &text);
     void on_comboBoxPgt1Parc_currentTextChanged(const QString &);
     void on_comboBoxPgt2_currentTextChanged(const QString &text);
@@ -28,7 +28,7 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt1_dateChanged(const QDate &date);
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
-    void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
+    void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
     void on_doubleSpinBoxTotal_editingFinished();
     void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxPgt1_editingFinished();
@@ -39,7 +39,7 @@ class Venda : public RegisterDialog {
     void on_pushButtonCadastrarPedido_clicked();
     void on_pushButtonVoltar_clicked();
     void on_pushButtonImprimir_clicked();
-    void setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage);
+    void setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage);
     void on_pushButtonGerarExcel_clicked();
     void on_lineEditPgt1_textChanged(const QString &);
     void on_lineEditPgt2_textChanged(const QString &);
@@ -69,7 +69,7 @@ class Venda : public RegisterDialog {
     // methods
     bool verifyFields();
     QString requiredStyle() const;
-    void calcPrecoGlobalTotal(const bool ajusteTotal = false);
+    void calcPrecoGlobalTotal(const bool &ajusteTotal = false);
     void calculoSpinBox1() const;
     void calculoSpinBox2() const;
     void clearFields();
@@ -78,9 +78,9 @@ class Venda : public RegisterDialog {
     void resetarPagamentos();
     void setupMapper();
     void setupTables();
-    virtual bool viewRegister(const QModelIndex index);
-    QVariant settings(QString key) const;
-    void setSettings(QString key, QVariant value) const;
+    virtual bool viewRegister(const QModelIndex &index);
+    QVariant settings(const QString &key) const;
+    void setSettings(const QString &key, const QVariant &value) const;
 };
 
 #endif // VENDA_H

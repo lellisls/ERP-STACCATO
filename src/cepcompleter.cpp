@@ -16,7 +16,7 @@ void CepCompleter::clearFields() {
   bairro.clear();
 }
 
-bool CepCompleter::buscaCEP(const QString cep) {
+bool CepCompleter::buscaCEP(const QString &cep) {
   clearFields();
 
   QSqlQuery query;

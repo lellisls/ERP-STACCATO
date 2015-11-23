@@ -24,7 +24,7 @@ XML_Viewer::XML_Viewer(QWidget *parent) : QDialog(parent), ui(new Ui::XML_Viewer
 
 XML_Viewer::~XML_Viewer() { delete ui; }
 
-void XML_Viewer::exibirXML(QString fileContent) {
+void XML_Viewer::exibirXML(const QString &fileContent) {
   if (fileContent.isEmpty()) {
     return;
   }

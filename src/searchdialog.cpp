@@ -7,7 +7,8 @@
 #include "ui_searchdialog.h"
 #include "doubledelegate.h"
 
-SearchDialog::SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent)
+SearchDialog::SearchDialog(const QString &title, const QString &table, const QStringList &indexes,
+                           const QString &filter, QWidget *parent)
   : QDialog(parent), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
 
@@ -122,7 +123,7 @@ void SearchDialog::setFilter(const QString &value) {
   model.setFilter(filter);
 }
 
-void SearchDialog::hideColumns(const QStringList columns) {
+void SearchDialog::hideColumns(const QStringList &columns) {
   for (const auto column : columns) {
     ui->tableBusca->hideColumn(column);
   }
@@ -147,7 +148,7 @@ QString SearchDialog::getPrimaryKey() const { return primaryKey; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
-QString SearchDialog::getText(const QVariant index) {
+QString SearchDialog::getText(const QVariant &index) {
   QString queryText;
 
   for (const auto key : textKeys) {
@@ -181,7 +182,7 @@ QString SearchDialog::getText(const QVariant index) {
   return res;
 }
 
-void SearchDialog::setHeaderData(const QString column, const QString value) { model.setHeaderData(column, value); }
+void SearchDialog::setHeaderData(const QString &column, const QString &value) { model.setHeaderData(column, value); }
 
 SearchDialog *SearchDialog::cliente(QWidget *parent) {
   SearchDialog *sdCliente = new SearchDialog("Buscar Cliente", "cliente", {"nome_razao", "nomeFantasia", "cpf", "cnpj"},
@@ -397,7 +398,7 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   return sdProfissional;
 }
 
-void SearchDialog::montarFiltroAtivoDesc(const bool ativo) {
+void SearchDialog::montarFiltroAtivoDesc(const bool &ativo) {
   ui->lineEditBusca->setFocus();
 
   const QString text = ui->lineEditBusca->text();
@@ -427,6 +428,6 @@ void SearchDialog::on_tableBusca_entered(const QModelIndex &) { ui->tableBusca->
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
 
-void SearchDialog::on_radioButtonProdAtivos_toggled(bool) { montarFiltroAtivoDesc(true); }
+void SearchDialog::on_radioButtonProdAtivos_toggled(const bool &) { montarFiltroAtivoDesc(true); }
 
-void SearchDialog::on_radioButtonProdDesc_toggled(bool) { montarFiltroAtivoDesc(false); }
+void SearchDialog::on_radioButtonProdDesc_toggled(const bool &) { montarFiltroAtivoDesc(false); }

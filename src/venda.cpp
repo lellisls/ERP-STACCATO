@@ -294,6 +294,7 @@ bool Venda::verifyFields() {
     return false;
   }
 
+  // TODO: mostrar valores para facilitar correcao
   if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
       ui->doubleSpinBoxTotalPag->value()) {
     QMessageBox::critical(this, "Erro!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
@@ -323,7 +324,7 @@ bool Venda::verifyFields() {
 
 QString Venda::requiredStyle() const { return QString(); }
 
-void Venda::calcPrecoGlobalTotal(const bool ajusteTotal) {
+void Venda::calcPrecoGlobalTotal(const bool &ajusteTotal) {
   QSqlQuery queryFrete;
   queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::getLoja());
@@ -442,12 +443,16 @@ void Venda::calculoSpinBox1() const {
     ui->doubleSpinBoxPgt2->setMaximum(restante + pgt2);
     ui->doubleSpinBoxPgt2->setValue(restante + pgt2);
     ui->doubleSpinBoxPgt3->setMaximum(pgt3);
-    restante = 0.;
-  } else if (pgt3 == 0.) {
+
+    return;
+  }
+
+  if (pgt3 == 0.) {
     ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
     ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
     ui->doubleSpinBoxPgt2->setMaximum(pgt2);
-    restante = 0.;
+
+    return;
   }
 }
 
@@ -602,7 +607,7 @@ void Venda::updateMode() {
   ui->checkBoxFreteManual->hide();
 }
 
-bool Venda::viewRegister(const QModelIndex index) {
+bool Venda::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -736,7 +741,7 @@ void Venda::on_doubleSpinBoxTotal_editingFinished() {
   }
 }
 
-void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
+void Venda::on_checkBoxFreteManual_clicked(const bool &checked) {
   if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->checkBoxFreteManual->setChecked(false);
     return;
@@ -751,7 +756,7 @@ void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
 
 void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
 
-void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) { calcPrecoGlobalTotal(); }
+void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double &) { calcPrecoGlobalTotal(); }
 
 void Venda::on_pushButtonImprimir_clicked() {
   if (settings("User/userFolder").toString().isEmpty()) {
@@ -836,7 +841,7 @@ void Venda::on_pushButtonImprimir_clicked() {
   report->printPDF(path + "/" + ui->lineEditVenda->text() + ".pdf");
 }
 
-void Venda::setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage) {
+void Venda::setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage) {
   Q_UNUSED(reportPage);
 
   QLocale locale;
@@ -1323,9 +1328,9 @@ void Venda::on_lineEditPgt2_textChanged(const QString &) { montarFluxoCaixa(); }
 
 void Venda::on_lineEditPgt3_textChanged(const QString &) { montarFluxoCaixa(); }
 
-QVariant Venda::settings(QString key) const { return UserSession::getSettings(key); }
+QVariant Venda::settings(const QString &key) const { return UserSession::getSettings(key); }
 
-void Venda::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
+void Venda::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 // TODO: colocar status mais a esquerda para ficar visivel
 // TODO: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal

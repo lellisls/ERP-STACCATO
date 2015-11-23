@@ -8,4 +8,4 @@ LineEditCEP::~LineEditCEP() {}
 
 QString LineEditCEP::getValue() const { return isValid() ? text() : QString(); }
 
-void LineEditCEP::setValue(const QString value) { setText(value); }
+void LineEditCEP::setValue(const QString &value) { setText(value); }

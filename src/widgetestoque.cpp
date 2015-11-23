@@ -49,7 +49,8 @@ void WidgetEstoque::on_pushButtonEntradaEstoque_clicked() {
 }
 
 void WidgetEstoque::on_pushButtonTesteFaturamento_clicked() {
-  QList<int> temp;
-  ImportarXML *import = new ImportarXML(temp, this);
+  ImportarXML *import = new ImportarXML(this);
   import->show();
 }
+
+// TODO: gerenciar lugares de estoque (cadastro/permissoes)

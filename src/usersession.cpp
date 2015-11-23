@@ -16,7 +16,7 @@ int UserSession::getIdUsuario() { return (query->value("idUsuario").toInt()); }
 
 QString UserSession::getNome() { return (query->value("nome").toString()); }
 
-bool UserSession::login(const QString user, const QString password) {
+bool UserSession::login(const QString &user, const QString &password) {
   initialize();
 
   query->prepare("SELECT * FROM usuario WHERE user = :user AND passwd = PASSWORD(:password) AND desativado = FALSE");
@@ -57,7 +57,7 @@ QString UserSession::getSiglaLoja() {
   return queryLoja.value("sigla").toString();
 }
 
-QString UserSession::getFromLoja(const QString parameter) {
+QString UserSession::getFromLoja(const QString &parameter) {
   QSqlQuery queryLoja;
   queryLoja.prepare("SELECT " + parameter + " FROM loja WHERE idLoja = :idLoja");
   queryLoja.bindValue(":idLoja", getLoja());
@@ -70,9 +70,9 @@ QString UserSession::getFromLoja(const QString parameter) {
   return queryLoja.value(parameter).toString();
 }
 
-QVariant UserSession::getSettings(const QString key) { return settings.value(key); }
+QVariant UserSession::getSettings(const QString &key) { return settings.value(key); }
 
-void UserSession::setSettings(const QString key, const QVariant value) { settings.setValue(key, value); }
+void UserSession::setSettings(const QString &key, const QVariant &value) { settings.setValue(key, value); }
 
 bool UserSession::settingsContains(const QString &key) { return settings.contains(key); }
 

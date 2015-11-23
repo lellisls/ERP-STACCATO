@@ -16,7 +16,7 @@ class ApagaOrcamento : public QDialog {
   public:
     explicit ApagaOrcamento(QWidget *parent = 0);
     ~ApagaOrcamento();
-    void apagar(const int index);
+    void apagar(const int &index);
 
   private slots:
     void on_pushButtonSalvar_clicked();

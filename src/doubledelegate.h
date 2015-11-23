@@ -6,14 +6,13 @@
 class DoubleDelegate : public QStyledItemDelegate {
 
   public:
-    explicit DoubleDelegate(QObject *parent = 0);
-    explicit DoubleDelegate(double decimais, QObject *parent = 0);
+    explicit DoubleDelegate(QObject *parent = 0, const double &decimais = 2.);
     ~DoubleDelegate();
     // QStyledItemDelegate interface
     QString displayText(const QVariant &value, const QLocale &locale) const;
 
   private:
-    double decimais = 2;
+    double decimais;
 };
 
 #endif // DOUBLEDELEGATE_H

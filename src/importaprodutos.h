@@ -21,10 +21,10 @@ class ImportaProdutos : public QDialog {
   private slots:
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
-    void on_checkBoxRepresentacao_clicked(const bool checked);
+    void on_checkBoxRepresentacao_clicked(const bool &checked);
     void on_tableProdutos_entered(const QModelIndex &);
     void on_tableErro_entered(const QModelIndex &);
-    void on_tabWidget_currentChanged(int index);
+    void on_tabWidget_currentChanged(const int &index);
 
   private:
     // attributes
@@ -52,7 +52,7 @@ class ImportaProdutos : public QDialog {
     bool readFile();
     bool readValidade();
     bool verificaTabela(const QSqlRecord &record);
-    int buscarCadastrarFornecedor(const QString fornecedor);
+    int buscarCadastrarFornecedor(const QString &fornecedor);
     void atualizaCamposProduto();
     void cadastraFornecedores();
     void cadastraProduto();
@@ -67,7 +67,7 @@ class ImportaProdutos : public QDialog {
     void setProgressDialog();
     bool verificaSeProdutoJaCadastrado();
     void verificaSeProdutoJaCadastradoNoModel();
-    void pintarCamposForaDoPadrao(const int row);
+    void pintarCamposForaDoPadrao(const int &row);
     void setVariantMap();
     void salvar();
     bool camposForaDoPadrao();

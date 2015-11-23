@@ -19,9 +19,7 @@ class WidgetEstoque : public QWidget {
 
   private slots:
     void on_tableEstoque_activated(const QModelIndex &index);
-
     void on_pushButtonEntradaEstoque_clicked();
-
     void on_pushButtonTesteFaturamento_clicked();
 
   private:

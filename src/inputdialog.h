@@ -15,12 +15,12 @@ class InputDialog : public QDialog {
   public:
     enum Type { Carrinho, GerarCompra, ConfirmarCompra, Faturamento, Coleta, Recebimento, Entrega } type;
 
-    explicit InputDialog(Type type, QWidget *parent = 0);
+    explicit InputDialog(const Type &type, QWidget *parent = 0);
     ~InputDialog();
     QDate getDate();
     QDate getNextDate();
-    void setFilter(QStringList ids);
-    void setFilter(QString id);
+    void setFilter(const QStringList &ids);
+    void setFilter(const QString &id);
 
   private slots:
     void on_pushButtonSalvar_clicked();

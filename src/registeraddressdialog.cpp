@@ -5,7 +5,7 @@
 
 #include "registeraddressdialog.h"
 
-RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, QWidget *parent)
+RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString &primaryKey, QWidget *parent)
   : RegisterDialog(table, primaryKey, parent) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
@@ -31,7 +31,7 @@ RegisterAddressDialog::RegisterAddressDialog(QString table, QString primaryKey, 
   mapperEnd.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 }
 
-bool RegisterAddressDialog::save(const bool isUpdate) {
+bool RegisterAddressDialog::save(const bool &isUpdate) {
   // TODO: converter campos para maiusculo
 
   if (not verifyFields()) {
@@ -96,7 +96,7 @@ bool RegisterAddressDialog::save(const bool isUpdate) {
   return true;
 }
 
-void RegisterAddressDialog::setDataEnd(const QString &key, QVariant value) {
+void RegisterAddressDialog::setDataEnd(const QString &key, const QVariant &value) {
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
     return;
   }
@@ -161,7 +161,7 @@ int RegisterAddressDialog::getCodigoUF(QString uf) const {
   return 0;
 }
 
-bool RegisterAddressDialog::viewRegisterById(const QVariant id) {
+bool RegisterAddressDialog::viewRegisterById(const QVariant &id) {
   if (not RegisterDialog::viewRegisterById(id)) {
     return false;
   }
@@ -175,3 +175,6 @@ bool RegisterAddressDialog::viewRegisterById(const QVariant id) {
 
   return true;
 }
+
+// TODO: renomear "Mostrar inativos" para mostrar removidos e adicionar esse checkbox na searchdialog
+// TODO: if endereco desativado and update clicked, activate endereco (set desativado 0)

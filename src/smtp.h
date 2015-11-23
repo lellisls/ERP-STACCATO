@@ -33,11 +33,12 @@ class Smtp : public QObject {
     Q_OBJECT
 
   public:
-    Smtp(const QString &user, const QString &pass, const QString &host, int port = 465, int timeout = 30000);
+    Smtp(const QString &user, const QString &pass, const QString &host, const int &port = 465,
+         const int &timeout = 30000);
     ~Smtp();
 
     void sendMail(const QString &from, const QString &to, const QString &subject, const QString &body,
-                  QStringList files = QStringList());
+                  const QStringList &files = QStringList());
 
   signals:
     void status(const QString &);

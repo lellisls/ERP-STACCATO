@@ -29,7 +29,7 @@ class CadastroTransportadora : public RegisterAddressDialog {
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonEndLimpar_clicked();
     void on_pushButtonRemoverEnd_clicked();
-    void on_checkBoxMostrarInativos_clicked(const bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool &checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_tableEndereco_clicked(const QModelIndex &index);
 
@@ -64,12 +64,12 @@ class CadastroTransportadora : public RegisterAddressDialog {
     // attributes
     Ui::CadastroTransportadora *ui;
     // methods
-    bool cadastrarEndereco(const bool isUpdate);
+    bool cadastrarEndereco(const bool &isUpdate);
     void novoEndereco();
     void setupTables();
     void clearEndereco();
     void setupUi();
-    bool viewRegister(const QModelIndex index);
+    bool viewRegister(const QModelIndex &index);
 };
 
 #endif // CADASTROTRANSPORTADORA_H

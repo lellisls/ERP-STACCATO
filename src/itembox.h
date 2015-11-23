@@ -18,11 +18,11 @@ class ItemBox : public QLineEdit {
     SearchDialog *searchDialog();
     QVariant value() const;
     void setValue(const QVariant &m_value);
-    void setReadOnlyItemBox(bool readOnly);
+    void setReadOnlyItemBox(const bool &readOnly);
     void clear();
 
   public slots:
-    void changeItem(const QVariant m_value);
+    void changeItem(const QVariant &m_value);
 
   protected slots:
     virtual void search();

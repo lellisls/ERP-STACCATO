@@ -6,7 +6,7 @@ class CepCompleter {
   public:
     CepCompleter();
     ~CepCompleter();
-    bool buscaCEP(const QString cpf);
+    bool buscaCEP(const QString &cpf);
     QString getCidade() const;
     QString getEndereco() const;
     QString getBairro() const;

@@ -107,7 +107,7 @@ bool CadastroUsuario::savingProcedures() {
   return isOk;
 }
 
-bool CadastroUsuario::viewRegister(const QModelIndex index) {
+bool CadastroUsuario::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }

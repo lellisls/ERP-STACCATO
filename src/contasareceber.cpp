@@ -52,7 +52,7 @@ void ContasAReceber::on_pushButtonSalvar_clicked() {
 
 void ContasAReceber::on_pushButtonCancelar_clicked() { close(); }
 
-void ContasAReceber::viewConta(const QString idVenda) {
+void ContasAReceber::viewConta(const QString &idVenda) {
   this->idVenda = idVenda;
 
   modelContas.setFilter("idVenda = '" + idVenda + "'");

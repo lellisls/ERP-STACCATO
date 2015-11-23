@@ -14,6 +14,7 @@
 #include "importaprodutos.h"
 #include "orcamento.h"
 #include "usersession.h"
+#include "userconfig.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -125,9 +126,9 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   cad->show();
 }
 
-QVariant MainWindow::settings(QString key) const { return UserSession::getSettings(key); }
+QVariant MainWindow::settings(const QString &key) const { return UserSession::getSettings(key); }
 
-void MainWindow::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
+void MainWindow::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 void MainWindow::on_actionImportaProdutos_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);
@@ -178,11 +179,13 @@ void MainWindow::darkTheme() {
   qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
 }
 
-void MainWindow::on_tabWidget_currentChanged(int) { updateTables(); }
+void MainWindow::on_tabWidget_currentChanged(const int &) { updateTables(); }
 
 void MainWindow::on_actionSobre_triggered() {
-  // TODO: adicionar informacoes de contato do desenvolvedor (telefone/email)
-  QMessageBox::about(this, "Sobre ERP Staccato", "Versão " + qApp->applicationVersion());
+  QMessageBox::about(
+        this, "Sobre ERP Staccato",
+        "Versão " + qApp->applicationVersion() +
+        "\nDesenvolvedor: Rodrigo Torres\nCelular/WhatsApp: (12)98138-3504\nE-mail: torres.dark@gmail.com");
 }
 
 void MainWindow::on_actionClaro_triggered() {
@@ -194,14 +197,8 @@ void MainWindow::on_actionClaro_triggered() {
 void MainWindow::on_actionEscuro_triggered() { darkTheme(); }
 
 void MainWindow::on_actionConfigura_es_triggered() {
-  // TODO: put screen to change user variables (userFolder etc)
+  UserConfig *config = new UserConfig(this);
+  config->show();
 }
 
-// TODO: gerenciar lugares de estoque (cadastro/permissoes)
-// TODO: a tabela de fornecedores em compra deve mostrar apenas os pedidos que estejam pendente/confirmar/faturar
-// TODO: a tabela de fornecedores em logistica deve mostrar apenas os pedidos que estejam coleta/recebimento/entrega
 // TODO: colocar logo da staccato na mainwindow
-// TODO: renomear "Mostrar inativos" para mostrar removidos e adicionar esse checkbox na searchdialog
-// TODO: add 'AND desativado = false' in tables where there is desativado
-// TODO: colocar accessibleName em todas as telas de cadastro
-// TODO: adicionar Qt::WA_deleteOnClose? para nao ficar segurando recursos??

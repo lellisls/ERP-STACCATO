@@ -48,7 +48,7 @@ void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
   xml->show();
 }
 
-void Estoque::viewRegisterById(const QString codComercial) {
+void Estoque::viewRegisterById(const QString &codComercial) {
   if (codComercial.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Estoque não encontrado!");
     return;

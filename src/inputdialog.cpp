@@ -7,11 +7,10 @@
 #include "inputdialog.h"
 #include "ui_inputdialog.h"
 
-InputDialog::InputDialog(Type type, QWidget *parent) : QDialog(parent), type(type), ui(new Ui::InputDialog) {
+InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), type(type), ui(new Ui::InputDialog) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
-  setAttribute(Qt::WA_DeleteOnClose);
 
   setupTables();
 
@@ -115,7 +114,7 @@ void InputDialog::on_dateEditEvento_dateChanged(const QDate &date) {
   }
 }
 
-void InputDialog::setFilter(QStringList ids) {
+void InputDialog::setFilter(const QStringList &ids) {
   if (ids.isEmpty() or ids.first().isEmpty()) {
     model.setFilter("idPedido = 0");
     QMessageBox::critical(this, "Erro!", "ids vazio!");
@@ -148,7 +147,7 @@ void InputDialog::setFilter(QStringList ids) {
   QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
 }
 
-void InputDialog::setFilter(QString id) {
+void InputDialog::setFilter(const QString &id) {
   if (id.isEmpty()) {
     model.setFilter("idPedido = 0");
     QMessageBox::critical(this, "Erro!", "ids vazio!");

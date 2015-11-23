@@ -93,20 +93,13 @@ void ItemBox::setValue(const QVariant &value) {
   }
 }
 
-void ItemBox::setReadOnlyItemBox(bool readOnly) {
+void ItemBox::setReadOnlyItemBox(const bool &readOnly) {
   readOnlyItemBox = readOnly;
 
-  if (readOnly) {
-    m_plusButton->hide();
-    m_plusButton->setDisabled(true);
-    m_searchButton->hide();
-    m_searchButton->setDisabled(true);
-  } else {
-    m_plusButton->show();
-    m_plusButton->setEnabled(true);
-    m_searchButton->show();
-    m_searchButton->setEnabled(true);
-  }
+  m_plusButton->setHidden(readOnly);
+  m_plusButton->setDisabled(readOnly);
+  m_searchButton->setHidden(readOnly);
+  m_searchButton->setDisabled(readOnly);
 }
 
 void ItemBox::clear() {
@@ -120,7 +113,7 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
   connect(m_searchDialog, &SearchDialog::itemSelected, this, &ItemBox::changeItem);
 }
 
-void ItemBox::changeItem(const QVariant value) {
+void ItemBox::changeItem(const QVariant &value) {
   setValue(value);
 
   if (m_registerDialog and m_registerDialog->isVisible()) {

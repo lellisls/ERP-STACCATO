@@ -21,7 +21,7 @@ ProdutosPendentes::ProdutosPendentes(QWidget *parent) : QDialog(parent), ui(new 
 
 ProdutosPendentes::~ProdutosPendentes() { delete ui; }
 
-void ProdutosPendentes::viewProduto(const QString codComercial, const QString status) {
+void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &status) {
   this->codComercial = codComercial;
 
   // TODO: convert this to view? make a view that filters this data for each item and filter to show only one

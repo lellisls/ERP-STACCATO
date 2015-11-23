@@ -392,4 +392,6 @@ void WidgetLogistica::on_tableFornLogistica_activated(const QModelIndex &index) 
   updateTables();
 }
 
-void WidgetLogistica::on_tabWidgetLogistica_currentChanged(int) { updateTables(); }
+void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) { updateTables(); }
+
+// TODO: a tabela de fornecedores deve mostrar apenas os pedidos que estejam coleta/recebimento/entrega

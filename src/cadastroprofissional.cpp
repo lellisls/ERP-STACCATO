@@ -99,7 +99,7 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroProfissional::viewRegister(const QModelIndex index) {
+bool CadastroProfissional::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -220,7 +220,7 @@ void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
         validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
 }
 
-bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
+bool CadastroProfissional::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -301,7 +301,7 @@ void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text)
                                                                                          : "color: rgb(255, 0, 0);");
 }
 
-void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool checked) {
+void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
 }
 
@@ -323,7 +323,7 @@ void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroProfissional::on_radioButtonPF_toggled(const bool checked) {
+void CadastroProfissional::on_radioButtonPF_toggled(const bool &checked) {
   if (checked) {
     tipoPFPJ = "PF";
     ui->lineEditCNPJ->hide();

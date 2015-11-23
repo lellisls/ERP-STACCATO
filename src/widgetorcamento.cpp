@@ -87,3 +87,7 @@ void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
   Orcamento *orcamento = new Orcamento(this);
   orcamento->show();
 }
+
+// TODO: ao replicar marcar ids em ambos os orcamentos novos e antigos
+// TODO: ao replicar marcar orcamento antigo como replicado e cancelar no bd
+// TODO: fazer script SQL para expirar orcamentos vencidos

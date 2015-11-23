@@ -19,19 +19,12 @@ class WidgetNfe : public QWidget {
 
   private slots:
     void on_radioButtonNFeAutorizado_clicked();
-
     void on_radioButtonNFeEnviado_clicked();
-
     void on_radioButtonNFeLimpar_clicked();
-
     void on_lineEditBuscaNFe_textChanged(const QString &text);
-
     void on_tableNfeSaida_activated(const QModelIndex &index);
-
     void on_tableNfeEntrada_activated(const QModelIndex &index);
-
-    void on_tabWidgetNfe_currentChanged(int);
-
+    void on_tabWidgetNfe_currentChanged(const int &);
     void on_pushButtonExibirXML_clicked();
 
   private:

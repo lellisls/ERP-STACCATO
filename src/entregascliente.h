@@ -15,7 +15,7 @@ class EntregasCliente : public QDialog {
   public:
     explicit EntregasCliente(QWidget *parent = 0);
     ~EntregasCliente();
-    void viewEntrega(const QString idVenda);
+    void viewEntrega(const QString &idVenda);
 
   private slots:
     void on_pushButtonCancelar_clicked();

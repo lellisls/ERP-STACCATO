@@ -155,8 +155,6 @@ void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {
 }
 
 void CadastroLoja::on_pushButtonAtualizarEnd_clicked() {
-  // TODO: if endereco desativado and update clicked, activate endereco (set desativado 0)
-
   if (not cadastrarEndereco(true)) {
     QMessageBox::critical(this, "Erro!", "Não foi possível atualizar este endereço.");
     return;
@@ -185,12 +183,12 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool checked) {
+void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
   ui->tableEndereco->resizeColumnsToContents();
 }
 
-bool CadastroLoja::cadastrarEndereco(const bool isUpdate) {
+bool CadastroLoja::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -274,7 +272,7 @@ void CadastroLoja::show() {
   adjustSize();
 }
 
-bool CadastroLoja::viewRegister(const QModelIndex index) {
+bool CadastroLoja::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -290,7 +288,3 @@ bool CadastroLoja::viewRegister(const QModelIndex index) {
 
   return true;
 }
-
-// TODO: parametrizar taxa cartao credito
-// TODO: guardar dados do email no QSettings (já que uma só pessoa vai usar?)
-// TODO: transformar pastas do ACBr em QSettings

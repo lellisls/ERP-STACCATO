@@ -22,14 +22,14 @@ class RegisterDialog : public QDialog {
 \param primaryKey Nome da PK da tabela.
 \param parent Janela "mãe" do QDialog.
 */
-    explicit RegisterDialog(QString table, QString primaryKey, QWidget *parent);
+    explicit RegisterDialog(const QString &table, const QString &primaryKey, QWidget *parent);
 
     /*!
 * \brief Utilizada para selecionar um item a partir de um QModelIndex.
 * \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
 * \return
 */
-    virtual bool viewRegister(const QModelIndex index);
+    virtual bool viewRegister(const QModelIndex &index);
 
   public slots:
     /*!
@@ -37,7 +37,7 @@ class RegisterDialog : public QDialog {
 * \param id Valor da PK.
 * \return
 */
-    virtual bool viewRegisterById(const QVariant id);
+    virtual bool viewRegisterById(const QVariant &id);
     void saveSlot();
     void marcarDirty();
 
@@ -47,7 +47,7 @@ class RegisterDialog : public QDialog {
 * \param idCliente Id do cadastro atualizado/cadastrado.
 * \param text Descrição do item, utilizada para representá-lo em um ItemBox, por exemplo.
 */
-    void registerUpdated(QVariant idCliente, QString text);
+    void registerUpdated(const QVariant &idCliente, const QString &text);
 
   protected:
     /*!
@@ -55,7 +55,7 @@ class RegisterDialog : public QDialog {
 * \param line QLineEdit a ser analisado.
 * \return
 */
-    virtual bool verifyRequiredField(QLineEdit *line, const bool silent = false);
+    virtual bool verifyRequiredField(QLineEdit *line, const bool &silent = false);
     /*!
 * \brief Mensagem de confirmação padrão, para evitar que o trabalho seja perdido.
 * \return
@@ -81,13 +81,13 @@ class RegisterDialog : public QDialog {
 * \brief Procedimento padrão para salvar informações no BD.
 * \return
 */
-    virtual bool save(const bool isUpdate = false);
+    virtual bool save(const bool &isUpdate = false);
     /*!
 * \brief Chama verifyRequiredField() sobre cada elemento da lista.
 * \param list Lista de QLineEdits a serem verificados.
 * \return
 */
-    bool verifyFields(const QList<QLineEdit *> list);
+    bool verifyFields(const QList<QLineEdit *> &list);
     /*!
 * \brief Função padrão para verificar campos obrigatórios.
 * \return
@@ -121,7 +121,7 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \param value Valor a ser atualizado.
 */
-    void setData(const QString &key, QVariant value);
+    void setData(const QString &key, const QVariant value);
 
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
@@ -137,7 +137,7 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \return
 */
-    QVariant data(int row, const QString &key);
+    QVariant data(const int &row, const QString &key);
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
 *        Equivale à função addMapping do mapper;
@@ -194,8 +194,8 @@ class RegisterDialog : public QDialog {
     // methods
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
-    bool validaCNPJ(const QString text);
-    bool validaCPF(const QString text);
+    bool validaCNPJ(const QString &text);
+    bool validaCPF(const QString &text);
     bool update();
     QStringList getTextKeys() const;
     void setTextKeys(const QStringList &value);

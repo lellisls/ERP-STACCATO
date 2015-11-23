@@ -82,7 +82,7 @@ void WidgetVenda::montaFiltroVendas() {
   ui->tableVendas->resizeColumnsToContents();
 }
 
-void WidgetVenda::on_groupBoxStatusVenda_toggled(bool enabled) {
+void WidgetVenda::on_groupBoxStatusVenda_toggled(const bool &enabled) {
   for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
   }
@@ -121,3 +121,6 @@ void WidgetVenda::on_tableVendas_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   vendas->viewRegisterById(modelVendas->data(index.row(), "Código"));
 }
+
+// TODO: frete as vezes recalcula para o minimo no lugar do valor armazenado
+// TODO: verificar como lidar com brinde/reposicao

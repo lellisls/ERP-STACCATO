@@ -26,7 +26,6 @@ class WidgetOrcamento : public QWidget {
     void on_radioButtonOrcProprios_clicked();
     void on_lineEditBuscaOrcamentos_textChanged(const QString &text);
     void on_tableOrcamentos_activated(const QModelIndex &index);
-
     void on_pushButtonCriarOrc_clicked();
 
   private:

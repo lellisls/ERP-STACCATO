@@ -2,14 +2,14 @@
 
 #include "importaprodutosproxy.h"
 
-ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, const int column, QObject *parent)
+ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, const int &column, QObject *parent)
   : QIdentityProxyModel(parent), column(column) {
   setSourceModel(model);
 }
 
 ImportaProdutosProxy::~ImportaProdutosProxy() {}
 
-QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) const {
+QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int &role) const {
   if (role == Qt::BackgroundRole) {
 
     // verifica se está descontinuado

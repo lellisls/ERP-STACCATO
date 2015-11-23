@@ -20,7 +20,7 @@ class LoginConfig : public QDialog {
 
   private:
     Ui::LoginConfig *ui;
-    QVariant settings(QString key) const;
-    void setSettings(QString key, QVariant value) const;};
+    QVariant settings(const QString &key) const;
+    void setSettings(const QString &key, const QVariant &value) const;};
 
 #endif // LOGINCONFIG_H

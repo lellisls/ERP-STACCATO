@@ -62,7 +62,7 @@ void Orcamento::on_tableProdutos_clicked(const QModelIndex &index) {
   mapperItem.setCurrentModelIndex(index);
 }
 
-bool Orcamento::viewRegister(const QModelIndex index) {
+bool Orcamento::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -343,9 +343,9 @@ void Orcamento::calcPrecoItemTotal() {
   }
 }
 
-void Orcamento::on_doubleSpinBoxDesconto_valueChanged(const double) { calcPrecoItemTotal(); }
+void Orcamento::on_doubleSpinBoxDesconto_valueChanged(const double &) { calcPrecoItemTotal(); }
 
-void Orcamento::on_doubleSpinBoxQte_valueChanged(const double) {
+void Orcamento::on_doubleSpinBoxQte_valueChanged(const double &) {
   const int caixas = qRound(ui->doubleSpinBoxQte->value() / ui->doubleSpinBoxQte->singleStep());
 
   if (ui->spinBoxCaixas->value() != caixas) {
@@ -357,7 +357,7 @@ void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
 
 void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
 
-void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
+void Orcamento::calcPrecoGlobalTotal(const bool &ajusteTotal) {
   QSqlQuery queryFrete;
   queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::getLoja());
@@ -411,7 +411,7 @@ void Orcamento::calcPrecoGlobalTotal(const bool ajusteTotal) {
   ui->doubleSpinBoxTotal->setValue(subTotal + frete);
 }
 
-void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) {
+void Orcamento::on_doubleSpinBoxDescontoGlobal_valueChanged(const double &) {
   calcPrecoItemTotal();
   calcPrecoGlobalTotal();
 }
@@ -509,7 +509,7 @@ void Orcamento::on_pushButtonImprimir_clicked() {
   report->printPDF(path + "/" + ui->lineEditOrcamento->text() + ".pdf");
 }
 
-void Orcamento::setValue(const int recNo, const QString paramName, QVariant &paramValue, const int reportPage) {
+void Orcamento::setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage) {
   Q_UNUSED(reportPage);
 
   QLocale locale;
@@ -757,7 +757,7 @@ void Orcamento::setupTables() {
   }
 }
 
-void Orcamento::adicionarItem(const bool isUpdate) {
+void Orcamento::adicionarItem(const bool &isUpdate) {
   ui->checkBoxRepresentacao->setDisabled(true);
 
   calcPrecoItemTotal();
@@ -914,9 +914,9 @@ void Orcamento::on_pushButtonCancelar_clicked() { close(); }
 
 void Orcamento::on_pushButtonCancelarItem_clicked() { novoItem(); }
 
-void Orcamento::on_doubleSpinBoxSubTotalLiq_valueChanged(const double) { calcPrecoGlobalTotal(); }
+void Orcamento::on_doubleSpinBoxSubTotalLiq_valueChanged(const double &) { calcPrecoGlobalTotal(); }
 
-void Orcamento::on_spinBoxCaixas_valueChanged(const int caixas) {
+void Orcamento::on_spinBoxCaixas_valueChanged(const int &caixas) {
   const double quant = caixas * ui->doubleSpinBoxQte->singleStep();
 
   if (ui->doubleSpinBoxQte->value() != quant) {
@@ -1006,7 +1006,7 @@ void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", 
 
 void Orcamento::on_pushButtonLimparSelecao_clicked() { novoItem(); }
 
-void Orcamento::on_checkBoxFreteManual_clicked(const bool checked) {
+void Orcamento::on_checkBoxFreteManual_clicked(const bool &checked) {
   ui->doubleSpinBoxFrete->setFrame(checked);
   ui->doubleSpinBoxFrete->setReadOnly(not checked);
   ui->doubleSpinBoxFrete->setButtonSymbols(checked ? QDoubleSpinBox::UpDownArrows : QDoubleSpinBox::NoButtons);
@@ -1054,7 +1054,7 @@ void Orcamento::on_doubleSpinBoxPrecoTotal_editingFinished() {
   ui->doubleSpinBoxDesconto->setValue(desconto);
 }
 
-bool Orcamento::save(const bool isUpdate) {
+bool Orcamento::save(const bool &isUpdate) {
   if (not verifyFields()) {
     return false;
   }
@@ -1273,13 +1273,13 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
   QDesktopServices::openUrl(QUrl::fromLocalFile(path + "/" + ui->lineEditOrcamento->text() + ".xlsx"));
 }
 
-void Orcamento::on_checkBoxRepresentacao_toggled(bool checked) {
+void Orcamento::on_checkBoxRepresentacao_toggled(const bool &checked) {
   ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = " + QString(checked ? "TRUE" : "FALSE"));
 }
 
-QVariant Orcamento::settings(QString key) const { return UserSession::getSettings(key); }
+QVariant Orcamento::settings(const QString &key) const { return UserSession::getSettings(key); }
 
-void Orcamento::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
+void Orcamento::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 // TODO: mudar status do orcamento para expirado se validade vencida
 // TODO: cadastrar endereco nao aparece (apenas apos fechar e abrir de novo) dar um refresh no model

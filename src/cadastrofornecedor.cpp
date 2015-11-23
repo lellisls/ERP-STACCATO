@@ -143,7 +143,7 @@ void CadastroFornecedor::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, const bool silent) {
+bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, const bool &silent) {
   if (line->styleSheet() != requiredStyle()) {
     return true;
   }
@@ -198,7 +198,7 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
       : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço."));
 }
 
-bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
+bool CadastroFornecedor::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -266,7 +266,7 @@ void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-bool CadastroFornecedor::viewRegister(const QModelIndex index) {
+bool CadastroFornecedor::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }

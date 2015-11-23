@@ -25,10 +25,8 @@ class WidgetLogistica : public QWidget {
     void on_tableEntregasCliente_activated(const QModelIndex &index);
     void on_pushButtonMarcarColetado_clicked();
     void on_pushButtonMarcarRecebido_clicked();
-
     void on_tableFornLogistica_activated(const QModelIndex &index);
-
-    void on_tabWidgetLogistica_currentChanged(int);
+    void on_tabWidgetLogistica_currentChanged(const int&);
 
   private:
     Ui::WidgetLogistica *ui;

@@ -159,7 +159,7 @@ void CadastroCliente::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroCliente::viewRegister(const QModelIndex index) {
+bool CadastroCliente::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }
@@ -259,7 +259,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
+bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -358,7 +358,7 @@ void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroCliente::on_radioButtonPF_toggled(const bool checked) {
+void CadastroCliente::on_radioButtonPF_toggled(const bool &checked) {
   if (checked) {
     tipoPFPJ = "PF";
     ui->lineEditCNPJ->hide();
@@ -391,7 +391,7 @@ void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
                                                                                          : "color: rgb(255, 0, 0);");
 }
 
-void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool checked) {
+void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
 }
 

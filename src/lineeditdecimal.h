@@ -9,7 +9,7 @@ class LineEditDecimal : public QLineEdit {
   public:
     explicit LineEditDecimal(QWidget *parent = 0);
     double getValue() const;
-    void setValue(const double value);
+    void setValue(const double &value);
 
   private:
     Q_PROPERTY(double value READ getValue WRITE setValue STORED false)
@@ -18,9 +18,9 @@ class LineEditDecimal : public QLineEdit {
     double top;
     // methods
     double getBottom() const;
-    void setBottom(const double value);
+    void setBottom(const double &value);
     double getTop() const;
-    void setTop(const double value);
+    void setTop(const double &value);
 };
 
 #endif // LINEEDITDECIMAL_H

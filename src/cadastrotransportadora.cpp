@@ -155,11 +155,11 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool checked) {
+void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
 }
 
-bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
+bool CadastroTransportadora::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) {
       return false;
@@ -251,7 +251,7 @@ void CadastroTransportadora::setupUi() {
   ui->lineEditUF->setInputMask(">AA;_");
 }
 
-bool CadastroTransportadora::viewRegister(const QModelIndex index) {
+bool CadastroTransportadora::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) {
     return false;
   }

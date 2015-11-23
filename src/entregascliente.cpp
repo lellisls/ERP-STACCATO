@@ -78,7 +78,7 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
 
 void EntregasCliente::on_pushButtonCancelar_clicked() { close(); }
 
-void EntregasCliente::viewEntrega(const QString idVenda) {
+void EntregasCliente::viewEntrega(const QString &idVenda) {
   this->idVenda = idVenda;
 
   modelProdutos.setFilter("idVenda = '" + idVenda + "'");

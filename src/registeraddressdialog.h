@@ -6,10 +6,10 @@
 class RegisterAddressDialog : public RegisterDialog {
 
   public:
-    explicit RegisterAddressDialog(QString table, QString primaryKey, QWidget *parent);
+    explicit RegisterAddressDialog(const QString &table, const QString &primaryKey, QWidget *parent);
 
   public slots:
-    bool viewRegisterById(const QVariant id);
+    bool viewRegisterById(const QVariant &id);
 
   protected:
     // attributes
@@ -17,9 +17,9 @@ class RegisterAddressDialog : public RegisterDialog {
     SqlTableModel modelEnd;
     // methods
     bool newRegister();
-    int getCodigoUF(const QString uf) const;
-    bool save(const bool isUpdate = false);
-    void setDataEnd(const QString &key, QVariant value);
+    int getCodigoUF(QString uf) const;
+    bool save(const bool &isUpdate = false);
+    void setDataEnd(const QString &key, const QVariant &value);
 };
 
 #endif // REGISTERADDRESSDIALOG_H

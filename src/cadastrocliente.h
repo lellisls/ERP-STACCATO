@@ -18,7 +18,7 @@ class CadastroCliente : public RegisterAddressDialog {
     void show();
 
   private slots:
-    void on_checkBoxMostrarInativos_clicked(const bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool &checked);
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &text);
     void on_lineEditContatoCPF_textEdited(const QString &text);
@@ -33,7 +33,7 @@ class CadastroCliente : public RegisterAddressDialog {
     void on_pushButtonEndLimpar_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonRemoverEnd_clicked();
-    void on_radioButtonPF_toggled(const bool checked);
+    void on_radioButtonPF_toggled(const bool &checked);
     void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
@@ -42,7 +42,7 @@ class CadastroCliente : public RegisterAddressDialog {
 * \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
 * \return
 */
-    virtual bool viewRegister(const QModelIndex index);
+    virtual bool viewRegister(const QModelIndex &index);
 
     void setupTables();
 
@@ -78,7 +78,7 @@ class CadastroCliente : public RegisterAddressDialog {
     Ui::CadastroCliente *ui;
     QString tipoPFPJ;
     // methods
-    bool cadastrarEndereco(const bool isUpdate);
+    bool cadastrarEndereco(const bool &isUpdate);
     void novoEndereco();
     void setupUi();
     void clearEndereco();

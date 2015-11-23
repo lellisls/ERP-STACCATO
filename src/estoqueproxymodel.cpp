@@ -2,14 +2,14 @@
 
 #include "estoqueproxymodel.h"
 
-EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, const QString column, QObject *parent)
+EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, const QString &column, QObject *parent)
   : QIdentityProxyModel(parent), column(model->fieldIndex(column)) {
   setSourceModel(model);
 }
 
 EstoqueProxyModel::~EstoqueProxyModel() {}
 
-QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, int role) const {
+QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int &role) const {
   if (role == Qt::BackgroundRole) {
     const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 

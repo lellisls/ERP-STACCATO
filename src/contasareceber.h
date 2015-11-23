@@ -15,7 +15,7 @@ class ContasAReceber : public QDialog {
   public:
     explicit ContasAReceber(QWidget *parent = 0);
     ~ContasAReceber();
-    void viewConta(const QString idVenda);
+    void viewConta(const QString &idVenda);
 
   private slots:
     void on_pushButtonSalvar_clicked();

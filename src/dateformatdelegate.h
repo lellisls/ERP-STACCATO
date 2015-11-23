@@ -7,7 +7,7 @@
 class DateFormatDelegate : public QStyledItemDelegate {
 
   public:
-    DateFormatDelegate(QObject *parent = 0);
+    explicit DateFormatDelegate(QObject *parent = 0);
     ~DateFormatDelegate();
 
   private:

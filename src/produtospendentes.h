@@ -15,7 +15,7 @@ class ProdutosPendentes : public QDialog {
   public:
     explicit ProdutosPendentes(QWidget *parent = 0);
     ~ProdutosPendentes();
-    void viewProduto(const QString codComercial, const QString status);
+    void viewProduto(const QString &codComercial, const QString &status);
 
   private slots:
     void on_pushButtonComprar_clicked();

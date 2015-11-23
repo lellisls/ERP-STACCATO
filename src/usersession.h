@@ -5,16 +5,16 @@
 
 class UserSession {
   public:
-    static bool login(const QString user, const QString password);
+    static bool login(const QString &user, const QString &password);
     static int getIdUsuario();
     static int getLoja();
     static QString getNome();
     static QString getSiglaLoja();
     static QString getTipoUsuario();
     static QStringList getTodosCNPJ();
-    static QString getFromLoja(const QString parameter);
-    static QVariant getSettings(const QString key);
-    static void setSettings(const QString key, const QVariant value);
+    static QString getFromLoja(const QString &parameter);
+    static QVariant getSettings(const QString &key);
+    static void setSettings(const QString &key, const QVariant &value);
     static bool settingsContains(const QString &key);
     static void free();
 

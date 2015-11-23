@@ -33,8 +33,8 @@ class CadastroProfissional : public RegisterAddressDialog {
     void on_tableEndereco_clicked(const QModelIndex &index);
     void on_pushButtonRemoverEnd_clicked();
     void on_lineEditContatoCPF_textEdited(const QString &text);
-    void on_checkBoxMostrarInativos_clicked(const bool checked);
-    void on_radioButtonPF_toggled(const bool checked);
+    void on_checkBoxMostrarInativos_clicked(const bool &checked);
+    void on_radioButtonPF_toggled(const bool &checked);
     void on_lineEditCPFBancario_textEdited(const QString &text);
 
   private:
@@ -72,9 +72,9 @@ class CadastroProfissional : public RegisterAddressDialog {
     void setupUi();
     void novoEndereco();
     void clearEndereco();
-    bool cadastrarEndereco(const bool isUpdate);
+    bool cadastrarEndereco(const bool &isUpdate);
     void setupTables();
-    bool viewRegister(const QModelIndex index);
+    bool viewRegister(const QModelIndex &index);
 };
 
 #endif // CADASTROPROFISSIONAL_H

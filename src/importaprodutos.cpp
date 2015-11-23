@@ -277,7 +277,7 @@ void ImportaProdutos::setupTables() {
 
   ui->tableProdutos->setItemDelegateForColumn("validade", new DateFormatDelegate(this));
 
-  DoubleDelegate *doubledelegate = new DoubleDelegate(4, this);
+  DoubleDelegate *doubledelegate = new DoubleDelegate(this, 4);
   ui->tableProdutos->setItemDelegateForColumn("m2cx", doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn("kgcx", doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn("qtdPallet", doubledelegate);
@@ -556,7 +556,7 @@ bool ImportaProdutos::verificaSeProdutoJaCadastrado() {
   return false;
 }
 
-void ImportaProdutos::pintarCamposForaDoPadrao(const int row) {
+void ImportaProdutos::pintarCamposForaDoPadrao(const int &row) {
   // Fora do padrão
   if (variantMap.value("ncm").toString() == "0" or variantMap.value("ncm").toString().isEmpty() or
       (variantMap.value("ncm").toString().length() != 8 and variantMap.value("ncm").toString().length() != 10)) {
@@ -697,7 +697,7 @@ void ImportaProdutos::cadastraProduto() {
   itensImported++;
 }
 
-int ImportaProdutos::buscarCadastrarFornecedor(const QString fornecedor) {
+int ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor) {
   QSqlQuery queryFornecedor;
   queryFornecedor.prepare("SELECT * FROM fornecedor WHERE razaoSocial = :razaoSocial");
   queryFornecedor.bindValue(":razaoSocial", fornecedor);
@@ -783,7 +783,7 @@ bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
   return true;
 }
 
-void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool checked) {
+void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool &checked) {
   for (int i = 0, rowCount = model.rowCount(); i < rowCount; ++i) {
     model.setData(i, "representacao", checked);
   }
@@ -802,7 +802,7 @@ void ImportaProdutos::on_tableProdutos_entered(const QModelIndex &) { ui->tableP
 
 void ImportaProdutos::on_tableErro_entered(const QModelIndex &) { ui->tableErro->resizeColumnsToContents(); }
 
-void ImportaProdutos::on_tabWidget_currentChanged(int index) {
+void ImportaProdutos::on_tabWidget_currentChanged(const int &index) {
   if (index == 0) {
     ui->tableProdutos->resizeColumnsToContents();
   }
@@ -812,5 +812,4 @@ void ImportaProdutos::on_tabWidget_currentChanged(int index) {
   }
 }
 
-// TODO: colocar um sistema que importa a tabela toda para verificar erros, pergunta se quer remover os erros e modifica
-// o excel, depois faz a importacao normal?
+// TODO: fix negative numbers on import stats

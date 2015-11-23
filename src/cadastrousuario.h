@@ -35,7 +35,7 @@ class CadastroUsuario : public RegisterDialog {
 *\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
 *\return
 */
-    bool viewRegister(const QModelIndex index);
+    bool viewRegister(const QModelIndex &index);
 
     /*!
 *\brief Função padrão para verificar campos obrigatórios

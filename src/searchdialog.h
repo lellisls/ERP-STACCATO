@@ -14,13 +14,14 @@ class SearchDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SearchDialog(QString title, QString table, QStringList indexes, QString filter, QWidget *parent = 0);
+    explicit SearchDialog(const QString &title, const QString &table, const QStringList &indexes, const QString &filter,
+                          QWidget *parent = 0);
     ~SearchDialog();
     void show();
     void showMaximized();
     void setFilter(const QString &value);
     void setRepresentacao(const QString &value);
-    QString getText(const QVariant index);
+    QString getText(const QVariant &index);
 
     // Factory Methods
     static SearchDialog *cliente(QWidget *parent);
@@ -42,8 +43,8 @@ class SearchDialog : public QDialog {
     void on_pushButtonSelecionar_clicked();
     void on_pushButtonCancelar_clicked();
     void on_tableBusca_entered(const QModelIndex &);
-    void on_radioButtonProdAtivos_toggled(bool);
-    void on_radioButtonProdDesc_toggled(bool);
+    void on_radioButtonProdAtivos_toggled(const bool &);
+    void on_radioButtonProdDesc_toggled(const bool &);
 
   private:
     // attributes
@@ -59,14 +60,14 @@ class SearchDialog : public QDialog {
     QVector<QPair<QString, QString>> headerData;
     // methods
     QString getFilter() const;
-    void hideColumns(const QStringList columns);
+    void hideColumns(const QStringList &columns);
     QString getPrimaryKey() const;
     void setPrimaryKey(const QString &value);
     QStringList getTextKeys() const;
     void setTextKeys(const QStringList &value);
-    void setHeaderData(const QString column, const QString value);
+    void setHeaderData(const QString &column, const QString &value);
     void sendUpdateMessage();
-    void montarFiltroAtivoDesc(const bool ativo);
+    void montarFiltroAtivoDesc(const bool &ativo);
 };
 
 #endif // SEARCHDIALOG_H

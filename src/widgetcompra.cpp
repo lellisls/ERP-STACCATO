@@ -123,54 +123,64 @@ void WidgetCompra::setupTables() {
 }
 
 bool WidgetCompra::updateTables() {
-  if (not modelProdPend->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produtos pendentes: " + modelProdPend->lastError().text());
-    return false;
-  }
-
-  if (not modelPedForn->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela fornecedores compra: " + modelPedForn->lastError().text());
-    return false;
-  }
-
-  ui->tableProdutosPend->resizeColumnsToContents();
-  ui->tableFornCompras->resizeColumnsToContents();
-
-  switch (ui->tabWidgetCompra->currentIndex()) {
-    case 0: // Gerar Compra
-      modelItemPedidosPend->setFilter("0");
-
-      if (not modelItemPedidosPend->select()) {
-        QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " +
-                              modelItemPedidosPend->lastError().text());
+  switch (ui->tabWidget->currentIndex()) {
+    case 0: // Pendentes
+      if (not modelProdPend->select()) {
+        QMessageBox::critical(this, "Erro!",
+                              "Erro lendo tabela produtos pendentes: " + modelProdPend->lastError().text());
         return false;
       }
 
-      for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
-        ui->tablePedidosPend->openPersistentEditor(
-              modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
-      }
-
-      ui->tablePedidosPend->resizeColumnsToContents();
-      break;
-
-    case 1: // Confirmar Compra
-      if (not modelItemPedidosComp->select()) {
-        QMessageBox::critical(this, "Erro!", "Erro lendo tabela compras: " + modelItemPedidosComp->lastError().text());
+      if (not modelPedForn->select()) {
+        QMessageBox::critical(this, "Erro!",
+                              "Erro lendo tabela fornecedores compra: " + modelPedForn->lastError().text());
         return false;
       }
 
-      ui->tablePedidosComp->resizeColumnsToContents();
-      break;
+      ui->tableProdutosPend->resizeColumnsToContents();
+      ui->tableFornCompras->resizeColumnsToContents();
 
-    case 2: // Faturamento
-      if (not modelFat->select()) {
-        QMessageBox::critical(this, "Erro!", "Erro lendo tabela faturamento: " + modelFat->lastError().text());
-        return false;
+      break;
+    case 1: // Ativas
+      switch (ui->tabWidgetCompra->currentIndex()) {
+        case 0: // Gerar Compra
+          modelItemPedidosPend->setFilter("0");
+
+          if (not modelItemPedidosPend->select()) {
+            QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " +
+                                  modelItemPedidosPend->lastError().text());
+            return false;
+          }
+
+          for (int i = 0; i < modelItemPedidosPend->rowCount(); ++i) {
+            ui->tablePedidosPend->openPersistentEditor(
+                  modelItemPedidosPend->index(i, modelItemPedidosPend->fieldIndex("selecionado")));
+          }
+
+          ui->tablePedidosPend->resizeColumnsToContents();
+          break;
+
+        case 1: // Confirmar Compra
+          if (not modelItemPedidosComp->select()) {
+            QMessageBox::critical(this, "Erro!", "Erro lendo tabela compras: " + modelItemPedidosComp->lastError().text());
+            return false;
+          }
+
+          ui->tablePedidosComp->resizeColumnsToContents();
+          break;
+
+        case 2: // Faturamento
+          if (not modelFat->select()) {
+            QMessageBox::critical(this, "Erro!", "Erro lendo tabela faturamento: " + modelFat->lastError().text());
+            return false;
+          }
+
+          ui->tableFaturamento->resizeColumnsToContents();
+          break;
+
+        default:
+          return true;
       }
-
-      ui->tableFaturamento->resizeColumnsToContents();
-      break;
 
     default:
       return true;

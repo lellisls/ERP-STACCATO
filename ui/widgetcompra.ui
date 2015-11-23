@@ -15,15 +15,15 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QSplitter" name="splitter_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <property name="childrenCollapsible">
-      <bool>false</bool>
-     </property>
-     <widget class="QFrame" name="frame_2">
-      <layout class="QGridLayout" name="gridLayout_16">
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Pendentes</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout">
          <item row="2" column="2">
@@ -173,8 +173,11 @@
        </item>
       </layout>
      </widget>
-     <widget class="QFrame" name="frame_3">
-      <layout class="QGridLayout" name="gridLayout_24">
+     <widget class="QWidget" name="tab_5">
+      <attribute name="title">
+       <string>Ativas</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
         <widget class="QSplitter" name="splitter_5">
          <property name="orientation">

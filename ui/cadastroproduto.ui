@@ -206,17 +206,17 @@
                  </property>
                  <item>
                   <property name="text">
-                   <string>pç</string>
+                   <string>PÇ</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>m2</string>
+                   <string>M²</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>ml</string>
+                   <string>ML</string>
                   </property>
                  </item>
                 </widget>

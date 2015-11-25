@@ -272,7 +272,7 @@ bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
     return false;
   }
 
-  rowEnd = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
   if (not isUpdate) {
     modelEnd.insertRow(rowEnd);
@@ -359,31 +359,18 @@ void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
 }
 
 void CadastroCliente::on_radioButtonPF_toggled(const bool &checked) {
-  if (checked) {
-    tipoPFPJ = "PF";
-    ui->lineEditCNPJ->hide();
-    ui->labelCNPJ->hide();
-    ui->lineEditCPF->show();
-    ui->labelCPF->show();
-    ui->lineEditInscEstadual->hide();
-    ui->labelInscricaoEstadual->hide();
-    ui->dateEdit->show();
-    ui->labelDataNasc->show();
+  tipoPFPJ = checked ? "PF" : "PJ";
+  ui->lineEditCNPJ->setHidden(checked);
+  ui->labelCNPJ->setHidden(checked);
+  ui->lineEditCPF->setVisible(checked);
+  ui->labelCPF->setVisible(checked);
+  ui->lineEditInscEstadual->setHidden(checked);
+  ui->labelInscricaoEstadual->setHidden(checked);
+  ui->dateEdit->setVisible(checked);
+  ui->labelDataNasc->setVisible(checked);
+  checked ? ui->lineEditCNPJ->clear() : ui->lineEditCPF->clear();
 
-    ui->lineEditCNPJ->clear();
-  } else {
-    tipoPFPJ = "PJ";
-    ui->lineEditCNPJ->show();
-    ui->labelCNPJ->show();
-    ui->lineEditCPF->hide();
-    ui->labelCPF->hide();
-    ui->lineEditInscEstadual->show();
-    ui->labelInscricaoEstadual->show();
-    ui->dateEdit->hide();
-    ui->labelDataNasc->hide();
-
-    ui->lineEditCPF->clear();
-  }
+  adjustSize();
 }
 
 void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {

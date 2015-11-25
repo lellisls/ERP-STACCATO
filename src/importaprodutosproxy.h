@@ -11,7 +11,7 @@ class ImportaProdutosProxy : public QIdentityProxyModel {
     ImportaProdutosProxy(SqlTableModel *model, const int &column, QObject *parent = 0);
     ~ImportaProdutosProxy();
     // QAbstractItemModel interface
-    QVariant data(const QModelIndex &proxyIndex, int &role) const;
+    QVariant data(const QModelIndex &proxyIndex, int role) const;
 
   private:
     const int column;

@@ -9,7 +9,7 @@ ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, const int &colu
 
 ImportaProdutosProxy::~ImportaProdutosProxy() {}
 
-QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int &role) const {
+QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) const {
   if (role == Qt::BackgroundRole) {
 
     // verifica se está descontinuado

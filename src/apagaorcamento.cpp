@@ -24,7 +24,7 @@ ApagaOrcamento::~ApagaOrcamento() { delete ui; }
 
 void ApagaOrcamento::on_pushButtonSalvar_clicked() {
   if (ui->lineEditMotivo->text().isEmpty()) {
-    QMessageBox::warning(this, "Aviso!", "Deve preencher o motivo");
+    QMessageBox::critical(this, "Erro!", "Deve preencher o motivo");
     return;
   }
 
@@ -42,3 +42,5 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
 void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }
 
 void ApagaOrcamento::apagar(const int &index) { row = index; }
+
+// TODO: colocar opcoes pré-definidas para motivos de cancelamento

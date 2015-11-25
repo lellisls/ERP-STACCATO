@@ -32,11 +32,9 @@ Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
 Estoque::~Estoque() { delete ui; }
 
 void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
-  int id = modelEstoque.data(index.row(), "idXML").toInt();
-
   QSqlQuery query;
   query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-  query.bindValue(":idNFe", id);
+  query.bindValue(":idNFe", modelEstoque.data(index.row(), "idXML"));
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando XML da NFe: " + query.lastError().text());

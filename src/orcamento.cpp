@@ -1283,3 +1283,4 @@ void Orcamento::setSettings(const QString &key, const QVariant &value) const { U
 
 // TODO: mudar status do orcamento para expirado se validade vencida
 // TODO: cadastrar endereco nao aparece (apenas apos fechar e abrir de novo) dar um refresh no model
+// TODO: if motivocancelamento not empty, append to observacoes (motivoCancelamento = ...)

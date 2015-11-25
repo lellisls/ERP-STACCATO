@@ -170,5 +170,3 @@ void CadastroProduto::show() {
   QWidget::show();
   adjustSize();
 }
-
-// TODO: testar cadastrar produto

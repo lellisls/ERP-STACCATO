@@ -19,7 +19,6 @@ class CepCompleter {
     QString bairro;
     QString uf;
     // methods
-    void clearFields();
 };
 
 #endif // CEPCOMPLETER_H

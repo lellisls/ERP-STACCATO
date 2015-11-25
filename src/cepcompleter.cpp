@@ -9,16 +9,7 @@ CepCompleter::CepCompleter() {}
 
 CepCompleter::~CepCompleter() {}
 
-void CepCompleter::clearFields() {
-  uf.clear();
-  cidade.clear();
-  endereco.clear();
-  bairro.clear();
-}
-
 bool CepCompleter::buscaCEP(const QString &cep) {
-  clearFields();
-
   QSqlQuery query;
   query.prepare("SELECT log_logradouro.log_tipo_logradouro, log_logradouro.log_no AS logradouro, log_bairro.bai_no AS "
                 "bairro, log_localidade.loc_no AS cidade, log_localidade.ufe_sg AS uf, log_logradouro.cep FROM "

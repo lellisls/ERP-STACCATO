@@ -1,14 +1,15 @@
-#include "tableview.h"
-
 #include <QHeaderView>
+#include <QIdentityProxyModel>
 #include <QSqlTableModel>
+
+#include "tableview.h"
 
 TableView::TableView(QWidget *parent) : QTableView(parent) {
   verticalHeader()->setResizeContentsPrecision(0);
   horizontalHeader()->setResizeContentsPrecision(0);
 }
 
-void TableView::hideColumn(const QString column) {
+void TableView::hideColumn(const QString &column) {
   if (QIdentityProxyModel *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (QSqlTableModel *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
       QTableView::hideColumn(sourceModel->fieldIndex(column));
@@ -20,7 +21,7 @@ void TableView::hideColumn(const QString column) {
   }
 }
 
-void TableView::setItemDelegateForColumn(const QString column, QAbstractItemDelegate *delegate) {
+void TableView::setItemDelegateForColumn(const QString &column, QAbstractItemDelegate *delegate) {
   if (QIdentityProxyModel *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (QSqlTableModel *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
       QTableView::setItemDelegateForColumn(sourceModel->fieldIndex(column), delegate);

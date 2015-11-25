@@ -324,27 +324,14 @@ void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
 }
 
 void CadastroProfissional::on_radioButtonPF_toggled(const bool &checked) {
-  if (checked) {
-    tipoPFPJ = "PF";
-    ui->lineEditCNPJ->hide();
-    ui->labelCNPJ->hide();
-    ui->lineEditCPF->show();
-    ui->labelCPF->show();
-    ui->lineEditInscEstadual->hide();
-    ui->labelInscricaoEstadual->hide();
-
-    ui->lineEditCNPJ->clear();
-  } else {
-    tipoPFPJ = "PJ";
-    ui->lineEditCNPJ->show();
-    ui->labelCNPJ->show();
-    ui->lineEditCPF->hide();
-    ui->labelCPF->hide();
-    ui->lineEditInscEstadual->show();
-    ui->labelInscricaoEstadual->show();
-
-    ui->lineEditCPF->clear();
-  }
+  tipoPFPJ = checked ? "PF" : "PJ";
+  ui->lineEditCNPJ->setHidden(checked);
+  ui->labelCNPJ->setHidden(checked);
+  ui->lineEditCPF->setVisible(checked);
+  ui->labelCPF->setVisible(checked);
+  ui->lineEditInscEstadual->setHidden(checked);
+  ui->labelInscricaoEstadual->setHidden(checked);
+  checked ? ui->lineEditCNPJ->clear() : ui->lineEditCPF->clear();
 
   adjustSize();
 }

@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
   app.setApplicationVersion("0.6");
+  app.setStyle("Fusion");
 
   //    setSettings("Login/hostname", ""); //to test store selection
   storeSelection();

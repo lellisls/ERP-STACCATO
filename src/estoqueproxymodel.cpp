@@ -9,7 +9,7 @@ EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, const QString &column
 
 EstoqueProxyModel::~EstoqueProxyModel() {}
 
-QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int &role) const {
+QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
     const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 

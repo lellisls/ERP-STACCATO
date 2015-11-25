@@ -10,7 +10,7 @@ class EstoqueProxyModel : public QIdentityProxyModel {
     explicit EstoqueProxyModel(SqlTableModel *model, const QString &column, QObject *parent = 0);
     ~EstoqueProxyModel();
     // QAbstractItemModel interface
-    QVariant data(const QModelIndex &proxyIndex, const int &role) const;
+    QVariant data(const QModelIndex &proxyIndex, const int role) const;
 
   private:
     const int column;

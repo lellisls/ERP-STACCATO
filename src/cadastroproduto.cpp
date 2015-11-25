@@ -86,6 +86,12 @@ bool CadastroProduto::verifyFields() {
     return false;
   }
 
+  if (ui->lineEditCodComer->text().isEmpty()) {
+    ui->lineEditCodComer->setFocus();
+    QMessageBox::critical(this, "Erro!", "Faltou preencher Código comercial!");
+    return false;
+  }
+
   return true;
 }
 

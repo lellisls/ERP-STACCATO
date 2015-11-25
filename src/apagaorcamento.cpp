@@ -37,7 +37,6 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
   }
 
   parentWidget()->close();
-  close();
 }
 
 void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }

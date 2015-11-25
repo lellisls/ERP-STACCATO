@@ -31,8 +31,8 @@ class WidgetConta : public QWidget {
 
   private:
     Ui::WidgetConta *ui;
-    SqlTableModel *modelCAPagar;
-    SqlTableModel *modelCAReceber;
+    SqlTableModel modelCAPagar;
+    SqlTableModel modelCAReceber;
     void setupTables();
 };
 

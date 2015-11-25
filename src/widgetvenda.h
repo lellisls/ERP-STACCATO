@@ -26,7 +26,7 @@ class WidgetVenda : public QWidget {
 
   private:
     Ui::WidgetVenda *ui;
-    SqlTableModel *modelVendas;
+    SqlTableModel modelVendas;
     void setupTables();
 };
 

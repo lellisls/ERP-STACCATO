@@ -50,10 +50,9 @@ WidgetVenda::~WidgetVenda() { delete ui; }
 void WidgetVenda::setupTables() {
   DoubleDelegate *doubledelegate = new DoubleDelegate(this);
 
-  modelVendas = new SqlTableModel(this);
-  modelVendas->setTable("view_venda");
+  modelVendas.setTable("view_venda");
 
-  ui->tableVendas->setModel(new OrcamentoProxyModel(modelVendas, "Dias restantes", this));
+  ui->tableVendas->setModel(new OrcamentoProxyModel(&modelVendas, "Dias restantes", this));
   ui->tableVendas->setItemDelegateForColumn("Bruto", doubledelegate);
   ui->tableVendas->setItemDelegateForColumn("Líquido", doubledelegate);
   ui->tableVendas->setItemDelegateForColumn("Frete", doubledelegate);
@@ -77,7 +76,7 @@ void WidgetVenda::montaFiltroVendas() {
     }
   }
 
-  modelVendas->setFilter(filtro2.isEmpty() ? filtro : filtro + " AND (" + filtro2 + ")");
+  modelVendas.setFilter(filtro2.isEmpty() ? filtro : filtro + " AND (" + filtro2 + ")");
 
   ui->tableVendas->resizeColumnsToContents();
 }
@@ -95,8 +94,8 @@ void WidgetVenda::on_groupBoxStatusVenda_toggled(const bool &enabled) {
 void WidgetVenda::on_comboBoxLojas_currentTextChanged(const QString &) { montaFiltroVendas(); }
 
 bool WidgetVenda::updateTables() {
-  if (not modelVendas->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelVendas->lastError().text());
+  if (not modelVendas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelVendas.lastError().text());
     return false;
   }
 
@@ -111,15 +110,15 @@ void WidgetVenda::on_lineEditBuscaVendas_textChanged(const QString &text) {
     return;
   }
 
-  modelVendas->setFilter("(Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
-                         text + "%')");
+  modelVendas.setFilter("(Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
+                        text + "%')");
 
   ui->tableVendas->resizeColumnsToContents();
 }
 
 void WidgetVenda::on_tableVendas_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
-  vendas->viewRegisterById(modelVendas->data(index.row(), "Código"));
+  vendas->viewRegisterById(modelVendas.data(index.row(), "Código"));
 }
 
 // TODO: frete as vezes recalcula para o minimo no lugar do valor armazenado

@@ -30,10 +30,10 @@ class WidgetLogistica : public QWidget {
 
   private:
     Ui::WidgetLogistica *ui;
-    SqlTableModel *modelPedForn2;
-    SqlTableModel *modelColeta;
-    SqlTableModel *modelReceb;
-    SqlTableModel *modelEntregasCliente;
+    SqlTableModel modelPedForn;
+    SqlTableModel modelColeta;
+    SqlTableModel modelReceb;
+    SqlTableModel modelEntregasCliente;
     void setupTables();
 };
 

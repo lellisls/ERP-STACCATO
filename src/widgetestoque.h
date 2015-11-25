@@ -24,7 +24,7 @@ class WidgetEstoque : public QWidget {
 
   private:
     Ui::WidgetEstoque *ui;
-    SqlTableModel *modelEstoque;
+    SqlTableModel modelEstoque;
     void setupTables();
 };
 

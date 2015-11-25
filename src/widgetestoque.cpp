@@ -20,17 +20,16 @@ void WidgetEstoque::setupTables() {
   DoubleDelegate *doubledelegate = new DoubleDelegate(this);
 
   // Estoque -----------------------------------------------------------------------------------------------------------
-  modelEstoque = new SqlTableModel(this);
-  modelEstoque->setTable("view_estoque");
-  modelEstoque->setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelEstoque.setTable("view_estoque");
+  modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  ui->tableEstoque->setModel(modelEstoque);
+  ui->tableEstoque->setModel(&modelEstoque);
   ui->tableEstoque->setItemDelegate(doubledelegate);
 }
 
 bool WidgetEstoque::updateTables() {
-  if (not modelEstoque->select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque->lastError().text());
+  if (not modelEstoque.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
     return false;
   }
 
@@ -39,7 +38,7 @@ bool WidgetEstoque::updateTables() {
 
 void WidgetEstoque::on_tableEstoque_activated(const QModelIndex &index) {
   Estoque *estoque = new Estoque(this);
-  estoque->viewRegisterById(modelEstoque->data(index.row(), "Cód Com").toString());
+  estoque->viewRegisterById(modelEstoque.data(index.row(), "Cód Com").toString());
 }
 
 void WidgetEstoque::on_pushButtonEntradaEstoque_clicked() {

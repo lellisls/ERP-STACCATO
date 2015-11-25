@@ -29,8 +29,8 @@ class WidgetNfe : public QWidget {
 
   private:
     Ui::WidgetNfe *ui;
-    SqlTableModel *modelNfeEntrada;
-    SqlTableModel *modelNfeSaida;
+    SqlTableModel modelNfeEntrada;
+    SqlTableModel modelNfeSaida;
     void setupTables();
 };
 

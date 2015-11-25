@@ -30,7 +30,7 @@ class WidgetOrcamento : public QWidget {
 
   private:
     Ui::WidgetOrcamento *ui;
-    SqlTableModel *modelOrcamento;
+    SqlTableModel modelOrcamento;
     void setupTables();
 };
 

@@ -27,22 +27,20 @@ void WidgetNfe::setupTables() {
   DoubleDelegate *doubledelegate = new DoubleDelegate(this);
 
   // NFe Entrada -------------------------------------------------------------------------------------------------------
-  modelNfeEntrada = new SqlTableModel(this);
-  modelNfeEntrada->setTable("nfe");
-  modelNfeEntrada->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelNfeEntrada->setFilter("tipo = 'ENTRADA'");
+  modelNfeEntrada.setTable("nfe");
+  modelNfeEntrada.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelNfeEntrada.setFilter("tipo = 'ENTRADA'");
 
-  ui->tableNfeEntrada->setModel(modelNfeEntrada);
+  ui->tableNfeEntrada->setModel(&modelNfeEntrada);
   ui->tableNfeEntrada->hideColumn("NFe");
   ui->tableNfeEntrada->setItemDelegate(doubledelegate);
 
   // NFe Saida ---------------------------------------------------------------------------------------------------------
-  modelNfeSaida = new SqlTableModel(this);
-  modelNfeSaida->setTable("nfe");
-  modelNfeSaida->setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelNfeSaida->setFilter("tipo = 'SAIDA'");
+  modelNfeSaida.setTable("nfe");
+  modelNfeSaida.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelNfeSaida.setFilter("tipo = 'SAIDA'");
 
-  ui->tableNfeSaida->setModel(modelNfeSaida);
+  ui->tableNfeSaida->setModel(&modelNfeSaida);
   ui->tableNfeSaida->hideColumn("NFe");
   ui->tableNfeSaida->setItemDelegate(doubledelegate);
 }
@@ -50,8 +48,8 @@ void WidgetNfe::setupTables() {
 bool WidgetNfe::updateTables() {
   switch (ui->tabWidgetNfe->currentIndex()) {
     case 0: // Entrada
-      if (not modelNfeEntrada->select()) {
-        QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeEntrada->lastError().text());
+      if (not modelNfeEntrada.select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeEntrada.lastError().text());
         return false;
       }
 
@@ -59,8 +57,8 @@ bool WidgetNfe::updateTables() {
       break;
 
     case 1: // Saida
-      if (not modelNfeSaida->select()) {
-        QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeSaida->lastError().text());
+      if (not modelNfeSaida.select()) {
+        QMessageBox::critical(this, "Erro!", "Erro lendo tabela NFe: " + modelNfeSaida.lastError().text());
         return false;
       }
 
@@ -75,35 +73,35 @@ bool WidgetNfe::updateTables() {
 }
 
 void WidgetNfe::on_radioButtonNFeAutorizado_clicked() {
-  modelNfeSaida->setFilter("status = 'autorizado'");
+  modelNfeSaida.setFilter("status = 'autorizado'");
   ui->tableNfeSaida->resizeColumnsToContents();
 }
 
 void WidgetNfe::on_radioButtonNFeEnviado_clicked() {
-  modelNfeSaida->setFilter("status = 'enviado'");
+  modelNfeSaida.setFilter("status = 'enviado'");
   ui->tableNfeSaida->resizeColumnsToContents();
 }
 
 void WidgetNfe::on_radioButtonNFeLimpar_clicked() {
-  modelNfeSaida->setFilter("");
+  modelNfeSaida.setFilter("");
   ui->tableNfeSaida->resizeColumnsToContents();
 }
 
 void WidgetNfe::on_lineEditBuscaNFe_textChanged(const QString &text) {
-  modelNfeSaida->setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  modelNfeSaida.setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
 
   ui->tableNfeSaida->resizeColumnsToContents();
 }
 
 void WidgetNfe::on_tableNfeSaida_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
-  vendas->viewRegisterById(modelNfeSaida->data(index.row(), "idVenda"));
+  vendas->viewRegisterById(modelNfeSaida.data(index.row(), "idVenda"));
 }
 
 void WidgetNfe::on_tableNfeEntrada_activated(const QModelIndex &index) {
   XML_Viewer *viewer = new XML_Viewer(this);
 
-  viewer->exibirXML(modelNfeEntrada->data(index.row(), "xml").toString());
+  viewer->exibirXML(modelNfeEntrada.data(index.row(), "xml").toString());
   viewer->show();
 }
 

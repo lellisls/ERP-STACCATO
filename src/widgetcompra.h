@@ -34,11 +34,11 @@ class WidgetCompra : public QWidget {
 
   private:
     Ui::WidgetCompra *ui;
-    SqlTableModel *modelProdPend;
-    SqlTableModel *modelPedForn;
-    SqlTableModel *modelItemPedidosPend;
-    SqlTableModel *modelItemPedidosComp;
-    SqlTableModel *modelFat;
+    SqlTableModel modelProdPend;
+    SqlTableModel modelPedForn;
+    SqlTableModel modelItemPedidosPend;
+    SqlTableModel modelItemPedidosComp;
+    SqlTableModel modelFat;
     void setupTables();
     QVariant settings(QString key) const;
     void setSettings(QString key, QVariant value) const;

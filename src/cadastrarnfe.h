@@ -18,9 +18,6 @@ class CadastrarNFe : public QDialog {
     ~CadastrarNFe();
     void prepararNFe(const QList<int> &items);
 
-  public slots:
-    void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
-
   private slots:
     void updateImpostos();
     void on_pushButtonGerarNFE_clicked();

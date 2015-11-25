@@ -19,7 +19,6 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(&modelProd, &QAbstractItemModel::dataChanged, this, &CadastrarNFe::onDataChanged);
 
   modelVenda.setTable("venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -351,52 +350,6 @@ QString CadastrarNFe::clearStr(const QString &str) const {
 
 QString CadastrarNFe::removeDiacritics(const QString &str) const {
   return str == "M²" ? "M2" : QString(str).normalized(QString::NormalizationForm_KD).remove(QRegExp("[^a-zA-Z\\s]"));
-}
-
-void CadastrarNFe::onDataChanged(const QModelIndex &topLeft,
-                                 const QModelIndex &bottomRight) { // TODO: finish implementation
-  if (topLeft == bottomRight) {                                    // only one cell changed
-    //    qDebug() << "cell changed: " << topLeft;
-
-    if (topLeft.column() == 11) { // baseICMS (valor produto + frete)
-    }
-
-    if (topLeft.column() == 12) { // valorICMS
-    }
-
-    if (topLeft.column() == 13) { // valorIPI
-    }
-
-    if (topLeft.column() == 14) { // aliquotaICMS
-      if (topLeft.data().toInt() > 100) {
-        //        qDebug() << "bigger than 100! limit.";
-        //        modelNFeItem.setData(topLeft, 100);
-      }
-
-      //      const double icms =
-      //          modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble()
-      //          *
-      //          (topLeft.data().toDouble() / 100);
-      //      qDebug() << "setting icms: "
-      //               << modelNFeItem.setData(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorICMS")),
-      //               icms);
-    }
-
-    if (topLeft.column() == 15) { // aliquotaIPI
-      if (topLeft.data().toInt() > 100) {
-        qDebug() << "bigger than 100! limit.";
-        //        modelNFeItem.setData(topLeft, 100);
-      }
-
-      //      const double icms =
-      //          modelNFeItem.data(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorTotal"))).toDouble()
-      //          *
-      //          (topLeft.data().toDouble() / 100);
-      //      qDebug() << "setting icms: "
-      //               << modelNFeItem.setData(modelNFeItem.index(topLeft.row(), modelNFeItem.fieldIndex("valorIPI")),
-      //               icms);
-    }
-  }
 }
 
 QString CadastrarNFe::calculaDigitoVerificador(const QString &chave) {

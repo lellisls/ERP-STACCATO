@@ -17,9 +17,6 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::Ap
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela de orçamentos: " + modelOrc.lastError().text());
   }
 
-  mapperOrc.setModel(&modelOrc);
-  mapperOrc.addMapping(ui->lineEditMotivo, modelOrc.fieldIndex("motivoCancelamento"));
-
   show();
 }
 
@@ -31,8 +28,8 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
     return;
   }
 
-  modelOrc.setData(mapperOrc.currentIndex(), "status", "CANCELADO");
-  modelOrc.setData(mapperOrc.currentIndex(), "motivoCancelamento", ui->lineEditMotivo->text());
+  modelOrc.setData(row, "status", "CANCELADO");
+  modelOrc.setData(row, "motivoCancelamento", ui->lineEditMotivo->text());
 
   if (not modelOrc.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro cancelando orçamento: " + modelOrc.lastError().text());
@@ -45,4 +42,4 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
 
 void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }
 
-void ApagaOrcamento::apagar(const int &index) { mapperOrc.setCurrentIndex(index); }
+void ApagaOrcamento::apagar(const int &index) { row = index; }

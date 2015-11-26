@@ -41,9 +41,8 @@ void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
     return;
   }
 
-  XML_Viewer *xml = new XML_Viewer(this);
-  xml->exibirXML(query.value(0).toString());
-  xml->show();
+  XML_Viewer *viewer = new XML_Viewer(this);
+  viewer->exibirXML(query.value(0).toByteArray());
 }
 
 void Estoque::viewRegisterById(const QString &codComercial) {
@@ -81,6 +80,5 @@ void Estoque::on_pushButtonExibirNfe_clicked() {
   }
 
   XML_Viewer *viewer = new XML_Viewer(this);
-  viewer->exibirXML(query.value(0).toString());
-  viewer->show();
+  viewer->exibirXML(query.value(0).toByteArray());
 }

@@ -24,43 +24,14 @@ XML_Viewer::XML_Viewer(QWidget *parent) : QDialog(parent), ui(new Ui::XML_Viewer
 
 XML_Viewer::~XML_Viewer() { delete ui; }
 
-void XML_Viewer::exibirXML(const QString &fileContent) {
+void XML_Viewer::exibirXML(const QByteArray &fileContent) {
   if (fileContent.isEmpty()) {
     return;
   }
 
-  QDomDocument document;
-  QString *error = new QString();
-
-  if (not document.setContent(fileContent, error)) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + *error);
-    return;
-  }
-
-  QDomElement root = document.firstChildElement();
-  QDomNamedNodeMap map = root.attributes();
-  QStandardItem *rootItem;
-
-  if (map.size() > 0) {
-    QString attributes = root.nodeName() + " ";
-
-    for (int i = 0; i < map.size(); ++i) {
-      if (i > 0) {
-        attributes += " ";
-      }
-
-      attributes += map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
-    }
-
-    rootItem = new QStandardItem(attributes);
-  } else {
-    rootItem = new QStandardItem(root.nodeName());
-  }
-
-  model.appendRow(rootItem);
-
-  XML xml;
-  xml.readChild(root, rootItem);
+  XML xml(model, fileContent);
 
   ui->treeView->expandAll();
+
+  show();
 }

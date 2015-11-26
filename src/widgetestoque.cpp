@@ -42,8 +42,22 @@ void WidgetEstoque::on_tableEstoque_activated(const QModelIndex &index) {
 }
 
 void WidgetEstoque::on_pushButtonEntradaEstoque_clicked() {
-  XML xml;
-  xml.importarXML();
+  QString filePath = QFileDialog::getOpenFileName(this, "Importar arquivo XML", QDir::currentPath(), ("XML (*.xml)"));
+
+  if (filePath.isEmpty()) {
+    return;
+  }
+
+  QFile file(filePath);
+
+  if (not file.open(QFile::ReadOnly)) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + file.errorString());
+    return;
+  }
+
+  XML xml(file.readAll(), file.fileName());
+  xml.cadastrarNFe("ENTRADA");
+
   updateTables();
 }
 

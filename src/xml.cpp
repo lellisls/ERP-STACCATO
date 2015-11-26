@@ -1,172 +1,123 @@
 #include <QDomDocument>
 #include <QFileDialog>
 #include <QString>
-#include <QDebug>
 #include <QSqlError>
 #include <QMessageBox>
 
 #include "xml.h"
 #include "usersession.h"
 
-XML::XML() {
+XML::XML(const QByteArray &fileContent, const QString &fileName) : XML(model, fileContent, fileName) {}
+
+XML::XML(QStandardItemModel &model, const QByteArray &fileContent, const QString &fileName)
+  : fileContent(fileContent), fileName(fileName) {
   modelProduto.setTable("produto");
   modelProduto.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelProduto.select()) {
     QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto: " + modelProduto.lastError().text());
   }
-}
 
-void XML::importarXML() {
-  fileName = QFileDialog::getOpenFileName(0, "Importar arquivo XML", QDir::currentPath(), ("XML (*.xml)"));
+  if (not fileContent.isEmpty()) {
+    QDomDocument document;
+    QString *error = new QString();
 
-  if (fileName.isEmpty()) {
-    return;
-  }
-
-  fileName.replace("/", "\\\\");
-
-  readXML();
-  saveXML();
-}
-
-void XML::readXML() {
-  QDomDocument document;
-
-  QFile file(fileName);
-
-  if (not file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    QMessageBox::critical(0, "Erro!", "Erro abrindo arquivo: " + file.errorString());
-    return;
-  }
-
-  QString *error = new QString();
-
-  if (not document.setContent(&file, error)) {
-    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
-    return;
-  }
-
-  file.close();
-
-  QDomElement root = document.firstChildElement();
-  QDomNamedNodeMap map = root.attributes();
-  QStandardItem *rootItem;
-
-  if (map.size() > 0) {
-    QString attributes = root.nodeName() + " ";
-
-    for (int i = 0; i < map.size(); ++i) {
-      if (i > 0) {
-        attributes += " ";
-      }
-
-      attributes += map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+    if (not document.setContent(fileContent, error)) {
+      QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
+      return;
     }
 
-    rootItem = new QStandardItem(attributes);
-  } else {
-    rootItem = new QStandardItem(root.nodeName());
+    QDomElement root = document.firstChildElement();
+    QDomNamedNodeMap map = root.attributes();
+    QString attributes = root.nodeName();
+
+    if (map.size() > 0) {
+      for (int i = 0; i < map.size(); ++i) {
+        if (i > 0) {
+          attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+        }
+      }
+    }
+
+    QStandardItem *rootItem = new QStandardItem(attributes);
+
+    model.appendRow(rootItem);
+
+    readChild(root, rootItem);
+
+    lerValores(model.item(0, 0));
   }
-
-  model.appendRow(rootItem);
-
-  readChild(root, rootItem);
 }
 
-void XML::readChild(QDomElement element, QStandardItem *elementItem) {
+void XML::readChild(QDomElement &element, QStandardItem *elementItem) {
   QDomElement child = element.firstChildElement();
-  QStandardItem *childItem;
 
   for (; not child.isNull(); child = child.nextSiblingElement()) {
     if (child.firstChild().isText()) {
-      childItem = new QStandardItem(child.nodeName() + " - " + child.text());
+      QStandardItem *childItem = new QStandardItem(child.nodeName() + " - " + child.text());
       elementItem->appendRow(childItem);
       continue;
     }
 
     QDomNamedNodeMap map = child.attributes();
-    QString attributes = child.nodeName() + " ";
+    QString attributes = child.nodeName();
 
     if (map.size() > 0) {
       for (int i = 0; i < map.size(); ++i) {
-        if (i > 0) {
-          attributes += " ";
-        }
-
-        attributes += map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+        attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
       }
-
-      childItem = new QStandardItem(attributes);
-      elementItem->appendRow(childItem);
-      readChild(child, childItem);
-      continue;
     }
 
-    childItem = new QStandardItem(child.nodeName());
+    QStandardItem *childItem = new QStandardItem(attributes);
     elementItem->appendRow(childItem);
     readChild(child, childItem);
   }
 }
 
-void XML::saveXML() {
-  QStandardItem *modelRoot = model.item(0, 0);
-
-  if (modelRoot->hasChildren()) {
-    readTree(modelRoot);
-  }
-}
-
-bool XML::readTree(QStandardItem *item) {
+bool XML::lerValores(const QStandardItem *item) {
   for (int i = 0; i < item->rowCount(); ++i) {
     for (int j = 0; j < item->columnCount(); ++j) {
       QStandardItem *child = item->child(i, j);
+      QString text = child->text();
 
-      if (child->text().left(6) == "infNFe") {
-        chaveAcesso = child->text().mid(child->text().indexOf("Id=") + 7, 44);
+      if (text.left(6) == "infNFe") {
+        chaveAcesso = text.mid(text.indexOf("Id=") + 7, 44);
 
-        QSqlQuery query;
-        query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
-        query.bindValue(":chaveAcesso", chaveAcesso);
+        //        QSqlQuery query;
+        //        query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
+        //        query.bindValue(":chaveAcesso", chaveAcesso);
 
-        if (not query.exec()) {
-          QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " + query.lastError().text());
-          return false;
-        }
+        //        if (not query.exec()) {
+        //          QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " +
+        //          query.lastError().text());
+        //          return false;
+        //        }
 
-        if (query.first()) {
-          QMessageBox::warning(0, "Aviso!", "Nota já cadastrada!");
-          return false;
-        }
+        //        if (query.first()) {
+        //          QMessageBox::warning(0, "Aviso!", "Nota já cadastrada!");
+        //          return false;
+        //        }
       }
 
-      if (child->parent()->text() == "emit" and child->text().left(7) == "xFant -") {
-        xFant = child->text().remove(0, 8);
-      }
+      if (child->parent()->text() == "emit" and text.left(7) == "xFant -") xFant = text.remove(0, 8);
+      if (child->parent()->text() == "emit" and text.left(7) == "xNome -") xNome = text.remove(0, 8);
+      if (child->parent()->text() == "dest" and text.left(6) == "CNPJ -") cnpj = text.remove(0, 7);
+      // NOTE: readicionar verificação de destinatario nfe
 
-      if (child->parent()->text() == "emit" and child->text().left(7) == "xNome -") {
-        xNome = child->text().remove(0, 8);
-      }
+      //                bool match = false;
 
-      if (child->parent()->text() == "dest" and child->text().left(6) == "CNPJ -") {
-        cnpj = child->text().remove(0, 7);
-        // NOTE: readicionar verificação de destinatario nfe
+      //                for (const auto cnpjLoja : UserSession::getTodosCNPJ()) {
+      //                  if (cnpj == cnpjLoja) {
+      //                    match = true;
+      //                  }
+      //                }
 
-        //                bool match = false;
+      //                if (not match) {
+      //                  QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
+      //                  return false;
+      //                }
 
-        //                for (const auto cnpjLoja : UserSession::getTodosCNPJ()) {
-        //                  if (cnpj == cnpjLoja) {
-        //                    match = true;
-        //                  }
-        //                }
-
-        //                if (not match) {
-        //                  QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
-        //                  return false;
-        //                }
-      }
-
-      //            if (child->parent()->text() == "dest" and child->text().left(5) == "CPF -") {
+      //            if (child->parent()->text() == "dest" and text.left(5) == "CPF -") {
       //              QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
       //              return false;
       //            }
@@ -174,12 +125,12 @@ bool XML::readTree(QStandardItem *item) {
       lerDadosProduto(child);
       lerICMSProduto(child);
       lerIPIProduto(child);
-      lerIPIProduto(child);
+      lerPISProduto(child);
       lerCOFINSProduto(child);
       lerTotais(child);
 
       if (child->hasChildren()) {
-        if (not readTree(child)) {
+        if (not lerValores(child)) {
           return false;
         }
       }
@@ -189,30 +140,24 @@ bool XML::readTree(QStandardItem *item) {
   return true;
 }
 
-void XML::inserirNoModel(QStandardItem *item, SqlTableModel *externalModel) {
+void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel) {
   for (int i = 0; i < item->rowCount(); ++i) {
     for (int j = 0; j < item->columnCount(); ++j) {
       QStandardItem *child = item->child(i, j);
+      QString text = child->text();
 
-      lerDadosProduto(child);
-      lerICMSProduto(child);
-      lerIPIProduto(child);
-      lerIPIProduto(child);
-      lerCOFINSProduto(child);
-      lerTotais(child);
-
-      if (child->text().mid(0, 10) == "det nItem=") {
-        inserirItem(externalModel);
+      if (text.mid(0, 10) == "det nItem=") {
+        inserirItemSql(externalModel);
       }
 
       if (child->hasChildren()) {
-        inserirNoModel(child, externalModel);
+        inserirNoSqlModel(child, externalModel);
       }
     }
   }
 }
 
-int XML::cadastrarNFe() {
+int XML::cadastrarNFe(const QString &tipo) {
   QSqlQuery query;
 
   query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
@@ -223,23 +168,20 @@ int XML::cadastrarNFe() {
     return false;
   }
 
-  qDebug() << "fileName: " << fileName;
-
-  QFile file(fileName);
-
-  if (not file.open(QFile::ReadOnly)) {
-    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + file.errorString());
-    return false;
-  }
-
-  QString fileContents = file.readAll();
-
   if (not query.first()) {
-    query.prepare("INSERT INTO nfe (idVendaCompra, tipo, chaveAcesso, xml) VALUES (:idVendaCompra, 'ENTRADA', "
+    QFile file(fileName);
+
+    if (not file.open(QFile::ReadOnly)) {
+      QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + file.errorString());
+      return false;
+    }
+
+    query.prepare("INSERT INTO nfe (idVendaCompra, tipo, chaveAcesso, xml) VALUES (:idVendaCompra, :tipo, "
                   ":chaveAcesso, :xml)");
     query.bindValue(":idVendaCompra", "PLACEHOLDER");
+    query.bindValue(":tipo", tipo);
     query.bindValue(":chaveAcesso", chaveAcesso);
-    query.bindValue(":xml", fileContents);
+    query.bindValue(":xml", file.readAll());
 
     if (not query.exec()) {
       QMessageBox::critical(0, "Erro!", "Erro cadastrando XML no estoque: " + query.lastError().text());
@@ -247,256 +189,113 @@ int XML::cadastrarNFe() {
     }
 
     idNFe = query.lastInsertId().toInt();
+    return idNFe;
   }
 
+  idNFe = query.value("idNFe").toInt();
   return idNFe;
 }
 
-void XML::lerDadosProduto(QStandardItem *child) {
-  if (child->text().mid(0, 10) == "det nItem=") {
-    itemNumero = child->text().right(child->text().size() - 10).remove("\"").toInt();
-  }
+void XML::lerDadosProduto(const QStandardItem *child) {
+  QString text = child->text();
+
+  if (text.mid(0, 10) == "det nItem=") itemNumero = text.right(text.size() - 10).remove("\"").toInt();
 
   if (child->parent()->text() == "prod") {
-    if (child->text().left(7) == "cProd -") {
-      codProd = child->text().remove(0, 8);
-    }
-
-    if (child->text().left(6) == "cEAN -") {
-      codBarras = child->text().remove(0, 7);
-    }
-
-    if (child->text().left(7) == "xProd -") {
-      descricao = child->text().remove(0, 8);
-    }
-
-    if (child->text().left(5) == "NCM -") {
-      ncm = child->text().remove(0, 6);
-    }
-
-    if (child->text().left(6) == "CFOP -") {
-      cfop = child->text().remove(0, 7);
-    }
-
-    if (child->text().left(6) == "uCom -") {
-      un = child->text().remove(0, 7);
-    }
-
-    if (child->text().left(6) == "qCom -") {
-      quant = child->text().remove(0, 7).toDouble();
-    }
-
-    if (child->text().left(8) == "vUnCom -") {
-      valorUnid = child->text().remove(0, 9).toDouble();
-    }
-
-    if (child->text().left(7) == "vProd -") {
-      valor = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(10) == "cEANTrib -") {
-      codBarrasTrib = child->text().remove(0, 11);
-    }
-
-    if (child->text().left(7) == "uTrib -") {
-      unTrib = child->text().remove(0, 8);
-    }
-
-    if (child->text().left(7) == "qTrib -") {
-      quantTrib = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(9) == "vUnTrib -") {
-      valorTrib = child->text().remove(0, 10).toDouble();
-    }
-
-    if (child->text().left(7) == "vDesc -") {
-      desconto = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(8) == "indTot -") {
-      compoeTotal = child->text().remove(0, 9).toInt();
-    }
-
-    if (child->text().left(6) == "xPed -") {
-      numeroPedido = child->text().remove(0, 7);
-    }
-
-    if (child->text().left(10) == "nItemPed -") {
-      itemPedido = child->text().remove(0, 11).toDouble();
-    }
+    if (text.left(7) == "cProd -") codProd = text.remove(0, 8);
+    if (text.left(6) == "cEAN -") codBarras = text.remove(0, 7);
+    if (text.left(7) == "xProd -") descricao = text.remove(0, 8);
+    if (text.left(5) == "NCM -") ncm = text.remove(0, 6);
+    if (text.left(6) == "CFOP -") cfop = text.remove(0, 7);
+    if (text.left(6) == "uCom -") un = text.remove(0, 7);
+    if (text.left(6) == "qCom -") quant = text.remove(0, 7).toDouble();
+    if (text.left(8) == "vUnCom -") valorUnid = text.remove(0, 9).toDouble();
+    if (text.left(7) == "vProd -") valor = text.remove(0, 8).toDouble();
+    if (text.left(10) == "cEANTrib -") codBarrasTrib = text.remove(0, 11);
+    if (text.left(7) == "uTrib -") unTrib = text.remove(0, 8);
+    if (text.left(7) == "qTrib -") quantTrib = text.remove(0, 8).toDouble();
+    if (text.left(9) == "vUnTrib -") valorTrib = text.remove(0, 10).toDouble();
+    if (text.left(7) == "vDesc -") desconto = text.remove(0, 8).toDouble();
+    if (text.left(8) == "indTot -") compoeTotal = text.remove(0, 9).toInt();
+    if (text.left(6) == "xPed -") numeroPedido = text.remove(0, 7);
+    if (text.left(10) == "nItemPed -") itemPedido = text.remove(0, 11).toDouble();
   }
 }
 
-void XML::lerICMSProduto(QStandardItem *child) {
-  if (child->text() == "ICMS") {
-    tipoICMS = child->child(0, 0)->text();
-  }
+void XML::lerICMSProduto(const QStandardItem *child) {
+  QString text = child->text();
+
+  if (text == "ICMS") tipoICMS = child->child(0, 0)->text();
 
   if (child->parent()->text() == tipoICMS) {
-    if (child->text().left(6) == "orig -") {
-      orig = child->text().remove(0, 7).toInt();
-    }
-
-    if (child->text().left(5) == "CST -") {
-      cstICMS = child->text().remove(0, 6).toInt();
-    }
-
-    if (child->text().left(7) == "modBC -") {
-      modBC = child->text().remove(0, 8).toInt();
-    }
-
-    if (child->text().left(5) == "vBC -") {
-      vBC = child->text().remove(0, 6).toDouble();
-    }
-
-    if (child->text().left(7) == "pICMS -") {
-      pICMS = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(7) == "vICMS -") {
-      vICMS = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(9) == "modBCST -") {
-      modBCST = child->text().remove(0, 10).toInt();
-    }
-
-    if (child->text().left(8) == "pMVAST -") {
-      pMVAST = child->text().remove(0, 9).toDouble();
-    }
-
-    if (child->text().left(7) == "vBCST -") {
-      vBCST = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(9) == "pICMSST -") {
-      pICMSST = child->text().remove(0, 10).toDouble();
-    }
-
-    if (child->text().left(9) == "vICMSST -") {
-      vICMSST = child->text().remove(0, 10).toDouble();
-    }
+    if (text.left(6) == "orig -") orig = text.remove(0, 7).toInt();
+    if (text.left(5) == "CST -") cstICMS = text.remove(0, 6).toInt();
+    if (text.left(7) == "modBC -") modBC = text.remove(0, 8).toInt();
+    if (text.left(5) == "vBC -") vBC = text.remove(0, 6).toDouble();
+    if (text.left(7) == "pICMS -") pICMS = text.remove(0, 8).toDouble();
+    if (text.left(7) == "vICMS -") vICMS = text.remove(0, 8).toDouble();
+    if (text.left(9) == "modBCST -") modBCST = text.remove(0, 10).toInt();
+    if (text.left(8) == "pMVAST -") pMVAST = text.remove(0, 9).toDouble();
+    if (text.left(7) == "vBCST -") vBCST = text.remove(0, 8).toDouble();
+    if (text.left(9) == "pICMSST -") pICMSST = text.remove(0, 10).toDouble();
+    if (text.left(9) == "vICMSST -") vICMSST = text.remove(0, 10).toDouble();
   }
 }
 
-void XML::lerIPIProduto(QStandardItem *child) {
+void XML::lerIPIProduto(const QStandardItem *child) {
+  QString text = child->text();
+
   if (child->parent()->text() == "IPI") {
-    if (child->text().left(6) == "cEnq -") {
-      cEnq = child->text().remove(0, 7).toInt();
-    }
-
-    if (child->text().left(5) == "CST -") {
-      cstIPI = child->text().remove(0, 6).toInt();
-    }
+    if (text.left(6) == "cEnq -") cEnq = text.remove(0, 7).toInt();
+    if (text.left(5) == "CST -") cstIPI = text.remove(0, 6).toInt();
   }
 }
 
-void XML::lerPISProduto(QStandardItem *child) {
+void XML::lerPISProduto(const QStandardItem *child) {
+  QString text = child->text();
+
   if (child->parent()->text() == "PISAliq") {
-    if (child->text().left(5) == "CST -") {
-      cstPIS = child->text().remove(0, 6).toInt();
-    }
-
-    if (child->text().left(5) == "vBC -") {
-      vBCPIS = child->text().remove(0, 6).toDouble();
-    }
-
-    if (child->text().left(6) == "pPIS -") {
-      pPIS = child->text().remove(0, 7).toDouble();
-    }
-
-    if (child->text().left(6) == "vPIS -") {
-      vPIS = child->text().remove(0, 7).toDouble();
-    }
+    if (text.left(5) == "CST -") cstPIS = text.remove(0, 6).toInt();
+    if (text.left(5) == "vBC -") vBCPIS = text.remove(0, 6).toDouble();
+    if (text.left(6) == "pPIS -") pPIS = text.remove(0, 7).toDouble();
+    if (text.left(6) == "vPIS -") vPIS = text.remove(0, 7).toDouble();
   }
 }
 
-void XML::lerCOFINSProduto(QStandardItem *child) {
+void XML::lerCOFINSProduto(const QStandardItem *child) {
+  QString text = child->text();
+
   if (child->parent()->text() == "COFINSAliq") {
-    if (child->text().left(5) == "CST -") {
-      cstCOFINS = child->text().remove(0, 6).toInt();
-    }
-
-    if (child->text().left(5) == "vBC -") {
-      vBCCOFINS = child->text().remove(0, 6).toDouble();
-    }
-
-    if (child->text().left(9) == "pCOFINS -") {
-      pCOFINS = child->text().remove(0, 10).toDouble();
-    }
-
-    if (child->text().left(9) == "vCOFINS -") {
-      vCOFINS = child->text().remove(0, 10).toDouble();
-    }
+    if (text.left(5) == "CST -") cstCOFINS = text.remove(0, 6).toInt();
+    if (text.left(5) == "vBC -") vBCCOFINS = text.remove(0, 6).toDouble();
+    if (text.left(9) == "pCOFINS -") pCOFINS = text.remove(0, 10).toDouble();
+    if (text.left(9) == "vCOFINS -") vCOFINS = text.remove(0, 10).toDouble();
   }
 }
 
-void XML::lerTotais(QStandardItem *child) {
+void XML::lerTotais(const QStandardItem *child) {
+  QString text = child->text();
+
   if (child->parent()->text() == "ICMSTot") {
-    if (child->text().left(5) == "vBC -") {
-      vBC_Total = child->text().remove(0, 6).toDouble();
-    }
-
-    if (child->text().left(7) == "vICMS -") {
-      vICMS_Total = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(12) == "vICMSDeson -") {
-      vICMSDeson_Total = child->text().remove(0, 13).toDouble();
-    }
-
-    if (child->text().left(7) == "vBCST -") {
-      vBCST_Total = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(5) == "vST -") {
-      vST_Total = child->text().remove(0, 6).toDouble();
-    }
-
-    if (child->text().left(7) == "vProd -") {
-      vProd_Total = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(8) == "vFrete -") {
-      vFrete_Total = child->text().remove(0, 9).toDouble();
-    }
-
-    if (child->text().left(6) == "vSeg -") {
-      vSeg_Total = child->text().remove(0, 7).toDouble();
-    }
-
-    if (child->text().left(7) == "vDesc -") {
-      vDesc_Total = child->text().remove(0, 8).toDouble();
-    }
-
-    if (child->text().left(5) == "vII -") {
-      vII_Total = child->text().remove(0, 6).toDouble();
-    }
-
-    if (child->text().left(6) == "vIPI -") {
-      vPIS_Total = child->text().remove(0, 7).toDouble();
-    }
-
-    if (child->text().left(6) == "vPIS -") {
-      vPIS_Total = child->text().remove(0, 7).toDouble();
-    }
-
-    if (child->text().left(9) == "vCOFINS -") {
-      vCOFINS_Total = child->text().remove(0, 10).toDouble();
-    }
-
-    if (child->text().left(8) == "vOutro -") {
-      vOutro_Total = child->text().remove(0, 9).toDouble();
-    }
-
-    if (child->text().left(5) == "vNF -") {
-      vNF_Total = child->text().remove(0, 6).toDouble();
-    }
+    if (text.left(5) == "vBC -") vBC_Total = text.remove(0, 6).toDouble();
+    if (text.left(7) == "vICMS -") vICMS_Total = text.remove(0, 8).toDouble();
+    if (text.left(12) == "vICMSDeson -") vICMSDeson_Total = text.remove(0, 13).toDouble();
+    if (text.left(7) == "vBCST -") vBCST_Total = text.remove(0, 8).toDouble();
+    if (text.left(5) == "vST -") vST_Total = text.remove(0, 6).toDouble();
+    if (text.left(7) == "vProd -") vProd_Total = text.remove(0, 8).toDouble();
+    if (text.left(8) == "vFrete -") vFrete_Total = text.remove(0, 9).toDouble();
+    if (text.left(6) == "vSeg -") vSeg_Total = text.remove(0, 7).toDouble();
+    if (text.left(7) == "vDesc -") vDesc_Total = text.remove(0, 8).toDouble();
+    if (text.left(5) == "vII -") vII_Total = text.remove(0, 6).toDouble();
+    if (text.left(6) == "vIPI -") vPIS_Total = text.remove(0, 7).toDouble();
+    if (text.left(6) == "vPIS -") vPIS_Total = text.remove(0, 7).toDouble();
+    if (text.left(9) == "vCOFINS -") vCOFINS_Total = text.remove(0, 10).toDouble();
+    if (text.left(8) == "vOutro -") vOutro_Total = text.remove(0, 9).toDouble();
+    if (text.left(5) == "vNF -") vNF_Total = text.remove(0, 6).toDouble();
   }
 }
 
-bool XML::insertEstoque() {
+bool XML::cadastrarEstoque() {
   QSqlQuery query;
 
   if (not query.exec("SELECT fornecedor FROM produto WHERE codComercial = '" + codProd + "'")) {
@@ -504,17 +303,12 @@ bool XML::insertEstoque() {
     return false;
   }
 
-  QString fornecedor;
-
-  // TODO: cadastrar produto
   if (not query.first()) {
     QMessageBox::warning(0, "Aviso!", "Produto não cadastrado, fornecedor em branco.");
     return false;
   }
 
-  fornecedor = query.value(0).toString();
-
-  qDebug() << "fornecedor: " << fornecedor;
+  const QString fornecedor = query.value(0).toString();
 
   query.prepare(
         "INSERT INTO estoque (idProduto, idXML, fornecedor, descricao, quant, un, codBarras, codComercial, ncm, cfop, "
@@ -576,58 +370,9 @@ bool XML::insertEstoque() {
   return true;
 }
 
-void XML::mostrarNoModel(QString file, SqlTableModel &externalModel) {
-  QFile fileXML(file);
+void XML::mostrarNoSqlModel(SqlTableModel &externalModel) { inserirNoSqlModel(model.item(0, 0), &externalModel); }
 
-  if (not fileXML.open(QFile::ReadOnly)) {
-    QMessageBox::critical(0, "Erro!", "Erro abrindo arquivo: " + fileXML.errorString());
-    return;
-  }
-
-  QDomDocument document;
-  QString *error = new QString();
-
-  if (not document.setContent(fileXML.readAll(), error)) {
-    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
-    return;
-  }
-
-  QDomElement root = document.firstChildElement();
-  QDomNamedNodeMap map = root.attributes();
-  QStandardItem *rootItem;
-
-  if (map.size() > 0) {
-    QString attributes = root.nodeName() + " ";
-
-    for (int i = 0; i < map.size(); ++i) {
-      if (i > 0) {
-        attributes += " ";
-      }
-
-      attributes += map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
-    }
-
-    rootItem = new QStandardItem(attributes);
-  } else {
-    rootItem = new QStandardItem(root.nodeName());
-  }
-
-  //---------------------
-
-  fileName = file;
-  model.appendRow(rootItem);
-  readChild(root, rootItem);
-
-  QStandardItem *modelRoot = model.item(0, 0);
-
-  if (not readTree(modelRoot)) {
-    return;
-  }
-
-  inserirNoModel(modelRoot, &externalModel);
-}
-
-bool XML::inserirItem(SqlTableModel *externalModel) {
+bool XML::inserirItemSql(SqlTableModel *externalModel) {
   int row = externalModel->rowCount();
 
   if (not externalModel->insertRow(row)) {
@@ -635,16 +380,16 @@ bool XML::inserirItem(SqlTableModel *externalModel) {
     return false;
   }
 
-  QModelIndexList indexList =
-      modelProduto.match(modelProduto.index(0, modelProduto.fieldIndex("codComercial")), Qt::DisplayRole, codProd, 1,
-                         Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
+  QSqlQuery query;
+  query.prepare("SELECT * FROM produto WHERE codComercial = :codComercial OR codBarras = :codBarras");
+  query.bindValue(":codComercial", codProd);
+  query.bindValue(":codBarras", codBarras);
 
-  if (indexList.size() == 0) {
-    QMessageBox::critical(0, "Erro!", "Não encontrou produto " + codProd);
-    return false;
+  if (not query.exec()) {
+    QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto!");
   }
 
-  int idTemp = modelProduto.data(indexList.first().row(), "idProduto").toInt();
+  const int idTemp = query.first() ? query.value("idProduto").toInt() : 0;
 
   return externalModel->setData(row, "fornecedor", xNome) and externalModel->setData(row, "idProduto", idTemp) and
       externalModel->setData(row, "descricao", descricao) and externalModel->setData(row, "quant", quant) and

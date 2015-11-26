@@ -8,16 +8,16 @@
 
 class XML {
   public:
-    XML();
-    void importarXML();
-    void readChild(QDomElement element, QStandardItem *elementItem);
-    void mostrarNoModel(QString file, SqlTableModel &externalModel);
-    void inserirNoModel(QStandardItem *item, SqlTableModel *externalModel); //temp
-    int cadastrarNFe();
+    XML(const QByteArray &fileContent, const QString &fileName);
+    XML(QStandardItemModel &model, const QByteArray &fileContent, const QString &fileName = QString());
+    bool cadastrarEstoque();
+    int cadastrarNFe(const QString &tipo);
+    void mostrarNoSqlModel(SqlTableModel &externalModel);
 
   private:
-    QString fileName;
     QStandardItemModel model;
+    QByteArray fileContent;
+    QString fileName;
     SqlTableModel modelProduto;
 
     QString chaveAcesso;
@@ -43,7 +43,7 @@ class XML {
     double quantTrib = 0;
     double valorTrib = 0;
     double desconto = 0;
-    bool compoeTotal;
+    bool compoeTotal = false;
     QString numeroPedido;
     int itemPedido = 0;
     // icms
@@ -83,27 +83,25 @@ class XML {
     double vSeg_Total = 0;
     double vDesc_Total = 0;
     double vII_Total = 0;
-    double vIPI_Total = 0;
     double vPIS_Total = 0;
     double vCOFINS_Total = 0;
     double vOutro_Total = 0;
     double vNF_Total = 0;
 
-    //xml
+    // xml
     int idNFe = 0;
 
     // methods
-    void readXML();
-    void saveXML();
-    bool insertEstoque();
-    void lerCOFINSProduto(QStandardItem *child);
-    void lerPISProduto(QStandardItem *child);
-    void lerIPIProduto(QStandardItem *child);
-    void lerICMSProduto(QStandardItem *child);
-    void lerDadosProduto(QStandardItem *child);
-    void lerTotais(QStandardItem *child);
-    bool inserirItem(SqlTableModel *externalModel);
-    bool readTree(QStandardItem *item);
+    bool inserirItemSql(SqlTableModel *externalModel);
+    bool lerValores(const QStandardItem *item);
+    void inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel);
+    void lerCOFINSProduto(const QStandardItem *child);
+    void lerDadosProduto(const QStandardItem *child);
+    void lerICMSProduto(const QStandardItem *child);
+    void lerIPIProduto(const QStandardItem *child);
+    void lerPISProduto(const QStandardItem *child);
+    void lerTotais(const QStandardItem *child);
+    void readChild(QDomElement &element, QStandardItem *elementItem);
 };
 
 #endif // XML_H

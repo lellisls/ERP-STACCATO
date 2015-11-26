@@ -101,8 +101,7 @@ void WidgetNfe::on_tableNfeSaida_activated(const QModelIndex &index) {
 void WidgetNfe::on_tableNfeEntrada_activated(const QModelIndex &index) {
   XML_Viewer *viewer = new XML_Viewer(this);
 
-  viewer->exibirXML(modelNfeEntrada.data(index.row(), "xml").toString());
-  viewer->show();
+  viewer->exibirXML(modelNfeEntrada.data(index.row(), "xml").toByteArray());
 }
 
 void WidgetNfe::on_tabWidgetNfe_currentChanged(const int &) { updateTables(); }
@@ -121,9 +120,6 @@ void WidgetNfe::on_pushButtonExibirXML_clicked() {
     return;
   }
 
-  xml = file.readAll();
-
   XML_Viewer *viewer = new XML_Viewer(this);
-  viewer->exibirXML(xml);
-  viewer->show();
+  viewer->exibirXML(file.readAll());
 }

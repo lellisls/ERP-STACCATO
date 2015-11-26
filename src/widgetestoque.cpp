@@ -1,12 +1,14 @@
+#include <QDebug>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSqlError>
+
 #include "widgetestoque.h"
 #include "ui_widgetestoque.h"
 #include "doubledelegate.h"
 #include "estoque.h"
 #include "xml.h"
 #include "importarxml.h"
-
-#include <QMessageBox>
-#include <QSqlError>
 
 WidgetEstoque::WidgetEstoque(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetEstoque) {
   ui->setupUi(this);

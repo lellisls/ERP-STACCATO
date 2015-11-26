@@ -29,7 +29,7 @@ class QxyzLabel : public QLabel
 {
     Q_OBJECT
 public:
-    QxyzLabel(QWidget *parent = 0);
+    explicit QxyzLabel(QWidget *parent = 0);
     QxyzLabel(const QString &Text, QWidget *parent = 0);
     ~QxyzLabel();
     void setHoverText(bool bHover);

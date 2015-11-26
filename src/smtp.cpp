@@ -234,5 +234,3 @@ void Smtp::readyRead() {
 
   response = "";
 }
-
-// TODO: add a progressDialog while sending message and close it before showing 'message sent'

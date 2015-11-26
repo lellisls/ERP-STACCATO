@@ -53,7 +53,6 @@ QString double2MoneyUKR(double n, int currency) {
 
   long nn = ((int)(n)*10000 + (int)(n * 1000) % 1000 + 5) / 10;
 
-  long lo = 0;
   long hi = nn;
   int r[3];
   int rod;
@@ -62,7 +61,7 @@ QString double2MoneyUKR(double n, int currency) {
     QString olds = s;
     s = "";
 
-    lo = hi % 1000;
+    long lo = hi % 1000;
     hi = hi / 1000;
 
     if ((nPor == 1) and (lo == 0) and (hi == 0)) {

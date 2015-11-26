@@ -145,31 +145,24 @@ QVariant Chart::getParam(ChartParam param) {
   switch (param) {
     case DrawGrid: {
         return m_drawGrid;
-        break;
       }
     case ShowCaption: {
         return m_drawCaption;
-        break;
       }
     case ShowLegend: {
         return m_drawHistory;
-        break;
       }
     case ShowGraphCaption: {
         return m_drawGraphCaption;
-        break;
       }
     case ShowPercent: {
         return m_showPercent;
-        break;
       }
     case Caption: {
         return m_caption;
-        break;
       }
     case AutoFillData: {
         return m_autoFillData;
-        break;
       }
     default:
       return QVariant();
@@ -217,9 +210,9 @@ void Chart::paintChart(QPainter *painter) {
 
     // Draw graps
     for (int i = 0; i < listOfGraph.size(); i++) {
-      painter->fillRect(widthOfGraph * i + 1 + leftSpaceWidth + m_left, // x
+      painter->fillRect(widthOfGraph * i + 1 + leftSpaceWidth + m_left,   // x
                         this->height() - 1 - m_bottomSpaceHeight + m_top, // y
-                        widthOfGraph, // width
+                        widthOfGraph,                                     // width
                         heightOfGraph * listOfGraph.at(i).valuePercent * -1, listOfGraph.at(i).color);
 
       if (m_drawHistory) {
@@ -247,7 +240,7 @@ void Chart::paintChart(QPainter *painter) {
                         m_top + heightOfGraph * listOfGraph.at(i).valuePercent * -1 + this->height() -
                         20 * m_koefRes_h - m_bottomSpaceHeight,
                         widthOfGraph + 5 * m_koefRes_w, // width
-                        20 * m_koefRes_h); // x y w h
+                        20 * m_koefRes_h);              // x y w h
         // painter->drawRect(textRect);
         painter->drawText(textRect, Qt::AlignCenter, txt);
       }

@@ -70,7 +70,66 @@
             <string>Filtros:</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_35">
+            <item row="3" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroTodos">
+              <property name="text">
+               <string>Todos</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroPendentes">
+              <property name="text">
+               <string>Pendentes</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroColeta">
+              <property name="text">
+               <string>Em coleta</string>
+              </property>
+             </widget>
+            </item>
             <item row="7" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroFaturamento">
+              <property name="text">
+               <string>Em faturamento</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroRecebimento">
+              <property name="text">
+               <string>Em recebimento</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroIniciados">
+              <property name="text">
+               <string>Iniciados</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroCompra">
+              <property name="text">
+               <string>Em compra</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="radioButtonProdPendTodos">
+              <property name="text">
+               <string>Todos</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="0">
              <spacer name="verticalSpacer_6">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -83,24 +142,19 @@
               </property>
              </spacer>
             </item>
-            <item row="5" column="0">
-             <widget class="QCheckBox" name="checkBox_3">
-              <property name="text">
-               <string>CheckBox</string>
+            <item row="12" column="0">
+             <widget class="QPushButton" name="pushButtonComprar">
+              <property name="enabled">
+               <bool>false</bool>
               </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QCheckBox" name="checkBox_2">
-              <property name="text">
-               <string>CheckBox</string>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QCheckBox" name="checkBox">
               <property name="text">
-               <string>CheckBox</string>
+               <string>Comprar</string>
               </property>
              </widget>
             </item>
@@ -118,29 +172,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButtonProdPendTodos">
+            <item row="10" column="0">
+             <widget class="QCheckBox" name="checkBoxFiltroEntregue">
               <property name="text">
-               <string>Todos</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="8" column="0">
-             <widget class="QPushButton" name="pushButtonComprar">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Comprar</string>
+               <string>Entregue</string>
               </property>
              </widget>
             </item>

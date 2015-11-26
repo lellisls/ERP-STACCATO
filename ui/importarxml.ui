@@ -47,12 +47,6 @@
    <item row="3" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="ItemBox" name="lineEdit_2"/>
-     </item>
-     <item>
-      <widget class="ItemBox" name="lineEdit_3"/>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -100,12 +94,7 @@
   <customwidget>
    <class>TableView</class>
    <extends>QTableView</extends>
-   <header location="global">src/tableview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ItemBox</class>
-   <extends>QLineEdit</extends>
-   <header>src/itembox.h</header>
+   <header>src/tableview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

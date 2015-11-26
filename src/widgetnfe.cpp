@@ -14,11 +14,6 @@ WidgetNfe::WidgetNfe(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfe) {
   ui->setupUi(this);
 
   setupTables();
-
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    ui->tableNfeSaida->hide();
-    ui->labelNfeSaida->hide();
-  }
 }
 
 WidgetNfe::~WidgetNfe() { delete ui; }
@@ -32,7 +27,7 @@ void WidgetNfe::setupTables() {
   modelNfeEntrada.setFilter("tipo = 'ENTRADA'");
 
   ui->tableNfeEntrada->setModel(&modelNfeEntrada);
-  ui->tableNfeEntrada->hideColumn("NFe");
+  ui->tableNfeEntrada->hideColumn("xml");
   ui->tableNfeEntrada->setItemDelegate(doubledelegate);
 
   // NFe Saida ---------------------------------------------------------------------------------------------------------
@@ -41,7 +36,7 @@ void WidgetNfe::setupTables() {
   modelNfeSaida.setFilter("tipo = 'SAIDA'");
 
   ui->tableNfeSaida->setModel(&modelNfeSaida);
-  ui->tableNfeSaida->hideColumn("NFe");
+  ui->tableNfeSaida->hideColumn("xml");
   ui->tableNfeSaida->setItemDelegate(doubledelegate);
 }
 

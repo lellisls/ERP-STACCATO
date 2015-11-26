@@ -364,6 +364,7 @@ void WidgetCompra::on_pushButtonGerarCompra_clicked() {
     return;
   }
 
+  // TODO: split in two pages?
   //  if(modelItem.rowCount() > 17){
   //    QMessageBox::critical(this, "Erro!", "Mais itens do que cabe no modelo!");
   //    return;
@@ -372,13 +373,6 @@ void WidgetCompra::on_pushButtonGerarCompra_clicked() {
   if (settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::warning(this, "Aviso!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
     setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
-    return;
-  }
-
-  if (UserSession::getFromLoja("emailCompra").isEmpty()) {
-    // TODO: set value here or open window to set
-    QMessageBox::warning(this, "Aviso!",
-                         "Não há um email de compras definido, favor cadastrar nas configurações da loja.");
     return;
   }
 
@@ -613,13 +607,18 @@ void WidgetCompra::on_pushButtonTodosFornCompras_clicked() {
   updateTables();
 }
 
-QVariant WidgetCompra::settings(QString key) const { return UserSession::getSettings(key); }
+QVariant WidgetCompra::settings(const QString &key) const { return UserSession::getSettings(key); }
 
-void WidgetCompra::setSettings(QString key, QVariant value) const { UserSession::setSettings(key, value); }
+void WidgetCompra::setSettings(const QString &key, const QVariant &value) const {
+  UserSession::setSettings(key, value);
+}
 
-void WidgetCompra::on_tabWidgetCompra_currentChanged(int) { updateTables(); }
+void WidgetCompra::on_tabWidgetCompra_currentChanged(const int &) { updateTables(); }
 
 void WidgetCompra::on_pushButtonTesteEmail_clicked() {
   SendMail *mail = new SendMail(this);
   mail->show();
 }
+
+// TODO: a tabela de fornecedores deve mostrar apenas os pedidos que estejam pendente/confirmar/faturar
+// TODO: colocar filtros por checkbox no estilo da tela de vendas

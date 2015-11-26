@@ -40,8 +40,8 @@ class WidgetCompra : public QWidget {
     SqlTableModel modelItemPedidosComp;
     SqlTableModel modelFat;
     void setupTables();
-    QVariant settings(QString key) const;
-    void setSettings(QString key, QVariant value) const;
+    QVariant settings(const QString &key) const;
+    void setSettings(const QString &key, const QVariant &value) const;
 };
 
 #endif // WIDGETCOMPRA_H

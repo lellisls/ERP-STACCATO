@@ -47,6 +47,8 @@ class CadastrarNFe : public QDialog {
     void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete) const;
     QString removeDiacritics(const QString &str) const;
     void guardarNotaBD();
+    void setSettings(const QString &key, const QVariant &value) const;
+    QVariant settings(const QString &key) const;
 };
 
 #endif // CADASTRARNFE_H

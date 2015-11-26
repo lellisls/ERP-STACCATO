@@ -19,6 +19,9 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
 
+  if (idVenda.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "idVenda vazio!");
+  }
 
   modelVenda.setTable("venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -97,7 +100,7 @@ void CadastrarNFe::guardarNotaBD() {
   QFile file(modelLoja.data(0, "pastaXmlACBr").toString() + chaveNum + "-nfe.xml");
 
   if (not file.open(QFile::ReadOnly)) {
-    QMessageBox::critical(this, "Aviso!", "Erro lendo arquivo: " + file.errorString());
+    QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + file.errorString());
     return;
   }
 
@@ -118,8 +121,7 @@ void CadastrarNFe::guardarNotaBD() {
   QMessageBox::information(this, "Aviso!", "Nota guardada com sucesso!");
 
   for (int row = 0; row < modelProd.rowCount(); ++row) {
-    if (not modelProd.setData(row, "idNfeSaida", queryNota.lastInsertId().toInt())) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando idNfe nos itens da venda: " + modelProd.lastError().text());
+    if (not modelProd.setData(row, "idNfeSaida", queryNota.lastInsertId())) {
       return;
     }
   }
@@ -133,7 +135,6 @@ void CadastrarNFe::guardarNotaBD() {
 
 void CadastrarNFe::on_pushButtonGerarNFE_clicked() {
   if (not writeTXT()) {
-    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro, NFe não foi gerada!");
     return;
   }
 
@@ -162,6 +163,7 @@ void CadastrarNFe::updateImpostos() {
 
   if (not queryEnd.exec() or not queryEnd.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando endereço: " + queryEnd.lastError().text());
+    return;
   }
 
   QString endereco = queryEnd.value("logradouro").toString() + ", " + queryEnd.value("numero").toString() + " " +
@@ -321,22 +323,22 @@ QString CadastrarNFe::criarChaveAcesso() {
 
   QStringList listChave;
 
-  listChave.push_back(modelLoja.data(0, "codUF").toString());
+  listChave << modelLoja.data(0, "codUF").toString();
 
-  listChave.push_back(QDate::currentDate().toString("yyMM")); // Ano/Mês
+  listChave << QDate::currentDate().toString("yyMM"); // Ano/Mês
 
   const QString cnpj = clearStr(modelLoja.data(0, "cnpj").toString());
-  listChave.push_back(cnpj); // CNPJ
+  listChave << cnpj; // CNPJ
 
-  listChave.push_back("55"); // modelo NFe
+  listChave << "55"; // modelo NFe
 
   QString serie = "1";
   serie = QString("%1").arg(serie.toInt(), 3, 10, QChar('0'));
-  listChave.push_back(serie); // série
+  listChave << serie; // série
 
-  listChave.push_back(QString("%1").arg(id, 9, 10, QChar('0'))); // número nf-e (id interno)
-  listChave.push_back("1");                                      // tpEmis - forma de emissão
-  listChave.push_back(QString("%1").arg(id, 8, 10, QChar('0'))); // código númerico aleatorio
+  listChave << QString("%1").arg(id, 9, 10, QChar('0')); // número nf-e (id interno)
+  listChave << "1";                                      // tpEmis - forma de emissão
+  listChave << QString("%1").arg(id, 8, 10, QChar('0')); // código númerico aleatorio
 
   QString chave = listChave.join("");
   chave += calculaDigitoVerificador(chave);
@@ -354,13 +356,14 @@ QString CadastrarNFe::removeDiacritics(const QString &str) const {
 
 QString CadastrarNFe::calculaDigitoVerificador(const QString &chave) {
   if (chave.size() != 43) {
-    QMessageBox::critical(this, "Erro!", "Erro na chave: " + chave);
+    QMessageBox::critical(this, "Erro!", "Erro no tamanho da chave: " + chave);
     return QString();
   }
 
   QVector<int> chave2;
+
   for (int i = 0, size = chave.size(); i < size; ++i) {
-    chave2.push_back(chave.at(i).digitValue());
+    chave2 << chave.at(i).digitValue();
   }
 
   const QVector<int> multiplicadores = {4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7,
@@ -372,13 +375,8 @@ QString CadastrarNFe::calculaDigitoVerificador(const QString &chave) {
   }
 
   const int resto = soma % 11;
-  int cDV = 11 - resto;
 
-  if (resto < 2) {
-    cDV = 0;
-  }
-
-  return QString::number(cDV);
+  return QString::number(resto < 2 ? 0 : 11 - resto);
 }
 
 void CadastrarNFe::writeIdentificacao(QTextStream &stream) const {
@@ -750,3 +748,11 @@ bool CadastrarNFe::writeTXT() {
 
   return true;
 }
+
+QVariant CadastrarNFe::settings(const QString &key) const { return UserSession::getSettings(key); }
+
+void CadastrarNFe::setSettings(const QString &key, const QVariant &value) const {
+  UserSession::setSettings(key, value);
+}
+
+// TODO: replace querys with models

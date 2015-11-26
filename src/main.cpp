@@ -6,9 +6,9 @@
 #include "mainwindow.h"
 #include "usersession.h"
 
-QVariant settings(QString key) { return UserSession::getSettings(key); }
+QVariant settings(const QString &key) { return UserSession::getSettings(key); }
 
-void setSettings(QString key, QVariant value) { UserSession::setSettings(key, value); }
+void setSettings(const QString &key, const QVariant &value) { UserSession::setSettings(key, value); }
 
 void update();
 

@@ -36,6 +36,36 @@ void UserConfig::on_pushButtonUserFolder_clicked() {
   ui->lineEditUserFolder->setText(path);
 }
 
+void UserConfig::on_pushButtonACBrEntrada_clicked() {
+  QString path = QFileDialog::getExistingDirectory(this, "Pasta Entrada ACBr", QDir::currentPath());
+
+  if (path.isEmpty()) {
+    return;
+  }
+
+  ui->lineEditPastaEntACBr->setText(path);
+}
+
+void UserConfig::on_pushButtonACBrSaida_clicked() {
+  QString path = QFileDialog::getExistingDirectory(this, "Pasta Saída ACBr", QDir::currentPath());
+
+  if (path.isEmpty()) {
+    return;
+  }
+
+  ui->lineEditPastaSaiACBr->setText(path);
+}
+
+void UserConfig::on_pushButtonACBrXML_clicked() {
+  QString path = QFileDialog::getExistingDirectory(this, "Pasta XML ACBr", QDir::currentPath());
+
+  if (path.isEmpty()) {
+    return;
+  }
+
+  ui->lineEditPastaXmlACBr->setText(path);
+}
+
 void UserConfig::on_pushButtonSalvar_clicked() {
   setSettings("User/pastaEntACBr", ui->lineEditPastaEntACBr->text());
   setSettings("User/pastaSaiACBr", ui->lineEditPastaSaiACBr->text());

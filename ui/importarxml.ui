@@ -33,9 +33,6 @@
    </item>
    <item row="1" column="0" colspan="3">
     <widget class="TableView" name="tableEstoque">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
@@ -77,9 +74,6 @@
    </item>
    <item row="2" column="0" colspan="3">
     <widget class="TableView" name="tableCompra">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>

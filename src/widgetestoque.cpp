@@ -29,13 +29,14 @@ void WidgetEstoque::setupTables() {
   ui->tableEstoque->setItemDelegate(doubledelegate);
 }
 
-bool WidgetEstoque::updateTables() {
+QString WidgetEstoque::updateTables() {
   if (not modelEstoque.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
-    return false;
+    return "Erro lendo tabela estoque: " + modelEstoque.lastError().text();
   }
 
-  return true;
+  ui->tableEstoque->resizeColumnsToContents();
+
+  return QString();
 }
 
 void WidgetEstoque::on_tableEstoque_activated(const QModelIndex &index) {
@@ -69,3 +70,4 @@ void WidgetEstoque::on_pushButtonTesteFaturamento_clicked() {
 }
 
 // TODO: gerenciar lugares de estoque (cadastro/permissoes)
+// FIXME: view_estoque is extremely slow

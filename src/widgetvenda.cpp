@@ -93,15 +93,14 @@ void WidgetVenda::on_groupBoxStatusVenda_toggled(const bool &enabled) {
 
 void WidgetVenda::on_comboBoxLojas_currentTextChanged(const QString &) { montaFiltroVendas(); }
 
-bool WidgetVenda::updateTables() {
+QString WidgetVenda::updateTables() {
   if (not modelVendas.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelVendas.lastError().text());
-    return false;
+    return "Erro lendo tabela vendas: " + modelVendas.lastError().text();
   }
 
   ui->tableVendas->resizeColumnsToContents();
 
-  return true;
+  return QString();
 }
 
 void WidgetVenda::on_lineEditBuscaVendas_textChanged(const QString &text) {

@@ -136,58 +136,57 @@ void WidgetLogistica::setupTables() {
   ui->tableEntregasCliente->setItemDelegate(doubledelegate);
 }
 
-bool WidgetLogistica::updateTables() {
+QString WidgetLogistica::updateTables() {
   if (not modelPedForn.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelPedForn.lastError().text());
-    return false;
+    return "Erro lendo tabela: " + modelPedForn.lastError().text();
   }
 
   ui->tableFornLogistica->resizeColumnsToContents();
 
   switch (ui->tabWidgetLogistica->currentIndex()) {
-    case 0: // Coletas
-      // TODO: set filter = 0? (for when no manufacturer is selected)
-      if (not modelColeta.select()) {
-        QMessageBox::critical(this, "Erro!",
-                              "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta.lastError().text());
-        return false;
+    case 0: { // Coletas
+        // TODO: set filter = 0? (for when no manufacturer is selected)
+        if (not modelColeta.select()) {
+          return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelColeta.lastError().text();
+        }
+
+        for (int i = 0; i < modelColeta.rowCount(); ++i) {
+          ui->tableColeta->openPersistentEditor(modelColeta.index(i, modelColeta.fieldIndex("selecionado")));
+        }
+
+        ui->tableColeta->resizeColumnsToContents();
+
+        break;
       }
 
-      for (int i = 0; i < modelColeta.rowCount(); ++i) {
-        ui->tableColeta->openPersistentEditor(modelColeta.index(i, modelColeta.fieldIndex("selecionado")));
+    case 1: { // Recebimentos
+        if (not modelReceb.select()) {
+          return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb.lastError().text();
+        }
+
+        for (int i = 0; i < modelReceb.rowCount(); ++i) {
+          ui->tableRecebimento->openPersistentEditor(modelReceb.index(i, modelReceb.fieldIndex("selecionado")));
+        }
+
+        ui->tableRecebimento->resizeColumnsToContents();
+
+        break;
       }
 
-      ui->tableColeta->resizeColumnsToContents();
-      break;
+    case 2: { // Entregas
+        if (not modelEntregasCliente.select()) {
+          return "Erro lendo tabela vendas: " + modelEntregasCliente.lastError().text();
+        }
 
-    case 1: // Recebimentos
-      if (not modelReceb.select()) {
-        QMessageBox::critical(this, "Erro!",
-                              "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb.lastError().text());
-        return false;
+        ui->tableEntregasCliente->resizeColumnsToContents();
+
+        break;
       }
 
-      for (int i = 0; i < modelReceb.rowCount(); ++i) {
-        ui->tableRecebimento->openPersistentEditor(modelReceb.index(i, modelReceb.fieldIndex("selecionado")));
-      }
-
-      ui->tableRecebimento->resizeColumnsToContents();
-      break;
-
-    case 2: // Entregas
-      if (not modelEntregasCliente.select()) {
-        QMessageBox::critical(this, "Erro!", "Erro lendo tabela vendas: " + modelEntregasCliente.lastError().text());
-        return false;
-      }
-
-      ui->tableEntregasCliente->resizeColumnsToContents();
-      break;
-
-    default:
-      return true;
+    default: { break; }
   }
 
-  return true;
+  return QString();
 }
 
 void WidgetLogistica::on_radioButtonEntregaLimpar_clicked() {

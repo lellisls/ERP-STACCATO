@@ -17,7 +17,7 @@ class WidgetOrcamento : public QWidget {
     ~WidgetOrcamento();
 
   public slots:
-    bool updateTables();
+    QString updateTables();
 
   private slots:
     void on_radioButtonOrcValido_clicked();

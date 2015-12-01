@@ -15,7 +15,7 @@ class WidgetEstoque : public QWidget {
   public:
     explicit WidgetEstoque(QWidget *parent = 0);
     ~WidgetEstoque();
-    bool updateTables();
+    QString updateTables();
 
   private slots:
     void on_tableEstoque_activated(const QModelIndex &index);

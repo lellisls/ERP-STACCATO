@@ -1,6 +1,9 @@
+#include <QDebug>
+#include <QLabel>
 #include <QMessageBox>
 #include <QShortcut>
 #include <QStyleFactory>
+#include <QTimer>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -49,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tabWidget->setTabEnabled(6, false);
     ui->actionCadastrarUsuario->setVisible(false);
   }
+
+  timer = new QTimer(this);
 }
 
 MainWindow::~MainWindow() {
@@ -91,34 +96,57 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
   cad->show();
 }
 
-bool MainWindow::updateTables() {
+void MainWindow::showStatusBarMessage() { ui->statusBar->showMessage(error, 125); }
+
+void MainWindow::timerStatusBar() {
+  disconnect(timer, &QTimer::timeout, this, &MainWindow::showStatusBarMessage);
+  connect(timer, &QTimer::timeout, this, &MainWindow::showStatusBarMessage);
+  timer->start(250);
+}
+
+void MainWindow::updateTables() {
   switch (ui->tabWidget->currentIndex()) {
-    case 0: // Orcamentos
-      return ui->widgetOrcamento->updateTables();
+    case 0: { // Orcamentos
+        error = ui->widgetOrcamento->updateTables();
+        break;
+      }
 
-    case 1: // Vendas
-      return ui->widgetVenda->updateTables();
+    case 1: { // Vendas
+        error = ui->widgetVenda->updateTables();
+        break;
+      }
 
-    case 2: // Compras
-      return ui->widgetCompra->updateTables();
+    case 2: { // Compras
+        error = ui->widgetCompra->updateTables();
+        break;
+      }
 
-    case 3: // Logistica
-      return ui->widgetLogistica->updateTables();
+    case 3: { // Logistica
+        error = ui->widgetLogistica->updateTables();
+        break;
+      }
 
-    case 4: // NFe
-      return ui->widgetNfe->updateTables();
+    case 4: { // NFe
+        error = ui->widgetNfe->updateTables();
+        break;
+      }
 
-    case 5: // Estoque
-      return ui->widgetEstoque->updateTables();
+    case 5: { // Estoque
+        error = ui->widgetEstoque->updateTables();
+        break;
+      }
 
-    case 6: // Contas
-      return ui->widgetConta->updateTables();
+    case 6: { // Contas
+        error = ui->widgetConta->updateTables();
+        break;
+      }
 
-    default:
-      return true;
+    default: { break; }
   }
 
-  return true;
+  if (not error.isEmpty()) {
+    timerStatusBar();
+  }
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
@@ -137,18 +165,17 @@ void MainWindow::on_actionImportaProdutos_triggered() {
 
 bool MainWindow::event(QEvent *e) {
   switch (e->type()) {
-    case QEvent::WindowActivate:
-      if (not updateTables()) {
-        exit(1);
+    case QEvent::WindowActivate: {
+        updateTables();
+
+        break;
       }
 
-      break;
+    case QEvent::WindowDeactivate: {
+        break;
+      }
 
-    case QEvent::WindowDeactivate:
-      break;
-
-    default:
-      break;
+    default: { break; }
   };
 
   return QMainWindow::event(e);

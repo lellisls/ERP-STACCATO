@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QLabel>
 #include <QMainWindow>
 
 #include "sqltablemodel.h"
@@ -17,7 +18,7 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
 
   public slots:
-    bool updateTables();
+    void updateTables();
 
   private slots:
     void on_actionCadastrarCliente_triggered();
@@ -34,17 +35,21 @@ class MainWindow : public QMainWindow {
     void on_actionImportaProdutos_triggered();
     void on_actionSobre_triggered();
     void on_tabWidget_currentChanged(const int &);
+    void showStatusBarMessage();
 
   private:
     // attributes
     Ui::MainWindow *ui;
     QString defaultStyle;
     QPalette defautPalette;
+    QString error;
+    QTimer *timer;
     // methods
     bool event(QEvent *e);
     void darkTheme();
     QVariant settings(const QString &key) const;
     void setSettings(const QString &key, const QVariant &value) const;
+    void timerStatusBar();
 };
 
 #endif // MAINWINDOW_H

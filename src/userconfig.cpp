@@ -21,11 +21,6 @@ UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig
 
 UserConfig::~UserConfig() { delete ui; }
 
-void UserConfig::show() {
-  QDialog::show();
-  adjustSize();
-}
-
 void UserConfig::on_pushButtonUserFolder_clicked() {
   QString path = QFileDialog::getExistingDirectory(this, "Pasta PFD/Excel", QDir::currentPath());
 

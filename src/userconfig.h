@@ -13,7 +13,6 @@ class UserConfig : public QDialog {
   public:
     explicit UserConfig(QWidget *parent = 0);
     ~UserConfig();
-    void show();
 
   private slots:
     void on_pushButtonUserFolder_clicked();

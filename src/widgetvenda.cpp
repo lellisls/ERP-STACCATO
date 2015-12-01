@@ -23,18 +23,18 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
     ui->radioButtonVendProprios->click();
   }
 
-  connect(ui->radioButtonVendLimpar, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->radioButtonVendProprios, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaPendente, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaIniciado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaEmCompra, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaEmFaturamento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaEmColeta, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaEmRecebimento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaEstoque, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
-  connect(ui->checkBoxVendaFinalizado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltroVendas);
+  connect(ui->radioButtonVendLimpar, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonVendProprios, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaPendente, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaIniciado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaEmCompra, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaEmFaturamento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaEmColeta, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaEmRecebimento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaEstoque, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxVendaFinalizado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
 
-  QSqlQuery query("SELECT * FROM loja WHERE descricao != 'Geral'");
+  QSqlQuery query("SELECT * FROM loja WHERE descricao != 'Geral' AND desativado = FALSE");
 
   ui->comboBoxLojas->addItem("");
 
@@ -60,8 +60,9 @@ void WidgetVenda::setupTables() {
   ui->tableVendas->sortByColumn("Código");
 }
 
-void WidgetVenda::montaFiltroVendas() {
-  QString loja = ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getSiglaLoja();
+void WidgetVenda::montaFiltro() {
+  const QString loja =
+      ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getFromLoja("loja.sigla");
 
   const QString filtro = ui->radioButtonVendLimpar->isChecked()
                          ? "(Código LIKE '%" + loja + "%')"
@@ -91,7 +92,7 @@ void WidgetVenda::on_groupBoxStatusVenda_toggled(const bool &enabled) {
   }
 }
 
-void WidgetVenda::on_comboBoxLojas_currentTextChanged(const QString &) { montaFiltroVendas(); }
+void WidgetVenda::on_comboBoxLojas_currentTextChanged(const QString &) { montaFiltro(); }
 
 QString WidgetVenda::updateTables() {
   if (not modelVendas.select()) {
@@ -105,7 +106,7 @@ QString WidgetVenda::updateTables() {
 
 void WidgetVenda::on_lineEditBuscaVendas_textChanged(const QString &text) {
   if (text.isEmpty()) {
-    montaFiltroVendas();
+    montaFiltro();
     return;
   }
 

@@ -73,6 +73,14 @@ void ImportaProdutos::atualizaProduto() {
   row = hash.value(variantMap.value("fornecedor").toString() + variantMap.value("codComercial").toString() +
                    variantMap.value("ui").toString());
 
+  if (hashAtualizado.value(row) == true) {
+    variantMap.insert("colecao", "REPETIDO");
+    insereEmErro();
+    return;
+  }
+
+  hashAtualizado[row] = true;
+
   atualizaCamposProduto();
   guardaNovoPrecoValidade();
   marcaProdutoNaoDescontinuado();
@@ -424,6 +432,13 @@ void ImportaProdutos::consistenciaDados() {
     variantMap.insert("ui", 0);
   }
 
+  variantMap.insert("kgcx", variantMap.value("kgcx").toString().remove("K").remove("G"));
+
+  if (variantMap.value("ncm").toString().length() == 10) {
+    variantMap.insert("ncmEx", variantMap.value("ncm").toString().right(2));
+    variantMap.insert("ncm", variantMap.value("ncm").toString().left(8));
+  }
+
   const QString un = variantMap.value("un").toString().toUpper();
 
   (un == "M2" or un == "M²") ? variantMap.insert("un", "M²") : variantMap.insert("un", un);
@@ -440,6 +455,10 @@ void ImportaProdutos::consistenciaDados() {
 
 void ImportaProdutos::leituraProduto(const QSqlQuery &query, const QSqlRecord &record) {
   for (auto key : variantMap.keys()) {
+    if (key == "ncmEx") {
+      continue;
+    }
+
     QVariant value = query.value(record.indexOf(key));
 
     if (value.type() == QVariant::Double) {
@@ -455,12 +474,15 @@ void ImportaProdutos::atualizaCamposProduto() {
 
   for (auto key : variantMap.keys()) {
     if (not variantMap.value(key).isNull() and model.data(row, key) != variantMap.value(key)) {
-      //      qDebug() << "old: " << model.data(row, key) << " - new: " << variantMap.value(key);
       model.setData(row, key, variantMap.value(key));
       model.setData(row, key + "Upd", Yellow);
     } else {
       model.setData(row, key + "Upd", White);
     }
+  }
+
+  if (model.data(row, "ncmEx").toString().isEmpty()) {
+    model.setData(row, "ncmExUpd", White);
   }
 
   const QString validadeStr = QDate::currentDate().addDays(validade).toString("yyyy-MM-dd");
@@ -483,21 +505,6 @@ void ImportaProdutos::atualizaCamposProduto() {
     changed = true;
   } else {
     model.setData(row, "markupUpd", White);
-  }
-
-  if (variantMap.value("ncm").toString().length() == 10) {
-    const QString ncmEx = variantMap.value("ncm").toString().right(2);
-    variantMap.insert("ncm", variantMap.value("ncm").toString().left(8));
-
-    if (model.data(row, "ncmEx") != ncmEx) {
-      model.setData(row, "ncmEx", ncmEx);
-      model.setData(row, "ncmExUpd", Yellow);
-      changed = true;
-    } else {
-      model.setData(row, "ncmExUpd", White);
-    }
-  } else {
-    model.setData(row, "ncmExUpd", White);
   }
 
   changed ? itensUpdated++ : itensNotChanged++;
@@ -568,36 +575,27 @@ void ImportaProdutos::pintarCamposForaDoPadrao(const int &row) {
   }
 
   // Errados
-  if ((variantMap.value("un").toString() == "M2" or variantMap.value("un").toString() == "M²") and
+  if ((variantMap.value("un").toString() == "M2" or variantMap.value("un").toString() == "M²" or
+       variantMap.value("un").toString() == "ML") and
       variantMap.value("m2cx") <= 0.) {
     modelErro.setData(row, "m2cxUpd", Red);
-    hasError = true;
-    itensError++;
   }
 
   if (variantMap.value("un").toString() != "M2" and variantMap.value("un").toString() != "M²" and
-      variantMap.value("pccx") < 1) {
+      variantMap.value("un").toString() != "ML" and variantMap.value("pccx") < 1) {
     modelErro.setData(row, "pccxUpd", Red);
-    hasError = true;
-    itensError++;
   }
 
   if (variantMap.value("codComercial").toString() == "0" or variantMap.value("codComercial").toString().isEmpty()) {
     modelErro.setData(row, "codComercialUpd", Red);
-    hasError = true;
-    itensError++;
   }
 
   if (variantMap.value("custo") <= 0.) {
     modelErro.setData(row, "custoUpd", Red);
-    hasError = true;
-    itensError++;
   }
 
   if (variantMap.value("precoVenda") <= 0.) {
     modelErro.setData(row, "precoVendaUpd", Red);
-    hasError = true;
-    itensError++;
   }
 }
 
@@ -656,6 +654,9 @@ void ImportaProdutos::insereEmErro() {
   }
 
   pintarCamposForaDoPadrao(row);
+
+  hasError = true;
+  itensError++;
 }
 
 void ImportaProdutos::insereEmOk() {
@@ -812,4 +813,5 @@ void ImportaProdutos::on_tabWidget_currentChanged(const int &index) {
   }
 }
 
-// TODO: fix negative numbers on import stats
+// TODO: verificar o que esta deixando a importacao lenta ao longo do tempo
+// TODO: fix some tables still having negative numbers (tabelas.txt)

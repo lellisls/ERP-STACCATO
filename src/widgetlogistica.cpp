@@ -219,13 +219,8 @@ void WidgetLogistica::on_tableEntregasCliente_activated(const QModelIndex &index
 void WidgetLogistica::on_pushButtonMarcarColetado_clicked() {
   QList<int> lista;
 
-  for (int i = 0; i < modelColeta.rowCount(); ++i) {
-    qDebug() << "selecionado: " << modelColeta.data(i, "selecionado");
-  }
-
-  // TODO: see why the hell this wont work with true while others tables do
   for (const auto index :
-       modelColeta.match(modelColeta.index(0, modelColeta.fieldIndex("selecionado")), Qt::DisplayRole, 1, -1,
+       modelColeta.match(modelColeta.index(0, modelColeta.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
                          Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
     lista.append(index.row());
   }
@@ -270,6 +265,11 @@ void WidgetLogistica::on_pushButtonMarcarColetado_clicked() {
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
+      return;
+    }
+
+    if (not query.exec("CALL update_venda_status()")) {
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
       return;
     }
     //
@@ -341,6 +341,11 @@ void WidgetLogistica::on_pushButtonMarcarRecebido_clicked() {
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
+      return;
+    }
+
+    if (not query.exec("CALL update_venda_status()")) {
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
       return;
     }
     //

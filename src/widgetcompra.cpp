@@ -261,6 +261,11 @@ void WidgetCompra::on_pushButtonConfirmarCompra_clicked() {
     QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
     return;
   }
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return;
+  }
   //
 
   updateTables();
@@ -269,32 +274,18 @@ void WidgetCompra::on_pushButtonConfirmarCompra_clicked() {
 }
 
 void WidgetCompra::on_pushButtonMarcarFaturado_clicked() {
-  QString idCompra;
-  QList<int> rows;
-
-  if (ui->tableFaturamento->selectionModel()->selectedRows().size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado.");
-    return;
-  }
-
-  for (auto const &index : ui->tableFaturamento->selectionModel()->selectedRows()) {
-    rows.append(modelFat->data(index.row(), "idCompra").toInt());
-  }
-
-  int row = ui->tableFaturamento->selectionModel()->selectedRows().first().row();
-  idCompra = modelFat->data(row, "idCompra").toString();
-
-  ImportarXML *import = new ImportarXML(rows, this);
+  ImportarXML *import = new ImportarXML(this);
   import->show();
 
   if (import->exec() != QDialog::Accepted) {
     return;
   }
 
+  QString const idCompra = import->getIdCompra();
   //----------------------------------------------------------//
 
   InputDialog *inputDlg = new InputDialog(InputDialog::ConfirmarCompra, this);
-  inputDlg->setFilter(idCompra);
+  //  inputDlg->setFilter(idCompra);
 
   if (inputDlg->exec() != InputDialog::Accepted) {
     return;
@@ -304,29 +295,45 @@ void WidgetCompra::on_pushButtonMarcarFaturado_clicked() {
   QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
-  query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealFat = :dataRealFat, dataPrevColeta = "
-                ":dataPrevColeta, status = 'EM COLETA' WHERE idCompra = :idCompra");
-  query.bindValue(":dataRealFat", dataFat);
-  query.bindValue(":dataPrevColeta", dataPrevista);
-  query.bindValue(":idCompra", idCompra);
+  //  query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealFat = :dataRealFat, dataPrevColeta = "
+  //                ":dataPrevColeta, status = 'EM COLETA' WHERE idCompra = :idCompra");
+  //  query.bindValue(":dataRealFat", dataFat.toString("yyyy-MM-dd"));
+  //  query.bindValue(":dataPrevColeta", dataPrevista.toString("yyyy-MM-dd"));
+  //  query.bindValue(":idCompra", idCompra);
 
-  if (not query.exec()) {
+  //  qDebug() << "dataFat: " << dataFat;
+  //  qDebug() << "dataPrev: " << dataPrevista;
+  //  qDebug() << "idCompra: " << idCompra;
+  //  qDebug() << "query: UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
+  //              "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
+  //              "', status = 'EM COLETA' WHERE idCompra = " + idCompra;
+
+  if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
+                     "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
+                     "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
     return;
   }
 
   // salvar status na venda
-  query.prepare("UPDATE venda_has_produto SET dataRealFat = :dataRealFat, dataPrevColeta = :dataPrevColeta, status = "
-                "'EM COLETA' WHERE idCompra = :idCompra");
-  query.bindValue(":dataRealFat", dataFat);
-  query.bindValue(":dataPrevColeta", dataPrevista);
-  query.bindValue(":idCompra", idCompra);
+  //  query.prepare("UPDATE venda_has_produto SET dataRealFat = :dataRealFat, dataPrevColeta = :dataPrevColeta, status =
+  //  "
+  //                "'EM COLETA' WHERE idCompra = :idCompra");
+  //  query.bindValue(":dataRealFat", dataFat);
+  //  query.bindValue(":dataPrevColeta", dataPrevista);
+  //  query.bindValue(":idCompra", idCompra);
 
-  if (not query.exec()) {
+  if (not query.exec("UPDATE venda_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
+                     "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
+                     "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
     return;
   }
-  //
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return;
+  }
 
   updateTables();
 
@@ -480,11 +487,18 @@ void WidgetCompra::on_pushButtonGerarCompra_clicked() {
     return;
   }
 
-  SendMail *mail = new SendMail(this, produtos.join("\n"), arquivo);
+  // TODO: perguntar se deseja enviar email
+  //  QMessageBox question(this, "Enviar E-mail?", "Deseja enviar e-mail?");
 
-  if (mail->exec() != SendMail::Accepted) {
-    return;
-  }
+  //  if(question.exec() == QMessageBox::Accepted){
+
+  //  }
+
+  //  SendMail *mail = new SendMail(this, produtos.join("\n"), arquivo);
+
+  //  if (mail->exec() != SendMail::Accepted) {
+  //    return;
+  //  }
 
   for (const auto row : lista) {
     modelItemPedidosPend.setData(row, "selecionado", false);
@@ -534,6 +548,11 @@ void WidgetCompra::on_pushButtonGerarCompra_clicked() {
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
+      return;
+    }
+
+    if (not query.exec("CALL update_venda_status()")) {
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
       return;
     }
     //

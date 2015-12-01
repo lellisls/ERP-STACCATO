@@ -39,6 +39,7 @@ class ImportaProdutos : public QDialog {
     QSqlDatabase db;
     QVariantMap variantMap;
     QHash<QString, int> hash;
+    QHash<int, bool> hashAtualizado;
     int row = 0;
     bool hasError = false;
     int itensImported = 0;

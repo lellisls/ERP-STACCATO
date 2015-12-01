@@ -46,29 +46,29 @@ QString WidgetOrcamento::updateTables() {
 }
 
 void WidgetOrcamento::on_radioButtonOrcValido_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() +
+  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") +
                            "%') AND `Dias restantes` > 0 AND status != 'CANCELADO'");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void WidgetOrcamento::on_radioButtonOrcExpirado_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%') AND `Dias restantes` < 1");
+  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%') AND `Dias restantes` < 1");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void WidgetOrcamento::on_radioButtonOrcLimpar_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')");
+  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%')");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void WidgetOrcamento::on_radioButtonOrcProprios_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%') AND Vendedor = '" +
+  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%') AND Vendedor = '" +
                            UserSession::getNome() + "'");
   ui->tableOrcamentos->resizeColumnsToContents();
 }
 
 void WidgetOrcamento::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getSiglaLoja() + "%')" +
+  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%')" +
                            (text.isEmpty() ? "" : " AND ((Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text +
                                              "%') OR (Cliente LIKE '%" + text + "%'))"));
 

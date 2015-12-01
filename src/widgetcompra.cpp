@@ -28,7 +28,15 @@ WidgetCompra::WidgetCompra(QWidget *parent) : QWidget(parent), ui(new Ui::Widget
     ui->labelPedidosCompra->hide();
   }
 
-  ui->radioButtonProdPendPend->click();
+  connect(ui->checkBoxFiltroPendentes, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+  connect(ui->checkBoxFiltroIniciados, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+  connect(ui->checkBoxFiltroCompra, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+  connect(ui->checkBoxFiltroFaturamento, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+  connect(ui->checkBoxFiltroColeta, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+  connect(ui->checkBoxFiltroRecebimento, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+  connect(ui->checkBoxFiltroEstoque, &QAbstractButton::toggled, this, &WidgetCompra::montaFiltro);
+
+  ui->groupBoxStatusPendentes->setChecked(true);
 }
 
 WidgetCompra::~WidgetCompra() { delete ui; }
@@ -259,25 +267,6 @@ void WidgetCompra::on_pushButtonConfirmarCompra_clicked() {
   updateTables();
 
   QMessageBox::information(this, "Aviso!", "Confirmado compra.");
-}
-
-void WidgetCompra::on_radioButtonProdPendTodos_clicked() {
-  modelProdPend.setFilter("");
-
-  ui->tableProdutosPend->resizeColumnsToContents();
-}
-
-void WidgetCompra::on_radioButtonProdPendPend_clicked() {
-  modelProdPend.setFilter("status = 'PENDENTE'");
-
-  ui->tableProdutosPend->resizeColumnsToContents();
-}
-
-void WidgetCompra::on_radioButtonProdPendEmCompra_clicked() {
-  // TODO: mostrar caixas e un2
-  modelProdPend.setFilter("status != 'PENDENTE'");
-
-  ui->tableProdutosPend->resizeColumnsToContents();
 }
 
 void WidgetCompra::on_pushButtonMarcarFaturado_clicked() {
@@ -620,5 +609,31 @@ void WidgetCompra::on_pushButtonTesteEmail_clicked() {
   mail->show();
 }
 
-// TODO: a tabela de fornecedores deve mostrar apenas os pedidos que estejam pendente/confirmar/faturar
-// TODO: colocar filtros por checkbox no estilo da tela de vendas
+void WidgetCompra::on_groupBoxStatusPendentes_toggled(const bool &enabled) {
+  for (auto const &child : ui->groupBoxStatusPendentes->findChildren<QCheckBox *>()) {
+    child->setEnabled(true);
+  }
+
+  for (auto const &child : ui->groupBoxStatusPendentes->findChildren<QCheckBox *>()) {
+    child->setChecked(enabled);
+  }
+}
+
+void WidgetCompra::montaFiltro() {
+  QString filtro;
+
+  for (auto const &child : ui->groupBoxStatusPendentes->findChildren<QCheckBox *>()) {
+    if (child->isChecked()) {
+      filtro += filtro.isEmpty() ? "status = '" + child->text().toUpper() + "'"
+                                 : " OR status = '" + child->text().toUpper() + "'";
+    }
+  }
+
+  modelProdPend.setFilter(filtro);
+
+  ui->tableProdutosPend->resizeColumnsToContents();
+}
+
+// TODO: reorganizar interface para não ter botão em um lado de uma tela e do outro lado em outra, consistência!
+// TODO: reorganizar para que seja mais intuitivo quando se deve marcar linhas
+// TODO: mostrar caixas e un2

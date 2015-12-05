@@ -266,8 +266,8 @@
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Código de Orçamento:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;O código de orçamento é composto de:&lt;/p&gt;&lt;p&gt; * Sigla da loja &lt;/p&gt;&lt;p&gt; * Sigla do Vendedor&lt;/p&gt;&lt;p&gt; * Data (AAAAMMDD)&lt;/p&gt;&lt;p&gt; * Numero de Sequência (Hexadecimal) de 3 dígitos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
-                <property name="text">
-                 <string/>
+                <property name="frame">
+                 <bool>false</bool>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -965,6 +965,54 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="labelSubTotalLiq">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>SubTotal Líq.</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxSubTotalLiq">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total líq. do orçamento é o subtotal dos itens com desconto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="frame">
+               <bool>false</bool>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
+              </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>true</bool>
+              </property>
+              <property name="prefix">
+               <string>R$ </string>
+              </property>
+              <property name="maximum">
+               <double>9999999.000000000000000</double>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="2">
              <widget class="QLabel" name="label_11">
               <property name="font">
@@ -979,34 +1027,17 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
-             <widget class="QDoubleSpinBox" name="doubleSpinBoxDescontoGlobal">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+            <item row="2" column="1">
+             <widget class="QLabel" name="labelDescontoGlobal">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
               </property>
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="suffix">
-               <string> %</string>
-              </property>
-              <property name="decimals">
-               <number>4</number>
-              </property>
-              <property name="minimum">
-               <double>-100.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>100.000000000000000</double>
+              <property name="text">
+               <string>Desconto adicional</string>
               </property>
              </widget>
             </item>
@@ -1094,6 +1125,28 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="3">
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wrapping">
+               <bool>false</bool>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="showGroupSeparator" stdset="0">
+               <bool>true</bool>
+              </property>
+              <property name="prefix">
+               <string>R$ </string>
+              </property>
+              <property name="maximum">
+               <double>9999999.000000000000000</double>
+              </property>
+             </widget>
+            </item>
             <item row="4" column="1">
              <widget class="QLabel" name="labelTotal">
               <property name="font">
@@ -1125,89 +1178,74 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="3">
-             <widget class="QDoubleSpinBox" name="doubleSpinBoxTotal">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="wrapping">
-               <bool>false</bool>
-              </property>
-              <property name="correctionMode">
-               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-              </property>
-              <property name="showGroupSeparator" stdset="0">
-               <bool>true</bool>
-              </property>
-              <property name="prefix">
-               <string>R$ </string>
-              </property>
-              <property name="maximum">
-               <double>9999999.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="labelSubTotalLiq">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>SubTotal Líq.</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QDoubleSpinBox" name="doubleSpinBoxSubTotalLiq">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sub-total líq. do orçamento é o subtotal dos itens com desconto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="frame">
-               <bool>false</bool>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-              <property name="correctionMode">
-               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-              </property>
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-              <property name="showGroupSeparator" stdset="0">
-               <bool>true</bool>
-              </property>
-              <property name="prefix">
-               <string>R$ </string>
-              </property>
-              <property name="maximum">
-               <double>9999999.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="labelDescontoGlobal">
-              <property name="font">
-               <font>
-                <pointsize>10</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Desconto adicional</string>
-              </property>
-             </widget>
+            <item row="2" column="3">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxDescontoGlobalReais">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="correctionMode">
+                 <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+                </property>
+                <property name="showGroupSeparator" stdset="0">
+                 <bool>true</bool>
+                </property>
+                <property name="prefix">
+                 <string>R$ </string>
+                </property>
+                <property name="minimum">
+                 <double>-9999999.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>9999999.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxDescontoGlobal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="suffix">
+                 <string> %</string>
+                </property>
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+                <property name="minimum">
+                 <double>-100.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>100.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -1251,6 +1289,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src/tableview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
    <header>src/itembox.h</header>
@@ -1260,15 +1303,9 @@
    <extends>QLineEdit</extends>
    <header>src/lineeditdecimal.h</header>
   </customwidget>
-  <customwidget>
-   <class>TableView</class>
-   <extends>QTableView</extends>
-   <header location="global">src/tableview.h</header>
-  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>lineEditOrcamento</tabstop>
   <tabstop>dateTimeEdit</tabstop>
   <tabstop>spinBoxValidade</tabstop>
   <tabstop>itemBoxVendedor</tabstop>

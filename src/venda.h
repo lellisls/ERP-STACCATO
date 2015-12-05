@@ -29,21 +29,22 @@ class Venda : public RegisterDialog {
     void on_dateEditPgt2_dateChanged(const QDate &date);
     void on_dateEditPgt3_dateChanged(const QDate &date);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
-    void on_doubleSpinBoxTotal_editingFinished();
-    void on_doubleSpinBoxFrete_editingFinished();
+    void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
+    void on_doubleSpinBoxFrete_valueChanged(const double &);
     void on_doubleSpinBoxPgt1_editingFinished();
     void on_doubleSpinBoxPgt2_editingFinished();
     void on_doubleSpinBoxPgt3_editingFinished();
-    void on_pushButtonLimparPag_clicked();
-    void on_pushButtonCancelar_clicked();
-    void on_pushButtonCadastrarPedido_clicked();
-    void on_pushButtonVoltar_clicked();
-    void on_pushButtonImprimir_clicked();
-    void setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage);
-    void on_pushButtonGerarExcel_clicked();
+    void on_doubleSpinBoxTotal_valueChanged(const double &);
     void on_lineEditPgt1_textChanged(const QString &);
     void on_lineEditPgt2_textChanged(const QString &);
     void on_lineEditPgt3_textChanged(const QString &);
+    void on_pushButtonCadastrarPedido_clicked();
+    void on_pushButtonCancelar_clicked();
+    void on_pushButtonGerarExcel_clicked();
+    void on_pushButtonImprimir_clicked();
+    void on_pushButtonLimparPag_clicked();
+    void on_pushButtonVoltar_clicked();
+    void setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage);
 
   signals:
     void finished();
@@ -57,6 +58,8 @@ class Venda : public RegisterDialog {
   private:
     // attributes
     Ui::Venda *ui;
+    double minimoFrete;
+    double porcFrete;
     SqlTableModel modelItem;
     SqlTableModel modelFluxoCaixa;
     QSqlQuery queryCliente;
@@ -69,7 +72,7 @@ class Venda : public RegisterDialog {
     // methods
     bool verifyFields();
     QString requiredStyle() const;
-    void calcPrecoGlobalTotal(const bool &ajusteTotal = false);
+    void calcPrecoGlobalTotal();
     void calculoSpinBox1() const;
     void calculoSpinBox2() const;
     void clearFields();

@@ -23,11 +23,12 @@ class Orcamento : public RegisterDialog {
     void on_checkBoxRepresentacao_toggled(const bool &checked);
     void on_doubleSpinBoxDesconto_valueChanged(const double &);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
-    void on_doubleSpinBoxFrete_editingFinished();
-    void on_doubleSpinBoxPrecoTotal_editingFinished();
+    void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
+    void on_doubleSpinBoxFrete_valueChanged(const QString &);
+    void on_doubleSpinBoxPrecoTotal_valueChanged(const QString &);
     void on_doubleSpinBoxQte_valueChanged(const double &);
     void on_doubleSpinBoxSubTotalLiq_valueChanged(const double &);
-    void on_doubleSpinBoxTotal_editingFinished();
+    void on_doubleSpinBoxTotal_valueChanged(const double &);
     void on_itemBoxCliente_textChanged(const QString &);
     void on_itemBoxProduto_textChanged(const QString &);
     void on_pushButtonAdicionarItem_clicked();
@@ -90,14 +91,12 @@ class Orcamento : public RegisterDialog {
 *\return
 */
     virtual bool newRegister();
-    /*!
-* \brief Mensagem de confirmação padrão para quando cadastro é realizado com sucesso.
-*/
-    void successMessage();
 
   private:
     // attributes
     Ui::Orcamento *ui;
+    double minimoFrete;
+    double porcFrete;
     SqlTableModel modelItem;
     QDataWidgetMapper mapperItem;
     QSqlQuery queryCliente;
@@ -109,7 +108,7 @@ class Orcamento : public RegisterDialog {
     // methods
     void removeItem();
     void adicionarItem(const bool &isUpdate = false);
-    void calcPrecoGlobalTotal(const bool &ajusteTotal = false);
+    void calcPrecoGlobalTotal();
     void calcPrecoItemTotal();
     void novoItem();
     void updateId();

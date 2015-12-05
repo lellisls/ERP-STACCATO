@@ -282,10 +282,22 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->itemBoxEndereco->setValue(queryOrc.value("idEnderecoEntrega"));
   ui->itemBoxEnderecoFat->setValue(queryOrc.value("idEnderecoFaturamento"));
 
-  ui->dateTimeEditOrc->setDateTime(model.data(mapper.currentIndex(), "data").toDateTime());
+  ui->dateTimeEditOrc->setDateTime(data("data").toDateTime());
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
   ui->tableVenda->resizeColumnsToContents();
+
+  QSqlQuery queryFrete;
+  queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryFrete.bindValue(":idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
+
+  if (not queryFrete.exec() or not queryFrete.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando parâmetros do frete: " + queryFrete.lastError().text());
+    return;
+  }
+
+  minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
+  porcFrete = queryFrete.value("porcentagemFrete").toDouble();
 }
 
 bool Venda::verifyFields() {
@@ -294,9 +306,9 @@ bool Venda::verifyFields() {
     return false;
   }
 
-  // TODO: mostrar valores para facilitar correcao
-  if (ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() <
-      ui->doubleSpinBoxTotalPag->value()) {
+  if (not qFuzzyCompare(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() +
+                        ui->doubleSpinBoxPgt3->value(),
+                        ui->doubleSpinBoxTotalPag->value())) {
     QMessageBox::critical(this, "Erro!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
     return false;
   }
@@ -324,19 +336,7 @@ bool Venda::verifyFields() {
 
 QString Venda::requiredStyle() const { return QString(); }
 
-void Venda::calcPrecoGlobalTotal(const bool &ajusteTotal) {
-  QSqlQuery queryFrete;
-  queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryFrete.bindValue(":idLoja", UserSession::getLoja());
-
-  if (not queryFrete.exec() or not queryFrete.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando parâmetros do frete: " + queryFrete.lastError().text());
-    return;
-  }
-
-  const double minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
-  const double porcFrete = queryFrete.value("porcentagemFrete").toDouble();
-
+void Venda::calcPrecoGlobalTotal() {
   double subTotalItens = 0.;
   double subTotalBruto = 0.;
 
@@ -350,16 +350,8 @@ void Venda::calcPrecoGlobalTotal(const bool &ajusteTotal) {
     modelItem.setData(row, "parcialDesc", stItem);
   }
 
-  const double frete = ui->checkBoxFreteManual->isChecked() ? ui->doubleSpinBoxFrete->value()
-                                                            : qMax(subTotalBruto * porcFrete / 100., minimoFrete);
-
   double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.;
   double subTotal = subTotalItens * (1. - descGlobal);
-
-  if (ajusteTotal) {
-    subTotal = ui->doubleSpinBoxTotal->value() - frete;
-    descGlobal = subTotalItens == 0. ? 0. : 1. - (subTotal / subTotalItens);
-  }
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     modelItem.setData(row, "descGlobal", descGlobal * 100.);
@@ -368,10 +360,10 @@ void Venda::calcPrecoGlobalTotal(const bool &ajusteTotal) {
 
   ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
   ui->doubleSpinBoxSubTotalLiq->setValue(subTotalItens);
-  ui->doubleSpinBoxDescontoGlobal->setValue(descGlobal * 100.);
-  ui->doubleSpinBoxDescontoGlobal->setPrefix("- R$ " + QString::number(subTotalItens - subTotal, 'f', 2) + " - ");
-  ui->doubleSpinBoxFrete->setValue(frete);
-  ui->doubleSpinBoxTotal->setValue(subTotal + frete);
+  ui->doubleSpinBoxDescontoGlobalReais->setValue(subTotalItens - subTotal);
+  ui->doubleSpinBoxDescontoGlobalReais->setMaximum(ui->doubleSpinBoxSubTotalLiq->value());
+  ui->doubleSpinBoxTotal->setValue(subTotal + ui->doubleSpinBoxFrete->value());
+  ui->doubleSpinBoxTotal->setMinimum(ui->doubleSpinBoxFrete->value());
 
   resetarPagamentos();
   montarFluxoCaixa();
@@ -527,7 +519,7 @@ bool Venda::savingProcedures() {
   setData("status", "PENDENTE");
   setData("data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
   setData("dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
-  setData("prazoEntrega", QDate::currentDate().addDays(ui->spinBoxPrazoEntrega->value()));
+  setData("prazoEntrega", ui->spinBoxPrazoEntrega->value());
   setData("observacao", ui->textEdit->toPlainText());
 
   if (not model.submitAll()) {
@@ -638,9 +630,6 @@ bool Venda::viewRegister(const QModelIndex &index) {
 
   ui->tableVenda->resizeColumnsToContents();
 
-  int prazo = QDate::currentDate().daysTo(model.data(mapper.currentIndex(), "prazoEntrega").toDate());
-  ui->spinBoxPrazoEntrega->setValue(prazo);
-
   ui->spinBoxPrazoEntrega->setReadOnly(true);
 
   ui->itemBoxCliente->setReadOnlyItemBox(true);
@@ -669,18 +658,11 @@ void Venda::montarFluxoCaixa() {
 
   modelFluxoCaixa.removeRows(0, modelFluxoCaixa.rowCount());
 
-  int row = 0;
-
-  QList<QComboBox *> comboPgt;
-  comboPgt << ui->comboBoxPgt1 << ui->comboBoxPgt2 << ui->comboBoxPgt3;
-  QList<QComboBox *> comboParc;
-  comboParc << ui->comboBoxPgt1Parc << ui->comboBoxPgt2Parc << ui->comboBoxPgt3Parc;
-  QList<QDoubleSpinBox *> spinPgt;
-  spinPgt << ui->doubleSpinBoxPgt1 << ui->doubleSpinBoxPgt2 << ui->doubleSpinBoxPgt3;
-  QList<QDateEdit *> datePgt;
-  datePgt << ui->dateEditPgt1 << ui->dateEditPgt2 << ui->dateEditPgt3;
-  QList<QLineEdit *> linePgt;
-  linePgt << ui->lineEditPgt1 << ui->lineEditPgt2 << ui->lineEditPgt3;
+  const QList<QComboBox *> comboPgt({ui->comboBoxPgt1, ui->comboBoxPgt2, ui->comboBoxPgt3});
+  const QList<QComboBox *> comboParc({ui->comboBoxPgt1Parc, ui->comboBoxPgt2Parc, ui->comboBoxPgt3Parc});
+  const QList<QDoubleSpinBox *> spinPgt({ui->doubleSpinBoxPgt1, ui->doubleSpinBoxPgt2, ui->doubleSpinBoxPgt3});
+  const QList<QDateEdit *> datePgt({ui->dateEditPgt1, ui->dateEditPgt2, ui->dateEditPgt3});
+  const QList<QLineEdit *> linePgt({ui->lineEditPgt1, ui->lineEditPgt2, ui->lineEditPgt3});
 
   for (int i = 0; i < 3; ++i) {
     if (comboPgt.at(i)->currentText() != "Escolha uma opção!") {
@@ -692,16 +674,15 @@ void Venda::montarFluxoCaixa() {
       const double parcela = static_cast<double>(temp);
 
       for (int x = 0, y = parcelas - 1; x < parcelas; ++x, --y) {
-        modelFluxoCaixa.insertRow(modelFluxoCaixa.rowCount());
+        const int row = modelFluxoCaixa.rowCount();
+        modelFluxoCaixa.insertRow(row);
         modelFluxoCaixa.setData(row, "idVenda", ui->lineEditVenda->text());
-        modelFluxoCaixa.setData(row, "idLoja", UserSession::getLoja());
+        modelFluxoCaixa.setData(row, "idLoja", data("idLoja"));
         modelFluxoCaixa.setData(row, "tipo", QString::number(i + 1) + ". " + comboPgt.at(i)->currentText());
         modelFluxoCaixa.setData(row, "parcela", parcelas - y);
         modelFluxoCaixa.setData(row, "valor", parcela + (x == 0 ? resto : 0));
         modelFluxoCaixa.setData(row, "data", datePgt.at(i)->date().addMonths(x + temp2));
         modelFluxoCaixa.setData(row, "observacao", linePgt.at(i)->text());
-
-        ++row;
       }
     }
   }
@@ -723,40 +704,35 @@ void Venda::on_dateEditPgt3_dateChanged(const QDate &) { montarFluxoCaixa(); }
 
 void Venda::on_pushButtonLimparPag_clicked() { resetarPagamentos(); }
 
-void Venda::on_doubleSpinBoxTotal_editingFinished() {
-  if (modelItem.rowCount() == 0 or ui->doubleSpinBoxSubTotalLiq->value() == 0) {
-    calcPrecoGlobalTotal();
-    return;
-  }
+void Venda::on_doubleSpinBoxTotal_valueChanged(const double &) {
+  double liq = ui->doubleSpinBoxSubTotalLiq->value();
+  double frete = ui->doubleSpinBoxFrete->value();
+  double total = ui->doubleSpinBoxTotal->value();
+  double value = 100 * (1 - ((total - frete) / liq));
 
-  const double new_total = ui->doubleSpinBoxTotal->value();
-  const double frete = ui->doubleSpinBoxFrete->value();
-  const double new_subtotal = new_total - frete;
-
-  if (new_subtotal >= ui->doubleSpinBoxSubTotalLiq->value()) {
-    ui->doubleSpinBoxDescontoGlobal->setValue(0.);
-    calcPrecoGlobalTotal();
-  } else {
-    calcPrecoGlobalTotal(true);
-  }
+  ui->doubleSpinBoxDescontoGlobal->setValue(value);
 }
 
 void Venda::on_checkBoxFreteManual_clicked(const bool &checked) {
-  if (checked == true and UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->checkBoxFreteManual->setChecked(false);
-    return;
-  }
-
   ui->doubleSpinBoxFrete->setFrame(checked);
   ui->doubleSpinBoxFrete->setReadOnly(not checked);
   ui->doubleSpinBoxFrete->setButtonSymbols(checked ? QDoubleSpinBox::UpDownArrows : QDoubleSpinBox::NoButtons);
 
-  calcPrecoGlobalTotal();
+  ui->doubleSpinBoxFrete->setValue(ui->checkBoxFreteManual->isChecked()
+                                   ? ui->doubleSpinBoxFrete->value()
+                                   : qMax(ui->doubleSpinBoxSubTotalBruto->value() * porcFrete / 100., minimoFrete));
 }
 
-void Venda::on_doubleSpinBoxFrete_editingFinished() { calcPrecoGlobalTotal(); }
+void Venda::on_doubleSpinBoxFrete_valueChanged(const double &) { calcPrecoGlobalTotal(); }
 
 void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double &) { calcPrecoGlobalTotal(); }
+
+void Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &) {
+  double liq = ui->doubleSpinBoxSubTotalLiq->value();
+  double desc = ui->doubleSpinBoxDescontoGlobalReais->value();
+
+  ui->doubleSpinBoxDescontoGlobal->setValue(100 * (1 - ((liq - desc) / liq)));
+}
 
 void Venda::on_pushButtonImprimir_clicked() {
   if (settings("User/userFolder").toString().isEmpty()) {
@@ -909,7 +885,7 @@ void Venda::setValue(const int &recNo, const QString &paramName, QVariant &param
     QString endereco = ui->itemBoxEndereco->text();
 
     if (endereco != "Não há/Retira") {
-      endereco = endereco.remove(0, endereco.indexOf("-") + 2);
+      endereco.remove(0, endereco.indexOf("-") + 2);
     }
 
     paramValue = endereco;
@@ -925,7 +901,7 @@ void Venda::setValue(const int &recNo, const QString &paramName, QVariant &param
     QString endereco = ui->itemBoxEndereco->text();
 
     if (endereco != "Não há/Retira") {
-      endereco = endereco.remove(0, endereco.indexOf("-") + 2);
+      endereco.remove(0, endereco.indexOf("-") + 2);
     }
 
     paramValue = endereco;
@@ -1205,7 +1181,7 @@ void Venda::on_pushButtonGerarExcel_clicked() {
 
   QXlsx::Document xlsx("modelo.xlsx");
 
-  QString idVenda = model.data(mapper.currentIndex(), "idVenda").toString();
+  const QString idVenda = data("idVenda").toString();
 
   QSqlQuery queryVenda;
   queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
@@ -1334,3 +1310,4 @@ void Venda::setSettings(const QString &key, const QVariant &value) const { UserS
 
 // TODO: colocar status mais a esquerda para ficar visivel
 // TODO: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
+// TODO: incluir desconto no excel/pdf?

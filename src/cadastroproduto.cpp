@@ -170,3 +170,8 @@ void CadastroProduto::show() {
   QWidget::show();
   adjustSize();
 }
+
+// TODO: produtos cadastrados manualmente devem ter uma validade definida
+// TODO: verificar se já não existe produto com o mesmo codComercial
+// TODO: peso por caixa na gui
+// TODO: calcular markup

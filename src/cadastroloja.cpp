@@ -277,7 +277,7 @@ bool CadastroLoja::viewRegister(const QModelIndex &index) {
     return false;
   }
 
-  modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + " AND desativado = FALSE");
+  modelEnd.setFilter("idLoja = " + data("idLoja").toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço da loja: " + modelEnd.lastError().text());

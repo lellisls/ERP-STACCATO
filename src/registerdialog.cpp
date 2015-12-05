@@ -11,7 +11,6 @@ RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, 
   : QDialog(parent), model(this), primaryKey(primaryKey) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
-  setAttribute(Qt::WA_DeleteOnClose);
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -73,20 +72,22 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> &list) {
   return true;
 }
 
-void RegisterDialog::setData(const QString &key, const QVariant value) {
+bool RegisterDialog::setData(const QString &key, const QVariant value) {
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
-    return;
+    return false;
   }
 
   if (value.type() == QVariant::String and value.toString().remove(".").remove("/").remove("-").isEmpty()) {
-    return;
+    return false;
   }
 
   if (value.type() == QVariant::String and value.toString() == "1900-01-01") {
-    return;
+    return false;
   }
 
-  isOk = model.setData(row, key, value);
+  int currentRow = row != -1 ? row : mapper.currentIndex();
+
+  return isOk = model.setData(currentRow, key, value);
 }
 
 QVariant RegisterDialog::data(const QString &key) { return model.data(mapper.currentIndex(), key); }

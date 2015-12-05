@@ -188,7 +188,7 @@ void ImportaProdutos::importarTabela() {
 
 void ImportaProdutos::setProgressDialog() {
   progressDialog = new QProgressDialog(this);
-  progressDialog->reset(); // NOTE: Qt 5.5 bug https://bugreports.qt.io/browse/QTBUG-47042
+  progressDialog->reset(); // BUG: Qt 5.5 bug https://bugreports.qt.io/browse/QTBUG-47042
   progressDialog->setCancelButton(0);
   progressDialog->setLabelText("Importando...");
   progressDialog->setWindowTitle("ERP Staccato");

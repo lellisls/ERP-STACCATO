@@ -27,7 +27,7 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
   // TODO: convert this to view? make a view that filters this data for each item and filter to show only one
   modelProdutos.setQuery(
         "SELECT v.fornecedor, v.idVenda, v.idProduto, v.produto, p.colecao, v.formComercial, v.quant "
-        "AS quant, v.un, v.codComercial, p.codBarras, v.idCompra, v.status, (SELECT SUM(quant) FROM "
+        "AS quant, v.un, p.kgcx, v.codComercial, p.codBarras, v.idCompra, v.status, (SELECT SUM(quant) FROM "
         "estoque WHERE codComercial = '" +
         codComercial +
         "') AS estoque FROM venda_has_produto AS v LEFT JOIN estoque AS e ON v.idProduto = e.idProduto LEFT JOIN produto "
@@ -65,7 +65,7 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
 
   ui->doubleSpinBoxQuantTotal->setSingleStep(step);
   ui->doubleSpinBoxComprar->setSingleStep(step);
-  ui->doubleSpinBoxComprar->setMinimum(quant);
+  //  ui->doubleSpinBoxComprar->setMinimum(quant);
 
   ui->tableProdutos->resizeColumnsToContents();
 
@@ -123,12 +123,12 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
       return;
     }
 
-    double custo = query.value(0).toDouble() * ui->doubleSpinBoxComprar->value();
+    double custo = query.value("custo").toDouble() * ui->doubleSpinBoxComprar->value();
 
     query.prepare(
           "INSERT INTO pedido_fornecedor_has_produto (fornecedor, idProduto, descricao, colecao, quant, un, "
-          "preco, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, :idProduto, "
-          ":descricao, :colecao, :quant, :un, :preco, :formComercial, :codComercial, :codBarras, :dataPrevCompra)");
+          "preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, :idProduto, "
+          ":descricao, :colecao, :quant, :un, :preco, :kgcx, :formComercial, :codComercial, :codBarras, :dataPrevCompra)");
 
     query.bindValue(":fornecedor", modelProdutos.data(0, "fornecedor"));
     query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
@@ -137,6 +137,7 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
     query.bindValue(":quant", ui->doubleSpinBoxComprar->value());
     query.bindValue(":un", modelProdutos.data(0, "un"));
     query.bindValue(":preco", custo);
+    query.bindValue(":kgcx", modelProdutos.data(0, "kgcx"));
     query.bindValue(":formComercial", modelProdutos.data(0, "formComercial"));
     query.bindValue(":codComercial", modelProdutos.data(0, "codComercial"));
     query.bindValue(":codBarras", modelProdutos.data(0, "codBarras"));

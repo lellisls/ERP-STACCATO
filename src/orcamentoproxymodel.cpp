@@ -9,7 +9,7 @@ OrcamentoProxyModel::OrcamentoProxyModel(SqlTableModel *model, const QString &co
 
 OrcamentoProxyModel::~OrcamentoProxyModel() {}
 
-QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int &role) const {
+QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if ((role == Qt::BackgroundRole) and (proxyIndex.column() == column)) {
     int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 

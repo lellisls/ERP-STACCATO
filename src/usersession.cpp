@@ -44,30 +44,18 @@ QString UserSession::getTipoUsuario() { return (query->value("tipo").toString())
 
 QString UserSession::getSigla() { return (query->value("sigla").toString()); }
 
-QString UserSession::getSiglaLoja() {
+QString UserSession::getFromLoja(const QString &parameter, const QString &user) {
   QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT sigla FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", getLoja());
-
-  if (not queryLoja.exec() or not queryLoja.first()) {
-    QMessageBox::critical(0, "Erro!", "Erro na query sigla loja: " + queryLoja.lastError().text());
-    return QString();
-  }
-
-  return queryLoja.value("sigla").toString();
-}
-
-QString UserSession::getFromLoja(const QString &parameter) {
-  QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT " + parameter + " FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", getLoja());
+  queryLoja.prepare("SELECT " + parameter +
+                    " FROM loja LEFT JOIN usuario ON loja.idLoja = usuario.idLoja WHERE usuario.nome = :nome");
+  queryLoja.bindValue(":nome", user);
 
   if (not queryLoja.exec() or not queryLoja.first()) {
     QMessageBox::critical(0, "Erro!", "Erro na query loja: " + queryLoja.lastError().text());
     return QString();
   }
 
-  return queryLoja.value(parameter).toString();
+  return queryLoja.value(0).toString();
 }
 
 QVariant UserSession::getSettings(const QString &key) { return settings.value(key); }
@@ -75,23 +63,6 @@ QVariant UserSession::getSettings(const QString &key) { return settings.value(ke
 void UserSession::setSettings(const QString &key, const QVariant &value) { settings.setValue(key, value); }
 
 bool UserSession::settingsContains(const QString &key) { return settings.contains(key); }
-
-QStringList UserSession::getTodosCNPJ() {
-  QSqlQuery queryLoja;
-  QStringList list;
-
-  if (not queryLoja.exec("SELECT cnpj FROM loja") or not queryLoja.first()) {
-    QMessageBox::critical(0, "Erro!", "Erro na query CNPJ: " + queryLoja.lastError().text());
-    return QStringList();
-  }
-
-  for (int i = 0; i < queryLoja.size(); ++i) {
-    list.append(queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-"));
-    queryLoja.next();
-  }
-
-  return list;
-}
 
 QSqlQuery *UserSession::initialize() {
   if (query) {

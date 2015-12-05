@@ -116,14 +116,15 @@ QString QSimpleUpdater::changeLog() const { return m_changelog; }
  */
 
 void QSimpleUpdater::checkForUpdates(void) {
-  if (not m_reference_url.isEmpty()) {
-    m_manager->get(QNetworkRequest(m_reference_url));
-
-    if (not silent()) {
-      m_progressDialog->show();
-    }
-  } else {
+  if (m_reference_url.isEmpty()) {
     qDebug() << "QSimpleUpdater: Invalid reference URL";
+    return;
+  }
+
+  m_manager->get(QNetworkRequest(m_reference_url));
+
+  if (not silent()) {
+    m_progressDialog->show();
   }
 }
 
@@ -390,14 +391,14 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
     QStringList _download = m_latest_version.split(".");
     QStringList _installed = m_installed_version.split(".");
 
-    for (int i = 0; i <= _download.count() - 1; ++i) {
-      if (_download.count() - 1 >= i and _installed.count() - 1 >= i) {
+    for (int i = 0; i <= _download.size() - 1; ++i) {
+      if (_download.size() - 1 >= i and _installed.size() - 1 >= i) {
         if (_download.at(i) > _installed.at(i)) {
           _new_update = true;
           break;
         }
       } else {
-        if (_installed.count() < _download.count()) {
+        if (_installed.size() < _download.size()) {
           if (_installed.at(i - 1) == _download.at(i - 1)) {
             break;
           } else {

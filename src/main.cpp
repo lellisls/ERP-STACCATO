@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.6");
+  app.setApplicationVersion("0.11");
   app.setStyle("Fusion");
 
   //    setSettings("Login/hostname", ""); //to test store selection
@@ -77,3 +77,8 @@ void storeSelection() {
     setSettings("Login/homologacao", false);
   }
 }
+
+// TODO: criar tela para organizar caminhão da coleta
+// TODO: arrumar status do estoque não saindo de pendente
+// TODO: arrumar filtros da tela de entrega
+// TODO: na emissão da nfe perguntar/mostrar o número da sequência

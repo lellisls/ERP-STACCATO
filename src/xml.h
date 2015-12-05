@@ -102,6 +102,7 @@ class XML {
     void lerPISProduto(const QStandardItem *child);
     void lerTotais(const QStandardItem *child);
     void readChild(QDomElement &element, QStandardItem *elementItem);
+    QStringList getTodosCNPJ();
 };
 
 #endif // XML_H

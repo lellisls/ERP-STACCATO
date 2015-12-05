@@ -39,7 +39,7 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
   ui->comboBoxLojas->addItem("");
 
   while (query.next()) {
-    ui->comboBoxLojas->addItem(query.value("sigla").toString(), query.value("idLoja"));
+    ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
 
   ui->comboBoxLojas->setCurrentValue(UserSession::getLoja());
@@ -121,5 +121,4 @@ void WidgetVenda::on_tableVendas_activated(const QModelIndex &index) {
   vendas->viewRegisterById(modelVendas.data(index.row(), "Código"));
 }
 
-// TODO: frete as vezes recalcula para o minimo no lugar do valor armazenado
-// TODO: verificar como lidar com brinde/reposicao
+// NOTE: verificar como lidar com brinde/reposicao

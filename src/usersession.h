@@ -9,10 +9,8 @@ class UserSession {
     static int getIdUsuario();
     static int getLoja();
     static QString getNome();
-    static QString getSiglaLoja();
     static QString getTipoUsuario();
-    static QStringList getTodosCNPJ();
-    static QString getFromLoja(const QString &parameter);
+    static QString getFromLoja(const QString &parameter, const QString &user = getNome());
     static QVariant getSettings(const QString &key);
     static void setSettings(const QString &key, const QVariant &value);
     static bool settingsContains(const QString &key);

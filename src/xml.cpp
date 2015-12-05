@@ -102,25 +102,24 @@ bool XML::lerValores(const QStandardItem *item) {
       if (child->parent()->text() == "emit" and text.left(7) == "xFant -") xFant = text.remove(0, 8);
       if (child->parent()->text() == "emit" and text.left(7) == "xNome -") xNome = text.remove(0, 8);
       if (child->parent()->text() == "dest" and text.left(6) == "CNPJ -") cnpj = text.remove(0, 7);
-      // NOTE: readicionar verificação de destinatario nfe
 
-      //                bool match = false;
+      //      bool match = false;
 
-      //                for (const auto cnpjLoja : UserSession::getTodosCNPJ()) {
-      //                  if (cnpj == cnpjLoja) {
-      //                    match = true;
-      //                  }
-      //                }
+      //      for (const auto cnpjLoja : getTodosCNPJ()) {
+      //        if (cnpj == cnpjLoja) {
+      //          match = true;
+      //        }
+      //    }
 
-      //                if (not match) {
-      //                  QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
-      //                  return false;
-      //                }
+      //      if (not match) {
+      //        QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
+      //        return false;
+      //      }
 
-      //            if (child->parent()->text() == "dest" and text.left(5) == "CPF -") {
-      //              QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
-      //              return false;
-      //            }
+      //      if (child->parent()->text() == "dest" and text.left(5) == "CPF -") {
+      //        QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
+      //        return false;
+      //      }
 
       lerDadosProduto(child);
       lerICMSProduto(child);
@@ -308,7 +307,7 @@ bool XML::cadastrarEstoque() {
     return false;
   }
 
-  const QString fornecedor = query.value(0).toString();
+  const QString fornecedor = query.value("fornecedor").toString();
 
   query.prepare(
         "INSERT INTO estoque (idProduto, idXML, fornecedor, descricao, quant, un, codBarras, codComercial, ncm, cfop, "
@@ -413,4 +412,21 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
       externalModel->setData(row, "vPIS", vPIS) and externalModel->setData(row, "cstCOFINS", cstCOFINS) and
       externalModel->setData(row, "vBCCOFINS", vBCCOFINS) and externalModel->setData(row, "pCOFINS", pCOFINS) and
       externalModel->setData(row, "vCOFINS", vCOFINS);
+}
+
+QStringList XML::getTodosCNPJ() {
+  QSqlQuery queryLoja;
+
+  if (not queryLoja.exec("SELECT cnpj FROM loja")) {
+    QMessageBox::critical(0, "Erro!", "Erro na query CNPJ: " + queryLoja.lastError().text());
+    return QStringList();
+  }
+
+  QStringList list;
+
+  while (queryLoja.next()) {
+    list << queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-");
+  }
+
+  return list;
 }

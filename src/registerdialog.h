@@ -121,7 +121,7 @@ class RegisterDialog : public QDialog {
 * \param key Chave da coluna.
 * \param value Valor a ser atualizado.
 */
-    void setData(const QString &key, const QVariant value);
+    bool setData(const QString &key, const QVariant value);
 
     /*!
 * \brief Acelerador para diminuir um pouco a verbosidade do código.
@@ -185,8 +185,8 @@ class RegisterDialog : public QDialog {
 
   protected:
     // attributes
-    int row = 0;
-    int rowEnd = 0;
+    int row = -1;
+    int rowEnd = -1;
     bool isOk = true;
     bool isDirty = false;
     bool silent = false;

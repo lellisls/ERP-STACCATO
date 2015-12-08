@@ -593,6 +593,9 @@ void Venda::updateMode() {
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(true);
   ui->doubleSpinBoxDescontoGlobal->setFrame(false);
   ui->doubleSpinBoxDescontoGlobal->setButtonSymbols(QDoubleSpinBox::NoButtons);
+  ui->doubleSpinBoxDescontoGlobalReais->setReadOnly(true);
+  ui->doubleSpinBoxDescontoGlobalReais->setFrame(false);
+  ui->doubleSpinBoxDescontoGlobalReais->setButtonSymbols(QDoubleSpinBox::NoButtons);
   ui->doubleSpinBoxTotal->setReadOnly(true);
   ui->doubleSpinBoxTotal->setFrame(false);
   ui->doubleSpinBoxTotal->setButtonSymbols(QDoubleSpinBox::NoButtons);

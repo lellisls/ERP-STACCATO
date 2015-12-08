@@ -1251,6 +1251,7 @@ void Venda::on_pushButtonGerarExcel_clicked() {
     return;
   }
 
+  xlsx.write("C2", "Pedido:");
   xlsx.write("D2", queryVenda.value("idVenda"));
   xlsx.write("D3", queryCliente.value("nome_razao"));
   xlsx.write("D4", queryCliente.value("email"));

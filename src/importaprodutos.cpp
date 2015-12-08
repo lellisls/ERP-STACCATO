@@ -527,21 +527,19 @@ void ImportaProdutos::marcaProdutoNaoDescontinuado() {
 }
 
 void ImportaProdutos::guardaNovoPrecoValidade() {
-  if (model.data(row, "precoVenda") != variantMap.value("precoVenda")) {
-    expiraPrecosAntigos();
+  expiraPrecosAntigos();
 
-    QSqlQuery query;
-    query.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) VALUES (:idProduto, "
-                  ":preco, :validadeInicio, :validadeFim)");
-    query.bindValue(":idProduto", model.data(row, "idProduto"));
-    query.bindValue(":preco", variantMap.value("precoVenda"));
-    query.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
-    query.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+  QSqlQuery query;
+  query.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) VALUES (:idProduto, "
+                ":preco, :validadeInicio, :validadeFim)");
+  query.bindValue(":idProduto", model.data(row, "idProduto"));
+  query.bindValue(":preco", variantMap.value("precoVenda"));
+  query.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
+  query.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
 
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro inserindo dados em produto_has_preco: " + query.lastError().text());
-      return;
-    }
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro inserindo dados em produto_has_preco: " + query.lastError().text());
+    return;
   }
 }
 
@@ -813,5 +811,5 @@ void ImportaProdutos::on_tabWidget_currentChanged(const int &index) {
   }
 }
 
-// TODO: verificar o que esta deixando a importacao lenta ao longo do tempo
-// TODO: fix some tables still having negative numbers (tabelas.txt)
+// NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo
+// FIXME: fix some tables still having negative numbers (tabelas.txt)

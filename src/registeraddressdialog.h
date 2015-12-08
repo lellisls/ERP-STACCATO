@@ -20,6 +20,7 @@ class RegisterAddressDialog : public RegisterDialog {
     int getCodigoUF(QString uf) const;
     bool save(const bool &isUpdate = false);
     void setDataEnd(const QString &key, const QVariant &value);
+    void setDataEnd(const int &row, const QString &key, const QVariant &value);
 };
 
 #endif // REGISTERADDRESSDIALOG_H

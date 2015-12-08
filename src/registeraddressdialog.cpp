@@ -68,7 +68,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   const int id = data(row, primaryKey).isValid() ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    setDataEnd(primaryKey, id);
+    setDataEnd(row, primaryKey, id);
   }
 
   if (not isOk) {
@@ -102,6 +102,14 @@ void RegisterAddressDialog::setDataEnd(const QString &key, const QVariant &value
   }
 
   isOk = modelEnd.setData(rowEnd, key, value);
+}
+
+void RegisterAddressDialog::setDataEnd(const int &row, const QString &key, const QVariant &value) {
+  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
+    return;
+  }
+
+  isOk = modelEnd.setData(row, key, value);
 }
 
 bool RegisterAddressDialog::newRegister() {

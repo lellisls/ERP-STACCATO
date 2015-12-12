@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1192</width>
-    <height>694</height>
+    <width>1303</width>
+    <height>791</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -740,7 +740,7 @@
                 <layout class="QGridLayout" name="gridLayout_11">
                  <item row="0" column="0">
                   <layout class="QGridLayout" name="gridLayout_5">
-                   <item row="0" column="3">
+                   <item row="0" column="4">
                     <widget class="QDateEdit" name="dateEditPgt1">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -756,7 +756,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="2">
+                   <item row="0" column="3">
                     <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -778,7 +778,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="1">
+                   <item row="0" column="2">
                     <widget class="QComboBox" name="comboBoxPgt1Parc">
                      <property name="enabled">
                       <bool>false</bool>
@@ -841,7 +841,7 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="0" column="0">
+                   <item row="0" column="1">
                     <widget class="QComboBox" name="comboBoxPgt1">
                      <property name="minimumSize">
                       <size>
@@ -851,10 +851,17 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="4">
+                   <item row="0" column="5">
                     <widget class="QLineEdit" name="lineEditPgt1">
                      <property name="placeholderText">
                       <string>Observação</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="checkBox">
+                     <property name="text">
+                      <string>Fornecedor</string>
                      </property>
                     </widget>
                    </item>
@@ -877,7 +884,7 @@
                 <layout class="QGridLayout" name="gridLayout_12">
                  <item row="0" column="0">
                   <layout class="QGridLayout" name="gridLayout_4">
-                   <item row="0" column="2">
+                   <item row="0" column="3">
                     <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -899,7 +906,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="1">
+                   <item row="0" column="2">
                     <widget class="QComboBox" name="comboBoxPgt2Parc">
                      <property name="enabled">
                       <bool>false</bool>
@@ -962,7 +969,7 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="0" column="0">
+                   <item row="0" column="1">
                     <widget class="QComboBox" name="comboBoxPgt2">
                      <property name="minimumSize">
                       <size>
@@ -972,7 +979,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="3">
+                   <item row="0" column="4">
                     <widget class="QDateEdit" name="dateEditPgt2">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -988,10 +995,17 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="4">
+                   <item row="0" column="5">
                     <widget class="QLineEdit" name="lineEditPgt2">
                      <property name="placeholderText">
                       <string>Observação</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="checkBox_2">
+                     <property name="text">
+                      <string>Fornecedor</string>
                      </property>
                     </widget>
                    </item>
@@ -1014,7 +1028,7 @@
                 <layout class="QGridLayout" name="gridLayout_13">
                  <item row="0" column="0">
                   <layout class="QGridLayout" name="gridLayout_3">
-                   <item row="0" column="1">
+                   <item row="0" column="2">
                     <widget class="QComboBox" name="comboBoxPgt3Parc">
                      <property name="enabled">
                       <bool>false</bool>
@@ -1077,7 +1091,7 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="0" column="0">
+                   <item row="0" column="1">
                     <widget class="QComboBox" name="comboBoxPgt3">
                      <property name="minimumSize">
                       <size>
@@ -1087,7 +1101,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="3">
+                   <item row="0" column="4">
                     <widget class="QDateEdit" name="dateEditPgt3">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1106,7 +1120,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="2">
+                   <item row="0" column="3">
                     <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1134,10 +1148,17 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="4">
+                   <item row="0" column="5">
                     <widget class="QLineEdit" name="lineEditPgt3">
                      <property name="placeholderText">
                       <string>Observação</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="checkBox_3">
+                     <property name="text">
+                      <string>Fornecedor</string>
                      </property>
                     </widget>
                    </item>

@@ -33,7 +33,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   ui->itemBoxEndereco->setSearchDialog(SearchDialog::enderecoCliente(this));
   ui->itemBoxEnderecoFat->setSearchDialog(SearchDialog::enderecoCliente(this));
 
-  // TODO: make this runtime changeable
+  // NOTE: make this runtime changeable
   QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque", "Dinheiro", "Boleto",
                    "Transf. Banc."};
 
@@ -48,7 +48,7 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   setupMapper();
   newRegister();
 
-  // TODO: make this work
+  // NOTE: make this work
   ui->splitter->setStretchFactor(0, 1);
   ui->splitter->setStretchFactor(1, 0);
 
@@ -399,19 +399,19 @@ void Venda::fillTotals() {
 void Venda::clearFields() {}
 
 void Venda::setupMapper() {
-  addMapping(ui->lineEditVenda, "idVenda");
+  addMapping(ui->dateTimeEdit, "data");
+  addMapping(ui->dateTimeEditOrc, "dataOrc");
+  addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
+  addMapping(ui->doubleSpinBoxFrete, "frete");
+  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
+  addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
+  addMapping(ui->doubleSpinBoxTotal, "total");
   addMapping(ui->itemBoxCliente, "idCliente", "value");
   addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
   addMapping(ui->itemBoxEnderecoFat, "idEnderecoFaturamento", "value");
-  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
   addMapping(ui->itemBoxProfissional, "idProfissional", "value");
-  addMapping(ui->dateTimeEditOrc, "dataOrc");
-  addMapping(ui->dateTimeEdit, "data");
-  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
-  addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
-  addMapping(ui->doubleSpinBoxFrete, "frete");
-  addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
-  addMapping(ui->doubleSpinBoxTotal, "total");
+  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
+  addMapping(ui->lineEditVenda, "idVenda");
   addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
   addMapping(ui->textEdit, "observacao");
 }
@@ -650,7 +650,12 @@ void Venda::on_pushButtonVoltar_clicked() {
   orcamento->show();
 
   isDirty = false;
-  model.select();
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    return;
+  }
+
   close();
 }
 
@@ -763,55 +768,9 @@ void Venda::on_pushButtonImprimir_clicked() {
     return;
   }
 
+  setPrintExcelQuerys();
+
   QtRPT *report = new QtRPT(this);
-
-  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", data("idCliente"));
-
-  if (not queryCliente.exec() or not queryCliente.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + model.lastError().text());
-    return;
-  }
-
-  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
-  queryProfissional.bindValue(":idProfissional", data("idProfissional"));
-
-  if (not queryProfissional.exec() or not queryProfissional.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
-    return;
-  }
-
-  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
-  queryVendedor.bindValue(":idUsuario", data("idUsuario"));
-
-  if (not queryVendedor.exec() or not queryVendedor.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
-    return;
-  }
-
-  queryEndereco.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
-  queryEndereco.bindValue(":idEndereco", data("idEnderecoEntrega"));
-
-  if (not queryEndereco.exec() or not queryEndereco.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando endereço: " + queryEndereco.lastError().text());
-    return;
-  }
-
-  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", data("idLoja"));
-
-  if (not queryLoja.exec() or not queryLoja.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando loja: " + queryLoja.lastError().text());
-    return;
-  }
-
-  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
-  queryLojaEnd.bindValue(":idLoja", data("idLoja"));
-
-  if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando loja endereço: " + queryLojaEnd.lastError().text());
-    return;
-  }
 
   report->loadReport(file.fileName());
   report->recordCount << ui->tableVenda->model()->rowCount();
@@ -896,7 +855,7 @@ void Venda::setValue(const int &recNo, const QString &paramName, QVariant &param
   }
 
   if (paramName == "cepfiscal") {
-    paramValue = queryEndereco.value("cep");
+    paramValue = queryEndEnt.value("cep");
     return;
   }
 
@@ -912,7 +871,7 @@ void Venda::setValue(const int &recNo, const QString &paramName, QVariant &param
   }
 
   if (paramName == "cepentrega") {
-    paramValue = queryEndereco.value("cep");
+    paramValue = queryEndEnt.value("cep");
     return;
   }
 
@@ -993,9 +952,21 @@ void Venda::setValue(const int &recNo, const QString &paramName, QVariant &param
   }
 
   // REPORT SUMMARY
+  if (paramName == "Soma") {
+    double value = ui->doubleSpinBoxSubTotalLiq->value();
+    paramValue = locale.toString(value, 'f', 2);
+    return;
+  }
+
+  if (paramName == "Desconto") {
+    double value = ui->doubleSpinBoxDescontoGlobal->value();
+    paramValue = locale.toString(value, 'f', 2);
+    return;
+  }
 
   if (paramName == "Total") {
-    double value = ui->doubleSpinBoxSubTotalLiq->value();
+    double value = ui->doubleSpinBoxSubTotalLiq->value() -
+                   (ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100);
     paramValue = locale.toString(value, 'f', 2);
     return;
   }
@@ -1182,78 +1153,16 @@ void Venda::on_pushButtonGerarExcel_clicked() {
     return;
   }
 
+  setPrintExcelQuerys();
+
   QXlsx::Document xlsx("modelo.xlsx");
 
-  const QString idVenda = data("idVenda").toString();
+  QString endLoja = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() +
+                    " - " + queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() +
+                    " - " + queryLojaEnd.value("uf").toString() + " - CEP: " + queryLojaEnd.value("cep").toString() +
+                    "\n" + queryLoja.value("tel").toString() + " - " + queryLoja.value("tel2").toString();
 
-  QSqlQuery queryVenda;
-  queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
-  queryVenda.bindValue(":idVenda", idVenda);
-
-  if (not queryVenda.exec() or not queryVenda.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados da venda: " + queryVenda.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryLoja;
-  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = (SELECT idLoja FROM venda WHERE idVenda = :idVenda)");
-  queryLoja.bindValue(":idVenda", idVenda);
-
-  if (not queryLoja.exec() or not queryLoja.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados da loja: " + queryLoja.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryUsuario;
-  queryUsuario.prepare(
-        "SELECT * FROM usuario WHERE idUsuario = (SELECT idUsuario FROM venda WHERE idVenda = :idVenda)");
-  queryUsuario.bindValue(":idVenda", idVenda);
-
-  if (not queryUsuario.exec() or not queryUsuario.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados do usuário: " + queryUsuario.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryCliente;
-  queryCliente.prepare(
-        "SELECT * FROM cliente WHERE idCliente = (SELECT idCliente FROM venda WHERE idVenda = :idVenda)");
-  queryCliente.bindValue(":idVenda", idVenda);
-
-  if (not queryCliente.exec() or not queryCliente.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados do cliente: " + queryCliente.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryEndEnt;
-  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = (SELECT idEnderecoEntrega FROM venda "
-                      "WHERE idVenda = :idVenda)");
-  queryEndEnt.bindValue(":idVenda", idVenda);
-
-  if (not queryEndEnt.exec() or not queryEndEnt.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados do endereço: " + queryEndEnt.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryEndFat;
-  queryEndFat.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = (SELECT idEnderecoFaturamento FROM venda "
-                      "WHERE idVenda = :idVenda)");
-  queryEndFat.bindValue(":idVenda", idVenda);
-
-  if (not queryEndFat.exec() or not queryEndFat.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados do endereço: " + queryEndFat.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryProf;
-  queryProf.prepare(
-        "SELECT * FROM profissional WHERE idProfissional = (SELECT idProfissional FROM venda WHERE idVenda = :idVenda)");
-  queryProf.bindValue(":idVenda", idVenda);
-
-  if (not queryProf.exec() or not queryProf.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados do profissional: " + queryProf.lastError().text());
-    return;
-  }
-
+  xlsx.write("A5", endLoja);
   xlsx.write("C2", "Pedido:");
   xlsx.write("D2", queryVenda.value("idVenda"));
   xlsx.write("D3", queryCliente.value("nome_razao"));
@@ -1262,16 +1171,16 @@ void Venda::on_pushButtonGerarExcel_clicked() {
              queryEndFat.value("bairro").toString() + ", " + queryEndFat.value("cidade").toString());
   xlsx.write("D6", queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() + " - " +
              queryEndEnt.value("bairro").toString() + ", " + queryEndEnt.value("cidade").toString());
-  xlsx.write("D7", queryProf.value("nome_razao").toString());
-  xlsx.write("D8", queryUsuario.value("nome").toString());
-  xlsx.write("F8", queryUsuario.value("email").toString());
+  xlsx.write("D7", queryProfissional.value("nome_razao").toString());
+  xlsx.write("D8", queryVendedor.value("nome").toString());
+  xlsx.write("F8", queryVendedor.value("email").toString());
   xlsx.write("M2", queryVenda.value("data").toDateTime().toString("dd/MM/yyyy hh:mm"));
   xlsx.write("M3", queryCliente.value(queryCliente.value("pfpj").toString() == "PF" ? "cpf" : "cnpj").toString());
   xlsx.write("M4", queryCliente.value("tel").toString());
   xlsx.write("M5", queryEndFat.value("cep").toString());
   xlsx.write("M6", queryEndEnt.value("cep").toString());
-  xlsx.write("H7", queryProf.value("tel").toString());
-  xlsx.write("K7", queryProf.value("email").toString());
+  xlsx.write("H7", queryProfissional.value("tel").toString());
+  xlsx.write("K7", queryProfissional.value("email").toString());
 
   xlsx.write("N29", "R$ " + QString::number(queryVenda.value("subTotalLiq").toDouble(), 'f', 2)); // soma
   xlsx.write("N30", QString::number(queryVenda.value("descontoPorc").toDouble(), 'f', 2) + "%");  // desconto
@@ -1312,6 +1221,75 @@ QVariant Venda::settings(const QString &key) const { return UserSession::getSett
 
 void Venda::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
+void Venda::setPrintExcelQuerys() {
+  queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
+  queryVenda.bindValue(":idVenda", data("idVenda"));
+
+  if (not queryVenda.exec() or not queryVenda.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando dados da venda: " + queryVenda.lastError().text());
+    return;
+  }
+
+  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.bindValue(":idCliente", data("idCliente"));
+
+  if (not queryCliente.exec() or not queryCliente.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + model.lastError().text());
+    return;
+  }
+
+  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndEnt.bindValue(":idEndereco", data("idEnderecoEntrega"));
+
+  if (not queryEndEnt.exec() or not queryEndEnt.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando endereço: " + queryEndEnt.lastError().text());
+    return;
+  }
+
+  queryEndFat.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndFat.bindValue(":idEndereco", data("idEnderecoFaturamento"));
+
+  if (not queryEndFat.exec() or not queryEndFat.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando dados do endereço: " + queryEndFat.lastError().text());
+    return;
+  }
+
+  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.bindValue(":idProfissional", data("idProfissional"));
+
+  if (not queryProfissional.exec() or not queryProfissional.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
+    return;
+  }
+
+  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.bindValue(":idUsuario", data("idUsuario"));
+
+  if (not queryVendedor.exec() or not queryVendedor.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
+    return;
+  }
+
+  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryLoja.bindValue(":idLoja", data("idLoja"));
+
+  if (not queryLoja.exec() or not queryLoja.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando loja: " + queryLoja.lastError().text());
+    return;
+  }
+
+  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.bindValue(":idLoja", data("idLoja"));
+
+  if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando loja endereço: " + queryLojaEnd.lastError().text());
+    return;
+  }
+}
+
 // TODO: colocar status mais a esquerda para ficar visivel
 // TODO: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
-// TODO: incluir desconto no excel/pdf?
+// TODO: tela de venda as vezes carrega o pedido errado ao fechar pedido (viewRegister)
+// TODO: mostrar desconto do produto na impressao apenas quando positivo
+// TODO: quando o total é alterado (desconto etc) resetar os pagamentos
+// TODO: implementar checkboxs pagamentos representacao

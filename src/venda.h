@@ -49,29 +49,31 @@ class Venda : public RegisterDialog {
   signals:
     void finished();
 
-  protected:
-    virtual bool savingProcedures();
-    virtual void registerMode();
-    virtual void updateMode();
-    virtual void successMessage();
-
   private:
     // attributes
     Ui::Venda *ui;
     double minimoFrete;
     double porcFrete;
-    SqlTableModel modelItem;
-    SqlTableModel modelFluxoCaixa;
     QSqlQuery queryCliente;
-    QSqlQuery queryEndereco;
-    QSqlQuery queryProfissional;
-    QSqlQuery queryVendedor;
-    QSqlQuery queryProduto;
+    QSqlQuery queryEndEnt;
+    QSqlQuery queryEndFat;
     QSqlQuery queryLoja;
     QSqlQuery queryLojaEnd;
+    QSqlQuery queryProduto;
+    QSqlQuery queryProfissional;
+    QSqlQuery queryVenda;
+    QSqlQuery queryVendedor;
+    SqlTableModel modelFluxoCaixa;
+    SqlTableModel modelItem;
     // methods
     bool verifyFields();
     QString requiredStyle() const;
+    QVariant settings(const QString &key) const;
+    virtual bool savingProcedures();
+    virtual bool viewRegister(const QModelIndex &index);
+    virtual void registerMode();
+    virtual void successMessage();
+    virtual void updateMode();
     void calcPrecoGlobalTotal();
     void calculoSpinBox1() const;
     void calculoSpinBox2() const;
@@ -79,11 +81,10 @@ class Venda : public RegisterDialog {
     void fillTotals();
     void montarFluxoCaixa();
     void resetarPagamentos();
+    void setPrintExcelQuerys();
+    void setSettings(const QString &key, const QVariant &value) const;
     void setupMapper();
     void setupTables();
-    virtual bool viewRegister(const QModelIndex &index);
-    QVariant settings(const QString &key) const;
-    void setSettings(const QString &key, const QVariant &value) const;
 };
 
 #endif // VENDA_H

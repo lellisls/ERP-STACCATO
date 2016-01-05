@@ -118,7 +118,7 @@ void Excel::gerarExcel() {
   xlsx.write("N33", "R$ " + locale.toString(query.value("total").toDouble(), 'f', 2));     // total final
   xlsx.write("B29", query.value("prazoEntrega").toString() + " dias");
 
-  QSqlQuery queryPgt1("SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+  QSqlQuery queryPgt1("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
                       id + "' AND tipo LIKE '1%'");
 
   if (not queryPgt1.exec() or not queryPgt1.first()) {
@@ -129,9 +129,9 @@ void Excel::gerarExcel() {
   QString pgt1 = queryPgt1.value("tipo").toString() + " - " + queryPgt1.value("COUNT(valor)").toString() + "x de R$ " +
                  locale.toString(queryPgt1.value("valor").toDouble(), 'f', 2) +
                  (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                 queryPgt1.value("data").toDate().toString("dd-MM-yyyy");
+                 queryPgt1.value("dataEmissao").toDate().toString("dd-MM-yyyy");
 
-  QSqlQuery queryPgt2("SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+  QSqlQuery queryPgt2("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
                       id + "' AND tipo LIKE '2%'");
 
   if (not queryPgt2.exec() or not queryPgt2.first()) {
@@ -142,11 +142,11 @@ void Excel::gerarExcel() {
   QString pgt2 = queryPgt2.value("tipo").toString() + " - " + queryPgt2.value("COUNT(valor)").toString() + "x de R$ " +
                  locale.toString(queryPgt2.value("valor").toDouble(), 'f', 2) +
                  (queryPgt2.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                 queryPgt2.value("data").toDate().toString("dd-MM-yyyy");
+                 queryPgt2.value("dataEmissao").toDate().toString("dd-MM-yyyy");
 
   if (queryPgt2.value("valor") == 0) pgt2 = "";
 
-  QSqlQuery queryPgt3("SELECT tipo, COUNT(valor), valor, data FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
+  QSqlQuery queryPgt3("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
                       id + "' AND tipo LIKE '3%'");
 
   if (not queryPgt3.exec() or not queryPgt3.first()) {
@@ -157,7 +157,7 @@ void Excel::gerarExcel() {
   QString pgt3 = queryPgt3.value("tipo").toString() + " - " + queryPgt3.value("COUNT(valor)").toString() + "x de R$ " +
                  locale.toString(queryPgt3.value("valor").toDouble(), 'f', 2) +
                  (queryPgt3.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                 queryPgt3.value("data").toDate().toString("dd-MM-yyyy");
+                 queryPgt3.value("dataEmissao").toDate().toString("dd-MM-yyyy");
 
   if (queryPgt3.value("valor") == 0) pgt3 = "";
 

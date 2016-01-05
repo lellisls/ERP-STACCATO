@@ -22,7 +22,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_26">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="styleSheet">
        <string notr="true">QTabBar::tab:disabled { width: 0; height: 0; margin: 0; padding: 0; border: none; }
@@ -97,26 +97,16 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_36">
         <item row="0" column="0">
-         <widget class="WidgetConta" name="widgetConta" native="true"/>
+         <widget class="WidgetContaPagar" name="widgetPagar" native="true"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="WidgetContaReceber" name="widgetReceber" native="true"/>
         </item>
        </layout>
       </widget>
      </widget>
     </item>
    </layout>
-   <widget class="QSplitter" name="splitter_2">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>100</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
-    </property>
-   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="styleSheet">
@@ -129,10 +119,10 @@
      <x>0</x>
      <y>0</y>
      <width>764</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuOp_es">
+   <widget class="QMenu" name="menuOpcoes">
     <property name="title">
      <string>Opções</string>
     </property>
@@ -145,9 +135,9 @@
     </widget>
     <addaction name="actionImportaProdutos"/>
     <addaction name="menuTema"/>
-    <addaction name="actionConfigura_es"/>
+    <addaction name="actionConfiguracoes"/>
    </widget>
-   <widget class="QMenu" name="menuAdministra_o">
+   <widget class="QMenu" name="menuAdministracao">
     <property name="title">
      <string>Administração</string>
     </property>
@@ -172,8 +162,8 @@
     <addaction name="actionSobre"/>
    </widget>
    <addaction name="menuVenda"/>
-   <addaction name="menuAdministra_o"/>
-   <addaction name="menuOp_es"/>
+   <addaction name="menuAdministracao"/>
+   <addaction name="menuOpcoes"/>
    <addaction name="menuAjuda"/>
   </widget>
   <action name="actionCriarOrcamento">
@@ -251,7 +241,7 @@
     <string>Escuro</string>
    </property>
   </action>
-  <action name="actionConfigura_es">
+  <action name="actionConfiguracoes">
    <property name="text">
     <string>Configurações</string>
    </property>
@@ -259,6 +249,18 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>WidgetContaReceber</class>
+   <extends>QWidget</extends>
+   <header>src/widgetcontareceber.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetContaPagar</class>
+   <extends>QWidget</extends>
+   <header>src/widgetcontapagar.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>WidgetOrcamento</class>
    <extends>QWidget</extends>
@@ -293,12 +295,6 @@
    <class>WidgetEstoque</class>
    <extends>QWidget</extends>
    <header>src/widgetestoque.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>WidgetConta</class>
-   <extends>QWidget</extends>
-   <header>src/widgetconta.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

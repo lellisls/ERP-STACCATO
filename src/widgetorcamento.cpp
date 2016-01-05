@@ -2,12 +2,12 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "widgetorcamento.h"
+#include "doubledelegate.h"
+#include "orcamento.h"
+#include "orcamentoproxymodel.h"
 #include "ui_widgetorcamento.h"
 #include "usersession.h"
-#include "doubledelegate.h"
-#include "orcamentoproxymodel.h"
-#include "orcamento.h"
+#include "widgetorcamento.h"
 
 WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetOrcamento) {
   ui->setupUi(this);
@@ -16,11 +16,19 @@ WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   ui->radioButtonOrcLimpar->click();
 
+  connect(ui->radioButtonOrcCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonOrcExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonOrcLimpar, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonOrcProprios, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonOrcValido, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->lineEditBuscaOrcamentos, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
+
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
     ui->radioButtonOrcProprios->click();
     ui->radioButtonOrcValido->setChecked(true);
-    on_radioButtonOrcValido_clicked();
   }
+
+  montaFiltro();
 }
 
 WidgetOrcamento::~WidgetOrcamento() { delete ui; }
@@ -45,36 +53,6 @@ QString WidgetOrcamento::updateTables() {
   return QString();
 }
 
-void WidgetOrcamento::on_radioButtonOrcValido_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") +
-                           "%') AND `Dias restantes` > 0 AND status != 'CANCELADO'");
-  ui->tableOrcamentos->resizeColumnsToContents();
-}
-
-void WidgetOrcamento::on_radioButtonOrcExpirado_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%') AND `Dias restantes` < 1");
-  ui->tableOrcamentos->resizeColumnsToContents();
-}
-
-void WidgetOrcamento::on_radioButtonOrcLimpar_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%')");
-  ui->tableOrcamentos->resizeColumnsToContents();
-}
-
-void WidgetOrcamento::on_radioButtonOrcProprios_clicked() {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%') AND Vendedor = '" +
-                           UserSession::getNome() + "'");
-  ui->tableOrcamentos->resizeColumnsToContents();
-}
-
-void WidgetOrcamento::on_lineEditBuscaOrcamentos_textChanged(const QString &text) {
-  modelOrcamento.setFilter("(Código LIKE '%" + UserSession::getFromLoja("loja.sigla") + "%')" +
-                           (text.isEmpty() ? "" : " AND ((Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text +
-                                             "%') OR (Cliente LIKE '%" + text + "%'))"));
-
-  ui->tableOrcamentos->resizeColumnsToContents();
-}
-
 void WidgetOrcamento::on_tableOrcamentos_activated(const QModelIndex &index) {
   Orcamento *orcamento = new Orcamento(this);
   orcamento->viewRegisterById(modelOrcamento.data(index.row(), "Código"));
@@ -86,6 +64,24 @@ void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
   orcamento->show();
 }
 
-// TODO: ao replicar marcar ids em ambos os orcamentos novos e antigos
-// TODO: ao replicar marcar orcamento antigo como replicado e cancelar no bd
-// TODO: fazer script SQL para expirar orcamentos vencidos
+void WidgetOrcamento::montaFiltro() {
+  QString textoBusca = ui->lineEditBuscaOrcamentos->text();
+
+  QString filtroBusca = "(Código LIKE '%" + UserSession::getFromLoja("sigla") + "%')" +
+                        (textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" +
+                                                textoBusca + "%') OR (Cliente LIKE '%" + textoBusca + "%'))");
+
+  QString f2;
+
+  f2 += ui->radioButtonOrcLimpar->isChecked() ? "status != 'CANCELADO'" : "";
+  f2 += ui->radioButtonOrcProprios->isChecked()
+        ? "Vendedor = '" + UserSession::getNome() + "' AND status != 'CANCELADO'"
+        : "";
+  f2 += ui->radioButtonOrcValido->isChecked() ? "`Dias restantes` > 0 AND status != 'CANCELADO'" : "";
+  f2 += ui->radioButtonOrcExpirado->isChecked() ? "`Dias restantes` <= 0 AND status != 'CANCELADO'" : "";
+  f2 += ui->radioButtonOrcCancelado->isChecked() ? "status = 'CANCELADO'" : "";
+
+  modelOrcamento.setFilter(textoBusca.isEmpty() ? f2 : filtroBusca + " AND " + f2);
+
+  ui->tableOrcamentos->resizeColumnsToContents();
+}

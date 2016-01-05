@@ -1,8 +1,8 @@
 #include <QMessageBox>
 
+#include "cadastrofornecedor.h"
 #include "cadastroproduto.h"
 #include "ui_cadastroproduto.h"
-#include "cadastrofornecedor.h"
 #include "usersession.h"
 
 CadastroProduto::CadastroProduto(QWidget *parent)
@@ -23,19 +23,15 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   setupMapper();
   newRegister();
 
-  SearchDialog *sdFornecedor = SearchDialog::fornecedor(this);
-  ui->itemBoxFornecedor->setSearchDialog(sdFornecedor);
+  ui->itemBoxFornecedor->setSearchDialog(SearchDialog::fornecedor(this));
 
   SearchDialog *sdProd = SearchDialog::produto(this);
   connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::viewRegisterById);
   connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProd, &SearchDialog::show);
 
-  CadastroFornecedor *cadFornecedor = new CadastroFornecedor(this);
-  ui->itemBoxFornecedor->setRegisterDialog(cadFornecedor);
+  ui->itemBoxFornecedor->setRegisterDialog(new CadastroFornecedor(this));
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
-    ui->pushButtonRemover->setDisabled(true);
-  }
+  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") ui->pushButtonRemover->setDisabled(true);
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }
@@ -47,6 +43,8 @@ void CadastroProduto::clearFields() {
 
   ui->radioButtonDesc->setChecked(false);
   ui->radioButtonLote->setChecked(false);
+
+  ui->dateEditValidade->setDate(QDate(1900, 1, 1));
 }
 
 void CadastroProduto::updateMode() {
@@ -61,7 +59,44 @@ void CadastroProduto::registerMode() {
   ui->pushButtonRemover->hide();
 }
 
+bool CadastroProduto::verifyFields(const bool &isUpdate) {
+  if (not isUpdate) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM produto WHERE fornecedor = :fornecedor AND codComercial = :codComercial");
+    query.bindValue(":fornecedor", ui->itemBoxFornecedor->text());
+    query.bindValue(":codComercial", ui->lineEditCodComer->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro verificando se produto já cadastrado!");
+      return false;
+    }
+
+    if (query.first()) {
+      QMessageBox::critical(this, "Erro!", "Código comercial já cadastrado!");
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool CadastroProduto::verifyFields() {
+  for (auto const &line : ui->frame->findChildren<QLineEdit *>()) {
+    if (not verifyRequiredField(line)) return false;
+  }
+
+  if (ui->comboBoxUn->currentText().isEmpty()) {
+    ui->comboBoxUn->setFocus();
+    QMessageBox::critical(this, "Erro!", "Faltou preencher unidade!");
+    return false;
+  }
+
+  if (ui->dateEditValidade->date().toString("dd-MM-yyyy") == "01-01-1900") {
+    ui->dateEditValidade->setFocus();
+    QMessageBox::critical(this, "Erro!", "Faltou preencher validade!");
+    return false;
+  }
+
   if (ui->doubleSpinBoxCusto->value() == 0) {
     ui->doubleSpinBoxCusto->setFocus();
     QMessageBox::critical(this, "Erro!", "Custo inválido!");
@@ -105,7 +140,6 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->lineEditNCM, "ncm");
   addMapping(ui->lineEditICMS, "icms");
   addMapping(ui->lineEditUI, "ui");
-
   addMapping(ui->doubleSpinBoxPcCx, "pccx");
   addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
   addMapping(ui->doubleSpinBoxQtePallet, "qtdPallet", "value");
@@ -116,44 +150,47 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->doubleSpinBoxVenda, "precoVenda", "value");
   addMapping(ui->doubleSpinBoxComissao, "comissao", "value");
   addMapping(ui->doubleSpinBoxEstoque, "estoque");
-
   addMapping(ui->textEditObserv, "observacoes", "plainText");
   addMapping(ui->comboBoxCST, "cst");
   addMapping(ui->itemBoxFornecedor, "idFornecedor", "value");
   addMapping(ui->comboBoxOrigem, "origem");
   addMapping(ui->radioButtonDesc, "descontinuado");
   addMapping(ui->radioButtonLote, "temLote");
+  addMapping(ui->dateEditValidade, "validade");
+  addMapping(ui->doubleSpinBoxKgCx, "kgcx");
 }
 
 bool CadastroProduto::savingProcedures() {
-  setData("codBarras", ui->lineEditCodBarras->text());
-  setData("codComercial", ui->lineEditCodComer->text());
-  setData("colecao", ui->lineEditColecao->text());
-  setData("comissao", ui->doubleSpinBoxComissao->value());
-  setData("custo", ui->doubleSpinBoxCusto->value());
-  setData("descontinuado", ui->radioButtonDesc->isChecked());
-  setData("descricao", ui->lineEditDescricao->text());
-  setData("estoque", ui->doubleSpinBoxEstoque->value());
-  setData("formComercial", ui->lineEditFormComer->text());
-  setData("Fornecedor", ui->itemBoxFornecedor->text());
-  setData("icms", ui->lineEditICMS->text());
-  setData("idFornecedor", ui->itemBoxFornecedor->value());
-  setData("ipi", ui->doubleSpinBoxIPI->value());
-  setData("m2cx", ui->doubleSpinBoxM2Cx->value());
-  setData("markup", ui->doubleSpinBoxMarkup->value());
-  setData("ncm", ui->lineEditNCM->text());
-  setData("observacoes", ui->textEditObserv->toPlainText());
-  setData("origem", ui->comboBoxOrigem->currentData());
-  setData("pccx", ui->doubleSpinBoxPcCx->value());
-  setData("precoVenda", ui->doubleSpinBoxVenda->value());
-  setData("qtdPallet", ui->doubleSpinBoxQtePallet->value());
-  setData("cst", ui->comboBoxCST->currentText());
-  setData("st", ui->doubleSpinBoxST->value());
-  setData("temLote", ui->radioButtonLote->isChecked());
-  setData("ui", ui->lineEditUI->text());
-  setData("un", ui->comboBoxUn->currentText());
+  if (not setData("codBarras", ui->lineEditCodBarras->text())) return false;
+  if (not setData("codComercial", ui->lineEditCodComer->text())) return false;
+  if (not setData("colecao", ui->lineEditColecao->text())) return false;
+  if (not setData("comissao", ui->doubleSpinBoxComissao->value())) return false;
+  if (not setData("cst", ui->comboBoxCST->currentText())) return false;
+  if (not setData("custo", ui->doubleSpinBoxCusto->value())) return false;
+  if (not setData("descontinuado", ui->radioButtonDesc->isChecked())) return false;
+  if (not setData("descricao", ui->lineEditDescricao->text())) return false;
+  if (not setData("estoque", ui->doubleSpinBoxEstoque->value())) return false;
+  if (not setData("formComercial", ui->lineEditFormComer->text())) return false;
+  if (not setData("Fornecedor", ui->itemBoxFornecedor->text())) return false;
+  if (not setData("icms", ui->lineEditICMS->text())) return false;
+  if (not setData("idFornecedor", ui->itemBoxFornecedor->value())) return false;
+  if (not setData("ipi", ui->doubleSpinBoxIPI->value())) return false;
+  if (not setData("kgcx", ui->doubleSpinBoxKgCx->value())) return false;
+  if (not setData("m2cx", ui->doubleSpinBoxM2Cx->value())) return false;
+  if (not setData("markup", ui->doubleSpinBoxMarkup->value())) return false;
+  if (not setData("ncm", ui->lineEditNCM->text())) return false;
+  if (not setData("observacoes", ui->textEditObserv->toPlainText())) return false;
+  if (not setData("origem", ui->comboBoxOrigem->currentData())) return false;
+  if (not setData("pccx", ui->doubleSpinBoxPcCx->value())) return false;
+  if (not setData("precoVenda", ui->doubleSpinBoxVenda->value())) return false;
+  if (not setData("qtdPallet", ui->doubleSpinBoxQtePallet->value())) return false;
+  if (not setData("st", ui->doubleSpinBoxST->value())) return false;
+  if (not setData("temLote", ui->radioButtonLote->isChecked() ? "SIM" : "NÃO")) return false;
+  if (not setData("ui", ui->lineEditUI->text().isEmpty() ? "0" : ui->lineEditUI->text())) return false;
+  if (not setData("un", ui->comboBoxUn->currentText())) return false;
+  if (not setData("validade", ui->dateEditValidade->date().toString("yyyy-MM-dd"))) return false;
 
-  return isOk;
+  return true;
 }
 
 void CadastroProduto::on_pushButtonCadastrar_clicked() { save(); }
@@ -171,7 +208,19 @@ void CadastroProduto::show() {
   adjustSize();
 }
 
-// TODO: produtos cadastrados manualmente devem ter uma validade definida
-// TODO: verificar se já não existe produto com o mesmo codComercial
-// TODO: peso por caixa na gui
-// TODO: calcular markup
+void CadastroProduto::on_doubleSpinBoxVenda_valueChanged(const double &) { calcularMarkup(); }
+
+void CadastroProduto::on_doubleSpinBoxCusto_valueChanged(const double &) { calcularMarkup(); }
+
+void CadastroProduto::calcularMarkup() {
+  double markup = ((ui->doubleSpinBoxVenda->value() / ui->doubleSpinBoxCusto->value()) - 1.) * 100.;
+  ui->doubleSpinBoxMarkup->setValue(markup);
+}
+
+bool CadastroProduto::save(const bool &isUpdate) {
+  verifyFields(isUpdate);
+
+  return RegisterDialog::save(isUpdate);
+}
+
+// NOTE: alguma coisa deixando lento (aparentemente a validade)

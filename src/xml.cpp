@@ -1,11 +1,11 @@
 #include <QDomDocument>
 #include <QFileDialog>
-#include <QString>
-#include <QSqlError>
 #include <QMessageBox>
+#include <QSqlError>
+#include <QString>
 
-#include "xml.h"
 #include "usersession.h"
+#include "xml.h"
 
 XML::XML(const QByteArray &fileContent, const QString &fileName) : XML(model, fileContent, fileName) {}
 
@@ -33,9 +33,7 @@ XML::XML(QStandardItemModel &model, const QByteArray &fileContent, const QString
 
     if (map.size() > 0) {
       for (int i = 0; i < map.size(); ++i) {
-        if (i > 0) {
-          attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
-        }
+        if (i > 0) attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
       }
     }
 
@@ -129,9 +127,7 @@ bool XML::lerValores(const QStandardItem *item) {
       lerTotais(child);
 
       if (child->hasChildren()) {
-        if (not lerValores(child)) {
-          return false;
-        }
+        if (not lerValores(child)) return false;
       }
     }
   }
@@ -146,12 +142,11 @@ void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalMo
       QString text = child->text();
 
       if (text.mid(0, 10) == "det nItem=") {
+        lerValores(child);
         inserirItemSql(externalModel);
       }
 
-      if (child->hasChildren()) {
-        inserirNoSqlModel(child, externalModel);
-      }
+      if (child->hasChildren()) inserirNoSqlModel(child, externalModel);
     }
   }
 }
@@ -411,7 +406,7 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
       externalModel->setData(row, "vBCPIS", vBCPIS) and externalModel->setData(row, "pPIS", pPIS) and
       externalModel->setData(row, "vPIS", vPIS) and externalModel->setData(row, "cstCOFINS", cstCOFINS) and
       externalModel->setData(row, "vBCCOFINS", vBCCOFINS) and externalModel->setData(row, "pCOFINS", pCOFINS) and
-      externalModel->setData(row, "vCOFINS", vCOFINS);
+      externalModel->setData(row, "vCOFINS", vCOFINS) and externalModel->setData(row, "temp", true);
 }
 
 QStringList XML::getTodosCNPJ() {

@@ -3,11 +3,11 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QSqlRecord>
 
+#include "estoque.h"
+#include "inputdialog.h"
 #include "produtospendentes.h"
 #include "ui_produtospendentes.h"
-#include "inputdialog.h"
 
 ProdutosPendentes::ProdutosPendentes(QWidget *parent) : QDialog(parent), ui(new Ui::ProdutosPendentes) {
   ui->setupUi(this);
@@ -24,24 +24,13 @@ ProdutosPendentes::~ProdutosPendentes() { delete ui; }
 void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &status) {
   this->codComercial = codComercial;
 
-  // TODO: convert this to view? make a view that filters this data for each item and filter to show only one
-  modelProdutos.setQuery(
-        "SELECT v.fornecedor, v.idVenda, v.idProduto, v.produto, p.colecao, v.formComercial, v.quant "
-        "AS quant, v.un, p.kgcx, v.codComercial, p.codBarras, v.idCompra, v.status, (SELECT SUM(quant) FROM "
-        "estoque WHERE codComercial = '" +
-        codComercial +
-        "') AS estoque FROM venda_has_produto AS v LEFT JOIN estoque AS e ON v.idProduto = e.idProduto LEFT JOIN produto "
-        "AS p ON v.idProduto = p.idProduto WHERE v.codComercial = '" +
-        codComercial + "' AND v.status = '" + status + "' GROUP BY idVenda");
+  modelProdutos.setFilter("codComercial = '" + codComercial + "' AND status = '" + status + "'");
 
-  modelProdutos.setHeaderData("fornecedor", "Fornecedor");
-  modelProdutos.setHeaderData("produto", "Descrição");
-  modelProdutos.setHeaderData("formComercial", "Form. Com.");
-  modelProdutos.setHeaderData("quant", "Quant.");
-  modelProdutos.setHeaderData("un", "Un.");
-  modelProdutos.setHeaderData("codComercial", "Cód. Com.");
-  modelProdutos.setHeaderData("status", "Status");
-  modelProdutos.setHeaderData("estoque", "Estoque");
+  if (not modelProdutos.select()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela view_produto_pendente: " + modelProdutos.lastError().text());
+    return;
+  }
 
   double quant = 0;
 
@@ -69,31 +58,61 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
 
   ui->tableProdutos->resizeColumnsToContents();
 
-  if (modelProdutos.data(0, "status").toString() == "PENDENTE") {
-    ui->pushButtonConsumirEstoque->setDisabled(true);
+  modelEstoque.setFilter("codComercial = '" + codComercial + "'");
+
+  if (not modelEstoque.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
+    return;
   }
 
-  if (modelProdutos.data(0, "status").toString() == "EM COMPRA") {
-    ui->pushButtonConsumirEstoque->setDisabled(true);
+  for (int column = 0; column < modelEstoque.columnCount(); ++column) {
+    if (modelEstoque.fieldIndex("xml") == column) continue;
+
+    ui->tableEstoque->resizeColumnToContents(column);
   }
 }
 
 void ProdutosPendentes::setupTables() {
+  modelProdutos.setTable("view_produto_pendente");
+
+  modelProdutos.setHeaderData("fornecedor", "Fornecedor");
+  modelProdutos.setHeaderData("produto", "Descrição");
+  modelProdutos.setHeaderData("formComercial", "Form. Com.");
+  modelProdutos.setHeaderData("quant", "Quant.");
+  modelProdutos.setHeaderData("un", "Un.");
+  modelProdutos.setHeaderData("codComercial", "Cód. Com.");
+  modelProdutos.setHeaderData("status", "Status");
+  modelProdutos.setHeaderData("estoque", "Estoque");
+
   ui->tableProdutos->setModel(&modelProdutos);
+
+  modelEstoque.setTable("estoque");
+  modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not modelEstoque.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
+  }
+
+  ui->tableEstoque->setModel(&modelEstoque);
+  ui->tableEstoque->hideColumn("idEstoque");
+  ui->tableEstoque->hideColumn("idCompra");
+  ui->tableEstoque->hideColumn("idVendaProduto");
+  ui->tableEstoque->hideColumn("idProduto");
+  ui->tableEstoque->hideColumn("idNFe");
+  ui->tableEstoque->hideColumn("quantUpd");
 }
 
 void ProdutosPendentes::on_pushButtonComprar_clicked() {
   InputDialog *inputDlg = new InputDialog(InputDialog::Carrinho, this);
 
-  if (inputDlg->exec() != InputDialog::Accepted) {
-    return;
-  }
+  if (inputDlg->exec() != InputDialog::Accepted) return;
 
   QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
 
-  query.prepare("SELECT * FROM pedido_fornecedor_has_produto WHERE codComercial = :codComercial");
+  query.prepare(
+        "SELECT * FROM pedido_fornecedor_has_produto WHERE codComercial = :codComercial AND status = 'PENDENTE'");
   query.bindValue(":codComercial", codComercial);
 
   if (not query.exec()) {
@@ -101,68 +120,9 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
     return;
   }
 
-  if (query.first() and query.value("status").toString() == "PENDENTE") {
-    double quant = query.value("quant").toDouble();
+  query.first() ? atualiza(query) : insere(query, dataPrevista);
 
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant WHERE codComercial = :codComercial AND "
-                  "status = 'PENDENTE'");
-    query.bindValue(":quant", quant + ui->doubleSpinBoxComprar->value());
-    query.bindValue(":codComercial", codComercial);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!",
-                            "Erro atualizando pedido_fornecedor_has_produto: " + query.lastError().text());
-      return;
-    }
-  } else {
-    query.prepare("SELECT custo FROM produto WHERE idProduto = :idProduto");
-    query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
-
-    if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando custo do produto: " + query.lastError().text());
-      return;
-    }
-
-    double custo = query.value("custo").toDouble() * ui->doubleSpinBoxComprar->value();
-
-    query.prepare(
-          "INSERT INTO pedido_fornecedor_has_produto (fornecedor, idProduto, descricao, colecao, quant, un, "
-          "preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, :idProduto, "
-          ":descricao, :colecao, :quant, :un, :preco, :kgcx, :formComercial, :codComercial, :codBarras, :dataPrevCompra)");
-
-    query.bindValue(":fornecedor", modelProdutos.data(0, "fornecedor"));
-    query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
-    query.bindValue(":descricao", modelProdutos.data(0, "produto"));
-    query.bindValue(":colecao", modelProdutos.data(0, "colecao"));
-    query.bindValue(":quant", ui->doubleSpinBoxComprar->value());
-    query.bindValue(":un", modelProdutos.data(0, "un"));
-    query.bindValue(":preco", custo);
-    query.bindValue(":kgcx", modelProdutos.data(0, "kgcx"));
-    query.bindValue(":formComercial", modelProdutos.data(0, "formComercial"));
-    query.bindValue(":codComercial", modelProdutos.data(0, "codComercial"));
-    query.bindValue(":codBarras", modelProdutos.data(0, "codBarras"));
-    query.bindValue(":dataPrevCompra", dataPrevista);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!",
-                            "Erro inserindo dados em pedido_fornecedor_has_produto: " + query.lastError().text());
-      return;
-    }
-
-    for (int i = 0; i < modelProdutos.rowCount(); ++i) {
-      query.prepare("UPDATE venda_has_produto SET dataPrevCompra = :dataPrevCompra, "
-                    "status = 'INICIADO' WHERE idVenda = :idVenda AND idProduto = :idProduto");
-      query.bindValue(":dataPrevCompra", dataPrevista);
-      query.bindValue(":idVenda", modelProdutos.data(i, "idVenda"));
-      query.bindValue(":idProduto", modelProdutos.data(i, "idProduto"));
-
-      if (not query.exec()) {
-        QMessageBox::critical(this, "Erro!",
-                              "Erro associando pedido_fornecedor a venda_has_produto: " + query.lastError().text());
-        return;
-      }
-    }
-  }
+  atualizaVenda(query, dataPrevista);
 
   if (not query.exec("CALL update_venda_status()")) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
@@ -174,5 +134,74 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
 }
 
 void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
-  QMessageBox::information(this, "Aviso!", "Ainda não implementado");
+  Estoque *estoque = new Estoque(this);
+  QString cod = modelProdutos.data(0, "codComercial").toString();
+  qDebug() << "cod: " << cod;
+  estoque->viewRegisterById(cod);
+  estoque->show();
+}
+
+void ProdutosPendentes::atualiza(QSqlQuery &query) {
+  query.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant WHERE codComercial = :codComercial AND "
+                "status = 'PENDENTE'");
+  query.bindValue(":quant", query.value("quant").toDouble() + ui->doubleSpinBoxComprar->value());
+  query.bindValue(":codComercial", codComercial);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando pedido_fornecedor_has_produto: " + query.lastError().text());
+    return;
+  }
+}
+
+void ProdutosPendentes::insere(QSqlQuery &query, QDate &dataPrevista) {
+  query.prepare("SELECT custo FROM produto WHERE idProduto = :idProduto");
+  query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando custo do produto: " + query.lastError().text());
+    return;
+  }
+
+  query.prepare(
+        "INSERT INTO pedido_fornecedor_has_produto (fornecedor, idProduto, descricao, colecao, quant, un, un2, caixas, "
+        "preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, :idProduto, "
+        ":descricao, :colecao, :quant, :un, :un2, :caixas, :preco, :kgcx, :formComercial, :codComercial, :codBarras, "
+        ":dataPrevCompra)");
+
+  query.bindValue(":fornecedor", modelProdutos.data(0, "fornecedor"));
+  query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
+  query.bindValue(":descricao", modelProdutos.data(0, "produto"));
+  query.bindValue(":colecao", modelProdutos.data(0, "colecao"));
+  query.bindValue(":quant", ui->doubleSpinBoxComprar->value());
+  query.bindValue(":un", modelProdutos.data(0, "un"));
+  query.bindValue(":un2", modelProdutos.data(0, "un2"));
+  query.bindValue(":caixas", modelProdutos.data(0, "caixas"));
+  query.bindValue(":preco", query.value("custo").toDouble() * ui->doubleSpinBoxComprar->value());
+  query.bindValue(":kgcx", modelProdutos.data(0, "kgcx"));
+  query.bindValue(":formComercial", modelProdutos.data(0, "formComercial"));
+  query.bindValue(":codComercial", modelProdutos.data(0, "codComercial"));
+  query.bindValue(":codBarras", modelProdutos.data(0, "codBarras"));
+  query.bindValue(":dataPrevCompra", dataPrevista);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro inserindo dados em pedido_fornecedor_has_produto: " + query.lastError().text());
+    return;
+  }
+}
+
+void ProdutosPendentes::atualizaVenda(QSqlQuery &query, QDate &dataPrevista) {
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    query.prepare("UPDATE venda_has_produto SET dataPrevCompra = :dataPrevCompra, "
+                  "status = 'INICIADO' WHERE idVenda = :idVenda AND idProduto = :idProduto");
+    query.bindValue(":dataPrevCompra", dataPrevista);
+    query.bindValue(":idVenda", modelProdutos.data(row, "idVenda"));
+    query.bindValue(":idProduto", modelProdutos.data(row, "idProduto"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro associando pedido_fornecedor a venda_has_produto: " + query.lastError().text());
+      return;
+    }
+  }
 }

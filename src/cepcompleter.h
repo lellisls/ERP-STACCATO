@@ -7,18 +7,16 @@ class CepCompleter {
     CepCompleter();
     ~CepCompleter();
     bool buscaCEP(const QString &cpf);
+    QString getBairro() const;
     QString getCidade() const;
     QString getEndereco() const;
-    QString getBairro() const;
     QString getUf() const;
 
   private:
-    // attributes
     QString cidade;
     QString endereco;
     QString bairro;
     QString uf;
-    // methods
 };
 
 #endif // CEPCOMPLETER_H

@@ -18,11 +18,10 @@ class ContasAReceber : public QDialog {
     void viewConta(const QString &idVenda);
 
   private slots:
-    void on_pushButtonSalvar_clicked();
     void on_pushButtonCancelar_clicked();
+    void on_pushButtonSalvar_clicked();
 
   private:
-    // attributes
     Ui::ContasAReceber *ui;
     SqlTableModel modelContas;
     QString idVenda;

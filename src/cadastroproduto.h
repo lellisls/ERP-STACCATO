@@ -23,37 +23,25 @@ class CadastroProduto : public RegisterDialog {
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
-
-  private:
-    /*!
-* \brief Função padrão para verificar campos obrigatórios
-* \return
-*/
-    virtual bool verifyFields();
-    /*!
-* \brief Onde ocorre o model.setData(), baseada nas informações da view.
-*/
-    virtual bool savingProcedures();
-    /*!
-*\brief Limpar os campos da tela
-*/
-    virtual void clearFields();
-    /*!
-*\brief Função onde os mapeamentos são configurados
-*/
-    virtual void setupMapper();
-    /*!
-*\brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
-*/
-    virtual void registerMode();
-    /*!
-*\brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
-*/
-    virtual void updateMode();
+    void on_doubleSpinBoxVenda_valueChanged(const double &);
+    void on_doubleSpinBoxCusto_valueChanged(const double &);
 
   private:
     // attributes
     Ui::CadastroProduto *ui;
+    // methods
+    virtual bool savingProcedures() override;
+    virtual bool verifyFields() override;
+    bool verifyFields(const bool &isUpdate);
+    virtual void clearFields() override;
+    virtual void registerMode() override;
+    virtual void setupMapper() override;
+    virtual void updateMode() override;
+    void calcularMarkup();
+
+    // RegisterDialog interface
+  protected:
+    virtual bool save(const bool &isUpdate = false) override;
 };
 
 #endif // CADASTROPRODUTO_H

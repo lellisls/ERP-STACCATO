@@ -393,13 +393,13 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
 
     for (int i = 0; i <= _download.size() - 1; ++i) {
       if (_download.size() - 1 >= i and _installed.size() - 1 >= i) {
-        if (_download.at(i) > _installed.at(i)) {
+        if (_download.at(i).toInt() > _installed.at(i).toInt()) {
           _new_update = true;
           break;
         }
       } else {
         if (_installed.size() < _download.size()) {
-          if (_installed.at(i - 1) == _download.at(i - 1)) {
+          if (_installed.at(i - 1).toInt() == _download.at(i - 1).toInt()) {
             break;
           } else {
             _new_update = true;

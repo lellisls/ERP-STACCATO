@@ -9,7 +9,7 @@ LineEditDecimal::LineEditDecimal(QWidget *parent) : QLineEdit(parent), bottom(0)
 
 double LineEditDecimal::getValue() const { return QLocale(QLocale::Portuguese).toDouble(text()); }
 
-void LineEditDecimal::setValue(const double &value) { setText(QLocale(QLocale::Portuguese).toString(value, 'f', 2)); }
+void LineEditDecimal::setValue(const double &value) { setText(QLocale(QLocale::Portuguese).toString(value, 'f', 4)); }
 
 double LineEditDecimal::getBottom() const { return bottom; }
 

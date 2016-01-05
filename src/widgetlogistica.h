@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "src/sqltablemodel.h"
+#include "sqltablemodel.h"
 
 namespace Ui {
   class WidgetLogistica;
@@ -18,22 +18,14 @@ class WidgetLogistica : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_radioButtonEntregaLimpar_clicked();
-    void on_radioButtonEntregaEnviado_clicked();
-    void on_radioButtonEntregaPendente_clicked();
-    void on_lineEditBuscaEntregas_textChanged(const QString &text);
-    void on_tableEntregasCliente_activated(const QModelIndex &index);
-    void on_pushButtonMarcarColetado_clicked();
-    void on_pushButtonMarcarRecebido_clicked();
     void on_tableFornLogistica_activated(const QModelIndex &index);
-    void on_tabWidgetLogistica_currentChanged(const int&);
+    void on_tabWidgetLogistica_currentChanged(const int &);
 
   private:
+    // attributes
     Ui::WidgetLogistica *ui;
     SqlTableModel modelPedForn;
-    SqlTableModel modelColeta;
-    SqlTableModel modelReceb;
-    SqlTableModel modelEntregasCliente;
+    // methods
     void setupTables();
 };
 

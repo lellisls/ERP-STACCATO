@@ -3,11 +3,11 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "widgetnfe.h"
-#include "ui_widgetnfe.h"
 #include "doubledelegate.h"
+#include "ui_widgetnfe.h"
 #include "usersession.h"
 #include "venda.h"
+#include "widgetnfe.h"
 #include "xml_viewer.h"
 
 WidgetNfe::WidgetNfe(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfe) {
@@ -43,9 +43,7 @@ void WidgetNfe::setupTables() {
 QString WidgetNfe::updateTables() {
   switch (ui->tabWidgetNfe->currentIndex()) {
     case 0: { // Entrada
-        if (not modelNfeEntrada.select()) {
-          return "Erro lendo tabela NFe: " + modelNfeEntrada.lastError().text();
-        }
+        if (not modelNfeEntrada.select()) return "Erro lendo tabela NFe: " + modelNfeEntrada.lastError().text();
 
         ui->tableNfeEntrada->resizeColumnsToContents();
 
@@ -53,16 +51,12 @@ QString WidgetNfe::updateTables() {
       }
 
     case 1: { // Saida
-        if (not modelNfeSaida.select()) {
-          return "Erro lendo tabela NFe: " + modelNfeSaida.lastError().text();
-        }
+        if (not modelNfeSaida.select()) return "Erro lendo tabela NFe: " + modelNfeSaida.lastError().text();
 
         ui->tableNfeSaida->resizeColumnsToContents();
 
         break;
       }
-
-    default: { break; }
   }
 
   return QString();
@@ -85,7 +79,6 @@ void WidgetNfe::on_radioButtonNFeLimpar_clicked() {
 
 void WidgetNfe::on_lineEditBuscaNFe_textChanged(const QString &text) {
   modelNfeSaida.setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
-
   ui->tableNfeSaida->resizeColumnsToContents();
 }
 
@@ -96,7 +89,6 @@ void WidgetNfe::on_tableNfeSaida_activated(const QModelIndex &index) {
 
 void WidgetNfe::on_tableNfeEntrada_activated(const QModelIndex &index) {
   XML_Viewer *viewer = new XML_Viewer(this);
-
   viewer->exibirXML(modelNfeEntrada.data(index.row(), "xml").toByteArray());
 }
 
@@ -105,9 +97,7 @@ void WidgetNfe::on_tabWidgetNfe_currentChanged(const int &) { updateTables(); }
 void WidgetNfe::on_pushButtonExibirXML_clicked() {
   QString xml = QFileDialog::getOpenFileName(this, "Arquivo XML", QDir::currentPath(), "*.xml");
 
-  if (xml.isEmpty()) {
-    return;
-  }
+  if (xml.isEmpty()) return;
 
   QFile file(xml);
 

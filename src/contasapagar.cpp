@@ -20,11 +20,11 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
                           "Erro lendo tabela conta_a_pagar_has_pagamento: " + modelItensContas.lastError().text());
   }
 
-  modelContas.setTable("conta_a_pagar");
+  modelContas.setTable("conta_a_pagar_has_pagamento");
   modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not modelContas.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar: " + modelContas.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar_has_pagamento: " + modelContas.lastError().text());
   }
 
   ui->tableContas->setModel(&modelItensContas);
@@ -59,7 +59,5 @@ void ContasAPagar::viewConta(const QString &idVenda) {
   modelItensContas.setFilter("idVenda = '" + idVenda + "'");
   modelContas.setFilter("idVenda = '" + idVenda + "'");
 
-  if (modelContas.data(0, "pago").toString() == "SIM") {
-    ui->checkBoxPago->setChecked(true);
-  }
+  if (modelContas.data(0, "pago").toString() == "SIM") ui->checkBoxPago->setChecked(true);
 }

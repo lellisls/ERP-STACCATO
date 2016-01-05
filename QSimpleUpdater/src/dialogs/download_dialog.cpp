@@ -70,22 +70,8 @@ void DownloadDialog::beginDownload(const QUrl &url) {
 }
 
 void DownloadDialog::installUpdate(void) {
-  QMessageBox msg;
-  msg.setIcon(QMessageBox::Question);
-  msg.setText("<b>" + tr("Para aplicar as atualizações é necessário fechar o programa.") + "</b>");
-  msg.setInformativeText(tr("Você deseja fechar o programa agora?"));
-  msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-  msg.setButtonText(QMessageBox::Yes, "Sim");
-  msg.setButtonText(QMessageBox::No, "Não");
-
-  if (msg.exec() == QMessageBox::Yes) {
-    openDownload();
-    qApp->closeAllWindows();
-  } else {
-    ui->openButton->setEnabled(true);
-    ui->openButton->setVisible(true);
-    ui->timeLabel->setText(tr("Clique no botão \"Abrir\" para aplicar a atualização"));
-  }
+  openDownload();
+  qApp->closeAllWindows();
 }
 
 void DownloadDialog::openDownload(void) {
@@ -109,6 +95,8 @@ void DownloadDialog::cancelDownload(void) {
     _message.setIcon(QMessageBox::Question);
     _message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     _message.setText(tr("Você tem certeza que quer cancelar a atualização?"));
+    _message.setButtonText(QMessageBox::Yes, "Sim");
+    _message.setButtonText(QMessageBox::No, "Não");
 
     if (_message.exec() == QMessageBox::Yes) {
       hide();

@@ -1,10 +1,7 @@
 #ifndef ORCAMENTO_H
 #define ORCAMENTO_H
 
-#include <QSqlQuery>
-
 #include "registerdialog.h"
-#include "sqltablemodel.h"
 
 namespace Ui {
   class Orcamento;
@@ -24,13 +21,15 @@ class Orcamento : public RegisterDialog {
     void on_doubleSpinBoxDesconto_valueChanged(const double &);
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
     void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
-    void on_doubleSpinBoxFrete_valueChanged(const QString &);
-    void on_doubleSpinBoxPrecoTotal_valueChanged(const QString &);
+    void on_doubleSpinBoxFrete_valueChanged(const double &);
+    void on_doubleSpinBoxPrecoTotal_valueChanged(const double &);
     void on_doubleSpinBoxQte_valueChanged(const double &);
+    void on_doubleSpinBoxSubTotalBruto_valueChanged(const double &);
     void on_doubleSpinBoxSubTotalLiq_valueChanged(const double &);
     void on_doubleSpinBoxTotal_valueChanged(const double &);
     void on_itemBoxCliente_textChanged(const QString &);
     void on_itemBoxProduto_textChanged(const QString &);
+    void on_itemBoxVendedor_textChanged(const QString &);
     void on_pushButtonAdicionarItem_clicked();
     void on_pushButtonApagarOrc_clicked();
     void on_pushButtonAtualizarItem_clicked();
@@ -46,79 +45,43 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonReplicar_clicked();
     void on_spinBoxCaixas_valueChanged(const int &caixas);
     void on_tableProdutos_clicked(const QModelIndex &index);
-    void setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage);
 
   signals:
     void finished();
 
-    // methods derived from RegisterDialog
-  public:
-    /*!
-*\brief Utilizada para selecionar um item a partir de um QModelIndex
-*\param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela
-*\return
-*/
-    virtual bool viewRegister(const QModelIndex &index);
-
-  private:
-    /*!
-* \brief Função padrão para verificar campos obrigatórios
-* \return
-*/
-    virtual bool verifyFields();
-    /*!
-* \brief Onde ocorre o model.setData(), baseada nas informações da view.
-*/
-    virtual bool savingProcedures();
-    /*!
-*\brief Limpar os campos da tela
-*/
-    virtual void clearFields();
-    /*!
-*\brief Função onde os mapeamentos são configurados
-*/
-    virtual void setupMapper();
-    /*!
-*\brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
-*/
-    virtual void registerMode();
-    /*!
-*\brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
-*/
-    virtual void updateMode();
-    /*!
-*\brief newRegister
-*\return
-*/
-    virtual bool newRegister();
-
   private:
     // attributes
     Ui::Orcamento *ui;
+    bool isBlockedDesconto = false;
+    bool isBlockedGlobal = false;
+    bool isBlockedPrecoTotal = false;
+    bool isBlockedReais = false;
+    bool isBlockedTotal = false;
+    bool isItemUpdate = false;
     double minimoFrete;
     double porcFrete;
-    SqlTableModel modelItem;
     QDataWidgetMapper mapperItem;
-    QSqlQuery queryCliente;
-    QSqlQuery queryProfissional;
-    QSqlQuery queryVendedor;
-    QSqlQuery queryProduto;
-    QSqlQuery queryLoja;
-    QSqlQuery queryLojaEnd;
+    SqlTableModel modelItem;
     // methods
-    void removeItem();
-    void adicionarItem(const bool &isUpdate = false);
+    bool atualizaReplica();
+    bool verificaCadastroCliente();
+    virtual bool newRegister() override;
+    virtual bool save(const bool &isUpdate = false) override;
+    virtual bool savingProcedures() override;
+    virtual bool verifyFields() override;
+    virtual bool viewRegister(const QModelIndex &index) override;
+    virtual void clearFields() override;
+    virtual void registerMode() override;
+    virtual void setupMapper() override;
+    virtual void updateMode() override;
+    void adicionarItem();
+    void atualizarItem();
     void calcPrecoGlobalTotal();
     void calcPrecoItemTotal();
     void novoItem();
-    void updateId();
+    void removeItem();
     void setupTables();
-    QVariant settings(const QString &key) const;
-    void setSettings(const QString &key, const QVariant &value) const;
-
-    // RegisterDialog interface
-  protected:
-    bool save(const bool &isUpdate = false);
+    void updateId();
 };
 
 #endif // ORCAMENTO_H

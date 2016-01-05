@@ -20,8 +20,6 @@ class WidgetVenda : public QWidget {
   private slots:
     void montaFiltro();
     void on_groupBoxStatusVenda_toggled(const bool &enabled);
-    void on_comboBoxLojas_currentTextChanged(const QString &);
-    void on_lineEditBuscaVendas_textChanged(const QString &text);
     void on_tableVendas_activated(const QModelIndex &index);
 
   private:

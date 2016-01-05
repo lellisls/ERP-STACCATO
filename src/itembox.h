@@ -13,34 +13,34 @@ class ItemBox : public QLineEdit {
   public:
     explicit ItemBox(QWidget *parent);
     ~ItemBox();
-    void setSearchDialog(SearchDialog *m_value);
-    void setRegisterDialog(RegisterDialog *m_value);
-    SearchDialog *searchDialog();
     QVariant value() const;
-    void setValue(const QVariant &m_value);
-    void setReadOnlyItemBox(const bool &readOnly);
+    SearchDialog *searchDialog();
     void clear();
+    void setReadOnlyItemBox(const bool &readOnly);
+    void setRegisterDialog(RegisterDialog *m_value);
+    void setSearchDialog(SearchDialog *m_value);
+    void setValue(const QVariant &m_value);
 
   public slots:
     void changeItem(const QVariant &m_value);
 
-  protected slots:
-    virtual void search();
+  private slots:
     virtual void edit();
+    virtual void search();
     void resetCursor();
 
-  protected:
+  private:
     Q_PROPERTY(QVariant value READ value WRITE setValue STORED false)
     // attributes
-    QPushButton *m_searchButton, *m_plusButton;
-    SearchDialog *m_searchDialog = nullptr;
-    RegisterDialog *m_registerDialog = nullptr;
-    QVariant m_value;
     bool readOnlyItemBox = false;
-    // methods
-    void mouseDoubleClickEvent(QMouseEvent *event);
-    virtual void resizeEvent(QResizeEvent *event);
+    QPushButton *m_searchButton, *m_plusButton;
+    QVariant m_value;
+    RegisterDialog *m_registerDialog = nullptr;
+    SearchDialog *m_searchDialog = nullptr;
+   // methods
     RegisterDialog *registerDialog();
+    virtual void resizeEvent(QResizeEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 #endif // ITEMBOX_H

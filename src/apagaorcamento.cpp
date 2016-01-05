@@ -1,5 +1,5 @@
-#include <QMessageBox>
 #include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 
 #include "apagaorcamento.h"
@@ -44,4 +44,4 @@ void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }
 
 void ApagaOrcamento::apagar(const int &index) { row = index; }
 
-// TODO: colocar opcoes pré-definidas para motivos de cancelamento
+// NOTE: colocar opcoes pré-definidas para motivos de cancelamento

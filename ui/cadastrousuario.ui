@@ -107,143 +107,135 @@
       <attribute name="title">
        <string>Cadastro Usuário</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_4">
+      <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0">
-            <widget class="QLabel" name="labelNome">
-             <property name="text">
-              <string>Nome completo</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEditNome">
-             <property name="accessibleName">
-              <string>Nome completo</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="labelLoja">
-             <property name="text">
-              <string>Loja</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="ComboBox" name="comboBoxLoja">
-             <property name="accessibleName">
-              <string>Loja</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="labelTipo">
-             <property name="text">
-              <string>Tipo</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QComboBox" name="comboBoxTipo">
-             <property name="accessibleName">
-              <string>Tipo</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>VENDEDOR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>GERENTE LOJA</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>GERENTE DEPARTAMENTO</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>DIRETOR</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>ADMINISTRATIVO</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="labelUser">
-             <property name="text">
-              <string>Nome de Usuário</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="lineEditUser">
-             <property name="accessibleName">
-              <string>Nome de usuário</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="labelSigla">
-             <property name="text">
-              <string>SIGLA</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="lineEditSigla">
-             <property name="accessibleName">
-              <string>Sigla</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="labelPasswd">
-             <property name="text">
-              <string>Senha</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLineEdit" name="lineEditPasswd">
-             <property name="accessibleName">
-              <string>Senha</string>
-             </property>
-             <property name="echoMode">
-              <enum>QLineEdit::Password</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="labelPasswd_2">
-             <property name="text">
-              <string>Conf. de Senha</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1">
-            <widget class="QLineEdit" name="lineEditPasswd_2">
-             <property name="accessibleName">
-              <string>Conf. de senha</string>
-             </property>
-             <property name="echoMode">
-              <enum>QLineEdit::Password</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
+        <widget class="QLabel" name="labelNome">
+         <property name="text">
+          <string>Nome completo:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEditNome">
+         <property name="accessibleName">
+          <string>Nome completo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelLoja">
+         <property name="text">
+          <string>Loja:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="ComboBox" name="comboBoxLoja">
+         <property name="accessibleName">
+          <string>Loja</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelTipo">
+         <property name="text">
+          <string>Tipo:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="comboBoxTipo">
+         <property name="accessibleName">
+          <string>Tipo</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>VENDEDOR</string>
+          </property>
          </item>
-        </layout>
+         <item>
+          <property name="text">
+           <string>GERENTE LOJA</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>GERENTE DEPARTAMENTO</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DIRETOR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ADMINISTRATIVO</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelUser">
+         <property name="text">
+          <string>Usuário:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="lineEditUser">
+         <property name="accessibleName">
+          <string>Nome de usuário</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="labelPasswd">
+         <property name="text">
+          <string>Senha:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="lineEditPasswd">
+         <property name="accessibleName">
+          <string>Senha</string>
+         </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="labelPasswd_2">
+         <property name="text">
+          <string>Conf. de Senha:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="lineEditPasswd_2">
+         <property name="accessibleName">
+          <string>Conf. de senha</string>
+         </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="labelSigla">
+         <property name="text">
+          <string>E-mail:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="lineEditEmail">
+         <property name="accessibleName">
+          <string>Sigla</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -351,7 +343,6 @@
   <tabstop>comboBoxLoja</tabstop>
   <tabstop>comboBoxTipo</tabstop>
   <tabstop>lineEditUser</tabstop>
-  <tabstop>lineEditSigla</tabstop>
   <tabstop>lineEditPasswd</tabstop>
   <tabstop>lineEditPasswd_2</tabstop>
   <tabstop>tablePermissoes</tabstop>

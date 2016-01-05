@@ -5,7 +5,8 @@
 #include "smtp.h"
 #include "usersession.h"
 
-SendMail::SendMail(QWidget *parent, const QString &text, const QString &arquivo) : QDialog(parent), ui(new Ui::SendMail) {
+SendMail::SendMail(QWidget *parent, const QString &text, const QString &arquivo)
+  : QDialog(parent), ui(new Ui::SendMail) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -44,6 +45,8 @@ void SendMail::on_pushButtonBuscar_clicked() {
 }
 
 void SendMail::on_pushButtonEnviar_clicked() {
+  progress->show();
+
   setSettings("User/emailServidor", ui->lineEditServidor->text());
   setSettings("User/emailPorta", ui->lineEditPorta->text());
   setSettings("User/emailCompra", ui->lineEditEmail->text());
@@ -55,8 +58,6 @@ void SendMail::on_pushButtonEnviar_clicked() {
 
   smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
                  ui->textEdit->toPlainText(), files);
-
-  progress->show();
 }
 
 void SendMail::on_pushButtonCancelar_clicked() {
@@ -64,11 +65,12 @@ void SendMail::on_pushButtonCancelar_clicked() {
   close();
 }
 
-void SendMail::mailSent(const QString &status) { status == "Message sent" ? successStatus() : failureStatus(status); }
+void SendMail::mailSent(const QString &status) {
+  progress->cancel();
+  status == "Message sent" ? successStatus() : failureStatus(status);
+}
 
 void SendMail::successStatus() {
-  progress->cancel();
-
   QMessageBox::information(0, tr("Qt Simple SMTP client"), tr("Mensagem enviada!"));
 
   QDialog::accept();
@@ -81,3 +83,5 @@ void SendMail::failureStatus(const QString &status) {
 QVariant SendMail::settings(const QString &key) const { return UserSession::getSettings(key); }
 
 void SendMail::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
+
+// NOTE: SMTP: email-ssl.com.br - 465

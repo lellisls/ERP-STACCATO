@@ -59,9 +59,7 @@ void Estoque::viewRegisterById(const QString &codComercial) {
   }
 
   for (int column = 0; column < modelEstoque.columnCount(); ++column) {
-    if (modelEstoque.fieldIndex("xml") == column) {
-      continue;
-    }
+    if (modelEstoque.fieldIndex("xml") == column) continue;
 
     ui->tableEstoque->resizeColumnToContents(column);
   }
@@ -81,4 +79,8 @@ void Estoque::on_pushButtonExibirNfe_clicked() {
 
   XML_Viewer *viewer = new XML_Viewer(this);
   viewer->exibirXML(query.value("xml").toByteArray());
+}
+
+void Estoque::on_pushButtonConsumir_clicked() {
+  // TODO: implementar consumo de estoque
 }

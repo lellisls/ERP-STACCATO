@@ -20,21 +20,21 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #define SMTP_H
 
 #include <QAbstractSocket>
+#include <QByteArray>
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <QSslSocket>
 #include <QString>
 #include <QTextStream>
-#include <QDebug>
-#include <QMessageBox>
-#include <QByteArray>
-#include <QFile>
-#include <QFileInfo>
 
 class Smtp : public QObject {
     Q_OBJECT
 
   public:
     Smtp(const QString &user, const QString &pass, const QString &host, const int &port = 465,
-         const int &timeout = 30000);
+         const int &timeout = 10000);
     ~Smtp();
 
     void sendMail(const QString &from, const QString &to, const QString &subject, const QString &body,

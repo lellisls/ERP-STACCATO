@@ -5,8 +5,6 @@
 #include <QStyleFactory>
 #include <QTimer>
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include "cadastrocliente.h"
 #include "cadastrofornecedor.h"
 #include "cadastroloja.h"
@@ -15,9 +13,11 @@
 #include "cadastrotransportadora.h"
 #include "cadastrousuario.h"
 #include "importaprodutos.h"
+#include "mainwindow.h"
 #include "orcamento.h"
-#include "usersession.h"
+#include "ui_mainwindow.h"
 #include "userconfig.h"
+#include "usersession.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -137,16 +137,13 @@ void MainWindow::updateTables() {
       }
 
     case 6: { // Contas
-        error = ui->widgetConta->updateTables();
+        error = ui->widgetPagar->updateTables();
+        error = ui->widgetReceber->updateTables();
         break;
       }
-
-    default: { break; }
   }
 
-  if (not error.isEmpty()) {
-    timerStatusBar();
-  }
+  if (not error.isEmpty()) timerStatusBar();
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
@@ -163,8 +160,8 @@ void MainWindow::on_actionImportaProdutos_triggered() {
   importa->importar();
 }
 
-bool MainWindow::event(QEvent *e) {
-  switch (e->type()) {
+bool MainWindow::event(QEvent *event) {
+  switch (event->type()) {
     case QEvent::WindowActivate: {
         updateTables();
 
@@ -175,14 +172,15 @@ bool MainWindow::event(QEvent *e) {
         break;
       }
 
-    default: { break; }
+    default:
+      break;
   };
 
-  return QMainWindow::event(e);
+  return QMainWindow::event(event);
 }
 
 void MainWindow::darkTheme() {
-  // TODO: texto no campo amarelo nao visivel
+  // FIXME: texto no campo amarelo nao visivel
   qApp->setStyle(QStyleFactory::create("Fusion"));
 
   QPalette darkPalette;
@@ -223,9 +221,11 @@ void MainWindow::on_actionClaro_triggered() {
 
 void MainWindow::on_actionEscuro_triggered() { darkTheme(); }
 
-void MainWindow::on_actionConfigura_es_triggered() {
+void MainWindow::on_actionConfiguracoes_triggered() {
   UserConfig *config = new UserConfig(this);
   config->show();
 }
 
-// TODO: colocar logo da staccato na mainwindow
+// NOTE: colocar logo da staccato na mainwindow
+// NOTE: pegar as querys com 'select *' e reduzir para apenas as colunas necessarias
+// NOTE: evitar divisoes por zero

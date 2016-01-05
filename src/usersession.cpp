@@ -23,9 +23,7 @@ bool UserSession::login(const QString &user, const QString &password) {
   query->bindValue(":user", user);
   query->bindValue(":password", password);
 
-  if (not query->exec()) {
-    QMessageBox::critical(0, "Erro!", "Erro no login: " + query->lastError().text());
-  }
+  if (not query->exec()) QMessageBox::critical(0, "Erro!", "Erro no login: " + query->lastError().text());
 
   return query->first();
 }
@@ -33,9 +31,7 @@ bool UserSession::login(const QString &user, const QString &password) {
 void UserSession::logout() { query->clear(); }
 
 void UserSession::free() {
-  if (query) {
-    delete query;
-  }
+  if (query) delete query;
 
   query = nullptr;
 }

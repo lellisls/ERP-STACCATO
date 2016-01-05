@@ -71,6 +71,25 @@
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
               <layout class="QGridLayout" name="gridLayout">
+               <item row="1" column="1">
+                <widget class="QLabel" name="label_3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Un.</string>
+                 </property>
+                </widget>
+               </item>
                <item row="3" column="2">
                 <widget class="ItemBox" name="itemBoxFornecedor">
                  <property name="sizePolicy">
@@ -95,7 +114,8 @@
                   <string>Fornecedor</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 255, 127);</string>
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                  </property>
                 </widget>
                </item>
@@ -118,8 +138,8 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="label_3">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_2">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -133,7 +153,10 @@
                   </size>
                  </property>
                  <property name="text">
-                  <string>Un.</string>
+                  <string>Descrição do produto</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>lineEditDescricao</cstring>
                  </property>
                 </widget>
                </item>
@@ -167,32 +190,11 @@
                   <string>Descrição</string>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 255, 127);</string>
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                  </property>
                  <property name="clearButtonEnabled">
                   <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Descrição do produto</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>lineEditDescricao</cstring>
                  </property>
                 </widget>
                </item>
@@ -200,6 +202,10 @@
                 <widget class="QComboBox" name="comboBoxUn">
                  <property name="accessibleName">
                   <string>Un.</string>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                  </property>
                  <property name="editable">
                   <bool>true</bool>
@@ -219,6 +225,65 @@
                    <string>ML</string>
                   </property>
                  </item>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QDateEdit" name="dateEditValidade">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+                 </property>
+                 <property name="dateTime">
+                  <datetime>
+                   <hour>0</hour>
+                   <minute>0</minute>
+                   <second>0</second>
+                   <year>1900</year>
+                   <month>1</month>
+                   <day>1</day>
+                  </datetime>
+                 </property>
+                 <property name="calendarPopup">
+                  <bool>true</bool>
+                 </property>
+                 <property name="date">
+                  <date>
+                   <year>1900</year>
+                   <month>1</month>
+                   <day>1</day>
+                  </date>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLabel" name="label_31">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Validade</string>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -374,6 +439,10 @@
                  <property name="accessibleName">
                   <string>Código comercial</string>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="1">
@@ -483,6 +552,35 @@
                  </property>
                 </widget>
                </item>
+               <item row="1" column="4">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxKgCx">
+                 <property name="accessibleName">
+                  <string>Pç/Cx</string>
+                 </property>
+                 <property name="maximum">
+                  <double>9999999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="label_32">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Kg/Cx</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
@@ -500,6 +598,10 @@
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxCusto">
                  <property name="accessibleName">
                   <string>Custo</string>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                  </property>
                  <property name="prefix">
                   <string>R$ </string>
@@ -595,7 +697,8 @@
                     <string>Tributação</string>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">background-color: rgb(255, 255, 127);</string>
+                    <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                    </property>
                    <item>
                     <property name="text">
@@ -778,6 +881,10 @@
                    <property name="accessibleName">
                     <string>ICMS</string>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+                   </property>
                   </widget>
                  </item>
                  <item row="2" column="0">
@@ -838,7 +945,8 @@
                     <string>NCM</string>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">background-color: rgb(255, 255, 127);</string>
+                    <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                    </property>
                   </widget>
                  </item>
@@ -869,7 +977,8 @@
                     <string>Origem</string>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">background-color: rgb(255, 255, 127);</string>
+                    <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                    </property>
                   </widget>
                  </item>
@@ -1058,6 +1167,10 @@
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxVenda">
                  <property name="accessibleName">
                   <string>Venda</string>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                  </property>
                  <property name="prefix">
                   <string>R$ </string>

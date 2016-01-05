@@ -26,19 +26,16 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.11");
+  app.setApplicationVersion("0.2.1");
   app.setStyle("Fusion");
 
-  //    setSettings("Login/hostname", ""); //to test store selection
   storeSelection();
 
   update();
 
   LoginDialog *dialog = new LoginDialog();
 
-  if (dialog->exec() == QDialog::Rejected) {
-    exit(1);
-  }
+  if (dialog->exec() == QDialog::Rejected) exit(1);
 
   MainWindow window;
   window.showMaximized();
@@ -60,16 +57,14 @@ void storeSelection() {
   if (settings("Login/hostname").toString().isEmpty()) {
     QStringList items;
     items << "Alphaville"
-          << "Gabriel";
+          << "Gabriel"
+          << "Granja";
 
     QString loja = QInputDialog::getItem(0, "Escolha a loja", "Qual a sua loja?", items, 0, false);
 
-    // TODO: add granja
-    if (loja == "Alphaville") {
-      setSettings("Login/hostname", "192.168.2.144");
-    } else if (loja == "Gabriel") {
-      setSettings("Login/hostname", "192.168.1.101");
-    }
+    if (loja == "Alphaville") setSettings("Login/hostname", "192.168.2.144");
+    if (loja == "Gabriel") setSettings("Login/hostname", "192.168.1.101");
+    if (loja == "Granja") setSettings("Login/hostname", "192.168.0.10");
 
     setSettings("Login/username", "user");
     setSettings("Login/password", "1234");
@@ -77,8 +72,3 @@ void storeSelection() {
     setSettings("Login/homologacao", false);
   }
 }
-
-// TODO: criar tela para organizar caminhão da coleta
-// TODO: arrumar status do estoque não saindo de pendente
-// TODO: arrumar filtros da tela de entrega
-// TODO: na emissão da nfe perguntar/mostrar o número da sequência

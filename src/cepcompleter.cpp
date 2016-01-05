@@ -23,9 +23,7 @@ bool CepCompleter::buscaCEP(const QString &cep) {
     return false;
   }
 
-  if (not query.first()) {
-    return false;
-  }
+  if (not query.first()) return false;
 
   cidade = query.value("cidade").toString();
   endereco = query.value("log_tipo_logradouro").toString() + " " + query.value("logradouro").toString();

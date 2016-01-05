@@ -1,8 +1,8 @@
 #ifndef DATEFORMATDELEGATE_H
 #define DATEFORMATDELEGATE_H
 
-#include <QStyledItemDelegate>
 #include <QDate>
+#include <QStyledItemDelegate>
 
 class DateFormatDelegate : public QStyledItemDelegate {
 
@@ -11,9 +11,7 @@ class DateFormatDelegate : public QStyledItemDelegate {
     ~DateFormatDelegate();
 
   private:
-    // attributes
-    // methods
-    virtual QString displayText(const QVariant &value, const QLocale &) const;
+    virtual QString displayText(const QVariant &value, const QLocale &) const override;
 };
 
 #endif // DATEFORMATDELEGATE_H

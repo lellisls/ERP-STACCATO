@@ -19,62 +19,62 @@ class ImportaProdutos : public QDialog {
     void importar();
 
   private slots:
+    void on_checkBoxRepresentacao_clicked(const bool &checked);
     void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
-    void on_checkBoxRepresentacao_clicked(const bool &checked);
-    void on_tableProdutos_entered(const QModelIndex &);
     void on_tableErro_entered(const QModelIndex &);
+    void on_tableProdutos_entered(const QModelIndex &);
     void on_tabWidget_currentChanged(const int &index);
 
   private:
     // attributes
     Ui::ImportaProdutos *ui;
-    SqlTableModel model, modelErro;
-    QProgressDialog *progressDialog;
-    QString file;
-    QString ids;
-    QString fornecedor;
-    int validade;
-    QMap<QString, int> fornecedores;
-    QSqlDatabase db;
-    QVariantMap variantMap;
-    QHash<QString, int> hash;
-    QHash<int, bool> hashAtualizado;
-    int row = 0;
     bool hasError = false;
-    int itensImported = 0;
-    int itensUpdated = 0;
-    int itensNotChanged = 0;
-    int itensExpired = 0;
     int itensError = 0;
+    int itensExpired = 0;
+    int itensImported = 0;
+    int itensNotChanged = 0;
+    int itensUpdated = 0;
+    int row = 0;
+    int validade;
+    QHash<int, bool> hashAtualizado;
+    QHash<QString, int> hash;
+    QMap<QString, int> fornecedores;
+    QProgressDialog *progressDialog;
+    QSqlDatabase db;
+    QString file;
+    QString fornecedor;
+    QString ids;
+    QVariantMap variantMap;
+    SqlTableModel model;
+    SqlTableModel modelErro;
     // methods
-    void importarTabela();
-    void consistenciaDados();
+    bool camposForaDoPadrao();
     bool readFile();
     bool readValidade();
+    bool verificaSeProdutoJaCadastrado();
     bool verificaTabela(const QSqlRecord &record);
     int buscarCadastrarFornecedor(const QString &fornecedor);
     void atualizaCamposProduto();
+    void atualizaProduto();
     void cadastraFornecedores();
     void cadastraProduto();
+    void consistenciaDados();
     void contaProdutos();
     void expiraPrecosAntigos();
     void guardaNovoPrecoValidade();
+    void importarTabela();
+    void insereEmErro();
+    void insereEmOk();
     void leituraProduto(const QSqlQuery &query, const QSqlRecord &record);
     void marcaProdutoNaoDescontinuado();
     void marcaTodosProdutosDescontinuados();
     void mostraApenasEstesFornecedores();
-    void setupTables();
-    void setProgressDialog();
-    bool verificaSeProdutoJaCadastrado();
-    void verificaSeProdutoJaCadastradoNoModel();
     void pintarCamposForaDoPadrao(const int &row);
-    void setVariantMap();
     void salvar();
-    bool camposForaDoPadrao();
-    void insereEmErro();
-    void insereEmOk();
-    void atualizaProduto();
+    void setProgressDialog();
+    void setupTables();
+    void setVariantMap();
     void verificaSeRepresentacao();
 
     enum FieldColors {

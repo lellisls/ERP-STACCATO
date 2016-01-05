@@ -15,11 +15,10 @@ class ImportarXML : public QDialog {
     Q_OBJECT
 
   public:
-    explicit ImportarXML(QList<int> rows, QWidget *parent = 0);
+    explicit ImportarXML(QWidget *parent = 0);
     ~ImportarXML();
-
-  public slots:
-    void show();
+    QString getIdCompra();
+    void filtrar(const QString &filtro);
 
   private slots:
     void on_pushButtonCancelar_clicked();
@@ -30,10 +29,19 @@ class ImportarXML : public QDialog {
   private:
     // attributes
     Ui::ImportarXML *ui;
-    SqlTableModel modelEstoque, modelCompra;
     QDataWidgetMapper mapper;
-    XML *xml = nullptr;
+    QString idCompra;
+    SqlTableModel modelCompra;
+    SqlTableModel modelEstoque;
     // methods
+    void closeEvent(QCloseEvent *event);
+    void setupTables();
+
+    enum FieldColors {
+      Green = 1,  // Ok
+      Yellow = 2, // Quant difere
+      Red = 3,    // Não encontrado
+    };
 };
 
 #endif // IMPORTARXML_H

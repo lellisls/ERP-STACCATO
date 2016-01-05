@@ -1,11 +1,11 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QDebug>
 
 #include "cadastrotransportadora.h"
-#include "ui_cadastrotransportadora.h"
-#include "searchdialog.h"
 #include "cepcompleter.h"
+#include "searchdialog.h"
+#include "ui_cadastrotransportadora.h"
 #include "usersession.h"
 
 CadastroTransportadora::CadastroTransportadora(QWidget *parent)
@@ -45,24 +45,22 @@ void CadastroTransportadora::clearFields() {
 
 bool CadastroTransportadora::verifyFields() {
   for (auto const &line : ui->groupBox_7->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   return true;
 }
 
 bool CadastroTransportadora::savingProcedures() {
-  setData("cnpj", ui->lineEditCNPJ->text());
-  setData("razaoSocial", ui->lineEditRazaoSocial->text());
-  setData("nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData("inscEstadual", ui->lineEditInscEstadual->text());
-  setData("tel", ui->lineEditTel->text());
-  setData("antt", ui->lineEditANTT->text());
-  setData("placaVeiculo", ui->lineEditPlaca->text());
+  if (not setData("cnpj", ui->lineEditCNPJ->text())) return false;
+  if (not setData("razaoSocial", ui->lineEditRazaoSocial->text())) return false;
+  if (not setData("nomeFantasia", ui->lineEditNomeFantasia->text())) return false;
+  if (not setData("inscEstadual", ui->lineEditInscEstadual->text())) return false;
+  if (not setData("tel", ui->lineEditTel->text())) return false;
+  if (not setData("antt", ui->lineEditANTT->text())) return false;
+  if (not setData("placaVeiculo", ui->lineEditPlaca->text())) return false;
 
-  return isOk;
+  return true;
 }
 
 void CadastroTransportadora::setupMapper() {
@@ -161,9 +159,7 @@ void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool &chec
 
 bool CadastroTransportadora::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   if (not ui->lineEditCEP->isValid()) {
@@ -172,11 +168,9 @@ bool CadastroTransportadora::cadastrarEndereco(const bool &isUpdate) {
     return false;
   }
 
-  rowEnd = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) {
-    modelEnd.insertRow(rowEnd);
-  }
+  if (not isUpdate) modelEnd.insertRow(rowEnd);
 
   setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
   setDataEnd("CEP", ui->lineEditCEP->text());
@@ -212,9 +206,7 @@ void CadastroTransportadora::clearEndereco() {
 }
 
 void CadastroTransportadora::on_lineEditCEP_textChanged(const QString &cep) {
-  if (not ui->lineEditCEP->isValid()) {
-    return;
-  }
+  if (not ui->lineEditCEP->isValid()) return;
 
   ui->lineEditNro->clear();
   ui->lineEditComp->clear();
@@ -252,9 +244,7 @@ void CadastroTransportadora::setupUi() {
 }
 
 bool CadastroTransportadora::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegister(index)) return false;
 
   modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
 

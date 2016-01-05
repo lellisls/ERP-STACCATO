@@ -91,7 +91,7 @@ QDate InputDialog::getNextDate() { return ui->dateEditProximo->date(); }
 
 void InputDialog::on_pushButtonSalvar_clicked() {
   if (type == ConfirmarCompra) {
-    // TODO: confirmar apenas os que estiverem marcados
+    // NOTE: confirmar apenas os que estiverem marcados
   }
 
   if (not model.submitAll()) {
@@ -109,9 +109,7 @@ void InputDialog::on_pushButtonCancelar_clicked() {
 }
 
 void InputDialog::on_dateEditEvento_dateChanged(const QDate &date) {
-  if (ui->dateEditProximo->date() < date) {
-    ui->dateEditProximo->setDate(date);
-  }
+  if (ui->dateEditProximo->date() < date) ui->dateEditProximo->setDate(date);
 }
 
 void InputDialog::setFilter(const QStringList &ids) {

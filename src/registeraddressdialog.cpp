@@ -1,7 +1,7 @@
+#include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QMessageBox>
-#include <QDebug>
 
 #include "registeraddressdialog.h"
 
@@ -32,16 +32,17 @@ RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString
 }
 
 bool RegisterAddressDialog::save(const bool &isUpdate) {
-  // TODO: converter campos para maiusculo
+  if (not verifyFields()) return false;
 
-  if (not verifyFields()) {
+  if (not isUpdate and not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
     return false;
   }
 
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Erro linha -1");
@@ -49,14 +50,18 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
     return false;
   }
 
-  if (not isUpdate) {
-    model.insertRow(row);
-  }
+  if (not isUpdate) model.insertRow(row);
 
   if (not savingProcedures()) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
+  }
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    if (model.data(row, column).type() == QVariant::String) {
+      model.setData(row, column, model.data(row, column).toString().toUpper());
+    }
   }
 
   if (not model.submitAll()) {
@@ -68,12 +73,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   const int id = data(row, primaryKey).isValid() ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    setDataEnd(row, primaryKey, id);
-  }
-
-  if (not isOk) {
-    QSqlQuery("ROLLBACK").exec();
-    return false;
+    modelEnd.setData(row, primaryKey, id);
   }
 
   if (not modelEnd.submitAll()) {
@@ -83,47 +83,30 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   }
 
   QSqlQuery("COMMIT").exec();
+
   isDirty = false;
-  isOk = true;
 
   viewRegister(model.index(row, 0));
   sendUpdateMessage();
 
-  if (not silent) {
-    successMessage();
-  }
+  if (not silent) successMessage();
 
   return true;
 }
 
-void RegisterAddressDialog::setDataEnd(const QString &key, const QVariant &value) {
-  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
-    return;
-  }
+bool RegisterAddressDialog::setDataEnd(const QString &key, const QVariant &value) {
+  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) return true;
 
-  isOk = modelEnd.setData(rowEnd, key, value);
-}
+  int currentRow = rowEnd != -1 ? rowEnd : mapperEnd.currentIndex();
 
-void RegisterAddressDialog::setDataEnd(const int &row, const QString &key, const QVariant &value) {
-  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
-    return;
-  }
-
-  isOk = modelEnd.setData(row, key, value);
+  return modelEnd.setData(currentRow, key, value);
 }
 
 bool RegisterAddressDialog::newRegister() {
-  if (not confirmationMessage()) {
-    return false;
-  }
+  if (not confirmationMessage()) return false;
 
   clearFields();
   registerMode();
-
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-    return false;
-  }
 
   modelEnd.setFilter("idEndereco = 0");
 
@@ -170,9 +153,7 @@ int RegisterAddressDialog::getCodigoUF(QString uf) const {
 }
 
 bool RegisterAddressDialog::viewRegisterById(const QVariant &id) {
-  if (not RegisterDialog::viewRegisterById(id)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegisterById(id)) return false;
 
   modelEnd.setFilter(primaryKey + " = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
@@ -183,6 +164,3 @@ bool RegisterAddressDialog::viewRegisterById(const QVariant &id) {
 
   return true;
 }
-
-// TODO: renomear "Mostrar inativos" para mostrar removidos e adicionar esse checkbox na searchdialog
-// TODO: if endereco desativado and update clicked, activate endereco (set desativado 0)

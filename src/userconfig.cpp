@@ -1,4 +1,5 @@
 #include "userconfig.h"
+#include "cadastrousuario.h"
 #include "ui_userconfig.h"
 #include "usersession.h"
 
@@ -87,3 +88,10 @@ void UserConfig::on_pushButtonCancelar_clicked() {
 QVariant UserConfig::settings(const QString &key) const { return UserSession::getSettings(key); }
 
 void UserConfig::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
+
+void UserConfig::on_pushButtonUserFolder_2_clicked() {
+  CadastroUsuario *cad = new CadastroUsuario(this);
+  cad->show();
+  cad->viewRegisterById(UserSession::getIdUsuario());
+  cad->modificarUsuario();
+}

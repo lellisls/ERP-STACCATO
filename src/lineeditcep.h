@@ -13,7 +13,7 @@ class LineEditCEP : public QLineEdit {
 
   private:
     Q_PROPERTY(QString value READ getValue WRITE setValue STORED false)
-    // methods
+
     QString getValue() const;
     void setValue(const QString &value);
 };

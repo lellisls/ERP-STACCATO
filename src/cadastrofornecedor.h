@@ -23,14 +23,14 @@ class CadastroFornecedor : public RegisterAddressDialog {
     void on_lineEditContatoCPF_textEdited(const QString &text);
     void on_pushButtonAdicionarEnd_clicked();
     void on_pushButtonAtualizar_clicked();
+    void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonBuscar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
-    void on_pushButtonAtualizarEnd_clicked();
-    void on_tableEndereco_clicked(const QModelIndex &index);
     void on_pushButtonRemoverEnd_clicked();
+    void on_tableEndereco_clicked(const QModelIndex &index);
 
   public:
     void clearEndereco();
@@ -40,17 +40,16 @@ class CadastroFornecedor : public RegisterAddressDialog {
     // attributes
     Ui::CadastroFornecedor *ui;
     // methods
-    bool verifyRequiredField(QLineEdit *line, const bool &silent = false);
-    void novoEndereco();
-    virtual bool verifyFields();
-    virtual bool savingProcedures();
-    virtual void clearFields();
-    virtual void setupMapper();
-    virtual void registerMode();
-    virtual void updateMode();
     bool cadastrarEndereco(const bool &isUpdate);
+    bool viewRegister(const QModelIndex &index) override;
+    virtual bool savingProcedures() override;
+    virtual bool verifyFields() override;
+    virtual void clearFields() override;
+    virtual void registerMode() override;
+    virtual void setupMapper() override;
+    virtual void updateMode() override;
+    void novoEndereco();
     void setupUi();
-    bool viewRegister(const QModelIndex &index);
 };
 
 #endif // CADASTROFORNECEDOR_H

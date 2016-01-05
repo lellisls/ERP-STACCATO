@@ -20,17 +20,15 @@ class WidgetOrcamento : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_radioButtonOrcValido_clicked();
-    void on_radioButtonOrcExpirado_clicked();
-    void on_radioButtonOrcLimpar_clicked();
-    void on_radioButtonOrcProprios_clicked();
-    void on_lineEditBuscaOrcamentos_textChanged(const QString &text);
-    void on_tableOrcamentos_activated(const QModelIndex &index);
+    void montaFiltro();
     void on_pushButtonCriarOrc_clicked();
+    void on_tableOrcamentos_activated(const QModelIndex &index);
 
   private:
+    // attributes
     Ui::WidgetOrcamento *ui;
     SqlTableModel modelOrcamento;
+    // methods
     void setupTables();
 };
 

@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-#include "sqlquerymodel.h"
+#include "sqltablemodel.h"
 
 namespace Ui {
   class ProdutosPendentes;
@@ -22,10 +22,15 @@ class ProdutosPendentes : public QDialog {
     void on_pushButtonConsumirEstoque_clicked();
 
   private:
+    // attributes
     Ui::ProdutosPendentes *ui;
-    SqlQueryModel modelProdutos;
     QString codComercial;
+    SqlTableModel modelEstoque;
+    SqlTableModel modelProdutos;
     // methods
+    void atualiza(QSqlQuery &query);
+    void atualizaVenda(QSqlQuery &query, QDate &dataPrevista);
+    void insere(QSqlQuery &query, QDate &dataPrevista);
     void setupTables();
 };
 

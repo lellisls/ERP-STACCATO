@@ -1,13 +1,13 @@
-#include <QFileDialog>
-#include <QSqlError>
-#include <QMessageBox>
 #include <QDebug>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSqlError>
 
 #include "cadastroloja.h"
-#include "ui_cadastroloja.h"
-#include "searchdialog.h"
-#include "usersession.h"
 #include "cepcompleter.h"
+#include "searchdialog.h"
+#include "ui_cadastroloja.h"
+#include "usersession.h"
 
 CadastroLoja::CadastroLoja(QWidget *parent)
   : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
@@ -67,27 +67,25 @@ void CadastroLoja::clearFields() {
 
 bool CadastroLoja::verifyFields() {
   for (auto const &line : ui->groupBoxCadastro->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   return true;
 }
 
 bool CadastroLoja::savingProcedures() {
-  setData("descricao", ui->lineEditDescricao->text());
-  setData("razaoSocial", ui->lineEditRazaoSocial->text());
-  setData("sigla", ui->lineEditSIGLA->text());
-  setData("nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData("cnpj", ui->lineEditCNPJ->text());
-  setData("inscEstadual", ui->lineEditInscEstadual->text());
-  setData("tel", ui->lineEditTel->text());
-  setData("tel2", ui->lineEditTel2->text());
-  setData("valorMinimoFrete", ui->doubleSpinBoxValorMinimoFrete->value());
-  setData("porcentagemFrete", ui->doubleSpinBoxPorcFrete->value());
+  if (not setData("descricao", ui->lineEditDescricao->text())) return false;
+  if (not setData("razaoSocial", ui->lineEditRazaoSocial->text())) return false;
+  if (not setData("sigla", ui->lineEditSIGLA->text())) return false;
+  if (not setData("nomeFantasia", ui->lineEditNomeFantasia->text())) return false;
+  if (not setData("cnpj", ui->lineEditCNPJ->text())) return false;
+  if (not setData("inscEstadual", ui->lineEditInscEstadual->text())) return false;
+  if (not setData("tel", ui->lineEditTel->text())) return false;
+  if (not setData("tel2", ui->lineEditTel2->text())) return false;
+  if (not setData("valorMinimoFrete", ui->doubleSpinBoxValorMinimoFrete->value())) return false;
+  if (not setData("porcentagemFrete", ui->doubleSpinBoxPorcFrete->value())) return false;
 
-  return isOk;
+  return true;
 }
 
 void CadastroLoja::registerMode() {
@@ -190,9 +188,7 @@ void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool &checked) {
 
 bool CadastroLoja::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   if (not ui->lineEditCEP->isValid()) {
@@ -201,26 +197,24 @@ bool CadastroLoja::cadastrarEndereco(const bool &isUpdate) {
     return false;
   }
 
-  rowEnd = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) {
-    modelEnd.insertRow(rowEnd);
-  }
+  if (not isUpdate) modelEnd.insertRow(rowEnd);
 
-  setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
-  setDataEnd("cep", ui->lineEditCEP->text());
-  setDataEnd("logradouro", ui->lineEditLogradouro->text());
-  setDataEnd("numero", ui->lineEditNro->text());
-  setDataEnd("complemento", ui->lineEditComp->text());
-  setDataEnd("bairro", ui->lineEditBairro->text());
-  setDataEnd("cidade", ui->lineEditCidade->text());
-  setDataEnd("uf", ui->lineEditUF->text());
-  setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()));
-  setDataEnd("desativado", false);
+  if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
+  if (not setDataEnd("cep", ui->lineEditCEP->text())) return false;
+  if (not setDataEnd("logradouro", ui->lineEditLogradouro->text())) return false;
+  if (not setDataEnd("numero", ui->lineEditNro->text())) return false;
+  if (not setDataEnd("complemento", ui->lineEditComp->text())) return false;
+  if (not setDataEnd("bairro", ui->lineEditBairro->text())) return false;
+  if (not setDataEnd("cidade", ui->lineEditCidade->text())) return false;
+  if (not setDataEnd("uf", ui->lineEditUF->text())) return false;
+  if (not setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()))) return false;
+  if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
 
-  return isOk;
+  return true;
 }
 
 void CadastroLoja::novoEndereco() {
@@ -241,9 +235,7 @@ void CadastroLoja::clearEndereco() {
 }
 
 void CadastroLoja::on_lineEditCEP_textChanged(const QString &cep) {
-  if (not ui->lineEditCEP->isValid()) {
-    return;
-  }
+  if (not ui->lineEditCEP->isValid()) return;
 
   ui->lineEditNro->clear();
   ui->lineEditComp->clear();
@@ -273,9 +265,7 @@ void CadastroLoja::show() {
 }
 
 bool CadastroLoja::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegister(index)) return false;
 
   modelEnd.setFilter("idLoja = " + data("idLoja").toString() + " AND desativado = FALSE");
 

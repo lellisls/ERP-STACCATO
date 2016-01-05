@@ -7,9 +7,6 @@ class SqlQueryModel : public QSqlQueryModel {
   public:
     explicit SqlQueryModel(QObject *parent = 0);
     bool setHeaderData(const QString &column, const QVariant &value);
-
-    // QAbstractItemModel interface
-  public:
     QVariant data(const int &row, const QString &column) const;
 
   private:

@@ -1,11 +1,11 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QDebug>
 
 #include "cadastrofornecedor.h"
-#include "ui_cadastrofornecedor.h"
-#include "searchdialog.h"
 #include "cepcompleter.h"
+#include "searchdialog.h"
+#include "ui_cadastrofornecedor.h"
 #include "usersession.h"
 
 CadastroFornecedor::CadastroFornecedor(QWidget *parent)
@@ -70,30 +70,28 @@ void CadastroFornecedor::novoEndereco() {
 
 bool CadastroFornecedor::verifyFields() {
   for (auto const &line : ui->frameCadastro->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   return true;
 }
 
 bool CadastroFornecedor::savingProcedures() {
-  setData("razaoSocial", ui->lineEditFornecedor->text());
-  setData("nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData("contatoNome", ui->lineEditContatoNome->text());
-  setData("contatoCPF", ui->lineEditContatoCPF->text().remove(".").remove("-"));
-  setData("contatoApelido", ui->lineEditContatoApelido->text());
-  setData("contatoRG", ui->lineEditContatoRG->text().remove(".").remove("-"));
-  setData("cnpj", ui->lineEditCNPJ->text().remove(".").remove("/").remove("-"));
-  setData("inscEstadual", ui->lineEditInscEstadual->text());
-  setData("tel", ui->lineEditTel_Res->text());
-  setData("telCel", ui->lineEditTel_Cel->text());
-  setData("telCom", ui->lineEditTel_Com->text());
-  setData("nextel", ui->lineEditNextel->text());
-  setData("email", ui->lineEditEmail->text());
+  if (not setData("razaoSocial", ui->lineEditFornecedor->text())) return false;
+  if (not setData("nomeFantasia", ui->lineEditNomeFantasia->text())) return false;
+  if (not setData("contatoNome", ui->lineEditContatoNome->text())) return false;
+  if (not setData("contatoCPF", ui->lineEditContatoCPF->text().remove(".").remove("-"))) return false;
+  if (not setData("contatoApelido", ui->lineEditContatoApelido->text())) return false;
+  if (not setData("contatoRG", ui->lineEditContatoRG->text().remove(".").remove("-"))) return false;
+  if (not setData("cnpj", ui->lineEditCNPJ->text().remove(".").remove("/").remove("-"))) return false;
+  if (not setData("inscEstadual", ui->lineEditInscEstadual->text())) return false;
+  if (not setData("tel", ui->lineEditTel_Res->text())) return false;
+  if (not setData("telCel", ui->lineEditTel_Cel->text())) return false;
+  if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
+  if (not setData("nextel", ui->lineEditNextel->text())) return false;
+  if (not setData("email", ui->lineEditEmail->text())) return false;
 
-  return isOk;
+  return true;
 }
 
 void CadastroFornecedor::clearFields() {
@@ -143,29 +141,6 @@ void CadastroFornecedor::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroFornecedor::verifyRequiredField(QLineEdit *line, const bool &silent) {
-  if (line->styleSheet() != requiredStyle()) {
-    return true;
-  }
-
-  if (not line->isVisible()) {
-    return true;
-  }
-
-  if ((line->text().isEmpty()) or (line->text() == "0,00") or (line->text() == "../-") or
-      (line->text().size() < line->inputMask().remove(";").remove(">").remove("_").size()) or
-      (line->text().size() < line->placeholderText().size() - 1)) {
-    if (not silent) {
-      QMessageBox::critical(this, "Erro!", "Você não preencheu um campo obrigatório: " + line->accessibleName());
-      line->setFocus();
-    }
-
-    return false;
-  }
-
-  return true;
-}
-
 void CadastroFornecedor::on_pushButtonCadastrar_clicked() { save(); }
 
 void CadastroFornecedor::on_pushButtonAtualizar_clicked() { update(); }
@@ -200,9 +175,7 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
 
 bool CadastroFornecedor::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   if (not ui->lineEditCEP->isValid()) {
@@ -211,32 +184,28 @@ bool CadastroFornecedor::cadastrarEndereco(const bool &isUpdate) {
     return false;
   }
 
-  rowEnd = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) {
-    modelEnd.insertRow(rowEnd);
-  }
+  if (not isUpdate) modelEnd.insertRow(rowEnd);
 
-  setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
-  setDataEnd("cep", ui->lineEditCEP->text());
-  setDataEnd("logradouro", ui->lineEditEndereco->text());
-  setDataEnd("numero", ui->lineEditNro->text());
-  setDataEnd("complemento", ui->lineEditComp->text());
-  setDataEnd("bairro", ui->lineEditBairro->text());
-  setDataEnd("cidade", ui->lineEditCidade->text());
-  setDataEnd("uf", ui->lineEditUF->text());
-  setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()));
-  setDataEnd("desativado", false);
+  if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
+  if (not setDataEnd("cep", ui->lineEditCEP->text())) return false;
+  if (not setDataEnd("logradouro", ui->lineEditEndereco->text())) return false;
+  if (not setDataEnd("numero", ui->lineEditNro->text())) return false;
+  if (not setDataEnd("complemento", ui->lineEditComp->text())) return false;
+  if (not setDataEnd("bairro", ui->lineEditBairro->text())) return false;
+  if (not setDataEnd("cidade", ui->lineEditCidade->text())) return false;
+  if (not setDataEnd("uf", ui->lineEditUF->text())) return false;
+  if (not setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()))) return false;
+  if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
 
-  return isOk;
+  return true;
 }
 
 void CadastroFornecedor::on_lineEditCEP_textChanged(const QString &cep) {
-  if (not ui->lineEditCEP->isValid()) {
-    return;
-  }
+  if (not ui->lineEditCEP->isValid()) return;
 
   ui->lineEditNro->clear();
   ui->lineEditComp->clear();
@@ -267,9 +236,7 @@ void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
 }
 
 bool CadastroFornecedor::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegister(index)) return false;
 
   modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + " AND desativado = FALSE");
 

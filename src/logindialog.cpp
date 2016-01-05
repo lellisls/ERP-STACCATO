@@ -1,10 +1,10 @@
 #include <QMessageBox>
 #include <QSqlError>
 
+#include "loginconfig.h"
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include "usersession.h"
-#include "loginconfig.h"
 
 LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDialog) {
   ui->setupUi(this);
@@ -46,9 +46,7 @@ void LoginDialog::on_buttonBox_accepted() {
 void LoginDialog::on_buttonBox_rejected() { reject(); }
 
 void LoginDialog::verify() {
-  if (not dbConnect()) {
-    return;
-  }
+  if (not dbConnect()) return;
 
   if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text())) {
     QMessageBox::critical(this, "Erro!", "Login inválido!");
@@ -84,7 +82,8 @@ bool LoginDialog::dbConnect() {
   db.setPassword(password);
   db.setDatabaseName("mysql");
 
-  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
+  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;MYSQL_OPT_CONNECT_TIMEOUT=5;MYSQL_OPT_READ_TIMEOUT=5;"
+                       "MYSQL_OPT_WRITE_TIMEOUT=5");
 
   if (not db.open()) {
     QString message;
@@ -116,9 +115,7 @@ bool LoginDialog::dbConnect() {
   bool hasMydb = false;
 
   while (query.next()) {
-    if (query.value(0).toString() == "mydb") {
-      hasMydb = true;
-    }
+    if (query.value(0).toString() == "mydb") hasMydb = true;
   }
 
   if (not hasMydb) {
@@ -139,6 +136,11 @@ bool LoginDialog::dbConnect() {
 
   if (not query.exec("CALL invalidate_expired()")) {
     QMessageBox::critical(this, "Erro!", "Erro executando InvalidarExpirados: " + query.lastError().text());
+    return false;
+  }
+
+  if (not query.exec("CALL update_orcamento_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro executando update_orcamento_status: " + query.lastError().text());
     return false;
   }
 

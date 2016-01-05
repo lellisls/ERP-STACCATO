@@ -9,11 +9,11 @@ class CheckBoxDelegate : public QStyledItemDelegate {
     ~CheckBoxDelegate();
 
   private:
-    // QAbstractItemDelegate interface
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const;
-    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
-    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const;
+    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override;
+    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const override;
+    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
+    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
+                                      const QModelIndex &) const override;
 };
 
 #endif // CHECKBOXDELEGATE_H

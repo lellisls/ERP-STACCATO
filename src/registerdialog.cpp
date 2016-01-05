@@ -1,24 +1,19 @@
 #include <QCloseEvent>
+#include <QDebug>
+#include <QMessageBox>
 #include <QShortcut>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QMessageBox>
-#include <QDebug>
 
 #include "registerdialog.h"
 
 RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, QWidget *parent = 0)
-  : QDialog(parent), model(this), primaryKey(primaryKey) {
+  : QDialog(parent), primaryKey(primaryKey), model(this) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro ao acessar a tabela " + table + ": " + model.lastError().text());
-    return;
-  }
 
   mapper.setModel(&model);
   mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -50,9 +45,7 @@ bool RegisterDialog::viewRegisterById(const QVariant &id) {
 }
 
 bool RegisterDialog::viewRegister(const QModelIndex &index) {
-  if (not confirmationMessage()) {
-    return false;
-  }
+  if (not confirmationMessage()) return false;
 
   clearFields();
   updateMode();
@@ -64,30 +57,20 @@ bool RegisterDialog::viewRegister(const QModelIndex &index) {
 
 bool RegisterDialog::verifyFields(const QList<QLineEdit *> &list) {
   for (auto const &line : list) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   return true;
 }
 
 bool RegisterDialog::setData(const QString &key, const QVariant value) {
-  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) {
-    return false;
-  }
-
-  if (value.type() == QVariant::String and value.toString().remove(".").remove("/").remove("-").isEmpty()) {
-    return false;
-  }
-
-  if (value.type() == QVariant::String and value.toString() == "1900-01-01") {
-    return false;
-  }
+  if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) return true;
+  if (value.type() == QVariant::String and value.toString().remove(".").remove("/").remove("-").isEmpty()) return true;
+  if (value.type() == QVariant::String and value.toString() == "1900-01-01") return true;
 
   int currentRow = row != -1 ? row : mapper.currentIndex();
 
-  return isOk = model.setData(currentRow, key, value);
+  return model.setData(currentRow, key, value);
 }
 
 QVariant RegisterDialog::data(const QString &key) { return model.data(mapper.currentIndex(), key); }
@@ -116,9 +99,7 @@ void RegisterDialog::sendUpdateMessage() {
   QString text;
 
   for (const auto key : textKeys) {
-    if (key.isEmpty() or not data(key).isValid()) {
-      continue;
-    }
+    if (key.isEmpty() or not data(key).isValid()) continue;
 
     text += (text.isEmpty() ? "" : " - ") + data(key).toString();
   }
@@ -147,13 +128,8 @@ void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 void RegisterDialog::saveSlot() { save(); }
 
 bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
-  if (line->styleSheet() != requiredStyle()) {
-    return true;
-  }
-
-  if (not line->isVisible()) {
-    return true;
-  }
+  if (not line->styleSheet().contains(requiredStyle())) return true;
+  if (not line->isVisible()) return true;
 
   if ((line->text().isEmpty()) or (line->text() == "0,00") or (line->text() == "../-") or
       (line->text().size() < line->inputMask().remove(";").remove(">").remove("_").size()) or
@@ -170,9 +146,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if (not model.isDirty() and not isDirty) {
-    return true;
-  }
+  if (not model.isDirty() and not isDirty) return true;
 
   QMessageBox msgBox;
   msgBox.setParent(this);
@@ -198,25 +172,26 @@ void RegisterDialog::successMessage() {
 }
 
 bool RegisterDialog::newRegister() {
-  if (not confirmationMessage()) {
-    return false;
-  }
+  if (not confirmationMessage()) return false;
 
   clearFields();
   registerMode();
 
-  return model.select();
+  return true;
 }
 
 bool RegisterDialog::save(const bool &isUpdate) {
-  if (not verifyFields()) {
+  if (not verifyFields()) return false;
+
+  if (not isUpdate and not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
     return false;
   }
 
   QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  row = (isUpdate) ? mapper.currentIndex() : model.rowCount();
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Linha errada!");
@@ -224,14 +199,18 @@ bool RegisterDialog::save(const bool &isUpdate) {
     return false;
   }
 
-  if (not isUpdate) {
-    model.insertRow(row);
-  }
+  if (not isUpdate) model.insertRow(row);
 
   if (not savingProcedures()) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
     return false;
+  }
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    if (model.data(row, column).type() == QVariant::String) {
+      model.setData(row, column, model.data(row, column).toString().toUpper());
+    }
   }
 
   if (not model.submitAll()) {
@@ -243,15 +222,13 @@ bool RegisterDialog::save(const bool &isUpdate) {
   }
 
   QSqlQuery("COMMIT").exec();
+
   isDirty = false;
-  isOk = true;
 
   viewRegister(model.index(row, 0));
   sendUpdateMessage();
 
-  if (not silent) {
-    successMessage();
-  }
+  if (not silent) successMessage();
 
   return true;
 }
@@ -283,9 +260,7 @@ void RegisterDialog::remove() {
 }
 
 bool RegisterDialog::validaCNPJ(const QString &text) {
-  if (text.size() != 14) {
-    return false;
-  }
+  if (text.size() != 14) return false;
 
   const QString sub = text.left(12);
 
@@ -329,9 +304,7 @@ bool RegisterDialog::validaCNPJ(const QString &text) {
 }
 
 bool RegisterDialog::validaCPF(const QString &text) {
-  if (text.size() != 11) {
-    return false;
-  }
+  if (text.size() != 11) return false;
 
   if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
       text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or
@@ -382,5 +355,3 @@ bool RegisterDialog::validaCPF(const QString &text) {
 }
 
 void RegisterDialog::marcarDirty() { isDirty = true; }
-
-// TODO: alguma forma de operar com cadastros desativados

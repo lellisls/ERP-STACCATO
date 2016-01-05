@@ -66,8 +66,7 @@ void WidgetEstoque::on_pushButtonEntradaEstoque_clicked() {
 
 void WidgetEstoque::on_pushButtonTesteFaturamento_clicked() {
   ImportarXML *import = new ImportarXML(this);
-  import->show();
+  import->showMaximized();
 }
 
-// TODO: gerenciar lugares de estoque (cadastro/permissoes)
-// FIXME: view_estoque is extremely slow
+// NOTE: gerenciar lugares de estoque (cadastro/permissoes)

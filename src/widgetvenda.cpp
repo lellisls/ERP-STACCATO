@@ -1,12 +1,13 @@
-#include "src/widgetvenda.h"
+#include <QDebug>
+#include <QMessageBox>
+#include <QSqlError>
+
 #include "doubledelegate.h"
 #include "orcamentoproxymodel.h"
 #include "ui_widgetvenda.h"
 #include "usersession.h"
 #include "venda.h"
-
-#include <QMessageBox>
-#include <QSqlError>
+#include "widgetvenda.h"
 
 WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVenda) {
   ui->setupUi(this);
@@ -33,11 +34,14 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
   connect(ui->checkBoxVendaEmRecebimento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxVendaEstoque, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxVendaFinalizado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->lineEditBuscaVendas, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->comboBoxLojas, &QComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
 
   QSqlQuery query("SELECT * FROM loja WHERE descricao != 'Geral' AND desativado = FALSE");
 
   ui->comboBoxLojas->addItem("");
 
+  // NOTE: verificar uma forma melhor de registrar a loja 'Geral'
   while (query.next()) {
     ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
@@ -61,13 +65,17 @@ void WidgetVenda::setupTables() {
 }
 
 void WidgetVenda::montaFiltro() {
+  QString textoBusca = ui->lineEditBuscaVendas->text();
+
+  QString filtroBusca = "((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" + textoBusca +
+                        "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+
   const QString loja =
-      ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getFromLoja("loja.sigla");
+      ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getFromLoja("loja.descricao");
 
   const QString filtro = ui->radioButtonVendLimpar->isChecked()
-                         ? "(Código LIKE '%" + loja + "%')"
-                         : "(Código LIKE '%" + loja + "%') AND Vendedor = '" + UserSession::getNome() + "'";
-
+                         ? "(Loja LIKE '%" + loja + "')"
+                         : "(Loja LIKE '%" + loja + "') AND Vendedor = '" + UserSession::getNome() + "'";
   QString filtro2;
 
   for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
@@ -77,7 +85,8 @@ void WidgetVenda::montaFiltro() {
     }
   }
 
-  modelVendas.setFilter(filtro2.isEmpty() ? filtro : filtro + " AND (" + filtro2 + ")");
+  modelVendas.setFilter(filtro + (filtro2.isEmpty() ? "" : " AND (" + filtro2 + ")") +
+                        (textoBusca.isEmpty() ? "" : " AND " + filtroBusca));
 
   ui->tableVendas->resizeColumnsToContents();
 }
@@ -85,35 +94,16 @@ void WidgetVenda::montaFiltro() {
 void WidgetVenda::on_groupBoxStatusVenda_toggled(const bool &enabled) {
   for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
-  }
-
-  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
     child->setChecked(enabled);
   }
 }
 
-void WidgetVenda::on_comboBoxLojas_currentTextChanged(const QString &) { montaFiltro(); }
-
 QString WidgetVenda::updateTables() {
-  if (not modelVendas.select()) {
-    return "Erro lendo tabela vendas: " + modelVendas.lastError().text();
-  }
+  if (not modelVendas.select()) return "Erro lendo tabela vendas: " + modelVendas.lastError().text();
 
   ui->tableVendas->resizeColumnsToContents();
 
   return QString();
-}
-
-void WidgetVenda::on_lineEditBuscaVendas_textChanged(const QString &text) {
-  if (text.isEmpty()) {
-    montaFiltro();
-    return;
-  }
-
-  modelVendas.setFilter("(Código LIKE '%" + text + "%') OR (Vendedor LIKE '%" + text + "%') OR (Cliente LIKE '%" +
-                        text + "%')");
-
-  ui->tableVendas->resizeColumnsToContents();
 }
 
 void WidgetVenda::on_tableVendas_activated(const QModelIndex &index) {
@@ -122,3 +112,5 @@ void WidgetVenda::on_tableVendas_activated(const QModelIndex &index) {
 }
 
 // NOTE: verificar como lidar com brinde/reposicao
+// NOTE: cancelamento de pedido: se todos os itens estiverem pendentes marcar status cancelado, senao fazer processo
+// inverso de estorno

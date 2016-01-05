@@ -29,49 +29,12 @@ class CadastroCliente : public RegisterAddressDialog {
     void on_pushButtonBuscar_clicked();
     void on_pushButtonCadastrar_clicked();
     void on_pushButtonCancelar_clicked();
-    void on_pushButtonNovoCad_clicked();
     void on_pushButtonEndLimpar_clicked();
+    void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonRemoverEnd_clicked();
     void on_radioButtonPF_toggled(const bool &checked);
     void on_tableEndereco_clicked(const QModelIndex &index);
-
-  public:
-    /*!
-* \brief Utilizada para selecionar um item a partir de um QModelIndex.
-* \param index Índice do Model relacionado ao item, normalmente obtido ao clicar na tabela.
-* \return
-*/
-    virtual bool viewRegister(const QModelIndex &index);
-
-    void setupTables();
-
-  private:
-    /*!
-* \brief Função padrão para verificar campos obrigatórios
-* \return
-*/
-    virtual bool verifyFields();
-    /*!
-* \brief Onde ocorre o model.setData(), baseada nas informações da view.
-*/
-    virtual bool savingProcedures();
-    /*!
-* \brief Limpar os campos da tela
-*/
-    virtual void clearFields();
-    /*!
-* \brief Função onde os mapeamentos são configurados
-*/
-    virtual void setupMapper();
-    /*!
-* \brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
-*/
-    virtual void registerMode();
-    /*!
-* \brief Função chamada para atualizar a view, escondendo botão cadastrar, por exemplo
-*/
-    virtual void updateMode();
 
   private:
     // attributes
@@ -79,9 +42,17 @@ class CadastroCliente : public RegisterAddressDialog {
     QString tipoPFPJ;
     // methods
     bool cadastrarEndereco(const bool &isUpdate);
-    void novoEndereco();
-    void setupUi();
+    virtual bool savingProcedures() override;
+    virtual bool verifyFields() override;
+    virtual bool viewRegister(const QModelIndex &index) override;
+    virtual void clearFields() override;
+    virtual void registerMode() override;
+    virtual void setupMapper() override;
+    virtual void updateMode() override;
     void clearEndereco();
+    void novoEndereco();
+    void setupTables();
+    void setupUi();
 };
 
 #endif // CADASTROCLIENTE_H

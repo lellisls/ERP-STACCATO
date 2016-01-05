@@ -3,9 +3,9 @@
 #include <QSqlQuery>
 
 #include "cadastrousuario.h"
+#include "searchdialog.h"
 #include "ui_cadastrousuario.h"
 #include "usersession.h"
-#include "searchdialog.h"
 
 CadastroUsuario::CadastroUsuario(QWidget *parent)
   : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
@@ -18,8 +18,6 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   setupTablePermissoes();
   fillCombobox();
 
-  ui->lineEditSigla->setInputMask(">AAA");
-
   ui->tablePermissoes->setEnabled(false);
   ui->tablePermissoes->setToolTip("Função indisponível nesta versão!");
   ui->tablePermissoes->resizeColumnsToContents();
@@ -31,6 +29,17 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }
+
+void CadastroUsuario::modificarUsuario() {
+  ui->pushButtonBuscar->hide();
+  ui->pushButtonNovoCad->hide();
+  ui->pushButtonRemover->hide();
+
+  ui->lineEditNome->setDisabled(true);
+  ui->lineEditUser->setDisabled(true);
+  ui->comboBoxLoja->setDisabled(true);
+  ui->comboBoxTipo->setDisabled(true);
+}
 
 void CadastroUsuario::setupTablePermissoes() {
   ui->tablePermissoes->resizeColumnsToContents();
@@ -54,9 +63,7 @@ void CadastroUsuario::setupTablePermissoes() {
 
 bool CadastroUsuario::verifyFields() {
   for (auto const &line : ui->gridLayout_2->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   if (ui->lineEditPasswd->text() != ui->lineEditPasswd_2->text()) {
@@ -75,7 +82,7 @@ void CadastroUsuario::setupMapper() {
   addMapping(ui->lineEditUser, "user");
   addMapping(ui->comboBoxTipo, "tipo");
   addMapping(ui->comboBoxLoja, "idLoja", "currentValue");
-  addMapping(ui->lineEditSigla, "sigla");
+  addMapping(ui->lineEditEmail, "email");
 }
 
 void CadastroUsuario::registerMode() {
@@ -91,26 +98,24 @@ void CadastroUsuario::updateMode() {
 }
 
 bool CadastroUsuario::savingProcedures() {
-  setData("nome", ui->lineEditNome->text());
-  setData("idLoja", ui->comboBoxLoja->getCurrentValue());
-  setData("tipo", ui->comboBoxTipo->currentText());
-  setData("user", ui->lineEditUser->text());
-  setData("sigla", ui->lineEditSigla->text());
-  setData("user", ui->lineEditUser->text());
+  if (not setData("nome", ui->lineEditNome->text())) return false;
+  if (not setData("idLoja", ui->comboBoxLoja->getCurrentValue())) return false;
+  if (not setData("tipo", ui->comboBoxTipo->currentText())) return false;
+  if (not setData("user", ui->lineEditUser->text())) return false;
+  if (not setData("email", ui->lineEditEmail->text())) return false;
+  if (not setData("user", ui->lineEditUser->text())) return false;
 
   if (ui->lineEditPasswd->text() != "********") {
     QSqlQuery query("SELECT PASSWORD('" + ui->lineEditPasswd->text() + "')");
     query.first();
-    setData("passwd", query.value(0));
+    if (not setData("passwd", query.value(0))) return false;
   }
 
-  return isOk;
+  return true;
 }
 
 bool CadastroUsuario::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegister(index)) return false;
 
   ui->lineEditPasswd->setText("********");
   ui->lineEditPasswd_2->setText("********");

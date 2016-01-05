@@ -1,10 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QLabel>
 #include <QMainWindow>
-
-#include "sqltablemodel.h"
 
 namespace Ui {
   class MainWindow;
@@ -27,7 +24,7 @@ class MainWindow : public QMainWindow {
     void on_actionCadastrarProfissional_triggered();
     void on_actionCadastrarUsuario_triggered();
     void on_actionClaro_triggered();
-    void on_actionConfigura_es_triggered();
+    void on_actionConfiguracoes_triggered();
     void on_actionCriarOrcamento_triggered();
     void on_actionEscuro_triggered();
     void on_actionGerenciar_Lojas_triggered();
@@ -40,14 +37,14 @@ class MainWindow : public QMainWindow {
   private:
     // attributes
     Ui::MainWindow *ui;
-    QString defaultStyle;
     QPalette defautPalette;
+    QString defaultStyle;
     QString error;
     QTimer *timer;
     // methods
-    bool event(QEvent *e);
-    void darkTheme();
+    bool event(QEvent *event);
     QVariant settings(const QString &key) const;
+    void darkTheme();
     void setSettings(const QString &key, const QVariant &value) const;
     void timerStatusBar();
 };

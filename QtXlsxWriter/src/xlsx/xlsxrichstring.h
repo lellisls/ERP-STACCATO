@@ -40,7 +40,7 @@ Q_XLSX_EXPORT uint qHash(const RichString &rs, uint seed = 0) Q_DECL_NOTHROW;
 class Q_XLSX_EXPORT RichString {
   public:
     RichString();
-    explicit RichString(const QString text);
+    explicit RichString(const QString &text);
     RichString(const RichString &other);
     ~RichString();
 

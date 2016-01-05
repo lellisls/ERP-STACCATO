@@ -1,8 +1,8 @@
 #ifndef XML_H
 #define XML_H
 
-#include <QStandardItemModel>
 #include <QDomElement>
+#include <QStandardItemModel>
 
 #include "sqltablemodel.h"
 
@@ -94,6 +94,7 @@ class XML {
     // methods
     bool inserirItemSql(SqlTableModel *externalModel);
     bool lerValores(const QStandardItem *item);
+    QStringList getTodosCNPJ();
     void inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel);
     void lerCOFINSProduto(const QStandardItem *child);
     void lerDadosProduto(const QStandardItem *child);
@@ -102,7 +103,6 @@ class XML {
     void lerPISProduto(const QStandardItem *child);
     void lerTotais(const QStandardItem *child);
     void readChild(QDomElement &element, QStandardItem *elementItem);
-    QStringList getTodosCNPJ();
 };
 
 #endif // XML_H

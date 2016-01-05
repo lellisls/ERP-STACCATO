@@ -1,12 +1,12 @@
-#include <QSqlError>
-#include <QMessageBox>
 #include <QDebug>
+#include <QMessageBox>
+#include <QSqlError>
 
 #include "cadastroprofissional.h"
-#include "ui_cadastroprofissional.h"
-#include "usersession.h"
 #include "cepcompleter.h"
 #include "itembox.h"
+#include "ui_cadastroprofissional.h"
+#include "usersession.h"
 
 CadastroProfissional::CadastroProfissional(QWidget *parent)
   : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
@@ -100,9 +100,7 @@ void CadastroProfissional::updateMode() {
 }
 
 bool CadastroProfissional::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegister(index)) return false;
 
   modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = FALSE");
 
@@ -122,39 +120,37 @@ bool CadastroProfissional::viewRegister(const QModelIndex &index) {
 
 bool CadastroProfissional::verifyFields() {
   for (auto const &line : ui->frame->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   return true;
 }
 
 bool CadastroProfissional::savingProcedures() {
-  setData("nome_razao", ui->lineEditProfissional->text());
-  setData("nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData("cpf", ui->lineEditCPF->text());
-  setData("contatoNome", ui->lineEditContatoNome->text());
-  setData("contatoCPF", ui->lineEditContatoCPF->text());
-  setData("contatoApelido", ui->lineEditContatoApelido->text());
-  setData("contatoRG", ui->lineEditContatoRG->text());
-  setData("cnpj", ui->lineEditCNPJ->text());
-  setData("inscEstadual", ui->lineEditInscEstadual->text());
-  setData("tel", ui->lineEditTel_Res->text());
-  setData("telCel", ui->lineEditTel_Cel->text());
-  setData("telCom", ui->lineEditTel_Com->text());
-  setData("nextel", ui->lineEditNextel->text());
-  setData("email", ui->lineEditEmail->text());
-  setData("pfpj", tipoPFPJ);
-  setData("tipoProf", ui->comboBoxTipo->currentText());
+  if (not setData("nome_razao", ui->lineEditProfissional->text())) return false;
+  if (not setData("nomeFantasia", ui->lineEditNomeFantasia->text())) return false;
+  if (not setData("cpf", ui->lineEditCPF->text())) return false;
+  if (not setData("contatoNome", ui->lineEditContatoNome->text())) return false;
+  if (not setData("contatoCPF", ui->lineEditContatoCPF->text())) return false;
+  if (not setData("contatoApelido", ui->lineEditContatoApelido->text())) return false;
+  if (not setData("contatoRG", ui->lineEditContatoRG->text())) return false;
+  if (not setData("cnpj", ui->lineEditCNPJ->text())) return false;
+  if (not setData("inscEstadual", ui->lineEditInscEstadual->text())) return false;
+  if (not setData("tel", ui->lineEditTel_Res->text())) return false;
+  if (not setData("telCel", ui->lineEditTel_Cel->text())) return false;
+  if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
+  if (not setData("nextel", ui->lineEditNextel->text())) return false;
+  if (not setData("email", ui->lineEditEmail->text())) return false;
+  if (not setData("pfpj", tipoPFPJ)) return false;
+  if (not setData("tipoProf", ui->comboBoxTipo->currentText())) return false;
   // Dados bancários
-  setData("banco", ui->lineEditBanco->text());
-  setData("agencia", ui->lineEditAgencia->text());
-  setData("cc", ui->lineEditCC->text());
-  setData("nomeBanco", ui->lineEditNomeBancario->text());
-  setData("cpfBanco", ui->lineEditCPFBancario->text());
+  if (not setData("banco", ui->lineEditBanco->text())) return false;
+  if (not setData("agencia", ui->lineEditAgencia->text())) return false;
+  if (not setData("cc", ui->lineEditCC->text())) return false;
+  if (not setData("nomeBanco", ui->lineEditNomeBancario->text())) return false;
+  if (not setData("cpfBanco", ui->lineEditCPFBancario->text())) return false;
 
-  return isOk;
+  return true;
 }
 
 void CadastroProfissional::on_pushButtonCadastrar_clicked() { save(); }
@@ -222,9 +218,7 @@ void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
 
 bool CadastroProfissional::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   if (not ui->lineEditCEP->isValid()) {
@@ -233,26 +227,24 @@ bool CadastroProfissional::cadastrarEndereco(const bool &isUpdate) {
     return false;
   }
 
-  rowEnd = (isUpdate) ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) {
-    modelEnd.insertRow(rowEnd);
-  }
+  if (not isUpdate) modelEnd.insertRow(rowEnd);
 
-  setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
-  setDataEnd("CEP", ui->lineEditCEP->text());
-  setDataEnd("logradouro", ui->lineEditLogradouro->text());
-  setDataEnd("numero", ui->lineEditNro->text());
-  setDataEnd("complemento", ui->lineEditComp->text());
-  setDataEnd("bairro", ui->lineEditBairro->text());
-  setDataEnd("cidade", ui->lineEditCidade->text());
-  setDataEnd("uf", ui->lineEditUF->text());
-  setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()));
-  setDataEnd("desativado", false);
+  if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
+  if (not setDataEnd("CEP", ui->lineEditCEP->text())) return false;
+  if (not setDataEnd("logradouro", ui->lineEditLogradouro->text())) return false;
+  if (not setDataEnd("numero", ui->lineEditNro->text())) return false;
+  if (not setDataEnd("complemento", ui->lineEditComp->text())) return false;
+  if (not setDataEnd("bairro", ui->lineEditBairro->text())) return false;
+  if (not setDataEnd("cidade", ui->lineEditCidade->text())) return false;
+  if (not setDataEnd("uf", ui->lineEditUF->text())) return false;
+  if (not setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()))) return false;
+  if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
 
-  return isOk;
+  return true;
 }
 
 void CadastroProfissional::on_pushButtonAdicionarEnd_clicked() {
@@ -268,9 +260,7 @@ void CadastroProfissional::on_pushButtonAtualizarEnd_clicked() {
 }
 
 void CadastroProfissional::on_lineEditCEP_textChanged(const QString &cep) {
-  if (not ui->lineEditCEP->isValid()) {
-    return;
-  }
+  if (not ui->lineEditCEP->isValid()) return;
 
   ui->lineEditNro->clear();
   ui->lineEditComp->clear();

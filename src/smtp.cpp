@@ -97,7 +97,11 @@ Smtp::~Smtp() {
   delete t;
   delete socket;
 }
-void Smtp::stateChanged(QAbstractSocket::SocketState socketState) { qDebug() << "stateChanged " << socketState; }
+void Smtp::stateChanged(QAbstractSocket::SocketState socketState) {
+  qDebug() << "stateChanged " << socketState;
+
+  if (socketState == QAbstractSocket::UnconnectedState) emit status("Não conseguiu conectar ao servidor SMTP!");
+}
 
 void Smtp::errorReceived(QAbstractSocket::SocketError socketError) { qDebug() << "error " << socketError; }
 
@@ -169,7 +173,7 @@ void Smtp::readyRead() {
   } else if (state == Auth and responseLine == "250") {
     // Trying AUTH
     qDebug() << "Auth";
-    // TODO: try using AUTH XOAUTH2 as described in the developers.google below
+    // NOTE: try using AUTH XOAUTH2 as described in the developers.google below
     *t << "AUTH LOGIN"
        << "\r\n";
     t->flush();

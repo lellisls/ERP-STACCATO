@@ -22,6 +22,8 @@ class UserConfig : public QDialog {
     void on_pushButtonACBrSaida_clicked();
     void on_pushButtonACBrXML_clicked();
 
+    void on_pushButtonUserFolder_2_clicked();
+
   private:
     Ui::UserConfig *ui;
     QVariant settings(const QString &key) const;

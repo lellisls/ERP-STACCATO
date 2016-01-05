@@ -658,9 +658,6 @@
             </widget>
            </item>
           </layout>
-          <zorder>groupBoxFrete</zorder>
-          <zorder>groupBox_3</zorder>
-          <zorder>groupBoxAlcadas</zorder>
          </widget>
         </widget>
        </item>

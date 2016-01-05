@@ -16,11 +16,10 @@ class RegisterAddressDialog : public RegisterDialog {
     QDataWidgetMapper mapperEnd;
     SqlTableModel modelEnd;
     // methods
-    bool newRegister();
+    bool setDataEnd(const QString &key, const QVariant &value);
     int getCodigoUF(QString uf) const;
-    bool save(const bool &isUpdate = false);
-    void setDataEnd(const QString &key, const QVariant &value);
-    void setDataEnd(const int &row, const QString &key, const QVariant &value);
+    virtual bool newRegister() override;
+    virtual bool save(const bool &isUpdate = false) override;
 };
 
 #endif // REGISTERADDRESSDIALOG_H

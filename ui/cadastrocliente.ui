@@ -416,14 +416,6 @@
                 </widget>
                </item>
               </layout>
-              <zorder>labelCPFContato</zorder>
-              <zorder>lineEditContatoCPF</zorder>
-              <zorder>labelApelido</zorder>
-              <zorder>lineEditContatoApelido</zorder>
-              <zorder>label_1</zorder>
-              <zorder>lineEditContatoRG</zorder>
-              <zorder>labelNome</zorder>
-              <zorder>lineEditContatoNome</zorder>
              </widget>
             </item>
             <item row="2" column="0" colspan="2">

@@ -18,58 +18,37 @@ class CadastroTransportadora : public RegisterAddressDialog {
     void show();
 
   private slots:
-    void on_pushButtonAtualizar_clicked();
-    void on_pushButtonCadastrar_clicked();
-    void on_pushButtonCancelar_clicked();
-    void on_pushButtonNovoCad_clicked();
-    void on_pushButtonRemover_clicked();
-    void on_pushButtonBuscar_clicked();
-    void on_lineEditCNPJ_textEdited(const QString &text);
-    void on_pushButtonAdicionarEnd_clicked();
-    void on_pushButtonAtualizarEnd_clicked();
-    void on_pushButtonEndLimpar_clicked();
-    void on_pushButtonRemoverEnd_clicked();
     void on_checkBoxMostrarInativos_clicked(const bool &checked);
     void on_lineEditCEP_textChanged(const QString &cep);
+    void on_lineEditCNPJ_textEdited(const QString &text);
+    void on_pushButtonAdicionarEnd_clicked();
+    void on_pushButtonAtualizar_clicked();
+    void on_pushButtonAtualizarEnd_clicked();
+    void on_pushButtonBuscar_clicked();
+    void on_pushButtonCadastrar_clicked();
+    void on_pushButtonCancelar_clicked();
+    void on_pushButtonEndLimpar_clicked();
+    void on_pushButtonNovoCad_clicked();
+    void on_pushButtonRemover_clicked();
+    void on_pushButtonRemoverEnd_clicked();
     void on_tableEndereco_clicked(const QModelIndex &index);
-
-  private:
-    /*!
-*\brief Função padrão para verificar campos obrigatórios
-*\return
-*/
-    virtual bool verifyFields();
-    /*!
-* \brief Onde ocorre o model.setData(), baseada nas informações da view.
-*/
-    virtual bool savingProcedures();
-    /*!
-*\brief Limpar os campos da tela
-*/
-    virtual void clearFields();
-    /*!
-*\brief Função onde os mapeamentos são configurados
-*/
-    virtual void setupMapper();
-    /*!
-*\brief Função chamada para atualizar a view, escondendo botão atualizar, por exemplo
-*/
-    virtual void registerMode();
-    /*!
-*\brief Função chamada para atualizar a view, escondendo botão cadastrarm, por exemplo
-*/
-    virtual void updateMode();
 
   private:
     // attributes
     Ui::CadastroTransportadora *ui;
     // methods
     bool cadastrarEndereco(const bool &isUpdate);
+    virtual bool savingProcedures() override;
+    virtual bool verifyFields() override;
+    virtual bool viewRegister(const QModelIndex &index) override;
+    virtual void clearFields() override;
+    virtual void registerMode() override;
+    virtual void setupMapper() override;
+    virtual void updateMode() override;
+    void clearEndereco();
     void novoEndereco();
     void setupTables();
-    void clearEndereco();
     void setupUi();
-    bool viewRegister(const QModelIndex &index);
 };
 
 #endif // CADASTROTRANSPORTADORA_H

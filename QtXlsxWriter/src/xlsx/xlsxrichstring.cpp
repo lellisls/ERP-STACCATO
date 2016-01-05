@@ -53,7 +53,7 @@ RichString::RichString() : d(new RichStringPrivate) {}
 /*!
     Constructs a plain string with the given \a text.
 */
-RichString::RichString(const QString text) : d(new RichStringPrivate) { addFragment(text, Format()); }
+RichString::RichString(const QString &text) : d(new RichStringPrivate) { addFragment(text, Format()); }
 
 /*!
     Constructs a copy of \a other.

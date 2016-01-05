@@ -1,12 +1,12 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QDebug>
 
 #include "cadastrocliente.h"
-#include "ui_cadastrocliente.h"
-#include "cepcompleter.h"
 #include "cadastroprofissional.h"
+#include "cepcompleter.h"
+#include "ui_cadastrocliente.h"
 #include "usersession.h"
 
 CadastroCliente::CadastroCliente(QWidget *parent)
@@ -17,17 +17,10 @@ CadastroCliente::CadastroCliente(QWidget *parent)
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
-  SearchDialog *sdCliente = SearchDialog::cliente(ui->itemBoxCliente);
-  ui->itemBoxCliente->setSearchDialog(sdCliente);
-
-  SearchDialog *sdProfissional = SearchDialog::profissional(this);
-  ui->itemBoxProfissional->setSearchDialog(sdProfissional);
-
-  RegisterDialog *regProfissional = new CadastroProfissional(this);
-  ui->itemBoxProfissional->setRegisterDialog(regProfissional);
-
-  SearchDialog *sdVendedor = SearchDialog::usuario(this);
-  ui->itemBoxVendedor->setSearchDialog(sdVendedor);
+  ui->itemBoxCliente->setSearchDialog(SearchDialog::cliente(this));
+  ui->itemBoxProfissional->setSearchDialog(SearchDialog::profissional(this));
+  ui->itemBoxProfissional->setRegisterDialog(new CadastroProfissional(this));
+  ui->itemBoxVendedor->setSearchDialog(SearchDialog::vendedor(this));
 
   setupTables();
   setupMapper();
@@ -62,42 +55,38 @@ void CadastroCliente::setupTables() {
 }
 
 bool CadastroCliente::verifyFields() {
-  if (modelEnd.rowCount() == 0) {
-    incompleto = true;
-  }
+  if (modelEnd.rowCount() == 0) incompleto = true;
 
   for (auto const &line : ui->frame->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   return true;
 }
 
 bool CadastroCliente::savingProcedures() {
-  setData("nome_razao", ui->lineEditCliente->text());
-  setData("nomeFantasia", ui->lineEditNomeFantasia->text());
-  setData("cpf", ui->lineEditCPF->text());
-  setData("contatoNome", ui->lineEditContatoNome->text());
-  setData("contatoCPF", ui->lineEditContatoCPF->text());
-  setData("contatoApelido", ui->lineEditContatoApelido->text());
-  setData("contatoRG", ui->lineEditContatoRG->text());
-  setData("cnpj", ui->lineEditCNPJ->text());
-  setData("inscEstadual", ui->lineEditInscEstadual->text());
-  setData("dataNasc", ui->dateEdit->date().toString("yyyy-MM-dd"));
-  setData("tel", ui->lineEditTel_Res->text());
-  setData("telCel", ui->lineEditTel_Cel->text());
-  setData("telCom", ui->lineEditTel_Com->text());
-  setData("nextel", ui->lineEditNextel->text());
-  setData("email", ui->lineEditEmail->text());
-  setData("idCadastroRel", ui->itemBoxCliente->value());
-  setData("idProfissionalRel", ui->itemBoxProfissional->value());
-  setData("idUsuarioRel", ui->itemBoxVendedor->value());
-  setData("pfpj", tipoPFPJ);
-  setData("incompleto", incompleto);
+  if (not setData("nome_razao", ui->lineEditCliente->text())) return false;
+  if (not setData("nomeFantasia", ui->lineEditNomeFantasia->text())) return false;
+  if (not setData("cpf", ui->lineEditCPF->text())) return false;
+  if (not setData("contatoNome", ui->lineEditContatoNome->text())) return false;
+  if (not setData("contatoCPF", ui->lineEditContatoCPF->text())) return false;
+  if (not setData("contatoApelido", ui->lineEditContatoApelido->text())) return false;
+  if (not setData("contatoRG", ui->lineEditContatoRG->text())) return false;
+  if (not setData("cnpj", ui->lineEditCNPJ->text())) return false;
+  if (not setData("inscEstadual", ui->lineEditInscEstadual->text())) return false;
+  if (not setData("dataNasc", ui->dateEdit->date().toString("yyyy-MM-dd"))) return false;
+  if (not setData("tel", ui->lineEditTel_Res->text())) return false;
+  if (not setData("telCel", ui->lineEditTel_Cel->text())) return false;
+  if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
+  if (not setData("nextel", ui->lineEditNextel->text())) return false;
+  if (not setData("email", ui->lineEditEmail->text())) return false;
+  if (not setData("idCadastroRel", ui->itemBoxCliente->value())) return false;
+  if (not setData("idProfissionalRel", ui->itemBoxProfissional->value())) return false;
+  if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
+  if (not setData("pfpj", tipoPFPJ)) return false;
+  if (not setData("incompleto", incompleto)) return false;
 
-  return isOk;
+  return true;
 }
 
 void CadastroCliente::clearFields() {
@@ -160,9 +149,7 @@ void CadastroCliente::updateMode() {
 }
 
 bool CadastroCliente::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) {
-    return false;
-  }
+  if (not RegisterDialog::viewRegister(index)) return false;
 
   if (data(primaryKey).toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "idCliente vazio!");
@@ -259,11 +246,9 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
+bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) { // NOTE: pass this to RegisterDialog?
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
-    if (not verifyRequiredField(line)) {
-      return false;
-    }
+    if (not verifyRequiredField(line)) return false;
   }
 
   if (not ui->lineEditCEP->isValid()) {
@@ -274,24 +259,22 @@ bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
 
   rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) {
-    modelEnd.insertRow(rowEnd);
-  }
+  if (not isUpdate) modelEnd.insertRow(rowEnd);
 
-  setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
-  setDataEnd("cep", ui->lineEditCEP->text());
-  setDataEnd("logradouro", ui->lineEditLogradouro->text());
-  setDataEnd("numero", ui->lineEditNro->text());
-  setDataEnd("complemento", ui->lineEditComp->text());
-  setDataEnd("bairro", ui->lineEditBairro->text());
-  setDataEnd("cidade", ui->lineEditCidade->text());
-  setDataEnd("uf", ui->lineEditUF->text());
-  setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()));
-  setDataEnd("desativado", false);
+  if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
+  if (not setDataEnd("cep", ui->lineEditCEP->text())) return false;
+  if (not setDataEnd("logradouro", ui->lineEditLogradouro->text())) return false;
+  if (not setDataEnd("numero", ui->lineEditNro->text())) return false;
+  if (not setDataEnd("complemento", ui->lineEditComp->text())) return false;
+  if (not setDataEnd("bairro", ui->lineEditBairro->text())) return false;
+  if (not setDataEnd("cidade", ui->lineEditCidade->text())) return false;
+  if (not setDataEnd("uf", ui->lineEditUF->text())) return false;
+  if (not setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()))) return false;
+  if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
 
-  return isOk;
+  return true;
 }
 
 void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
@@ -313,9 +296,7 @@ void CadastroCliente::on_pushButtonAtualizarEnd_clicked() {
 }
 
 void CadastroCliente::on_lineEditCEP_textChanged(const QString &cep) {
-  if (not ui->lineEditCEP->isValid()) {
-    return;
-  }
+  if (not ui->lineEditCEP->isValid()) return;
 
   ui->lineEditNro->clear();
   ui->lineEditComp->clear();

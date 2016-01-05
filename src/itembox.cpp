@@ -30,7 +30,7 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
   QLineEdit::resizeEvent(event);
   const QSize size = m_searchButton->minimumSizeHint();
   int x = rect().right();
-  int y = (rect().height() - size.height()) / 2.0;
+  int y = (rect().height() - size.height()) / 2.;
 
   if (m_searchDialog) {
     x -= size.width();
@@ -52,16 +52,12 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
 }
 
 void ItemBox::search() {
-  if (m_searchDialog) {
-    m_searchDialog->show();
-  }
+  if (m_searchDialog) m_searchDialog->show();
 }
 
 void ItemBox::edit() {
   if (m_registerDialog) {
-    if (not m_value.isNull()) {
-      m_registerDialog->viewRegisterById(m_value);
-    }
+    if (not m_value.isNull()) m_registerDialog->viewRegisterById(m_value);
 
     m_registerDialog->show();
   }
@@ -81,16 +77,11 @@ RegisterDialog *ItemBox::registerDialog() { return m_registerDialog; }
 QVariant ItemBox::value() const { return m_value; }
 
 void ItemBox::setValue(const QVariant &value) {
+  if (value.isNull()) return;
+
   m_value = value;
 
-  if (value.isNull()) {
-    setText("");
-    return;
-  }
-
-  if (m_searchDialog) {
-    setText(m_searchDialog->getText(value));
-  }
+  if (m_searchDialog) setText(m_searchDialog->getText(value));
 }
 
 void ItemBox::setReadOnlyItemBox(const bool &readOnly) {
@@ -103,7 +94,7 @@ void ItemBox::setReadOnlyItemBox(const bool &readOnly) {
 }
 
 void ItemBox::clear() {
-  m_value = QVariant();
+  m_value.clear();
 
   QLineEdit::clear();
 }
@@ -116,18 +107,13 @@ void ItemBox::setSearchDialog(SearchDialog *value) {
 void ItemBox::changeItem(const QVariant &value) {
   setValue(value);
 
-  if (m_registerDialog and m_registerDialog->isVisible()) {
-    m_registerDialog->close();
-  }
-
-  if (m_searchDialog and m_searchDialog->isVisible()) {
-    m_searchDialog->close();
-  }
+  if (m_registerDialog) m_registerDialog->close();
+  if (m_searchDialog) m_searchDialog->close();
 }
 
 void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {
-  if (not readOnlyItemBox) {
-    search();
-    event->accept();
-  }
+  if (readOnlyItemBox) return;
+
+  search();
+  event->accept();
 }

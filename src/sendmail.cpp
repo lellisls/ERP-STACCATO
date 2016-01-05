@@ -18,8 +18,8 @@ SendMail::SendMail(QWidget *parent, const QString &text, const QString &arquivo)
 
   ui->lineEditAnexo->setText(arquivo);
 
-  ui->lineEditServidor->setText(settings("User/emailServidor").toString());
-  ui->lineEditPorta->setText(settings("User/emailPorta").toString());
+  ui->lineEditServidor->setText(settings("User/servidorSMTP").toString());
+  ui->lineEditPorta->setText(settings("User/portaSMTP").toString());
   ui->lineEditEmail->setText(settings("User/emailCompra").toString());
   ui->lineEditPasswd->setText(settings("User/emailSenha").toString());
 
@@ -47,8 +47,8 @@ void SendMail::on_pushButtonBuscar_clicked() {
 void SendMail::on_pushButtonEnviar_clicked() {
   progress->show();
 
-  setSettings("User/emailServidor", ui->lineEditServidor->text());
-  setSettings("User/emailPorta", ui->lineEditPorta->text());
+  setSettings("User/servidorSMTP", ui->lineEditServidor->text());
+  setSettings("User/portaSMTP", ui->lineEditPorta->text());
   setSettings("User/emailCompra", ui->lineEditEmail->text());
   setSettings("User/emailSenha", ui->lineEditPasswd->text());
 

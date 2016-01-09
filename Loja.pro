@@ -65,18 +65,21 @@ SOURCES += src/apagaorcamento.cpp \
     src/widgetcompraconfirmar.cpp \
     src/widgetcomprafaturar.cpp \
     src/widgetcompragerar.cpp \
+    src/widgetcomprapendentes.cpp \
+    src/widgetcontapagar.cpp \
+    src/widgetcontareceber.cpp \
     src/widgetestoque.cpp \
     src/widgetlogistica.cpp \
     src/widgetlogisticacoleta.cpp \
     src/widgetlogisticaentrega.cpp \
     src/widgetlogisticarecebimento.cpp \
     src/widgetnfe.cpp \
+    src/widgetnfeentrada.cpp \
+    src/widgetnfesaida.cpp \
     src/widgetorcamento.cpp \
     src/widgetvenda.cpp \
     src/xml.cpp \
-    src/xml_viewer.cpp \
-    src/widgetcontapagar.cpp \
-    src/widgetcontareceber.cpp
+    src/xml_viewer.cpp
 
 HEADERS  += src/apagaorcamento.h \
     src/cadastrarnfe.h \
@@ -131,18 +134,21 @@ HEADERS  += src/apagaorcamento.h \
     src/widgetcompraconfirmar.h \
     src/widgetcomprafaturar.h \
     src/widgetcompragerar.h \
+    src/widgetcomprapendentes.h \
+    src/widgetcontapagar.h \
+    src/widgetcontareceber.h \
     src/widgetestoque.h \
     src/widgetlogistica.h \
     src/widgetlogisticacoleta.h \
     src/widgetlogisticaentrega.h \
     src/widgetlogisticarecebimento.h \
     src/widgetnfe.h \
+    src/widgetnfeentrada.h \
+    src/widgetnfesaida.h \
     src/widgetorcamento.h \
     src/widgetvenda.h \
     src/xml.h \
-    src/xml_viewer.h \
-    src/widgetcontapagar.h \
-    src/widgetcontareceber.h
+    src/xml_viewer.h
 
 FORMS += ui/apagaorcamento.ui \
     ui/cadastrarnfe.ui \
@@ -174,17 +180,20 @@ FORMS += ui/apagaorcamento.ui \
     ui/widgetcompraconfirmar.ui \
     ui/widgetcomprafaturar.ui \
     ui/widgetcompragerar.ui \
+    ui/widgetcomprapendentes.ui \
+    ui/widgetcontapagar.ui \
+    ui/widgetcontareceber.ui \
     ui/widgetestoque.ui \
     ui/widgetlogistica.ui \
     ui/widgetlogisticacoleta.ui \
     ui/widgetlogisticaentrega.ui \
     ui/widgetlogisticarecebimento.ui \
     ui/widgetnfe.ui \
+    ui/widgetnfeentrada.ui \
+    ui/widgetnfesaida.ui \
     ui/widgetorcamento.ui \
     ui/widgetvenda.ui \
-    ui/xml_viewer.ui \
-    ui/widgetcontareceber.ui \
-    ui/widgetcontapagar.ui
+    ui/xml_viewer.ui
 
 CONFIG += c++14
 

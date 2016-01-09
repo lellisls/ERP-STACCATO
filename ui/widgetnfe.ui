@@ -25,127 +25,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_44">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_42">
-         <item row="1" column="0" rowspan="2">
-          <widget class="QGroupBox" name="groupBox_9">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="title">
-            <string>Filtros:</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_43">
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButtonNFeEnviado_3">
-              <property name="text">
-               <string>Enviados</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="radioButtonNFeAutorizado_3">
-              <property name="text">
-               <string>Autorizados</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <spacer name="verticalSpacer_11">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>290</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButtonNFeLimpar_3">
-              <property name="text">
-               <string>Todos</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QCheckBox" name="checkBoxNFeAutorizado_5">
-              <property name="text">
-               <string>ENTRADA</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QCheckBox" name="checkBoxNFeAutorizado_6">
-              <property name="text">
-               <string>SAÍDA</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="labelNfeEntrada">
-           <property name="text">
-            <string>Notas Fiscais</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="TableView" name="tableNfeEntrada">
-           <property name="editTriggers">
-            <set>QAbstractItemView::NoEditTriggers</set>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-           <property name="sortingEnabled">
-            <bool>true</bool>
-           </property>
-           <attribute name="horizontalHeaderCascadingSectionResizes">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="horizontalHeaderStretchLastSection">
-            <bool>false</bool>
-           </attribute>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="labelNFE_4">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Buscar:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="lineEditBuscaNFe_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="pushButtonExibirXML">
-           <property name="text">
-            <string>Exibir XML</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="WidgetNfeEntrada" name="widgetEntrada" native="true"/>
        </item>
       </layout>
      </widget>
@@ -155,120 +35,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_45">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_7">
-         <item row="0" column="0" rowspan="2">
-          <widget class="QGroupBox" name="groupBox_8">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="title">
-            <string>Filtros:</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_15">
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButtonNFeEnviado">
-              <property name="text">
-               <string>Enviados</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="radioButtonNFeAutorizado">
-              <property name="text">
-               <string>Autorizados</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <spacer name="verticalSpacer_8">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>290</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButtonNFeLimpar">
-              <property name="text">
-               <string>Todos</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QCheckBox" name="checkBoxNFeAutorizado_3">
-              <property name="text">
-               <string>ENTRADA</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QCheckBox" name="checkBoxNFeAutorizado_4">
-              <property name="text">
-               <string>SAÍDA</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="labelNfeSaida">
-           <property name="text">
-            <string>Notas Fiscais</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="TableView" name="tableNfeSaida">
-           <property name="editTriggers">
-            <set>QAbstractItemView::NoEditTriggers</set>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-           <property name="sortingEnabled">
-            <bool>true</bool>
-           </property>
-           <attribute name="horizontalHeaderCascadingSectionResizes">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="horizontalHeaderStretchLastSection">
-            <bool>false</bool>
-           </attribute>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelNFE_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Buscar:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="lineEditBuscaNFe">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="WidgetNfeSaida" name="widgetSaida" native="true"/>
        </item>
       </layout>
      </widget>
@@ -278,9 +45,16 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TableView</class>
-   <extends>QTableView</extends>
-   <header>src/tableview.h</header>
+   <class>WidgetNfeSaida</class>
+   <extends>QWidget</extends>
+   <header>src/widgetnfesaida.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetNfeEntrada</class>
+   <extends>QWidget</extends>
+   <header>src/widgetnfeentrada.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

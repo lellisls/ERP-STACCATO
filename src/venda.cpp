@@ -558,6 +558,7 @@ void Venda::registerMode() {
   ui->framePagamentos->show();
   ui->pushButtonGerarExcel->hide();
   ui->pushButtonImprimir->hide();
+  ui->pushButtonCancelamento->hide();
   ui->pushButtonCadastrarPedido->show();
   ui->pushButtonVoltar->show();
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(false);
@@ -573,6 +574,7 @@ void Venda::updateMode() {
   ui->framePagamentos_2->hide();
   ui->pushButtonGerarExcel->show();
   ui->pushButtonImprimir->show();
+  ui->pushButtonCancelamento->show();
   ui->pushButtonCadastrarPedido->hide();
   ui->pushButtonVoltar->hide();
   ui->doubleSpinBoxDescontoGlobal->setReadOnly(true);
@@ -627,6 +629,8 @@ bool Venda::viewRegister(const QModelIndex &index) {
   ui->itemBoxEnderecoFat->setReadOnlyItemBox(true);
   ui->itemBoxProfissional->setReadOnlyItemBox(true);
   ui->itemBoxVendedor->setReadOnlyItemBox(true);
+
+  if (data("status").toString() == "CANCELADO") ui->pushButtonCancelamento->hide();
 
   return true;
 }
@@ -831,6 +835,31 @@ bool Venda::save(const bool &isUpdate) {
   if (not silent) successMessage();
 
   return true;
+}
+
+void Venda::on_pushButtonCancelamento_clicked() {
+  // TODO: copiar de volta para orcamento e remover contas_a_receber (alcada gerente)
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja cancelar?",
+                     QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Sim");
+  msgBox.setButtonText(QMessageBox::No, "Não");
+
+  if (msgBox.exec() == QMessageBox::Yes) {
+    if (model.data(mapper.currentIndex(), "status").toString() != "PENDENTE") {
+      QMessageBox::critical(this, "Erro!", "Status diferente de 'PENDENTE'! Deve fazer estorno/devolução.");
+      return;
+    }
+
+    if (not model.setData(mapper.currentIndex(), "status", "CANCELADO")) return;
+
+    if (not model.submitAll()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando status 'CANCELADO': " + model.lastError().text());
+      return;
+    }
+
+    QMessageBox::information(this, "Aviso!", "Venda cancelada!");
+    close();
+  }
 }
 
 // NOTE: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal

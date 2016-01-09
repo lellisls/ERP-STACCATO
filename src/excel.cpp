@@ -65,6 +65,15 @@ void Excel::gerarExcel() {
     return;
   }
 
+  QFile file(path + "/" + id + ".xlsx");
+
+  if (not file.open(QFile::WriteOnly)) {
+    QMessageBox::critical(parent, "Erro!", "Arquivo bloqueado! Por favor feche o arquivo.");
+    return;
+  }
+
+  file.close();
+
   setQuerys();
 
   QLocale locale;

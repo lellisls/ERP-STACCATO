@@ -59,6 +59,15 @@ void Impressao::print() {
     return;
   }
 
+  QFile file(path + "/" + id + ".pdf");
+
+  if (not file.open(QFile::WriteOnly)) {
+    QMessageBox::critical(parent, "Erro!", "Arquivo bloqueado! Por favor feche o arquivo.");
+    return;
+  }
+
+  file.close();
+
   setQuerys();
 
   QtRPT *report = new QtRPT(this);

@@ -35,7 +35,6 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonAtualizarItem_clicked();
     void on_pushButtonAtualizarOrcamento_clicked();
     void on_pushButtonCadastrarOrcamento_clicked();
-    void on_pushButtonCancelarItem_clicked();
     void on_pushButtonGerarExcel_clicked();
     void on_pushButtonGerarVenda_clicked();
     void on_pushButtonImprimir_clicked();

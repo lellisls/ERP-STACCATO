@@ -507,8 +507,6 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
   close();
 }
 
-void Orcamento::on_pushButtonCancelarItem_clicked() { novoItem(); }
-
 void Orcamento::on_doubleSpinBoxSubTotalLiq_valueChanged(const double &) { calcPrecoGlobalTotal(); }
 
 void Orcamento::on_spinBoxCaixas_valueChanged(const int &caixas) {

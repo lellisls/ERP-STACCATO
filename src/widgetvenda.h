@@ -19,12 +19,14 @@ class WidgetVenda : public QWidget {
 
   private slots:
     void montaFiltro();
-    void on_groupBoxStatusVenda_toggled(const bool &enabled);
-    void on_tableVendas_activated(const QModelIndex &index);
+    void on_groupBoxStatus_toggled(const bool &enabled);
+    void on_table_activated(const QModelIndex &index);
 
   private:
+    // attributes
     Ui::WidgetVenda *ui;
-    SqlTableModel modelVendas;
+    SqlTableModel model;
+    // methods
     void setupTables();
 };
 

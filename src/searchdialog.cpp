@@ -110,7 +110,6 @@ void SearchDialog::showMaximized() {
 
 void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &) {
   sendUpdateMessage();
-  ui->lineEditBusca->clear();
   close();
 }
 
@@ -129,10 +128,6 @@ void SearchDialog::hideColumns(const QStringList &columns) {
 
 void SearchDialog::on_pushButtonSelecionar_clicked() {
   sendUpdateMessage();
-  ui->lineEditBusca->clear();
-  close();
-}
-
   close();
 }
 
@@ -240,8 +235,8 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
                        "descontinuado", "temLote", "observacoes", "codBarras", "qtdPallet", "st", "desativado", "cfop",
                        "ncm", "ncmEx", "atualizarTabelaPreco", "representacao"});
 
-  for (int i = 0; i < sdProd->model.columnCount(); ++i) {
-    if (sdProd->model.record().fieldName(i).endsWith("Upd")) sdProd->ui->tableBusca->setColumnHidden(i, true);
+  for (int column = 0; column < sdProd->model.columnCount(); ++column) {
+    if (sdProd->model.record().fieldName(column).endsWith("Upd")) sdProd->ui->tableBusca->setColumnHidden(column, true);
   }
 
   sdProd->setHeaderData("fornecedor", "Fornecedor");

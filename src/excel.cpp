@@ -127,8 +127,9 @@ void Excel::gerarExcel() {
   xlsx.write("N33", "R$ " + locale.toString(query.value("total").toDouble(), 'f', 2));     // total final
   xlsx.write("B29", query.value("prazoEntrega").toString() + " dias");
 
-  QSqlQuery queryPgt1("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                      id + "' AND tipo LIKE '1%'");
+  QSqlQuery queryPgt1(
+        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+        "' AND tipo LIKE '1%'");
 
   if (not queryPgt1.exec() or not queryPgt1.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 1: " + queryPgt1.lastError().text());
@@ -140,8 +141,9 @@ void Excel::gerarExcel() {
                  (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
                  queryPgt1.value("dataEmissao").toDate().toString("dd-MM-yyyy");
 
-  QSqlQuery queryPgt2("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                      id + "' AND tipo LIKE '2%'");
+  QSqlQuery queryPgt2(
+        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+        "' AND tipo LIKE '2%'");
 
   if (not queryPgt2.exec() or not queryPgt2.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 2: " + queryPgt2.lastError().text());
@@ -155,8 +157,9 @@ void Excel::gerarExcel() {
 
   if (queryPgt2.value("valor") == 0) pgt2 = "";
 
-  QSqlQuery queryPgt3("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                      id + "' AND tipo LIKE '3%'");
+  QSqlQuery queryPgt3(
+        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+        "' AND tipo LIKE '3%'");
 
   if (not queryPgt3.exec() or not queryPgt3.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 3: " + queryPgt3.lastError().text());

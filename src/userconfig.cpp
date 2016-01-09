@@ -83,9 +83,9 @@ QVariant UserConfig::settings(const QString &key) const { return UserSession::ge
 
 void UserConfig::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
-void UserConfig::on_pushButtonUserFolder_2_clicked() {
-  CadastroUsuario *cad = new CadastroUsuario(this);
-  cad->show();
-  cad->viewRegisterById(UserSession::getIdUsuario());
-  cad->modificarUsuario();
+void UserConfig::on_pushButtonAlterarDados_clicked() {
+  CadastroUsuario *usuario = new CadastroUsuario(this);
+  usuario->show();
+  usuario->viewRegisterById(UserSession::getIdUsuario());
+  usuario->modificarUsuario();
 }

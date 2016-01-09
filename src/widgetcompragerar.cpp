@@ -120,7 +120,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   }
 
   if (lista.size() == 0) {
-    QMessageBox::warning(this, "Aviso!", "Nenhum item selecionado!");
+    QMessageBox::critical(this, "Aviso!", "Nenhum item selecionado!");
     QSqlQuery("ROLLBACK").exec();
     return;
   }

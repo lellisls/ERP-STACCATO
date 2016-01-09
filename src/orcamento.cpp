@@ -87,8 +87,6 @@ bool Orcamento::viewRegister(const QModelIndex &index) {
 
   ui->checkBoxRepresentacao->setDisabled(true);
 
-  ui->lineEditOrcamento->setText(data("idOrcamento").toString());
-
   return true;
 }
 
@@ -96,7 +94,6 @@ void Orcamento::novoItem() {
   ui->pushButtonAdicionarItem->show();
   ui->pushButtonAtualizarItem->hide();
   ui->itemBoxProduto->clear();
-  ui->itemBoxProduto->setValue(QVariant());
   ui->tableProdutos->clearSelection();
   ui->tableProdutos->resizeColumnsToContents();
 }
@@ -210,7 +207,7 @@ void Orcamento::updateId() {
 
   int last = 0;
 
-  if (query.last() > 0) {
+  if (query.last()) {
     QString temp = query.value("idOrcamento").toString().mid(id.size());
 
     if (temp.endsWith("R")) temp.remove(temp.size() - 1, 1);
@@ -219,8 +216,10 @@ void Orcamento::updateId() {
   }
 
   id += QString("%1").arg(last + 1, 4, 10, QChar('0'));
-  ui->lineEditOrcamento->setText(ui->checkBoxRepresentacao->isChecked() ? id + "R" : id);
+  id += ui->checkBoxRepresentacao->isChecked() ? "R" : "";
   id += "O";
+
+  ui->lineEditOrcamento->setText(id);
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     if (not modelItem.setData(row, primaryKey, id)) {
@@ -505,6 +504,7 @@ void Orcamento::on_pushButtonGerarVenda_clicked() {
 
   Venda *venda = new Venda(parentWidget());
   venda->fecharOrcamento(ui->lineEditOrcamento->text());
+
   close();
 }
 
@@ -527,8 +527,10 @@ void Orcamento::on_pushButtonApagarOrc_clicked() {
 
 void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
   if (ui->itemBoxProduto->text().isEmpty()) {
+    ui->spinBoxCaixas->setValue(0);
     ui->spinBoxCaixas->setDisabled(true);
     ui->doubleSpinBoxQte->setDisabled(true);
+    ui->doubleSpinBoxDesconto->setValue(0);
     ui->doubleSpinBoxDesconto->setDisabled(true);
     ui->doubleSpinBoxQte->setSingleStep(1.);
     ui->doubleSpinBoxPrecoTotal->clear();
@@ -682,9 +684,8 @@ bool Orcamento::save(const bool &isUpdate) {
   isDirty = false;
 
   QSqlQuery queryOrc;
-  queryOrc.prepare(
-        "SELECT Código FROM view_orcamento WHERE Vendedor = :Vendedor AND Cliente = :Cliente AND Total = :Total "
-        "AND `Data de emissão` LIKE :Data");
+  queryOrc.prepare("SELECT Código FROM view_orcamento WHERE Vendedor = :Vendedor AND Cliente = :Cliente AND `Data` "
+                   "LIKE :Data AND Total = :Total");
   queryOrc.bindValue(":Vendedor", ui->itemBoxVendedor->text());
   queryOrc.bindValue(":Cliente", ui->itemBoxCliente->text());
   queryOrc.bindValue(":Total", ui->doubleSpinBoxTotal->value());

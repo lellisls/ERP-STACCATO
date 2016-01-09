@@ -14,27 +14,28 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
 
   setupTables();
 
-  ui->radioButtonVendLimpar->click();
+  ui->radioButtonTodos->click();
 
   if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
     ui->groupBoxLojas->hide();
   }
 
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    ui->radioButtonVendProprios->click();
+    ui->radioButtonProprios->click();
   }
 
-  connect(ui->radioButtonVendLimpar, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->radioButtonVendProprios, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaPendente, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaIniciado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaEmCompra, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaEmFaturamento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaEmColeta, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaEmRecebimento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaEstoque, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxVendaFinalizado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->lineEditBuscaVendas, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonTodos, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonProprios, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxPendente, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxIniciado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmCompra, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmFaturamento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmColeta, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmRecebimento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEstoque, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxFinalizado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxCancelado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
   connect(ui->comboBoxLojas, &QComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
 
   QSqlQuery query("SELECT * FROM loja WHERE descricao != 'Geral' AND desativado = FALSE");
@@ -54,61 +55,77 @@ WidgetVenda::~WidgetVenda() { delete ui; }
 void WidgetVenda::setupTables() {
   DoubleDelegate *doubledelegate = new DoubleDelegate(this);
 
-  modelVendas.setTable("view_venda");
+  model.setTable("view_venda");
 
-  ui->tableVendas->setModel(new OrcamentoProxyModel(&modelVendas, "Dias restantes", this));
-  ui->tableVendas->setItemDelegateForColumn("Bruto", doubledelegate);
-  ui->tableVendas->setItemDelegateForColumn("Líquido", doubledelegate);
-  ui->tableVendas->setItemDelegateForColumn("Frete", doubledelegate);
-  ui->tableVendas->setItemDelegateForColumn("Total R$", doubledelegate);
-  ui->tableVendas->sortByColumn("Código");
+  ui->table->setModel(new OrcamentoProxyModel(&model, "Dias restantes", this));
+  ui->table->setItemDelegateForColumn("Bruto", doubledelegate);
+  ui->table->setItemDelegateForColumn("Líquido", doubledelegate);
+  ui->table->setItemDelegateForColumn("Frete", doubledelegate);
+  ui->table->setItemDelegateForColumn("Total R$", doubledelegate);
+  ui->table->sortByColumn("Código");
 }
 
 void WidgetVenda::montaFiltro() {
-  QString textoBusca = ui->lineEditBuscaVendas->text();
+  QString sigla = UserSession::getFromLoja("sigla");
 
-  QString filtroBusca = "((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" + textoBusca +
-                        "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+  if (ui->groupBoxLojas->isVisible() and not ui->comboBoxLojas->currentText().isEmpty()) {
+    QSqlQuery query;
+    query.prepare("SELECT sigla FROM loja WHERE descricao = :descricao");
+    query.bindValue(":descricao", ui->comboBoxLojas->currentText());
 
-  const QString loja =
-      ui->groupBoxLojas->isVisible() ? ui->comboBoxLojas->currentText() : UserSession::getFromLoja("loja.descricao");
+    if (not query.exec() or not query.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando sigla da loja: " + query.lastError().text());
+      return;
+    }
 
-  const QString filtro = ui->radioButtonVendLimpar->isChecked()
-                         ? "(Loja LIKE '%" + loja + "')"
-                         : "(Loja LIKE '%" + loja + "') AND Vendedor = '" + UserSession::getNome() + "'";
-  QString filtro2;
+    sigla = query.value("sigla").toString();
+  }
 
-  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+  const QString filtroLoja = "(Código LIKE '%" + sigla + "%')";
+
+  const QString filtroRadio =
+      ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::getNome() + "'";
+
+  QString filtroCheck;
+
+  for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
     if (child->isChecked()) {
-      filtro2 += filtro2.isEmpty() ? "status = '" + child->text().toUpper() + "'"
-                                   : " OR status = '" + child->text().toUpper() + "'";
+      filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'"
+                                           : " OR status = '" + child->text().toUpper() + "'";
     }
   }
 
-  modelVendas.setFilter(filtro + (filtro2.isEmpty() ? "" : " AND (" + filtro2 + ")") +
-                        (textoBusca.isEmpty() ? "" : " AND " + filtroBusca));
+  filtroCheck = filtroCheck.isEmpty() ? "" : " AND (" + filtroCheck + ")";
 
-  ui->tableVendas->resizeColumnsToContents();
+  const QString textoBusca = ui->lineEditBusca->text();
+
+  const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
+                                                     "%') OR (Vendedor LIKE '%" + textoBusca +
+                                                     "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+
+  model.setFilter(filtroLoja + filtroRadio + filtroCheck + filtroBusca);
+
+  ui->table->resizeColumnsToContents();
 }
 
-void WidgetVenda::on_groupBoxStatusVenda_toggled(const bool &enabled) {
-  for (auto const &child : ui->groupBoxStatusVenda->findChildren<QCheckBox *>()) {
+void WidgetVenda::on_groupBoxStatus_toggled(const bool &enabled) {
+  for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
     child->setChecked(enabled);
   }
 }
 
 QString WidgetVenda::updateTables() {
-  if (not modelVendas.select()) return "Erro lendo tabela vendas: " + modelVendas.lastError().text();
+  if (not model.select()) return "Erro lendo tabela vendas: " + model.lastError().text();
 
-  ui->tableVendas->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }
 
-void WidgetVenda::on_tableVendas_activated(const QModelIndex &index) {
+void WidgetVenda::on_table_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
-  vendas->viewRegisterById(modelVendas.data(index.row(), "Código"));
+  vendas->viewRegisterById(model.data(index.row(), "Código"));
 }
 
 // NOTE: verificar como lidar com brinde/reposicao

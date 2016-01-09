@@ -14,18 +14,18 @@ WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   setupTables();
 
-  ui->radioButtonOrcLimpar->click();
+  ui->radioButtonTodos->click();
 
-  connect(ui->radioButtonOrcCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonOrcExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonOrcLimpar, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonOrcProprios, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonOrcValido, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->lineEditBuscaOrcamentos, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonTodos, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonProprios, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonValido, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
 
   if (UserSession::getTipoUsuario() == "VENDEDOR") {
-    ui->radioButtonOrcProprios->click();
-    ui->radioButtonOrcValido->setChecked(true);
+    ui->radioButtonProprios->click();
+    ui->radioButtonValido->setChecked(true);
   }
 
   montaFiltro();
@@ -36,26 +36,26 @@ WidgetOrcamento::~WidgetOrcamento() { delete ui; }
 void WidgetOrcamento::setupTables() {
   DoubleDelegate *doubledelegate = new DoubleDelegate(this);
 
-  modelOrcamento.setTable("view_orcamento");
+  model.setTable("view_orcamento");
 
-  ui->tableOrcamentos->setModel(new OrcamentoProxyModel(&modelOrcamento, "Dias restantes", this));
-  ui->tableOrcamentos->setItemDelegate(doubledelegate);
-  ui->tableOrcamentos->sortByColumn("Código");
+  ui->table->setModel(new OrcamentoProxyModel(&model, "Dias restantes", this));
+  ui->table->setItemDelegate(doubledelegate);
+  ui->table->sortByColumn("Código");
 }
 
 QString WidgetOrcamento::updateTables() {
-  if (not modelOrcamento.select()) {
-    return "Erro lendo tabela orçamento: " + modelOrcamento.lastError().text();
+  if (not model.select()) {
+    return "Erro lendo tabela orçamento: " + model.lastError().text();
   }
 
-  ui->tableOrcamentos->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }
 
-void WidgetOrcamento::on_tableOrcamentos_activated(const QModelIndex &index) {
+void WidgetOrcamento::on_table_activated(const QModelIndex &index) {
   Orcamento *orcamento = new Orcamento(this);
-  orcamento->viewRegisterById(modelOrcamento.data(index.row(), "Código"));
+  orcamento->viewRegisterById(model.data(index.row(), "Código"));
   orcamento->show();
 }
 
@@ -65,23 +65,25 @@ void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
 }
 
 void WidgetOrcamento::montaFiltro() {
-  QString textoBusca = ui->lineEditBuscaOrcamentos->text();
+  const QString filtroLoja = "(Código LIKE '%" + UserSession::getFromLoja("sigla") + "%')";
 
-  QString filtroBusca = "(Código LIKE '%" + UserSession::getFromLoja("sigla") + "%')" +
-                        (textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" +
-                                                textoBusca + "%') OR (Cliente LIKE '%" + textoBusca + "%'))");
+  QString filtroRadio = " AND ";
 
-  QString f2;
+  filtroRadio += ui->radioButtonTodos->isChecked() ? "status != 'CANCELADO'" : "";
+  filtroRadio += ui->radioButtonProprios->isChecked()
+                 ? "Vendedor = '" + UserSession::getNome() + "' AND status != 'CANCELADO'"
+                 : "";
+  filtroRadio += ui->radioButtonValido->isChecked() ? "`Dias restantes` > 0 AND status != 'CANCELADO'" : "";
+  filtroRadio += ui->radioButtonExpirado->isChecked() ? "`Dias restantes` <= 0 AND status != 'CANCELADO'" : "";
+  filtroRadio += ui->radioButtonCancelado->isChecked() ? "status = 'CANCELADO'" : "";
 
-  f2 += ui->radioButtonOrcLimpar->isChecked() ? "status != 'CANCELADO'" : "";
-  f2 += ui->radioButtonOrcProprios->isChecked()
-        ? "Vendedor = '" + UserSession::getNome() + "' AND status != 'CANCELADO'"
-        : "";
-  f2 += ui->radioButtonOrcValido->isChecked() ? "`Dias restantes` > 0 AND status != 'CANCELADO'" : "";
-  f2 += ui->radioButtonOrcExpirado->isChecked() ? "`Dias restantes` <= 0 AND status != 'CANCELADO'" : "";
-  f2 += ui->radioButtonOrcCancelado->isChecked() ? "status = 'CANCELADO'" : "";
+  const QString textoBusca = ui->lineEditBusca->text();
 
-  modelOrcamento.setFilter(textoBusca.isEmpty() ? f2 : filtroBusca + " AND " + f2);
+  const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
+                                                     "%') OR (Vendedor LIKE '%" + textoBusca +
+                                                     "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
 
-  ui->tableOrcamentos->resizeColumnsToContents();
+  model.setFilter(filtroLoja + filtroRadio + filtroBusca);
+
+  ui->table->resizeColumnsToContents();
 }

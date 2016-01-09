@@ -44,7 +44,7 @@
     </widget>
    </item>
    <item row="1" column="1" rowspan="2">
-    <widget class="TableView" name="tableOrcamentos">
+    <widget class="TableView" name="table">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -90,7 +90,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_9">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButtonOrcLimpar">
+       <widget class="QRadioButton" name="radioButtonTodos">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -103,7 +103,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButtonOrcProprios">
+       <widget class="QRadioButton" name="radioButtonProprios">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -116,7 +116,7 @@
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QRadioButton" name="radioButtonOrcExpirado">
+       <widget class="QRadioButton" name="radioButtonExpirado">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -126,7 +126,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QRadioButton" name="radioButtonOrcValido">
+       <widget class="QRadioButton" name="radioButtonValido">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -152,7 +152,7 @@
        </spacer>
       </item>
       <item row="4" column="0">
-       <widget class="QRadioButton" name="radioButtonOrcCancelado">
+       <widget class="QRadioButton" name="radioButtonCancelado">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -178,7 +178,7 @@
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="lineEditBuscaOrcamentos">
+    <widget class="QLineEdit" name="lineEditBusca">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -190,7 +190,7 @@
   <customwidget>
    <class>TableView</class>
    <extends>QTableView</extends>
-   <header location="global">src/tableview.h</header>
+   <header>src/tableview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

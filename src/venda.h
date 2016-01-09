@@ -62,7 +62,6 @@ class Venda : public RegisterDialog {
     void calcPrecoGlobalTotal();
     void calculoSpinBox1() const;
     void calculoSpinBox2() const;
-    void fillTotals();
     void resetarPagamentos();
     void setupTables();
 };

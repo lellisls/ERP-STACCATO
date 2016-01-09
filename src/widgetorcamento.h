@@ -15,19 +15,17 @@ class WidgetOrcamento : public QWidget {
   public:
     explicit WidgetOrcamento(QWidget *parent = 0);
     ~WidgetOrcamento();
-
-  public slots:
     QString updateTables();
 
   private slots:
     void montaFiltro();
     void on_pushButtonCriarOrc_clicked();
-    void on_tableOrcamentos_activated(const QModelIndex &index);
+    void on_table_activated(const QModelIndex &index);
 
   private:
     // attributes
     Ui::WidgetOrcamento *ui;
-    SqlTableModel modelOrcamento;
+    SqlTableModel model;
     // methods
     void setupTables();
 };

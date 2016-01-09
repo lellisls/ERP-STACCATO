@@ -213,53 +213,6 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     return;
   }
 
-  QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", queryOrc.value("idCliente"));
-
-  if (not queryCliente.exec() or not queryCliente.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + queryCliente.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryEndFat;
-  queryEndFat.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
-  queryEndFat.bindValue(":idEndereco", queryOrc.value("idEnderecoFaturamento"));
-
-  if (not queryEndFat.exec() or not queryEndFat.first()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro buscando endereço faturamento do cliente: " + queryEndFat.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryEndEnt;
-  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco= :idEndereco");
-  queryEndEnt.bindValue(":idEndereco", queryOrc.value("idEnderecoEntrega"));
-
-  if (not queryEndEnt.exec() or not queryEndEnt.first()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro buscando endereço entrega do cliente: " + queryEndEnt.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryVendedor;
-  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
-  queryVendedor.bindValue(":idUsuario", queryOrc.value("idUsuario"));
-
-  if (not queryVendedor.exec() or not queryVendedor.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
-    return;
-  }
-
-  QSqlQuery queryProfissional;
-  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
-  queryProfissional.bindValue(":idProfissional", queryOrc.value("idProfissional"));
-
-  if (not queryProfissional.exec() or not queryProfissional.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
-    return;
-  }
-
   modelItem.setFilter("idVenda = '" + idVenda + "'");
 
   while (queryProdutos.next()) {
@@ -268,28 +221,28 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
     if (not modelItem.setData(rowItem, "idVenda", queryProdutos.value("idOrcamento"))) return;
 
-    for (int field = 1, fieldCount = queryProdutos.record().count(); field < fieldCount; ++field) {
-      if (modelItem.fieldIndex(queryProdutos.record().fieldName(field)) != -1 and
-          not modelItem.setData(rowItem, queryProdutos.record().fieldName(field),
-                                queryProdutos.value(queryProdutos.record().fieldName(field)))) {
-        return;
-      }
+    for (int column = 0, columnCount = queryProdutos.record().count(); column < columnCount; ++column) {
+      QString field = queryProdutos.record().fieldName(column);
+
+      if (field == "idVenda") continue;
+      if (modelItem.fieldIndex(field) == -1) continue;
+      if (not modelItem.setData(rowItem, field, queryProdutos.value(field))) return;
     }
 
     if (not modelItem.setData(rowItem, "idVenda", idVenda)) return;
     if (not modelItem.setData(rowItem, "status", "PENDENTE")) return;
   }
 
+  for (int column = 0; column < queryOrc.record().count(); ++column) {
+    QString field = queryOrc.record().fieldName(column);
 
-  for (int field = 1, columnCount = queryOrc.record().count(); field < columnCount; ++field) {
-    if (model.fieldIndex(queryOrc.record().fieldName(field)) != -1 and
-        not model.setData(mapper.currentIndex(), queryOrc.record().fieldName(field), queryOrc.value(field))) {
-      return;
-    }
+    if (field == "idVenda") continue;
+    if (model.fieldIndex(field) == -1) continue;
+    if (not model.setData(mapper.currentIndex(), field, queryOrc.value(column))) return;
   }
 
-  fillTotals();
   if (not model.setData(row, "idVenda", idVenda)) return;
+
   resetarPagamentos();
 
   modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
@@ -301,7 +254,6 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->lineEditVenda->setText(idVenda);
   ui->itemBoxVendedor->setValue(queryOrc.value("idUsuario"));
   ui->itemBoxCliente->setValue(queryOrc.value("idCliente"));
-  ui->dateTimeEdit->setDateTime(queryOrc.value("data").toDateTime());
   ui->itemBoxProfissional->setValue(queryOrc.value("idProfissional"));
   ui->itemBoxEndereco->setValue(queryOrc.value("idEnderecoEntrega"));
   ui->itemBoxEnderecoFat->setValue(queryOrc.value("idEnderecoFaturamento"));
@@ -401,34 +353,6 @@ void Venda::calcPrecoGlobalTotal() {
   resetarPagamentos();
 }
 
-void Venda::fillTotals() { // NOTE: replace this with better code, dont mix model and query
-  QSqlQuery query;
-  query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", ui->lineEditVenda->text());
-
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando orçamento: " + query.lastError().text());
-    return;
-  }
-
-  if (not query.first()) {
-    query.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", ui->lineEditVenda->text());
-
-    if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando venda: " + query.lastError().text());
-      return;
-    }
-  }
-
-  ui->doubleSpinBoxSubTotalBruto->setValue(query.value("subTotalBru").toDouble());
-  ui->doubleSpinBoxSubTotalLiq->setValue(query.value("subTotalLiq").toDouble());
-  ui->doubleSpinBoxFrete->setValue(query.value("frete").toDouble());
-  ui->doubleSpinBoxTotal->setValue(query.value("total").toDouble());
-  ui->doubleSpinBoxDescontoGlobalReais->setValue(query.value("descontoReais").toDouble());
-  ui->doubleSpinBoxDescontoGlobal->setValue(query.value("descontoPorc").toDouble());
-}
-
 void Venda::clearFields() {}
 
 void Venda::setupMapper() {
@@ -443,6 +367,7 @@ void Venda::setupMapper() {
   addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
   addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
   addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
+  addMapping(ui->doubleSpinBoxDescontoGlobalReais, "descontoReais");
   addMapping(ui->doubleSpinBoxFrete, "frete");
   addMapping(ui->doubleSpinBoxTotal, "total");
   addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
@@ -617,8 +542,6 @@ bool Venda::viewRegister(const QModelIndex &index) {
   }
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
-
-  fillTotals();
 
   ui->tableVenda->resizeColumnsToContents();
 
@@ -863,3 +786,5 @@ void Venda::on_pushButtonCancelamento_clicked() {
 }
 
 // NOTE: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
+// TODO: criar um idVenda autoincrement numerico (invisivel) no bd e usar o idVenda atual como valor secundario
+// (visivel), quando o idVenda mudar o id novo continua o mesmo

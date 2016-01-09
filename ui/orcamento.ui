@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>976</width>
+    <width>984</width>
     <height>705</height>
    </rect>
   </property>
@@ -823,22 +823,6 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButtonCancelarItem">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cancelar item atual&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Cancelar</string>
-              </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="pushButtonRemoverItem">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Remover item selecionado&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1319,7 +1303,6 @@
   <tabstop>tableProdutos</tabstop>
   <tabstop>pushButtonAtualizarItem</tabstop>
   <tabstop>pushButtonAdicionarItem</tabstop>
-  <tabstop>pushButtonCancelarItem</tabstop>
   <tabstop>pushButtonRemoverItem</tabstop>
   <tabstop>pushButtonLimparSelecao</tabstop>
   <tabstop>doubleSpinBoxSubTotalBruto</tabstop>

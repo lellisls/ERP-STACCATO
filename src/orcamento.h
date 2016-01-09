@@ -23,6 +23,7 @@ class Orcamento : public RegisterDialog {
     void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
     void on_doubleSpinBoxFrete_valueChanged(const double &);
     void on_doubleSpinBoxPrecoTotal_valueChanged(const double &);
+    void on_doubleSpinBoxQte_editingFinished();
     void on_doubleSpinBoxQte_valueChanged(const double &);
     void on_doubleSpinBoxSubTotalBruto_valueChanged(const double &);
     void on_doubleSpinBoxSubTotalLiq_valueChanged(const double &);

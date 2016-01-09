@@ -52,9 +52,9 @@ void Impressao::print() {
     return;
   }
 
-  QFile file(qApp->applicationDirPath() + (type == Orcamento ? "/orcamento.xml" : "/venda.xml"));
+  QFile modelo(qApp->applicationDirPath() + (type == Orcamento ? "/orcamento.xml" : "/venda.xml"));
 
-  if (not file.exists()) {
+  if (not modelo.exists()) {
     QMessageBox::critical(parent, "Erro!", "XML da impressão não encontrado!");
     return;
   }
@@ -71,7 +71,7 @@ void Impressao::print() {
   setQuerys();
 
   QtRPT *report = new QtRPT(this);
-  report->loadReport(file.fileName());
+  report->loadReport(modelo.fileName());
   report->recordCount << modelItem.rowCount();
   connect(report, &QtRPT::setValue, this, &Impressao::setValue);
   report->printPDF(path + "/" + id + ".pdf");
@@ -209,8 +209,9 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "FormaPagamento1") {
     if (type == Orcamento) return;
 
-    QSqlQuery queryPgt1("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                        id + "' AND tipo LIKE '1%'");
+    QSqlQuery queryPgt1(
+          "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+          "' AND tipo LIKE '1%'");
 
     if (not queryPgt1.exec() or not queryPgt1.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 1: " + queryPgt1.lastError().text());
@@ -226,8 +227,9 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "FormaPagamento2") {
     if (type == Orcamento) return;
 
-    QSqlQuery queryPgt2("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                        id + "' AND tipo LIKE '2%'");
+    QSqlQuery queryPgt2(
+          "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+          "' AND tipo LIKE '2%'");
 
     if (not queryPgt2.exec() or not queryPgt2.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 2: " + queryPgt2.lastError().text());
@@ -245,8 +247,9 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "FormaPagamento3") {
     if (type == Orcamento) return;
 
-    QSqlQuery queryPgt3("SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" +
-                        id + "' AND tipo LIKE '3%'");
+    QSqlQuery queryPgt3(
+          "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+          "' AND tipo LIKE '3%'");
 
     if (not queryPgt3.exec() or not queryPgt3.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 3: " + queryPgt3.lastError().text());

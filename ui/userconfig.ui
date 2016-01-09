@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>498</width>
-    <height>386</height>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -174,7 +174,7 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="3">
-    <widget class="QPushButton" name="pushButtonUserFolder_2">
+    <widget class="QPushButton" name="pushButtonAlterarDados">
      <property name="text">
       <string>Alterar dados do usuário</string>
      </property>

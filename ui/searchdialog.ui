@@ -125,7 +125,7 @@
   <customwidget>
    <class>TableView</class>
    <extends>QTableView</extends>
-   <header location="global">src/tableview.h</header>
+   <header>src/tableview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

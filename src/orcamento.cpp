@@ -63,18 +63,16 @@ void Orcamento::on_tableProdutos_clicked(const QModelIndex &index) {
 }
 
 bool Orcamento::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) return false;
-
-  modelItem.setFilter("idOrcamento = '" + data("idOrcamento").toString() + "'");
+  modelItem.setFilter("idOrcamento = '" + data(index.row(), "idOrcamento").toString() + "'");
 
   if (not modelItem.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela orcamento_has_produto: " + modelItem.lastError().text());
     return false;
   }
 
-  novoItem();
+  if (not RegisterDialog::viewRegister(index)) return false;
 
-  calcPrecoGlobalTotal();
+  novoItem();
 
   if (ui->dateTimeEdit->dateTime().addDays(data("validade").toInt()).date() < QDateTime::currentDateTime().date()) {
     ui->pushButtonGerarVenda->hide();

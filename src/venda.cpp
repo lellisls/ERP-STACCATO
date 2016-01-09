@@ -587,19 +587,19 @@ void Venda::updateMode() {
 }
 
 bool Venda::viewRegister(const QModelIndex &index) {
+  modelItem.setFilter("idVenda = '" + model.data(index.row(), "idVenda").toString() + "'");
+
+  if (not modelItem.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelItem.lastError().text());
+    return false;
+  }
+
   if (not RegisterDialog::viewRegister(index)) return false;
 
   QString idCliente = ui->itemBoxCliente->value().toString();
 
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + idCliente + " AND desativado = FALSE");
   ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + idCliente + " AND desativado = FALSE");
-
-  modelItem.setFilter("idVenda = '" + ui->lineEditVenda->text() + "'");
-
-  if (not modelItem.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelItem.lastError().text());
-    return false;
-  }
 
   modelFluxoCaixa.setFilter("idVenda = '" + ui->lineEditVenda->text() + "'");
 

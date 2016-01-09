@@ -342,6 +342,10 @@ void Orcamento::on_doubleSpinBoxQte_valueChanged(const double &) {
   if (ui->spinBoxCaixas->value() != caixas) ui->spinBoxCaixas->setValue(caixas);
 }
 
+void Orcamento::on_doubleSpinBoxQte_editingFinished() {
+  ui->doubleSpinBoxQte->setValue(ui->spinBoxCaixas->value() * ui->doubleSpinBoxQte->singleStep());
+}
+
 void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
 
 void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }

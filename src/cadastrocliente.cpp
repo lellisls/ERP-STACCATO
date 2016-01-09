@@ -197,8 +197,6 @@ void CadastroCliente::show() {
   adjustSize();
 }
 
-void CadastroCliente::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastroCliente::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroCliente::on_pushButtonNovoCad_clicked() { newRegister(); }

@@ -103,11 +103,6 @@ void InputDialog::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void InputDialog::on_pushButtonCancelar_clicked() {
-  QDialog::reject();
-  close();
-}
-
 void InputDialog::on_dateEditEvento_dateChanged(const QDate &date) {
   if (ui->dateEditProximo->date() < date) ui->dateEditProximo->setDate(date);
 }

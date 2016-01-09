@@ -102,8 +102,6 @@ void CadastroTransportadora::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroTransportadora::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroTransportadora::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastroTransportadora::on_pushButtonBuscar_clicked() {
   SearchDialog *sdTransportadora = SearchDialog::transportadora(this);
   connect(sdTransportadora, &SearchDialog::itemSelected, this, &CadastroTransportadora::viewRegisterById);

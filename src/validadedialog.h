@@ -17,7 +17,6 @@ class ValidadeDialog : public QDialog {
 
   private slots:
     void on_pushButtonSalvar_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_spinBox_valueChanged(const int &dias);
     void on_dateEdit_dateChanged(const QDate &date);
 

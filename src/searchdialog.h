@@ -39,7 +39,6 @@ class SearchDialog : public QDialog {
 
   private slots:
     void on_lineEditBusca_textChanged(const QString &text);
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonSelecionar_clicked();
     void on_radioButtonProdAtivos_toggled(const bool &);
     void on_radioButtonProdDesc_toggled(const bool &);

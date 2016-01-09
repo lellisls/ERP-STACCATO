@@ -33,8 +33,6 @@ void LoginConfig::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void LoginConfig::on_pushButtonCancelar_clicked() { close(); }
-
 QVariant LoginConfig::settings(const QString &key) const { return UserSession::getSettings(key); }
 
 void LoginConfig::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }

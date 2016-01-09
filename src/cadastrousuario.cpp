@@ -141,8 +141,6 @@ void CadastroUsuario::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroUsuario::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroUsuario::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastroUsuario::on_pushButtonBuscar_clicked() {
   SearchDialog *sdUsuario = SearchDialog::usuario(this);
   connect(sdUsuario, &SearchDialog::itemSelected, this, &CadastroUsuario::viewRegisterById);

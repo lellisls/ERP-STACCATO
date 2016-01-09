@@ -20,7 +20,6 @@ class ImportaProdutos : public QDialog {
 
   private slots:
     void on_checkBoxRepresentacao_clicked(const bool &checked);
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonSalvar_clicked();
     void on_tableErro_entered(const QModelIndex &);
     void on_tableProdutos_entered(const QModelIndex &);
@@ -55,6 +54,7 @@ class ImportaProdutos : public QDialog {
     bool verificaSeProdutoJaCadastrado();
     bool verificaTabela(const QSqlRecord &record);
     int buscarCadastrarFornecedor(const QString &fornecedor);
+    virtual void closeEvent(QCloseEvent *event) override;
     void atualizaCamposProduto();
     void atualizaProduto();
     void cadastraFornecedores();

@@ -58,13 +58,6 @@ void ImportarXML::filtrar(const QString &filtro) {
   ui->tableCompra->resizeColumnsToContents();
 }
 
-void ImportarXML::on_pushButtonCancelar_clicked() {
-  QSqlQuery("ROLLBACK").exec();
-
-  QDialog::reject();
-  close();
-}
-
 void ImportarXML::on_pushButtonImportar_clicked() {
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
     modelEstoque.setData(row, "temp", 0);

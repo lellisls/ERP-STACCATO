@@ -144,8 +144,6 @@ void CadastrarNFe::on_pushButtonEnviarNFE_clicked() {
   close();
 }
 
-void CadastrarNFe::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastrarNFe::updateImpostos() {
   // FIXME: fix icms
   //  double icms = 0;

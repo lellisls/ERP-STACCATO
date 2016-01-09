@@ -17,7 +17,6 @@ class UserConfig : public QDialog {
   private slots:
     void on_pushButtonUserFolder_clicked();
     void on_pushButtonSalvar_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonACBrEntrada_clicked();
     void on_pushButtonACBrSaida_clicked();
     void on_pushButtonACBrXML_clicked();

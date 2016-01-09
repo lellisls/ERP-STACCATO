@@ -51,8 +51,6 @@ void ContasAPagar::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void ContasAPagar::on_pushButtonCancelar_clicked() {}
-
 void ContasAPagar::viewConta(const QString &idVenda) {
   this->idVenda = idVenda;
 

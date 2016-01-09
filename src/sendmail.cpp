@@ -60,11 +60,6 @@ void SendMail::on_pushButtonEnviar_clicked() {
                  ui->textEdit->toPlainText(), files);
 }
 
-void SendMail::on_pushButtonCancelar_clicked() {
-  QDialog::reject();
-  close();
-}
-
 void SendMail::mailSent(const QString &status) {
   progress->cancel();
   status == "Message sent" ? successStatus() : failureStatus(status);

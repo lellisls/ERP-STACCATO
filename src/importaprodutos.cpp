@@ -676,11 +676,6 @@ int ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor) {
   return queryFornecedor.value("idFornecedor").toInt();
 }
 
-void ImportaProdutos::on_pushButtonCancelar_clicked() {
-  QSqlQuery("ROLLBACK").exec();
-  close();
-}
-
 void ImportaProdutos::salvar() {
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao salvar os dados: " + model.lastError().text());
@@ -759,6 +754,12 @@ void ImportaProdutos::on_tableErro_entered(const QModelIndex &) { ui->tableErro-
 void ImportaProdutos::on_tabWidget_currentChanged(const int &index) {
   if (index == 0) ui->tableProdutos->resizeColumnsToContents();
   if (index == 1) ui->tableErro->resizeColumnsToContents();
+}
+
+void ImportaProdutos::closeEvent(QCloseEvent *event) {
+  QSqlQuery("ROLLBACK").exec();
+
+  QDialog::closeEvent(event);
 }
 
 // NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo

@@ -130,8 +130,6 @@ void CadastroLoja::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroLoja::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroLoja::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastroLoja::on_pushButtonBuscar_clicked() {
   SearchDialog *sdLoja = SearchDialog::loja(this);
   connect(sdLoja, &SearchDialog::itemSelected, this, &CadastroLoja::viewRegisterById);

@@ -1308,9 +1308,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCancelar">
        <property name="text">
-        <string>Cancelar</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -1366,7 +1364,6 @@
   <tabstop>pushButtonCadastrarPedido</tabstop>
   <tabstop>pushButtonImprimir</tabstop>
   <tabstop>pushButtonVoltar</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

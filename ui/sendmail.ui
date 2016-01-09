@@ -146,13 +146,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonCancelar">
-           <property name="text">
-            <string>Cancelar</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -169,7 +162,6 @@
   <tabstop>lineEditAnexo</tabstop>
   <tabstop>pushButtonBuscar</tabstop>
   <tabstop>textEdit</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

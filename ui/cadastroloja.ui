@@ -722,13 +722,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCancelar">
-       <property name="text">
-        <string>Cancelar</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -788,7 +781,6 @@
   <tabstop>pushButtonBuscar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

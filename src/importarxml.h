@@ -21,7 +21,6 @@ class ImportarXML : public QDialog {
     void filtrar(const QString &filtro);
 
   private slots:
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonImportar_clicked();
     void on_pushButtonProcurar_clicked();
     void on_tableEstoque_clicked(const QModelIndex &index);

@@ -26,7 +26,6 @@ class CadastroFornecedor : public RegisterAddressDialog {
     void on_pushButtonAtualizarEnd_clicked();
     void on_pushButtonBuscar_clicked();
     void on_pushButtonCadastrar_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void on_pushButtonRemoverEnd_clicked();

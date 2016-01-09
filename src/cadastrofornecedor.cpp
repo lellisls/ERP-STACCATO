@@ -155,8 +155,6 @@ void CadastroFornecedor::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroFornecedor::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroFornecedor::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
         validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");

@@ -17,7 +17,6 @@ class SendMail : public QDialog {
 
   private slots:
     void on_pushButtonBuscar_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonEnviar_clicked();
     void mailSent(const QString &status);
 

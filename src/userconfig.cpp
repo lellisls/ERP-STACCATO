@@ -79,12 +79,6 @@ void UserConfig::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void UserConfig::on_pushButtonCancelar_clicked() {
-  QDialog::reject();
-
-  close();
-}
-
 QVariant UserConfig::settings(const QString &key) const { return UserSession::getSettings(key); }
 
 void UserConfig::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }

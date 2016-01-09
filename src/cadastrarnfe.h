@@ -19,7 +19,6 @@ class CadastrarNFe : public QDialog {
     void prepararNFe(const QList<int> &items);
 
   private slots:
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonEnviarNFE_clicked();
     void on_pushButtonGerarNFE_clicked();
     void on_tableItens_activated(const QModelIndex &);

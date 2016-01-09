@@ -18,7 +18,6 @@ class EntregasCliente : public QDialog {
     void viewEntrega(const QString &idVenda);
 
   private slots:
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonNFe_clicked();
 
   private:

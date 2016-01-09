@@ -16,7 +16,6 @@ class LoginConfig : public QDialog {
 
   private slots:
     void on_pushButtonSalvar_clicked();
-    void on_pushButtonCancelar_clicked();
 
   private:
     Ui::LoginConfig *ui;

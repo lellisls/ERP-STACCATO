@@ -76,8 +76,6 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
   nfe->show();
 }
 
-void EntregasCliente::on_pushButtonCancelar_clicked() { close(); }
-
 void EntregasCliente::viewEntrega(const QString &idVenda) {
   this->idVenda = idVenda;
 

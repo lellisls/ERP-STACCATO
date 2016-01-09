@@ -1714,25 +1714,6 @@ color: rgb(0, 0, 0);</string>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCancelar">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Cancelar</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="verticalSpacer">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1812,7 +1793,6 @@ color: rgb(0, 0, 0);</string>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonNovoCad</tabstop>
   <tabstop>pushButtonRemover</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources>
   <include location="../qrs/resources.qrc"/>

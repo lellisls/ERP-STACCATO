@@ -40,8 +40,6 @@ void ContasAReceber::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void ContasAReceber::on_pushButtonCancelar_clicked() { close(); }
-
 void ContasAReceber::viewConta(const QString &idVenda) {
   this->idVenda = idVenda;
 

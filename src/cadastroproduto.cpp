@@ -201,8 +201,6 @@ void CadastroProduto::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroProduto::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroProduto::on_pushButtonCancelar_clicked() { close(); }
-
 void CadastroProduto::show() {
   QWidget::show();
   adjustSize();

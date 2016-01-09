@@ -448,8 +448,6 @@ void Venda::setupMapper() {
   addMapping(ui->textEdit, "observacao");
 }
 
-void Venda::on_pushButtonCancelar_clicked() { close(); }
-
 void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
 
 void Venda::calculoSpinBox1() const {

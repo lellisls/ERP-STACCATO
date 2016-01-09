@@ -133,8 +133,6 @@ void SearchDialog::on_pushButtonSelecionar_clicked() {
   close();
 }
 
-void SearchDialog::on_pushButtonCancelar_clicked() {
-  ui->lineEditBusca->clear();
   close();
 }
 

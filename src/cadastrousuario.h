@@ -23,7 +23,6 @@ class CadastroUsuario : public RegisterDialog {
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonBuscar_clicked();
     void on_pushButtonCadastrar_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_pushButtonNovoCad_clicked();
     void on_pushButtonRemover_clicked();
     void setupTablePermissoes();

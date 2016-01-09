@@ -12,9 +12,6 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDia
   setWindowTitle("ERP Login");
   setWindowModality(Qt::WindowModal);
 
-  ui->buttonBox->button(QDialogButtonBox::Ok)->setText("Login");
-  ui->buttonBox->button(QDialogButtonBox::Cancel)->setText("Cancelar");
-
   ui->lineEditUser->setFocus();
 
   if (settingsContains("User/lastuser")) {
@@ -36,14 +33,6 @@ void LoginDialog::readSettings() {
   port = settings("Login/port").toString();
   homologacao = settings("Login/homologacao").toBool();
 }
-
-void LoginDialog::on_buttonBox_accepted() {
-  verify();
-
-  setSettings("User/lastuser", ui->lineEditUser->text());
-}
-
-void LoginDialog::on_buttonBox_rejected() { reject(); }
 
 void LoginDialog::verify() {
   if (not dbConnect()) return;
@@ -145,4 +134,10 @@ bool LoginDialog::dbConnect() {
   }
 
   return true;
+}
+
+void LoginDialog::on_pushButtonLogin_clicked() {
+  verify();
+
+  setSettings("User/lastuser", ui->lineEditUser->text());
 }

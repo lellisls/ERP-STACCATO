@@ -180,22 +180,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCancelar">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Cancelar edição/cadastro e fechar tela de orçamento&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Cancelar</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -1344,7 +1328,6 @@
   <tabstop>pushButtonCadastrarOrcamento</tabstop>
   <tabstop>pushButtonAtualizarOrcamento</tabstop>
   <tabstop>pushButtonImprimir</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

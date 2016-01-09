@@ -24,7 +24,6 @@ class InputDialog : public QDialog {
 
   private slots:
     void on_pushButtonSalvar_clicked();
-    void on_pushButtonCancelar_clicked();
     void on_dateEditEvento_dateChanged(const QDate &date);
 
   private:

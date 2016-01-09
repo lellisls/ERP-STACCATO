@@ -17,9 +17,8 @@ class LoginDialog : public QDialog {
     void readSettings();
 
   private slots:
-    void on_buttonBox_accepted();
-    void on_buttonBox_rejected();
-    void on_pushButtonConfig_clicked();
+    void on_pushButtonConfig_clicked();    
+    void on_pushButtonLogin_clicked();
 
   private:
     // attributes

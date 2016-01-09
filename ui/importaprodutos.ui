@@ -79,13 +79,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="pushButtonCancelar">
-       <property name="text">
-        <string>Cancelar</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="0">
       <widget class="QCheckBox" name="checkBoxRepresentacao">
        <property name="text">
@@ -289,7 +282,6 @@
  </customwidgets>
  <tabstops>
   <tabstop>pushButtonSalvar</tabstop>
-  <tabstop>pushButtonCancelar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

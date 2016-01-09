@@ -161,7 +161,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     QString precoDesc =
         desc > 0.01 ? " (-" + locale.toString(porc, 'f', 2) + "% R$ " + locale.toString(prcUn - desc, 'f', 2) + ")"
                     : "";
-    QString precoDescNeg = locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
+    QString precoDescNeg = "R$ " + locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
 
     paramValue = porc < 0 ? precoDescNeg : preco + precoDesc;
   }
@@ -177,7 +177,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     QString total = "R$ " + locale.toString(modelItem.data(recNo, "parcial").toDouble(), 'f', 2);
     QString totalDesc =
         desc > 0.01 ? " (R$ " + locale.toString(modelItem.data(recNo, "total").toDouble(), 'f', 2) + ")" : "";
-    QString totalDescNeg = locale.toString(modelItem.data(recNo, "parcialDesc").toDouble(), 'f', 2);
+    QString totalDescNeg = "R$ " + locale.toString(modelItem.data(recNo, "parcialDesc").toDouble(), 'f', 2);
 
     paramValue = porc < 0 ? totalDescNeg : total + totalDesc;
   }

@@ -189,14 +189,14 @@ void Excel::gerarExcel() {
     QString precoDesc =
         desc > 0.01 ? " (-" + locale.toString(porc, 'f', 2) + "% R$ " + locale.toString(prcUn - desc, 'f', 2) + ")"
                     : "";
-    QString precoDescNeg = locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
+    QString precoDescNeg = "R$ " + locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
     xlsx.write("K" + QString::number(12 + row), porc < 0 ? precoDescNeg : preco + precoDesc);
     xlsx.write("L" + QString::number(12 + row), modelItem.data(row, "quant"));
     xlsx.write("M" + QString::number(12 + row), modelItem.data(row, "un"));
     QString total = "R$ " + locale.toString(modelItem.data(row, "parcial").toDouble(), 'f', 2);
     QString totalDesc =
         desc > 0.01 ? " (R$ " + locale.toString(modelItem.data(row, "parcialDesc").toDouble(), 'f', 2) + ")" : "";
-    QString totalDescNeg = locale.toString(modelItem.data(row, "parcialDesc").toDouble(), 'f', 2);
+    QString totalDescNeg = "R$ " + locale.toString(modelItem.data(row, "parcialDesc").toDouble(), 'f', 2);
     xlsx.write("N" + QString::number(12 + row), porc < 0 ? totalDescNeg : total + totalDesc);
 
     if (desc > 0.01) xlsx.setColumnWidth(11, 28);

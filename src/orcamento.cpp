@@ -516,7 +516,9 @@ void Orcamento::on_spinBoxCaixas_valueChanged(const int &caixas) {
 
   if (ui->doubleSpinBoxQte->value() != quant) ui->doubleSpinBoxQte->setValue(quant);
 
+  isBlockedDesconto = true;
   calcPrecoItemTotal();
+  isBlockedDesconto = false;
 }
 
 void Orcamento::on_pushButtonApagarOrc_clicked() {

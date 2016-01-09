@@ -220,6 +220,7 @@ void Orcamento::updateId() {
 
   id += QString("%1").arg(last + 1, 4, 10, QChar('0'));
   ui->lineEditOrcamento->setText(ui->checkBoxRepresentacao->isChecked() ? id + "R" : id);
+  id += "O";
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
     if (not modelItem.setData(row, primaryKey, id)) {

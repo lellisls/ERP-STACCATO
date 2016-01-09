@@ -189,11 +189,11 @@ void Venda::resetarPagamentos() {
 }
 
 void Venda::fecharOrcamento(const QString &idOrcamento) {
+  QString idVenda = idOrcamento.endsWith("O") ? idOrcamento.left(idOrcamento.size() - 1) : idOrcamento;
+
   const int row = model.rowCount();
   model.insertRow(row);
   mapper.toLast();
-
-  ui->lineEditVenda->setText(idOrcamento);
 
   QSqlQuery queryProdutos;
   queryProdutos.prepare("SELECT * FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento");
@@ -260,7 +260,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     return;
   }
 
-  modelItem.setFilter("idVenda = '" + idOrcamento + "'");
+  modelItem.setFilter("idVenda = '" + idVenda + "'");
 
   while (queryProdutos.next()) {
     const int rowItem = modelItem.rowCount();
@@ -276,10 +276,10 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
       }
     }
 
+    if (not modelItem.setData(rowItem, "idVenda", idVenda)) return;
     if (not modelItem.setData(rowItem, "status", "PENDENTE")) return;
   }
 
-  if (not model.setData(row, "idVenda", idOrcamento)) return;
 
   for (int field = 1, columnCount = queryOrc.record().count(); field < columnCount; ++field) {
     if (model.fieldIndex(queryOrc.record().fieldName(field)) != -1 and
@@ -289,15 +289,16 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   }
 
   fillTotals();
+  if (not model.setData(row, "idVenda", idVenda)) return;
   resetarPagamentos();
 
-  modelFluxoCaixa.setFilter("idVenda = '" + idOrcamento + "'");
+  modelFluxoCaixa.setFilter("idVenda = '" + idVenda + "'");
   ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + queryOrc.value("idCliente").toString() +
                                                  " AND desativado = FALSE");
   ui->itemBoxEnderecoFat->searchDialog()->setFilter("idCliente = " + queryOrc.value("idCliente").toString() +
                                                     " AND desativado = FALSE");
 
-  ui->lineEditVenda->setText(queryOrc.value("idOrcamento").toString());
+  ui->lineEditVenda->setText(idVenda);
   ui->itemBoxVendedor->setValue(queryOrc.value("idUsuario"));
   ui->itemBoxCliente->setValue(queryOrc.value("idCliente"));
   ui->dateTimeEdit->setDateTime(queryOrc.value("data").toDateTime());
@@ -632,7 +633,7 @@ bool Venda::viewRegister(const QModelIndex &index) {
 
 void Venda::on_pushButtonVoltar_clicked() {
   Orcamento *orcamento = new Orcamento(parentWidget());
-  orcamento->viewRegisterById(ui->lineEditVenda->text());
+  orcamento->viewRegisterById(ui->lineEditVenda->text() + "O");
   orcamento->show();
 
   isDirty = false;
@@ -804,16 +805,16 @@ bool Venda::save(const bool &isUpdate) {
 
   QSqlQuery query;
 
-  query.prepare("DELETE FROM orcamento_has_produto WHERE idOrcamento = :idVenda");
-  query.bindValue(":idVenda", ui->lineEditVenda->text());
+  query.prepare("DELETE FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento");
+  query.bindValue(":idOrcamento", ui->lineEditVenda->text() + "O");
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro deletando itens no orçamento_has_produto: " + query.lastError().text());
     return false;
   }
 
-  query.prepare("DELETE FROM orcamento WHERE idOrcamento = :idVenda");
-  query.bindValue(":idVenda", ui->lineEditVenda->text());
+  query.prepare("DELETE FROM orcamento WHERE idOrcamento = :idOrcamento");
+  query.bindValue(":idOrcamento", ui->lineEditVenda->text() + "O");
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro deletando orçamento: " + query.lastError().text());

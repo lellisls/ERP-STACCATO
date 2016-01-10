@@ -211,6 +211,7 @@ void Orcamento::updateId() {
     QString temp = query.value("idOrcamento").toString().mid(id.size());
 
     if (temp.endsWith("R")) temp.remove(temp.size() - 1, 1);
+    if (temp.endsWith("O")) temp.remove(temp.size() - 1, 1);
 
     last = temp.toInt();
   }

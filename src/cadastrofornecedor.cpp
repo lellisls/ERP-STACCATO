@@ -236,7 +236,7 @@ void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
 bool CadastroFornecedor::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) return false;
 
-  modelEnd.setFilter("idFornecedor = " + data(primaryKey).toString() + " AND desativado = FALSE");
+  modelEnd.setFilter("idFornecedor = " + data("idFornecedor").toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço do fornecedor: " + modelEnd.lastError().text());

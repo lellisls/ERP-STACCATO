@@ -72,6 +72,7 @@ class Orcamento : public RegisterDialog {
     virtual void clearFields() override;
     virtual void registerMode() override;
     virtual void setupMapper() override;
+    virtual void successMessage() override;
     virtual void updateMode() override;
     void adicionarItem();
     void atualizarItem();

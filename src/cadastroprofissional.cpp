@@ -102,7 +102,7 @@ void CadastroProfissional::updateMode() {
 bool CadastroProfissional::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) return false;
 
-  modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + " AND desativado = FALSE");
+  modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço profissional: " + modelEnd.lastError().text());
@@ -292,7 +292,8 @@ void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text)
 }
 
 void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool &checked) {
-  modelEnd.setFilter("idProfissional = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
+  modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() +
+                     (checked ? "" : " AND desativado = FALSE"));
 }
 
 void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {

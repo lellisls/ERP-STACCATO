@@ -151,22 +151,22 @@ void CadastroCliente::updateMode() {
 bool CadastroCliente::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) return false;
 
-  if (data(primaryKey).toString().isEmpty()) {
+  if (data("idCliente").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "idCliente vazio!");
     return false;
   }
 
-  modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + " AND desativado = FALSE");
+  modelEnd.setFilter("idCliente = " + data("idCliente").toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço do cliente: " + modelEnd.lastError().text());
   }
 
-  ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data(primaryKey).toString() + ")");
+  ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data("idCliente").toString() + ")");
 
   QSqlQuery query;
-  query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM cliente WHERE idCadastroRel = :primaryKey");
-  query.bindValue(":primaryKey", data(primaryKey));
+  query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM cliente WHERE idCadastroRel = :idCadastroRel");
+  query.bindValue(":idCadastroRel", data("idCliente"));
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro na query cliente: " + query.lastError().text());
@@ -358,7 +358,7 @@ void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
 }
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool &checked) {
-  modelEnd.setFilter("idCliente = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
+  modelEnd.setFilter("idCliente = " + data("idCliente").toString() + (checked ? "" : " AND desativado = FALSE"));
 }
 
 void CadastroCliente::on_pushButtonRemoverEnd_clicked() {

@@ -1,23 +1,16 @@
-#include <QDesktopServices>
-#include <QDir>
-#include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QSqlQuery>
 #include <QSqlRecord>
 
-#include "cadastrarnfe.h"
 #include "cadastrocliente.h"
 #include "checkboxdelegate.h"
 #include "doubledelegate.h"
 #include "excel.h"
 #include "impressao.h"
 #include "orcamento.h"
-#include "qtrpt.h"
 #include "ui_venda.h"
 #include "usersession.h"
 #include "venda.h"
-#include "xlsxdocument.h"
 
 Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
@@ -672,11 +665,7 @@ void Venda::on_pushButtonImprimir_clicked() {
   impressao.print();
 }
 
-void Venda::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!");
-
-  close();
-}
+void Venda::successMessage() { QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!"); }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
   Excel excel(ui->lineEditVenda->text(), this);
@@ -786,5 +775,3 @@ void Venda::on_pushButtonCancelamento_clicked() {
 }
 
 // NOTE: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
-// TODO: criar um idVenda autoincrement numerico (invisivel) no bd e usar o idVenda atual como valor secundario
-// (visivel), quando o idVenda mudar o id novo continua o mesmo

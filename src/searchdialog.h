@@ -58,9 +58,6 @@ class SearchDialog : public QDialog {
     QVector<QPair<QString, QString>> headerData;
     SqlTableModel model;
     // methods
-    QString getFilter() const;
-    QString getPrimaryKey() const;
-    QStringList getTextKeys() const;
     void hideColumns(const QStringList &columns);
     void montarFiltroAtivoDesc(const bool &ativo);
     void sendUpdateMessage();

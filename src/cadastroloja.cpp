@@ -180,7 +180,7 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
 }
 
 void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool &checked) {
-  modelEnd.setFilter("idLoja = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
+  modelEnd.setFilter("idLoja = " + data("idLoja").toString() + (checked ? "" : " AND desativado = FALSE"));
   ui->tableEndereco->resizeColumnsToContents();
 }
 

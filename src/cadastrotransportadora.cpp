@@ -152,7 +152,8 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
 }
 
 void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool &checked) {
-  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + (checked ? "" : " AND desativado = FALSE"));
+  modelEnd.setFilter("idTransportadora = " + data("idTransportadora").toString() +
+                     (checked ? "" : " AND desativado = FALSE"));
 }
 
 bool CadastroTransportadora::cadastrarEndereco(const bool &isUpdate) {
@@ -244,7 +245,7 @@ void CadastroTransportadora::setupUi() {
 bool CadastroTransportadora::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) return false;
 
-  modelEnd.setFilter("idTransportadora = " + data(primaryKey).toString() + " AND desativado = FALSE");
+  modelEnd.setFilter("idTransportadora = " + data("idTransportadora").toString() + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço transportadora: " + modelEnd.lastError().text());

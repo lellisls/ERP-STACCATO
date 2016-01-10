@@ -1,9 +1,5 @@
-#include <QDesktopServices>
-#include <QDir>
-#include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QSqlQuery>
 
 #include "apagaorcamento.h"
 #include "cadastrocliente.h"
@@ -11,11 +7,9 @@
 #include "excel.h"
 #include "impressao.h"
 #include "orcamento.h"
-#include "qtrpt.h"
 #include "ui_orcamento.h"
 #include "usersession.h"
 #include "venda.h"
-#include "xlsxdocument.h"
 
 Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
   ui->setupUi(this);
@@ -223,7 +217,7 @@ void Orcamento::updateId() {
   ui->lineEditOrcamento->setText(id);
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    if (not modelItem.setData(row, primaryKey, id)) {
+    if (not modelItem.setData(row, "idOrcamento", id)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando id nos itens: " + modelItem.lastError().text());
       return;
     }
@@ -452,7 +446,6 @@ void Orcamento::adicionarItem() {
 
   if (not isItemUpdate) modelItem.insertRow(row);
 
-  modelItem.setData(row, "idOrcamento", ui->lineEditOrcamento->text());
   modelItem.setData(row, "idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
   modelItem.setData(row, "idProduto", ui->itemBoxProduto->value().toInt());
   modelItem.setData(row, "item", row);
@@ -669,11 +662,6 @@ bool Orcamento::save(const bool &isUpdate) {
     return false;
   }
 
-  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    modelItem.setData(row, primaryKey, ui->lineEditOrcamento->text());
-    modelItem.setData(row, "idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
-  }
-
   if (not modelItem.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro ao adicionar um item ao orçamento: " + modelItem.lastError().text());
     QSqlQuery("ROLLBACK").exec();
@@ -684,23 +672,10 @@ bool Orcamento::save(const bool &isUpdate) {
 
   isDirty = false;
 
-  QSqlQuery queryOrc;
-  queryOrc.prepare("SELECT Código FROM view_orcamento WHERE Vendedor = :Vendedor AND Cliente = :Cliente AND `Data` "
-                   "LIKE :Data AND Total = :Total");
-  queryOrc.bindValue(":Vendedor", ui->itemBoxVendedor->text());
-  queryOrc.bindValue(":Cliente", ui->itemBoxCliente->text());
-  queryOrc.bindValue(":Total", ui->doubleSpinBoxTotal->value());
-  queryOrc.bindValue(":Data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm%"));
-
-  if (not queryOrc.exec() or not queryOrc.first()) {
-    QMessageBox::critical(this, "Erro!", "Não encontrou orçamento!");
-    return false;
-  }
-
-  viewRegisterById(queryOrc.value("Código"));
+  viewRegisterById(ui->lineEditOrcamento->text());
   sendUpdateMessage();
 
-  if (not silent) QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!");
+  if (not silent) successMessage();
 
   return true;
 }
@@ -860,3 +835,8 @@ void Orcamento::on_doubleSpinBoxSubTotalBruto_valueChanged(const double &) {
                                    ? ui->doubleSpinBoxFrete->value()
                                    : qMax(ui->doubleSpinBoxSubTotalBruto->value() * porcFrete / 100., minimoFrete));
 }
+
+void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!"); }
+
+// NOTE: replicar nao copia desconto individual de cada produto (talvez nao deva?)
+// TODO: verificar todos os QSqlQuery.exec

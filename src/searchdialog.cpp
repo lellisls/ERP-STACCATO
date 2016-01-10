@@ -113,8 +113,6 @@ void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &) {
   close();
 }
 
-QString SearchDialog::getFilter() const { return filter; }
-
 void SearchDialog::setFilter(const QString &value) {
   filter = value;
   model.setFilter(filter);
@@ -131,11 +129,7 @@ void SearchDialog::on_pushButtonSelecionar_clicked() {
   close();
 }
 
-QStringList SearchDialog::getTextKeys() const { return textKeys; }
-
 void SearchDialog::setTextKeys(const QStringList &value) { textKeys = value; }
-
-QString SearchDialog::getPrimaryKey() const { return primaryKey; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 

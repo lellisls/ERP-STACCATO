@@ -90,7 +90,7 @@ void ImportaProdutos::importarTabela() {
   bool canceled = false;
 
   QSqlQuery("SET AUTOCOMMIT=0").exec();
-  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   db = QSqlDatabase::contains("Excel Connection") ? QSqlDatabase::database("Excel Connection")

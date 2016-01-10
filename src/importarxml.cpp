@@ -99,7 +99,7 @@ void ImportarXML::on_pushButtonImportar_clicked() {
 }
 
 void ImportarXML::on_pushButtonProcurar_clicked() {
-  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   const QString filePath = QFileDialog::getOpenFileName(this, "Arquivo XML", QDir::currentPath(), "XML (*.xml)");

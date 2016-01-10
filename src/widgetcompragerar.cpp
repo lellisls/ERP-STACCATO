@@ -96,7 +96,7 @@ QString WidgetCompraGerar::updateTables() {
 void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   // NOTE: refactor this function into smaller functions
 
-  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   QList<int> lista;

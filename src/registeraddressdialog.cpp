@@ -39,7 +39,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
     return false;
   }
 
-  QSqlQuery("SET SESSION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   row = isUpdate ? mapper.currentIndex() : model.rowCount();

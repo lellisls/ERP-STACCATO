@@ -368,7 +368,10 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
   msgBox.setButtonText(QMessageBox::No, "Não");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    setDataEnd("desativado", true);
+    if (not setDataEnd("desativado", true)) {
+      QMessageBox::critical(this, "Erro!", "Erro marcando desativado!");
+      return;
+    }
 
     if (not modelEnd.submitAll()) {
       QMessageBox::critical(this, "Erro!", "Não foi possível remover este item: " + modelEnd.lastError().text());

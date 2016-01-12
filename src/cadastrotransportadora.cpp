@@ -140,7 +140,10 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
   msgBox.setButtonText(QMessageBox::No, "Não");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    setDataEnd("desativado", true);
+    if (not setDataEnd("desativado", true)) {
+      QMessageBox::critical(this, "Erro!", "Erro marcando desativado!");
+      return;
+    }
 
     if (not modelEnd.submitAll()) {
       QMessageBox::critical(this, "Erro!", "Não foi possível remover este item: " + modelEnd.lastError().text());
@@ -171,16 +174,16 @@ bool CadastroTransportadora::cadastrarEndereco(const bool &isUpdate) {
 
   if (not isUpdate) modelEnd.insertRow(rowEnd);
 
-  setDataEnd("descricao", ui->comboBoxTipoEnd->currentText());
-  setDataEnd("CEP", ui->lineEditCEP->text());
-  setDataEnd("logradouro", ui->lineEditLogradouro->text());
-  setDataEnd("numero", ui->lineEditNro->text());
-  setDataEnd("complemento", ui->lineEditComp->text());
-  setDataEnd("bairro", ui->lineEditBairro->text());
-  setDataEnd("cidade", ui->lineEditCidade->text());
-  setDataEnd("uf", ui->lineEditUF->text());
-  setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()));
-  setDataEnd("desativado", false);
+  if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
+  if (not setDataEnd("CEP", ui->lineEditCEP->text())) return false;
+  if (not setDataEnd("logradouro", ui->lineEditLogradouro->text())) return false;
+  if (not setDataEnd("numero", ui->lineEditNro->text())) return false;
+  if (not setDataEnd("complemento", ui->lineEditComp->text())) return false;
+  if (not setDataEnd("bairro", ui->lineEditBairro->text())) return false;
+  if (not setDataEnd("cidade", ui->lineEditCidade->text())) return false;
+  if (not setDataEnd("uf", ui->lineEditUF->text())) return false;
+  if (not setDataEnd("codUF", getCodigoUF(ui->lineEditUF->text()))) return false;
+  if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
 

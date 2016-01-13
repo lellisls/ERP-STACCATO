@@ -1,7 +1,7 @@
+#include <QDate>
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "loginconfig.h"
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include "usersession.h"
@@ -14,48 +14,31 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDia
 
   ui->lineEditUser->setFocus();
 
-  if (settingsContains("User/lastuser")) {
-    ui->lineEditUser->setText(settings("User/lastuser").toString());
+  if (UserSession::settingsContains("User/lastuser")) {
+    ui->lineEditUser->setText(UserSession::settings("User/lastuser").toString());
     ui->lineEditPass->setFocus();
   }
 
-  readSettings();
+  ui->lineEditHostname->setText(UserSession::settings("Login/hostname").toString());
+  ui->checkBoxHomologacao->setChecked(UserSession::settings("Login/homologacao").toBool());
+
+  ui->labelHostname->hide();
+  ui->lineEditHostname->hide();
+  ui->checkBoxHomologacao->hide();
+
+  adjustSize();
 
   accept();
 }
 
 LoginDialog::~LoginDialog() { delete ui; }
 
-void LoginDialog::readSettings() {
-  hostname = settings("Login/hostname").toString();
-  username = settings("Login/username").toString();
-  password = settings("Login/password").toString();
-  port = settings("Login/port").toString();
-  homologacao = settings("Login/homologacao").toBool();
-}
-
-void LoginDialog::verify() {
-  if (not dbConnect()) return;
-
-  if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text())) {
-    QMessageBox::critical(this, "Erro!", "Login inválido!");
-    ui->lineEditPass->setFocus();
-    return;
-  }
-
-  accept();
-}
-
 void LoginDialog::on_pushButtonConfig_clicked() {
-  LoginConfig *config = new LoginConfig(this);
-  config->show();
+  ui->labelHostname->setVisible(not ui->labelHostname->isVisible());
+  ui->lineEditHostname->setVisible(not ui->lineEditHostname->isVisible());
+  ui->checkBoxHomologacao->setVisible(not ui->checkBoxHomologacao->isVisible());
+  adjustSize();
 }
-
-QVariant LoginDialog::settings(const QString &key) const { return UserSession::getSettings(key); }
-
-void LoginDialog::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
-
-bool LoginDialog::settingsContains(const QString &key) const { return UserSession::settingsContains(key); }
 
 bool LoginDialog::dbConnect() {
   if (not QSqlDatabase::drivers().contains("QMYSQL")) {
@@ -66,9 +49,9 @@ bool LoginDialog::dbConnect() {
 
   QSqlDatabase db = QSqlDatabase::contains() ? QSqlDatabase::database() : QSqlDatabase::addDatabase("QMYSQL");
 
-  db.setHostName(hostname);
-  db.setUserName(username);
-  db.setPassword(password);
+  db.setHostName(UserSession::settings("Login/hostname").toString());
+  db.setUserName(ui->lineEditUser->text().toLower());
+  db.setPassword("1234");
   db.setDatabaseName("mysql");
 
   db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;MYSQL_OPT_CONNECT_TIMEOUT=5;MYSQL_OPT_READ_TIMEOUT=5;"
@@ -116,7 +99,7 @@ bool LoginDialog::dbConnect() {
 
   db.close();
 
-  db.setDatabaseName(homologacao ? "mydb_test" : "mydb");
+  db.setDatabaseName(ui->checkBoxHomologacao->isChecked() ? "mydb_test" : "mydb");
 
   if (not db.open()) {
     QMessageBox::critical(this, "Erro", "Erro conectando no banco de dados: " + db.lastError().text());
@@ -150,7 +133,19 @@ bool LoginDialog::dbConnect() {
 }
 
 void LoginDialog::on_pushButtonLogin_clicked() {
-  verify();
+  UserSession::setSettings("Login/hostname", ui->lineEditHostname->text());
+  UserSession::setSettings("Login/homologacao", ui->checkBoxHomologacao->isChecked());
 
-  setSettings("User/lastuser", ui->lineEditUser->text());
+  if (not dbConnect()) return;
+
+  if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text())) {
+    QMessageBox::critical(this, "Erro!", "Login inválido!");
+    ui->lineEditPass->setFocus();
+
+    return;
+  }
+
+  accept();
+
+  UserSession::setSettings("User/lastuser", ui->lineEditUser->text());
 }

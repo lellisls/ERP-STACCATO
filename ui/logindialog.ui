@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>172</width>
-    <height>98</height>
+    <width>201</width>
+    <height>143</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,29 +16,22 @@
   <property name="locale">
    <locale language="Portuguese" country="Brazil"/>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="2" column="5">
+    <widget class="QPushButton" name="pushButtonLogin">
+     <property name="text">
+      <string>Login</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
     <widget class="QLabel" name="labelUser">
      <property name="text">
       <string>Usuário:</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="labelPass">
-     <property name="text">
-      <string>Senha:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLineEdit" name="lineEditPass">
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
+   <item row="2" column="4">
     <widget class="QPushButton" name="pushButtonConfig">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -58,13 +51,41 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
+   <item row="1" column="4">
+    <widget class="QLabel" name="labelPass">
+     <property name="text">
+      <string>Senha:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="5">
+    <widget class="QLineEdit" name="lineEditPass">
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5">
     <widget class="QLineEdit" name="lineEditUser"/>
    </item>
-   <item row="3" column="2">
-    <widget class="QPushButton" name="pushButtonLogin">
+   <item row="3" column="4">
+    <widget class="QLabel" name="labelHostname">
      <property name="text">
-      <string>Login</string>
+      <string>Servidor:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="5">
+    <widget class="QLineEdit" name="lineEditHostname">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="5">
+    <widget class="QCheckBox" name="checkBoxHomologacao">
+     <property name="text">
+      <string>Homologação</string>
      </property>
     </widget>
    </item>

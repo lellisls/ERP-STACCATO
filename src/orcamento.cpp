@@ -204,13 +204,6 @@ void Orcamento::generateId() {
   id += "O";
 
   ui->lineEditOrcamento->setText(id);
-
-  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    if (not modelItem.setData(row, "idOrcamento", id)) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando id nos itens: " + modelItem.lastError().text());
-      return;
-    }
-  }
 }
 
 bool Orcamento::verifyFields() {
@@ -275,6 +268,13 @@ bool Orcamento::savingProcedures() {
   if (not setData("subTotalLiq", ui->doubleSpinBoxSubTotalLiq->value())) return false;
   if (not setData("total", ui->doubleSpinBoxTotal->value())) return false;
   if (not setData("validade", ui->spinBoxValidade->value())) return false;
+
+  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
+    if (not modelItem.setData(row, "idOrcamento", ui->lineEditOrcamento->text())) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando id nos itens: " + modelItem.lastError().text());
+      return false;
+    }
+  }
 
   if (not atualizaReplica()) return false;
 

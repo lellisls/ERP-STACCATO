@@ -1,16 +1,18 @@
 #include <QSqlError>
 
-#include "widgetlogisticaentrega.h"
-#include "ui_widgetlogisticaentrega.h"
 #include "doubledelegate.h"
-#include "usersession.h"
 #include "entregascliente.h"
+#include "ui_widgetlogisticaentrega.h"
+#include "usersession.h"
+#include "widgetlogisticaentrega.h"
 
 WidgetLogisticaEntrega::WidgetLogisticaEntrega(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaEntrega) {
   ui->setupUi(this);
 
+  setupTables();
+
   if (UserSession::tipoUsuario() == "VENDEDOR") {
-    ui->tableEntregasCliente->hide();
+    ui->table->hide();
     ui->labelEntregasCliente->hide();
   }
 }
@@ -18,45 +20,42 @@ WidgetLogisticaEntrega::WidgetLogisticaEntrega(QWidget *parent) : QWidget(parent
 WidgetLogisticaEntrega::~WidgetLogisticaEntrega() { delete ui; }
 
 void WidgetLogisticaEntrega::setupTables() {
-  modelEntregasCliente.setTable("view_venda");
+  model.setTable("view_venda");
 
-  ui->tableEntregasCliente->setModel(&modelEntregasCliente);
-  ui->tableEntregasCliente->setItemDelegate(new DoubleDelegate(this));
+  ui->table->setModel(&model);
+  ui->table->setItemDelegate(new DoubleDelegate(this));
 }
 
 QString WidgetLogisticaEntrega::updateTables() {
-  if (not modelEntregasCliente.select()) {
-    return "Erro lendo tabela vendas: " + modelEntregasCliente.lastError().text();
-  }
+  if (not model.select()) return "Erro lendo tabela vendas: " + model.lastError().text();
 
-  ui->tableEntregasCliente->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }
 
 void WidgetLogisticaEntrega::on_radioButtonEntregaLimpar_clicked() {
-  modelEntregasCliente.setFilter("tipo = 'cliente'");
-  ui->tableEntregasCliente->resizeColumnsToContents();
+  model.setFilter("tipo = 'cliente'");
+  ui->table->resizeColumnsToContents();
 }
 
 void WidgetLogisticaEntrega::on_radioButtonEntregaEnviado_clicked() {
-  modelEntregasCliente.setFilter("status = 'enviado' AND tipo = 'cliente'");
-  ui->tableEntregasCliente->resizeColumnsToContents();
+  model.setFilter("status = 'ENVIADO' AND tipo = 'cliente'");
+  ui->table->resizeColumnsToContents();
 }
 
 void WidgetLogisticaEntrega::on_radioButtonEntregaPendente_clicked() {
-  modelEntregasCliente.setFilter("status = 'pendente' AND tipo = 'cliente'");
-  ui->tableEntregasCliente->resizeColumnsToContents();
+  model.setFilter("status = 'PENDENTE' AND tipo = 'cliente'");
+  ui->table->resizeColumnsToContents();
 }
 
 void WidgetLogisticaEntrega::on_lineEditBuscaEntregas_textChanged(const QString &text) {
-  modelEntregasCliente.setFilter(text.isEmpty() ? ""
-                                                : "(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
+  model.setFilter(text.isEmpty() ? "" : "(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
 
-  ui->tableEntregasCliente->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 }
 
-void WidgetLogisticaEntrega::on_tableEntregasCliente_activated(const QModelIndex &index) {
+void WidgetLogisticaEntrega::on_table_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
-  entregas->viewEntrega(modelEntregasCliente.data(index.row(), "Código").toString());
+  entregas->viewEntrega(model.data(index.row(), "Código").toString());
 }

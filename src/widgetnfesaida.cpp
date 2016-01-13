@@ -39,12 +39,12 @@ void WidgetNfeSaida::on_table_activated(const QModelIndex &index) {
 }
 
 void WidgetNfeSaida::on_radioButtonAutorizado_clicked() {
-  model.setFilter("status = 'autorizado'");
+  model.setFilter("status = 'AUTORIZADO'");
   ui->table->resizeColumnsToContents();
 }
 
 void WidgetNfeSaida::on_radioButtonEnviado_clicked() {
-  model.setFilter("status = 'enviado'");
+  model.setFilter("status = 'ENVIADO'");
   ui->table->resizeColumnsToContents();
 }
 

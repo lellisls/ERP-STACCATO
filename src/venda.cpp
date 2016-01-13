@@ -464,8 +464,8 @@ bool Venda::savingProcedures() {
   if (not setData("idEnderecoEntrega", ui->itemBoxEndereco->value())) return false;
   if (not setData("idEnderecoFaturamento", ui->itemBoxEnderecoFat->value())) return false;
   if (not setData("status", "PENDENTE")) return false;
-  if (not setData("data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd hh:mm:ss"))) return false;
-  if (not setData("dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd hh:mm:ss"))) return false;
+  if (not setData("data", ui->dateTimeEdit->dateTime().toString("yyyy-MM-dd"))) return false;
+  if (not setData("dataOrc", ui->dateTimeEditOrc->dateTime().toString("yyyy-MM-dd"))) return false;
   if (not setData("prazoEntrega", ui->spinBoxPrazoEntrega->value())) return false;
   if (not setData("observacao", ui->textEdit->toPlainText())) return false;
 
@@ -775,3 +775,4 @@ void Venda::on_pushButtonCancelamento_clicked() {
 }
 
 // NOTE: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
+// TODO: implementar generateId (copiar de orcamento e adaptar)

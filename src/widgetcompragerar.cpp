@@ -20,75 +20,74 @@ WidgetCompraGerar::WidgetCompraGerar(QWidget *parent) : QWidget(parent), ui(new 
 WidgetCompraGerar::~WidgetCompraGerar() { delete ui; }
 
 void WidgetCompraGerar::setupTables() {
-  modelPedForn.setTable("view_fornecedor_compra");
+  modelForn.setTable("view_fornecedor_compra");
 
-  modelPedForn.setHeaderData("fornecedor", "Fornecedor");
-  modelPedForn.setHeaderData("COUNT(fornecedor)", "Itens");
+  modelForn.setHeaderData("fornecedor", "Fornecedor");
+  modelForn.setHeaderData("COUNT(fornecedor)", "Itens");
 
-  ui->tableFornCompras->setModel(&modelPedForn);
+  ui->tableForn->setModel(&modelForn);
 
-  modelItemPedidosPend.setTable("pedido_fornecedor_has_produto");
-  modelItemPedidosPend.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelProdutos.setTable("pedido_fornecedor_has_produto");
+  modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelItemPedidosPend.setHeaderData("selecionado", "");
-  modelItemPedidosPend.setHeaderData("fornecedor", "Fornecedor");
-  modelItemPedidosPend.setHeaderData("descricao", "Descrição");
-  modelItemPedidosPend.setHeaderData("colecao", "Coleção");
-  modelItemPedidosPend.setHeaderData("quant", "Quant.");
-  modelItemPedidosPend.setHeaderData("un", "Un.");
-  modelItemPedidosPend.setHeaderData("preco", "Preço");
-  modelItemPedidosPend.setHeaderData("formComercial", "Form. Com.");
-  modelItemPedidosPend.setHeaderData("codComercial", "Cód. Com.");
-  modelItemPedidosPend.setHeaderData("codBarras", "Cód. Bar.");
-  modelItemPedidosPend.setHeaderData("idCompra", "Compra");
-  modelItemPedidosPend.setHeaderData("dataPrevCompra", "Prev. Compra");
-  modelItemPedidosPend.setHeaderData("dataCompra", "Data Compra");
-  modelItemPedidosPend.setHeaderData("status", "Status");
+  modelProdutos.setHeaderData("selecionado", "");
+  modelProdutos.setHeaderData("fornecedor", "Fornecedor");
+  modelProdutos.setHeaderData("descricao", "Descrição");
+  modelProdutos.setHeaderData("colecao", "Coleção");
+  modelProdutos.setHeaderData("quant", "Quant.");
+  modelProdutos.setHeaderData("un", "Un.");
+  modelProdutos.setHeaderData("preco", "Preço");
+  modelProdutos.setHeaderData("formComercial", "Form. Com.");
+  modelProdutos.setHeaderData("codComercial", "Cód. Com.");
+  modelProdutos.setHeaderData("codBarras", "Cód. Bar.");
+  modelProdutos.setHeaderData("idCompra", "Compra");
+  modelProdutos.setHeaderData("dataPrevCompra", "Prev. Compra");
+  modelProdutos.setHeaderData("dataCompra", "Data Compra");
+  modelProdutos.setHeaderData("status", "Status");
 
-  modelItemPedidosPend.setFilter("status = 'PENDENTE'");
+  modelProdutos.setFilter("status = 'PENDENTE'");
 
-  ui->tablePedidosPend->setModel(&modelItemPedidosPend);
-  ui->tablePedidosPend->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
-  ui->tablePedidosPend->hideColumn("quantUpd");
-  ui->tablePedidosPend->hideColumn("idPedido");
-  ui->tablePedidosPend->hideColumn("idLoja");
-  ui->tablePedidosPend->hideColumn("item");
-  ui->tablePedidosPend->hideColumn("idProduto");
-  ui->tablePedidosPend->hideColumn("prcUnitario");
-  ui->tablePedidosPend->hideColumn("parcial");
-  ui->tablePedidosPend->hideColumn("desconto");
-  ui->tablePedidosPend->hideColumn("parcialDesc");
-  ui->tablePedidosPend->hideColumn("descGlobal");
-  ui->tablePedidosPend->hideColumn("dataRealCompra");
-  ui->tablePedidosPend->hideColumn("dataPrevConf");
-  ui->tablePedidosPend->hideColumn("dataRealConf");
-  ui->tablePedidosPend->hideColumn("dataPrevFat");
-  ui->tablePedidosPend->hideColumn("dataRealFat");
-  ui->tablePedidosPend->hideColumn("dataPrevColeta");
-  ui->tablePedidosPend->hideColumn("dataRealColeta");
-  ui->tablePedidosPend->hideColumn("dataPrevEnt");
-  ui->tablePedidosPend->hideColumn("dataRealEnt");
-  ui->tablePedidosPend->hideColumn("dataPrevReceb");
-  ui->tablePedidosPend->hideColumn("dataRealReceb");
+  ui->tableProdutos->setModel(&modelProdutos);
+  ui->tableProdutos->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->tableProdutos->hideColumn("quantUpd");
+  ui->tableProdutos->hideColumn("idPedido");
+  ui->tableProdutos->hideColumn("idLoja");
+  ui->tableProdutos->hideColumn("item");
+  ui->tableProdutos->hideColumn("idProduto");
+  ui->tableProdutos->hideColumn("prcUnitario");
+  ui->tableProdutos->hideColumn("parcial");
+  ui->tableProdutos->hideColumn("desconto");
+  ui->tableProdutos->hideColumn("parcialDesc");
+  ui->tableProdutos->hideColumn("descGlobal");
+  ui->tableProdutos->hideColumn("dataRealCompra");
+  ui->tableProdutos->hideColumn("dataPrevConf");
+  ui->tableProdutos->hideColumn("dataRealConf");
+  ui->tableProdutos->hideColumn("dataPrevFat");
+  ui->tableProdutos->hideColumn("dataRealFat");
+  ui->tableProdutos->hideColumn("dataPrevColeta");
+  ui->tableProdutos->hideColumn("dataRealColeta");
+  ui->tableProdutos->hideColumn("dataPrevEnt");
+  ui->tableProdutos->hideColumn("dataRealEnt");
+  ui->tableProdutos->hideColumn("dataPrevReceb");
+  ui->tableProdutos->hideColumn("dataRealReceb");
 }
 
 QString WidgetCompraGerar::updateTables() {
-  modelPedForn.select();
+  modelForn.select();
 
-  ui->tableFornCompras->resizeColumnsToContents();
+  ui->tableForn->resizeColumnsToContents();
 
-  modelItemPedidosPend.setFilter("0");
+  modelProdutos.setFilter("0");
 
-  if (not modelItemPedidosPend.select()) {
-    return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelItemPedidosPend.lastError().text();
+  if (not modelProdutos.select()) {
+    return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelProdutos.lastError().text();
   }
 
-  for (int i = 0; i < modelItemPedidosPend.rowCount(); ++i) {
-    ui->tablePedidosPend->openPersistentEditor(
-          modelItemPedidosPend.index(i, modelItemPedidosPend.fieldIndex("selecionado")));
+  for (int i = 0; i < modelProdutos.rowCount(); ++i) {
+    ui->tableProdutos->openPersistentEditor(modelProdutos.index(i, modelProdutos.fieldIndex("selecionado")));
   }
 
-  ui->tablePedidosPend->resizeColumnsToContents();
+  ui->tableProdutos->resizeColumnsToContents();
 
   return QString();
 }
@@ -103,10 +102,10 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   QStringList ids;
 
   for (const auto index :
-       modelItemPedidosPend.match(modelItemPedidosPend.index(0, modelItemPedidosPend.fieldIndex("selecionado")),
-                                  Qt::DisplayRole, true, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
+       modelProdutos.match(modelProdutos.index(0, modelProdutos.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
+                           Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
     lista.append(index.row());
-    ids.append(modelItemPedidosPend.data(index.row(), "idPedido").toString());
+    ids.append(modelProdutos.data(index.row(), "idPedido").toString());
 
     // is this necessary?
     //    QString status = modelItemPedidosPend.data(index.row(), "status").toString();
@@ -125,7 +124,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     return;
   }
 
-  QString filtro = modelItemPedidosPend.filter();
+  QString filtro = modelProdutos.filter();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::GerarCompra, this);
   inputDlg->setFilter(ids);
@@ -138,15 +137,15 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   const QDate dataCompra = inputDlg->getDate();
   const QDate dataPrevista = inputDlg->getNextDate();
 
-  modelItemPedidosPend.setFilter(filtro);
-  modelItemPedidosPend.select();
+  modelProdutos.setFilter(filtro);
+  modelProdutos.select();
 
   QStringList produtos;
 
   for (const auto row : lista) {
-    QString produto = modelItemPedidosPend.data(row, "descricao").toString() + ", Quant: " +
-                      modelItemPedidosPend.data(row, "quant").toString() + ", R$ " +
-                      modelItemPedidosPend.data(row, "preco").toString().replace(".", ",");
+    QString produto = modelProdutos.data(row, "descricao").toString() + ", Quant: " +
+                      modelProdutos.data(row, "quant").toString() + ", R$ " +
+                      modelProdutos.data(row, "preco").toString().replace(".", ",");
     produtos.append(produto);
   }
 
@@ -159,7 +158,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   }
 
   //------------------------------
-  QString path = settings("User/userFolder").toString();
+  QString path = UserSession::settings("User/userFolder").toString();
 
   QString arquivo = path + "/" + idVenda + ".xlsx";
 
@@ -179,18 +178,15 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   if (msgBox.exec() == QMessageBox::Yes) {
     SendMail *mail = new SendMail(this, produtos.join("\n"), arquivo);
 
-    if (mail->exec() != SendMail::Accepted) {
-      return;
-    }
+    if (mail->exec() != SendMail::Accepted) return;
   }
 
-  modelItemPedidosPend.setFilter(filtro);
-  modelItemPedidosPend.select();
+  modelProdutos.setFilter(filtro);
+  modelProdutos.select();
 
   for (const auto row : lista) {
-    if (not modelItemPedidosPend.setData(row, "status", "EM COMPRA")) {
-      QMessageBox::critical(this, "Erro!",
-                            "Erro marcando status EM COMPRA: " + modelItemPedidosPend.lastError().text());
+    if (not modelProdutos.setData(row, "status", "EM COMPRA")) {
+      QMessageBox::critical(this, "Erro!", "Erro marcando status EM COMPRA: " + modelProdutos.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;
     }
@@ -205,8 +201,8 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
 
     QString id = queryId.first() ? QString::number(queryId.value("idCompra").toInt() + 1) : "1";
 
-    if (not modelItemPedidosPend.setData(row, "idCompra", id)) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando idCompra: " + modelItemPedidosPend.lastError().text());
+    if (not modelProdutos.setData(row, "idCompra", id)) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando idCompra: " + modelProdutos.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;
     }
@@ -219,7 +215,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     query.bindValue(":idCompra", id);
     query.bindValue(":dataRealCompra", dataCompra);
     query.bindValue(":dataPrevConf", dataPrevista);
-    query.bindValue(":idProduto", modelItemPedidosPend.data(row, "idProduto"));
+    query.bindValue(":idProduto", modelProdutos.data(row, "idProduto"));
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
@@ -234,14 +230,14 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     }
     //
 
-    if (not modelItemPedidosPend.setData(row, "dataRealCompra", dataCompra.toString("yyyy-MM-dd"))) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando data da compra: " + modelItemPedidosPend.lastError().text());
+    if (not modelProdutos.setData(row, "dataRealCompra", dataCompra.toString("yyyy-MM-dd"))) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando data da compra: " + modelProdutos.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;
     }
 
-    if (not modelItemPedidosPend.setData(row, "dataPrevConf", dataPrevista.toString("yyyy-MM-dd"))) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + modelItemPedidosPend.lastError().text());
+    if (not modelProdutos.setData(row, "dataPrevConf", dataPrevista.toString("yyyy-MM-dd"))) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + modelProdutos.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;
     }
@@ -256,7 +252,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     query.bindValue(":dataEmissao", QDate::currentDate().toString("yyyy-MM-dd"));
     query.bindValue(":idVenda", idVenda);
     query.bindValue(":idLoja", UserSession::loja());
-    query.bindValue(":valor", modelItemPedidosPend.data(row, "preco"));
+    query.bindValue(":valor", modelProdutos.data(row, "preco"));
     query.bindValue(":tipo", "A CONFIRMAR");
     query.bindValue(":parcela", 1);
     query.bindValue(":observacao", "");
@@ -269,9 +265,9 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     }
   }
 
-  if (not modelItemPedidosPend.submitAll()) {
+  if (not modelProdutos.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
-                          modelItemPedidosPend.lastError().text());
+                          modelProdutos.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
@@ -289,17 +285,13 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
     return QString();
   }
 
-  if (settings("User/userFolder").toString().isEmpty()) {
-    return QString();
-  }
+  if (settings("User/userFolder").toString().isEmpty()) return QString();
 
   QString path = settings("User/userFolder").toString();
 
   QDir dir(path);
 
-  if (not dir.exists()) {
-    dir.mkdir(path);
-  }
+  if (not dir.exists()) dir.mkdir(path);
 
   QFile modelo(QDir::currentPath() + "/modelo.xlsx");
 
@@ -316,7 +308,7 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
 
   QSqlQuery queryVenda;
   queryVenda.prepare("SELECT * FROM venda_has_produto WHERE idProduto = :idProduto");
-  queryVenda.bindValue(":idProduto", modelItemPedidosPend.data(lista.first(), "idProduto"));
+  queryVenda.bindValue(":idProduto", modelProdutos.data(lista.first(), "idProduto"));
 
   if (not queryVenda.exec() or not queryVenda.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando dados da venda:" + queryVenda.lastError().text());
@@ -346,12 +338,12 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
     static int i = 0;
 
     xlsx.write("A" + QString::number(13 + i), i + 1);
-    xlsx.write("B" + QString::number(13 + i), modelItemPedidosPend.data(row, "codComercial"));
-    xlsx.write("C" + QString::number(13 + i), modelItemPedidosPend.data(row, "descricao"));
-    xlsx.write("E" + QString::number(13 + i), (modelItemPedidosPend.data(row, "preco").toDouble() /
-                                               modelItemPedidosPend.data(row, "quant").toDouble()));
-    xlsx.write("F" + QString::number(13 + i), modelItemPedidosPend.data(row, "un"));
-    xlsx.write("G" + QString::number(13 + i), modelItemPedidosPend.data(row, "quant"));
+    xlsx.write("B" + QString::number(13 + i), modelProdutos.data(row, "codComercial"));
+    xlsx.write("C" + QString::number(13 + i), modelProdutos.data(row, "descricao"));
+    xlsx.write("E" + QString::number(13 + i),
+               (modelProdutos.data(row, "preco").toDouble() / modelProdutos.data(row, "quant").toDouble()));
+    xlsx.write("F" + QString::number(13 + i), modelProdutos.data(row, "un"));
+    xlsx.write("G" + QString::number(13 + i), modelProdutos.data(row, "quant"));
 
     ++i;
   }
@@ -365,6 +357,7 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
   return idVenda;
 }
 
+// TODO: remove these
 QVariant WidgetCompraGerar::settings(const QString &key) const { return UserSession::settings(key); }
 
 void WidgetCompraGerar::setSettings(const QString &key, const QVariant &value) const {
@@ -372,28 +365,27 @@ void WidgetCompraGerar::setSettings(const QString &key, const QVariant &value) c
 }
 
 void WidgetCompraGerar::on_checkBoxTodosGerar_clicked(const bool &checked) {
-  for (int row = 0; row < modelItemPedidosPend.rowCount(); ++row) {
-    modelItemPedidosPend.setData(row, "selecionado", checked);
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    modelProdutos.setData(row, "selecionado", checked);
   }
 }
 
-void WidgetCompraGerar::on_tableFornCompras_activated(const QModelIndex &index) {
-  const QString fornecedor = modelPedForn.data(index.row(), "fornecedor").toString();
+void WidgetCompraGerar::on_tableProdutos_activated(const QModelIndex &index) {
+  const QString fornecedor = modelForn.data(index.row(), "fornecedor").toString();
 
-  modelItemPedidosPend.setFilter("fornecedor = '" + fornecedor + "' AND status = 'PENDENTE'");
+  modelProdutos.setFilter("fornecedor = '" + fornecedor + "' AND status = 'PENDENTE'");
 
-  if (not modelItemPedidosPend.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " +
-                          modelItemPedidosPend.lastError().text());
+  if (not modelProdutos.select()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelProdutos.lastError().text());
     return;
   }
 
-  for (int row = 0; row < modelItemPedidosPend.rowCount(); ++row) {
-    ui->tablePedidosPend->openPersistentEditor(
-          modelItemPedidosPend.index(row, modelItemPedidosPend.fieldIndex("selecionado")));
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
   }
 
   ui->checkBoxTodosGerar->setChecked(false);
 
-  ui->tablePedidosPend->resizeColumnsToContents();
+  ui->tableProdutos->resizeColumnsToContents();
 }

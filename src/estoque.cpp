@@ -13,28 +13,28 @@ Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
 
-  modelEstoque.setTable("estoque");
-  modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  model.setTable("estoque");
+  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not modelEstoque.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
   }
 
-  ui->tableEstoque->setModel(&modelEstoque);
-  ui->tableEstoque->hideColumn("idEstoque");
-  ui->tableEstoque->hideColumn("idCompra");
-  ui->tableEstoque->hideColumn("idVendaProduto");
-  ui->tableEstoque->hideColumn("idProduto");
-  ui->tableEstoque->hideColumn("idNFe");
-  ui->tableEstoque->hideColumn("quantUpd");
+  ui->table->setModel(&model);
+  ui->table->hideColumn("idEstoque");
+  ui->table->hideColumn("idCompra");
+  ui->table->hideColumn("idVendaProduto");
+  ui->table->hideColumn("idProduto");
+  ui->table->hideColumn("idNFe");
+  ui->table->hideColumn("quantUpd");
 }
 
 Estoque::~Estoque() { delete ui; }
 
-void Estoque::on_tableEstoque_activated(const QModelIndex &index) {
+void Estoque::on_table_activated(const QModelIndex &index) {
   QSqlQuery query;
   query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-  query.bindValue(":idNFe", modelEstoque.data(index.row(), "idXML"));
+  query.bindValue(":idNFe", model.data(index.row(), "idXML"));
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando XML da NFe: " + query.lastError().text());
@@ -51,17 +51,17 @@ void Estoque::viewRegisterById(const QString &codComercial) {
     return;
   }
 
-  modelEstoque.setFilter("codComercial = '" + codComercial + "'");
+  model.setFilter("codComercial = '" + codComercial + "'");
 
-  if (not modelEstoque.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
     return;
   }
 
-  for (int column = 0; column < modelEstoque.columnCount(); ++column) {
-    if (modelEstoque.fieldIndex("xml") == column) continue;
+  for (int column = 0; column < model.columnCount(); ++column) {
+    if (model.fieldIndex("xml") == column) continue;
 
-    ui->tableEstoque->resizeColumnToContents(column);
+    ui->table->resizeColumnToContents(column);
   }
 
   show();
@@ -70,7 +70,7 @@ void Estoque::viewRegisterById(const QString &codComercial) {
 void Estoque::on_pushButtonExibirNfe_clicked() {
   QSqlQuery query;
   query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-  query.bindValue(":idNFe", modelEstoque.data(0, "idNFe"));
+  query.bindValue(":idNFe", model.data(0, "idNFe"));
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando nota fiscal: " + query.lastError().text());

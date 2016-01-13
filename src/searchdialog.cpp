@@ -27,13 +27,13 @@ SearchDialog::SearchDialog(const QString &title, const QString &table, const QSt
     return;
   }
 
-  ui->tableBusca->setModel(&model);
-  ui->tableBusca->setItemDelegate(new DoubleDelegate(this));
+  ui->table->setModel(&model);
+  ui->table->setItemDelegate(new DoubleDelegate(this));
 
   if (indexes.isEmpty()) {
     ui->lineEditBusca->hide();
     ui->labelBusca->hide();
-    ui->tableBusca->setFocus();
+    ui->table->setFocus();
   } else {
     this->indexes = indexes;
     textKeys.append(indexes.first());
@@ -73,13 +73,11 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
 }
 
 void SearchDialog::sendUpdateMessage() {
-  auto selection = ui->tableBusca->selectionModel()->selection().indexes();
+  auto selection = ui->table->selectionModel()->selection().indexes();
 
   if (selection.isEmpty()) return;
 
-  selectedId = model.data(selection.first().row(), primaryKey);
-
-  emit itemSelected(selectedId);
+  emit itemSelected(model.data(selection.first().row(), primaryKey));
 }
 
 void SearchDialog::show() {
@@ -93,7 +91,7 @@ void SearchDialog::show() {
 
   QDialog::show();
 
-  ui->tableBusca->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 }
 
 void SearchDialog::showMaximized() {
@@ -105,10 +103,10 @@ void SearchDialog::showMaximized() {
   ui->lineEditBusca->setFocus();
 
   QDialog::showMaximized();
-  ui->tableBusca->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 }
 
-void SearchDialog::on_tableBusca_doubleClicked(const QModelIndex &) {
+void SearchDialog::on_table_doubleClicked(const QModelIndex &) {
   sendUpdateMessage();
   close();
 }
@@ -120,7 +118,7 @@ void SearchDialog::setFilter(const QString &value) {
 
 void SearchDialog::hideColumns(const QStringList &columns) {
   for (const auto column : columns) {
-    ui->tableBusca->hideColumn(column);
+    ui->table->hideColumn(column);
   }
 }
 
@@ -172,7 +170,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
   sdCliente->setPrimaryKey("idCliente");
   sdCliente->setTextKeys({"nome_razao"});
 
-  sdCliente->hideColumns({"idCliente", "rg", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca",
+  sdCliente->hideColumns({"idCliente", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca",
                           "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto",
                           "desativado"});
 
@@ -230,7 +228,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
                        "ncm", "ncmEx", "atualizarTabelaPreco", "representacao"});
 
   for (int column = 0; column < sdProd->model.columnCount(); ++column) {
-    if (sdProd->model.record().fieldName(column).endsWith("Upd")) sdProd->ui->tableBusca->setColumnHidden(column, true);
+    if (sdProd->model.record().fieldName(column).endsWith("Upd")) sdProd->ui->table->setColumnHidden(column, true);
   }
 
   sdProd->setHeaderData("fornecedor", "Fornecedor");
@@ -366,7 +364,7 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome_razao"});
 
-  sdProfissional->hideColumns({"idProfissional", "rg", "inscEstadual", "contatoNome", "contatoCPF", "contatoApelido",
+  sdProfissional->hideColumns({"idProfissional", "inscEstadual", "contatoNome", "contatoCPF", "contatoApelido",
                                "contatoRG", "banco", "agencia", "cc", "nomeBanco", "cpfBanco", "desativado"});
 
   sdProfissional->setHeaderData("pfpj", "Tipo");
@@ -388,7 +386,7 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
 void SearchDialog::montarFiltroAtivoDesc(const bool &ativo) {
   ui->lineEditBusca->setFocus();
 
-  const QString text = ui->lineEditBusca->text();
+  const QString text = ui->lineEditBusca->text().remove("-");
 
   if (text.isEmpty()) {
     setFilter("idProduto = 0");
@@ -406,10 +404,10 @@ void SearchDialog::montarFiltroAtivoDesc(const bool &ativo) {
   setFilter(searchFilter + " AND descontinuado = " + (ativo ? "FALSE" : "TRUE") + " AND desativado = FALSE" +
             representacao);
 
-  if (isVisible()) ui->tableBusca->resizeColumnsToContents();
+  if (isVisible()) ui->table->resizeColumnsToContents();
 }
 
-void SearchDialog::on_tableBusca_entered(const QModelIndex &) { ui->tableBusca->resizeColumnsToContents(); }
+void SearchDialog::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
 

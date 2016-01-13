@@ -21,10 +21,12 @@ class ContasAPagar : public QDialog {
     void on_pushButtonSalvar_clicked();
 
   private:
+    // attributes
     Ui::ContasAPagar *ui;
     QString idVenda;
-    SqlTableModel modelContas;
-    SqlTableModel modelItensContas;
+    SqlTableModel model;
+    // methods
+    void setupTables();
 };
 
 #endif // CONTASAPAGAR_H

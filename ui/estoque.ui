@@ -42,7 +42,7 @@
     </spacer>
    </item>
    <item row="0" column="0" rowspan="3">
-    <widget class="TableView" name="tableEstoque">
+    <widget class="TableView" name="table">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -57,7 +57,7 @@
   <customwidget>
    <class>TableView</class>
    <extends>QTableView</extends>
-   <header location="global">src/tableview.h</header>
+   <header>src/tableview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

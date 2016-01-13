@@ -1,5 +1,6 @@
 #include <QCheckBox>
 #include <QMessageBox>
+#include <QSqlError>
 #include <QSqlQuery>
 
 #include "cadastrousuario.h"
@@ -124,7 +125,7 @@ bool CadastroUsuario::viewRegister(const QModelIndex &index) {
 }
 
 void CadastroUsuario::fillCombobox() {
-  QSqlQuery query("SELECT * FROM loja");
+  QSqlQuery query("SELECT descricao, idLoja FROM loja");
 
   while (query.next()) {
     ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));

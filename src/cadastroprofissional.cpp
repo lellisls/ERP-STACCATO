@@ -218,12 +218,12 @@ void CadastroProfissional::show() {
 }
 
 void CadastroProfissional::on_lineEditCPF_textEdited(const QString &text) {
-  ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+  ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 bool CadastroProfissional::cadastrarEndereco(const bool &isUpdate) {
@@ -298,7 +298,7 @@ void CadastroProfissional::on_tableEndereco_clicked(const QModelIndex &index) {
 
 void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text) {
   ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                         : "color: rgb(255, 0, 0);");
+                                                                                         : "color: rgb(255, 0, 0)");
 }
 
 void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool &checked) {
@@ -342,5 +342,5 @@ void CadastroProfissional::on_radioButtonPF_toggled(const bool &checked) {
 
 void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text) {
   ui->lineEditCPFBancario->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                          : "color: rgb(255, 0, 0);");
+                                                                                          : "color: rgb(255, 0, 0)");
 }

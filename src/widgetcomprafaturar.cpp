@@ -17,52 +17,50 @@ WidgetCompraFaturar::WidgetCompraFaturar(QWidget *parent) : QWidget(parent), ui(
 WidgetCompraFaturar::~WidgetCompraFaturar() { delete ui; }
 
 void WidgetCompraFaturar::tableFornCompras_activated(const QString &fornecedor) {
-  modelFat.setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM FATURAMENTO'");
+  model.setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM FATURAMENTO'");
 
-  if (not modelFat.select()) {
+  if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelFat.lastError().text());
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
 }
 
 void WidgetCompraFaturar::setupTables() {
-  modelFat.setTable("view_faturamento");
+  model.setTable("view_faturamento");
 
-  modelFat.setHeaderData("fornecedor", "Fornecedor");
-  modelFat.setHeaderData("idCompra", "Compra");
-  modelFat.setHeaderData("COUNT(idProduto)", "Itens");
-  modelFat.setHeaderData("SUM(preco)", "Preço");
-  modelFat.setHeaderData("status", "Status");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("idCompra", "Compra");
+  model.setHeaderData("COUNT(idProduto)", "Itens");
+  model.setHeaderData("SUM(preco)", "Preço");
+  model.setHeaderData("status", "Status");
 
-  ui->tableFaturamento->setModel(&modelFat);
+  ui->table->setModel(&model);
 }
 
 QString WidgetCompraFaturar::updateTables() {
-  if (not modelFat.select()) {
-    return "Erro lendo tabela faturamento: " + modelFat.lastError().text();
+  if (not model.select()) {
+    return "Erro lendo tabela faturamento: " + model.lastError().text();
   }
 
-  ui->tableFaturamento->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }
 
 void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
-  if (ui->tableFaturamento->selectionModel()->selectedRows().size() == 0) {
+  if (ui->table->selectionModel()->selectedRows().size() == 0) {
     QMessageBox::critical(this, "Erro!", "Não selecionou nenhuma compra!");
     return;
   }
 
-  int row = ui->tableFaturamento->selectionModel()->selectedRows().first().row();
+  int row = ui->table->selectionModel()->selectedRows().first().row();
 
   ImportarXML *import = new ImportarXML(this);
-  import->filtrar(modelFat.data(row, "Fornecedor").toString());
+  import->filtrar(model.data(row, "Fornecedor").toString());
   import->showMaximized();
 
-  if (import->exec() != QDialog::Accepted) {
-    return;
-  }
+  if (import->exec() != QDialog::Accepted) return;
 
   QString const idCompra = import->getIdCompra();
   //----------------------------------------------------------//
@@ -70,9 +68,7 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
   //  inputDlg->setFilter(idCompra);
 
-  if (inputDlg->exec() != InputDialog::Accepted) {
-    return;
-  }
+  if (inputDlg->exec() != InputDialog::Accepted) return;
 
   const QDate dataFat = inputDlg->getDate();
   const QDate dataPrevista = inputDlg->getNextDate();

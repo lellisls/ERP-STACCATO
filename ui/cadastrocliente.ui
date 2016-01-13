@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1163</width>
-    <height>605</height>
+    <width>1115</width>
+    <height>622</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -561,6 +561,41 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxCliente">
+                   <property name="accessibleName">
+                    <string>Cliente Vinculado</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxProfissional">
+                   <property name="accessibleName">
+                    <string>Profissional</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxVendedor">
+                   <property name="accessibleName">
+                    <string>Vendedor</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_42">
+                   <property name="text">
+                    <string>Profissional</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_43">
+                   <property name="text">
+                    <string>Vinculado ao cliente</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="6" column="0">
                   <widget class="QLabel" name="label_44">
                    <property name="enabled">
@@ -581,34 +616,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_43">
-                   <property name="text">
-                    <string>Vinculado ao cliente</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_42">
-                   <property name="text">
-                    <string>Profissional</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0" colspan="2">
-                  <widget class="ItemBox" name="itemBoxVendedor">
-                   <property name="accessibleName">
-                    <string>Vendedor</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0" colspan="2">
-                  <widget class="ItemBox" name="itemBoxCliente">
-                   <property name="accessibleName">
-                    <string>Cliente Vinculado</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="7" column="0" colspan="2">
                   <widget class="QLineEdit" name="lineEditSegmento">
                    <property name="enabled">
@@ -618,26 +625,6 @@
                     <string>Segmento de Mercado</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="3" column="0" colspan="2">
-                  <widget class="ItemBox" name="itemBoxProfissional">
-                   <property name="accessibleName">
-                    <string>Profissional</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="0">
-                  <spacer name="verticalSpacer_2">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -687,7 +674,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_21">
           <item row="1" column="0">
-           <widget class="QTableView" name="tableEndereco">
+           <widget class="TableView" name="tableEndereco">
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>
@@ -993,6 +980,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>src/tableview.h</header>
+  </customwidget>
   <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>

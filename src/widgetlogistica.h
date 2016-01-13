@@ -18,13 +18,13 @@ class WidgetLogistica : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_tableFornLogistica_activated(const QModelIndex &index);
+    void on_table_activated(const QModelIndex &index);
     void on_tabWidgetLogistica_currentChanged(const int &);
 
   private:
     // attributes
     Ui::WidgetLogistica *ui;
-    SqlTableModel modelPedForn;
+    SqlTableModel model;
     // methods
     void setupTables();
 };

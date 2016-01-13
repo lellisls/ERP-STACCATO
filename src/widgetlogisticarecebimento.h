@@ -9,8 +9,7 @@ namespace Ui {
   class WidgetLogisticaRecebimento;
 }
 
-class WidgetLogisticaRecebimento : public QWidget
-{
+class WidgetLogisticaRecebimento : public QWidget {
     Q_OBJECT
 
   public:
@@ -20,13 +19,14 @@ class WidgetLogisticaRecebimento : public QWidget
     void TableFornLogistica_activated(const QString &fornecedor);
 
   private slots:
+    void on_checkBoxMarcarTodos_clicked(const bool &checked);
     void on_pushButtonMarcarRecebido_clicked();
 
-    void on_checkBoxMarcarTodos_clicked(const bool &checked);
-
   private:
+    // attributes
     Ui::WidgetLogisticaRecebimento *ui;
-    SqlTableModel modelReceb;
+    SqlTableModel model;
+    // methods
     void setupTables();
 };
 

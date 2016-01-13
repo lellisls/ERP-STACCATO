@@ -81,7 +81,7 @@ class Orcamento : public RegisterDialog {
     void novoItem();
     void removeItem();
     void setupTables();
-    void updateId();
+    void generateId();
 };
 
 #endif // ORCAMENTO_H

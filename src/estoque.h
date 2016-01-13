@@ -18,13 +18,13 @@ class Estoque : public QDialog {
     void viewRegisterById(const QString &codComercial);
 
   private slots:
-    void on_tableEstoque_activated(const QModelIndex &index);
+    void on_table_activated(const QModelIndex &index);
     void on_pushButtonExibirNfe_clicked();
     void on_pushButtonConsumir_clicked();
 
   private:
     Ui::Estoque *ui;
-    SqlTableModel modelEstoque;
+    SqlTableModel model;
 };
 
 #endif // ESTOQUE_H

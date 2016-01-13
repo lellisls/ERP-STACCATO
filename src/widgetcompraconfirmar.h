@@ -21,8 +21,10 @@ class WidgetCompraConfirmar : public QWidget {
     void on_pushButtonConfirmarCompra_clicked();
 
   private:
+    // attributes
     Ui::WidgetCompraConfirmar *ui;
-    SqlTableModel modelItemPedidosComp;
+    SqlTableModel model;
+    // methods
     void setupTables();
 };
 

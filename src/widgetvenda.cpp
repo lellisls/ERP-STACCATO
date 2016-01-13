@@ -38,11 +38,8 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
   connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
   connect(ui->comboBoxLojas, &QComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
 
-  QSqlQuery query("SELECT * FROM loja WHERE descricao != 'Geral' AND desativado = FALSE");
+  QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
 
-  ui->comboBoxLojas->addItem("");
-
-  // NOTE: verificar uma forma melhor de registrar a loja 'Geral'
   while (query.next()) {
     ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
@@ -83,8 +80,7 @@ void WidgetVenda::montaFiltro() {
 
   const QString filtroLoja = "(Código LIKE '%" + sigla + "%')";
 
-  const QString filtroRadio =
-      ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::nome() + "'";
+  const QString filtroRadio = ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::nome() + "'";
 
   QString filtroCheck;
 

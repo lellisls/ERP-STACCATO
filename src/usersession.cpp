@@ -14,7 +14,7 @@ int UserSession::loja() { return (query->value("idLoja").toInt()); }
 
 int UserSession::idUsuario() { return (query->value("idUsuario").toInt()); }
 
-QString UserSession::getNome() { return (query->value("nome").toString()); }
+QString UserSession::nome() { return (query->value("nome").toString()); }
 
 bool UserSession::login(const QString &user, const QString &password) {
   initialize();

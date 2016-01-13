@@ -14,42 +14,44 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
 
+  setupTables();
+
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
-
-  modelContas.setTable("conta_a_receber_has_pagamento");
-  modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelContas.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelContas.lastError().text());
-  }
-
-  ui->tableView->setModel(&modelContas);
-  ui->tableView->setItemDelegate(new DoubleDelegate(this));
-  ui->tableView->setItemDelegateForColumn(modelContas.fieldIndex("status"), new ComboBoxDelegate(this));
-  ui->tableView->hideColumn(modelContas.fieldIndex("idPagamento"));
-  ui->tableView->hideColumn(modelContas.fieldIndex("idVenda"));
-  ui->tableView->hideColumn(modelContas.fieldIndex("idLoja"));
 
   show();
 }
 
 ContasAReceber::~ContasAReceber() { delete ui; }
 
-void ContasAReceber::on_pushButtonSalvar_clicked() {
-  close();
+void ContasAReceber::setupTables() {
+  model.setTable("conta_a_receber_has_pagamento");
+  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela conta_a_receber_has_pagamento: " + model.lastError().text());
+  }
+
+  ui->table->setModel(&model);
+  ui->table->setItemDelegate(new DoubleDelegate(this));
+  ui->table->setItemDelegateForColumn(model.fieldIndex("status"), new ComboBoxDelegate(this));
+  ui->table->hideColumn(model.fieldIndex("idPagamento"));
+  ui->table->hideColumn(model.fieldIndex("idVenda"));
+  ui->table->hideColumn(model.fieldIndex("idLoja"));
 }
+
+void ContasAReceber::on_pushButtonSalvar_clicked() { close(); }
 
 void ContasAReceber::viewConta(const QString &idVenda) {
   this->idVenda = idVenda;
 
-  modelContas.setFilter("idVenda = '" + idVenda + "'");
+  model.setFilter("idVenda = '" + idVenda + "'");
 
-  ui->checkBox->setChecked(modelContas.data(0, "pago").toString() == "SIM" ? true : false);
+  ui->checkBox->setChecked(model.data(0, "pago").toString() == "SIM" ? true : false);
 
-  ui->tableView->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
-  for (int row = 0, rowCount = modelContas.rowCount(); row < rowCount; ++row) {
-    ui->tableView->openPersistentEditor(modelContas.index(row, modelContas.fieldIndex("status")));
+  for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
+    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("status")));
   }
 }

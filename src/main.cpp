@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.5");
+  app.setApplicationVersion("0.2.7");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -72,3 +72,5 @@ void storeSelection() {
     setSettings("Login/homologacao", false);
   }
 }
+
+// NOTE: verificar todos os QSqlQuery.exec

@@ -76,6 +76,8 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
     modelEnd.setData(row, primaryKey, id);
   }
 
+  // TODO: modelEnd toUpper?
+
   if (not modelEnd.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
     QSqlQuery("ROLLBACK").exec();

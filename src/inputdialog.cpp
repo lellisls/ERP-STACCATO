@@ -43,11 +43,12 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
     ui->labelEvento->setText("Data confirmação:");
     ui->labelProximoEvento->setText("Data prevista faturamento:");
 
-    ui->tableView->showColumn(model.fieldIndex("selecionado"));
+    // NOTE: readd this later
+    //    ui->tableView->showColumn(model.fieldIndex("selecionado"));
 
-    for (int i = 0; i < model.rowCount(); ++i) {
-      ui->tableView->openPersistentEditor(model.index(i, model.fieldIndex("selecionado")));
-    }
+    //    for (int i = 0; i < model.rowCount(); ++i) {
+    //      ui->tableView->openPersistentEditor(model.index(i, model.fieldIndex("selecionado")));
+    //    }
   }
 
   if (type == Faturamento) {
@@ -125,7 +126,7 @@ void InputDialog::setFilter(const QStringList &ids) {
     return;
   }
 
-  ui->tableView->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   int nWidth = 800;
   int nHeight = height();
@@ -134,7 +135,7 @@ void InputDialog::setFilter(const QStringList &ids) {
               parentWidget()->y() + parentWidget()->height() / 2 - nHeight / 2, nWidth, nHeight);
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    ui->tableView->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
   }
 
   QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
@@ -155,7 +156,7 @@ void InputDialog::setFilter(const QString &id) {
     return;
   }
 
-  ui->tableView->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   int nWidth = 800;
   int nHeight = height();
@@ -164,7 +165,7 @@ void InputDialog::setFilter(const QString &id) {
               parentWidget()->y() + parentWidget()->height() / 2 - nHeight / 2, nWidth, nHeight);
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    ui->tableView->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
   }
 
   QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
@@ -190,25 +191,25 @@ void InputDialog::setupTables() {
     return;
   }
 
-  ui->tableView->setModel(&model);
-  ui->tableView->hideColumn("quantUpd");
-  ui->tableView->hideColumn("selecionado");
-  ui->tableView->hideColumn("idPedido");
-  ui->tableView->hideColumn("idProduto");
-  ui->tableView->hideColumn("codBarras");
-  ui->tableView->hideColumn("idCompra");
-  ui->tableView->hideColumn("status");
-  ui->tableView->hideColumn("dataPrevCompra");
-  ui->tableView->hideColumn("dataRealCompra");
-  ui->tableView->hideColumn("dataPrevConf");
-  ui->tableView->hideColumn("dataRealConf");
-  ui->tableView->hideColumn("dataPrevFat");
-  ui->tableView->hideColumn("dataRealFat");
-  ui->tableView->hideColumn("dataPrevColeta");
-  ui->tableView->hideColumn("dataRealColeta");
-  ui->tableView->hideColumn("dataPrevReceb");
-  ui->tableView->hideColumn("dataRealReceb");
-  ui->tableView->hideColumn("dataPrevEnt");
-  ui->tableView->hideColumn("dataRealEnt");
-  ui->tableView->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->table->setModel(&model);
+  ui->table->hideColumn("quantUpd");
+  ui->table->hideColumn("selecionado");
+  ui->table->hideColumn("idPedido");
+  ui->table->hideColumn("idProduto");
+  ui->table->hideColumn("codBarras");
+  ui->table->hideColumn("idCompra");
+  ui->table->hideColumn("status");
+  ui->table->hideColumn("dataPrevCompra");
+  ui->table->hideColumn("dataRealCompra");
+  ui->table->hideColumn("dataPrevConf");
+  ui->table->hideColumn("dataRealConf");
+  ui->table->hideColumn("dataPrevFat");
+  ui->table->hideColumn("dataRealFat");
+  ui->table->hideColumn("dataPrevColeta");
+  ui->table->hideColumn("dataRealColeta");
+  ui->table->hideColumn("dataPrevReceb");
+  ui->table->hideColumn("dataRealReceb");
+  ui->table->hideColumn("dataPrevEnt");
+  ui->table->hideColumn("dataRealEnt");
+  ui->table->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
 }

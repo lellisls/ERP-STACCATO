@@ -18,7 +18,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QTableView" name="tableContas"/>
+    <widget class="QTableView" name="table"/>
    </item>
    <item row="0" column="1">
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -81,7 +81,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>tableContas</tabstop>
+  <tabstop>table</tabstop>
   <tabstop>dateTimeEdit</tabstop>
   <tabstop>checkBoxPago</tabstop>
   <tabstop>pushButtonSalvar</tabstop>

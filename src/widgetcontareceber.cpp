@@ -1,8 +1,8 @@
-#include "widgetcontareceber.h"
+#include <QSqlError>
+
 #include "doubledelegate.h"
 #include "ui_widgetcontareceber.h"
-
-#include <QSqlError>
+#include "widgetcontareceber.h"
 
 WidgetContaReceber::WidgetContaReceber(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetContaReceber) {
   ui->setupUi(this);
@@ -13,22 +13,18 @@ WidgetContaReceber::WidgetContaReceber(QWidget *parent) : QWidget(parent), ui(ne
 WidgetContaReceber::~WidgetContaReceber() { delete ui; }
 
 void WidgetContaReceber::setupTables() {
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
-
   model.setTable("conta_a_receber_has_pagamento");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  ui->tableContasReceber->setModel(&model);
-  ui->tableContasReceber->setItemDelegate(doubledelegate);
-  ui->tableContasReceber->hideColumn("idPagamento");
+  ui->table->setModel(&model);
+  ui->table->setItemDelegate(new DoubleDelegate(this));
+  ui->table->hideColumn("idPagamento");
 }
 
 QString WidgetContaReceber::updateTables() {
-  if (not model.select()) {
-    return "Erro lendo tabela conta_a_receber_has_pagamento: " + model.lastError().text();
-  }
+  if (not model.select()) return "Erro lendo tabela conta_a_receber_has_pagamento: " + model.lastError().text();
 
-  ui->tableContasReceber->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }

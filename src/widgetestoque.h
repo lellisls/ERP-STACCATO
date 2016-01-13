@@ -18,13 +18,15 @@ class WidgetEstoque : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_tableEstoque_activated(const QModelIndex &index);
+    void on_table_activated(const QModelIndex &index);
     void on_pushButtonEntradaEstoque_clicked();
     void on_pushButtonTesteFaturamento_clicked();
 
   private:
+    // attributes
     Ui::WidgetEstoque *ui;
-    SqlTableModel modelEstoque;
+    SqlTableModel model;
+    // methods
     void setupTables();
 };
 

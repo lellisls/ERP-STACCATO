@@ -1,7 +1,7 @@
 #include <QSqlError>
 
-#include "widgetlogistica.h"
 #include "ui_widgetlogistica.h"
+#include "widgetlogistica.h"
 
 WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogistica) {
   ui->setupUi(this);
@@ -15,40 +15,35 @@ WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::
 WidgetLogistica::~WidgetLogistica() { delete ui; }
 
 void WidgetLogistica::setupTables() {
-  modelPedForn.setTable("view_fornecedor_logistica");
+  model.setTable("view_fornecedor_logistica");
 
-  modelPedForn.setHeaderData("fornecedor", "Fornecedor");
-  modelPedForn.setHeaderData("COUNT(fornecedor)", "Itens");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("COUNT(fornecedor)", "Itens");
 
-  ui->tableFornLogistica->setModel(&modelPedForn);
+  ui->table->setModel(&model);
 }
 
 QString WidgetLogistica::updateTables() {
-  if (not modelPedForn.select()) {
-    return "Erro lendo tabela: " + modelPedForn.lastError().text();
-  }
+  if (not model.select()) return "Erro lendo tabela: " + model.lastError().text();
 
-  ui->tableFornLogistica->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   switch (ui->tabWidgetLogistica->currentIndex()) {
-    case 0: { // Coletas
-        return ui->widgetColeta->updateTables();
-      }
+    case 0:
+      return ui->widgetColeta->updateTables();
 
-    case 1: { // Recebimentos
-        return ui->widgetRecebimento->updateTables();
-      }
+    case 1:
+      return ui->widgetRecebimento->updateTables();
 
-    case 2: { // Entregas
-        return ui->widgetEntrega->updateTables();
-      }
+    case 2:
+      return ui->widgetEntrega->updateTables();
   }
 
   return QString();
 }
 
-void WidgetLogistica::on_tableFornLogistica_activated(const QModelIndex &index) {
-  const QString fornecedor = modelPedForn.data(index.row(), "fornecedor").toString();
+void WidgetLogistica::on_table_activated(const QModelIndex &index) {
+  const QString fornecedor = model.data(index.row(), "fornecedor").toString();
 
   ui->widgetColeta->TableFornLogistica_activated(fornecedor);
   ui->widgetRecebimento->TableFornLogistica_activated(fornecedor);

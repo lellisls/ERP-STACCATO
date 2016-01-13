@@ -473,7 +473,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_21">
           <item row="1" column="0">
-           <widget class="QTableView" name="tableEndereco">
+           <widget class="TableView" name="tableEndereco">
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>
@@ -779,6 +779,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>src/tableview.h</header>
+  </customwidget>
   <customwidget>
    <class>LineEditCEP</class>
    <extends>QLineEdit</extends>

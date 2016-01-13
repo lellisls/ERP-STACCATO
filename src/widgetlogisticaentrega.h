@@ -18,16 +18,16 @@ class WidgetLogisticaEntrega : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_radioButtonEntregaLimpar_clicked();
-    void on_radioButtonEntregaEnviado_clicked();
-    void on_radioButtonEntregaPendente_clicked();
     void on_lineEditBuscaEntregas_textChanged(const QString &text);
-    void on_tableEntregasCliente_activated(const QModelIndex &index);
+    void on_radioButtonEntregaEnviado_clicked();
+    void on_radioButtonEntregaLimpar_clicked();
+    void on_radioButtonEntregaPendente_clicked();
+    void on_table_activated(const QModelIndex &index);
 
   private:
     // attributes
     Ui::WidgetLogisticaEntrega *ui;
-    SqlTableModel modelEntregasCliente;
+    SqlTableModel model;
     // methods
     void setupTables();
 };

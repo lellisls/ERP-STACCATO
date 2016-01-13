@@ -21,9 +21,12 @@ class ContasAReceber : public QDialog {
     void on_pushButtonSalvar_clicked();
 
   private:
+    // attributes
     Ui::ContasAReceber *ui;
-    SqlTableModel modelContas;
+    SqlTableModel model;
     QString idVenda;
+    // methods
+    void setupTables();
 };
 
 #endif // CONTASARECEBER_H

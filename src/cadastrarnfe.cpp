@@ -1,6 +1,5 @@
 #include <QDate>
 #include <QDebug>
-#include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QProgressDialog>
@@ -47,7 +46,7 @@ void CadastrarNFe::setupTables(QString idVenda) {
 
   modelLoja.setTable("loja");
   modelLoja.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelLoja.setFilter("idLoja = 2"); // 1 is loja geral, 2 for alphaville
+  modelLoja.setFilter("descricao = 'ALPHAVILLE'");
 
   if (not modelLoja.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela de lojas: " + modelLoja.lastError().text());

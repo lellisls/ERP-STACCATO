@@ -48,10 +48,10 @@ CadastroCliente::~CadastroCliente() { delete ui; }
 
 void CadastroCliente::setupTables() {
   ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idCliente"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
+  ui->tableEndereco->hideColumn("idEndereco");
+  ui->tableEndereco->hideColumn("desativado");
+  ui->tableEndereco->hideColumn("idCliente");
+  ui->tableEndereco->hideColumn("codUF");
 }
 
 bool CadastroCliente::verifyFields() {
@@ -218,7 +218,7 @@ void CadastroCliente::on_pushButtonBuscar_clicked() {
 }
 
 void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
-  ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+  ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 
   QSqlQuery query;
   query.prepare("SELECT * FROM cliente WHERE cpf = :cpf");
@@ -237,7 +237,7 @@ void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
 
 void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 
   QSqlQuery query;
   query.prepare("SELECT * FROM cliente WHERE cnpj = :cnpj");
@@ -364,7 +364,7 @@ void CadastroCliente::on_radioButtonPF_toggled(const bool &checked) {
 
 void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
   ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                         : "color: rgb(255, 0, 0);");
+                                                                                         : "color: rgb(255, 0, 0)");
 }
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool &checked) {
@@ -391,3 +391,5 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
     novoEndereco();
   }
 }
+
+// TODO: digitar um cpf existente e clicar em 'cancelar', bang!

@@ -24,7 +24,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="TableView" name="tableFaturamento">
+       <widget class="TableView" name="table">
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>
         </property>

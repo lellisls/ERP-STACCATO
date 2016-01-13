@@ -31,10 +31,10 @@ CadastroFornecedor::~CadastroFornecedor() { delete ui; }
 
 void CadastroFornecedor::setupTables() {
   ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idFornecedor"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
+  ui->tableEndereco->hideColumn("idEndereco");
+  ui->tableEndereco->hideColumn("desativado");
+  ui->tableEndereco->hideColumn("idFornecedor");
+  ui->tableEndereco->hideColumn("codUF");
 }
 
 void CadastroFornecedor::setupUi() {
@@ -162,12 +162,12 @@ void CadastroFornecedor::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {
   ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                         : "color: rgb(255, 0, 0);");
+                                                                                         : "color: rgb(255, 0, 0)");
 }
 
 void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {

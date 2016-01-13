@@ -3,9 +3,9 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-#include "widgetcompraconfirmar.h"
-#include "ui_widgetcompraconfirmar.h"
 #include "inputdialog.h"
+#include "ui_widgetcompraconfirmar.h"
+#include "widgetcompraconfirmar.h"
 
 WidgetCompraConfirmar::WidgetCompraConfirmar(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraConfirmar) {
   ui->setupUi(this);
@@ -16,23 +16,21 @@ WidgetCompraConfirmar::WidgetCompraConfirmar(QWidget *parent) : QWidget(parent),
 WidgetCompraConfirmar::~WidgetCompraConfirmar() { delete ui; }
 
 void WidgetCompraConfirmar::setupTables() {
-  modelItemPedidosComp.setTable("view_compras");
+  model.setTable("view_compras");
 
-  modelItemPedidosComp.setHeaderData("fornecedor", "Fornecedor");
-  modelItemPedidosComp.setHeaderData("idCompra", "Compra");
-  modelItemPedidosComp.setHeaderData("COUNT(idProduto)", "Itens");
-  modelItemPedidosComp.setHeaderData("SUM(preco)", "Preço");
-  modelItemPedidosComp.setHeaderData("status", "Status");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("idCompra", "Compra");
+  model.setHeaderData("COUNT(idProduto)", "Itens");
+  model.setHeaderData("SUM(preco)", "Preço");
+  model.setHeaderData("status", "Status");
 
-  ui->tablePedidosComp->setModel(&modelItemPedidosComp);
+  ui->table->setModel(&model);
 }
 
 QString WidgetCompraConfirmar::updateTables() {
-  if (not modelItemPedidosComp.select()) {
-    return "Erro lendo tabela compras: " + modelItemPedidosComp.lastError().text();
-  }
+  if (not model.select()) return "Erro lendo tabela compras: " + model.lastError().text();
 
-  ui->tablePedidosComp->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }
@@ -40,20 +38,18 @@ QString WidgetCompraConfirmar::updateTables() {
 void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
   QString idCompra;
 
-  if (ui->tablePedidosComp->selectionModel()->selectedRows().size() == 0) {
+  if (ui->table->selectionModel()->selectedRows().size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
-  int row = ui->tablePedidosComp->selectionModel()->selectedRows().first().row();
-  idCompra = modelItemPedidosComp.data(row, "idCompra").toString();
+  int row = ui->table->selectionModel()->selectedRows().first().row();
+  idCompra = model.data(row, "idCompra").toString();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::ConfirmarCompra, this);
   inputDlg->setFilter(idCompra);
 
-  if (inputDlg->exec() != InputDialog::Accepted) {
-    return;
-  }
+  if (inputDlg->exec() != InputDialog::Accepted) return;
 
   const QDate dataConf = inputDlg->getDate();
   const QDate dataPrevista = inputDlg->getNextDate();

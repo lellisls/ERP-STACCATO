@@ -53,10 +53,10 @@ void CadastroLoja::setupTables() {
   ui->tableAlcadas->resizeColumnsToContents();
 
   ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idLoja"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
+  ui->tableEndereco->hideColumn("idEndereco");
+  ui->tableEndereco->hideColumn("desativado");
+  ui->tableEndereco->hideColumn("idLoja");
+  ui->tableEndereco->hideColumn("codUF");
 }
 
 void CadastroLoja::clearFields() {
@@ -138,7 +138,7 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
 
 void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {

@@ -107,7 +107,7 @@ void RegisterDialog::sendUpdateMessage() {
   emit registerUpdated(data(primaryKey), text);
 }
 
-QString RegisterDialog::requiredStyle() { return (QString("background-color: rgb(255, 255, 127);")); }
+QString RegisterDialog::requiredStyle() { return (QString("background-color: rgb(255, 255, 127)")); }
 
 void RegisterDialog::closeEvent(QCloseEvent *event) { confirmationMessage() ? event->accept() : event->ignore(); }
 

@@ -22,8 +22,10 @@ class WidgetCompraFaturar : public QWidget {
     void on_pushButtonMarcarFaturado_clicked();
 
   private:
+    // attributes
     Ui::WidgetCompraFaturar *ui;
-    SqlTableModel modelFat;
+    SqlTableModel model;
+    // methods
     void setupTables();
 };
 

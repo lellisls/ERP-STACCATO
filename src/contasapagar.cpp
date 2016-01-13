@@ -12,23 +12,7 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
 
-  modelItensContas.setTable("conta_a_pagar_has_pagamento");
-  modelItensContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelItensContas.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_pagar_has_pagamento: " + modelItensContas.lastError().text());
-  }
-
-  modelContas.setTable("conta_a_pagar_has_pagamento");
-  modelContas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelContas.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar_has_pagamento: " + modelContas.lastError().text());
-  }
-
-  ui->tableContas->setModel(&modelItensContas);
-  ui->tableContas->resizeColumnsToContents();
+  setupTables();
 
   ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
@@ -36,6 +20,18 @@ ContasAPagar::ContasAPagar(QWidget *parent) : QDialog(parent), ui(new Ui::Contas
 }
 
 ContasAPagar::~ContasAPagar() { delete ui; }
+
+void ContasAPagar::setupTables() {
+  model.setTable("conta_a_pagar_has_pagamento");
+  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_pagar_has_pagamento: " + model.lastError().text());
+  }
+
+  ui->table->setModel(&model);
+  ui->table->resizeColumnsToContents();
+}
 
 void ContasAPagar::on_pushButtonSalvar_clicked() {
   QSqlQuery query;
@@ -54,8 +50,7 @@ void ContasAPagar::on_pushButtonSalvar_clicked() {
 void ContasAPagar::viewConta(const QString &idVenda) {
   this->idVenda = idVenda;
 
-  modelItensContas.setFilter("idVenda = '" + idVenda + "'");
-  modelContas.setFilter("idVenda = '" + idVenda + "'");
+  model.setFilter("idVenda = '" + idVenda + "'");
 
-  if (modelContas.data(0, "pago").toString() == "SIM") ui->checkBoxPago->setChecked(true);
+  if (model.data(0, "pago").toString() == "SIM") ui->checkBoxPago->setChecked(true);
 }

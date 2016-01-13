@@ -175,21 +175,10 @@ void Orcamento::removeItem() {
   novoItem();
 }
 
-void Orcamento::updateId() {
+void Orcamento::generateId() {
+  QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
+
   QSqlQuery query;
-  query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", ui->lineEditOrcamento->text());
-
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro na query: " + query.lastError().text());
-    return;
-  }
-
-  if (query.size() != 0) return;
-
-  QString id =
-      UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
-
   query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
                 "venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
   query.bindValue(":id", id + "%");
@@ -204,8 +193,8 @@ void Orcamento::updateId() {
   if (query.last()) {
     QString temp = query.value("idOrcamento").toString().mid(id.size());
 
-    if (temp.endsWith("R")) temp.remove(temp.size() - 1, 1);
     if (temp.endsWith("O")) temp.remove(temp.size() - 1, 1);
+    if (temp.endsWith("R")) temp.remove(temp.size() - 1, 1);
 
     last = temp.toInt();
   }
@@ -264,8 +253,6 @@ bool Orcamento::verifyFields() {
 }
 
 bool Orcamento::savingProcedures() {
-  updateId();
-
   if (not setData("data", ui->dateTimeEdit->dateTime())) return false;
   if (not setData("descontoPorc", ui->doubleSpinBoxDescontoGlobal->value())) return false;
   double desconto = ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100.;
@@ -542,7 +529,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
 
   QSqlQuery query;
   query.prepare("SELECT * FROM produto WHERE idProduto = :index");
-  query.bindValue(":index", ui->itemBoxProduto->value().toInt());
+  query.bindValue(":index", ui->itemBoxProduto->value());
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro na busca do produto: " + query.lastError().text());
@@ -565,7 +552,7 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
   ui->doubleSpinBoxPrecoTotal->setEnabled(true);
 
   ui->doubleSpinBoxQte->setSingleStep(
-        query.value((un.contains("M2") or un.contains("M²") or un.contains("ML")) ? "m2cx" : "pccx").toDouble());
+        query.value(un.contains("M2") or un.contains("M²") or un.contains("ML") ? "m2cx" : "pccx").toDouble());
 
   ui->doubleSpinBoxQte->setValue(0.);
 
@@ -648,7 +635,10 @@ bool Orcamento::save(const bool &isUpdate) {
     return false;
   }
 
-  if (not isUpdate) model.insertRow(row);
+  if (not isUpdate) {
+    model.insertRow(row);
+    generateId();
+  }
 
   if (not savingProcedures()) {
     errorMessage();
@@ -837,6 +827,3 @@ void Orcamento::on_doubleSpinBoxSubTotalBruto_valueChanged(const double &) {
 }
 
 void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!"); }
-
-// NOTE: replicar nao copia desconto individual de cada produto (talvez nao deva?)
-// TODO: verificar todos os QSqlQuery.exec

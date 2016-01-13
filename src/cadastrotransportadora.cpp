@@ -31,10 +31,10 @@ CadastroTransportadora::~CadastroTransportadora() { delete ui; }
 
 void CadastroTransportadora::setupTables() {
   ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idTransportadora"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
+  ui->tableEndereco->hideColumn("idEndereco");
+  ui->tableEndereco->hideColumn("desativado");
+  ui->tableEndereco->hideColumn("idTransportadora");
+  ui->tableEndereco->hideColumn("codUF");
 }
 
 void CadastroTransportadora::clearFields() {
@@ -110,7 +110,7 @@ void CadastroTransportadora::on_pushButtonBuscar_clicked() {
 
 void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0);");
+        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {

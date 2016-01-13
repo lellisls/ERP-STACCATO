@@ -42,8 +42,8 @@ class SearchDialog : public QDialog {
     void on_pushButtonSelecionar_clicked();
     void on_radioButtonProdAtivos_toggled(const bool &);
     void on_radioButtonProdDesc_toggled(const bool &);
-    void on_tableBusca_doubleClicked(const QModelIndex &);
-    void on_tableBusca_entered(const QModelIndex &);
+    void on_table_doubleClicked(const QModelIndex &);
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes
@@ -54,7 +54,6 @@ class SearchDialog : public QDialog {
     QString representacao;
     QStringList indexes;
     QStringList textKeys;
-    QVariant selectedId;
     QVector<QPair<QString, QString>> headerData;
     SqlTableModel model;
     // methods

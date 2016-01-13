@@ -19,80 +19,80 @@ WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent)
 WidgetLogisticaRecebimento::~WidgetLogisticaRecebimento() { delete ui; }
 
 QString WidgetLogisticaRecebimento::updateTables() {
-  if (not modelReceb.select()) {
-    return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb.lastError().text();
+  if (not model.select()) {
+    return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
   }
 
-  for (int i = 0; i < modelReceb.rowCount(); ++i) {
-    ui->tableRecebimento->openPersistentEditor(modelReceb.index(i, modelReceb.fieldIndex("selecionado")));
+  for (int row = 0; row < model.rowCount(); ++row) {
+    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
   }
 
-  ui->tableRecebimento->resizeColumnsToContents();
+  ui->table->resizeColumnsToContents();
 
   return QString();
 }
 
 void WidgetLogisticaRecebimento::TableFornLogistica_activated(const QString &fornecedor) {
-  modelReceb.setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM RECEBIMENTO'");
+  model.setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM RECEBIMENTO'");
 
-  if (not modelReceb.select()) {
+  if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + modelReceb.lastError().text());
+                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
 }
 
 void WidgetLogisticaRecebimento::setupTables() {
-  modelReceb.setTable("pedido_fornecedor_has_produto");
-  modelReceb.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  model.setTable("pedido_fornecedor_has_produto");
+  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelReceb.setHeaderData("selecionado", "");
-  modelReceb.setHeaderData("fornecedor", "Fornecedor");
-  modelReceb.setHeaderData("descricao", "Descrição");
-  modelReceb.setHeaderData("colecao", "Coleção");
-  modelReceb.setHeaderData("quant", "Quant.");
-  modelReceb.setHeaderData("un", "Un.");
-  modelReceb.setHeaderData("preco", "Preço");
-  modelReceb.setHeaderData("formComercial", "Form. Com.");
-  modelReceb.setHeaderData("codComercial", "Cód. Com.");
-  modelReceb.setHeaderData("codBarras", "Cód. Bar.");
-  modelReceb.setHeaderData("idCompra", "Compra");
-  modelReceb.setHeaderData("dataRealColeta", "Data Coleta");
-  modelReceb.setHeaderData("dataPrevReceb", "Prev. Receb.");
-  modelReceb.setHeaderData("status", "Status");
+  model.setHeaderData("selecionado", "");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("descricao", "Descrição");
+  model.setHeaderData("colecao", "Coleção");
+  model.setHeaderData("quant", "Quant.");
+  model.setHeaderData("un", "Un.");
+  model.setHeaderData("preco", "Preço");
+  model.setHeaderData("formComercial", "Form. Com.");
+  model.setHeaderData("codComercial", "Cód. Com.");
+  model.setHeaderData("codBarras", "Cód. Bar.");
+  model.setHeaderData("idCompra", "Compra");
+  model.setHeaderData("dataRealColeta", "Data Coleta");
+  model.setHeaderData("dataPrevReceb", "Prev. Receb.");
+  model.setHeaderData("status", "Status");
 
-  modelReceb.setFilter("status = 'EM RECEBIMENTO'");
+  model.setFilter("status = 'EM RECEBIMENTO'");
 
-  ui->tableRecebimento->setModel(&modelReceb);
-  ui->tableRecebimento->setItemDelegateForColumn("status", new ComboBoxDelegate(this));
-  ui->tableRecebimento->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
-  ui->tableRecebimento->hideColumn("idPedido");
-  ui->tableRecebimento->hideColumn("idLoja");
-  ui->tableRecebimento->hideColumn("item");
-  ui->tableRecebimento->hideColumn("idProduto");
-  ui->tableRecebimento->hideColumn("prcUnitario");
-  ui->tableRecebimento->hideColumn("parcial");
-  ui->tableRecebimento->hideColumn("desconto");
-  ui->tableRecebimento->hideColumn("parcialDesc");
-  ui->tableRecebimento->hideColumn("descGlobal");
-  ui->tableRecebimento->hideColumn("dataPrevCompra");
-  ui->tableRecebimento->hideColumn("dataRealCompra");
-  ui->tableRecebimento->hideColumn("dataPrevConf");
-  ui->tableRecebimento->hideColumn("dataRealConf");
-  ui->tableRecebimento->hideColumn("dataPrevFat");
-  ui->tableRecebimento->hideColumn("dataRealFat");
-  ui->tableRecebimento->hideColumn("dataPrevEnt");
-  ui->tableRecebimento->hideColumn("dataRealEnt");
-  ui->tableRecebimento->hideColumn("dataPrevColeta");
-  ui->tableRecebimento->hideColumn("dataRealReceb");
-  ui->tableRecebimento->hideColumn("quantUpd");
+  ui->table->setModel(&model);
+  ui->table->setItemDelegateForColumn("status", new ComboBoxDelegate(this));
+  ui->table->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->table->hideColumn("idPedido");
+  ui->table->hideColumn("idLoja");
+  ui->table->hideColumn("item");
+  ui->table->hideColumn("idProduto");
+  ui->table->hideColumn("prcUnitario");
+  ui->table->hideColumn("parcial");
+  ui->table->hideColumn("desconto");
+  ui->table->hideColumn("parcialDesc");
+  ui->table->hideColumn("descGlobal");
+  ui->table->hideColumn("dataPrevCompra");
+  ui->table->hideColumn("dataRealCompra");
+  ui->table->hideColumn("dataPrevConf");
+  ui->table->hideColumn("dataRealConf");
+  ui->table->hideColumn("dataPrevFat");
+  ui->table->hideColumn("dataRealFat");
+  ui->table->hideColumn("dataPrevEnt");
+  ui->table->hideColumn("dataRealEnt");
+  ui->table->hideColumn("dataPrevColeta");
+  ui->table->hideColumn("dataRealReceb");
+  ui->table->hideColumn("quantUpd");
 }
 
 void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
   QList<int> lista;
 
-  for (const auto index : modelReceb.match(modelReceb.index(0, modelReceb.fieldIndex("selecionado")), Qt::DisplayRole,
-                                           true, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
+  for (const auto index : model.match(model.index(0, model.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
+                                      Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
     lista.append(index.row());
   }
 
@@ -108,16 +108,16 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
   const QDate dataReceb = inputDlg->getDate();
 
   for (const auto row : lista) {
-    modelReceb.setData(row, "selecionado", false);
+    model.setData(row, "selecionado", false);
 
-    if (modelReceb.data(row, "status").toString() != "EM RECEBIMENTO") {
-      modelReceb.select();
+    if (model.data(row, "status").toString() != "EM RECEBIMENTO") {
+      model.select();
       QMessageBox::critical(this, "Erro!", "Produto não estava em recebimento!");
       return;
     }
 
-    if (not modelReceb.setData(row, "status", "ESTOQUE")) {
-      QMessageBox::critical(this, "Erro!", "Erro marcando status ESTOQUE: " + modelReceb.lastError().text());
+    if (not model.setData(row, "status", "ESTOQUE")) {
+      QMessageBox::critical(this, "Erro!", "Erro marcando status ESTOQUE: " + model.lastError().text());
       return;
     }
 
@@ -127,7 +127,7 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
     query.prepare(
           "UPDATE venda_has_produto SET dataRealReceb = :dataRealReceb, status = 'ESTOQUE' WHERE idCompra = :idCompra");
     query.bindValue(":dataRealReceb", dataReceb);
-    query.bindValue(":idCompra", modelReceb.data(row, "idCompra"));
+    query.bindValue(":idCompra", model.data(row, "idCompra"));
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
@@ -140,13 +140,13 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
     }
     //
 
-    if (not modelReceb.setData(row, "dataRealReceb", dataReceb.toString("yyyy-MM-dd"))) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando data de recebimento: " + modelReceb.lastError().text());
+    if (not model.setData(row, "dataRealReceb", dataReceb.toString("yyyy-MM-dd"))) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando data de recebimento: " + model.lastError().text());
       return;
     }
 
     query.prepare("UPDATE estoque SET status = 'RECEBIDO' WHERE idCompra = :idCompra AND idVendaProduto = 0");
-    query.bindValue(":idCompra", modelReceb.data(row, "idCompra"));
+    query.bindValue(":idCompra", model.data(row, "idCompra"));
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status do estoque: " + query.lastError().text());
@@ -154,9 +154,9 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
     }
   }
 
-  if (not modelReceb.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
-                          modelReceb.lastError().text());
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro salvando dados da tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
 
@@ -166,7 +166,7 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
 }
 
 void WidgetLogisticaRecebimento::on_checkBoxMarcarTodos_clicked(const bool &checked) {
-  for (int row = 0; row < modelReceb.rowCount(); ++row) {
-    modelReceb.setData(row, "selecionado", checked);
+  for (int row = 0; row < model.rowCount(); ++row) {
+    model.setData(row, "selecionado", checked);
   }
 }

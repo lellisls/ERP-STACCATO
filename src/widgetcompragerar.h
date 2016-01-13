@@ -21,13 +21,13 @@ class WidgetCompraGerar : public QWidget {
     QString gerarExcel(QList<int> lista);
     void on_checkBoxTodosGerar_clicked(const bool &checked);
     void on_pushButtonGerarCompra_clicked();
-    void on_tableFornCompras_activated(const QModelIndex &index);
+    void on_tableProdutos_activated(const QModelIndex &index);
 
   private:
     // attributes
     Ui::WidgetCompraGerar *ui;
-    SqlTableModel modelItemPedidosPend;
-    SqlTableModel modelPedForn;
+    SqlTableModel modelProdutos;
+    SqlTableModel modelForn;
     // methods
     QVariant settings(const QString &key) const;
     void setSettings(const QString &key, const QVariant &value) const;

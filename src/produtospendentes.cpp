@@ -144,6 +144,7 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
 void ProdutosPendentes::atualiza(QSqlQuery &query) {
   query.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant WHERE codComercial = :codComercial AND "
                 "status = 'PENDENTE'");
+  // TODO: essa query ainda funciona depois dela ser preparada em cima??
   query.bindValue(":quant", query.value("quant").toDouble() + ui->doubleSpinBoxComprar->value());
   query.bindValue(":codComercial", codComercial);
 

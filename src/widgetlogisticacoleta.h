@@ -9,8 +9,7 @@ namespace Ui {
   class WidgetLogisticaColeta;
 }
 
-class WidgetLogisticaColeta : public QWidget
-{
+class WidgetLogisticaColeta : public QWidget {
     Q_OBJECT
 
   public:
@@ -20,13 +19,14 @@ class WidgetLogisticaColeta : public QWidget
     void TableFornLogistica_activated(const QString &fornecedor);
 
   private slots:
+    void on_checkBoxMarcarTodos_clicked(const bool &checked);
     void on_pushButtonMarcarColetado_clicked();
 
-    void on_checkBoxMarcarTodos_clicked(const bool &checked);
-
   private:
+    // attributes
     Ui::WidgetLogisticaColeta *ui;
-    SqlTableModel modelColeta;
+    SqlTableModel model;
+    // methods
     void setupTables();
 };
 

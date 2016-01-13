@@ -124,6 +124,7 @@ void ImportaProdutos::importarTabela() {
 
   verificaSeRepresentacao();
   mostraApenasEstesFornecedores();
+  marcaTodosProdutosDescontinuados();
 
   model.setFilter(ids);
 
@@ -137,12 +138,13 @@ void ImportaProdutos::importarTabela() {
     return;
   }
 
+  itensExpired = model.rowCount();
+
   for (int i = 0; i < model.rowCount(); ++i) {
     hash[model.data(i, "fornecedor").toString() + model.data(i, "codComercial").toString() +
         model.data(i, "ui").toString()] = i;
   }
 
-  marcaTodosProdutosDescontinuados();
   contaProdutos();
 
   int current = 0;
@@ -391,11 +393,12 @@ void ImportaProdutos::mostraApenasEstesFornecedores() {
 }
 
 void ImportaProdutos::marcaTodosProdutosDescontinuados() {
-  for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
-    model.setData(row, "descontinuado", true);
-  }
+  QSqlQuery query;
 
-  itensExpired = model.rowCount();
+  if (not query.exec("UPDATE produto SET descontinuado = TRUE WHERE " + ids)) {
+    QMessageBox::critical(this, "Erro!", "Erro marcando produtos descontinuados: " + query.lastError().text());
+    return;
+  }
 }
 
 void ImportaProdutos::contaProdutos() {

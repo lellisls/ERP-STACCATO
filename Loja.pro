@@ -41,7 +41,6 @@ SOURCES += src/apagaorcamento.cpp \
     src/lineeditcep.cpp \
     src/lineeditdecimal.cpp \
     src/lineedittel.cpp \
-    src/loginconfig.cpp \
     src/logindialog.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
@@ -111,7 +110,6 @@ HEADERS  += src/apagaorcamento.h \
     src/lineeditcep.h \
     src/lineeditdecimal.h \
     src/lineedittel.h \
-    src/loginconfig.h \
     src/logindialog.h \
     src/mainwindow.h \
     src/orcamento.h \
@@ -166,7 +164,6 @@ FORMS += ui/apagaorcamento.ui \
     ui/importaprodutos.ui \
     ui/importarxml.ui \
     ui/inputdialog.ui \
-    ui/loginconfig.ui \
     ui/logindialog.ui \
     ui/mainwindow.ui \
     ui/orcamento.ui \

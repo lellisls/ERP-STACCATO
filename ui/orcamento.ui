@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>984</width>
+    <width>996</width>
     <height>705</height>
    </rect>
   </property>
@@ -563,7 +563,7 @@
                <widget class="QDoubleSpinBox" name="doubleSpinBoxQte">
                 <property name="maximumSize">
                  <size>
-                  <width>55</width>
+                  <width>75</width>
                   <height>16777215</height>
                  </size>
                 </property>

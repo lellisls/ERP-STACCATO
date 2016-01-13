@@ -394,3 +394,14 @@ void WidgetCompraGerar::on_tableForn_activated(const QModelIndex &index) {
 
   ui->tableProdutos->resizeColumnsToContents();
 }
+
+void WidgetCompraGerar::on_tableProdutos_entered(const QModelIndex &) {
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
+  }
+
+  ui->tableProdutos->resizeColumnsToContents();
+}
+
+// NOTE: arrumar openPersistent quando ordenar colunas (tableEntered é temp)
+// TODO: alterar logica para nao resetar tabela fornecedores se existir linha selecionada

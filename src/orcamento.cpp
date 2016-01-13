@@ -30,7 +30,7 @@ Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento
   setupMapper();
   newRegister();
 
-  if (UserSession::getTipoUsuario() == "ADMINISTRADOR") {
+  if (UserSession::tipoUsuario() == "ADMINISTRADOR") {
     ui->dateTimeEdit->setReadOnly(false);
     ui->dateTimeEdit->setCalendarPopup(true);
     ui->checkBoxFreteManual->show();
@@ -188,7 +188,7 @@ void Orcamento::updateId() {
   if (query.size() != 0) return;
 
   QString id =
-      UserSession::getFromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
+      UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
 
   query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
                 "venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
@@ -225,7 +225,7 @@ void Orcamento::updateId() {
 }
 
 bool Orcamento::verifyFields() {
-  if (UserSession::getTipoUsuario() == "ADMINISTRADOR" and UserSession::getNome() == ui->itemBoxVendedor->text()) {
+  if (UserSession::tipoUsuario() == "ADMINISTRADOR" and UserSession::nome() == ui->itemBoxVendedor->text()) {
     QMessageBox::critical(this, "Erro!", "Administrador não pode cadastrar, escolha outro vendedor.");
     return false;
   }
@@ -274,7 +274,7 @@ bool Orcamento::savingProcedures() {
   if (not setData("idCliente", ui->itemBoxCliente->value())) return false;
   if (not setData("idEnderecoEntrega", ui->itemBoxEndereco->value())) return false;
   if (not setData("idEnderecoFaturamento", ui->itemBoxEndereco->value())) return false;
-  if (not setData("idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()))) return false;
+  if (not setData("idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()))) return false;
   if (not setData("idOrcamento", ui->lineEditOrcamento->text())) return false;
   if (not setData("idProfissional", ui->itemBoxProfissional->value())) return false;
   if (not setData("idUsuario", ui->itemBoxVendedor->value())) return false;
@@ -313,7 +313,7 @@ bool Orcamento::atualizaReplica() {
 
 void Orcamento::clearFields() {
   RegisterDialog::clearFields();
-  ui->itemBoxVendedor->setValue(UserSession::getIdUsuario());
+  ui->itemBoxVendedor->setValue(UserSession::idUsuario());
   ui->itemBoxEndereco->setEnabled(false);
 }
 
@@ -446,7 +446,7 @@ void Orcamento::adicionarItem() {
 
   if (not isItemUpdate) modelItem.insertRow(row);
 
-  modelItem.setData(row, "idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
+  modelItem.setData(row, "idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
   modelItem.setData(row, "idProduto", ui->itemBoxProduto->value().toInt());
   modelItem.setData(row, "item", row);
   modelItem.setData(row, "fornecedor", ui->lineEditFornecedor->text());
@@ -775,7 +775,7 @@ void Orcamento::on_itemBoxVendedor_textChanged(const QString &) {
 
   QSqlQuery queryFrete;
   queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryFrete.bindValue(":idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
+  queryFrete.bindValue(":idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
 
   if (not queryFrete.exec() or not queryFrete.next()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando parâmetros do frete: " + queryFrete.lastError().text());

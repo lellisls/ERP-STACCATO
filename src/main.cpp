@@ -6,7 +6,7 @@
 #include "mainwindow.h"
 #include "usersession.h"
 
-QVariant settings(const QString &key) { return UserSession::getSettings(key); }
+QVariant settings(const QString &key) { return UserSession::settings(key); }
 
 void setSettings(const QString &key, const QVariant &value) { UserSession::setSettings(key, value); }
 

@@ -8,11 +8,11 @@
 
 QSqlQuery *UserSession::query = nullptr;
 
-QSettings settings("Staccato", "ERP");
+QSettings m_settings("Staccato", "ERP");
 
-int UserSession::getLoja() { return (query->value("idLoja").toInt()); }
+int UserSession::loja() { return (query->value("idLoja").toInt()); }
 
-int UserSession::getIdUsuario() { return (query->value("idUsuario").toInt()); }
+int UserSession::idUsuario() { return (query->value("idUsuario").toInt()); }
 
 QString UserSession::getNome() { return (query->value("nome").toString()); }
 
@@ -36,11 +36,9 @@ void UserSession::free() {
   query = nullptr;
 }
 
-QString UserSession::getTipoUsuario() { return (query->value("tipo").toString()); }
+QString UserSession::tipoUsuario() { return (query->value("tipo").toString()); }
 
-QString UserSession::getSigla() { return (query->value("sigla").toString()); }
-
-QString UserSession::getFromLoja(const QString &parameter, const QString &user) {
+QString UserSession::fromLoja(const QString &parameter, const QString &user) {
   QSqlQuery queryLoja;
   queryLoja.prepare("SELECT " + parameter +
                     " FROM loja LEFT JOIN usuario ON loja.idLoja = usuario.idLoja WHERE usuario.nome = :nome");
@@ -54,11 +52,11 @@ QString UserSession::getFromLoja(const QString &parameter, const QString &user) 
   return queryLoja.value(0).toString();
 }
 
-QVariant UserSession::getSettings(const QString &key) { return settings.value(key); }
+QVariant UserSession::settings(const QString &key) { return m_settings.value(key); }
 
-void UserSession::setSettings(const QString &key, const QVariant &value) { settings.setValue(key, value); }
+void UserSession::setSettings(const QString &key, const QVariant &value) { m_settings.setValue(key, value); }
 
-bool UserSession::settingsContains(const QString &key) { return settings.contains(key); }
+bool UserSession::settingsContains(const QString &key) { return m_settings.contains(key); }
 
 QSqlQuery *UserSession::initialize() {
   if (query) {

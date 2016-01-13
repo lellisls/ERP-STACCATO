@@ -26,7 +26,7 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   setupMapper();
   newRegister();
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
   }

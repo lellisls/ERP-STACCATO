@@ -258,7 +258,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
   QSqlQuery queryFrete;
   queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
-  queryFrete.bindValue(":idLoja", UserSession::getFromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
+  queryFrete.bindValue(":idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
 
   if (not queryFrete.exec() or not queryFrete.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando parâmetros do frete: " + queryFrete.lastError().text());

@@ -79,13 +79,13 @@ void UserConfig::on_pushButtonSalvar_clicked() {
   close();
 }
 
-QVariant UserConfig::settings(const QString &key) const { return UserSession::getSettings(key); }
+QVariant UserConfig::settings(const QString &key) const { return UserSession::settings(key); }
 
 void UserConfig::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 void UserConfig::on_pushButtonAlterarDados_clicked() {
   CadastroUsuario *usuario = new CadastroUsuario(this);
   usuario->show();
-  usuario->viewRegisterById(UserSession::getIdUsuario());
+  usuario->viewRegisterById(UserSession::idUsuario());
   usuario->modificarUsuario();
 }

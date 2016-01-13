@@ -31,11 +31,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
   connect(shortcut, &QShortcut::activated, this, &QWidget::close);
 
-  setWindowTitle(windowTitle() + " - " + UserSession::getNome() + " - " + UserSession::getTipoUsuario() + " - " +
+  setWindowTitle(windowTitle() + " - " + UserSession::nome() + " - " + UserSession::tipoUsuario() + " - " +
                  settings("Login/hostname").toString() +
                  (settings("Login/homologacao").toBool() ? " - HOMOLOGACAO" : ""));
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR" and UserSession::getTipoUsuario() != "GERENTE LOJA") {
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR" and UserSession::tipoUsuario() != "GERENTE LOJA") {
     ui->actionGerenciar_Lojas->setDisabled(true);
     ui->actionGerenciar_Transportadoras->setDisabled(true);
     ui->actionImportaProdutos->setDisabled(true);
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->actionCadastrarFornecedor->setDisabled(true);
   }
 
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
+  if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->tabWidget->setTabEnabled(2, false);
     ui->tabWidget->setTabEnabled(3, false);
     ui->tabWidget->setTabEnabled(4, false);
@@ -151,7 +151,7 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   cad->show();
 }
 
-QVariant MainWindow::settings(const QString &key) const { return UserSession::getSettings(key); }
+QVariant MainWindow::settings(const QString &key) const { return UserSession::settings(key); }
 
 void MainWindow::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 

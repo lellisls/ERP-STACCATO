@@ -23,7 +23,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   setupMapper();
   newRegister();
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->tabWidget->setTabEnabled(1, false);
     ui->pushButtonRemover->setDisabled(true);
   }

@@ -22,7 +22,7 @@ CadastroLoja::CadastroLoja(QWidget *parent)
   setupMapper();
   newRegister();
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
     ui->pushButtonRemoverEnd->setDisabled(true);
   }
@@ -40,7 +40,7 @@ void CadastroLoja::setupUi() {
 void CadastroLoja::setupTables() {
   modelAlcadas.setTable("alcadas");
   modelAlcadas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::getLoja()) + "");
+  modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::loja()) + "");
 
   if (not modelAlcadas.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela de alçadas: " + modelAlcadas.lastError().text());

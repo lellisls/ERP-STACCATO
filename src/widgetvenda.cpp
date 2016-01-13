@@ -16,11 +16,11 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
 
   ui->radioButtonTodos->click();
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") {
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->groupBoxLojas->hide();
   }
 
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
+  if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->radioButtonProprios->click();
   }
 
@@ -47,7 +47,7 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
     ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
 
-  ui->comboBoxLojas->setCurrentValue(UserSession::getLoja());
+  ui->comboBoxLojas->setCurrentValue(UserSession::loja());
 }
 
 WidgetVenda::~WidgetVenda() { delete ui; }
@@ -66,7 +66,7 @@ void WidgetVenda::setupTables() {
 }
 
 void WidgetVenda::montaFiltro() {
-  QString sigla = UserSession::getFromLoja("sigla");
+  QString sigla = UserSession::fromLoja("sigla");
 
   if (ui->groupBoxLojas->isVisible() and not ui->comboBoxLojas->currentText().isEmpty()) {
     QSqlQuery query;
@@ -84,7 +84,7 @@ void WidgetVenda::montaFiltro() {
   const QString filtroLoja = "(Código LIKE '%" + sigla + "%')";
 
   const QString filtroRadio =
-      ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::getNome() + "'";
+      ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::nome() + "'";
 
   QString filtroCheck;
 

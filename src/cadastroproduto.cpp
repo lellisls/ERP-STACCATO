@@ -31,7 +31,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 
   ui->itemBoxFornecedor->setRegisterDialog(new CadastroFornecedor(this));
 
-  if (UserSession::getTipoUsuario() != "ADMINISTRADOR") ui->pushButtonRemover->setDisabled(true);
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->pushButtonRemover->setDisabled(true);
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }

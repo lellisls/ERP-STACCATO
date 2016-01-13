@@ -36,14 +36,14 @@ void Impressao::verificaTipo() {
 }
 
 void Impressao::print() {
-  if (UserSession::getSettings("User/userFolder").toString().isEmpty()) {
+  if (UserSession::settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::critical(parent, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
     UserSession::setSettings("User/userFolder", QFileDialog::getExistingDirectory(parent, "Pasta PDF/Excel"));
 
-    if (UserSession::getSettings("User/userFolder").toString().isEmpty()) return;
+    if (UserSession::settings("User/userFolder").toString().isEmpty()) return;
   }
 
-  QString path = UserSession::getSettings("User/userFolder").toString();
+  QString path = UserSession::settings("User/userFolder").toString();
 
   QDir dir(path);
 

@@ -255,7 +255,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
                   ":status)");
     query.bindValue(":dataEmissao", QDate::currentDate().toString("yyyy-MM-dd"));
     query.bindValue(":idVenda", idVenda);
-    query.bindValue(":idLoja", UserSession::getLoja());
+    query.bindValue(":idLoja", UserSession::loja());
     query.bindValue(":valor", modelItemPedidosPend.data(row, "preco"));
     query.bindValue(":tipo", "A CONFIRMAR");
     query.bindValue(":parcela", 1);
@@ -365,7 +365,7 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
   return idVenda;
 }
 
-QVariant WidgetCompraGerar::settings(const QString &key) const { return UserSession::getSettings(key); }
+QVariant WidgetCompraGerar::settings(const QString &key) const { return UserSession::settings(key); }
 
 void WidgetCompraGerar::setSettings(const QString &key, const QVariant &value) const {
   UserSession::setSettings(key, value);

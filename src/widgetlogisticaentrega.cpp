@@ -9,7 +9,7 @@
 WidgetLogisticaEntrega::WidgetLogisticaEntrega(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaEntrega) {
   ui->setupUi(this);
 
-  if (UserSession::getTipoUsuario() == "VENDEDOR") {
+  if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->tableEntregasCliente->hide();
     ui->labelEntregasCliente->hide();
   }

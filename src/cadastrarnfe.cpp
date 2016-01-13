@@ -735,7 +735,7 @@ bool CadastrarNFe::writeTXT() {
   return true;
 }
 
-QVariant CadastrarNFe::settings(const QString &key) const { return UserSession::getSettings(key); }
+QVariant CadastrarNFe::settings(const QString &key) const { return UserSession::settings(key); }
 
 void CadastrarNFe::setSettings(const QString &key, const QVariant &value) const {
   UserSession::setSettings(key, value);

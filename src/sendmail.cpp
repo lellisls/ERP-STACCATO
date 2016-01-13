@@ -75,7 +75,7 @@ void SendMail::failureStatus(const QString &status) {
   QMessageBox::critical(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
 }
 
-QVariant SendMail::settings(const QString &key) const { return UserSession::getSettings(key); }
+QVariant SendMail::settings(const QString &key) const { return UserSession::settings(key); }
 
 void SendMail::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 

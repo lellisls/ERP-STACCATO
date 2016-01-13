@@ -370,7 +370,7 @@ void WidgetCompraGerar::on_checkBoxTodosGerar_clicked(const bool &checked) {
   }
 }
 
-void WidgetCompraGerar::on_tableProdutos_activated(const QModelIndex &index) {
+void WidgetCompraGerar::on_tableForn_activated(const QModelIndex &index) {
   const QString fornecedor = modelForn.data(index.row(), "fornecedor").toString();
 
   modelProdutos.setFilter("fornecedor = '" + fornecedor + "' AND status = 'PENDENTE'");

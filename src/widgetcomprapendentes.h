@@ -18,15 +18,21 @@ class WidgetCompraPendentes : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_tableProdutosPend_activated(const QModelIndex &index);
-    void on_groupBoxStatus_toggled(const bool &enabled);
     void montaFiltro();
+    void on_doubleSpinBoxQuantAvulso_valueChanged(const double &value);
+    void on_doubleSpinBoxQuantAvulsoCaixas_valueChanged(const double &value);
+    void on_groupBoxStatus_toggled(const bool &enabled);
+    void on_pushButtonComprarAvulso_clicked();
+    void on_table_activated(const QModelIndex &index);
+    void setarDadosAvulso();
 
   private:
     // attributes
     Ui::WidgetCompraPendentes *ui;
-    SqlTableModel modelProdPend;
+    SqlTableModel model;
     // methods
+    bool atualiza(QSqlQuery &query);
+    bool insere(QSqlQuery &query, QDate &dataPrevista);
     void setupTables();
 };
 

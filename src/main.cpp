@@ -65,12 +65,6 @@ void storeSelection() {
     if (loja == "Alphaville") setSettings("Login/hostname", "192.168.2.144");
     if (loja == "Gabriel") setSettings("Login/hostname", "192.168.1.101");
     if (loja == "Granja") setSettings("Login/hostname", "192.168.0.10");
-
-    // TODO: remove these and elsewhere
-    setSettings("Login/username", "user");
-    setSettings("Login/password", "1234");
-    setSettings("Login/port", "3306");
-    setSettings("Login/homologacao", false);
   }
 }
 

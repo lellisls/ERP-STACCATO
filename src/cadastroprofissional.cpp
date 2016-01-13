@@ -123,6 +123,16 @@ bool CadastroProfissional::verifyFields() {
     if (not verifyRequiredField(line)) return false;
   }
 
+  if (ui->radioButtonPF->isChecked() and ui->lineEditCPF->styleSheet().contains("color: rgb(255, 0, 0)")) {
+    QMessageBox::critical(this, "Erro!", "CPF inválido!");
+    return false;
+  }
+
+  if (ui->radioButtonPJ->isChecked() and ui->lineEditCNPJ->styleSheet().contains("color: rgb(255, 0, 0)")) {
+    QMessageBox::critical(this, "Erro!", "CNPJ inválido!");
+    return false;
+  }
+
   return true;
 }
 

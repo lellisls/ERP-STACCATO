@@ -30,7 +30,6 @@ void WidgetCompraFaturar::setupTables() {
   model.setTable("view_faturamento");
 
   model.setHeaderData("fornecedor", "Fornecedor");
-  model.setHeaderData("idCompra", "Compra");
   model.setHeaderData("COUNT(idProduto)", "Itens");
   model.setHeaderData("SUM(preco)", "Preço");
   model.setHeaderData("status", "Status");

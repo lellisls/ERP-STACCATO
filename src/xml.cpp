@@ -1,10 +1,9 @@
-#include <QDomDocument>
+#include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
-#include <QString>
+#include <QSqlQuery>
 
-#include "usersession.h"
 #include "xml.h"
 
 XML::XML(const QByteArray &fileContent, const QString &fileName) : XML(model, fileContent, fileName) {}
@@ -20,10 +19,10 @@ XML::XML(QStandardItemModel &model, const QByteArray &fileContent, const QString
 
   if (not fileContent.isEmpty()) {
     QDomDocument document;
-    QString *error = new QString();
+    QString error;
 
-    if (not document.setContent(fileContent, error)) {
-      QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + *error);
+    if (not document.setContent(fileContent, &error)) {
+      QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + error);
       return;
     }
 
@@ -33,7 +32,7 @@ XML::XML(QStandardItemModel &model, const QByteArray &fileContent, const QString
 
     if (map.size() > 0) {
       for (int i = 0; i < map.size(); ++i) {
-        if (i > 0) attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+        attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
       }
     }
 
@@ -73,9 +72,9 @@ void XML::readChild(QDomElement &element, QStandardItem *elementItem) {
 }
 
 bool XML::lerValores(const QStandardItem *item) {
-  for (int i = 0; i < item->rowCount(); ++i) {
-    for (int j = 0; j < item->columnCount(); ++j) {
-      QStandardItem *child = item->child(i, j);
+  for (int row = 0; row < item->rowCount(); ++row) {
+    for (int col = 0; col < item->columnCount(); ++col) {
+      QStandardItem *child = item->child(row, col);
       QString text = child->text();
 
       if (text.left(6) == "infNFe") {
@@ -92,7 +91,7 @@ bool XML::lerValores(const QStandardItem *item) {
         //        }
 
         //        if (query.first()) {
-        //          QMessageBox::warning(0, "Aviso!", "Nota já cadastrada!");
+        //          QMessageBox::critical(0, "Erro!", "Nota já cadastrada!");
         //          return false;
         //        }
       }
@@ -136,9 +135,9 @@ bool XML::lerValores(const QStandardItem *item) {
 }
 
 void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel) {
-  for (int i = 0; i < item->rowCount(); ++i) {
-    for (int j = 0; j < item->columnCount(); ++j) {
-      QStandardItem *child = item->child(i, j);
+  for (int row = 0; row < item->rowCount(); ++row) {
+    for (int col = 0; col < item->columnCount(); ++col) {
+      QStandardItem *child = item->child(row, col);
       QString text = child->text();
 
       if (text.mid(0, 10) == "det nItem=") {
@@ -181,13 +180,9 @@ int XML::cadastrarNFe(const QString &tipo) {
       QMessageBox::critical(0, "Erro!", "Erro cadastrando XML no estoque: " + query.lastError().text());
       return false;
     }
-
-    idNFe = query.lastInsertId().toInt();
-    return idNFe;
   }
 
-  idNFe = query.value("idNFe").toInt();
-  return idNFe;
+  return idNFe = query.first() ? query.value("idNFe").toInt() : query.lastInsertId().toInt();
 }
 
 void XML::lerDadosProduto(const QStandardItem *child) {
@@ -380,7 +375,8 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
   query.bindValue(":codBarras", codBarras);
 
   if (not query.exec()) {
-    QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto!");
+    QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto: " + query.lastError().text());
+    return false;
   }
 
   const int idTemp = query.first() ? query.value("idProduto").toInt() : 0;

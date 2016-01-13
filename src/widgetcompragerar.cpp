@@ -88,8 +88,8 @@ QString WidgetCompraGerar::updateTables() {
     return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelProdutos.lastError().text();
   }
 
-  for (int i = 0; i < modelProdutos.rowCount(); ++i) {
-    ui->tableProdutos->openPersistentEditor(modelProdutos.index(i, modelProdutos.fieldIndex("selecionado")));
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
   }
 
   ui->tableProdutos->resizeColumnsToContents();

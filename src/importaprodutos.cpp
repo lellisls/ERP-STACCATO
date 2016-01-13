@@ -140,9 +140,9 @@ void ImportaProdutos::importarTabela() {
 
   itensExpired = model.rowCount();
 
-  for (int i = 0; i < model.rowCount(); ++i) {
-    hash[model.data(i, "fornecedor").toString() + model.data(i, "codComercial").toString() +
-        model.data(i, "ui").toString()] = i;
+  for (int row = 0; row < model.rowCount(); ++row) {
+    hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() +
+        model.data(row, "ui").toString()] = row;
   }
 
   contaProdutos();
@@ -253,8 +253,8 @@ void ImportaProdutos::setupTables() {
 
   ui->tableProdutos->setModel(new ImportaProdutosProxy(&model, model.fieldIndex("descontinuado"), this));
 
-  for (int i = 0; i < model.columnCount(); ++i) {
-    if (model.record().fieldName(i).endsWith("Upd")) ui->tableProdutos->setColumnHidden(i, true);
+  for (int column = 0; column < model.columnCount(); ++column) {
+    if (model.record().fieldName(column).endsWith("Upd")) ui->tableProdutos->setColumnHidden(column, true);
   }
 
   ui->tableProdutos->hideColumn("idProduto");
@@ -324,8 +324,8 @@ void ImportaProdutos::setupTables() {
 
   ui->tableErro->setModel(new ImportaProdutosProxy(&modelErro, modelErro.fieldIndex("descontinuado"), this));
 
-  for (int i = 0; i < modelErro.columnCount(); ++i) {
-    if (modelErro.record().fieldName(i).endsWith("Upd")) ui->tableErro->setColumnHidden(i, true);
+  for (int column = 0; column < modelErro.columnCount(); ++column) {
+    if (modelErro.record().fieldName(column).endsWith("Upd")) ui->tableErro->setColumnHidden(column, true);
   }
 
   ui->tableErro->hideColumn("idProduto");
@@ -486,7 +486,7 @@ void ImportaProdutos::atualizaCamposProduto() {
   changed ? itensUpdated++ : itensNotChanged++;
 }
 
-void ImportaProdutos::marcaProdutoNaoDescontinuado() {
+void ImportaProdutos::marcaProdutoNaoDescontinuado() { // TODO: why this set false twice??
   QSqlQuery query;
   query.prepare("UPDATE produto SET descontinuado = FALSE WHERE idProduto = :idProduto");
   query.bindValue(":idProduto", model.data(row, "idProduto"));
@@ -686,12 +686,12 @@ void ImportaProdutos::salvar() {
     return;
   }
 
-  QSqlQuery("COMMIT").exec();
+  QSqlQuery("COMMIT").exec(); // TODO: shouldnt this be in the end?
 
   QSqlQuery queryPrecos;
-  queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT "
-                      "idProduto, precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM "
-                      "produto WHERE atualizarTabelaPreco = TRUE");
+  queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT idProduto, "
+                      "precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM produto WHERE "
+                      "atualizarTabelaPreco = TRUE");
   queryPrecos.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
   queryPrecos.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
 
@@ -702,7 +702,7 @@ void ImportaProdutos::salvar() {
   }
 
   queryPrecos.exec("UPDATE produto SET atualizarTabelaPreco = FALSE");
-  queryPrecos.exec("COMMIT");
+  queryPrecos.exec("COMMIT"); // TODO: why this?
 
   close();
 }
@@ -714,11 +714,7 @@ void ImportaProdutos::on_pushButtonSalvar_clicked() {
     msgBox.setButtonText(QMessageBox::Yes, "Sim");
     msgBox.setButtonText(QMessageBox::No, "Não");
 
-    if (msgBox.exec() == QMessageBox::Yes) {
-      salvar();
-    }
-
-    return;
+    if (msgBox.exec() == QMessageBox::No) return;
   }
 
   salvar();
@@ -736,8 +732,8 @@ bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
 }
 
 void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool &checked) {
-  for (int i = 0, rowCount = model.rowCount(); i < rowCount; ++i) {
-    model.setData(i, "representacao", checked);
+  for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
+    model.setData(row, "representacao", checked);
   }
 
   QSqlQuery query;

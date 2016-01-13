@@ -412,7 +412,7 @@ color: rgb(0, 0, 0);</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Pç/Cx</string>
+                  <string>Pç./Cx.</string>
                  </property>
                 </widget>
                </item>
@@ -463,7 +463,7 @@ color: rgb(0, 0, 0);</string>
                   <string/>
                  </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;M&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;/Cx&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;M&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;/Cx.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>
@@ -577,7 +577,7 @@ color: rgb(0, 0, 0);</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Kg/Cx</string>
+                  <string>Kg./Cx.</string>
                  </property>
                 </widget>
                </item>
@@ -1744,14 +1744,14 @@ color: rgb(0, 0, 0);</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>src/combobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
    <header>src/itembox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>src/combobox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

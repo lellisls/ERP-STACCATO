@@ -46,8 +46,8 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
     // NOTE: readd this later
     //    ui->tableView->showColumn(model.fieldIndex("selecionado"));
 
-    //    for (int i = 0; i < model.rowCount(); ++i) {
-    //      ui->tableView->openPersistentEditor(model.index(i, model.fieldIndex("selecionado")));
+    //    for (int row = 0; row < model.rowCount(); ++row) {
+    //      ui->tableView->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
     //    }
   }
 

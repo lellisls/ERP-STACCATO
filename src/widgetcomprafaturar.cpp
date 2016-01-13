@@ -75,6 +75,8 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   QSqlQuery query;
 
+  // TODO: juntar os updates em uma unica query
+
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
                      "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {

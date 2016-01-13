@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.7");
+  app.setApplicationVersion("0.2.8");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -66,6 +66,7 @@ void storeSelection() {
     if (loja == "Gabriel") setSettings("Login/hostname", "192.168.1.101");
     if (loja == "Granja") setSettings("Login/hostname", "192.168.0.10");
 
+    // TODO: remove these and elsewhere
     setSettings("Login/username", "user");
     setSettings("Login/password", "1234");
     setSettings("Login/port", "3306");

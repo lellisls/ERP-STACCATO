@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 
@@ -607,9 +608,9 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   replica->ui->checkBoxRepresentacao->setChecked(ui->checkBoxRepresentacao->isChecked());
   replica->ui->lineEditReplicaDe->setText(model.data(row, "idOrcamento").toString());
 
-  for (int i = 0; i < modelItem.rowCount(); ++i) {
-    replica->ui->itemBoxProduto->setValue(modelItem.data(i, "idProduto"));
-    replica->ui->doubleSpinBoxQte->setValue(modelItem.data(i, "quant").toDouble());
+  for (int row = 0; row < modelItem.rowCount(); ++row) {
+    replica->ui->itemBoxProduto->setValue(modelItem.data(row, "idProduto"));
+    replica->ui->doubleSpinBoxQte->setValue(modelItem.data(row, "quant").toDouble());
     replica->adicionarItem();
   }
 
@@ -827,3 +828,5 @@ void Orcamento::on_doubleSpinBoxSubTotalBruto_valueChanged(const double &) {
 }
 
 void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!"); }
+
+// TODO: on save rollback put "auto gerado" back in id?

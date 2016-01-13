@@ -48,8 +48,8 @@ void CadastroUsuario::setupTablePermissoes() {
   ui->tablePermissoes->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
   // NOTE: checkbox em tableWidget
 
-  for (int i = 0, rowCount = ui->tablePermissoes->rowCount(); i < rowCount; ++i) {
-    for (int j = 0, columnCount = ui->tablePermissoes->columnCount(); j < columnCount; ++j) {
+  for (int row = 0, rowCount = ui->tablePermissoes->rowCount(); row < rowCount; ++row) {
+    for (int column = 0, columnCount = ui->tablePermissoes->columnCount(); column < columnCount; ++column) {
       QWidget *widget = new QWidget();
       QCheckBox *checkBox = new QCheckBox();
       QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -57,7 +57,7 @@ void CadastroUsuario::setupTablePermissoes() {
       layout->setAlignment(Qt::AlignCenter);
       layout->setContentsMargins(0, 0, 0, 0);
       widget->setLayout(layout);
-      ui->tablePermissoes->setCellWidget(i, j, widget);
+      ui->tablePermissoes->setCellWidget(row, column, widget);
     }
   }
 }

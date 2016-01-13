@@ -34,8 +34,8 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
 
   double quant = 0;
 
-  for (int i = 0; i < modelProdutos.rowCount(); ++i) {
-    quant += modelProdutos.data(i, "quant").toDouble();
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    quant += modelProdutos.data(row, "quant").toDouble();
   }
 
   ui->doubleSpinBoxQuantTotal->setValue(quant);

@@ -18,9 +18,9 @@ QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) con
     if (value == 1) return QBrush(Qt::cyan);
 
     // verifica cada campo
-    for (int i = 0, columns = columnCount(); i < columns; ++i) {
-      if (i % 2 == 0 and proxyIndex.column() == i) {
-        const int value = QIdentityProxyModel::data(index(proxyIndex.row(), i + 1), Qt::DisplayRole).toInt();
+    for (int column = 0, columns = columnCount(); column < columns; ++column) {
+      if (column % 2 == 0 and proxyIndex.column() == column) {
+        const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column + 1), Qt::DisplayRole).toInt();
 
         if (value == 1) return QBrush(Qt::green);
         if (value == 2) return QBrush(Qt::yellow);

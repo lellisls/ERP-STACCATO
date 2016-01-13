@@ -34,9 +34,12 @@ void WidgetCompraGerar::setupTables() {
   modelProdutos.setHeaderData("fornecedor", "Fornecedor");
   modelProdutos.setHeaderData("descricao", "Descrição");
   modelProdutos.setHeaderData("colecao", "Coleção");
+  modelProdutos.setHeaderData("caixas", "Caixas");
   modelProdutos.setHeaderData("quant", "Quant.");
   modelProdutos.setHeaderData("un", "Un.");
+  modelProdutos.setHeaderData("un2", "Un.2");
   modelProdutos.setHeaderData("preco", "Preço");
+  modelProdutos.setHeaderData("kgcx", "Kg./Cx.");
   modelProdutos.setHeaderData("formComercial", "Form. Com.");
   modelProdutos.setHeaderData("codComercial", "Cód. Com.");
   modelProdutos.setHeaderData("codBarras", "Cód. Bar.");
@@ -49,6 +52,8 @@ void WidgetCompraGerar::setupTables() {
 
   ui->tableProdutos->setModel(&modelProdutos);
   ui->tableProdutos->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
+  ui->tableProdutos->hideColumn("idNfe");
+  ui->tableProdutos->hideColumn("idEstoque");
   ui->tableProdutos->hideColumn("quantUpd");
   ui->tableProdutos->hideColumn("idPedido");
   ui->tableProdutos->hideColumn("idLoja");

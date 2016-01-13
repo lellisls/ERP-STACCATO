@@ -178,8 +178,11 @@ void InputDialog::setupTables() {
   model.setHeaderData("fornecedor", "Fornecedor");
   model.setHeaderData("descricao", "Produto");
   model.setHeaderData("colecao", "Coleção");
+  model.setHeaderData("caixas", "Caixas");
   model.setHeaderData("quant", "Quant.");
   model.setHeaderData("un", "Un.");
+  model.setHeaderData("un2", "Un.2");
+  model.setHeaderData("kgcx", "Kg./Cx.");
   model.setHeaderData("formComercial", "Formato");
   model.setHeaderData("codComercial", "Código");
   model.setHeaderData("preco", "Preço");
@@ -192,6 +195,8 @@ void InputDialog::setupTables() {
   }
 
   ui->table->setModel(&model);
+  ui->table->hideColumn("idNfe");
+  ui->table->hideColumn("idEstoque");
   ui->table->hideColumn("quantUpd");
   ui->table->hideColumn("selecionado");
   ui->table->hideColumn("idPedido");

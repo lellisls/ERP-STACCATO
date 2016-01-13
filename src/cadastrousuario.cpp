@@ -152,3 +152,96 @@ void CadastroUsuario::show() {
   QWidget::show();
   adjustSize();
 }
+
+bool CadastroUsuario::save(const bool &isUpdate) {
+  if (not verifyFields()) return false;
+
+  if (not isUpdate and not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    return false;
+  }
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+
+  if (row == -1) {
+    QMessageBox::critical(this, "Erro!", "Linha errada!");
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  if (not isUpdate) model.insertRow(row);
+
+  if (not savingProcedures()) {
+    errorMessage();
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    if (model.data(row, column).type() == QVariant::String) {
+      model.setData(row, column, model.data(row, column).toString().toUpper());
+    }
+  }
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    errorMessage();
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  if (not isUpdate) {
+    QSqlQuery query;
+    query.prepare("CREATE USER :user@'%' IDENTIFIED BY '1234'");
+    query.bindValue(":user", ui->lineEditUser->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro criando usuário do banco de dados: " + query.lastError().text());
+      QSqlQuery("ROLLBACK").exec();
+      return false;
+    }
+
+    query.prepare("GRANT ALL PRIVILEGES ON *.* TO :user@'%' WITH GRANT OPTION");
+    query.bindValue(":user", ui->lineEditUser->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro guardando privilégios do usuário do banco de dados: " + query.lastError().text());
+      QSqlQuery("ROLLBACK").exec();
+      return false;
+    }
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  isDirty = false;
+
+  viewRegister(model.index(row, 0));
+  sendUpdateMessage();
+
+  if (not silent) successMessage();
+
+  return true;
+}
+
+void CadastroUsuario::successMessage() { QMessageBox::information(this, "Aviso!", "Usuário atualizado com sucesso!"); }
+
+void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
+  QSqlQuery query;
+  query.prepare("SELECT * FROM usuario WHERE user = :user");
+  query.bindValue(":user", text);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando usuário: " + query.lastError().text());
+    return;
+  }
+
+  if (query.first()) {
+    QMessageBox::critical(this, "Erro!", "Nome de usuário já existe!");
+    return;
+  }
+}

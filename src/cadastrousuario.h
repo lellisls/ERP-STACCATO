@@ -20,6 +20,7 @@ class CadastroUsuario : public RegisterDialog {
 
   private slots:
     void fillCombobox();
+    void on_lineEditUser_textEdited(const QString &text);
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonBuscar_clicked();
     void on_pushButtonCadastrar_clicked();
@@ -32,11 +33,13 @@ class CadastroUsuario : public RegisterDialog {
     Ui::CadastroUsuario *ui;
     // methods
     bool viewRegister(const QModelIndex &index) override;
+    virtual bool save(const bool &isUpdate = false) override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
     virtual void clearFields() override;
     virtual void registerMode() override;
     virtual void setupMapper() override;
+    virtual void successMessage() override;
     virtual void updateMode() override;
 };
 

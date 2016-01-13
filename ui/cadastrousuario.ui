@@ -113,6 +113,9 @@
          <property name="accessibleName">
           <string>Nome completo</string>
          </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 127);</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="0">
@@ -180,6 +183,9 @@
          <property name="accessibleName">
           <string>Nome de usuário</string>
          </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 127);</string>
+         </property>
         </widget>
        </item>
        <item row="4" column="0">
@@ -193,6 +199,9 @@
         <widget class="QLineEdit" name="lineEditPasswd">
          <property name="accessibleName">
           <string>Senha</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 127);</string>
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
@@ -210,6 +219,9 @@
         <widget class="QLineEdit" name="lineEditPasswd_2">
          <property name="accessibleName">
           <string>Conf. de senha</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 127);</string>
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>

@@ -116,7 +116,9 @@ void WidgetCompraPendentes::montaFiltro() {
                                                      "%') OR (Descrição LIKE '%" + textoBusca +
                                                      "%') OR (`Cód Com` LIKE '%" + textoBusca + "%'))";
 
-  model.setFilter(filtroCheck + filtroBusca + " AND status != 'CANCELADO'");
+  const QString filtroStatus = QString((filtroCheck + filtroBusca).isEmpty() ? "" : " AND ") + "status != 'CANCELADO'";
+
+  model.setFilter(filtroCheck + filtroBusca + filtroStatus);
 
   ui->table->resizeColumnsToContents();
 }

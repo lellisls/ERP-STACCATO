@@ -123,9 +123,22 @@ bool LoginDialog::dbConnect() {
     return false;
   }
 
-  if (not query.exec("CALL invalidate_expired()")) {
-    QMessageBox::critical(this, "Erro!", "Erro executando InvalidarExpirados: " + query.lastError().text());
+  if (not query.exec("SELECT * FROM maintenance") or not query.first()) {
+    QMessageBox::critical(this, "Erro", "Erro verificando lastInvalidated: " + query.lastError().text());
     return false;
+  }
+
+  if (query.value("lastInvalidated").toDate() < QDate::currentDate()) {
+    if (not query.exec("CALL invalidate_expired()")) {
+      QMessageBox::critical(this, "Erro!", "Erro executando InvalidarExpirados: " + query.lastError().text());
+      return false;
+    }
+
+    if (not query.exec("UPDATE maintenance SET lastInvalidated = '" + QDate::currentDate().toString("yyyy-MM-dd") +
+                       "' WHERE id = 1")) {
+      QMessageBox::critical(this, "Erro", "Erro atualizando lastInvalidated: " + query.lastError().text());
+      return false;
+    }
   }
 
   if (not query.exec("CALL update_orcamento_status()")) {

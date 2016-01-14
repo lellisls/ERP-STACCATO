@@ -531,7 +531,7 @@ bool Venda::viewRegister(const QModelIndex &index) {
   }
 
   for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
-    ui->tableFluxoCaixa->openPersistentEditor(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("representacao")));
+    ui->tableFluxoCaixa->openPersistentEditor(row, "representacao");
   }
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
@@ -604,7 +604,7 @@ void Venda::montarFluxoCaixa() {
   }
 
   for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
-    ui->tableFluxoCaixa->openPersistentEditor(modelFluxoCaixa.index(row, modelFluxoCaixa.fieldIndex("representacao")));
+    ui->tableFluxoCaixa->openPersistentEditor(row, "representacao");
   }
 
   ui->tableFluxoCaixa->resizeColumnsToContents();

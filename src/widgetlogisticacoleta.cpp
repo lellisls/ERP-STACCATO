@@ -26,8 +26,7 @@ QString WidgetLogisticaColeta::updateTables() {
   }
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    // TODO: reimplementar openPersistent?
-    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(row, "selecionado");
   }
 
   ui->table->resizeColumnsToContents();
@@ -45,7 +44,7 @@ void WidgetLogisticaColeta::TableFornLogistica_activated(const QString &forneced
   }
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(row, "selecionado");
   }
 
   ui->table->resizeColumnsToContents();

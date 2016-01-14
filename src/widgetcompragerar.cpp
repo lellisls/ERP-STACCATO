@@ -387,7 +387,7 @@ void WidgetCompraGerar::on_tableForn_activated(const QModelIndex &index) {
   }
 
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {
-    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
   }
 
   ui->checkBoxTodosGerar->setChecked(false);
@@ -397,7 +397,7 @@ void WidgetCompraGerar::on_tableForn_activated(const QModelIndex &index) {
 
 void WidgetCompraGerar::on_tableProdutos_entered(const QModelIndex &) {
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {
-    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
   }
 
   ui->tableProdutos->resizeColumnsToContents();

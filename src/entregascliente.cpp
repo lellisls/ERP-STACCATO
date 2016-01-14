@@ -87,7 +87,7 @@ void EntregasCliente::viewEntrega(const QString &idVenda) {
   }
 
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {
-    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
   }
 
   ui->tableProdutos->resizeColumnsToContents();

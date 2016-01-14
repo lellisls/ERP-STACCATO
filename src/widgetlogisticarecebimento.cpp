@@ -24,7 +24,7 @@ QString WidgetLogisticaRecebimento::updateTables() {
   }
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(row, "selecionado");
   }
 
   ui->table->resizeColumnsToContents();

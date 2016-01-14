@@ -135,7 +135,7 @@ void InputDialog::setFilter(const QStringList &ids) {
               parentWidget()->y() + parentWidget()->height() / 2 - nHeight / 2, nWidth, nHeight);
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(row, "selecionado");
   }
 
   QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
@@ -165,7 +165,7 @@ void InputDialog::setFilter(const QString &id) {
               parentWidget()->y() + parentWidget()->height() / 2 - nHeight / 2, nWidth, nHeight);
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("selecionado")));
+    ui->table->openPersistentEditor(row, "selecionado");
   }
 
   QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");

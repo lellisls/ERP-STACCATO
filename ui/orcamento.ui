@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>996</width>
+    <width>1016</width>
     <height>705</height>
    </rect>
   </property>
@@ -322,7 +322,7 @@
               <item>
                <widget class="QLineEdit" name="lineEditOrcamento">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Código de Orçamento:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;O código de orçamento é composto de:&lt;/p&gt;&lt;p&gt; * Sigla da loja &lt;/p&gt;&lt;p&gt; * Sigla do Vendedor&lt;/p&gt;&lt;p&gt; * Data (AAAAMMDD)&lt;/p&gt;&lt;p&gt; * Numero de Sequência (Hexadecimal) de 3 dígitos&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Código de Orçamento:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;O código de orçamento é composto de:&lt;/p&gt;&lt;p&gt;* Sigla da loja &lt;/p&gt;&lt;p&gt;* Data (AA)&lt;/p&gt;&lt;p&gt;* Sequência de 4 dígitos&lt;/p&gt;&lt;p&gt;* 'R' se representação&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="frame">
                  <bool>false</bool>

@@ -215,18 +215,20 @@ void CadastroCliente::on_pushButtonBuscar_clicked() {
 void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
   ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 
-  QSqlQuery query;
-  query.prepare("SELECT * FROM cliente WHERE cpf = :cpf");
-  query.bindValue(":cpf", text);
+  if (not ui->lineEditCPF->styleSheet().contains("color: rgb(255, 0, 0)")) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM cliente WHERE cpf = :cpf");
+    query.bindValue(":cpf", text);
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando CPF: " + query.lastError().text());
-    return;
-  }
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando CPF: " + query.lastError().text());
+      return;
+    }
 
-  if (query.first()) {
-    QMessageBox::critical(this, "Erro!", "CPF já cadastrado!");
-    viewRegisterById(query.value("idCliente"));
+    if (query.first()) {
+      QMessageBox::critical(this, "Erro!", "CPF já cadastrado!");
+      viewRegisterById(query.value("idCliente"));
+    }
   }
 }
 
@@ -234,18 +236,20 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
         validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 
-  QSqlQuery query;
-  query.prepare("SELECT * FROM cliente WHERE cnpj = :cnpj");
-  query.bindValue(":cnpj", text);
+  if (not ui->lineEditCNPJ->styleSheet().contains("color: rgb(255, 0, 0)")) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM cliente WHERE cnpj = :cnpj");
+    query.bindValue(":cnpj", text);
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando CNPJ: " + query.lastError().text());
-    return;
-  }
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando CNPJ: " + query.lastError().text());
+      return;
+    }
 
-  if (query.first()) {
-    QMessageBox::critical(this, "Erro!", "CNPJ já cadastrado!");
-    viewRegisterById(query.value("idCliente"));
+    if (query.first()) {
+      QMessageBox::critical(this, "Erro!", "CNPJ já cadastrado!");
+      viewRegisterById(query.value("idCliente"));
+    }
   }
 }
 
@@ -387,4 +391,4 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-// TODO: digitar um cpf existente e clicar em 'cancelar', bang!
+// TODO: verificar se cpf/cnpj ja existe antes de salvar

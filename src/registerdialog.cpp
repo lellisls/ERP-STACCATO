@@ -39,7 +39,7 @@ bool RegisterDialog::viewRegisterById(const QVariant &id) {
     return false;
   }
 
-  viewRegister(indexList.first());
+  if (not viewRegister(indexList.first())) return false;
 
   return true;
 }

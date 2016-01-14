@@ -182,7 +182,7 @@ void Venda::resetarPagamentos() {
 }
 
 void Venda::fecharOrcamento(const QString &idOrcamento) {
-  QString idVenda = idOrcamento.endsWith("O") ? idOrcamento.left(idOrcamento.size() - 1) : idOrcamento;
+  m_idOrcamento = idOrcamento;
 
   const int row = model.rowCount();
   model.insertRow(row);
@@ -205,6 +205,11 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     QMessageBox::critical(this, "Erro!", "Erro buscando orçamento: " + queryOrc.lastError().text());
     return;
   }
+
+  ui->itemBoxVendedor->setValue(queryOrc.value("idUsuario"));
+
+  generateId();
+  QString idVenda = ui->lineEditVenda->text();
 
   modelItem.setFilter("idVenda = '" + idVenda + "'");
 
@@ -245,7 +250,6 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
                                                     " AND desativado = FALSE");
 
   ui->lineEditVenda->setText(idVenda);
-  ui->itemBoxVendedor->setValue(queryOrc.value("idUsuario"));
   ui->itemBoxCliente->setValue(queryOrc.value("idCliente"));
   ui->itemBoxProfissional->setValue(queryOrc.value("idProfissional"));
   ui->itemBoxEndereco->setValue(queryOrc.value("idEnderecoEntrega"));
@@ -553,7 +557,7 @@ bool Venda::viewRegister(const QModelIndex &index) {
 
 void Venda::on_pushButtonVoltar_clicked() {
   Orcamento *orcamento = new Orcamento(parentWidget());
-  orcamento->viewRegisterById(ui->lineEditVenda->text() + "O");
+  orcamento->viewRegisterById(m_idOrcamento);
   orcamento->show();
 
   isDirty = false;
@@ -772,5 +776,34 @@ void Venda::on_pushButtonCancelamento_clicked() {
   }
 }
 
+void Venda::generateId() {
+  QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
+
+  QSqlQuery query;
+  query.prepare("SELECT idVenda FROM venda WHERE idVenda LIKE :id ORDER BY idVenda ASC");
+  query.bindValue(":id", id + "%");
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro na query: " + query.lastError().text());
+    return;
+  }
+
+  int last = 0;
+
+  if (query.last()) {
+    QString temp = query.value("idVenda").toString().mid(id.size());
+
+    if (temp.endsWith("O")) temp.remove(temp.size() - 1, 1);
+    if (temp.endsWith("R")) temp.remove(temp.size() - 1, 1);
+
+    last = temp.toInt();
+  }
+
+  id += UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
+  id += QString("%1").arg(last + 1, 3, 10, QChar('0'));
+  id += (m_idOrcamento.endsWith("R") or m_idOrcamento.endsWith("RO")) ? "R" : "";
+
+  ui->lineEditVenda->setText(id);
+}
+
 // NOTE: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
-// TODO: implementar generateId (copiar de orcamento e adaptar)

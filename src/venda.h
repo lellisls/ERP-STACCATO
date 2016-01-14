@@ -46,6 +46,7 @@ class Venda : public RegisterDialog {
     bool isBlockedTotal = false;
     double minimoFrete;
     double porcFrete;
+    QString m_idOrcamento;
     SqlTableModel modelFluxoCaixa;
     SqlTableModel modelItem;
     // methods
@@ -61,6 +62,7 @@ class Venda : public RegisterDialog {
     void calcPrecoGlobalTotal();
     void calculoSpinBox1() const;
     void calculoSpinBox2() const;
+    void generateId();
     void resetarPagamentos();
     void setupTables();
 };

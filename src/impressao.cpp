@@ -112,21 +112,25 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "tel2") paramValue = queryCliente.value("telCel");
   if (paramName == "cepfiscal") paramValue = queryEndEnt.value("cep");
 
-  if (paramName == "endfiscal")
-    paramValue = query.value("idEnderecoFaturamento").toInt() == 1
-                 ? "Não há/Retira"
-                 : queryEndEnt.value("descricao").toString() + " - " + queryEndEnt.value("logradouro").toString() +
-                   " - " + queryEndEnt.value("numero").toString() + " - " +
-                   queryEndEnt.value("bairro").toString() + " - " + queryEndEnt.value("cidade").toString() +
-                   " - " + queryEndEnt.value("uf").toString();
+  if (paramName == "endfiscal") {
+    QString endereco =
+        query.value("idEnderecoFaturamento").toInt() == 1
+        ? "Não há/Retira"
+        : queryEndEnt.value("descricao").toString() + " - " + queryEndEnt.value("logradouro").toString() + " - " +
+          queryEndEnt.value("numero").toString() + " - " + queryEndEnt.value("bairro").toString() + " - " +
+          queryEndEnt.value("cidade").toString() + " - " + queryEndEnt.value("uf").toString();
+    paramValue = endereco.left(90);
+  }
 
-  if (paramName == "endentrega")
-    paramValue = query.value("idEnderecoEntrega").toInt() == 1
-                 ? "Não há/Retira"
-                 : queryEndEnt.value("descricao").toString() + " - " + queryEndEnt.value("logradouro").toString() +
-                   " - " + queryEndEnt.value("numero").toString() + " - " +
-                   queryEndEnt.value("bairro").toString() + " - " + queryEndEnt.value("cidade").toString() +
-                   " - " + queryEndEnt.value("uf").toString();
+  if (paramName == "endentrega") {
+    QString endereco =
+        query.value("idEnderecoEntrega").toInt() == 1
+        ? "Não há/Retira"
+        : queryEndEnt.value("descricao").toString() + " - " + queryEndEnt.value("logradouro").toString() + " - " +
+          queryEndEnt.value("numero").toString() + " - " + queryEndEnt.value("bairro").toString() + " - " +
+          queryEndEnt.value("cidade").toString() + " - " + queryEndEnt.value("uf").toString();
+    paramValue = endereco.left(90);
+  }
 
   if (paramName == "cepentrega") paramValue = queryEndEnt.value("cep");
 

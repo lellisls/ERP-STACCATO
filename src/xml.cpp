@@ -77,46 +77,16 @@ bool XML::lerValores(const QStandardItem *item) {
       QStandardItem *child = item->child(row, col);
       QString text = child->text();
 
-      if (text.left(6) == "infNFe") {
-        chaveAcesso = text.mid(text.indexOf("Id=") + 7, 44);
-
-        //        QSqlQuery query;
-        //        query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
-        //        query.bindValue(":chaveAcesso", chaveAcesso);
-
-        //        if (not query.exec()) {
-        //          QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " +
-        //          query.lastError().text());
-        //          return false;
-        //        }
-
-        //        if (query.first()) {
-        //          QMessageBox::critical(0, "Erro!", "Nota já cadastrada!");
-        //          return false;
-        //        }
-      }
+      if (text.left(6) == "infNFe") chaveAcesso = text.mid(text.indexOf("Id=") + 7, 44);
 
       if (child->parent()->text() == "emit" and text.left(7) == "xFant -") xFant = text.remove(0, 8);
       if (child->parent()->text() == "emit" and text.left(7) == "xNome -") xNome = text.remove(0, 8);
       if (child->parent()->text() == "dest" and text.left(6) == "CNPJ -") cnpj = text.remove(0, 7);
 
-      //      bool match = false;
-
-      //      for (const auto cnpjLoja : getTodosCNPJ()) {
-      //        if (cnpj == cnpjLoja) {
-      //          match = true;
-      //        }
-      //    }
-
-      //      if (not match) {
-      //        QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
-      //        return false;
-      //      }
-
-      //      if (child->parent()->text() == "dest" and text.left(5) == "CPF -") {
-      //        QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
-      //        return false;
-      //      }
+      if (child->parent()->text() == "dest" and text.left(5) == "CPF -") {
+        QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
+        return false;
+      }
 
       lerDadosProduto(child);
       lerICMSProduto(child);
@@ -151,9 +121,11 @@ void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalMo
 }
 
 int XML::cadastrarNFe(const QString &tipo) {
+  if (not verificaCNPJ() or verificaExiste()) return 0;
+
   QSqlQuery query;
 
-  query.prepare("SELECT * FROM nfe WHERE chaveAcesso = :chaveAcesso");
+  query.prepare("SELECT idNFe FROM nfe WHERE chaveAcesso = :chaveAcesso");
   query.bindValue(":chaveAcesso", chaveAcesso);
 
   if (not query.exec()) {
@@ -161,28 +133,28 @@ int XML::cadastrarNFe(const QString &tipo) {
     return false;
   }
 
-  if (not query.first()) {
-    QFile file(fileName);
+  if (query.first()) return idNFe = query.value("idNFe").toInt();
 
-    if (not file.open(QFile::ReadOnly)) {
-      QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + file.errorString());
-      return false;
-    }
+  QFile file(fileName);
 
-    query.prepare("INSERT INTO nfe (idVendaCompra, tipo, chaveAcesso, xml) VALUES (:idVendaCompra, :tipo, "
-                  ":chaveAcesso, :xml)");
-    query.bindValue(":idVendaCompra", "PLACEHOLDER");
-    query.bindValue(":tipo", tipo);
-    query.bindValue(":chaveAcesso", chaveAcesso);
-    query.bindValue(":xml", file.readAll());
-
-    if (not query.exec()) {
-      QMessageBox::critical(0, "Erro!", "Erro cadastrando XML no estoque: " + query.lastError().text());
-      return false;
-    }
+  if (not file.open(QFile::ReadOnly)) {
+    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + file.errorString());
+    return false;
   }
 
-  return idNFe = query.first() ? query.value("idNFe").toInt() : query.lastInsertId().toInt();
+  query.prepare("INSERT INTO nfe (idVendaCompra, tipo, chaveAcesso, xml) VALUES (:idVendaCompra, :tipo, "
+                ":chaveAcesso, :xml)");
+  query.bindValue(":idVendaCompra", "PLACEHOLDER");
+  query.bindValue(":tipo", tipo);
+  query.bindValue(":chaveAcesso", chaveAcesso);
+  query.bindValue(":xml", file.readAll());
+
+  if (not query.exec()) {
+    QMessageBox::critical(0, "Erro!", "Erro cadastrando XML no estoque: " + query.lastError().text());
+    return false;
+  }
+
+  return idNFe = query.lastInsertId().toInt();
 }
 
 void XML::lerDadosProduto(const QStandardItem *child) {
@@ -381,36 +353,58 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
 
   const int idTemp = query.first() ? query.value("idProduto").toInt() : 0;
 
-  return externalModel->setData(row, "fornecedor", xNome) and externalModel->setData(row, "idProduto", idTemp) and
-      externalModel->setData(row, "descricao", descricao) and externalModel->setData(row, "quant", quant) and
-      externalModel->setData(row, "un", un) and externalModel->setData(row, "codBarras", codBarras) and
-      externalModel->setData(row, "codComercial", codProd) and externalModel->setData(row, "ncm", ncm) and
-      externalModel->setData(row, "cfop", cfop) and externalModel->setData(row, "valorUnid", valorUnid) and
-      externalModel->setData(row, "valor", valor) and externalModel->setData(row, "codBarrasTrib", codBarrasTrib) and
-      externalModel->setData(row, "unTrib", unTrib) and externalModel->setData(row, "quantTrib", quantTrib) and
-      externalModel->setData(row, "valorTrib", valorTrib) and externalModel->setData(row, "desconto", desconto) and
-      externalModel->setData(row, "compoeTotal", compoeTotal) and
-      externalModel->setData(row, "numeroPedido", numeroPedido) and
-      externalModel->setData(row, "itemPedido", itemPedido) and externalModel->setData(row, "tipoICMS", tipoICMS) and
-      externalModel->setData(row, "orig", orig) and externalModel->setData(row, "cstICMS", cstICMS) and
-      externalModel->setData(row, "modBC", modBC) and externalModel->setData(row, "vBC", vBC) and
-      externalModel->setData(row, "pICMS", pICMS) and externalModel->setData(row, "vICMS", vICMS) and
-      externalModel->setData(row, "modBCST", modBCST) and externalModel->setData(row, "pMVAST", pMVAST) and
-      externalModel->setData(row, "vBCST", vBCST) and externalModel->setData(row, "pICMSST", pICMSST) and
-      externalModel->setData(row, "vICMSST", vICMSST) and externalModel->setData(row, "cEnq", cEnq) and
-      externalModel->setData(row, "cstIPI", cstIPI) and externalModel->setData(row, "cstPIS", cstPIS) and
-      externalModel->setData(row, "vBCPIS", vBCPIS) and externalModel->setData(row, "pPIS", pPIS) and
-      externalModel->setData(row, "vPIS", vPIS) and externalModel->setData(row, "cstCOFINS", cstCOFINS) and
-      externalModel->setData(row, "vBCCOFINS", vBCCOFINS) and externalModel->setData(row, "pCOFINS", pCOFINS) and
-      externalModel->setData(row, "vCOFINS", vCOFINS) and externalModel->setData(row, "temp", true);
+  if (not externalModel->setData(row, "fornecedor", xNome)) return false;
+  if (not externalModel->setData(row, "idProduto", idTemp)) return false;
+  if (not externalModel->setData(row, "descricao", descricao)) return false;
+  if (not externalModel->setData(row, "quant", quant)) return false;
+  if (not externalModel->setData(row, "un", un)) return false;
+  if (not externalModel->setData(row, "codBarras", codBarras)) return false;
+  if (not externalModel->setData(row, "codComercial", codProd)) return false;
+  if (not externalModel->setData(row, "ncm", ncm)) return false;
+  if (not externalModel->setData(row, "cfop", cfop)) return false;
+  if (not externalModel->setData(row, "valorUnid", valorUnid)) return false;
+  if (not externalModel->setData(row, "valor", valor)) return false;
+  if (not externalModel->setData(row, "codBarrasTrib", codBarrasTrib)) return false;
+  if (not externalModel->setData(row, "unTrib", unTrib)) return false;
+  if (not externalModel->setData(row, "quantTrib", quantTrib)) return false;
+  if (not externalModel->setData(row, "valorTrib", valorTrib)) return false;
+  if (not externalModel->setData(row, "desconto", desconto)) return false;
+  if (not externalModel->setData(row, "compoeTotal", compoeTotal)) return false;
+  if (not externalModel->setData(row, "numeroPedido", numeroPedido)) return false;
+  if (not externalModel->setData(row, "itemPedido", itemPedido)) return false;
+  if (not externalModel->setData(row, "tipoICMS", tipoICMS)) return false;
+  if (not externalModel->setData(row, "orig", orig)) return false;
+  if (not externalModel->setData(row, "cstICMS", cstICMS)) return false;
+  if (not externalModel->setData(row, "modBC", modBC)) return false;
+  if (not externalModel->setData(row, "vBC", vBC)) return false;
+  if (not externalModel->setData(row, "pICMS", pICMS)) return false;
+  if (not externalModel->setData(row, "vICMS", vICMS)) return false;
+  if (not externalModel->setData(row, "modBCST", modBCST)) return false;
+  if (not externalModel->setData(row, "pMVAST", pMVAST)) return false;
+  if (not externalModel->setData(row, "vBCST", vBCST)) return false;
+  if (not externalModel->setData(row, "pICMSST", pICMSST)) return false;
+  if (not externalModel->setData(row, "vICMSST", vICMSST)) return false;
+  if (not externalModel->setData(row, "cEnq", cEnq)) return false;
+  if (not externalModel->setData(row, "cstIPI", cstIPI)) return false;
+  if (not externalModel->setData(row, "cstPIS", cstPIS)) return false;
+  if (not externalModel->setData(row, "vBCPIS", vBCPIS)) return false;
+  if (not externalModel->setData(row, "pPIS", pPIS)) return false;
+  if (not externalModel->setData(row, "vPIS", vPIS)) return false;
+  if (not externalModel->setData(row, "cstCOFINS", cstCOFINS)) return false;
+  if (not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)) return false;
+  if (not externalModel->setData(row, "pCOFINS", pCOFINS)) return false;
+  if (not externalModel->setData(row, "vCOFINS", vCOFINS)) return false;
+  if (not externalModel->setData(row, "temp", true)) return false;
+
+  return true;
 }
 
-QStringList XML::getTodosCNPJ() {
+bool XML::verificaCNPJ() {
   QSqlQuery queryLoja;
 
   if (not queryLoja.exec("SELECT cnpj FROM loja")) {
     QMessageBox::critical(0, "Erro!", "Erro na query CNPJ: " + queryLoja.lastError().text());
-    return QStringList();
+    return false;
   }
 
   QStringList list;
@@ -419,5 +413,28 @@ QStringList XML::getTodosCNPJ() {
     list << queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-");
   }
 
-  return list;
+  if (not list.contains(cnpj)) {
+    QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");
+    return false;
+  }
+
+  return true;
+}
+
+bool XML::verificaExiste() {
+  QSqlQuery query;
+  query.prepare("SELECT idNFe FROM nfe WHERE chaveAcesso = :chaveAcesso");
+  query.bindValue(":chaveAcesso", chaveAcesso);
+
+  if (not query.exec()) {
+    QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " + query.lastError().text());
+    return false;
+  }
+
+  if (query.first()) {
+    QMessageBox::critical(0, "Erro!", "Nota já cadastrada!");
+    return true;
+  }
+
+  return false;
 }

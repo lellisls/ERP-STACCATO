@@ -15,8 +15,8 @@ class XML {
     void mostrarNoSqlModel(SqlTableModel &externalModel);
 
   private:
-    QStandardItemModel model;
     QByteArray fileContent;
+    QStandardItemModel model;
     QString fileName;
     SqlTableModel modelProduto;
 
@@ -94,7 +94,8 @@ class XML {
     // methods
     bool inserirItemSql(SqlTableModel *externalModel);
     bool lerValores(const QStandardItem *item);
-    QStringList getTodosCNPJ();
+    bool verificaCNPJ();
+    bool verificaExiste();
     void inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel);
     void lerCOFINSProduto(const QStandardItem *child);
     void lerDadosProduto(const QStandardItem *child);

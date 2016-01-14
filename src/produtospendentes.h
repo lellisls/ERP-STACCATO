@@ -28,9 +28,9 @@ class ProdutosPendentes : public QDialog {
     SqlTableModel modelEstoque;
     SqlTableModel modelProdutos;
     // methods
-    void atualiza(QSqlQuery &query);
-    void atualizaVenda(QSqlQuery &query, QDate &dataPrevista);
-    void insere(QSqlQuery &query, QDate &dataPrevista);
+    void atualiza(const QSqlQuery &query);
+    void atualizaVenda(const QDate &dataPrevista);
+    void insere(const QDate &dataPrevista);
     void setupTables();
 };
 

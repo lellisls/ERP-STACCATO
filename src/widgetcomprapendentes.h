@@ -31,8 +31,8 @@ class WidgetCompraPendentes : public QWidget {
     Ui::WidgetCompraPendentes *ui;
     SqlTableModel model;
     // methods
-    bool atualiza(QSqlQuery &query);
-    bool insere(QSqlQuery &query, QDate &dataPrevista);
+    bool atualiza(const QSqlQuery &query);
+    bool insere(const QDate &dataPrevista);
     void setupTables();
 };
 

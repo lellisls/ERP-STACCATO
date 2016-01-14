@@ -110,7 +110,6 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
   QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
-
   query.prepare(
         "SELECT * FROM pedido_fornecedor_has_produto WHERE codComercial = :codComercial AND status = 'PENDENTE'");
   query.bindValue(":codComercial", codComercial);
@@ -120,9 +119,9 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
     return;
   }
 
-  query.first() ? atualiza(query) : insere(query, dataPrevista);
+  query.first() ? atualiza(query) : insere(dataPrevista);
 
-  atualizaVenda(query, dataPrevista);
+  atualizaVenda(dataPrevista);
 
   if (not query.exec("CALL update_venda_status()")) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
@@ -141,34 +140,27 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
   estoque->show();
 }
 
-void ProdutosPendentes::atualiza(QSqlQuery &query) {
-  query.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant WHERE codComercial = :codComercial AND "
-                "status = 'PENDENTE'");
-  // TODO: essa query ainda funciona depois dela ser preparada em cima??
-  query.bindValue(":quant", query.value("quant").toDouble() + ui->doubleSpinBoxComprar->value());
-  query.bindValue(":codComercial", codComercial);
+void ProdutosPendentes::atualiza(const QSqlQuery &query) {
+  QSqlQuery query2;
+  query2.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant WHERE codComercial = :codComercial AND "
+                 "status = 'PENDENTE'");
+  query2.bindValue(":quant", query.value("quant").toDouble() + ui->doubleSpinBoxComprar->value());
+  query2.bindValue(":codComercial", codComercial);
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando pedido_fornecedor_has_produto: " + query.lastError().text());
+  if (not query2.exec()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro atualizando pedido_fornecedor_has_produto: " + query2.lastError().text());
     return;
   }
 }
 
-void ProdutosPendentes::insere(QSqlQuery &query, QDate &dataPrevista) {
-  query.prepare("SELECT custo FROM produto WHERE idProduto = :idProduto");
-  query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
-
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando custo do produto: " + query.lastError().text());
-    return;
-  }
-
+void ProdutosPendentes::insere(const QDate &dataPrevista) {
+  QSqlQuery query;
   query.prepare(
         "INSERT INTO pedido_fornecedor_has_produto (fornecedor, idProduto, descricao, colecao, quant, un, un2, caixas, "
         "preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, :idProduto, "
         ":descricao, :colecao, :quant, :un, :un2, :caixas, :preco, :kgcx, :formComercial, :codComercial, :codBarras, "
         ":dataPrevCompra)");
-
   query.bindValue(":fornecedor", modelProdutos.data(0, "fornecedor"));
   query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
   query.bindValue(":descricao", modelProdutos.data(0, "produto"));
@@ -177,7 +169,7 @@ void ProdutosPendentes::insere(QSqlQuery &query, QDate &dataPrevista) {
   query.bindValue(":un", modelProdutos.data(0, "un"));
   query.bindValue(":un2", modelProdutos.data(0, "un2"));
   query.bindValue(":caixas", modelProdutos.data(0, "caixas"));
-  query.bindValue(":preco", query.value("custo").toDouble() * ui->doubleSpinBoxComprar->value());
+  query.bindValue(":preco", modelProdutos.data(0, "custo").toDouble() * ui->doubleSpinBoxComprar->value());
   query.bindValue(":kgcx", modelProdutos.data(0, "kgcx"));
   query.bindValue(":formComercial", modelProdutos.data(0, "formComercial"));
   query.bindValue(":codComercial", modelProdutos.data(0, "codComercial"));
@@ -191,7 +183,9 @@ void ProdutosPendentes::insere(QSqlQuery &query, QDate &dataPrevista) {
   }
 }
 
-void ProdutosPendentes::atualizaVenda(QSqlQuery &query, QDate &dataPrevista) {
+void ProdutosPendentes::atualizaVenda(const QDate &dataPrevista) {
+  QSqlQuery query;
+
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {
     query.prepare("UPDATE venda_has_produto SET dataPrevCompra = :dataPrevCompra, "
                   "status = 'INICIADO' WHERE idVenda = :idVenda AND idProduto = :idProduto");

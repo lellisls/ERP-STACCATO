@@ -15,6 +15,9 @@ WidgetCompraGerar::WidgetCompraGerar(QWidget *parent) : QWidget(parent), ui(new 
   ui->setupUi(this);
 
   setupTables();
+
+  connect(ui->tableProdutos->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this,
+          &WidgetCompraGerar::fixPersistente);
 }
 
 WidgetCompraGerar::~WidgetCompraGerar() { delete ui; }
@@ -78,7 +81,11 @@ void WidgetCompraGerar::setupTables() {
 }
 
 QString WidgetCompraGerar::updateTables() {
-  modelForn.select();
+  auto selection = ui->tableForn->selectionModel()->selectedRows();
+
+  auto index = selection.size() > 0 ? selection.first() : QModelIndex();
+
+  if (not modelForn.select()) return "Erro lendo tabela fornecedores: " + modelForn.lastError().text();
 
   ui->tableForn->resizeColumnsToContents();
 
@@ -89,10 +96,15 @@ QString WidgetCompraGerar::updateTables() {
   }
 
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {
-    ui->tableProdutos->openPersistentEditor(modelProdutos.index(row, modelProdutos.fieldIndex("selecionado")));
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
   }
 
   ui->tableProdutos->resizeColumnsToContents();
+
+  if (selection.size() > 0) {
+    on_tableForn_activated(index);
+    ui->tableForn->selectRow(index.row());
+  }
 
   return QString();
 }
@@ -388,13 +400,8 @@ void WidgetCompraGerar::on_tableForn_activated(const QModelIndex &index) {
   ui->tableProdutos->resizeColumnsToContents();
 }
 
-void WidgetCompraGerar::on_tableProdutos_entered(const QModelIndex &) {
+void WidgetCompraGerar::fixPersistente() {
   for (int row = 0; row < modelProdutos.rowCount(); ++row) {
     ui->tableProdutos->openPersistentEditor(row, "selecionado");
   }
-
-  ui->tableProdutos->resizeColumnsToContents();
 }
-
-// NOTE: arrumar openPersistent quando ordenar colunas (tableEntered é temp)
-// TODO: alterar logica para nao resetar tabela fornecedores se existir linha selecionada

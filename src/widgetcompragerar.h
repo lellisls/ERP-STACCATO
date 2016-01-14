@@ -19,10 +19,10 @@ class WidgetCompraGerar : public QWidget {
 
   private slots:
     QString gerarExcel(QList<int> lista);
+    void fixPersistente();
     void on_checkBoxTodosGerar_clicked(const bool &checked);
     void on_pushButtonGerarCompra_clicked();
     void on_tableForn_activated(const QModelIndex &index);
-    void on_tableProdutos_entered(const QModelIndex &);
 
   private:
     // attributes

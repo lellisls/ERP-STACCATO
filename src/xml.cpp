@@ -142,9 +142,9 @@ int XML::cadastrarNFe(const QString &tipo) {
     return false;
   }
 
-  query.prepare("INSERT INTO nfe (idVendaCompra, tipo, chaveAcesso, xml) VALUES (:idVendaCompra, :tipo, "
+  query.prepare("INSERT INTO nfe (idCompra, tipo, chaveAcesso, xml) VALUES (:idCompra, :tipo, "
                 ":chaveAcesso, :xml)");
-  query.bindValue(":idVendaCompra", "PLACEHOLDER");
+  query.bindValue(":idCompra", "PLACEHOLDER");
   query.bindValue(":tipo", tipo);
   query.bindValue(":chaveAcesso", chaveAcesso);
   query.bindValue(":xml", file.readAll());

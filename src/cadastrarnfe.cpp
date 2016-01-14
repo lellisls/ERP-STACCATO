@@ -109,9 +109,9 @@ void CadastrarNFe::guardarNotaBD() {
   }
 
   QSqlQuery queryNota;
-  queryNota.prepare("INSERT INTO nfe (idVendaCompra, tipo, xml, status, chaveAcesso) VALUES (:idVendaCompra, :tipo, "
+  queryNota.prepare("INSERT INTO nfe (idCompra, tipo, xml, status, chaveAcesso) VALUES (:idCompra, :tipo, "
                     ":xml, :status, :chaveAcesso)");
-  queryNota.bindValue(":idVendaCompra", "PLACEHOLDER"); // TODO: replace placeholder
+  queryNota.bindValue(":idCompra", "PLACEHOLDER"); // TODO: replace placeholder
   queryNota.bindValue(":tipo", "SAÍDA");
   queryNota.bindValue(":xml", file.readAll());
   queryNota.bindValue(":status", "PENDENTE");

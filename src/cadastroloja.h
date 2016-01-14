@@ -14,9 +14,6 @@ class CadastroLoja : public RegisterAddressDialog {
     explicit CadastroLoja(QWidget *parent = 0);
     ~CadastroLoja();
 
-  public slots:
-    void show();
-
   private slots:
     void on_checkBoxMostrarInativos_clicked(const bool &checked);
     void on_lineEditCEP_textChanged(const QString &cep);

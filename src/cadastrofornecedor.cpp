@@ -46,11 +46,6 @@ void CadastroFornecedor::setupUi() {
   ui->lineEditUF->setInputMask(">AA;_");
 }
 
-void CadastroFornecedor::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 void CadastroFornecedor::clearEndereco() {
   ui->lineEditBairro->clear();
   ui->lineEditCEP->clear();

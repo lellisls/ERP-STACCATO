@@ -14,9 +14,6 @@ class CadastroFornecedor : public RegisterAddressDialog {
     explicit CadastroFornecedor(QWidget *parent = 0);
     ~CadastroFornecedor();
 
-  public slots:
-    void show();
-
   private slots:
     void on_lineEditCEP_textChanged(const QString &cep);
     void on_lineEditCNPJ_textEdited(const QString &text);

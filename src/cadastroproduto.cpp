@@ -201,11 +201,6 @@ void CadastroProduto::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroProduto::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroProduto::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 void CadastroProduto::on_doubleSpinBoxVenda_valueChanged(const double &) { calcularMarkup(); }
 
 void CadastroProduto::on_doubleSpinBoxCusto_valueChanged(const double &) { calcularMarkup(); }

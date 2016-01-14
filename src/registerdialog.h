@@ -18,6 +18,7 @@ class RegisterDialog : public QDialog {
     virtual bool viewRegisterById(const QVariant &id);
     void marcarDirty();
     void saveSlot();
+    void show();
 
   signals:
     void registerUpdated(const QVariant &idCliente, const QString &text);

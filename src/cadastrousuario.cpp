@@ -148,11 +148,6 @@ void CadastroUsuario::on_pushButtonBuscar_clicked() {
   sdUsuario->show();
 }
 
-void CadastroUsuario::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 bool CadastroUsuario::save(const bool &isUpdate) {
   if (not verifyFields()) return false;
 

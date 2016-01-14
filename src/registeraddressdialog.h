@@ -10,7 +10,6 @@ class RegisterAddressDialog : public RegisterDialog {
 
   public slots:
     bool viewRegisterById(const QVariant &id);
-    // TODO: reimplementar show() no lugar das subclasses
 
   protected:
     // attributes

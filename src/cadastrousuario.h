@@ -15,9 +15,6 @@ class CadastroUsuario : public RegisterDialog {
     ~CadastroUsuario();
     void modificarUsuario();
 
-  public slots:
-    void show();
-
   private slots:
     void fillCombobox();
     void on_lineEditUser_textEdited(const QString &text);

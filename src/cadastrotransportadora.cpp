@@ -232,11 +232,6 @@ void CadastroTransportadora::on_tableEndereco_clicked(const QModelIndex &index) 
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroTransportadora::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 void CadastroTransportadora::setupUi() {
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
   ui->lineEditANTT->setInputMask("99999999;_");

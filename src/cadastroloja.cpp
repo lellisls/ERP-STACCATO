@@ -260,11 +260,6 @@ void CadastroLoja::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroLoja::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 bool CadastroLoja::viewRegister(const QModelIndex &index) {
   if (not RegisterDialog::viewRegister(index)) return false;
 

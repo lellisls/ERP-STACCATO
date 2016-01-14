@@ -212,11 +212,6 @@ void CadastroProfissional::on_pushButtonBuscar_clicked() {
   sdProfissional->show();
 }
 
-void CadastroProfissional::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 void CadastroProfissional::on_lineEditCPF_textEdited(const QString &text) {
   ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }

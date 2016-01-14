@@ -127,6 +127,11 @@ void RegisterDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void RegisterDialog::saveSlot() { save(); }
 
+void RegisterDialog::show() {
+  QWidget::show();
+  adjustSize();
+}
+
 bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
   if (not line->styleSheet().contains(requiredStyle())) return true;
   if (not line->isVisible()) return true;

@@ -14,9 +14,6 @@ class CadastroProduto : public RegisterDialog {
     explicit CadastroProduto(QWidget *parent = 0);
     ~CadastroProduto();
 
-  public slots:
-    void show();
-
   private slots:
     void on_pushButtonAtualizar_clicked();
     void on_pushButtonCadastrar_clicked();

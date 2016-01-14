@@ -202,11 +202,6 @@ void CadastroCliente::on_pushButtonCadastrar_clicked() { save(); }
 
 void CadastroCliente::on_pushButtonAtualizar_clicked() { update(); }
 
-void CadastroCliente::show() {
-  QWidget::show();
-  adjustSize();
-}
-
 void CadastroCliente::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroCliente::on_pushButtonNovoCad_clicked() { newRegister(); }

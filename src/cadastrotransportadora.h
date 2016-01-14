@@ -14,9 +14,6 @@ class CadastroTransportadora : public RegisterAddressDialog {
     explicit CadastroTransportadora(QWidget *parent = 0);
     ~CadastroTransportadora();
 
-  public slots:
-    void show();
-
   private slots:
     void on_checkBoxMostrarInativos_clicked(const bool &checked);
     void on_lineEditCEP_textChanged(const QString &cep);

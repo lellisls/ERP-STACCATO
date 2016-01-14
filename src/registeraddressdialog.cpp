@@ -76,7 +76,11 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
     modelEnd.setData(row, primaryKey, id);
   }
 
-  // TODO: modelEnd toUpper?
+  for (int column = 0; column < modelEnd.rowCount(); ++column) {
+    if (modelEnd.data(row, column).type() == QVariant::String) {
+      modelEnd.setData(row, column, modelEnd.data(row, column).toString().toUpper());
+    }
+  }
 
   if (not modelEnd.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());

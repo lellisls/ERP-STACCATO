@@ -78,10 +78,10 @@ class Orcamento : public RegisterDialog {
     void atualizarItem();
     void calcPrecoGlobalTotal();
     void calcPrecoItemTotal();
+    void generateId();
     void novoItem();
     void removeItem();
     void setupTables();
-    void generateId();
 };
 
 #endif // ORCAMENTO_H

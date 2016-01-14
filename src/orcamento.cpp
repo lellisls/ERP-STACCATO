@@ -180,8 +180,7 @@ void Orcamento::generateId() {
   QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
 
   QSqlQuery query;
-  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id UNION SELECT idVenda AS idOrcamento FROM "
-                "venda WHERE idVenda LIKE :id ORDER BY idOrcamento ASC");
+  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id ORDER BY idOrcamento ASC");
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {

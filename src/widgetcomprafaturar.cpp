@@ -48,8 +48,12 @@ QString WidgetCompraFaturar::updateTables() {
 }
 
 void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
   if (ui->table->selectionModel()->selectedRows().size() == 0) {
     QMessageBox::critical(this, "Erro!", "Não selecionou nenhuma compra!");
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
 
@@ -59,27 +63,31 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
   import->filtrar(model.data(row, "Fornecedor").toString());
   import->showMaximized();
 
-  if (import->exec() != QDialog::Accepted) return;
+  if (import->exec() != QDialog::Accepted) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
 
   const QString idCompra = import->getIdCompra();
   //----------------------------------------------------------//
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
-  //  inputDlg->setFilter(idCompra);
 
-  if (inputDlg->exec() != InputDialog::Accepted) return;
+  if (inputDlg->exec() != InputDialog::Accepted) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
 
   const QDate dataFat = inputDlg->getDate();
   const QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
 
-  // TODO: juntar updates em uma unica query
-
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
                      "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
 
@@ -88,15 +96,19 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
                      "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
 
   if (not query.exec("CALL update_venda_status()")) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
 
   updateTables();
+
+  QSqlQuery("COMMIT").exec();
 
   QMessageBox::information(this, "Aviso!", "Confirmado faturamento.");
 }

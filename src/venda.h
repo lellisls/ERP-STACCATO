@@ -46,7 +46,6 @@ class Venda : public RegisterDialog {
     bool isBlockedTotal = false;
     double minimoFrete;
     double porcFrete;
-    QString id;
     SqlTableModel modelFluxoCaixa;
     SqlTableModel modelItem;
     // methods

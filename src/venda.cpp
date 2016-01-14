@@ -673,8 +673,6 @@ void Venda::on_pushButtonGerarExcel_clicked() {
 }
 
 bool Venda::save(const bool &isUpdate) {
-  id = data("idVenda").toString();
-
   if (not verifyFields()) return false;
 
   if (not isUpdate and not model.select()) {
@@ -741,7 +739,7 @@ bool Venda::save(const bool &isUpdate) {
 
   isDirty = false;
 
-  viewRegisterById(id);
+  viewRegisterById(ui->lineEditVenda->text());
   sendUpdateMessage();
 
   if (not silent) successMessage();

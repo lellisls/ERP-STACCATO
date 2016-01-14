@@ -61,7 +61,7 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   if (import->exec() != QDialog::Accepted) return;
 
-  QString const idCompra = import->getIdCompra();
+  const QString idCompra = import->getIdCompra();
   //----------------------------------------------------------//
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
@@ -74,7 +74,7 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   QSqlQuery query;
 
-  // TODO: juntar os updates em uma unica query
+  // TODO: juntar updates em uma unica query
 
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +

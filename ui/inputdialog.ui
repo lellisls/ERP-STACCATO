@@ -43,7 +43,13 @@
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxDataPreco">
      <property name="title">
-      <string>Preços</string>
+      <string/>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
@@ -55,11 +61,21 @@
    <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxData">
      <property name="title">
-      <string>Data</string>
+      <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1">
-       <widget class="QDateEdit" name="dateEditEvento"/>
+       <widget class="QDateEdit" name="dateEditEvento">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelProximoEvento">
@@ -69,7 +85,17 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDateEdit" name="dateEditProximo"/>
+       <widget class="QDateEdit" name="dateEditProximo">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="labelEvento">

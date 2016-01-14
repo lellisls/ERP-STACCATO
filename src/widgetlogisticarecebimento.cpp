@@ -19,9 +19,7 @@ WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent)
 WidgetLogisticaRecebimento::~WidgetLogisticaRecebimento() { delete ui; }
 
 QString WidgetLogisticaRecebimento::updateTables() {
-  if (not model.select()) {
-    return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
-  }
+  if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
 
   for (int row = 0; row < model.rowCount(); ++row) {
     ui->table->openPersistentEditor(row, "selecionado");

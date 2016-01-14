@@ -1,12 +1,12 @@
 #include <QDebug>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QMessageBox>
+#include <QSqlError>
+#include <QSqlQuery>
 
 #include "cadastrarnfe.h"
+#include "checkboxdelegate.h"
 #include "entregascliente.h"
 #include "ui_entregascliente.h"
-#include "checkboxdelegate.h"
 
 EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::EntregasCliente) {
   ui->setupUi(this);

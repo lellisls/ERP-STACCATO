@@ -30,8 +30,6 @@ class WidgetCompraGerar : public QWidget {
     SqlTableModel modelProdutos;
     SqlTableModel modelForn;
     // methods
-    QVariant settings(const QString &key) const;
-    void setSettings(const QString &key, const QVariant &value) const;
     void setupTables();
 };
 

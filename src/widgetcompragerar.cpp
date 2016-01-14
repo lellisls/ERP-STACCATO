@@ -284,15 +284,15 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
 
 QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
   // NOTE: refactor this to use excel class (verify what should be in this file)
-  if (settings("User/userFolder").toString().isEmpty()) {
+  if (UserSession::settings("User/userFolder").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
-    setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
+    UserSession::setSettings("User/userFolder", QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel"));
     return QString();
   }
 
-  if (settings("User/userFolder").toString().isEmpty()) return QString();
+  if (UserSession::settings("User/userFolder").toString().isEmpty()) return QString();
 
-  QString path = settings("User/userFolder").toString();
+  QString path = UserSession::settings("User/userFolder").toString();
 
   QDir dir(path);
 
@@ -360,13 +360,6 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
 
   QMessageBox::information(this, "Ok!", "Arquivo salvo como " + path + "/" + idVenda + ".xlsx");
   return idVenda;
-}
-
-// TODO: remove these
-QVariant WidgetCompraGerar::settings(const QString &key) const { return UserSession::settings(key); }
-
-void WidgetCompraGerar::setSettings(const QString &key, const QVariant &value) const {
-  UserSession::setSettings(key, value);
 }
 
 void WidgetCompraGerar::on_checkBoxTodosGerar_clicked(const bool &checked) {

@@ -828,5 +828,3 @@ void Orcamento::on_doubleSpinBoxSubTotalBruto_valueChanged(const double &) {
 }
 
 void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!"); }
-
-// TODO: on save rollback put "auto gerado" back in id?

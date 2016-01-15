@@ -120,7 +120,7 @@ void Venda::setupTables() {
   modelFluxoCaixa.setHeaderData("tipo", "Tipo");
   modelFluxoCaixa.setHeaderData("parcela", "Parcela");
   modelFluxoCaixa.setHeaderData("valor", "R$");
-  modelFluxoCaixa.setHeaderData("data", "Data");
+  modelFluxoCaixa.setHeaderData("dataPagamento", "Data");
   modelFluxoCaixa.setHeaderData("observacao", "Obs.");
   modelFluxoCaixa.setHeaderData("status", "Status");
   modelFluxoCaixa.setHeaderData("representacao", "Representação");
@@ -137,7 +137,6 @@ void Venda::setupTables() {
   ui->tableFluxoCaixa->hideColumn("idLoja");
   ui->tableFluxoCaixa->hideColumn("idPagamento");
   ui->tableFluxoCaixa->hideColumn("dataEmissao");
-  ui->tableFluxoCaixa->hideColumn("dataPagamento");
   ui->tableFluxoCaixa->hideColumn("dataRealizado");
   ui->tableFluxoCaixa->hideColumn("valorReal");
   ui->tableFluxoCaixa->hideColumn("tipoReal");

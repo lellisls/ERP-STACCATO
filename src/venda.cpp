@@ -274,6 +274,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
     ui->checkBoxRep1->hide();
     ui->checkBoxRep2->hide();
     ui->checkBoxRep3->hide();
+    ui->tableFluxoCaixa->hideColumn("representacao");
   }
 }
 
@@ -367,6 +368,7 @@ void Venda::setupMapper() {
   addMapping(ui->doubleSpinBoxTotal, "total");
   addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
   addMapping(ui->textEdit, "observacao");
+  addMapping(ui->lineEditIdOrcamento, "idOrcamento");
 }
 
 void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
@@ -463,6 +465,7 @@ void Venda::on_comboBoxPgt3_currentTextChanged(const QString &text) {
 }
 
 bool Venda::savingProcedures() {
+  if (not setData("idOrcamento", m_idOrcamento)) return false;
   if (not setData("idEnderecoEntrega", ui->itemBoxEndereco->value())) return false;
   if (not setData("idEnderecoFaturamento", ui->itemBoxEnderecoFat->value())) return false;
   if (not setData("status", "PENDENTE")) return false;
@@ -727,7 +730,7 @@ bool Venda::save(const bool &isUpdate) {
   QSqlQuery query;
 
   query.prepare("DELETE FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", ui->lineEditVenda->text() + "O");
+  query.bindValue(":idOrcamento", m_idOrcamento);
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro deletando itens no orçamento_has_produto: " + query.lastError().text());
@@ -735,7 +738,7 @@ bool Venda::save(const bool &isUpdate) {
   }
 
   query.prepare("DELETE FROM orcamento WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", ui->lineEditVenda->text() + "O");
+  query.bindValue(":idOrcamento", m_idOrcamento);
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro deletando orçamento: " + query.lastError().text());
@@ -780,7 +783,8 @@ void Venda::on_pushButtonCancelamento_clicked() {
 }
 
 void Venda::generateId() {
-  QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
+  QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy") +
+               UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
 
   QSqlQuery query;
   query.prepare("SELECT idVenda FROM venda WHERE idVenda LIKE :id ORDER BY idVenda ASC");
@@ -802,7 +806,6 @@ void Venda::generateId() {
     last = temp.toInt();
   }
 
-  id += UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
   id += QString("%1").arg(last + 1, 3, 10, QChar('0'));
   id += (m_idOrcamento.endsWith("R") or m_idOrcamento.endsWith("RO")) ? "R" : "";
 

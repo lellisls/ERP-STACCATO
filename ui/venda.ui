@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1228</width>
-    <height>694</height>
+    <width>1215</width>
+    <height>722</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,10 +52,7 @@
            <number>0</number>
           </property>
           <layout class="QGridLayout" name="gridLayout_10">
-           <item row="4" column="1">
-            <widget class="ItemBox" name="itemBoxEnderecoFat"/>
-           </item>
-           <item row="6" column="0" colspan="2">
+           <item row="9" column="0" colspan="2">
             <widget class="QTextEdit" name="textEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -94,6 +91,9 @@
              </property>
             </widget>
            </item>
+           <item row="4" column="1">
+            <widget class="ItemBox" name="itemBoxEnderecoFat"/>
+           </item>
            <item row="4" column="0">
             <widget class="QLabel" name="labelPrazoEntrega_2">
              <property name="sizePolicy">
@@ -104,19 +104,6 @@
              </property>
              <property name="text">
               <string>End. de faturamento:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="labelEndereco_9">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Observação:</string>
              </property>
             </widget>
            </item>
@@ -148,13 +135,6 @@
              </attribute>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="labelDateTimeOrc">
-             <property name="text">
-              <string>Data orçamento:</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="1">
             <widget class="QDateTimeEdit" name="dateTimeEditOrc">
              <property name="toolTip">
@@ -171,6 +151,39 @@
              </property>
              <property name="calendarPopup">
               <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelDateTimeOrc">
+             <property name="text">
+              <string>Data orçamento:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="labelEndereco_9">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Observação:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0">
+            <widget class="QLabel" name="labelIdOrcamento">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>IdOrçamento:</string>
              </property>
             </widget>
            </item>
@@ -300,6 +313,13 @@
                </layout>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item row="12" column="1">
+            <widget class="QLineEdit" name="lineEditIdOrcamento">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>

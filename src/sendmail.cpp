@@ -1,8 +1,8 @@
 #include <QFileDialog>
 
 #include "sendmail.h"
-#include "ui_sendmail.h"
 #include "smtp.h"
+#include "ui_sendmail.h"
 #include "usersession.h"
 
 SendMail::SendMail(QWidget *parent, const QString &text, const QString &arquivo)
@@ -18,10 +18,10 @@ SendMail::SendMail(QWidget *parent, const QString &text, const QString &arquivo)
 
   ui->lineEditAnexo->setText(arquivo);
 
-  ui->lineEditServidor->setText(settings("User/servidorSMTP").toString());
-  ui->lineEditPorta->setText(settings("User/portaSMTP").toString());
-  ui->lineEditEmail->setText(settings("User/emailCompra").toString());
-  ui->lineEditPasswd->setText(settings("User/emailSenha").toString());
+  ui->lineEditServidor->setText(UserSession::settings("User/servidorSMTP").toString());
+  ui->lineEditPorta->setText(UserSession::settings("User/portaSMTP").toString());
+  ui->lineEditEmail->setText(UserSession::settings("User/emailCompra").toString());
+  ui->lineEditPasswd->setText(UserSession::settings("User/emailSenha").toString());
 
   progress = new QProgressDialog("Enviando...", "Cancelar", 0, 0, this);
   progress->setCancelButton(0);
@@ -47,10 +47,10 @@ void SendMail::on_pushButtonBuscar_clicked() {
 void SendMail::on_pushButtonEnviar_clicked() {
   progress->show();
 
-  setSettings("User/servidorSMTP", ui->lineEditServidor->text());
-  setSettings("User/portaSMTP", ui->lineEditPorta->text());
-  setSettings("User/emailCompra", ui->lineEditEmail->text());
-  setSettings("User/emailSenha", ui->lineEditPasswd->text());
+  UserSession::setSettings("User/servidorSMTP", ui->lineEditServidor->text());
+  UserSession::setSettings("User/portaSMTP", ui->lineEditPorta->text());
+  UserSession::setSettings("User/emailCompra", ui->lineEditEmail->text());
+  UserSession::setSettings("User/emailSenha", ui->lineEditPasswd->text());
 
   Smtp *smtp = new Smtp(ui->lineEditEmail->text(), ui->lineEditPasswd->text(), ui->lineEditServidor->text(),
                         ui->lineEditPorta->text().toInt());
@@ -74,9 +74,3 @@ void SendMail::successStatus() {
 void SendMail::failureStatus(const QString &status) {
   QMessageBox::critical(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
 }
-
-QVariant SendMail::settings(const QString &key) const { return UserSession::settings(key); }
-
-void SendMail::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
-
-// NOTE: SMTP: email-ssl.com.br - 465

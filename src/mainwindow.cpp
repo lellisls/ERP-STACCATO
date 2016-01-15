@@ -32,8 +32,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   connect(shortcut, &QShortcut::activated, this, &QWidget::close);
 
   setWindowTitle(windowTitle() + " - " + UserSession::nome() + " - " + UserSession::tipoUsuario() + " - " +
-                 settings("Login/hostname").toString() +
-                 (settings("Login/homologacao").toBool() ? " - HOMOLOGACAO" : ""));
+                 UserSession::settings("Login/hostname").toString() +
+                 (UserSession::settings("Login/homologacao").toBool() ? " - HOMOLOGACAO" : ""));
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR" and UserSession::tipoUsuario() != "GERENTE LOJA") {
     ui->actionGerenciar_Lojas->setDisabled(true);
@@ -150,10 +150,6 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   CadastroFornecedor *cad = new CadastroFornecedor(this);
   cad->show();
 }
-
-QVariant MainWindow::settings(const QString &key) const { return UserSession::settings(key); }
-
-void MainWindow::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 void MainWindow::on_actionImportaProdutos_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);

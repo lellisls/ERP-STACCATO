@@ -26,8 +26,6 @@ class SendMail : public QDialog {
     QProgressDialog *progress;
     QStringList files;
     // methods
-    void setSettings(const QString &key, const QVariant &value) const;
-    QVariant settings(const QString &key) const;
     void successStatus();
     void failureStatus(const QString &status);
 };

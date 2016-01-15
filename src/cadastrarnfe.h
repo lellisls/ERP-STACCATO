@@ -44,9 +44,7 @@ class CadastrarNFe : public QDialog {
     QString clearStr(const QString &str) const;
     QString criarChaveAcesso();
     QString removeDiacritics(const QString &str) const;
-    QVariant settings(const QString &key) const;
     void guardarNotaBD();
-    void setSettings(const QString &key, const QVariant &value) const;
     void writeIdentificacao(QTextStream &stream) const;
     void writeTotal(QTextStream &stream, double &total, double &icmsTotal, double &frete) const;
     void setupTables(QString idVenda);

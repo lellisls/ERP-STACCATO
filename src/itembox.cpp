@@ -117,3 +117,5 @@ void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {
   search();
   event->accept();
 }
+
+// TODO: verificar se é possivel mostrar todo o texto no tooltip para quando nao cabe na tela

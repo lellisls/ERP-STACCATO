@@ -6,10 +6,6 @@
 #include "mainwindow.h"
 #include "usersession.h"
 
-QVariant settings(const QString &key) { return UserSession::settings(key); }
-
-void setSettings(const QString &key, const QVariant &value) { UserSession::setSettings(key, value); }
-
 void update();
 
 void storeSelection();
@@ -26,7 +22,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.8");
+  app.setApplicationVersion("0.2.10");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -46,15 +42,15 @@ int main(int argc, char *argv[]) {
 void update() {
   QSimpleUpdater *updater = new QSimpleUpdater();
   updater->setApplicationVersion(qApp->applicationVersion());
-  updater->setReferenceUrl("http://" + settings("Login/hostname").toString() + "/versao.txt");
-  updater->setDownloadUrl("http://" + settings("Login/hostname").toString() + "/Instalador.exe");
+  updater->setReferenceUrl("http://" + UserSession::settings("Login/hostname").toString() + "/versao.txt");
+  updater->setDownloadUrl("http://" + UserSession::settings("Login/hostname").toString() + "/Instalador.exe");
   updater->setSilent(true);
   updater->setShowNewestVersionMessage(true);
   updater->checkForUpdates();
 }
 
 void storeSelection() {
-  if (settings("Login/hostname").toString().isEmpty()) {
+  if (UserSession::settings("Login/hostname").toString().isEmpty()) {
     QStringList items;
     items << "Alphaville"
           << "Gabriel"
@@ -62,9 +58,9 @@ void storeSelection() {
 
     QString loja = QInputDialog::getItem(0, "Escolha a loja", "Qual a sua loja?", items, 0, false);
 
-    if (loja == "Alphaville") setSettings("Login/hostname", "192.168.2.144");
-    if (loja == "Gabriel") setSettings("Login/hostname", "192.168.1.101");
-    if (loja == "Granja") setSettings("Login/hostname", "192.168.0.10");
+    if (loja == "Alphaville") UserSession::setSettings("Login/hostname", "192.168.2.144");
+    if (loja == "Gabriel") UserSession::setSettings("Login/hostname", "192.168.1.101");
+    if (loja == "Granja") UserSession::setSettings("Login/hostname", "192.168.0.10");
   }
 }
 

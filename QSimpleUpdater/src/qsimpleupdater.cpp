@@ -456,3 +456,5 @@ void QSimpleUpdater::ignoreSslErrors(QNetworkReply *reply, const QList<QSslError
   Q_UNUSED(error);
 #endif
 }
+
+// TODO: o updater acha que 0.3.0 é menor que 0.2.9 FIX!!!

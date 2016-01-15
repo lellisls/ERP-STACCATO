@@ -755,7 +755,7 @@ bool Venda::save(const bool &isUpdate) {
 }
 
 void Venda::on_pushButtonCancelamento_clicked() {
-  // TODO: copiar de volta para orcamento e remover contas_a_receber (alcada gerente)
+  // TODO: copiar de volta para orcamento e para venda_cancelada, remover contas_a_receber (alcada gerente)
   QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja cancelar?",
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Sim");

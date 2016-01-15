@@ -23,11 +23,7 @@ class UserConfig : public QDialog {
     void on_pushButtonUserFolder_clicked();
 
   private:
-    // attributes
     Ui::UserConfig *ui;
-    // methods
-    QVariant settings(const QString &key) const;
-    void setSettings(const QString &key, const QVariant &value) const;
 };
 
 #endif // USERCONFIG_H

@@ -54,7 +54,7 @@ void CadastrarNFe::setupTables(QString idVenda) {
 }
 
 void CadastrarNFe::guardarNotaBD() {
-  QFile fileResposta(settings("User/pastaSaiACBr").toString() + "/" + chaveNum + "-resp.txt");
+  QFile fileResposta(UserSession::settings("User/pastaSaiACBr").toString() + "/" + chaveNum + "-resp.txt");
 
   QProgressDialog *progressDialog = new QProgressDialog(this);
   progressDialog->reset();
@@ -79,7 +79,7 @@ void CadastrarNFe::guardarNotaBD() {
   if (not fileResposta.exists()) {
     QMessageBox::critical(this, "Erro!", "ACBr não respondeu, verificar se ele está aberto e funcionando!");
 
-    QFile entrada(settings("User/pastaEntACBr").toString() + "/" + chaveNum + ".txt");
+    QFile entrada(UserSession::settings("User/pastaEntACBr").toString() + "/" + chaveNum + ".txt");
 
     if (entrada.exists()) entrada.remove();
 
@@ -101,7 +101,7 @@ void CadastrarNFe::guardarNotaBD() {
   QMessageBox::information(this, "Aviso!", "Resposta do ACBr: " + resposta);
   fileResposta.remove();
 
-  QFile file(settings("User/pastaXmlACBr").toString() + "/" + chaveNum + "-nfe.xml");
+  QFile file(UserSession::settings("User/pastaXmlACBr").toString() + "/" + chaveNum + "-nfe.xml");
 
   if (not file.open(QFile::ReadOnly)) {
     QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + file.errorString());
@@ -690,7 +690,7 @@ bool CadastrarNFe::writeTXT() {
   chaveNum = criarChaveAcesso();
   chaveAcesso = "NFE" + chaveNum;
 
-  const QString dir = settings("User/pastaEntACBr").toString();
+  const QString dir = UserSession::settings("User/pastaEntACBr").toString();
   QFile file(dir + "/" + chaveNum + ".txt");
 
   qDebug() << "file: " << dir + chaveNum + ".txt";
@@ -734,17 +734,11 @@ bool CadastrarNFe::writeTXT() {
   return true;
 }
 
-QVariant CadastrarNFe::settings(const QString &key) const { return UserSession::settings(key); }
-
-void CadastrarNFe::setSettings(const QString &key, const QVariant &value) const {
-  UserSession::setSettings(key, value);
-}
-
 void CadastrarNFe::on_pushButtonGerarNFE_clicked() { // NOTE: for testing, remove later
   chaveNum = criarChaveAcesso();
   chaveAcesso = "NFE" + chaveNum;
 
-  const QString dir = settings("User/pastaEntACBr").toString();
+  const QString dir = UserSession::settings("User/pastaEntACBr").toString();
   QFile file(dir + "/" + chaveNum + ".txt");
 
   qDebug() << "file: " << dir + chaveNum + ".txt";

@@ -8,16 +8,16 @@
 UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig) {
   ui->setupUi(this);
 
-  ui->lineEditPastaEntACBr->setText(settings("User/pastaEntACBr").toString());
-  ui->lineEditPastaSaiACBr->setText(settings("User/pastaSaiACBr").toString());
-  ui->lineEditPastaXmlACBr->setText(settings("User/pastaXmlACBr").toString());
+  ui->lineEditPastaEntACBr->setText(UserSession::settings("User/pastaEntACBr").toString());
+  ui->lineEditPastaSaiACBr->setText(UserSession::settings("User/pastaSaiACBr").toString());
+  ui->lineEditPastaXmlACBr->setText(UserSession::settings("User/pastaXmlACBr").toString());
 
-  ui->lineEditServidorSMTP->setText(settings("User/servidorSMTP").toString());
-  ui->lineEditPortaSMTP->setText(settings("User/portaSMTP").toString());
-  ui->lineEditEmail->setText(settings("User/emailCompra").toString());
-  ui->lineEditEmailSenha->setText(settings("User/emailSenha").toString());
+  ui->lineEditServidorSMTP->setText(UserSession::settings("User/servidorSMTP").toString());
+  ui->lineEditPortaSMTP->setText(UserSession::settings("User/portaSMTP").toString());
+  ui->lineEditEmail->setText(UserSession::settings("User/emailCompra").toString());
+  ui->lineEditEmailSenha->setText(UserSession::settings("User/emailSenha").toString());
 
-  ui->lineEditUserFolder->setText(settings("User/userFolder").toString());
+  ui->lineEditUserFolder->setText(UserSession::settings("User/userFolder").toString());
 }
 
 UserConfig::~UserConfig() { delete ui; }
@@ -63,25 +63,21 @@ void UserConfig::on_pushButtonACBrXML_clicked() {
 }
 
 void UserConfig::on_pushButtonSalvar_clicked() {
-  setSettings("User/pastaEntACBr", ui->lineEditPastaEntACBr->text());
-  setSettings("User/pastaSaiACBr", ui->lineEditPastaSaiACBr->text());
-  setSettings("User/pastaXmlACBr", ui->lineEditPastaXmlACBr->text());
+  UserSession::setSettings("User/pastaEntACBr", ui->lineEditPastaEntACBr->text());
+  UserSession::setSettings("User/pastaSaiACBr", ui->lineEditPastaSaiACBr->text());
+  UserSession::setSettings("User/pastaXmlACBr", ui->lineEditPastaXmlACBr->text());
 
-  setSettings("User/servidorSMTP", ui->lineEditServidorSMTP->text());
-  setSettings("User/portaSMTP", ui->lineEditPortaSMTP->text());
-  setSettings("User/emailCompra", ui->lineEditEmail->text());
-  setSettings("User/emailSenha", ui->lineEditEmailSenha->text());
+  UserSession::setSettings("User/servidorSMTP", ui->lineEditServidorSMTP->text());
+  UserSession::setSettings("User/portaSMTP", ui->lineEditPortaSMTP->text());
+  UserSession::setSettings("User/emailCompra", ui->lineEditEmail->text());
+  UserSession::setSettings("User/emailSenha", ui->lineEditEmailSenha->text());
 
-  setSettings("User/userFolder", ui->lineEditUserFolder->text());
+  UserSession::setSettings("User/userFolder", ui->lineEditUserFolder->text());
 
   QDialog::accept();
 
   close();
 }
-
-QVariant UserConfig::settings(const QString &key) const { return UserSession::settings(key); }
-
-void UserConfig::setSettings(const QString &key, const QVariant &value) const { UserSession::setSettings(key, value); }
 
 void UserConfig::on_pushButtonAlterarDados_clicked() {
   CadastroUsuario *usuario = new CadastroUsuario(this);

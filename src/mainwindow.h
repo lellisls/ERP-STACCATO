@@ -43,9 +43,7 @@ class MainWindow : public QMainWindow {
     QTimer *timer;
     // methods
     bool event(QEvent *event);
-    QVariant settings(const QString &key) const;
     void darkTheme();
-    void setSettings(const QString &key, const QVariant &value) const;
     void timerStatusBar();
 };
 

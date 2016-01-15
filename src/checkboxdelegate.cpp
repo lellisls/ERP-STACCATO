@@ -2,13 +2,14 @@
 
 #include "checkboxdelegate.h"
 
-CheckBoxDelegate::CheckBoxDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
+CheckBoxDelegate::CheckBoxDelegate(QObject *parent, const bool &readOnly)
+  : QStyledItemDelegate(parent), readOnly(readOnly) {}
 
 CheckBoxDelegate::~CheckBoxDelegate() {}
 
 QWidget *CheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
   QCheckBox *editor = new QCheckBox(parent);
-  editor->setAutoFillBackground(true);
+  if (readOnly) editor->setDisabled(true);
 
   return editor;
 }
@@ -35,3 +36,5 @@ void CheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionV
                                             const QModelIndex &) const {
   editor->setGeometry(option.rect);
 }
+
+QString CheckBoxDelegate::displayText(const QVariant &, const QLocale &) const { return QString(); }

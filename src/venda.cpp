@@ -113,7 +113,6 @@ void Venda::setupTables() {
   ui->tableVenda->hideColumn("idProduto");
   ui->tableVenda->hideColumn("item");
   ui->tableVenda->setItemDelegate(new DoubleDelegate(this));
-  ui->tableVenda->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
 
   modelFluxoCaixa.setTable("conta_a_receber_has_pagamento");
   modelFluxoCaixa.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -533,6 +532,9 @@ bool Venda::viewRegister(const QModelIndex &index) {
     return false;
   }
 
+  ui->tableFluxoCaixa->setItemDelegateForColumn(modelFluxoCaixa.fieldIndex("representacao"),
+                                                new CheckBoxDelegate(this, true));
+
   for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
     ui->tableFluxoCaixa->openPersistentEditor(row, "representacao");
   }
@@ -548,6 +550,8 @@ bool Venda::viewRegister(const QModelIndex &index) {
   ui->itemBoxEnderecoFat->setReadOnlyItemBox(true);
   ui->itemBoxProfissional->setReadOnlyItemBox(true);
   ui->itemBoxVendedor->setReadOnlyItemBox(true);
+
+  ui->textEdit->setReadOnly(true);
 
   if (data("status").toString() == "CANCELADO") ui->pushButtonCancelamento->hide();
 

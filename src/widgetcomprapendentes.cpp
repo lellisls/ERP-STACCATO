@@ -86,10 +86,16 @@ void WidgetCompraPendentes::setupTables() {
 }
 
 void WidgetCompraPendentes::on_table_activated(const QModelIndex &index) {
-  ProdutosPendentes *produtos = new ProdutosPendentes(this);
+  const QString status = model.data(index.row(), "Status").toString();
+
+  if (status != "PENDENTE") {
+    QMessageBox::critical(this, "Erro!", "Produto não está PENDENTE!");
+    return;
+  }
 
   const QString codComercial = model.data(index.row(), "Cód Com").toString();
-  const QString status = model.data(index.row(), "Status").toString();
+
+  ProdutosPendentes *produtos = new ProdutosPendentes(this);
 
   produtos->viewProduto(codComercial, status);
 }

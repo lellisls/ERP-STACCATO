@@ -34,7 +34,7 @@ Estoque::~Estoque() { delete ui; }
 void Estoque::on_table_activated(const QModelIndex &index) {
   QSqlQuery query;
   query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-  query.bindValue(":idNFe", model.data(index.row(), "idXML"));
+  query.bindValue(":idNFe", model.data(index.row(), "idNFe"));
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando XML da NFe: " + query.lastError().text());

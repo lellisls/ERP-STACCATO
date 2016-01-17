@@ -209,6 +209,8 @@ bool CadastroUsuario::save(const bool &isUpdate) {
       QSqlQuery("ROLLBACK").exec();
       return false;
     }
+
+    QSqlQuery("FLUSH PRIVILEGES").exec();
   }
 
   QSqlQuery("COMMIT").exec();

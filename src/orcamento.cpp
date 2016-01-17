@@ -270,10 +270,8 @@ bool Orcamento::savingProcedures() {
   if (not setData("validade", ui->spinBoxValidade->value())) return false;
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    if (not modelItem.setData(row, "idOrcamento", ui->lineEditOrcamento->text())) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando id nos itens: " + modelItem.lastError().text());
-      return false;
-    }
+    if (not modelItem.setData(row, "idOrcamento", ui->lineEditOrcamento->text())) return false;
+    if (not modelItem.setData(row, "idLoja", model.data(this->row, "idLoja"))) return false;
   }
 
   if (not atualizaReplica()) return false;

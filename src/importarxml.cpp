@@ -11,12 +11,12 @@
 #include "xml.h"
 #include "xml_viewer.h"
 
-ImportarXML::ImportarXML(QWidget *parent) : QDialog(parent), ui(new Ui::ImportarXML) {
+ImportarXML::ImportarXML(const QString &fornecedor, QWidget *parent) : QDialog(parent), ui(new Ui::ImportarXML) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
 
-  setupTables();
+  setupTables(fornecedor);
 
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
@@ -24,7 +24,7 @@ ImportarXML::ImportarXML(QWidget *parent) : QDialog(parent), ui(new Ui::Importar
 
 ImportarXML::~ImportarXML() { delete ui; }
 
-void ImportarXML::setupTables() {
+void ImportarXML::setupTables(const QString &fornecedor) {
   modelEstoque.setTable("estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEstoque.setFilter("temp = TRUE");
@@ -40,7 +40,7 @@ void ImportarXML::setupTables() {
 
   modelCompra.setTable("pedido_fornecedor_has_produto");
   modelCompra.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelCompra.setFilter("status = 'EM FATURAMENTO'");
+  modelCompra.setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM FATURAMENTO'");
 
   if (not modelCompra.select()) {
     QMessageBox::critical(this, "Erro!",
@@ -55,11 +55,6 @@ void ImportarXML::setupTables() {
 
 QString ImportarXML::getIdCompra() { return idCompra; }
 
-void ImportarXML::filtrar(const QString &filtro) {
-  modelCompra.setFilter("fornecedor = '" + filtro + "'");
-
-  ui->tableCompra->resizeColumnsToContents();
-}
 
 void ImportarXML::on_pushButtonImportar_clicked() {
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {

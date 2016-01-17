@@ -59,8 +59,7 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   int row = ui->table->selectionModel()->selectedRows().first().row();
 
-  ImportarXML *import = new ImportarXML(this);
-  import->filtrar(model.data(row, "Fornecedor").toString());
+  ImportarXML *import = new ImportarXML(model.data(row, "Fornecedor").toString(), this);
   import->showMaximized();
 
   if (import->exec() != QDialog::Accepted) {

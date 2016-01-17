@@ -15,10 +15,9 @@ class ImportarXML : public QDialog {
     Q_OBJECT
 
   public:
-    explicit ImportarXML(QWidget *parent = 0);
+    explicit ImportarXML(const QString &fornecedor, QWidget *parent = 0);
     ~ImportarXML();
     QString getIdCompra();
-    void filtrar(const QString &filtro);
 
   private slots:
     void on_pushButtonImportar_clicked();

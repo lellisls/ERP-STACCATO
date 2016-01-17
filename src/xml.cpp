@@ -394,7 +394,7 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
   if (not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)) return false;
   if (not externalModel->setData(row, "pCOFINS", pCOFINS)) return false;
   if (not externalModel->setData(row, "vCOFINS", vCOFINS)) return false;
-  if (not externalModel->setData(row, "temp", true)) return false;
+  if (not externalModel->setData(row, "status", "TEMP")) return false;
 
   return true;
 }

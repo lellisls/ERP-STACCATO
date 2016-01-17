@@ -27,7 +27,7 @@ ImportarXML::~ImportarXML() { delete ui; }
 void ImportarXML::setupTables(const QString &fornecedor) {
   modelEstoque.setTable("estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelEstoque.setFilter("temp = TRUE");
+  modelEstoque.setFilter("status = 'TEMP'");
 
   if (not modelEstoque.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
@@ -58,7 +58,7 @@ QString ImportarXML::getIdCompra() { return idCompra; }
 
 void ImportarXML::on_pushButtonImportar_clicked() {
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
-    modelEstoque.setData(row, "temp", 0);
+    modelEstoque.setData(row, "status", modelEstoque.data(row, "quant").toDouble() < 0 ? "PRÉ-CONSUMO" : "ESTOQUE");
   }
 
   if (not modelEstoque.submitAll()) {

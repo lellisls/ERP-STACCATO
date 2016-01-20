@@ -1,9 +1,9 @@
 #ifndef WIDGETESTOQUE_H
 #define WIDGETESTOQUE_H
 
-#include "sqltablemodel.h"
-
 #include <QWidget>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class WidgetEstoque;
@@ -19,8 +19,6 @@ class WidgetEstoque : public QWidget {
 
   private slots:
     void on_table_activated(const QModelIndex &index);
-    void on_pushButtonEntradaEstoque_clicked();
-    void on_pushButtonTesteFaturamento_clicked();
 
   private:
     // attributes

@@ -1,3 +1,4 @@
+#include <QDate>
 #include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
@@ -122,6 +123,23 @@ QString WidgetVenda::updateTables() {
 void WidgetVenda::on_table_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
   vendas->viewRegisterById(model.data(index.row(), "Código"));
+}
+
+void WidgetVenda::on_pushButtonCalcularTotal_clicked() {
+  QSqlQuery query;
+  query.prepare("SELECT SUM(total - frete) AS total, MONTH(data) FROM venda WHERE idUsuario = :idUsuario AND "
+                "YEAR(data) = :year AND MONTH(data) = :month GROUP BY idUsuario, MONTH(data)");
+  query.bindValue(":idUsuario", UserSession::idUsuario());
+  query.bindValue(":year", QDate::currentDate().year());
+  query.bindValue(":month", QDate::currentDate().month());
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando dados das vendas: " + query.lastError().text());
+    return;
+  }
+
+  QMessageBox::information(this, "Aviso!",
+                           "Total vendido no mês: R$ " + locale().toString(query.value("total").toDouble(), 'f', 2));
 }
 
 // NOTE: verificar como lidar com brinde/reposicao

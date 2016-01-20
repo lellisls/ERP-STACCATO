@@ -55,7 +55,17 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="radioButtonProprios">
+          <property name="text">
+           <string>Próprios</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -67,16 +77,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="radioButtonProprios">
-          <property name="text">
-           <string>Próprios</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QGroupBox" name="groupBoxStatus">
@@ -216,6 +216,13 @@
           </layout>
          </widget>
         </item>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="pushButtonCalcularTotal">
+          <property name="text">
+           <string>Calcular total vendido</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -269,14 +276,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>src/combobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>TableView</class>
    <extends>QTableView</extends>
    <header>src/tableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>src/combobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

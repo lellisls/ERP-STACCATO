@@ -350,8 +350,8 @@ void QSimpleUpdater::onCheckingFinished(void) {
                                 .arg(qApp->applicationName())
                                 .arg(latestVersion())
                                 .arg(installedVersion()));
-    _message.setButtonText(QMessageBox::Yes, "Sim");
-    _message.setButtonText(QMessageBox::No, "Não");
+    _message.setButtonText(QMessageBox::Yes, "Baixar");
+    _message.setButtonText(QMessageBox::No, "Pular");
 
     if (_message.exec() == QMessageBox::Yes) {
       downloadLatestVersion();
@@ -385,31 +385,19 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
   _reply.replace(" ", "");
   _reply.replace("\n", "");
 
-  if (not _reply.isEmpty()) {
+  if (_reply.isEmpty()) {
+    showErrorMessage();
+  } else {
     m_latest_version = _reply;
 
     QStringList _download = m_latest_version.split(".");
     QStringList _installed = m_installed_version.split(".");
 
-    for (int i = 0; i <= _download.size() - 1; ++i) {
-      if (_download.size() - 1 >= i and _installed.size() - 1 >= i) {
-        if (_download.at(i).toInt() > _installed.at(i).toInt()) {
-          _new_update = true;
-          break;
-        }
-      } else {
-        if (_installed.size() < _download.size()) {
-          if (_installed.at(i - 1).toInt() == _download.at(i - 1).toInt()) {
-            break;
-          } else {
-            _new_update = true;
-            break;
-          }
-        }
-      }
+    for (int i = 0, size = qMin(_installed.size(), _download.size()); i < size; ++i) {
+      if (_download.at(i) == _installed.at(i)) continue;
+      if (_download.at(i) > _installed.at(i)) _new_update = true;
+      if (_download.at(i) < _installed.at(i)) break;
     }
-  } else {
-    showErrorMessage();
   }
 
   m_new_version_available = _new_update;
@@ -456,5 +444,3 @@ void QSimpleUpdater::ignoreSslErrors(QNetworkReply *reply, const QList<QSslError
   Q_UNUSED(error);
 #endif
 }
-
-// TODO: o updater acha que 0.3.0 é menor que 0.2.9 FIX!!!

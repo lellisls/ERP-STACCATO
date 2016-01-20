@@ -5,5 +5,6 @@
         <file>plus.png</file>
         <file>qt_portuguese.qm</file>
         <file>Staccato.ico</file>
+        <file>calculator-icon.png</file>
     </qresource>
 </RCC>

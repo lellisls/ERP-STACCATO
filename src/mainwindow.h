@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow {
     void on_actionCadastrarProdutos_triggered();
     void on_actionCadastrarProfissional_triggered();
     void on_actionCadastrarUsuario_triggered();
+    void on_actionCalculadora_triggered();
     void on_actionClaro_triggered();
     void on_actionConfiguracoes_triggered();
     void on_actionCriarOrcamento_triggered();

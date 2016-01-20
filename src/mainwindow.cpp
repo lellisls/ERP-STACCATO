@@ -1,9 +1,11 @@
 #include <QDebug>
+#include <QDesktopServices>
 #include <QLabel>
 #include <QMessageBox>
 #include <QShortcut>
 #include <QStyleFactory>
 #include <QTimer>
+#include <QUrl>
 
 #include "cadastrocliente.h"
 #include "cadastrofornecedor.h"
@@ -220,6 +222,10 @@ void MainWindow::on_actionEscuro_triggered() { darkTheme(); }
 void MainWindow::on_actionConfiguracoes_triggered() {
   UserConfig *config = new UserConfig(this);
   config->show();
+}
+
+void MainWindow::on_actionCalculadora_triggered() {
+  QDesktopServices::openUrl(QUrl::fromLocalFile("C:\\Windows\\System32\\calc.exe"));
 }
 
 // NOTE: colocar logo da staccato na mainwindow

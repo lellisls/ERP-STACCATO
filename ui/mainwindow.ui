@@ -21,8 +21,8 @@
    <locale language="Portuguese" country="Brazil"/>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_26">
-    <item row="1" column="0">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="styleSheet">
        <string notr="true">QTabBar::tab:disabled { width: 0; height: 0; margin: 0; padding: 0; border: none; }
@@ -35,7 +35,7 @@
        <attribute name="title">
         <string>Orçamentos</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
+       <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="WidgetOrcamento" name="widgetOrcamento" native="true"/>
         </item>
@@ -161,10 +161,21 @@
     </property>
     <addaction name="actionSobre"/>
    </widget>
+   <widget class="QMenu" name="menuCalculadora">
+    <property name="title">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="../qrs/resources.qrc">
+      <normaloff>:/calculator-icon.png</normaloff>:/calculator-icon.png</iconset>
+    </property>
+    <addaction name="actionCalculadora"/>
+   </widget>
    <addaction name="menuVenda"/>
    <addaction name="menuAdministracao"/>
    <addaction name="menuOpcoes"/>
    <addaction name="menuAjuda"/>
+   <addaction name="menuCalculadora"/>
   </widget>
   <action name="actionCriarOrcamento">
    <property name="text">
@@ -244,6 +255,15 @@
   <action name="actionConfiguracoes">
    <property name="text">
     <string>Configurações</string>
+   </property>
+  </action>
+  <action name="actionCalculadora">
+   <property name="icon">
+    <iconset resource="../qrs/resources.qrc">
+     <normaloff>:/calculator-icon.png</normaloff>:/calculator-icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Calculadora</string>
    </property>
   </action>
  </widget>

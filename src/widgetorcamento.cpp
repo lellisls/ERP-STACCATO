@@ -14,21 +14,20 @@ WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   setupTables();
 
-  ui->radioButtonTodos->click();
-
+  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonTodos, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonFechado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonProprios, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->radioButtonTodos, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonValido, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
 
   if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->radioButtonProprios->click();
     ui->radioButtonValido->setChecked(true);
   }
 
-  montaFiltro();
+  ui->radioButtonTodos->click();
 }
 
 WidgetOrcamento::~WidgetOrcamento() { delete ui; }
@@ -67,15 +66,14 @@ void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
 void WidgetOrcamento::montaFiltro() {
   const QString filtroLoja = "(Código LIKE '%" + UserSession::fromLoja("sigla") + "%')";
 
-  QString filtroRadio = " AND ";
+  QString filtroRadio;
 
-  filtroRadio += ui->radioButtonTodos->isChecked() ? "status != 'CANCELADO'" : "";
-  filtroRadio += ui->radioButtonProprios->isChecked()
-                 ? "Vendedor = '" + UserSession::nome() + "' AND status != 'CANCELADO'"
-                 : "";
-  filtroRadio += ui->radioButtonValido->isChecked() ? "`Dias restantes` > 0 AND status != 'CANCELADO'" : "";
-  filtroRadio += ui->radioButtonExpirado->isChecked() ? "`Dias restantes` <= 0 AND status != 'CANCELADO'" : "";
-  filtroRadio += ui->radioButtonCancelado->isChecked() ? "status = 'CANCELADO'" : "";
+  if (ui->radioButtonTodos->isChecked()) filtroRadio = " AND status != 'CANCELADO' AND status != 'FECHADO'";
+  if (ui->radioButtonProprios->isChecked()) filtroRadio = " AND Vendedor = '" + UserSession::nome() + "'";
+  if (ui->radioButtonValido->isChecked()) filtroRadio = " AND status = 'ATIVO'";
+  if (ui->radioButtonExpirado->isChecked()) filtroRadio = " AND status = 'EXPIRADO'";
+  if (ui->radioButtonCancelado->isChecked()) filtroRadio = " AND status = 'CANCELADO'";
+  if (ui->radioButtonFechado->isChecked()) filtroRadio = " AND status = 'FECHADO'";
 
   const QString textoBusca = ui->lineEditBusca->text();
 

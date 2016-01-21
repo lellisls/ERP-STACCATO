@@ -135,7 +135,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "telprofissional") paramValue = queryProfissional.value("tel");
   if (paramName == "emailprofissional") paramValue = queryProfissional.value("email");
   if (paramName == "vendedor") paramValue = queryVendedor.value("nome");
-  if (paramName == "emailVendedor") paramValue = queryVendedor.value("email");
+  if (paramName == "emailvendedor") paramValue = queryVendedor.value("email");
   if (paramName == "estoque") paramValue = "";
   if (paramName == "dataestoque") paramValue = "";
 

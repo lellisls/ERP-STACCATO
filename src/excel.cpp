@@ -110,6 +110,7 @@ void Excel::gerarExcel() {
   xlsx.write("M2", query.value("data").toDateTime().toString("dd/MM/yyyy hh:mm"));
   xlsx.write("M3", queryCliente.value(queryCliente.value("pfpj") == "PF" ? "cpf" : "cnpj"));
   xlsx.write("M4", queryCliente.value("tel"));
+  xlsx.write("J4", queryCliente.value("telCel"));
   xlsx.write("M5", queryEndFat.value("cep"));
   xlsx.write("M6", queryEndEnt.value("cep"));
   xlsx.write("H7", queryProfissional.value("tel"));

@@ -52,6 +52,7 @@ SOURCES += src/apagaorcamento.cpp \
     src/registerdialog.cpp \
     src/searchdialog.cpp \
     src/sendmail.cpp \
+    src/singleeditdelegate.cpp \
     src/smtp.cpp \
     src/sqlquerymodel.cpp \
     src/sqltablemodel.cpp \
@@ -120,6 +121,7 @@ HEADERS  += src/apagaorcamento.h \
     src/registerdialog.h \
     src/searchdialog.h \
     src/sendmail.h \
+    src/singleeditdelegate.h \
     src/smtp.h \
     src/sqlquerymodel.h \
     src/sqltablemodel.h \

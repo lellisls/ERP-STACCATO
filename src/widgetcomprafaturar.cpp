@@ -1,4 +1,5 @@
 #include <QDate>
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -81,6 +82,7 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
   const QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
+  qDebug() << "idCompra: " + idCompra;
 
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +

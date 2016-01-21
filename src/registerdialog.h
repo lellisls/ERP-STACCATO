@@ -27,7 +27,6 @@ class RegisterDialog : public QDialog {
     // attributes
     bool incompleto = false;
     bool isDirty = false;
-    //    bool isUpdate = false;
     bool silent = false;
     int row = -1;
     int rowEnd = -1;
@@ -56,13 +55,11 @@ class RegisterDialog : public QDialog {
     virtual void setupMapper() = 0;
     virtual void successMessage();
     virtual void updateMode() = 0;
-    void addMapping(QWidget *widget, const QString &key);
-    void addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName);
+    void addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName = QByteArray());
     void closeEvent(QCloseEvent *event) override;
     void errorMessage();
     void keyPressEvent(QKeyEvent *event) override;
     void remove();
-    void sendUpdateMessage();
     void setTextKeys(const QStringList &value);
 };
 

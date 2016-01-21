@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -43,10 +44,6 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   setupMapper();
   newRegister();
 
-  // NOTE: make this work
-  ui->splitter->setStretchFactor(0, 1);
-  ui->splitter->setStretchFactor(1, 0);
-
   connect(ui->checkBoxRep1, &QCheckBox::stateChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->checkBoxRep2, &QCheckBox::stateChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->checkBoxRep3, &QCheckBox::stateChanged, this, &Venda::montarFluxoCaixa);
@@ -59,6 +56,10 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
   connect(ui->lineEditPgt1, &QLineEdit::textChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->lineEditPgt2, &QLineEdit::textChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->lineEditPgt3, &QLineEdit::textChanged, this, &Venda::montarFluxoCaixa);
+
+  if (not UserSession::tipoUsuario().contains("GERENTE")) {
+    ui->pushButtonCancelamento->hide();
+  }
 
   show();
 }
@@ -234,7 +235,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
 
     if (field == "idVenda") continue;
     if (model.fieldIndex(field) == -1) continue;
-    if (not model.setData(mapper.currentIndex(), field, queryOrc.value(column))) return;
+    if (not setData(field, queryOrc.value(column))) return;
   }
 
   if (not model.setData(row, "idVenda", idVenda)) return;
@@ -270,7 +271,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   minimoFrete = queryFrete.value("valorMinimoFrete").toDouble();
   porcFrete = queryFrete.value("porcentagemFrete").toDouble();
 
-  if (not model.data(mapper.currentIndex(), "representacao").toBool()) {
+  if (not data("representacao").toBool()) {
     ui->checkBoxRep1->hide();
     ui->checkBoxRep2->hide();
     ui->checkBoxRep3->hide();
@@ -352,23 +353,23 @@ void Venda::calcPrecoGlobalTotal() {
 void Venda::clearFields() {}
 
 void Venda::setupMapper() {
-  addMapping(ui->lineEditVenda, "idVenda");
-  addMapping(ui->itemBoxCliente, "idCliente", "value");
-  addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
-  addMapping(ui->itemBoxEnderecoFat, "idEnderecoFaturamento", "value");
-  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
-  addMapping(ui->itemBoxProfissional, "idProfissional", "value");
-  addMapping(ui->dateTimeEditOrc, "dataOrc");
   addMapping(ui->dateTimeEdit, "data");
-  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
-  addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
+  addMapping(ui->dateTimeEditOrc, "dataOrc");
   addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
   addMapping(ui->doubleSpinBoxDescontoGlobalReais, "descontoReais");
   addMapping(ui->doubleSpinBoxFrete, "frete");
+  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
+  addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
   addMapping(ui->doubleSpinBoxTotal, "total");
+  addMapping(ui->itemBoxCliente, "idCliente", "value");
+  addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
+  addMapping(ui->itemBoxEnderecoFat, "idEnderecoFaturamento", "value");
+  addMapping(ui->itemBoxProfissional, "idProfissional", "value");
+  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
+  addMapping(ui->lineEditIdOrcamento, "idOrcamento");
+  addMapping(ui->lineEditVenda, "idVenda");
   addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
   addMapping(ui->textEdit, "observacao");
-  addMapping(ui->lineEditIdOrcamento, "idOrcamento");
 }
 
 void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
@@ -555,8 +556,11 @@ bool Venda::viewRegister(const QModelIndex &index) {
   ui->itemBoxVendedor->setReadOnlyItemBox(true);
 
   ui->textEdit->setReadOnly(true);
+  ui->textEdit->setText(data("observacao").toString());
 
   if (data("status").toString() == "CANCELADO") ui->pushButtonCancelamento->hide();
+
+  ui->framePagamentos->adjustSize();
 
   return true;
 }
@@ -731,19 +735,11 @@ bool Venda::save(const bool &isUpdate) {
 
   QSqlQuery query;
 
-  query.prepare("DELETE FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento");
+  query.prepare("UPDATE orcamento SET status = 'FECHADO' WHERE idOrcamento = :idOrcamento");
   query.bindValue(":idOrcamento", m_idOrcamento);
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro deletando itens no orçamento_has_produto: " + query.lastError().text());
-    return false;
-  }
-
-  query.prepare("DELETE FROM orcamento WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", m_idOrcamento);
-
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro deletando orçamento: " + query.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro marcando orçamento como 'FECHADO': " + query.lastError().text());
     return false;
   }
 
@@ -752,7 +748,6 @@ bool Venda::save(const bool &isUpdate) {
   isDirty = false;
 
   viewRegisterById(ui->lineEditVenda->text());
-  sendUpdateMessage();
 
   if (not silent) successMessage();
 
@@ -760,24 +755,59 @@ bool Venda::save(const bool &isUpdate) {
 }
 
 void Venda::on_pushButtonCancelamento_clicked() {
-  // TODO: copiar de volta para orcamento e para venda_cancelada, remover contas_a_receber (alcada gerente)
   QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja cancelar?",
                      QMessageBox::Yes | QMessageBox::No, this);
-  msgBox.setButtonText(QMessageBox::Yes, "Sim");
-  msgBox.setButtonText(QMessageBox::No, "Não");
+  msgBox.setButtonText(QMessageBox::Yes, "Cancelar venda");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    if (model.data(mapper.currentIndex(), "status").toString() != "PENDENTE") {
+    if (data("status").toString() != "PENDENTE") {
       QMessageBox::critical(this, "Erro!", "Status diferente de 'PENDENTE'! Deve fazer estorno/devolução.");
       return;
     }
 
-    if (not model.setData(mapper.currentIndex(), "status", "CANCELADO")) return;
+    //--------------------------
 
-    if (not model.submitAll()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status 'CANCELADO': " + model.lastError().text());
+    QString idOrcamento = data("idOrcamento").toString();
+
+    QMessageBox::information(this, "Aviso!", idOrcamento.isEmpty() ? "Não havia idOrçamento associado para ativar!"
+                                                                   : "IdOrçamento: " + idOrcamento);
+
+    QSqlQuery query;
+    query.prepare("UPDATE orcamento SET status = 'ATIVO' WHERE idOrcamento = :idOrcamento");
+    query.bindValue(":idOrcamento", idOrcamento);
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro reativando orçamento: " + query.lastError().text());
       return;
     }
+
+    if (not query.exec("CALL update_orcamento_status")) {
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status do orçamento: " + query.lastError().text());
+      return;
+    }
+
+    //---------------------------
+
+    query.prepare("DELETE FROM conta_a_receber_has_pagamento WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", ui->lineEditVenda->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro apagando contas a receber: " + query.lastError().text());
+      return;
+    }
+
+    //---------------------------
+
+    query.prepare("INSERT INTO venda_cancelada SELECT * FROM venda WHERE idVenda = :idVenda");
+    query.bindValue(":idVenda", ui->lineEditVenda->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro copiando venda para venda_cancelada: " + query.lastError().text());
+      return;
+    }
+
+    //---------------------------
 
     QMessageBox::information(this, "Aviso!", "Venda cancelada!");
     close();
@@ -789,7 +819,7 @@ void Venda::generateId() {
                UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
 
   QSqlQuery query;
-  query.prepare("SELECT idVenda FROM venda WHERE idVenda LIKE :id ORDER BY idVenda ASC");
+  query.prepare("SELECT idVenda FROM venda WHERE idVenda LIKE :id ORDER BY idVenda DESC LIMIT 1");
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {
@@ -799,7 +829,7 @@ void Venda::generateId() {
 
   int last = 0;
 
-  if (query.last()) {
+  if (query.first()) {
     QString temp = query.value("idVenda").toString().mid(id.size());
 
     if (temp.endsWith("O")) temp.remove(temp.size() - 1, 1);
@@ -814,4 +844,4 @@ void Venda::generateId() {
   ui->lineEditVenda->setText(id);
 }
 
-// NOTE: reorganizar tela de venda, talvez colocar fluxo de caixa numa aba separada ou embaixo da tabela principal
+// TODO: adicionar credito cliente como forma de pagamento

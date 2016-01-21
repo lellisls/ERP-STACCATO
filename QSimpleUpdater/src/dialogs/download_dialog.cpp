@@ -95,8 +95,8 @@ void DownloadDialog::cancelDownload(void) {
     _message.setIcon(QMessageBox::Question);
     _message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     _message.setText(tr("Você tem certeza que quer cancelar a atualização?"));
-    _message.setButtonText(QMessageBox::Yes, "Sim");
-    _message.setButtonText(QMessageBox::No, "Não");
+    _message.setButtonText(QMessageBox::Yes, "Cancelar");
+    _message.setButtonText(QMessageBox::No, "Continuar");
 
     if (_message.exec() == QMessageBox::Yes) {
       hide();

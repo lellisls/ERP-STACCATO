@@ -143,11 +143,11 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "Marca") paramValue = modelItem.data(recNo, "fornecedor");
   if (paramName == "Código") paramValue = queryProduto.value("codComercial");
 
-  if (paramName == "Nome do produto")
-    paramValue = modelItem.data(recNo, "produto").toString() +
-                 (modelItem.data(recNo, "formComercial").toString().isEmpty()
-                  ? ""
-                  : " (" + modelItem.data(recNo, "formComercial").toString() + ")");
+  if (paramName == "Nome do produto") {
+    QString formComercial = modelItem.data(recNo, "formComercial").toString();
+    paramValue =
+        modelItem.data(recNo, "produto").toString() + (formComercial.isEmpty() ? "" : " (" + formComercial + ")");
+  }
 
   if (paramName == "Ambiente") paramValue = modelItem.data(recNo, "obs");
 

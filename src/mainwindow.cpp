@@ -229,5 +229,3 @@ void MainWindow::on_actionCalculadora_triggered() {
 }
 
 // NOTE: colocar logo da staccato na mainwindow
-// NOTE: pegar as querys com 'select *' e reduzir para apenas as colunas necessarias
-// NOTE: evitar divisoes por zero

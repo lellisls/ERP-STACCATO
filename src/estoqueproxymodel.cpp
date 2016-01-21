@@ -13,9 +13,10 @@ QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int role) 
   if (role == Qt::BackgroundRole) {
     const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
 
-    if (value == 1) return QBrush(Qt::green);  // Ok
-    if (value == 2) return QBrush(Qt::yellow); // Quant difere
-    if (value == 3) return QBrush(Qt::red);    // Não encontrado
+    if (value == 1) return QBrush(Qt::green);     // Ok
+    if (value == 2) return QBrush(Qt::yellow);    // Quant difere
+    if (value == 3) return QBrush(Qt::red);       // Não encontrado
+    if (value == 4) return QBrush(Qt::darkGreen); // Consumo
   }
 
   return QIdentityProxyModel::data(proxyIndex, role);

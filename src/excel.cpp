@@ -182,7 +182,9 @@ void Excel::gerarExcel() {
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     xlsx.write("A" + QString::number(12 + row), modelItem.data(row, "fornecedor"));
     xlsx.write("B" + QString::number(12 + row), modelItem.data(row, "codComercial"));
-    xlsx.write("C" + QString::number(12 + row), modelItem.data(row, "produto"));
+    QString formComercial = modelItem.data(row, "formComercial").toString();
+    xlsx.write("C" + QString::number(12 + row),
+               modelItem.data(row, "produto").toString() + (formComercial.isEmpty() ? "" : " (" + formComercial + ")"));
     xlsx.write("H" + QString::number(12 + row), modelItem.data(row, "obs"));
 
     double prcUn = modelItem.data(row, "prcUnitario").toDouble();

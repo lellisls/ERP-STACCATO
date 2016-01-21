@@ -711,8 +711,8 @@ void ImportaProdutos::on_pushButtonSalvar_clicked() {
   if (hasError) {
     QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Produtos com erro não serão salvos. Deseja continuar?",
                        QMessageBox::Yes | QMessageBox::No, this);
-    msgBox.setButtonText(QMessageBox::Yes, "Sim");
-    msgBox.setButtonText(QMessageBox::No, "Não");
+    msgBox.setButtonText(QMessageBox::Yes, "Continuar");
+    msgBox.setButtonText(QMessageBox::No, "Voltar");
 
     if (msgBox.exec() == QMessageBox::No) return;
   }
@@ -762,3 +762,4 @@ void ImportaProdutos::closeEvent(QCloseEvent *event) {
 }
 
 // NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo
+// TODO: adicionar flag para indicar se é estoque (nao descontinuar os que estiverem cadastrados)

@@ -438,3 +438,5 @@ bool XML::verificaExiste() {
 
   return false;
 }
+
+// NOTE: verificar se é possivel otimizar?

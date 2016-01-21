@@ -93,7 +93,6 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   isDirty = false;
 
   viewRegister(model.index(row, 0));
-  sendUpdateMessage();
 
   if (not silent) successMessage();
 

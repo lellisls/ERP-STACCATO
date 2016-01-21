@@ -82,6 +82,8 @@ bool Orcamento::viewRegister(const QModelIndex &index) {
 
   ui->checkBoxRepresentacao->setDisabled(true);
 
+  ui->textEditObs->setText(data("observacao").toString());
+
   return true;
 }
 
@@ -94,37 +96,37 @@ void Orcamento::novoItem() {
 }
 
 void Orcamento::setupMapper() {
-  addMapping(ui->lineEditOrcamento, "idOrcamento");
-  addMapping(ui->itemBoxCliente, "idCliente", "value");
-  addMapping(ui->itemBoxProfissional, "idProfissional", "value");
-  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
-  addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
-  addMapping(ui->spinBoxValidade, "validade");
+  addMapping(ui->checkBoxRepresentacao, "representacao");
   addMapping(ui->dateTimeEdit, "data");
-  addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
-  addMapping(ui->textEditObs, "observacao");
-  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
-  addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
   addMapping(ui->doubleSpinBoxDescontoGlobal, "descontoPorc");
   addMapping(ui->doubleSpinBoxFrete, "frete");
+  addMapping(ui->doubleSpinBoxSubTotalBruto, "subTotalBru");
+  addMapping(ui->doubleSpinBoxSubTotalLiq, "subTotalLiq");
   addMapping(ui->doubleSpinBoxTotal, "total");
-  addMapping(ui->checkBoxRepresentacao, "representacao");
+  addMapping(ui->itemBoxCliente, "idCliente", "value");
+  addMapping(ui->itemBoxEndereco, "idEnderecoEntrega", "value");
+  addMapping(ui->itemBoxProfissional, "idProfissional", "value");
+  addMapping(ui->itemBoxVendedor, "idUsuario", "value");
+  addMapping(ui->lineEditOrcamento, "idOrcamento");
   addMapping(ui->lineEditReplicaDe, "replicadoDe");
   addMapping(ui->lineEditReplicadoEm, "replicadoEm");
+  addMapping(ui->spinBoxPrazoEntrega, "prazoEntrega");
+  addMapping(ui->spinBoxValidade, "validade");
+  addMapping(ui->textEditObs, "observacao");
 
   mapperItem.setModel(&modelItem);
   mapperItem.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
-  mapperItem.addMapping(ui->lineEditPrecoUn, modelItem.fieldIndex("prcUnitario"), "value");
+  mapperItem.addMapping(ui->doubleSpinBoxDesconto, modelItem.fieldIndex("desconto"), "value");
   mapperItem.addMapping(ui->doubleSpinBoxPrecoTotal, modelItem.fieldIndex("parcialDesc"));
-  mapperItem.addMapping(ui->lineEditOrcamento, modelItem.fieldIndex("idOrcamento"), "text");
-  mapperItem.addMapping(ui->lineEditObs, modelItem.fieldIndex("obs"), "text");
-  mapperItem.addMapping(ui->lineEditUn, modelItem.fieldIndex("un"), "text");
+  mapperItem.addMapping(ui->doubleSpinBoxQte, modelItem.fieldIndex("quant"), "value");
+  mapperItem.addMapping(ui->itemBoxProduto, modelItem.fieldIndex("idProduto"), "value");
   mapperItem.addMapping(ui->lineEditCodComercial, modelItem.fieldIndex("codComercial"));
   mapperItem.addMapping(ui->lineEditFormComercial, modelItem.fieldIndex("formComercial"));
-  mapperItem.addMapping(ui->itemBoxProduto, modelItem.fieldIndex("idProduto"), "value");
-  mapperItem.addMapping(ui->doubleSpinBoxQte, modelItem.fieldIndex("quant"), "value");
-  mapperItem.addMapping(ui->doubleSpinBoxDesconto, modelItem.fieldIndex("desconto"), "value");
+  mapperItem.addMapping(ui->lineEditObs, modelItem.fieldIndex("obs"), "text");
+  mapperItem.addMapping(ui->lineEditOrcamento, modelItem.fieldIndex("idOrcamento"), "text");
+  mapperItem.addMapping(ui->lineEditPrecoUn, modelItem.fieldIndex("prcUnitario"), "value");
+  mapperItem.addMapping(ui->lineEditUn, modelItem.fieldIndex("un"), "text");
 }
 
 void Orcamento::registerMode() {
@@ -176,21 +178,21 @@ void Orcamento::removeItem() {
   novoItem();
 }
 
-void Orcamento::generateId() {
+bool Orcamento::generateId() {
   QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy");
 
   QSqlQuery query;
-  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id ORDER BY idOrcamento ASC");
+  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id ORDER BY idOrcamento DESC LIMIT 1");
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro na query: " + query.lastError().text());
-    return;
+    return false;
   }
 
   int last = 0;
 
-  if (query.last()) {
+  if (query.first()) {
     QString temp = query.value("idOrcamento").toString().mid(id.size());
 
     if (temp.endsWith("O")) temp.remove(temp.size() - 1, 1);
@@ -204,6 +206,8 @@ void Orcamento::generateId() {
   id += "O";
 
   ui->lineEditOrcamento->setText(id);
+
+  return true;
 }
 
 bool Orcamento::verifyFields() {
@@ -326,9 +330,23 @@ void Orcamento::on_doubleSpinBoxQte_editingFinished() {
   ui->doubleSpinBoxQte->setValue(ui->spinBoxCaixas->value() * ui->doubleSpinBoxQte->singleStep());
 }
 
-void Orcamento::on_pushButtonCadastrarOrcamento_clicked() { save(); }
+void Orcamento::on_pushButtonCadastrarOrcamento_clicked() {
+  save();
 
-void Orcamento::on_pushButtonAtualizarOrcamento_clicked() { update(); }
+  if (not viewRegisterById(ui->lineEditOrcamento->text())) {
+    QMessageBox::critical(this, "Erro!", "Erro ao ler o orçamento cadastrado!");
+    return;
+  }
+}
+
+void Orcamento::on_pushButtonAtualizarOrcamento_clicked() {
+  update();
+
+  if (not viewRegisterById(ui->lineEditOrcamento->text())) {
+    QMessageBox::critical(this, "Erro!", "Erro ao ler o orçamento cadastrado!");
+    return;
+  }
+}
 
 void Orcamento::calcPrecoGlobalTotal() {
   double subTotalItens = 0.;
@@ -436,24 +454,23 @@ void Orcamento::adicionarItem() {
 
   if (not isItemUpdate) modelItem.insertRow(row);
 
-  modelItem.setData(row, "idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
-  modelItem.setData(row, "idProduto", ui->itemBoxProduto->value().toInt());
-  modelItem.setData(row, "item", row);
-  modelItem.setData(row, "fornecedor", ui->lineEditFornecedor->text());
-  modelItem.setData(row, "produto", ui->itemBoxProduto->text());
-  modelItem.setData(row, "obs", ui->lineEditObs->text());
-  modelItem.setData(row, "prcUnitario", ui->lineEditPrecoUn->getValue());
-  modelItem.setData(row, "caixas", ui->spinBoxCaixas->value());
-  modelItem.setData(row, "quant", ui->doubleSpinBoxQte->value());
-  modelItem.setData(row, "unCaixa", ui->doubleSpinBoxQte->singleStep());
-  modelItem.setData(row, "un", ui->lineEditUn->text());
-  modelItem.setData(row, "codComercial", ui->lineEditCodComercial->text());
-  modelItem.setData(row, "formComercial", ui->lineEditFormComercial->text());
-  modelItem.setData(row, "desconto", ui->doubleSpinBoxDesconto->value());
+  if (not modelItem.setData(row, "idProduto", ui->itemBoxProduto->value().toInt())) return;
+  if (not modelItem.setData(row, "item", row)) return;
+  if (not modelItem.setData(row, "fornecedor", ui->lineEditFornecedor->text())) return;
+  if (not modelItem.setData(row, "produto", ui->itemBoxProduto->text())) return;
+  if (not modelItem.setData(row, "obs", ui->lineEditObs->text())) return;
+  if (not modelItem.setData(row, "prcUnitario", ui->lineEditPrecoUn->getValue())) return;
+  if (not modelItem.setData(row, "caixas", ui->spinBoxCaixas->value())) return;
+  if (not modelItem.setData(row, "quant", ui->doubleSpinBoxQte->value())) return;
+  if (not modelItem.setData(row, "unCaixa", ui->doubleSpinBoxQte->singleStep())) return;
+  if (not modelItem.setData(row, "un", ui->lineEditUn->text())) return;
+  if (not modelItem.setData(row, "codComercial", ui->lineEditCodComercial->text())) return;
+  if (not modelItem.setData(row, "formComercial", ui->lineEditFormComercial->text())) return;
+  if (not modelItem.setData(row, "desconto", ui->doubleSpinBoxDesconto->value())) return;
 
   calcPrecoGlobalTotal();
 
-  modelItem.setData(row, "parcialDesc", ui->doubleSpinBoxPrecoTotal->value());
+  if (not modelItem.setData(row, "parcialDesc", ui->doubleSpinBoxPrecoTotal->value())) return;
 
   isItemUpdate = false;
 
@@ -641,8 +658,11 @@ bool Orcamento::save(const bool &isUpdate) {
   }
 
   if (not isUpdate) {
-    model.insertRow(row);
-    generateId();
+    if (not generateId() or not model.insertRow(row)) {
+      QMessageBox::critical(this, "Erro!", "Erro inserindo linha na tabela");
+      QSqlQuery("ROLLBACK").exec();
+      return false;
+    }
   }
 
   if (not savingProcedures()) {
@@ -666,9 +686,6 @@ bool Orcamento::save(const bool &isUpdate) {
   QSqlQuery("COMMIT").exec();
 
   isDirty = false;
-
-  viewRegisterById(ui->lineEditOrcamento->text());
-  sendUpdateMessage();
 
   if (not silent) successMessage();
 
@@ -832,3 +849,5 @@ void Orcamento::on_doubleSpinBoxSubTotalBruto_valueChanged(const double &) {
 }
 
 void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!"); }
+
+// NOTE: model.submitAll faz mapper voltar para -1, select tambem (talvez porque submitAll chama select)

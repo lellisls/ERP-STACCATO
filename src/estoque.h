@@ -20,7 +20,6 @@ class Estoque : public QDialog {
   private slots:
     void on_table_activated(const QModelIndex &index);
     void on_pushButtonExibirNfe_clicked();
-    void on_pushButtonConsumir_clicked();
 
   private:
     Ui::Estoque *ui;

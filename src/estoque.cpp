@@ -81,6 +81,4 @@ void Estoque::on_pushButtonExibirNfe_clicked() {
   viewer->exibirXML(query.value("xml").toByteArray());
 }
 
-void Estoque::on_pushButtonConsumir_clicked() {
-  // TODO: implementar consumo de estoque
-}
+// TODO: pintar/filtrar

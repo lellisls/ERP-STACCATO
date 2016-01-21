@@ -63,6 +63,7 @@ class Orcamento : public RegisterDialog {
     SqlTableModel modelItem;
     // methods
     bool atualizaReplica();
+    bool generateId();
     bool verificaCadastroCliente();
     virtual bool newRegister() override;
     virtual bool save(const bool &isUpdate = false) override;
@@ -78,7 +79,6 @@ class Orcamento : public RegisterDialog {
     void atualizarItem();
     void calcPrecoGlobalTotal();
     void calcPrecoItemTotal();
-    void generateId();
     void novoItem();
     void removeItem();
     void setupTables();

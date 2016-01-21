@@ -554,59 +554,49 @@
               <layout class="QGridLayout" name="gridLayout">
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_11">
-                 <item row="4" column="0">
+                 <item row="6" column="0">
                   <widget class="QLabel" name="label_41">
                    <property name="text">
                     <string>Vendedor</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0" colspan="2">
+                 <item row="3" column="0" colspan="2">
                   <widget class="ItemBox" name="itemBoxCliente">
                    <property name="accessibleName">
                     <string>Cliente Vinculado</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0" colspan="2">
-                  <widget class="ItemBox" name="itemBoxProfissional">
-                   <property name="accessibleName">
-                    <string>Profissional</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0" colspan="2">
-                  <widget class="ItemBox" name="itemBoxVendedor">
-                   <property name="accessibleName">
-                    <string>Vendedor</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
+                 <item row="4" column="0">
                   <widget class="QLabel" name="label_42">
                    <property name="text">
                     <string>Profissional</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
+                 <item row="2" column="0">
                   <widget class="QLabel" name="label_43">
                    <property name="text">
                     <string>Vinculado ao cliente</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_44">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="text">
-                    <string>Segmento de mercado</string>
+                 <item row="7" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxVendedor">
+                   <property name="accessibleName">
+                    <string>Vendedor</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="1">
+                 <item row="5" column="0" colspan="2">
+                  <widget class="ItemBox" name="itemBoxProfissional">
+                   <property name="accessibleName">
+                    <string>Profissional</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1">
                   <widget class="QCheckBox" name="checkBox_4">
                    <property name="enabled">
                     <bool>false</bool>
@@ -616,7 +606,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="0" colspan="2">
+                 <item row="9" column="0" colspan="2">
                   <widget class="QLineEdit" name="lineEditSegmento">
                    <property name="enabled">
                     <bool>false</bool>
@@ -625,6 +615,26 @@
                     <string>Segmento de Mercado</string>
                    </property>
                   </widget>
+                 </item>
+                 <item row="8" column="0">
+                  <widget class="QLabel" name="label_44">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Segmento de mercado</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Crédito</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QDoubleSpinBox" name="doubleSpinBoxCredito"/>
                  </item>
                 </layout>
                </item>

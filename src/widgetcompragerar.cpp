@@ -189,8 +189,8 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
 
   QMessageBox msgBox(QMessageBox::Question, "Enviar E-mail?", "Deseja enviar e-mail?",
                      QMessageBox::Yes | QMessageBox::No, this);
-  msgBox.setButtonText(QMessageBox::Yes, "Sim");
-  msgBox.setButtonText(QMessageBox::No, "Não");
+  msgBox.setButtonText(QMessageBox::Yes, "Enviar");
+  msgBox.setButtonText(QMessageBox::No, "Pular");
 
   if (msgBox.exec() == QMessageBox::Yes) {
     SendMail *mail = new SendMail(this, produtos.join("\n"), arquivo);
@@ -405,3 +405,5 @@ void WidgetCompraGerar::fixPersistente() {
     ui->tableProdutos->openPersistentEditor(row, "selecionado");
   }
 }
+
+// TODO: adicionar idVenda

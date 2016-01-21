@@ -41,3 +41,4 @@ void WidgetEstoque::on_table_activated(const QModelIndex &index) {
 }
 
 // NOTE: gerenciar lugares de estoque (cadastro/permissoes)
+// TODO: adicionar caixas

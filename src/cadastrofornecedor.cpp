@@ -251,8 +251,8 @@ bool CadastroFornecedor::viewRegister(const QModelIndex &index) {
 void CadastroFornecedor::on_pushButtonRemoverEnd_clicked() {
   QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
                      QMessageBox::Yes | QMessageBox::No, this);
-  msgBox.setButtonText(QMessageBox::Yes, "Sim");
-  msgBox.setButtonText(QMessageBox::No, "Não");
+  msgBox.setButtonText(QMessageBox::Yes, "Remover");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
 
   if (msgBox.exec() == QMessageBox::Yes) {
     if (not setDataEnd("desativado", true)) {

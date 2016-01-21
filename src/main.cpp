@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.10");
+  app.setApplicationVersion("0.2.12");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -64,4 +64,19 @@ void storeSelection() {
   }
 }
 
+// NOTE: adaptar a funcao de importar tabela para perguntar se é normal, estoque ou promocao e setar a flag de acordo
+// (produtos de estoque sao sempre 1 por caixa?)
+// NOTE: evitar divisoes por zero
+// NOTE: para a tabela de estoque: inserir coluna estoque_promocao para pintar, inserir estoque na tabela produto mas
+// colocar coluna idRelacionado para indicar qual o produto (para usar o idProduto original para vender/etc)
+// NOTE: pegar as querys com 'select *' e reduzir para apenas as colunas necessarias
+// NOTE: verificar comparacoes double: substituir por qFuzzyCompare ou floats
 // NOTE: verificar todos os QSqlQuery.exec
+// NOTE: pesquisar setData e selects/submits sem verificacao
+// TODO: usar view_validacao para ajustar valores diferentes e acompanhar
+// TODO: verificar se tem como buscar id's nao relacionados e apagar produtos descontinuados
+// NOTE: criar enum para tipos de usuario de forma que possa fazer 'tipo >= GERENTE' (criar coluna no bd com numeros
+// 0,1,2...)
+// NOTE: obrigar atualizar para conectar no servidor?
+// TODO: copiar logica orcamento (save/update) para as outras classes derivadas do registerdialog
+// TODO: colocar mappings em ordem alfabetica

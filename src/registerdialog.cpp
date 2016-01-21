@@ -77,34 +77,14 @@ QVariant RegisterDialog::data(const QString &key) { return model.data(mapper.cur
 
 QVariant RegisterDialog::data(const int &row, const QString &key) { return model.data(row, key); }
 
-void RegisterDialog::addMapping(QWidget *widget, const QString &key) {
-  if (model.fieldIndex(key) == -1) {
-    QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
-    return;
-  }
-
-  mapper.addMapping(widget, model.fieldIndex(key));
-}
-
 void RegisterDialog::addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName) {
   if (model.fieldIndex(key) == -1) {
     QMessageBox::critical(this, "Erro!", "Chave " + key + " não encontrada na tabela " + model.tableName());
     return;
   }
 
-  mapper.addMapping(widget, model.fieldIndex(key), propertyName);
-}
-
-void RegisterDialog::sendUpdateMessage() {
-  QString text;
-
-  for (const auto key : textKeys) {
-    if (key.isEmpty() or not data(key).isValid()) continue;
-
-    text += (text.isEmpty() ? "" : " - ") + data(key).toString();
-  }
-
-  emit registerUpdated(data(primaryKey), text);
+  propertyName.isNull() ? mapper.addMapping(widget, model.fieldIndex(key))
+                        : mapper.addMapping(widget, model.fieldIndex(key), propertyName);
 }
 
 QString RegisterDialog::requiredStyle() { return (QString("background-color: rgb(255, 255, 127)")); }
@@ -231,7 +211,6 @@ bool RegisterDialog::save(const bool &isUpdate) {
   isDirty = false;
 
   viewRegister(model.index(row, 0));
-  sendUpdateMessage();
 
   if (not silent) successMessage();
 
@@ -249,8 +228,8 @@ void RegisterDialog::clearFields() {
 void RegisterDialog::remove() {
   QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
                      QMessageBox::Yes | QMessageBox::No, this);
-  msgBox.setButtonText(QMessageBox::Yes, "Sim");
-  msgBox.setButtonText(QMessageBox::No, "Não");
+  msgBox.setButtonText(QMessageBox::Yes, "Remover");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
 
   if (msgBox.exec() == QMessageBox::Yes) {
     setData("desativado", true);
@@ -360,3 +339,5 @@ bool RegisterDialog::validaCPF(const QString &text) {
 }
 
 void RegisterDialog::marcarDirty() { isDirty = true; }
+
+// TODO: verificar dados sendo salvos que dependam de outras operacoes (escolher um itembox etc)

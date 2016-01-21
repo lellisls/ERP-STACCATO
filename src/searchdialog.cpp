@@ -131,7 +131,7 @@ void SearchDialog::setTextKeys(const QStringList &value) { textKeys = value; }
 
 void SearchDialog::setPrimaryKey(const QString &value) { primaryKey = value; }
 
-QString SearchDialog::getText(const QVariant &index) {
+QString SearchDialog::getText(const QVariant &value) {
   QString queryText;
 
   for (const auto key : textKeys) {
@@ -139,7 +139,7 @@ QString SearchDialog::getText(const QVariant &index) {
   }
 
   queryText =
-      "SELECT " + queryText + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + index.toString() + "'";
+      "SELECT " + queryText + " FROM " + model.tableName() + " WHERE " + primaryKey + " = '" + value.toString() + "'";
 
   QSqlQuery query(queryText);
 
@@ -149,7 +149,7 @@ QString SearchDialog::getText(const QVariant &index) {
   }
 
   if (model.tableName().contains("endereco")) {
-    if (query.value("descricao").toString() == "Não há/Retira") return "Não há/Retira";
+    if (value == 1) return "Não há/Retira";
   }
 
   QString res;
@@ -341,7 +341,7 @@ SearchDialog *SearchDialog::enderecoCliente(QWidget *parent) {
   SearchDialog *sdEndereco = new SearchDialog("Buscar Endereço", "cliente_has_endereco", {}, "idEndereco = 1", parent);
 
   sdEndereco->setPrimaryKey("idEndereco");
-  sdEndereco->setTextKeys({"descricao", "logradouro", "numero", "bairro", "cidade", "uf"});
+  sdEndereco->setTextKeys({"logradouro", "numero", "bairro", "cidade", "uf"});
 
   sdEndereco->hideColumns({"idEndereco", "idCliente", "codUF", "desativado"});
 

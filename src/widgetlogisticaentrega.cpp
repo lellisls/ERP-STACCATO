@@ -9,8 +9,6 @@
 WidgetLogisticaEntrega::WidgetLogisticaEntrega(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaEntrega) {
   ui->setupUi(this);
 
-  setupTables();
-
   if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->table->hide();
     ui->labelEntregasCliente->hide();
@@ -27,6 +25,8 @@ void WidgetLogisticaEntrega::setupTables() {
 }
 
 QString WidgetLogisticaEntrega::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela vendas: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

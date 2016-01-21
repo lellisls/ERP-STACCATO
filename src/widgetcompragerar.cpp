@@ -14,8 +14,6 @@
 WidgetCompraGerar::WidgetCompraGerar(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraGerar) {
   ui->setupUi(this);
 
-  setupTables();
-
   connect(ui->tableProdutos->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this,
           &WidgetCompraGerar::fixPersistente);
 }
@@ -81,6 +79,8 @@ void WidgetCompraGerar::setupTables() {
 }
 
 QString WidgetCompraGerar::updateTables() {
+  if (modelForn.tableName().isEmpty()) setupTables();
+
   auto selection = ui->tableForn->selectionModel()->selectedRows();
 
   auto index = selection.size() > 0 ? selection.first() : QModelIndex();

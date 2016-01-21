@@ -6,8 +6,6 @@
 WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogistica) {
   ui->setupUi(this);
 
-  setupTables();
-
   ui->splitter_6->setStretchFactor(0, 0);
   ui->splitter_6->setStretchFactor(1, 1);
 }
@@ -24,6 +22,8 @@ void WidgetLogistica::setupTables() {
 }
 
 QString WidgetLogistica::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

@@ -5,15 +5,13 @@
 #include "venda.h"
 #include "widgetnfesaida.h"
 
-WidgetNfeSaida::WidgetNfeSaida(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfeSaida) {
-  ui->setupUi(this);
-
-  setupTables();
-}
+WidgetNfeSaida::WidgetNfeSaida(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfeSaida) { ui->setupUi(this); }
 
 WidgetNfeSaida::~WidgetNfeSaida() { delete ui; }
 
 QString WidgetNfeSaida::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela NFe: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

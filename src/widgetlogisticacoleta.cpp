@@ -12,13 +12,13 @@
 
 WidgetLogisticaColeta::WidgetLogisticaColeta(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaColeta) {
   ui->setupUi(this);
-
-  setupTables();
 }
 
 WidgetLogisticaColeta::~WidgetLogisticaColeta() { delete ui; }
 
 QString WidgetLogisticaColeta::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   model.setFilter("0");
 
   if (not model.select()) {

@@ -12,13 +12,13 @@
 WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent)
   : QWidget(parent), ui(new Ui::WidgetLogisticaRecebimento) {
   ui->setupUi(this);
-
-  setupTables();
 }
 
 WidgetLogisticaRecebimento::~WidgetLogisticaRecebimento() { delete ui; }
 
 QString WidgetLogisticaRecebimento::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
 
   for (int row = 0; row < model.rowCount(); ++row) {

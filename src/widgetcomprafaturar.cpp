@@ -11,8 +11,6 @@
 
 WidgetCompraFaturar::WidgetCompraFaturar(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraFaturar) {
   ui->setupUi(this);
-
-  setupTables();
 }
 
 WidgetCompraFaturar::~WidgetCompraFaturar() { delete ui; }
@@ -39,6 +37,8 @@ void WidgetCompraFaturar::setupTables() {
 }
 
 QString WidgetCompraFaturar::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) {
     return "Erro lendo tabela faturamento: " + model.lastError().text();
   }

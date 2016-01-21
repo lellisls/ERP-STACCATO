@@ -9,8 +9,6 @@
 
 WidgetCompraConfirmar::WidgetCompraConfirmar(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraConfirmar) {
   ui->setupUi(this);
-
-  setupTables();
 }
 
 WidgetCompraConfirmar::~WidgetCompraConfirmar() { delete ui; }
@@ -28,6 +26,8 @@ void WidgetCompraConfirmar::setupTables() {
 }
 
 QString WidgetCompraConfirmar::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela compras: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

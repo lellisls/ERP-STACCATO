@@ -10,11 +10,7 @@
 #include "widgetestoque.h"
 #include "xml.h"
 
-WidgetEstoque::WidgetEstoque(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetEstoque) {
-  ui->setupUi(this);
-
-  setupTables();
-}
+WidgetEstoque::WidgetEstoque(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetEstoque) { ui->setupUi(this); }
 
 WidgetEstoque::~WidgetEstoque() { delete ui; }
 
@@ -28,6 +24,8 @@ void WidgetEstoque::setupTables() {
 }
 
 QString WidgetEstoque::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela estoque: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

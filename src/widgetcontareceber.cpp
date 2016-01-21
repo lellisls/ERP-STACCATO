@@ -6,8 +6,6 @@
 
 WidgetContaReceber::WidgetContaReceber(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetContaReceber) {
   ui->setupUi(this);
-
-  setupTables();
 }
 
 WidgetContaReceber::~WidgetContaReceber() { delete ui; }
@@ -22,6 +20,8 @@ void WidgetContaReceber::setupTables() {
 }
 
 QString WidgetContaReceber::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela conta_a_receber_has_pagamento: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

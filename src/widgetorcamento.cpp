@@ -12,8 +12,6 @@
 WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetOrcamento) {
   ui->setupUi(this);
 
-  setupTables();
-
   connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
@@ -43,6 +41,8 @@ void WidgetOrcamento::setupTables() {
 }
 
 QString WidgetOrcamento::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) {
     return "Erro lendo tabela orçamento: " + model.lastError().text();
   }

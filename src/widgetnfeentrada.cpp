@@ -7,13 +7,13 @@
 
 WidgetNfeEntrada::WidgetNfeEntrada(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfeEntrada) {
   ui->setupUi(this);
-
-  setupTables();
 }
 
 WidgetNfeEntrada::~WidgetNfeEntrada() { delete ui; }
 
 QString WidgetNfeEntrada::updateTables() {
+  if (model.tableName().isEmpty()) setupTables();
+
   if (not model.select()) return "Erro lendo tabela NFe: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

@@ -13,7 +13,6 @@
 WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVenda) {
   ui->setupUi(this);
 
-  setupTables();
 
   ui->radioButtonTodos->click();
 
@@ -113,6 +112,11 @@ void WidgetVenda::on_groupBoxStatus_toggled(const bool &enabled) {
 }
 
 QString WidgetVenda::updateTables() {
+  if (model.tableName().isEmpty()) {
+    setupTables();
+    montaFiltro();
+  }
+
   if (not model.select()) return "Erro lendo tabela vendas: " + model.lastError().text();
 
   ui->table->resizeColumnsToContents();

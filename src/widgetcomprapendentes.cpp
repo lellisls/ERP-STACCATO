@@ -60,7 +60,10 @@ void WidgetCompraPendentes::setarDadosAvulso() {
 }
 
 QString WidgetCompraPendentes::updateTables() {
-  if (model.tableName().isEmpty()) setupTables();
+  if (model.tableName().isEmpty()) {
+    setupTables();
+    montaFiltro();
+  }
 
   if (not model.select()) return "Erro lendo tabela produtos pendentes: " + model.lastError().text();
 

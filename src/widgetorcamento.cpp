@@ -41,7 +41,10 @@ void WidgetOrcamento::setupTables() {
 }
 
 QString WidgetOrcamento::updateTables() {
-  if (model.tableName().isEmpty()) setupTables();
+  if (model.tableName().isEmpty()) {
+    setupTables();
+    montaFiltro();
+  }
 
   if (not model.select()) {
     return "Erro lendo tabela orçamento: " + model.lastError().text();

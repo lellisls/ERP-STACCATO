@@ -31,7 +31,7 @@ bool SqlTableModel::setData(const int &row, const int &column, const QVariant &v
 
 bool SqlTableModel::setData(const int &row, const QString &column, const QVariant &value) {
   if (row == -1) {
-    QMessageBox::critical(0, "Erro!", "Erro: linha -1");
+    QMessageBox::critical(0, "Erro!", "Erro: linha -1 SqlTableModel");
     return false;
   }
 

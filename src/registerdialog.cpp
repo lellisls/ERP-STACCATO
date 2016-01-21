@@ -199,7 +199,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Linha errada!");
+    QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
     QSqlQuery("ROLLBACK").exec();
     return false;
   }

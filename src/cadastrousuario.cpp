@@ -162,7 +162,8 @@ bool CadastroUsuario::save(const bool &isUpdate) {
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Linha errada!");
+    QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate)) + "\nMapper: " +
+        QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
     QSqlQuery("ROLLBACK").exec();
     return false;
   }

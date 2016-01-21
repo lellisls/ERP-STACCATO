@@ -696,7 +696,9 @@ bool Venda::save(const bool &isUpdate) {
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro linha - 1");
+    QMessageBox::critical(this, "Erro!", "Erro linha -1 Venda: " + QString::number(isUpdate) + "\nMapper: " +
+                          QString::number(mapper.currentIndex()) + "\nModel: " +
+                          QString::number(model.rowCount()));
     QSqlQuery("ROLLBACK").exec();
     return false;
   }

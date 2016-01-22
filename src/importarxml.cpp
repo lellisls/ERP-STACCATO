@@ -242,7 +242,7 @@ void ImportarXML::setarIdCompraNFe(const int &idNFe) {
 
   for (auto item : list) {
     QSqlQuery query;
-    query.prepare("SELECT * FROM nfe WHERE idNFe = :idNFe");
+    query.prepare("SELECT idCompra FROM nfe WHERE idNFe = :idNFe");
     query.bindValue(":idNFe", idNFe);
 
     if (not query.exec() or not query.first()) {
@@ -286,9 +286,9 @@ int ImportarXML::lerXML(QFile &file) {
 
 void ImportarXML::criarConsumo(QModelIndex &item, QString codComercial, QString codBarras, QString idCompra, int row) {
   QSqlQuery query;
-  query.prepare("SELECT * FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto = p.idProduto WHERE "
-                "(p.codComercial = :codComercial OR p.codBarras = :codBarras) AND idCompra = :idCompra AND status = "
-                "'EM FATURAMENTO'");
+  query.prepare("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto = "
+                "p.idProduto WHERE (p.codComercial = :codComercial OR p.codBarras = :codBarras) AND idCompra = "
+                ":idCompra AND status = 'EM FATURAMENTO'");
   query.bindValue(":codComercial", codComercial);
   query.bindValue(":codBarras", codBarras);
   query.bindValue(":idCompra", idCompra);

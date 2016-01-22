@@ -342,7 +342,7 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT * FROM produto WHERE codComercial = :codComercial OR codBarras = :codBarras");
+  query.prepare("SELECT idProduto FROM produto WHERE codComercial = :codComercial OR codBarras = :codBarras");
   query.bindValue(":codComercial", codProd);
   query.bindValue(":codBarras", codBarras);
 

@@ -157,7 +157,8 @@ void CadastrarNFe::updateImpostos() {
   const double imposto = 0;
 
   QSqlQuery queryEnd;
-  queryEnd.prepare("SELECT * FROM cliente_has_endereco WHERE idCliente = :idCliente");
+  queryEnd.prepare("SELECT logradouro, numero, complemento, bairro, cidade, uf FROM cliente_has_endereco WHERE "
+                   "idCliente = :idCliente");
   queryEnd.bindValue(":idCliente", modelVenda.data(0, "idCliente"));
 
   if (not queryEnd.exec() or not queryEnd.first()) {
@@ -213,7 +214,9 @@ void CadastrarNFe::prepararNFe(const QList<int> &items) {
   //-----------------------
 
   //  QSqlQuery queryVenda;
-  //  queryVenda.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
+  //  queryVenda.prepare("SELECT frete, total, idLoja, idCliente, idEnderecoFaturamento, descontoPorc, subTotalLiq FROM
+  //  "
+  //                     "venda WHERE idVenda = :idVenda");
   //  queryVenda.bindValue(":idVenda", idVenda);
 
   //  if (not queryVenda.exec() or not queryVenda.first()) {
@@ -252,8 +255,9 @@ void CadastrarNFe::prepararNFe(const QList<int> &items) {
 
   //  for (const auto item : items) {
   //    QSqlQuery queryItens;
-  //    queryItens.prepare("SELECT * FROM venda_has_produto NATURAL LEFT JOIN "
-  //                       "produto WHERE idVenda = :idVenda AND item = :item");
+  //    queryItens.prepare("SELECT cst, codComercial, produto, ncm, un, quant, prcUnitario, total FROM venda_has_produto
+  //    "
+  //                       "NATURAL LEFT JOIN produto WHERE idVenda = :idVenda AND item = :item");
   //    queryItens.bindValue(":idVenda", idVenda);
   //    queryItens.bindValue(":item", item);
 
@@ -426,7 +430,8 @@ bool CadastrarNFe::writeEmitente(QTextStream &stream) {
   stream << "Fone = " + modelLoja.data(0, "tel").toString() << endl;
 
   QSqlQuery queryLojaEnd;
-  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.prepare(
+        "SELECT cep, logradouro, numero, complemento, bairro, cidade, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", modelLoja.data(0, "idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
@@ -492,8 +497,9 @@ bool CadastrarNFe::writeDestinatario(QTextStream &stream) {
   }
 
   QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT * FROM cliente AS c LEFT JOIN cliente_has_endereco AS e ON c.idCliente = e.idCliente "
-                       "WHERE e.idCliente = :idCliente");
+  queryCliente.prepare("SELECT nome_razao, pfpj, cpf, cnpj, inscEstadual, tel, cep, logradouro, numero, complemento, "
+                       "bairro, cidade, uf FROM cliente AS c LEFT JOIN cliente_has_endereco AS e ON c.idCliente = "
+                       "e.idCliente WHERE e.idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", idCliente);
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -583,7 +589,8 @@ bool CadastrarNFe::writeDestinatario(QTextStream &stream) {
 bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icmsTotal) {
   for (int row = 0; row < modelProd.rowCount(); ++row) {
     QSqlQuery queryProd;
-    queryProd.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
+    queryProd.prepare(
+          "SELECT codComercial, codBarras, descricao, un, precoVenda FROM produto WHERE idProduto = :idProduto");
     queryProd.bindValue(":idProduto", modelProd.data(row, "idProduto"));
 
     if (not queryProd.exec() or not queryProd.first()) {
@@ -592,7 +599,7 @@ bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icms
     }
 
     QSqlQuery queryEstoque;
-    queryEstoque.prepare("SELECT * FROM estoque WHERE idVendaProduto = :idVendaProduto");
+    queryEstoque.prepare("SELECT ncm FROM estoque WHERE idVendaProduto = :idVendaProduto");
     queryEstoque.bindValue(":idVendaProduto", modelProd.data(row, "idVendaProduto"));
 
     if (not queryEstoque.exec() or not queryEstoque.first()) {

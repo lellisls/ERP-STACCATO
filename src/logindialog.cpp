@@ -106,7 +106,7 @@ bool LoginDialog::dbConnect() {
     return false;
   }
 
-  if (not query.exec("SELECT * FROM maintenance") or not query.first()) {
+  if (not query.exec("SELECT lastInvalidated FROM maintenance") or not query.first()) {
     QMessageBox::critical(this, "Erro", "Erro verificando lastInvalidated: " + query.lastError().text());
     return false;
   }

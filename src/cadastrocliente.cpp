@@ -217,7 +217,7 @@ void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
 
   if (not ui->lineEditCPF->styleSheet().contains("color: rgb(255, 0, 0)")) {
     QSqlQuery query;
-    query.prepare("SELECT * FROM cliente WHERE cpf = :cpf");
+    query.prepare("SELECT idCliente FROM cliente WHERE cpf = :cpf");
     query.bindValue(":cpf", text);
 
     if (not query.exec()) {
@@ -238,7 +238,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
 
   if (not ui->lineEditCNPJ->styleSheet().contains("color: rgb(255, 0, 0)")) {
     QSqlQuery query;
-    query.prepare("SELECT * FROM cliente WHERE cnpj = :cnpj");
+    query.prepare("SELECT idCliente FROM cliente WHERE cnpj = :cnpj");
     query.bindValue(":cnpj", text);
 
     if (not query.exec()) {

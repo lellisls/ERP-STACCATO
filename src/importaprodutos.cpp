@@ -656,7 +656,7 @@ void ImportaProdutos::cadastraProduto() { camposForaDoPadrao() ? insereEmErro() 
 
 int ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor) {
   QSqlQuery queryFornecedor;
-  queryFornecedor.prepare("SELECT * FROM fornecedor WHERE razaoSocial = :razaoSocial");
+  queryFornecedor.prepare("SELECT idFornecedor FROM fornecedor WHERE razaoSocial = :razaoSocial");
   queryFornecedor.bindValue(":razaoSocial", fornecedor);
 
   if (not queryFornecedor.exec()) {

@@ -111,7 +111,7 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
 
   QSqlQuery query;
   query.prepare(
-        "SELECT * FROM pedido_fornecedor_has_produto WHERE codComercial = :codComercial AND status = 'PENDENTE'");
+        "SELECT quant FROM pedido_fornecedor_has_produto WHERE codComercial = :codComercial AND status = 'PENDENTE'");
   query.bindValue(":codComercial", codComercial);
 
   if (not query.exec()) {

@@ -548,7 +548,8 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT * FROM produto WHERE idProduto = :index");
+  query.prepare("SELECT un, precoVenda, estoque, fornecedor, codComercial, formComercial, m2cx, pccx FROM produto "
+                "WHERE idProduto = :index");
   query.bindValue(":index", ui->itemBoxProduto->value());
 
   if (not query.exec() or not query.first()) {
@@ -696,7 +697,7 @@ bool Orcamento::verificaCadastroCliente() {
   const int idCliente = ui->itemBoxCliente->value().toInt();
 
   QSqlQuery queryCliente;
-  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.prepare("SELECT cpf, cnpj FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", idCliente);
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -714,7 +715,7 @@ bool Orcamento::verificaCadastroCliente() {
   }
 
   QSqlQuery queryCadastro;
-  queryCadastro.prepare("SELECT * FROM cliente_has_endereco WHERE idCliente = :idCliente");
+  queryCadastro.prepare("SELECT idCliente FROM cliente_has_endereco WHERE idCliente = :idCliente");
   queryCadastro.bindValue(":idCliente", idCliente);
 
   if (not queryCadastro.exec()) {
@@ -786,7 +787,7 @@ void Orcamento::on_itemBoxVendedor_textChanged(const QString &) {
   if (ui->itemBoxVendedor->text().isEmpty()) return;
 
   QSqlQuery queryFrete;
-  queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryFrete.prepare("SELECT valorMinimoFrete, porcentagemFrete FROM loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
 
   if (not queryFrete.exec() or not queryFrete.next()) {

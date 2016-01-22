@@ -324,7 +324,7 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
   }
 
   QSqlQuery queryVenda;
-  queryVenda.prepare("SELECT * FROM venda_has_produto WHERE idProduto = :idProduto");
+  queryVenda.prepare("SELECT idVenda FROM venda_has_produto WHERE idProduto = :idProduto");
   queryVenda.bindValue(":idProduto", modelProdutos.data(lista.first(), "idProduto"));
 
   if (not queryVenda.exec() or not queryVenda.first()) {
@@ -335,8 +335,8 @@ QString WidgetCompraGerar::gerarExcel(QList<int> lista) {
   QString idVenda = queryVenda.value("idVenda").toString();
 
   QSqlQuery queryForn;
-  queryForn.prepare("SELECT * FROM fornecedor WHERE razaoSocial = (SELECT fornecedor FROM venda_has_produto WHERE "
-                    "idVenda = :idVenda LIMIT 1)");
+  queryForn.prepare("SELECT razaoSocial, contatoNome FROM fornecedor WHERE razaoSocial = (SELECT fornecedor FROM "
+                    "venda_has_produto WHERE idVenda = :idVenda LIMIT 1)");
   queryForn.bindValue(":idVenda", idVenda);
 
   if (not queryForn.exec() or not queryForn.first()) {

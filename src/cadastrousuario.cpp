@@ -229,7 +229,7 @@ void CadastroUsuario::successMessage() { QMessageBox::information(this, "Aviso!"
 
 void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
   QSqlQuery query;
-  query.prepare("SELECT * FROM usuario WHERE user = :user");
+  query.prepare("SELECT idUsuario FROM usuario WHERE user = :user");
   query.bindValue(":user", text);
 
   if (not query.exec()) {

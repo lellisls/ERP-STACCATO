@@ -62,7 +62,7 @@ void CadastroProduto::registerMode() {
 bool CadastroProduto::verifyFields(const bool &isUpdate) {
   if (not isUpdate) {
     QSqlQuery query;
-    query.prepare("SELECT * FROM produto WHERE fornecedor = :fornecedor AND codComercial = :codComercial");
+    query.prepare("SELECT idProduto FROM produto WHERE fornecedor = :fornecedor AND codComercial = :codComercial");
     query.bindValue(":fornecedor", ui->itemBoxFornecedor->text());
     query.bindValue(":codComercial", ui->lineEditCodComer->text());
 

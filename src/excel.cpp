@@ -25,7 +25,7 @@ Excel::Excel(QString id, QWidget *parent) : QObject(parent), id(id), parent(pare
 
 void Excel::verificaTipo() {
   QSqlQuery query;
-  query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
+  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento = :idOrcamento");
   query.bindValue(":idOrcamento", id);
 
   if (not query.exec()) {
@@ -219,12 +219,14 @@ void Excel::gerarExcel() {
 
 void Excel::setQuerys() {
   if (type == Orcamento) {
-    query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
+    query.prepare("SELECT data, subTotalLiq, subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM "
+                  "orcamento WHERE idOrcamento = :idOrcamento");
     query.bindValue(":idOrcamento", model.data(0, "idOrcamento"));
   }
 
   if (type == Venda) {
-    query.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
+    query.prepare("SELECT data, subTotalLiq, subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM "
+                  "venda WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", model.data(0, "idVenda"));
   }
 
@@ -233,7 +235,8 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.prepare(
+        "SELECT nome_razao, email, cpf, cnpj, pfpj, tel, telCel FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -241,7 +244,8 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndEnt.prepare(
+        "SELECT logradouro, numero, bairro, cidade, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
   queryEndEnt.bindValue(":idEndereco", model.data(0, "idEnderecoEntrega"));
 
   if (not queryEndEnt.exec() or not queryEndEnt.first()) {
@@ -250,7 +254,8 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryEndFat.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndFat.prepare(
+        "SELECT logradouro, numero, bairro, cidade, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
   queryEndFat.bindValue(":idEndereco", model.data(0, "idEnderecoFaturamento"));
 
   if (not queryEndFat.exec() or not queryEndFat.first()) {
@@ -258,7 +263,7 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.prepare("SELECT nome_razao, tel, email FROM profissional WHERE idProfissional = :idProfissional");
   queryProfissional.bindValue(":idProfissional", model.data(0, "idProfissional"));
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
@@ -266,7 +271,7 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.prepare("SELECT nome, email FROM usuario WHERE idUsuario = :idUsuario");
   queryVendedor.bindValue(":idUsuario", model.data(0, "idUsuario"));
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
@@ -274,7 +279,7 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryLoja.prepare("SELECT tel, tel2 FROM loja WHERE idLoja = :idLoja");
   queryLoja.bindValue(":idLoja", model.data(0, "idLoja"));
 
   if (not queryLoja.exec() or not queryLoja.first()) {
@@ -282,7 +287,8 @@ void Excel::setQuerys() {
     return;
   }
 
-  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.prepare(
+        "SELECT logradouro, numero, bairro, cidade, cep, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", model.data(0, "idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {

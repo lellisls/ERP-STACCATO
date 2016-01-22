@@ -24,7 +24,7 @@ Impressao::Impressao(QString id, QWidget *parent) : QObject(parent), id(id), par
 
 void Impressao::verificaTipo() {
   QSqlQuery query;
-  query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
+  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento = :idOrcamento");
   query.bindValue(":idOrcamento", id);
 
   if (not query.exec()) {
@@ -83,7 +83,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   QLocale locale;
 
   if (modelItem.data(recNo, "idProduto") != queryProduto.boundValue(":idProduto")) {
-    queryProduto.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
+    queryProduto.prepare("SELECT codComercial FROM produto WHERE idProduto = :idProduto");
     queryProduto.bindValue(":idProduto", modelItem.data(recNo, "idProduto"));
 
     if (not queryProduto.exec() or not queryProduto.first()) {
@@ -265,7 +265,8 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
 
 void Impressao::setQuerys() {
   if (type == Orcamento) {
-    query.prepare("SELECT * FROM orcamento WHERE idOrcamento = :idOrcamento");
+    query.prepare("SELECT data, validade, idEnderecoFaturamento, idEnderecoEntrega, subTotalLiq, descontoPorc, frete, "
+                  "total, observacao, prazoEntrega FROM orcamento WHERE idOrcamento = :idOrcamento");
     query.bindValue(":idOrcamento", model.data(0, "idOrcamento"));
 
     if (not query.exec() or not query.first()) {
@@ -273,7 +274,8 @@ void Impressao::setQuerys() {
       return;
     }
   } else {
-    query.prepare("SELECT * FROM venda WHERE idVenda = :idVenda");
+    query.prepare("SELECT data, idEnderecoFaturamento, idEnderecoEntrega, subTotalLiq, descontoPorc, frete, "
+                  "total, observacao, prazoEntrega FROM venda WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", model.data(0, "idVenda"));
 
     if (not query.exec() or not query.first()) {
@@ -282,7 +284,7 @@ void Impressao::setQuerys() {
     }
   }
 
-  queryCliente.prepare("SELECT * FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.prepare("SELECT nome_razao, pfpj, cpf, cnpj, email, tel, telCel FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -290,7 +292,8 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryEndEnt.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndEnt.prepare(
+        "SELECT logradouro, numero, bairro, cidade, uf, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
   queryEndEnt.bindValue(":idEndereco", model.data(0, "idEnderecoEntrega"));
 
   if (not queryEndEnt.exec() or not queryEndEnt.first()) {
@@ -298,7 +301,8 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryEndFat.prepare("SELECT * FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndFat.prepare(
+        "SELECT logradouro, numero, bairro, cidade, uf, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
   queryEndFat.bindValue(":idEndereco", model.data(0, "idEnderecoFaturamento"));
 
   if (not queryEndFat.exec() or not queryEndFat.first()) {
@@ -306,7 +310,7 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryProfissional.prepare("SELECT * FROM profissional WHERE idProfissional = :idProfissional");
+  queryProfissional.prepare("SELECT nome_razao, tel, email FROM profissional WHERE idProfissional = :idProfissional");
   queryProfissional.bindValue(":idProfissional", model.data(0, "idProfissional"));
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
@@ -314,7 +318,7 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryVendedor.prepare("SELECT * FROM usuario WHERE idUsuario = :idUsuario");
+  queryVendedor.prepare("SELECT nome, email FROM usuario WHERE idUsuario = :idUsuario");
   queryVendedor.bindValue(":idUsuario", model.data(0, "idUsuario"));
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
@@ -322,7 +326,7 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryLoja.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryLoja.prepare("SELECT descricao, tel, tel2 FROM loja WHERE idLoja = :idLoja");
   queryLoja.bindValue(":idLoja", model.data(0, "idLoja"));
 
   if (not queryLoja.exec() or not queryLoja.first()) {
@@ -330,7 +334,8 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryLojaEnd.prepare("SELECT * FROM loja_has_endereco WHERE idLoja = :idLoja");
+  queryLojaEnd.prepare(
+        "SELECT logradouro, numero, bairro, cidade, uf, cep FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", model.data(0, "idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {

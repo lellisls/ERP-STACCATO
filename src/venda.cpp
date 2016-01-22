@@ -260,7 +260,7 @@ void Venda::fecharOrcamento(const QString &idOrcamento) {
   ui->tableVenda->resizeColumnsToContents();
 
   QSqlQuery queryFrete;
-  queryFrete.prepare("SELECT * FROM loja WHERE idLoja = :idLoja");
+  queryFrete.prepare("SELECT valorMinimoFrete, porcentagemFrete FROM loja WHERE idLoja = :idLoja");
   queryFrete.bindValue(":idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()));
 
   if (not queryFrete.exec() or not queryFrete.first()) {

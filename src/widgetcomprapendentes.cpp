@@ -43,7 +43,7 @@ void WidgetCompraPendentes::setarDadosAvulso() {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
+  query.prepare("SELECT un, m2cx, pccx FROM produto WHERE idProduto = :idProduto");
   query.bindValue(":idProduto", ui->itemBoxProduto->value());
 
   if (not query.exec() or not query.first()) {
@@ -140,7 +140,7 @@ void WidgetCompraPendentes::on_pushButtonComprarAvulso_clicked() {
   QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
-  query.prepare("SELECT * FROM pedido_fornecedor_has_produto WHERE idProduto = :idProduto AND status = 'PENDENTE'");
+  query.prepare("SELECT quant FROM pedido_fornecedor_has_produto WHERE idProduto = :idProduto AND status = 'PENDENTE'");
   query.bindValue(":idProduto", ui->itemBoxProduto->value());
 
   if (not query.exec()) {
@@ -174,7 +174,8 @@ bool WidgetCompraPendentes::atualiza(const QSqlQuery &query) {
 
 bool WidgetCompraPendentes::insere(const QDate &dataPrevista) {
   QSqlQuery query;
-  query.prepare("SELECT * FROM produto WHERE idProduto = :idProduto");
+  query.prepare("SELECT fornecedor, idProduto, descricao, colecao, un, un2, custo, kgcx, formComercial, codComercial, "
+                "codBarras FROM produto WHERE idProduto = :idProduto");
   query.bindValue(":idProduto", ui->itemBoxProduto->value());
 
   if (not query.exec() or not query.first()) {

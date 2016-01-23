@@ -34,6 +34,13 @@ void TableView::setItemDelegateForColumn(const QString &column, QAbstractItemDel
 }
 
 void TableView::openPersistentEditor(const int &row, const QString &column) {
+  if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
+    if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
+      QTableView::openPersistentEditor(model->index(row, sourceModel->fieldIndex(column)));
+      return;
+    }
+  }
+
   if (auto *model = qobject_cast<QSqlTableModel *>(QTableView::model())) {
     QTableView::openPersistentEditor(model->index(row, model->fieldIndex(column)));
   }

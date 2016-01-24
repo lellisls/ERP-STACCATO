@@ -211,7 +211,7 @@ void CadastroProduto::calcularMarkup() {
 }
 
 bool CadastroProduto::save(const bool &isUpdate) {
-  verifyFields(isUpdate);
+  if (not verifyFields(isUpdate)) return false;
 
   return RegisterDialog::save(isUpdate);
 }

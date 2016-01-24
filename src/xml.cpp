@@ -342,7 +342,8 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT idProduto FROM produto WHERE codComercial = :codComercial OR codBarras = :codBarras");
+  query.prepare(
+        "SELECT idProduto, m2cx, pccx FROM produto WHERE codComercial = :codComercial OR codBarras = :codBarras");
   query.bindValue(":codComercial", codProd);
   query.bindValue(":codBarras", codBarras);
 
@@ -351,13 +352,20 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
     return false;
   }
 
-  const int idTemp = query.first() ? query.value("idProduto").toInt() : 0;
+  query.first();
+
+  double quantCaixa =
+      ((un == "M²") or (un == "M2") or (un == "ML")) ? query.value("m2cx").toDouble() : query.value("pccx").toDouble();
+
+  int caixas = quant / quantCaixa;
 
   if (not externalModel->setData(row, "fornecedor", xNome)) return false;
-  if (not externalModel->setData(row, "idProduto", idTemp)) return false;
+  if (not externalModel->setData(row, "local", "TEMP")) return false;
+  if (not externalModel->setData(row, "idProduto", query.first() ? query.value("idProduto").toInt() : 0)) return false;
   if (not externalModel->setData(row, "descricao", descricao)) return false;
   if (not externalModel->setData(row, "quant", quant)) return false;
   if (not externalModel->setData(row, "un", un)) return false;
+  if (not externalModel->setData(row, "caixas", caixas)) return false;
   if (not externalModel->setData(row, "codBarras", codBarras)) return false;
   if (not externalModel->setData(row, "codComercial", codProd)) return false;
   if (not externalModel->setData(row, "ncm", ncm)) return false;

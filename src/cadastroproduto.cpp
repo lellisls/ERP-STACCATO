@@ -41,6 +41,10 @@ void CadastroProduto::clearFields() {
     line->clear();
   }
 
+  for (auto const &spinBox : findChildren<QDoubleSpinBox *>()) {
+    spinBox->clear();
+  }
+
   ui->radioButtonDesc->setChecked(false);
   ui->radioButtonLote->setChecked(false);
 

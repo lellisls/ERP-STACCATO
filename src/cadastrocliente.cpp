@@ -391,4 +391,29 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-// TODO: verificar se cpf/cnpj ja existe antes de salvar
+bool CadastroCliente::save(const bool &isUpdate) {
+  if (not verifyFields(isUpdate)) return false;
+
+  return RegisterAddressDialog::save(isUpdate);
+}
+
+bool CadastroCliente::verifyFields(const bool &isUpdate) {
+  if (not isUpdate) {
+    QSqlQuery query;
+    query.prepare("SELECT cpf, cnpj FROM cliente WHERE cpf = :cpf OR cnpj = :cnpj");
+    query.bindValue(":cpf", ui->lineEditCPF->text());
+    query.bindValue(":cnpj", ui->lineEditCNPJ->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro verificando se CPF/CNPJ já cadastrado!");
+      return false;
+    }
+
+    if (query.first()) {
+      QMessageBox::critical(this, "Erro!", "CPF/CNPJ já cadastrado!");
+      return false;
+    }
+  }
+
+  return true;
+}

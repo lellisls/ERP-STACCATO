@@ -51,6 +51,7 @@ SOURCES += src/apagaorcamento.cpp \
     src/registeraddressdialog.cpp \
     src/registerdialog.cpp \
     src/searchdialog.cpp \
+    src/searchdialogproxy.cpp \
     src/sendmail.cpp \
     src/singleeditdelegate.cpp \
     src/smtp.cpp \
@@ -120,6 +121,7 @@ HEADERS  += src/apagaorcamento.h \
     src/registeraddressdialog.h \
     src/registerdialog.h \
     src/searchdialog.h \
+    src/searchdialogproxy.h \
     src/sendmail.h \
     src/singleeditdelegate.h \
     src/smtp.h \

@@ -153,6 +153,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
 
   if (not isUpdate and not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -165,6 +166,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
     QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate)) + "\nMapper: " +
         QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -173,6 +175,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
   if (not savingProcedures()) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -187,6 +190,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
                           "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -198,6 +202,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro criando usuário do banco de dados: " + query.lastError().text());
       QSqlQuery("ROLLBACK").exec();
+      viewRegister(model.index(row, 0));
       return false;
     }
 
@@ -208,6 +213,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
       QMessageBox::critical(this, "Erro!",
                             "Erro guardando privilégios do usuário do banco de dados: " + query.lastError().text());
       QSqlQuery("ROLLBACK").exec();
+      viewRegister(model.index(row, 0));
       return false;
     }
 

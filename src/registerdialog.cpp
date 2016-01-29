@@ -170,6 +170,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
 
   if (not isUpdate and not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -181,6 +182,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -189,6 +191,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
   if (not savingProcedures()) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -203,6 +206,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
                           "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 

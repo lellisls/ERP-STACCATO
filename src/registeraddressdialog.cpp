@@ -36,6 +36,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
 
   if (not isUpdate and not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -47,6 +48,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Erro linha -1");
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -55,6 +57,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   if (not savingProcedures()) {
     errorMessage();
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -67,6 +70,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro: " + model.lastError().text());
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -85,6 +89,7 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   if (not modelEnd.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
     QSqlQuery("ROLLBACK").exec();
+    viewRegister(model.index(row, 0));
     return false;
   }
 

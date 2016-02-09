@@ -20,11 +20,9 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDia
   }
 
   ui->lineEditHostname->setText(UserSession::settings("Login/hostname").toString());
-  ui->checkBoxHomologacao->setChecked(UserSession::settings("Login/homologacao").toBool());
 
   ui->labelHostname->hide();
   ui->lineEditHostname->hide();
-  ui->checkBoxHomologacao->hide();
 
   adjustSize();
 
@@ -36,7 +34,6 @@ LoginDialog::~LoginDialog() { delete ui; }
 void LoginDialog::on_pushButtonConfig_clicked() {
   ui->labelHostname->setVisible(not ui->labelHostname->isVisible());
   ui->lineEditHostname->setVisible(not ui->lineEditHostname->isVisible());
-  ui->checkBoxHomologacao->setVisible(not ui->checkBoxHomologacao->isVisible());
   adjustSize();
 }
 
@@ -99,7 +96,7 @@ bool LoginDialog::dbConnect() {
 
   db.close();
 
-  db.setDatabaseName(ui->checkBoxHomologacao->isChecked() ? "mydb_test" : "mydb");
+  db.setDatabaseName("mydb");
 
   if (not db.open()) {
     QMessageBox::critical(this, "Erro", "Erro conectando no banco de dados: " + db.lastError().text());
@@ -134,7 +131,6 @@ bool LoginDialog::dbConnect() {
 
 void LoginDialog::on_pushButtonLogin_clicked() {
   UserSession::setSettings("Login/hostname", ui->lineEditHostname->text());
-  UserSession::setSettings("Login/homologacao", ui->checkBoxHomologacao->isChecked());
 
   if (not dbConnect()) return;
 

@@ -22,8 +22,12 @@ class Estoque : public QDialog {
     void on_pushButtonExibirNfe_clicked();
 
   private:
+    // attributes
     Ui::Estoque *ui;
     SqlTableModel model;
+    // methods
+    void setupTables();
+    void criarConsumo();
 };
 
 #endif // ESTOQUE_H

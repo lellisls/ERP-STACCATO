@@ -15,7 +15,7 @@ class ProdutosPendentes : public QDialog {
   public:
     explicit ProdutosPendentes(QWidget *parent = 0);
     ~ProdutosPendentes();
-    void viewProduto(const QString &codComercial, const QString &status);
+    void viewProduto(const QString &codComercial, const QString &idVenda);
 
   private slots:
     void on_pushButtonComprar_clicked();
@@ -28,7 +28,6 @@ class ProdutosPendentes : public QDialog {
     SqlTableModel modelEstoque;
     SqlTableModel modelProdutos;
     // methods
-    void atualiza(const QSqlQuery &query);
     void atualizaVenda(const QDate &dataPrevista);
     void insere(const QDate &dataPrevista);
     void setupTables();

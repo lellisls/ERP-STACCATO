@@ -262,7 +262,7 @@ void ImportaProdutos::setupTables() {
   model.setHeaderData("validade", "Validade");
   model.setHeaderData("markup", "Markup");
 
-  ui->tableProdutos->setModel(new ImportaProdutosProxy(&model, model.fieldIndex("descontinuado"), this));
+  ui->tableProdutos->setModel(new ImportaProdutosProxy(&model, this));
 
   for (int column = 0; column < model.columnCount(); ++column) {
     if (model.record().fieldName(column).endsWith("Upd")) ui->tableProdutos->setColumnHidden(column, true);
@@ -333,7 +333,7 @@ void ImportaProdutos::setupTables() {
   modelErro.setHeaderData("validade", "Validade");
   modelErro.setHeaderData("markup", "Markup");
 
-  ui->tableErro->setModel(new ImportaProdutosProxy(&modelErro, modelErro.fieldIndex("descontinuado"), this));
+  ui->tableErro->setModel(new ImportaProdutosProxy(&modelErro, this));
 
   for (int column = 0; column < modelErro.columnCount(); ++column) {
     if (modelErro.record().fieldName(column).endsWith("Upd")) ui->tableErro->setColumnHidden(column, true);
@@ -375,6 +375,7 @@ void ImportaProdutos::setVariantMap() {
   variantMap.insert("m2cx", QVariant(QVariant::Double));
   variantMap.insert("pccx", QVariant(QVariant::Int));
   variantMap.insert("kgcx", QVariant(QVariant::Double));
+  variantMap.insert("minimo", QVariant(QVariant::Double));
   variantMap.insert("formComercial", QVariant(QVariant::String));
   variantMap.insert("codComercial", QVariant(QVariant::String));
   variantMap.insert("codBarras", QVariant(QVariant::String));
@@ -497,17 +498,7 @@ void ImportaProdutos::atualizaCamposProduto() {
   changed ? itensUpdated++ : itensNotChanged++;
 }
 
-void ImportaProdutos::marcaProdutoNaoDescontinuado() { // TODO: why this set false twice??
-  QSqlQuery query;
-  query.prepare("UPDATE produto SET descontinuado = FALSE WHERE idProduto = :idProduto");
-  query.bindValue(":idProduto", model.data(row, "idProduto"));
-
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro marcando produto atualizado como não descontiunado: " + query.lastError().text());
-    return;
-  }
-
+void ImportaProdutos::marcaProdutoNaoDescontinuado() {
   model.setData(row, "descontinuado", false);
 
   itensExpired--;
@@ -716,8 +707,6 @@ void ImportaProdutos::salvar() {
     return;
   }
 
-  QSqlQuery("COMMIT").exec(); // TODO: shouldnt this be in the end?
-
   QSqlQuery queryPrecos;
   queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT idProduto, "
                       "precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM produto WHERE "
@@ -728,11 +717,13 @@ void ImportaProdutos::salvar() {
   if (not queryPrecos.exec()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro inserindo dados em produto_has_preco: " + queryPrecos.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
 
   queryPrecos.exec("UPDATE produto SET atualizarTabelaPreco = FALSE");
-  queryPrecos.exec("COMMIT"); // TODO: why this?
+
+  QSqlQuery("COMMIT").exec();
 
   close();
 }
@@ -792,4 +783,3 @@ void ImportaProdutos::closeEvent(QCloseEvent *event) {
 }
 
 // NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo
-// TODO: adicionar flag para indicar se é estoque (nao descontinuar os que estiverem cadastrados)

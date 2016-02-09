@@ -144,9 +144,9 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "Código") paramValue = queryProduto.value("codComercial");
 
   if (paramName == "Nome do produto") {
+    QString produto = modelItem.data(recNo, "produto").toString();
     QString formComercial = modelItem.data(recNo, "formComercial").toString();
-    paramValue =
-        modelItem.data(recNo, "produto").toString() + (formComercial.isEmpty() ? "" : " (" + formComercial + ")");
+    paramValue = produto + (formComercial.isEmpty() ? "" : " (" + formComercial + ")");
   }
 
   if (paramName == "Ambiente") paramValue = modelItem.data(recNo, "obs");
@@ -165,6 +165,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   }
 
   if (paramName == "Quant.") paramValue = modelItem.data(recNo, "quant");
+
   if (paramName == "Unid.") paramValue = modelItem.data(recNo, "un");
 
   if (paramName == "TotalProd") {
@@ -284,7 +285,8 @@ void Impressao::setQuerys() {
     }
   }
 
-  queryCliente.prepare("SELECT nome_razao, pfpj, cpf, cnpj, email, tel, telCel FROM cliente WHERE idCliente = :idCliente");
+  queryCliente.prepare(
+        "SELECT nome_razao, pfpj, cpf, cnpj, email, tel, telCel FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {

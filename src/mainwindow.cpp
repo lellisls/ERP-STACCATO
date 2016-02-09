@@ -24,7 +24,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-  defaultStyle = this->style()->objectName();
+  defaultStyle = style()->objectName();
   defautPalette = qApp->palette();
 
   setWindowIcon(QIcon("Staccato.ico"));

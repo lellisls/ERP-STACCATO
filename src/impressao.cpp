@@ -110,14 +110,14 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "email") paramValue = queryCliente.value("email");
   if (paramName == "tel1") paramValue = queryCliente.value("tel");
   if (paramName == "tel2") paramValue = queryCliente.value("telCel");
-  if (paramName == "cepfiscal") paramValue = queryEndEnt.value("cep");
+  if (paramName == "cepfiscal") paramValue = queryEndFat.value("cep");
 
   if (paramName == "endfiscal")
     paramValue = query.value("idEnderecoFaturamento").toInt() == 1
                  ? "Não há/Retira"
-                 : queryEndEnt.value("logradouro").toString() + " - " + queryEndEnt.value("numero").toString() +
-                   " - " + queryEndEnt.value("bairro").toString() + " - " +
-                   queryEndEnt.value("cidade").toString() + " - " + queryEndEnt.value("uf").toString();
+                 : queryEndFat.value("logradouro").toString() + " - " + queryEndFat.value("numero").toString() +
+                   " - " + queryEndFat.value("bairro").toString() + " - " +
+                   queryEndFat.value("cidade").toString() + " - " + queryEndFat.value("uf").toString();
 
   if (paramName == "endentrega")
     paramValue = query.value("idEnderecoEntrega").toInt() == 1

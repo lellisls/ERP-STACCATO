@@ -52,38 +52,38 @@ void CadastroProfissional::setupUi() {
 }
 
 void CadastroProfissional::setupMapper() {
-  addMapping(ui->lineEditBanco, "banco");
-  addMapping(ui->lineEditAgencia, "agencia");
-  addMapping(ui->lineEditCC, "cc");
-  addMapping(ui->lineEditNomeBancario, "nomeBanco");
-  addMapping(ui->lineEditCPFBancario, "cpfBanco");
   addMapping(ui->comboBoxTipo, "tipoProf");
-  addMapping(ui->lineEditProfissional, "nome_razao");
-  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditAgencia, "agencia");
+  addMapping(ui->lineEditBanco, "banco");
+  addMapping(ui->lineEditCC, "cc");
+  addMapping(ui->lineEditCNPJ, "cnpj");
   addMapping(ui->lineEditContatoApelido, "contatoApelido");
+  addMapping(ui->lineEditContatoApelido, "contatoApelido");
+  addMapping(ui->lineEditContatoCPF, "contatoCPF");
+  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditContatoRG, "contatoRG");
   addMapping(ui->lineEditContatoRG, "contatoRG");
   addMapping(ui->lineEditCPF, "cpf");
-  addMapping(ui->lineEditCNPJ, "cnpj");
-  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditCPFBancario, "cpfBanco");
+  addMapping(ui->lineEditEmail, "email");
+  addMapping(ui->lineEditIdNextel, "idNextel");
   addMapping(ui->lineEditInscEstadual, "inscEstadual");
-  addMapping(ui->lineEditTel_Res, "tel");
+  addMapping(ui->lineEditNextel, "nextel");
+  addMapping(ui->lineEditNomeBancario, "nomeBanco");
+  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditProfissional, "nome_razao");
   addMapping(ui->lineEditTel_Cel, "telCel");
   addMapping(ui->lineEditTel_Com, "telCom");
-  addMapping(ui->lineEditIdNextel, "idNextel");
-  addMapping(ui->lineEditNextel, "nextel");
-  addMapping(ui->lineEditEmail, "email");
-  addMapping(ui->lineEditContatoNome, "contatoNome");
-  addMapping(ui->lineEditContatoCPF, "contatoCPF");
-  addMapping(ui->lineEditContatoApelido, "contatoApelido");
-  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->lineEditTel_Res, "tel");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
   mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
-  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
-  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
-  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
@@ -177,7 +177,7 @@ void CadastroProfissional::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  for (auto const &box : this->findChildren<ItemBox *>()) {
+  for (auto const &box : findChildren<ItemBox *>()) {
     box->clear();
   }
 
@@ -338,4 +338,8 @@ void CadastroProfissional::on_radioButtonPF_toggled(const bool &checked) {
 void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text) {
   ui->lineEditCPFBancario->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
                                                                                           : "color: rgb(255, 0, 0)");
+}
+
+void CadastroProfissional::successMessage() {
+  QMessageBox::information(this, "Atenção!", "Profissional cadastrado com sucesso!");
 }

@@ -35,7 +35,7 @@ void WidgetOrcamento::setupTables() {
 
   model.setTable("view_orcamento");
 
-  ui->table->setModel(new OrcamentoProxyModel(&model, "Dias restantes", this));
+  ui->table->setModel(new OrcamentoProxyModel(&model, this));
   ui->table->setItemDelegate(doubledelegate);
   ui->table->sortByColumn("Código");
 }

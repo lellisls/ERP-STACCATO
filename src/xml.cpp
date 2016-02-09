@@ -120,8 +120,8 @@ void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalMo
   }
 }
 
-int XML::cadastrarNFe(const QString &tipo) {
-  if (not verificaCNPJ() or verificaExiste()) return 0;
+bool XML::cadastrarNFe(const QString &tipo) {
+  if (not verificaCNPJ() or verificaExiste()) return false;
 
   QSqlQuery query;
 
@@ -133,7 +133,10 @@ int XML::cadastrarNFe(const QString &tipo) {
     return false;
   }
 
-  if (query.first()) return idNFe = query.value("idNFe").toInt();
+  if (query.first()) {
+    idNFe = query.value("idNFe").toInt();
+    return true;
+  }
 
   QFile file(fileName);
 
@@ -154,7 +157,9 @@ int XML::cadastrarNFe(const QString &tipo) {
     return false;
   }
 
-  return idNFe = query.lastInsertId().toInt();
+  idNFe = query.lastInsertId().toInt();
+
+  return true;
 }
 
 void XML::lerDadosProduto(const QStandardItem *child) {
@@ -334,6 +339,33 @@ bool XML::cadastrarEstoque() {
 void XML::mostrarNoSqlModel(SqlTableModel &externalModel) { inserirNoSqlModel(model.item(0, 0), &externalModel); }
 
 bool XML::inserirItemSql(SqlTableModel *externalModel) {
+  auto list = externalModel->match(externalModel->index(0, externalModel->fieldIndex("codComercial")), Qt::DisplayRole,
+                                   codProd, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
+
+  for (auto item : list) {
+    QMessageBox msgBox(QMessageBox::Question, "Atenção!",
+                       "Produto é do mesmo lote da linha " + QString::number(item.row() + 1) + "?",
+                       QMessageBox::Yes | QMessageBox::No, 0);
+    msgBox.setButtonText(QMessageBox::Yes, "Sim");
+    msgBox.setButtonText(QMessageBox::No, "Não");
+
+    if (msgBox.exec() == QMessageBox::Yes) {
+      int row = item.row();
+
+      double newQuant = externalModel->data(row, "quant").toDouble();
+
+      if (not externalModel->setData(row, "quant", quant + newQuant)) return false;
+
+      QString id = externalModel->data(row, "idNFe").toString();
+
+      if (not id.contains(QString::number(idNFe))) id = id + "," + QString::number(idNFe);
+
+      externalModel->setData(row, "idNFe", id);
+
+      return true;
+    }
+  }
+
   int row = externalModel->rowCount();
 
   if (not externalModel->insertRow(row)) {
@@ -342,10 +374,8 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
   }
 
   QSqlQuery query;
-  query.prepare(
-        "SELECT idProduto, m2cx, pccx FROM produto WHERE codComercial = :codComercial OR codBarras = :codBarras");
+  query.prepare("SELECT idProduto, m2cx, pccx FROM produto WHERE codComercial = :codComercial");
   query.bindValue(":codComercial", codProd);
-  query.bindValue(":codBarras", codBarras);
 
   if (not query.exec()) {
     QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto: " + query.lastError().text());
@@ -359,6 +389,7 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
 
   int caixas = quant / quantCaixa;
 
+  if (not externalModel->setData(row, "idNFe", idNFe)) return false;
   if (not externalModel->setData(row, "fornecedor", xNome)) return false;
   if (not externalModel->setData(row, "local", "TEMP")) return false;
   if (not externalModel->setData(row, "idProduto", query.first() ? query.value("idProduto").toInt() : 0)) return false;

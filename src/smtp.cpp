@@ -18,7 +18,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 #include "smtp.h"
 
-Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const int &port, const int &timeout) {
+Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const int &port, const int &timeout)
+  : port(port), timeout(timeout), host(host), pass(pass), user(user) {
   socket = new QSslSocket(this);
 
   connect(socket, &QIODevice::readyRead, this, &Smtp::readyRead);
@@ -26,13 +27,6 @@ Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const 
   connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorReceived(QAbstractSocket::SocketError)));
   connect(socket, &QAbstractSocket::stateChanged, this, &Smtp::stateChanged);
   connect(socket, &QAbstractSocket::disconnected, this, &Smtp::disconnected);
-
-  this->user = user;
-  this->pass = pass;
-
-  this->host = host;
-  this->port = port;
-  this->timeout = timeout;
 }
 
 void Smtp::sendMail(const QString &from, const QString &to, const QString &subject, const QString &body,

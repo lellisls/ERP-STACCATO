@@ -6,9 +6,8 @@
 #include "sqltablemodel.h"
 
 class ImportaProdutosProxy : public QIdentityProxyModel {
-
   public:
-    ImportaProdutosProxy(SqlTableModel *model, const int &column, QObject *parent = 0);
+    ImportaProdutosProxy(SqlTableModel *model, QObject *parent = 0);
     ~ImportaProdutosProxy();
     QVariant data(const QModelIndex &proxyIndex, int role) const override;
 

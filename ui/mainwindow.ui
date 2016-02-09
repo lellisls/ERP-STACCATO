@@ -133,7 +133,15 @@
      <addaction name="actionClaro"/>
      <addaction name="actionEscuro"/>
     </widget>
-    <addaction name="actionImportaProdutos"/>
+    <widget class="QMenu" name="menuImportar_tabela_fornecedor">
+     <property name="title">
+      <string>Importar tabela fornecedor</string>
+     </property>
+     <addaction name="actionProdutos"/>
+     <addaction name="actionEstoque"/>
+     <addaction name="actionPromocao"/>
+    </widget>
+    <addaction name="menuImportar_tabela_fornecedor"/>
     <addaction name="menuTema"/>
     <addaction name="actionConfiguracoes"/>
    </widget>
@@ -232,11 +240,6 @@
     <string>Cadastrar fornecedor</string>
    </property>
   </action>
-  <action name="actionImportaProdutos">
-   <property name="text">
-    <string>Importar tabela fornecedor</string>
-   </property>
-  </action>
   <action name="actionSobre">
    <property name="text">
     <string>Sobre o ERP Staccato</string>
@@ -264,6 +267,21 @@
    </property>
    <property name="text">
     <string>Calculadora</string>
+   </property>
+  </action>
+  <action name="actionProdutos">
+   <property name="text">
+    <string>Produtos</string>
+   </property>
+  </action>
+  <action name="actionEstoque">
+   <property name="text">
+    <string>Estoque</string>
+   </property>
+  </action>
+  <action name="actionPromocao">
+   <property name="text">
+    <string>Promoção</string>
    </property>
   </action>
  </widget>

@@ -38,7 +38,7 @@ class SearchDialog : public QDialog {
     void itemSelected(QVariant value);
 
   private slots:
-    void on_lineEditBusca_textChanged(const QString &text);
+    void on_lineEditBusca_textChanged(const QString &);
     void on_pushButtonSelecionar_clicked();
     void on_radioButtonProdAtivos_toggled(const bool &);
     void on_radioButtonProdDesc_toggled(const bool &);
@@ -58,11 +58,11 @@ class SearchDialog : public QDialog {
     SqlTableModel model;
     // methods
     void hideColumns(const QStringList &columns);
-    void montarFiltroAtivoDesc(const bool &ativo);
     void sendUpdateMessage();
     void setHeaderData(const QString &column, const QString &value);
     void setPrimaryKey(const QString &value);
     void setTextKeys(const QStringList &value);
+    void setupTables(const QString &table, const QString &filter);
 };
 
 #endif // SEARCHDIALOG_H

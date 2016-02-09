@@ -26,18 +26,15 @@ class CadastroProduto : public RegisterDialog {
     // attributes
     Ui::CadastroProduto *ui;
     // methods
+    bool verifyFields(const bool &isUpdate);
+    virtual bool save(const bool &isUpdate = false) override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
-    bool verifyFields(const bool &isUpdate);
     virtual void clearFields() override;
     virtual void registerMode() override;
     virtual void setupMapper() override;
     virtual void updateMode() override;
     void calcularMarkup();
-
-    // RegisterDialog interface
-  protected:
-    virtual bool save(const bool &isUpdate = false) override;
 };
 
 #endif // CADASTROPRODUTO_H

@@ -44,25 +44,25 @@ class Smtp : public QObject {
     void status(const QString &);
 
   private slots:
-    void stateChanged(QAbstractSocket::SocketState socketState);
-    void errorReceived(QAbstractSocket::SocketError socketError);
-    void disconnected();
     void connected();
+    void disconnected();
+    void errorReceived(QAbstractSocket::SocketError socketError);
     void readyRead();
+    void stateChanged(QAbstractSocket::SocketState socketState);
 
   private:
+    enum states { Tls, HandShake, Auth, User, Pass, Rcpt, Mail, Data, Init, Body, Quit, Close };
+    int port;
+    int state;
     int timeout;
-    QString message;
-    QTextStream *t;
     QSslSocket *socket;
     QString from;
+    QString host;
+    QString message;
+    QString pass;
     QString rcpt;
     QString response;
     QString user;
-    QString pass;
-    QString host;
-    int port;
-    enum states { Tls, HandShake, Auth, User, Pass, Rcpt, Mail, Data, Init, Body, Quit, Close };
-    int state;
+    QTextStream *t;
 };
 #endif

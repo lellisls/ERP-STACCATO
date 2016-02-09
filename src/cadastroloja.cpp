@@ -60,7 +60,7 @@ void CadastroLoja::setupTables() {
 }
 
 void CadastroLoja::clearFields() {
-  for (auto const &line : this->findChildren<QLineEdit *>()) {
+  for (auto const &line : findChildren<QLineEdit *>()) {
     line->clear();
   }
 }
@@ -101,24 +101,24 @@ void CadastroLoja::updateMode() {
 }
 
 void CadastroLoja::setupMapper() {
-  addMapping(ui->lineEditDescricao, "descricao");
+  addMapping(ui->doubleSpinBoxPorcFrete, "porcentagemFrete");
+  addMapping(ui->doubleSpinBoxValorMinimoFrete, "valorMinimoFrete");
   addMapping(ui->lineEditCNPJ, "cnpj");
-  addMapping(ui->lineEditRazaoSocial, "razaoSocial");
-  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditDescricao, "descricao");
   addMapping(ui->lineEditInscEstadual, "inscEstadual");
+  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditRazaoSocial, "razaoSocial");
+  addMapping(ui->lineEditSIGLA, "sigla");
   addMapping(ui->lineEditTel, "tel");
   addMapping(ui->lineEditTel2, "tel2");
-  addMapping(ui->lineEditSIGLA, "sigla");
-  addMapping(ui->doubleSpinBoxValorMinimoFrete, "valorMinimoFrete");
-  addMapping(ui->doubleSpinBoxPorcFrete, "porcentagemFrete");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
   mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
-  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
-  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
-  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
@@ -274,3 +274,5 @@ bool CadastroLoja::viewRegister(const QModelIndex &index) {
 
   return true;
 }
+
+void CadastroLoja::successMessage() { QMessageBox::information(this, "Atenção!", "Loja cadastrada com sucesso!"); }

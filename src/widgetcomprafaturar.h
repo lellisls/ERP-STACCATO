@@ -20,6 +20,7 @@ class WidgetCompraFaturar : public QWidget {
 
   private slots:
     void on_pushButtonMarcarFaturado_clicked();
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

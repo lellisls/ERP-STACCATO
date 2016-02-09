@@ -90,7 +90,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QCheckBox" name="checkBoxTodosGerar">
+       <widget class="QCheckBox" name="checkBoxMarcarTodos">
         <property name="text">
          <string>Marcar todos</string>
         </property>

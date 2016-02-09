@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>201</width>
-    <height>151</height>
+    <width>204</width>
+    <height>126</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,13 +21,6 @@
     <widget class="QPushButton" name="pushButtonLogin">
      <property name="text">
       <string>Login</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QLabel" name="labelUser">
-     <property name="text">
-      <string>Usuário:</string>
      </property>
     </widget>
    </item>
@@ -51,17 +44,24 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="4">
-    <widget class="QLabel" name="labelPass">
-     <property name="text">
-      <string>Senha:</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="5">
     <widget class="QLineEdit" name="lineEditPass">
      <property name="echoMode">
       <enum>QLineEdit::Password</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QLabel" name="labelUser">
+     <property name="text">
+      <string>Usuário:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QLabel" name="labelPass">
+     <property name="text">
+      <string>Senha:</string>
      </property>
     </widget>
    </item>
@@ -79,13 +79,6 @@
     <widget class="QLineEdit" name="lineEditHostname">
      <property name="text">
       <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="5">
-    <widget class="QCheckBox" name="checkBoxHomologacao">
-     <property name="text">
-      <string>Homologação</string>
      </property>
     </widget>
    </item>

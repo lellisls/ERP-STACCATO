@@ -1,9 +1,9 @@
 #ifndef WIDGETVENDA_H
 #define WIDGETVENDA_H
 
-#include "sqltablemodel.h"
-
 #include <QWidget>
+
+#include "sqltablemodel.h"
 
 namespace Ui {
   class WidgetVenda;

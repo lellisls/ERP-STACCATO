@@ -16,12 +16,6 @@ WidgetCompraConfirmar::~WidgetCompraConfirmar() { delete ui; }
 void WidgetCompraConfirmar::setupTables() {
   model.setTable("view_compras");
 
-  model.setHeaderData("fornecedor", "Fornecedor");
-  model.setHeaderData("idCompra", "Compra");
-  model.setHeaderData("COUNT(idProduto)", "Itens");
-  model.setHeaderData("SUM(preco)", "Preço");
-  model.setHeaderData("status", "Status");
-
   ui->table->setModel(&model);
 }
 
@@ -44,7 +38,7 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
   }
 
   int row = ui->table->selectionModel()->selectedRows().first().row();
-  idCompra = model.data(row, "idCompra").toString();
+  idCompra = model.data(row, "Compra").toString();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::ConfirmarCompra, this);
   inputDlg->setFilter(idCompra);
@@ -88,3 +82,5 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
 
   QMessageBox::information(this, "Aviso!", "Confirmado compra.");
 }
+
+// TODO: adicionar fluxo de pagamentos

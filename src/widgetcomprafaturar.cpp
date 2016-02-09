@@ -28,11 +28,6 @@ void WidgetCompraFaturar::tableFornCompras_activated(const QString &fornecedor) 
 void WidgetCompraFaturar::setupTables() {
   model.setTable("view_faturamento");
 
-  model.setHeaderData("fornecedor", "Fornecedor");
-  model.setHeaderData("COUNT(idProduto)", "Itens");
-  model.setHeaderData("SUM(preco)", "Preço");
-  model.setHeaderData("status", "Status");
-
   ui->table->setModel(&model);
 }
 
@@ -58,9 +53,16 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
     return;
   }
 
-  int row = ui->table->selectionModel()->selectedRows().first().row();
+  auto list = ui->table->selectionModel()->selectedRows();
 
-  ImportarXML *import = new ImportarXML(model.data(row, "Fornecedor").toString(), this);
+  QString idCompra;
+
+  for (auto item : list) {
+    QString id = model.data(item.row(), "idCompra").toString();
+    idCompra += idCompra.isEmpty() ? id : " OR idCompra = " + id;
+  }
+
+  ImportarXML *import = new ImportarXML(idCompra, this);
   import->showMaximized();
 
   if (import->exec() != QDialog::Accepted) {
@@ -68,7 +70,6 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
     return;
   }
 
-  const QString idCompra = import->getIdCompra();
   //----------------------------------------------------------//
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
@@ -82,7 +83,6 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
   const QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
-  qDebug() << "idCompra: " + idCompra;
 
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
@@ -113,3 +113,5 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   QMessageBox::information(this, "Aviso!", "Confirmado faturamento.");
 }
+
+void WidgetCompraFaturar::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

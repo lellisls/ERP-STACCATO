@@ -6,18 +6,41 @@
 
 #include "doubledelegate.h"
 #include "searchdialog.h"
+#include "searchdialogproxy.h"
 #include "ui_searchdialog.h"
 #include "usersession.h"
 
 SearchDialog::SearchDialog(const QString &title, const QString &table, const QStringList &indexes,
                            const QString &filter, QWidget *parent)
-  : QDialog(parent), ui(new Ui::SearchDialog) {
+  : QDialog(parent), ui(new Ui::SearchDialog), indexes(indexes) {
   ui->setupUi(this);
 
   setWindowTitle(title);
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
+  setupTables(table, filter);
+
+  if (indexes.isEmpty()) {
+    ui->lineEditBusca->hide();
+    ui->labelBusca->hide();
+    ui->table->setFocus();
+  } else {
+    textKeys.append(indexes.first());
+    primaryKey = indexes.first();
+    ui->lineEditBusca->setFocus();
+  }
+
+  ui->radioButtonProdAtivos->hide();
+  ui->radioButtonProdDesc->hide();
+  ui->lineEditEstoque->hide();
+  ui->lineEditPromocao->hide();
+  ui->lineEditBusca->setFocus();
+}
+
+SearchDialog::~SearchDialog() { delete ui; }
+
+void SearchDialog::setupTables(const QString &table, const QString &filter) {
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
   setFilter(filter);
@@ -27,32 +50,12 @@ SearchDialog::SearchDialog(const QString &title, const QString &table, const QSt
     return;
   }
 
-  ui->table->setModel(&model);
+  ui->table->setModel(new SearchDialogProxy(&model, this));
   ui->table->setItemDelegate(new DoubleDelegate(this));
-
-  if (indexes.isEmpty()) {
-    ui->lineEditBusca->hide();
-    ui->labelBusca->hide();
-    ui->table->setFocus();
-  } else {
-    this->indexes = indexes;
-    textKeys.append(indexes.first());
-    primaryKey = indexes.first();
-    ui->lineEditBusca->setFocus();
-  }
-
-  ui->radioButtonProdAtivos->hide();
-  ui->radioButtonProdDesc->hide();
-  ui->lineEditBusca->setFocus();
 }
 
-SearchDialog::~SearchDialog() { delete ui; }
-
-void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
-  if (model.tableName() == "produto") {
-    montarFiltroAtivoDesc(ui->radioButtonProdAtivos->isChecked());
-    return;
-  }
+void SearchDialog::on_lineEditBusca_textChanged(const QString &) {
+  const QString text = ui->lineEditBusca->text().replace("-", " ");
 
   if (text.isEmpty()) {
     model.setFilter(filter);
@@ -66,6 +69,13 @@ void SearchDialog::on_lineEditBusca_textChanged(const QString &text) {
   }
 
   QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + strings.join(" ") + "' IN BOOLEAN MODE)";
+
+  if (model.tableName() == "produto") {
+    model.setFilter(searchFilter + " AND descontinuado = " +
+                    (ui->radioButtonProdAtivos->isChecked() ? "FALSE" : "TRUE") + " AND desativado = FALSE" +
+                    representacao);
+    return;
+  }
 
   if (not filter.isEmpty()) searchFilter.append(" AND (" + filter + ")");
 
@@ -90,6 +100,9 @@ void SearchDialog::show() {
   ui->lineEditBusca->clear();
 
   QDialog::show();
+
+  ui->lineEditEstoque->setText("Estoque");
+  ui->lineEditPromocao->setText("Promoção");
 
   ui->table->resizeColumnsToContents();
 }
@@ -225,7 +238,8 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->hideColumns({"idProduto", "idFornecedor", "cst", "icms", "custo", "ipi", "markup", "comissao", "origem",
                        "descontinuado", "temLote", "observacoes", "codBarras", "qtdPallet", "st", "desativado", "cfop",
-                       "ncm", "ncmEx", "atualizarTabelaPreco", "representacao"});
+                       "ncm", "ncmEx", "atualizarTabelaPreco", "representacao", "estoque_promocao",
+                       "idProdutoRelacionado"});
 
   for (int column = 0; column < sdProd->model.columnCount(); ++column) {
     if (sdProd->model.record().fieldName(column).endsWith("Upd")) sdProd->ui->table->setColumnHidden(column, true);
@@ -249,6 +263,8 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
   sdProd->ui->radioButtonProdAtivos->show();
   sdProd->ui->radioButtonProdDesc->show();
+  sdProd->ui->lineEditEstoque->show();
+  sdProd->ui->lineEditPromocao->show();
   sdProd->ui->radioButtonProdAtivos->setChecked(true);
 
   return sdProd;
@@ -383,34 +399,10 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   return sdProfissional;
 }
 
-void SearchDialog::montarFiltroAtivoDesc(const bool &ativo) {
-  ui->lineEditBusca->setFocus();
-
-  const QString text = ui->lineEditBusca->text().remove("-");
-
-  if (text.isEmpty()) {
-    setFilter("idProduto = 0");
-    return;
-  }
-
-  QStringList strings = text.split(" ", QString::SkipEmptyParts);
-
-  for (auto &string : strings) {
-    string.prepend("+").append("*");
-  }
-
-  const QString searchFilter = "MATCH(" + indexes.join(", ") + ") AGAINST('" + strings.join(" ") + "' IN BOOLEAN MODE)";
-
-  setFilter(searchFilter + " AND descontinuado = " + (ativo ? "FALSE" : "TRUE") + " AND desativado = FALSE" +
-            representacao);
-
-  if (isVisible()) ui->table->resizeColumnsToContents();
-}
-
 void SearchDialog::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
 
-void SearchDialog::on_radioButtonProdAtivos_toggled(const bool &) { montarFiltroAtivoDesc(true); }
+void SearchDialog::on_radioButtonProdAtivos_toggled(const bool &) { on_lineEditBusca_textChanged(QString()); }
 
-void SearchDialog::on_radioButtonProdDesc_toggled(const bool &) { montarFiltroAtivoDesc(false); }
+void SearchDialog::on_radioButtonProdDesc_toggled(const bool &) { on_lineEditBusca_textChanged(QString()); }

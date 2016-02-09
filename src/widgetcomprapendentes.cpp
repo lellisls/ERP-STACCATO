@@ -73,34 +73,41 @@ QString WidgetCompraPendentes::updateTables() {
 }
 
 void WidgetCompraPendentes::setupTables() {
-  model.setTable("view_produtos_pendentes");
+  model.setTable("view_venda_produto");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela produtos pendentes: " + model.lastError().text());
   }
 
-  model.setHeaderData("Form", "Form.");
-  model.setHeaderData("Quant", "Quant.");
-  model.setHeaderData("Un", "Un.");
-  model.setHeaderData("Cód Com", "Cód. Com.");
+  model.setHeaderData("data", "Data");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("idVenda", "Venda");
+  model.setHeaderData("produto", "Produto");
+  model.setHeaderData("caixas", "Caixas");
+  model.setHeaderData("quant", "Quant.");
+  model.setHeaderData("un", "Un.");
+  model.setHeaderData("codComercial", "Cód. Com.");
+  model.setHeaderData("formComercial", "Form. Com.");
 
   ui->table->setModel(&model);
+
+  ui->table->sortByColumn("idVenda");
   ui->table->resizeColumnsToContents();
 }
 
 void WidgetCompraPendentes::on_table_activated(const QModelIndex &index) {
-  const QString status = model.data(index.row(), "Status").toString();
+  const QString status = model.data(index.row(), "status").toString();
 
   if (status != "PENDENTE") {
     QMessageBox::critical(this, "Erro!", "Produto não está PENDENTE!");
     return;
   }
 
-  const QString codComercial = model.data(index.row(), "Cód Com").toString();
+  const QString codComercial = model.data(index.row(), "codComercial").toString();
+  const QString idVenda = model.data(index.row(), "idVenda").toString();
 
   ProdutosPendentes *produtos = new ProdutosPendentes(this);
-
-  produtos->viewProduto(codComercial, status);
+  produtos->viewProduto(codComercial, idVenda);
 }
 
 void WidgetCompraPendentes::on_groupBoxStatus_toggled(const bool &enabled) {
@@ -121,9 +128,10 @@ void WidgetCompraPendentes::montaFiltro() {
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Fornecedor LIKE '%" + textoBusca +
-                                                     "%') OR (Descrição LIKE '%" + textoBusca +
-                                                     "%') OR (`Cód Com` LIKE '%" + textoBusca + "%'))";
+  const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((idVenda LIKE '%" + textoBusca +
+                                                     "%') OR (fornecedor LIKE '%" + textoBusca +
+                                                     "%') OR (produto LIKE '%" + textoBusca +
+                                                     "%') OR (`codComercial` LIKE '%" + textoBusca + "%'))";
 
   const QString filtroStatus = QString((filtroCheck + filtroBusca).isEmpty() ? "" : " AND ") + "status != 'CANCELADO'";
 
@@ -178,8 +186,13 @@ bool WidgetCompraPendentes::insere(const QDate &dataPrevista) {
                 "codBarras FROM produto WHERE idProduto = :idProduto");
   query.bindValue(":idProduto", ui->itemBoxProduto->value());
 
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando custo do produto: " + query.lastError().text());
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando produto: " + query.lastError().text());
+    return false;
+  }
+
+  if (not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Não encontrou produto!");
     return false;
   }
 
@@ -221,3 +234,6 @@ void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulsoCaixas_valueChanged(const
 void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const double &value) {
   ui->doubleSpinBoxQuantAvulsoCaixas->setValue(value / ui->doubleSpinBoxQuantAvulso->singleStep());
 }
+
+// TODO: change default pushButton (to avoid enter activating single product)
+// TODO: arrumar interface para nao ficar ambiguo entre compras avulsas

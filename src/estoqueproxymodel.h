@@ -7,7 +7,7 @@
 
 class EstoqueProxyModel : public QIdentityProxyModel {
   public:
-    explicit EstoqueProxyModel(SqlTableModel *model, const QString &column, QObject *parent = 0);
+    explicit EstoqueProxyModel(SqlTableModel *model, QObject *parent = 0);
     ~EstoqueProxyModel();
     QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 

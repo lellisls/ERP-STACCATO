@@ -11,7 +11,7 @@ class XML {
     XML(const QByteArray &fileContent, const QString &fileName);
     XML(QStandardItemModel &model, const QByteArray &fileContent, const QString &fileName = QString());
     bool cadastrarEstoque();
-    int cadastrarNFe(const QString &tipo);
+    bool cadastrarNFe(const QString &tipo);
     void mostrarNoSqlModel(SqlTableModel &externalModel);
 
   private:

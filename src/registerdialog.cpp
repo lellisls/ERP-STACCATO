@@ -196,9 +196,8 @@ bool RegisterDialog::save(const bool &isUpdate) {
   }
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    if (model.data(row, column).type() == QVariant::String) {
-      model.setData(row, column, model.data(row, column).toString().toUpper());
-    }
+    QVariant dado = model.data(row, column);
+    if (dado.type() == QVariant::String) model.setData(row, column, dado.toString().toUpper());
   }
 
   if (not model.submitAll()) {
@@ -224,7 +223,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
 bool RegisterDialog::update() { return save(true); }
 
 void RegisterDialog::clearFields() {
-  for (auto const &line : this->findChildren<QLineEdit *>()) {
+  for (auto const &line : findChildren<QLineEdit *>()) {
     line->clear();
   }
 }
@@ -343,5 +342,3 @@ bool RegisterDialog::validaCPF(const QString &text) {
 }
 
 void RegisterDialog::marcarDirty() { isDirty = true; }
-
-// TODO: verificar dados sendo salvos que dependam de outras operacoes (escolher um itembox etc)

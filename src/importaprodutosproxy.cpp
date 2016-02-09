@@ -2,8 +2,8 @@
 
 #include "importaprodutosproxy.h"
 
-ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, const int &column, QObject *parent)
-  : QIdentityProxyModel(parent), column(column) {
+ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, QObject *parent)
+  : QIdentityProxyModel(parent), column(model->fieldIndex("descontinuado")) {
   setSourceModel(model);
 }
 

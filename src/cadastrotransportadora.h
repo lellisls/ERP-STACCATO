@@ -40,6 +40,7 @@ class CadastroTransportadora : public RegisterAddressDialog {
     virtual void clearFields() override;
     virtual void registerMode() override;
     virtual void setupMapper() override;
+    virtual void successMessage() override;
     virtual void updateMode() override;
     void clearEndereco();
     void novoEndereco();

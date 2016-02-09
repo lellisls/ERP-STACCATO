@@ -38,5 +38,6 @@ void WidgetEstoque::on_table_activated(const QModelIndex &index) {
   estoque->viewRegisterById(model.data(index.row(), "Cód Com").toString());
 }
 
+void WidgetEstoque::on_radioButtonMaior_toggled(bool checked) { model.setFilter(checked ? "Quant > 0" : "Quant = 0"); }
+
 // NOTE: gerenciar lugares de estoque (cadastro/permissoes)
-// TODO: adicionar caixas

@@ -43,6 +43,7 @@ class CadastroFornecedor : public RegisterAddressDialog {
     virtual void clearFields() override;
     virtual void registerMode() override;
     virtual void setupMapper() override;
+    virtual void successMessage() override;
     virtual void updateMode() override;
     void novoEndereco();
     void setupUi();

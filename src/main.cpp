@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.12");
+  app.setApplicationVersion("0.2.19");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -73,10 +73,12 @@ void storeSelection() {
 // NOTE: verificar comparacoes double: substituir por qFuzzyCompare ou floats
 // NOTE: verificar todos os QSqlQuery.exec
 // NOTE: pesquisar setData e selects/submits sem verificacao
-// TODO: usar view_validacao para ajustar valores diferentes e acompanhar
-// TODO: verificar se tem como buscar id's nao relacionados e apagar produtos descontinuados
+// NOTE: verificar se tem como buscar id's nao relacionados e apagar produtos descontinuados
 // NOTE: criar enum para tipos de usuario de forma que possa fazer 'tipo >= GERENTE' (criar coluna no bd com numeros
 // 0,1,2...)
 // NOTE: obrigar atualizar para conectar no servidor?
-// TODO: copiar logica orcamento (save/update) para as outras classes derivadas do registerdialog
-// TODO: colocar mappings em ordem alfabetica
+// TODO: repassar por todos pedidos/orcamentos imprimindo para verificar quais campos cortam (reduzir fonte?)
+// NOTE: fazer um delegate para 'R$'?
+// NOTE: criar um delegate unidade para concatenar a unidade na coluna quant?
+// TODO: aparentemente nao precisa fazer date.tostring(yyyy/dd/mm) para converter para o formato do bd
+// TODO: colocar coluna 'data' em venda_has_produto (copiar de venda?)

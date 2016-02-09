@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>698</width>
-    <height>500</height>
+    <width>434</width>
+    <height>541</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,13 +90,13 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_40">
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="checkBoxIniciado">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="checkBoxPendente">
              <property name="enabled">
               <bool>true</bool>
              </property>
              <property name="text">
-              <string>Iniciado</string>
+              <string>Pendente</string>
              </property>
              <property name="checked">
               <bool>true</bool>
@@ -116,13 +116,13 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QCheckBox" name="checkBoxPendente">
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="checkBoxIniciado">
              <property name="enabled">
               <bool>true</bool>
              </property>
              <property name="text">
-              <string>Pendente</string>
+              <string>Iniciado</string>
              </property>
              <property name="checked">
               <bool>true</bool>
@@ -155,6 +155,26 @@
              </property>
             </widget>
            </item>
+           <item row="7" column="0">
+            <widget class="QCheckBox" name="checkBoxFinalizado">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>Finalizado</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QCheckBox" name="checkBoxCancelado">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>Cancelado</string>
+             </property>
+            </widget>
+           </item>
            <item row="4" column="0">
             <widget class="QCheckBox" name="checkBoxEmColeta">
              <property name="enabled">
@@ -181,23 +201,13 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
-            <widget class="QCheckBox" name="checkBoxFinalizado">
+           <item row="9" column="0">
+            <widget class="QCheckBox" name="checkBoxDevolucao">
              <property name="enabled">
               <bool>true</bool>
              </property>
              <property name="text">
-              <string>Finalizado</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QCheckBox" name="checkBoxCancelado">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>Cancelado</string>
+              <string>Devolução</string>
              </property>
             </widget>
            </item>

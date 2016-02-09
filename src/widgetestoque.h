@@ -18,6 +18,7 @@ class WidgetEstoque : public QWidget {
     QString updateTables();
 
   private slots:
+    void on_radioButtonMaior_toggled(bool checked);
     void on_table_activated(const QModelIndex &index);
 
   private:

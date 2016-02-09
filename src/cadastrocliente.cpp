@@ -105,7 +105,7 @@ void CadastroCliente::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  for (auto const &box : this->findChildren<ItemBox *>()) {
+  for (auto const &box : findChildren<ItemBox *>()) {
     box->clear();
   }
 
@@ -113,36 +113,36 @@ void CadastroCliente::clearFields() {
 }
 
 void CadastroCliente::setupMapper() {
-  addMapping(ui->lineEditCliente, "nome_razao");
-  addMapping(ui->lineEditContatoNome, "contatoNome");
-  addMapping(ui->lineEditContatoApelido, "contatoApelido");
-  addMapping(ui->lineEditContatoRG, "contatoRG");
-  addMapping(ui->lineEditCPF, "cpf");
-  addMapping(ui->lineEditCNPJ, "cnpj");
-  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
-  addMapping(ui->lineEditInscEstadual, "inscEstadual");
-  addMapping(ui->lineEditTel_Res, "tel");
-  addMapping(ui->lineEditTel_Cel, "telCel");
-  addMapping(ui->lineEditTel_Com, "telCom");
-  addMapping(ui->lineEditIdNextel, "idNextel");
-  addMapping(ui->lineEditNextel, "nextel");
-  addMapping(ui->lineEditEmail, "email");
-  addMapping(ui->lineEditContatoNome, "contatoNome");
-  addMapping(ui->lineEditContatoCPF, "contatoCPF");
-  addMapping(ui->lineEditContatoApelido, "contatoApelido");
-  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->dateEdit, "dataNasc");
   addMapping(ui->itemBoxCliente, "idCadastroRel", "value");
   addMapping(ui->itemBoxProfissional, "idProfissionalRel", "value");
   addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
-  addMapping(ui->dateEdit, "dataNasc");
+  addMapping(ui->lineEditCliente, "nome_razao");
+  addMapping(ui->lineEditCNPJ, "cnpj");
+  addMapping(ui->lineEditContatoApelido, "contatoApelido");
+  addMapping(ui->lineEditContatoApelido, "contatoApelido");
+  addMapping(ui->lineEditContatoCPF, "contatoCPF");
+  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->lineEditCPF, "cpf");
+  addMapping(ui->lineEditEmail, "email");
+  addMapping(ui->lineEditIdNextel, "idNextel");
+  addMapping(ui->lineEditInscEstadual, "inscEstadual");
+  addMapping(ui->lineEditNextel, "nextel");
+  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditTel_Cel, "telCel");
+  addMapping(ui->lineEditTel_Com, "telCom");
+  addMapping(ui->lineEditTel_Res, "tel");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
   mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
-  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
-  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
-  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
@@ -417,3 +417,5 @@ bool CadastroCliente::verifyFields(const bool &isUpdate) {
 
   return true;
 }
+
+void CadastroCliente::successMessage() { QMessageBox::information(this, "Atenção!", "Cliente cadastrado com sucesso!"); }

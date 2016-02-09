@@ -64,21 +64,21 @@ bool CadastroTransportadora::savingProcedures() {
 }
 
 void CadastroTransportadora::setupMapper() {
-  addMapping(ui->lineEditCNPJ, "cnpj");
-  addMapping(ui->lineEditRazaoSocial, "razaoSocial");
-  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
-  addMapping(ui->lineEditInscEstadual, "inscEstadual");
-  addMapping(ui->lineEditTel, "tel");
   addMapping(ui->lineEditANTT, "antt");
+  addMapping(ui->lineEditCNPJ, "cnpj");
+  addMapping(ui->lineEditInscEstadual, "inscEstadual");
+  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
   addMapping(ui->lineEditPlaca, "placaVeiculo");
+  addMapping(ui->lineEditRazaoSocial, "razaoSocial");
+  addMapping(ui->lineEditTel, "tel");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
   mapperEnd.addMapping(ui->lineEditLogradouro, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
-  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
-  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
-  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
@@ -253,4 +253,8 @@ bool CadastroTransportadora::viewRegister(const QModelIndex &index) {
   ui->tableEndereco->resizeColumnsToContents();
 
   return true;
+}
+
+void CadastroTransportadora::successMessage() {
+  QMessageBox::information(this, "Atenção!", "Transportadora cadastrada com sucesso!");
 }

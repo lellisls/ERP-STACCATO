@@ -101,31 +101,31 @@ void CadastroFornecedor::clearFields() {
 }
 
 void CadastroFornecedor::setupMapper() {
-  addMapping(ui->lineEditFornecedor, "razaoSocial");
-  addMapping(ui->lineEditContatoNome, "contatoNome");
-  addMapping(ui->lineEditContatoApelido, "contatoApelido");
-  addMapping(ui->lineEditContatoRG, "contatoRG");
   addMapping(ui->lineEditCNPJ, "cnpj");
-  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
+  addMapping(ui->lineEditContatoApelido, "contatoApelido");
+  addMapping(ui->lineEditContatoApelido, "contatoApelido");
+  addMapping(ui->lineEditContatoCPF, "contatoCPF");
+  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditContatoNome, "contatoNome");
+  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->lineEditEmail, "email");
+  addMapping(ui->lineEditFornecedor, "razaoSocial");
+  addMapping(ui->lineEditIdNextel, "idNextel");
   addMapping(ui->lineEditInscEstadual, "inscEstadual");
-  addMapping(ui->lineEditTel_Res, "tel");
+  addMapping(ui->lineEditNextel, "nextel");
+  addMapping(ui->lineEditNomeFantasia, "nomeFantasia");
   addMapping(ui->lineEditTel_Cel, "telCel");
   addMapping(ui->lineEditTel_Com, "telCom");
-  addMapping(ui->lineEditIdNextel, "idNextel");
-  addMapping(ui->lineEditNextel, "nextel");
-  addMapping(ui->lineEditEmail, "email");
-  addMapping(ui->lineEditContatoNome, "contatoNome");
-  addMapping(ui->lineEditContatoCPF, "contatoCPF");
-  addMapping(ui->lineEditContatoApelido, "contatoApelido");
-  addMapping(ui->lineEditContatoRG, "contatoRG");
+  addMapping(ui->lineEditTel_Res, "tel");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
+  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
   mapperEnd.addMapping(ui->lineEditCEP, modelEnd.fieldIndex("CEP"));
+  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
+  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
   mapperEnd.addMapping(ui->lineEditEndereco, modelEnd.fieldIndex("logradouro"));
   mapperEnd.addMapping(ui->lineEditNro, modelEnd.fieldIndex("numero"));
-  mapperEnd.addMapping(ui->lineEditComp, modelEnd.fieldIndex("complemento"));
-  mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
-  mapperEnd.addMapping(ui->lineEditCidade, modelEnd.fieldIndex("cidade"));
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 }
 
@@ -267,4 +267,8 @@ void CadastroFornecedor::on_pushButtonRemoverEnd_clicked() {
 
     novoEndereco();
   }
+}
+
+void CadastroFornecedor::successMessage() {
+  QMessageBox::information(this, "Atenção!", "Fornecedor cadastrado com sucesso!");
 }

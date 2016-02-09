@@ -2,8 +2,8 @@
 
 #include "orcamentoproxymodel.h"
 
-OrcamentoProxyModel::OrcamentoProxyModel(SqlTableModel *model, const QString &column, QObject *parent)
-  : QIdentityProxyModel(parent), column(model->fieldIndex(column)) {
+OrcamentoProxyModel::OrcamentoProxyModel(SqlTableModel *model, QObject *parent)
+  : QIdentityProxyModel(parent), column(model->fieldIndex("Dias restantes")) {
   setSourceModel(model);
 }
 

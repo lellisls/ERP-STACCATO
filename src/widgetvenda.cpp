@@ -8,35 +8,26 @@
 #include "ui_widgetvenda.h"
 #include "usersession.h"
 #include "venda.h"
+#include "vendasmes.h"
 #include "widgetvenda.h"
 
 WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVenda) {
   ui->setupUi(this);
 
-
-  ui->radioButtonTodos->click();
-
-  if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
-    ui->groupBoxLojas->hide();
-  }
-
-  if (UserSession::tipoUsuario() == "VENDEDOR") {
-    ui->radioButtonProprios->click();
-  }
-
-  connect(ui->radioButtonTodos, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->radioButtonProprios, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxPendente, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxIniciado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmCompra, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmFaturamento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmColeta, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmRecebimento, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEstoque, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxFinalizado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxCancelado, &QAbstractButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxCancelado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxDevolucao, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmColeta, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmCompra, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmFaturamento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmRecebimento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEstoque, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxFinalizado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxIniciado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxPendente, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->comboBoxLojas, &ComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
   connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
-  connect(ui->comboBoxLojas, &QComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonProprios, &QRadioButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonTodos, &QRadioButton::toggled, this, &WidgetVenda::montaFiltro);
 
   QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
 
@@ -45,6 +36,11 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
   }
 
   ui->comboBoxLojas->setCurrentValue(UserSession::loja());
+
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->groupBoxLojas->hide();
+  ui->radioButtonTodos->click();
+  if (UserSession::tipoUsuario() == "VENDEDOR") ui->radioButtonProprios->click();
+  if (UserSession::tipoUsuario() != "VENDEDOR") ui->pushButtonCalcularTotal->hide();
 }
 
 WidgetVenda::~WidgetVenda() { delete ui; }
@@ -54,7 +50,7 @@ void WidgetVenda::setupTables() {
 
   model.setTable("view_venda");
 
-  ui->table->setModel(new OrcamentoProxyModel(&model, "Dias restantes", this));
+  ui->table->setModel(new OrcamentoProxyModel(&model, this));
   ui->table->setItemDelegateForColumn("Bruto", doubledelegate);
   ui->table->setItemDelegateForColumn("Líquido", doubledelegate);
   ui->table->setItemDelegateForColumn("Frete", doubledelegate);
@@ -130,20 +126,8 @@ void WidgetVenda::on_table_activated(const QModelIndex &index) {
 }
 
 void WidgetVenda::on_pushButtonCalcularTotal_clicked() {
-  QSqlQuery query;
-  query.prepare("SELECT SUM(total - frete) AS total, MONTH(data) FROM venda WHERE idUsuario = :idUsuario AND "
-                "YEAR(data) = :year AND MONTH(data) = :month GROUP BY idUsuario, MONTH(data)");
-  query.bindValue(":idUsuario", UserSession::idUsuario());
-  query.bindValue(":year", QDate::currentDate().year());
-  query.bindValue(":month", QDate::currentDate().month());
-
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados das vendas: " + query.lastError().text());
-    return;
-  }
-
-  QMessageBox::information(this, "Aviso!",
-                           "Total vendido no mês: R$ " + locale().toString(query.value("total").toDouble(), 'f', 2));
+  VendasMes *vendas = new VendasMes(UserSession::idUsuario(), this);
+  vendas->show();
 }
 
 // NOTE: verificar como lidar com brinde/reposicao

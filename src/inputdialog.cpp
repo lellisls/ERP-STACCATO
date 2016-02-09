@@ -195,6 +195,7 @@ void InputDialog::setupTables() {
   }
 
   ui->table->setModel(&model);
+  ui->table->hideColumn("quantConsumida");
   ui->table->hideColumn("idNfe");
   ui->table->hideColumn("idEstoque");
   ui->table->hideColumn("quantUpd");
@@ -218,3 +219,5 @@ void InputDialog::setupTables() {
   ui->table->hideColumn("dataRealEnt");
   ui->table->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
 }
+
+// TODO: adicionar fluxo de caixa

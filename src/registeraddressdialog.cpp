@@ -62,9 +62,8 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   }
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    if (model.data(row, column).type() == QVariant::String) {
-      model.setData(row, column, model.data(row, column).toString().toUpper());
-    }
+    QVariant dado = model.data(row, column);
+    if (dado.type() == QVariant::String) model.setData(row, column, dado.toString().toUpper());
   }
 
   if (not model.submitAll()) {
@@ -81,9 +80,8 @@ bool RegisterAddressDialog::save(const bool &isUpdate) {
   }
 
   for (int column = 0; column < modelEnd.rowCount(); ++column) {
-    if (modelEnd.data(row, column).type() == QVariant::String) {
-      modelEnd.setData(row, column, modelEnd.data(row, column).toString().toUpper());
-    }
+    QVariant dado = modelEnd.data(row, column);
+    if (dado.type() == QVariant::String) modelEnd.setData(row, column, dado.toString().toUpper());
   }
 
   if (not modelEnd.submitAll()) {

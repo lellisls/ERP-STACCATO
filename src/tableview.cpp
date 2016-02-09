@@ -13,6 +13,7 @@ void TableView::hideColumn(const QString &column) {
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
       QTableView::hideColumn(sourceModel->fieldIndex(column));
+      return;
     }
   }
 
@@ -25,6 +26,7 @@ void TableView::setItemDelegateForColumn(const QString &column, QAbstractItemDel
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
       QTableView::setItemDelegateForColumn(sourceModel->fieldIndex(column), delegate);
+      return;
     }
   }
 
@@ -54,6 +56,7 @@ void TableView::sortByColumn(const QString &column) {
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
       QTableView::sortByColumn(sourceModel->fieldIndex(column));
+      return;
     }
   }
 

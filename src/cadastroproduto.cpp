@@ -37,7 +37,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 CadastroProduto::~CadastroProduto() { delete ui; }
 
 void CadastroProduto::clearFields() {
-  for (auto const &line : this->findChildren<QLineEdit *>()) {
+  for (auto const &line : findChildren<QLineEdit *>()) {
     line->clear();
   }
 
@@ -135,33 +135,33 @@ bool CadastroProduto::verifyFields() {
 }
 
 void CadastroProduto::setupMapper() {
-  addMapping(ui->lineEditDescricao, "descricao");
-  addMapping(ui->comboBoxUn, "un");
-  addMapping(ui->lineEditColecao, "colecao");
-  addMapping(ui->lineEditFormComer, "formComercial");
-  addMapping(ui->lineEditCodComer, "codComercial");
-  addMapping(ui->lineEditCodBarras, "codBarras");
-  addMapping(ui->lineEditNCM, "ncm");
-  addMapping(ui->lineEditICMS, "icms");
-  addMapping(ui->lineEditUI, "ui");
-  addMapping(ui->doubleSpinBoxPcCx, "pccx");
-  addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
-  addMapping(ui->doubleSpinBoxQtePallet, "qtdPallet", "value");
-  addMapping(ui->doubleSpinBoxCusto, "custo", "value");
-  addMapping(ui->doubleSpinBoxIPI, "ipi", "value");
-  addMapping(ui->doubleSpinBoxST, "st", "value");
-  addMapping(ui->doubleSpinBoxMarkup, "markup", "value");
-  addMapping(ui->doubleSpinBoxVenda, "precoVenda", "value");
-  addMapping(ui->doubleSpinBoxComissao, "comissao", "value");
-  addMapping(ui->doubleSpinBoxEstoque, "estoque");
-  addMapping(ui->textEditObserv, "observacoes", "plainText");
   addMapping(ui->comboBoxCST, "cst");
-  addMapping(ui->itemBoxFornecedor, "idFornecedor", "value");
   addMapping(ui->comboBoxOrigem, "origem");
+  addMapping(ui->comboBoxUn, "un");
+  addMapping(ui->dateEditValidade, "validade");
+  addMapping(ui->doubleSpinBoxComissao, "comissao", "value");
+  addMapping(ui->doubleSpinBoxCusto, "custo", "value");
+  addMapping(ui->doubleSpinBoxEstoque, "estoque");
+  addMapping(ui->doubleSpinBoxIPI, "ipi", "value");
+  addMapping(ui->doubleSpinBoxKgCx, "kgcx");
+  addMapping(ui->doubleSpinBoxM2Cx, "m2cx", "value");
+  addMapping(ui->doubleSpinBoxMarkup, "markup", "value");
+  addMapping(ui->doubleSpinBoxPcCx, "pccx");
+  addMapping(ui->doubleSpinBoxQtePallet, "qtdPallet", "value");
+  addMapping(ui->doubleSpinBoxST, "st", "value");
+  addMapping(ui->doubleSpinBoxVenda, "precoVenda", "value");
+  addMapping(ui->itemBoxFornecedor, "idFornecedor", "value");
+  addMapping(ui->lineEditCodBarras, "codBarras");
+  addMapping(ui->lineEditCodComer, "codComercial");
+  addMapping(ui->lineEditColecao, "colecao");
+  addMapping(ui->lineEditDescricao, "descricao");
+  addMapping(ui->lineEditFormComer, "formComercial");
+  addMapping(ui->lineEditICMS, "icms");
+  addMapping(ui->lineEditNCM, "ncm");
+  addMapping(ui->lineEditUI, "ui");
   addMapping(ui->radioButtonDesc, "descontinuado");
   addMapping(ui->radioButtonLote, "temLote");
-  addMapping(ui->dateEditValidade, "validade");
-  addMapping(ui->doubleSpinBoxKgCx, "kgcx");
+  addMapping(ui->textEditObserv, "observacoes", "plainText");
 }
 
 bool CadastroProduto::savingProcedures() {

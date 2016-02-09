@@ -14,23 +14,22 @@ class ImportarXML : public QDialog {
     Q_OBJECT
 
   public:
-    explicit ImportarXML(const QString &fornecedor, QWidget *parent = 0);
+    explicit ImportarXML(const QString &idCompra, QWidget *parent = 0);
     ~ImportarXML();
-    QString getIdCompra();
 
   private slots:
     void on_pushButtonCancelar_clicked();
     void on_pushButtonImportar_clicked();
     void on_pushButtonProcurar_clicked();
     void on_pushButtonReparear_clicked();
+    void openPersistente();
 
   private:
     // attributes
     Ui::ImportarXML *ui;
-    QString m_idCompra;
+    int idNFe;
     SqlTableModel modelCompra;
     SqlTableModel modelEstoque;
-    int idNFe;
 
     enum FieldColors {
       White = 0,     // Não processado
@@ -41,13 +40,13 @@ class ImportarXML : public QDialog {
     };
 
     // methods
-    int lerXML(QFile &file);
-    void associarItens(QModelIndex &item, int row, int idNFe, double &estoqueConsumido);
+    bool lerXML(QFile &file);
+    void associarItens(QModelIndex &item, int row, double &estoqueConsumido);
     void closeEvent(QCloseEvent *event);
-    void criarConsumo(QModelIndex &item, QString codComercial, QString codBarras, QString idCompra, int row);
+    void criarConsumo();
     void limparAssociacoes();
-    void setarIdCompraNFe(const int &idNFe);
-    void setupTables(const QString &fornecedor);
+    void parear();
+    void setupTables(const QString &idCompra);
 };
 
 #endif // IMPORTARXML_H

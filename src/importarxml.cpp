@@ -5,18 +5,21 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
+#include "checkboxdelegate.h"
 #include "estoqueproxymodel.h"
 #include "importarxml.h"
 #include "singleeditdelegate.h"
 #include "ui_importarxml.h"
 #include "xml.h"
 
-ImportarXML::ImportarXML(const QString &fornecedor, QWidget *parent) : QDialog(parent), ui(new Ui::ImportarXML) {
+ImportarXML::ImportarXML(const QString &idCompra, QWidget *parent) : QDialog(parent), ui(new Ui::ImportarXML) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
 
-  setupTables(fornecedor);
+  setupTables(idCompra);
+
+  connect(ui->tableCompra->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &ImportarXML::openPersistente);
 
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
@@ -24,7 +27,7 @@ ImportarXML::ImportarXML(const QString &fornecedor, QWidget *parent) : QDialog(p
 
 ImportarXML::~ImportarXML() { delete ui; }
 
-void ImportarXML::setupTables(const QString &fornecedor) {
+void ImportarXML::setupTables(const QString &idCompra) {
   modelEstoque.setTable("estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelEstoque.setFilter("status = 'TEMP'");
@@ -33,30 +36,34 @@ void ImportarXML::setupTables(const QString &fornecedor) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
   }
 
-  //  mapper.setModel(&modelEstoque);
-  //  mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
-
-  ui->tableEstoque->setModel(new EstoqueProxyModel(&modelEstoque, "quantUpd", this));
+  ui->tableEstoque->setModel(new EstoqueProxyModel(&modelEstoque, this));
   ui->tableEstoque->setItemDelegate(new SingleEditDelegate(modelEstoque.fieldIndex("codComercial"), this));
   ui->tableEstoque->hideColumn("quantUpd");
 
   modelCompra.setTable("pedido_fornecedor_has_produto");
   modelCompra.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelCompra.setFilter("fornecedor = '" + fornecedor + "' AND status = 'EM FATURAMENTO'");
+
+  modelCompra.setHeaderData("selecionado", "");
+
+  modelCompra.setFilter("idCompra = " + idCompra);
 
   if (not modelCompra.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro lendo tabela pedido_fornecedor_has_produto: " + modelCompra.lastError().text());
   }
 
-  ui->tableCompra->setModel(new EstoqueProxyModel(&modelCompra, "quantUpd", this));
-  ui->tableCompra->hideColumn("selecionado");
+  ui->tableCompra->setModel(new EstoqueProxyModel(&modelCompra, this));
+  ui->tableCompra->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
   ui->tableCompra->hideColumn("quantUpd");
 
   ui->tableCompra->resizeColumnsToContents();
-}
 
-QString ImportarXML::getIdCompra() { return m_idCompra; }
+  openPersistente();
+
+  for (int row = 0; row < modelCompra.rowCount(); ++row) {
+    modelCompra.setData(row, "selecionado", true);
+  }
+}
 
 void ImportarXML::on_pushButtonImportar_clicked() {
   //--------------
@@ -65,24 +72,37 @@ void ImportarXML::on_pushButtonImportar_clicked() {
   }
   //--------------
 
-  if (not modelEstoque.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela estoque: " + modelEstoque.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
+  bool ok = true;
+
+  for (int row = 0; row < modelCompra.rowCount(); ++row) {
+    if (modelCompra.data(row, "quantUpd") != Green) {
+      ok = false;
+      break;
+    }
+  }
+
+  if (not ok) {
+    QMessageBox::critical(this, "Erro!", "Nenhum produto de compra foi pareado!");
     return;
   }
 
-  bool ok = true;
-
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
-    ok = modelEstoque.data(row, "quantUpd") != White ? false : true;
+    int color = modelEstoque.data(row, "quantUpd").toInt();
+
+    if (color != Green and color != DarkGreen) {
+      ok = false;
+      break;
+    }
   }
 
-  //  for (int row = 0; row < modelCompra.rowCount(); ++row) {
-  //    ok = modelCompra.data(row, "quantUpd") == Green;
-  //  }
-
   if (not ok) {
-    QMessageBox::critical(this, "Erro!", "Nem todos os produtos estão ok!");
+    QMessageBox::critical(this, "Erro!", "Nem todos os estoques estão ok!");
+    return;
+  }
+
+  if (not modelEstoque.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela estoque: " + modelEstoque.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
 
@@ -120,12 +140,9 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
     return;
   }
 
-  int idNFe = lerXML(file);
-  //  idNFe = lerXML(file);
-  if (idNFe == 0) return;
+  if (not lerXML(file)) return;
 
   //--------------------
-  // TODO: local nao deve ser reinserido, substituindo os antigos (cada um tem o seu!)
   QSqlQuery query;
   if (not query.exec("SELECT descricao FROM loja WHERE descricao > '' AND descricao != 'CD'")) {
     QMessageBox::critical(this, "Erro!", "Erro buscando lojas: " + query.lastError().text());
@@ -140,59 +157,48 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
   }
 
   QString local = QInputDialog::getItem(this, "Local", "Local do depósito:", lojas, 0, false);
+
+  for (int row = 0; row < modelEstoque.rowCount(); ++row) {
+    if (modelEstoque.data(row, "local").toString() == "TEMP") modelEstoque.setData(row, "local", local);
+  }
   //--------------------
 
   // generate ids for estoque
   if (not modelEstoque.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro gerando id estoque: " + modelEstoque.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
 
-  //--------------
-  limparAssociacoes();
-  //--------------
-
-  for (int row = 0; row < modelEstoque.rowCount(); ++row) {
-    if (modelEstoque.data(row, "quantUpd") == Green) continue;
-
-    //---------
-    if (modelEstoque.data(row, "local").toString() == "TEMP") modelEstoque.setData(row, "local", local);
-    //---------
-
-    const auto list = modelCompra.match(modelCompra.index(0, modelCompra.fieldIndex("codComercial")), Qt::DisplayRole,
-                                        modelEstoque.data(row, "codComercial"), -1);
-
-    if (list.size() == 0) {
-      if (not modelEstoque.setData(row, "quantUpd", Red)) {
-        QSqlQuery("ROLLBACK").exec();
-        return;
-      }
-
-      continue;
-    }
-
-    double estoqueConsumido = 0;
-
-    for (auto item : list) {
-      associarItens(item, row, idNFe, estoqueConsumido);
-    }
-  }
-
-  m_idCompra = m_idCompra.replace(",", " OR idCompra = ");
+  parear();
 
   if (not modelEstoque.submitAll() and not modelCompra.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando estoque e compra: " + modelEstoque.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
 
-  setarIdCompraNFe(idNFe);
+  bool ok = true;
+
+  for (int row = 0; row < modelCompra.rowCount(); ++row) {
+    if (modelCompra.data(row, "quantUpd") != Green) {
+      ok = false;
+      break;
+    }
+  }
+
+  if (ok) {
+    ui->pushButtonProcurar->setDisabled(true);
+  }
 
   ui->tableEstoque->resizeColumnsToContents();
+  ui->tableCompra->resizeColumnsToContents();
 }
 
-void ImportarXML::associarItens(QModelIndex &item, int row, int idNFe, double &estoqueConsumido) {
+void ImportarXML::associarItens(QModelIndex &item, int row, double &estoqueConsumido) {
   if (modelEstoque.data(row, "quantUpd") == Green) return;
   if (modelCompra.data(item.row(), "quantUpd") == Green) return;
+  if (modelCompra.data(item.row(), "selecionado") == false) return;
 
   //-------------------------------
   if (modelEstoque.data(row, "quant").toDouble() < 0) return;
@@ -214,110 +220,90 @@ void ImportarXML::associarItens(QModelIndex &item, int row, int idNFe, double &e
                       qFuzzyCompare((quantConsumida + quantAdicionar), quantCompra) ? Green : Yellow);
 
   QString idCompra = modelCompra.data(item.row(), "idCompra").toString();
-  if (not m_idCompra.contains(idCompra)) m_idCompra += m_idCompra.isEmpty() ? idCompra : "," + idCompra;
-
   QString idCompraEstoque = modelEstoque.data(row, "idCompra").toString().remove("0");
   if (not idCompraEstoque.contains(idCompra)) idCompraEstoque += idCompraEstoque.isEmpty() ? idCompra : "," + idCompra;
   modelEstoque.setData(row, "idCompra", idCompraEstoque);
-  if (modelEstoque.data(row, "idNFe").isNull()) modelEstoque.setData(row, "idNFe", idNFe);
 
   QString idEstoqueBaixo = modelCompra.data(item.row(), "idEstoque").toString();
   QString idEstoqueCima = modelEstoque.data(row, "idEstoque").toString();
-  QString idNFeBaixo = modelCompra.data(item.row(), "idNFe").toString();
-  QString idNFeCima = modelEstoque.data(row, "idNFe").toString();
-
-  modelCompra.setData(item.row(), "idEstoque",
-                      idEstoqueBaixo.isEmpty() ? idEstoqueCima : idEstoqueBaixo + "," + idEstoqueCima);
-  modelCompra.setData(item.row(), "idNFe", idNFeBaixo.isEmpty() ? idNFeCima : idNFeBaixo + "," + idNFeCima);
-
-  // ----------------------------------
-  if (modelCompra.data(item.row(), "quantUpd") == Green) {
-    criarConsumo(item, modelCompra.data(item.row(), "codComercial").toString(),
-                 modelCompra.data(item.row(), "codBarras").toString(), idCompra, row);
+  if (not idEstoqueBaixo.contains(idEstoqueCima)) {
+    idEstoqueBaixo = idEstoqueBaixo.isEmpty() ? idEstoqueCima : idEstoqueBaixo + "," + idEstoqueCima;
   }
-}
+  modelCompra.setData(item.row(), "idEstoque", idEstoqueBaixo);
 
-void ImportarXML::setarIdCompraNFe(const int &idNFe) {
-  auto list = modelEstoque.match(modelEstoque.index(0, modelEstoque.fieldIndex("idNFe")), Qt::DisplayRole, idNFe, -1);
+  QStringList idsEstoque = idEstoqueBaixo.split(",");
 
-  for (auto item : list) {
-    QSqlQuery query;
-    query.prepare("SELECT idCompra FROM nfe WHERE idNFe = :idNFe");
-    query.bindValue(":idNFe", idNFe);
+  QString idNFeBaixo;
 
-    if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando dados da nfe: " + query.lastError().text());
-      QSqlQuery("ROLLBACK").exec();
-      return;
+  for (auto id : idsEstoque) {
+    auto list =
+        modelEstoque.match(modelEstoque.index(0, modelEstoque.fieldIndex("idEstoque")), Qt::DisplayRole, id, -1);
+
+    for (auto estoque : list) {
+      QString idNFeCima = modelEstoque.data(estoque.row(), "idNFe").toString();
+      idNFeBaixo += idNFeBaixo.isEmpty() ? idNFeCima : "," + idNFeCima;
     }
 
-    QString idCompra1 = query.value("idCompra").toString().remove("PLACEHOLDER");
-    QString idCompra2 = modelEstoque.data(item.row(), "idCompra").toString();
-    QString idCompra3 = (idCompra1.isEmpty() or idCompra1 == idCompra2) ? idCompra2 : idCompra1 + "," + idCompra2;
-    idCompra3 = idCompra1.contains(idCompra2) ? idCompra1 : idCompra3;
+    modelCompra.setData(item.row(), "idNFe", idNFeBaixo);
+  }
 
-    //    qDebug() << "idCompra1: " << idCompra1;
-    //    qDebug() << "idCompra2: " << idCompra2;
-    //    qDebug() << "idCompra3: " << idCompra3;
+  //---------------------------- setar idCompra nas nfe's
 
-    query.prepare("UPDATE nfe SET idCompra = :idCompra WHERE idNFe = :idNFe");
-    query.bindValue(":idCompra", idCompra3);
-    query.bindValue(":idNFe", idNFe);
+  QString tempidCompra = modelEstoque.data(row, "idCompra").toString();
+  QStringList tempidsNfe = modelEstoque.data(row, "idNFe").toString().split(",");
+
+  for (auto tempnfe : tempidsNfe) {
+    QSqlQuery query;
+    query.prepare("UPDATE nfe SET idCompra = '" + tempidCompra + "' WHERE idNFe = :idNFe");
+    query.bindValue(":idNFe", tempnfe);
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando idCompra em nfe: " + query.lastError().text());
+      QMessageBox::critical(this, "Erro!", "Erro salvando idCompra em NFe: " + query.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;
     }
   }
 }
 
-int ImportarXML::lerXML(QFile &file) {
+bool ImportarXML::lerXML(QFile &file) {
   XML xml(file.readAll(), file.fileName());
-
-  int idNFe = xml.cadastrarNFe("ENTRADA");
-
-  if (idNFe == 0) return 0;
-
+  if (not xml.cadastrarNFe("ENTRADA")) return false;
   xml.mostrarNoSqlModel(modelEstoque);
 
-  return idNFe;
+  return true;
 }
 
-void ImportarXML::criarConsumo(QModelIndex &item, QString codComercial, QString codBarras, QString idCompra, int row) {
-  QSqlQuery query;
-  query.prepare("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto = "
-                "p.idProduto WHERE (p.codComercial = :codComercial OR p.codBarras = :codBarras) AND idCompra = "
-                ":idCompra AND status = 'EM FATURAMENTO'");
-  query.bindValue(":codComercial", codComercial);
-  query.bindValue(":codBarras", codBarras);
-  query.bindValue(":idCompra", idCompra);
+void ImportarXML::criarConsumo() {
+  for (int row = 0; row < modelEstoque.rowCount(); ++row) {
+    QString codComercial = modelEstoque.data(row, "codComercial").toString();
+    QString idCompra = modelEstoque.data(row, "idCompra").toString().replace(",", " OR idCompra = ");
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + modelEstoque.lastError().text());
-    return;
-  }
-
-  while (query.next()) {
-    if (query.value("quant") > modelCompra.data(item.row(), "quant")) continue;
-
-    int newRow = modelEstoque.rowCount();
-
-    if (not modelEstoque.insertRow(newRow)) {
-      QMessageBox::critical(this, "Erro!", "Erro criando nova linha na tabela: " + modelEstoque.lastError().text());
+    QSqlQuery query;
+    if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto "
+                       "= p.idProduto WHERE p.codComercial = '" +
+                       codComercial + "' AND idCompra = " + idCompra + " AND status = 'EM FATURAMENTO'")) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + modelEstoque.lastError().text());
       return;
     }
 
-    for (int column = 0; column < modelEstoque.columnCount(); ++column) {
-      if (not modelEstoque.setData(newRow, column, modelEstoque.data(row, column))) return;
+    while (query.next()) {
+      if (query.value("quant") > modelEstoque.data(row, "quant")) continue;
+
+      int newRow = modelEstoque.rowCount();
+
+      modelEstoque.insertRow(newRow);
+
+      for (int column = 0; column < modelEstoque.columnCount(); ++column) {
+        if (not modelEstoque.setData(newRow, column, modelEstoque.data(row, column))) return;
+      }
+
+      double quant = query.value("quant").toDouble() * -1;
+
+      if (not modelEstoque.setData(newRow, "quant", quant)) return;
+      if (not modelEstoque.setData(newRow, "quantUpd", DarkGreen)) return;
+      if (not modelEstoque.setData(newRow, "idVendaProduto", query.value("idVendaProduto"))) return;
+      if (not modelEstoque.setData(newRow, "idEstoqueConsumido", modelEstoque.data(row, "idEstoque"))) return;
     }
-
-    double quant = query.value("quant").toDouble() * -1;
-
-    if (not modelEstoque.setData(newRow, "quant", quant)) return;
-    if (not modelEstoque.setData(newRow, "quantUpd", DarkGreen)) return;
-    if (not modelEstoque.setData(newRow, "idVendaProduto", query.value("idVendaProduto"))) return;
-    if (not modelEstoque.setData(newRow, "idEstoqueConsumido", modelEstoque.data(row, "idEstoque"))) return;
   }
 }
 
@@ -330,13 +316,25 @@ void ImportarXML::closeEvent(QCloseEvent *event) {
 void ImportarXML::on_pushButtonCancelar_clicked() { close(); }
 
 void ImportarXML::on_pushButtonReparear_clicked() {
-  //--------------
+  parear();
+
+  ui->tableEstoque->clearSelection();
+  ui->tableCompra->clearSelection();
+}
+
+void ImportarXML::openPersistente() {
+  for (int row = 0, rowCount = ui->tableCompra->model()->rowCount(); row < rowCount; ++row) {
+    ui->tableCompra->openPersistentEditor(row, "selecionado");
+  }
+}
+
+void ImportarXML::parear() {
   limparAssociacoes();
-  //--------------
 
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
     const auto list = modelCompra.match(modelCompra.index(0, modelCompra.fieldIndex("codComercial")), Qt::DisplayRole,
-                                        modelEstoque.data(row, "codComercial"), -1);
+                                        modelEstoque.data(row, "codComercial"), -1,
+                                        Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
     if (list.size() == 0) {
       if (not modelEstoque.setData(row, "quantUpd", Red)) {
@@ -349,18 +347,39 @@ void ImportarXML::on_pushButtonReparear_clicked() {
 
     double estoqueConsumido = 0;
 
+    //------------------------ procurar quantidades iguais
     for (auto item : list) {
-      associarItens(item, row, idNFe, estoqueConsumido);
+      double quantEstoque = modelEstoque.data(row, "quant").toDouble();
+      double quantCompra = modelCompra.data(item.row(), "quant").toDouble();
+
+      if (quantEstoque == quantCompra) associarItens(item, row, estoqueConsumido);
+    }
+    //------------------------
+
+    for (auto item : list) {
+      associarItens(item, row, estoqueConsumido);
     }
   }
 
-  ui->tableEstoque->clearSelection();
-  ui->tableCompra->clearSelection();
+  //---------------------------
+  bool ok = true;
+
+  for (int row = 0; row < modelCompra.rowCount(); ++row) {
+    if (modelCompra.data(row, "quantUpd") != Green) {
+      ok = false;
+      break;
+    }
+  }
+
+  if (ok) {
+    criarConsumo();
+  }
+
+  //---------------------------
+
+  modelEstoque.submitAll();
 }
 
-// TODO: quando for consumir verificar se existe quantidades iguais para associar, senao associar normal
-// TODO: no final mudar status para diferente de temp
-// TODO: erro ao importar 4 notas de white plain
-// TODO: adicionar caixas
-// TODO: no caso dos white plain com varias notas, e se somasse os estoques na tabela de cima em vez de ter 3 linhas
-// iguais??
+// TODO: corrigir consumo de estoque para consumir parcialmente de forma correta
+// NOTE: se filtro por compra, é necessário a coluna 'selecionado' para escolher qual linha parear?
+// NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir items na arvore?)

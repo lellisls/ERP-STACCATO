@@ -192,7 +192,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
 
   if (paramName == "Frete") paramValue = locale.toString(query.value("frete").toDouble(), 'f', 2);
   if (paramName == "TotalFinal") paramValue = locale.toString(query.value("total").toDouble(), 'f', 2);
-  if (paramName == "Observacao") paramValue = query.value("observacao");
+  if (paramName == "Observacao") paramValue = query.value("observacao").toString().replace("\n", " ");
 
   if (paramName == "Disclaimer") {
     paramValue =

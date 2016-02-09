@@ -37,16 +37,26 @@ void ImportaProdutos::expiraPrecosAntigos() {
   }
 }
 
-void ImportaProdutos::importar() {
-  if (not readFile()) {
-    return;
-  }
+void ImportaProdutos::importarProduto() {
+  if (not readFile()) return;
+  if (not readValidade()) return;
 
-  if (not readValidade()) {
-    return;
-  }
+  importarTabela("0");
+}
 
-  importarTabela();
+void ImportaProdutos::importarEstoque() {
+  if (not readFile()) return;
+
+  validade = 9999;
+
+  importarTabela("1");
+}
+
+void ImportaProdutos::importarPromocao() {
+  if (not readFile()) return;
+  if (not readValidade()) return;
+
+  importarTabela("2");
 }
 
 void ImportaProdutos::verificaSeRepresentacao() {
@@ -86,7 +96,7 @@ void ImportaProdutos::atualizaProduto() {
   marcaProdutoNaoDescontinuado();
 }
 
-void ImportaProdutos::importarTabela() {
+void ImportaProdutos::importarTabela(const QString &tipo) {
   bool canceled = false;
 
   QSqlQuery("SET AUTOCOMMIT=0").exec();
@@ -124,12 +134,13 @@ void ImportaProdutos::importarTabela() {
 
   verificaSeRepresentacao();
   mostraApenasEstesFornecedores();
-  marcaTodosProdutosDescontinuados();
+  marcaTodosProdutosDescontinuados(tipo);
 
-  model.setFilter(ids);
+  model.setFilter("(" + ids + ") AND estoque_promocao = " + tipo);
 
-  modelErro.setFilter("(" + ids + ") AND (m2cxUpd = " + Red + " OR pccxUpd = " + Red + " OR codComercialUpd = " + Red +
-                      " OR custoUpd = " + Red + " OR precoVendaUpd = " + Red + ")");
+  modelErro.setFilter("(" + ids + ") AND estoque_promocao = " + tipo + " AND (m2cxUpd = " + Red + " OR pccxUpd = " +
+                      Red + " OR codComercialUpd = " + Red + " OR custoUpd = " + Red + " OR precoVendaUpd = " + Red +
+                      ")");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto: " + model.lastError().text());
@@ -165,7 +176,7 @@ void ImportaProdutos::importarTabela() {
     leituraProduto(query, record);
     consistenciaDados();
 
-    verificaSeProdutoJaCadastrado() ? atualizaProduto() : cadastraProduto();
+    verificaSeProdutoJaCadastrado() ? atualizaProduto() : cadastraProduto(tipo);
   }
 
   progressDialog->cancel();
@@ -392,10 +403,10 @@ void ImportaProdutos::mostraApenasEstesFornecedores() {
   }
 }
 
-void ImportaProdutos::marcaTodosProdutosDescontinuados() {
+void ImportaProdutos::marcaTodosProdutosDescontinuados(const QString &tipo) {
   QSqlQuery query;
 
-  if (not query.exec("UPDATE produto SET descontinuado = TRUE WHERE " + ids)) {
+  if (not query.exec("UPDATE produto SET descontinuado = TRUE WHERE " + ids + " AND estoque_promocao = " + tipo)) {
     QMessageBox::critical(this, "Erro!", "Erro marcando produtos descontinuados: " + query.lastError().text());
     return;
   }
@@ -617,13 +628,32 @@ void ImportaProdutos::insereEmErro() {
   itensError++;
 }
 
-void ImportaProdutos::insereEmOk() {
+void ImportaProdutos::insereEmOk(const QString &tipo) {
   const int row = model.rowCount();
   model.insertRow(row);
 
   for (auto key : variantMap.keys()) {
     model.setData(row, key, variantMap.value(key));
     model.setData(row, key + "Upd", Green);
+  }
+
+  model.setData(row, "estoque_promocao", tipo.toInt());
+
+  if (tipo == "1" or tipo == "2") {
+    QSqlQuery query;
+    query.prepare("SELECT idProduto FROM produto WHERE idFornecedor = :idFornecedor AND codComercial = :codComercial "
+                  "AND estoque_promocao = 0");
+    query.bindValue(":idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
+    query.bindValue(":codComercial", model.data(row, "codComercial"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando produto relacionado: " + query.lastError().text());
+      return;
+    }
+
+    if (query.first()) {
+      model.setData(row, "idProdutoRelacionado", query.value("idProduto"));
+    }
   }
 
   model.setData(row, "idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
@@ -652,7 +682,7 @@ void ImportaProdutos::insereEmOk() {
   itensImported++;
 }
 
-void ImportaProdutos::cadastraProduto() { camposForaDoPadrao() ? insereEmErro() : insereEmOk(); }
+void ImportaProdutos::cadastraProduto(const QString &tipo) { camposForaDoPadrao() ? insereEmErro() : insereEmOk(tipo); }
 
 int ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor) {
   QSqlQuery queryFornecedor;

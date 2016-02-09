@@ -84,3 +84,5 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
 }
 
 // TODO: adicionar fluxo de pagamentos
+// NOTE: permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
+// diferentes: 50 -> 40+10

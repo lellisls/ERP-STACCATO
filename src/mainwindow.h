@@ -28,9 +28,11 @@ class MainWindow : public QMainWindow {
     void on_actionConfiguracoes_triggered();
     void on_actionCriarOrcamento_triggered();
     void on_actionEscuro_triggered();
+    void on_actionEstoque_triggered();
     void on_actionGerenciar_Lojas_triggered();
     void on_actionGerenciar_Transportadoras_triggered();
-    void on_actionImportaProdutos_triggered();
+    void on_actionProdutos_triggered();
+    void on_actionPromocao_triggered();
     void on_actionSobre_triggered();
     void on_tabWidget_currentChanged(const int &);
     void showStatusBarMessage();

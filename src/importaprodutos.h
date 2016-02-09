@@ -16,7 +16,9 @@ class ImportaProdutos : public QDialog {
   public:
     explicit ImportaProdutos(QWidget *parent = 0);
     ~ImportaProdutos();
-    void importar();
+    void importarProduto();
+    void importarEstoque();
+    void importarPromocao();
 
   private slots:
     void on_checkBoxRepresentacao_clicked(const bool &checked);
@@ -58,17 +60,17 @@ class ImportaProdutos : public QDialog {
     void atualizaCamposProduto();
     void atualizaProduto();
     void cadastraFornecedores();
-    void cadastraProduto();
+    void cadastraProduto(const QString &tipo);
     void consistenciaDados();
     void contaProdutos();
     void expiraPrecosAntigos();
     void guardaNovoPrecoValidade();
-    void importarTabela();
+    void importarTabela(const QString &tipo);
     void insereEmErro();
-    void insereEmOk();
+    void insereEmOk(const QString &tipo);
     void leituraProduto(const QSqlQuery &query, const QSqlRecord &record);
     void marcaProdutoNaoDescontinuado();
-    void marcaTodosProdutosDescontinuados();
+    void marcaTodosProdutosDescontinuados(const QString &tipo);
     void mostraApenasEstesFornecedores();
     void pintarCamposForaDoPadrao(const int &row);
     void salvar();

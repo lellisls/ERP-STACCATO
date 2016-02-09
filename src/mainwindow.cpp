@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   if (UserSession::tipoUsuario() != "ADMINISTRADOR" and UserSession::tipoUsuario() != "GERENTE LOJA") {
     ui->actionGerenciar_Lojas->setDisabled(true);
     ui->actionGerenciar_Transportadoras->setDisabled(true);
-    ui->actionImportaProdutos->setDisabled(true);
+    ui->menuImportar_tabela_fornecedor->setDisabled(true);
     ui->actionCadastrarUsuario->setDisabled(true);
     ui->actionCadastrarProfissional->setDisabled(true);
     ui->actionCadastrarFornecedor->setDisabled(true);
@@ -153,11 +153,6 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
   cad->show();
 }
 
-void MainWindow::on_actionImportaProdutos_triggered() {
-  ImportaProdutos *importa = new ImportaProdutos(this);
-  importa->importar();
-}
-
 bool MainWindow::event(QEvent *event) {
   switch (event->type()) {
     case QEvent::WindowActivate: {
@@ -226,6 +221,21 @@ void MainWindow::on_actionConfiguracoes_triggered() {
 
 void MainWindow::on_actionCalculadora_triggered() {
   QDesktopServices::openUrl(QUrl::fromLocalFile("C:\\Windows\\System32\\calc.exe"));
+}
+
+void MainWindow::on_actionProdutos_triggered() {
+  ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->importarProduto();
+}
+
+void MainWindow::on_actionEstoque_triggered() {
+  ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->importarEstoque();
+}
+
+void MainWindow::on_actionPromocao_triggered() {
+  ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->importarPromocao();
 }
 
 // NOTE: colocar logo da staccato na mainwindow

@@ -82,6 +82,8 @@ void ItemBox::setValue(const QVariant &value) {
   m_value = value;
 
   if (m_searchDialog) setText(m_searchDialog->getText(value));
+
+  QLineEdit::setToolTip(text());
 }
 
 void ItemBox::setReadOnlyItemBox(const bool &readOnly) {

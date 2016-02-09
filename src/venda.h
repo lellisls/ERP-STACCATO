@@ -30,6 +30,7 @@ class Venda : public RegisterDialog {
     void on_doubleSpinBoxTotal_valueChanged(const double &);
     void on_pushButtonCadastrarPedido_clicked();
     void on_pushButtonCancelamento_clicked();
+    void on_pushButtonDevolucao_clicked();
     void on_pushButtonGerarExcel_clicked();
     void on_pushButtonImprimir_clicked();
     void on_pushButtonLimparPag_clicked();

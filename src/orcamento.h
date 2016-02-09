@@ -22,12 +22,12 @@ class Orcamento : public RegisterDialog {
     void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
     void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
     void on_doubleSpinBoxFrete_valueChanged(const double &);
-    void on_doubleSpinBoxPrecoTotal_valueChanged(const double &);
-    void on_doubleSpinBoxQte_editingFinished();
-    void on_doubleSpinBoxQte_valueChanged(const double &);
+    void on_doubleSpinBoxQuant_editingFinished();
+    void on_doubleSpinBoxQuant_valueChanged(const double &);
     void on_doubleSpinBoxSubTotalBruto_valueChanged(const double &);
     void on_doubleSpinBoxSubTotalLiq_valueChanged(const double &);
     void on_doubleSpinBoxTotal_valueChanged(const double &);
+    void on_doubleSpinBoxTotalItem_valueChanged(const double &);
     void on_itemBoxCliente_textChanged(const QString &);
     void on_itemBoxProduto_textChanged(const QString &);
     void on_itemBoxVendedor_textChanged(const QString &);
@@ -53,7 +53,7 @@ class Orcamento : public RegisterDialog {
     Ui::Orcamento *ui;
     bool isBlockedDesconto = false;
     bool isBlockedGlobal = false;
-    bool isBlockedPrecoTotal = false;
+    bool isBlockedTotalItem = false;
     bool isBlockedReais = false;
     bool isBlockedTotal = false;
     bool isItemUpdate = false;

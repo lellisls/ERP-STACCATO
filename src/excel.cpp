@@ -1,4 +1,5 @@
 #include <QDateTime>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QLocale>
@@ -53,15 +54,18 @@ void Excel::gerarExcel() {
     return;
   }
 
-  QFile modelo(QDir::currentPath() + "/modelo.xlsx");
-
-  if (not modelo.exists()) {
-    QMessageBox::critical(parent, "Erro!", "Não encontrou o modelo do Excel!");
+  if (modelItem.rowCount() > 34) {
+    QMessageBox::critical(parent, "Erro!", "Mais itens do que cabe no modelo!");
     return;
   }
 
-  if (modelItem.rowCount() > 17) {
-    QMessageBox::critical(parent, "Erro!", "Mais itens do que cabe no modelo!");
+  QString arquivoModelo = modelItem.rowCount() <= 17 ? "modelo.xlsx" : "modelo2.xlsx";
+  bool maior = modelItem.rowCount() > 17 ? true : false;
+
+  QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
+
+  if (not modelo.exists()) {
+    QMessageBox::critical(parent, "Erro!", "Não encontrou o modelo do Excel!");
     return;
   }
 
@@ -78,7 +82,7 @@ void Excel::gerarExcel() {
 
   QLocale locale;
 
-  QXlsx::Document xlsx("modelo.xlsx");
+  QXlsx::Document xlsx(arquivoModelo);
 
   QString endLoja = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() +
                     " - " + queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() +
@@ -119,14 +123,14 @@ void Excel::gerarExcel() {
   double subLiq = query.value("subTotalLiq").toDouble();
   double subBru = query.value("subTotalBru").toDouble();
   double desconto = query.value("descontoPorc").toDouble();
-  xlsx.write("N29", subLiq > subBru ? "R$ " + locale.toString(subLiq, 'f', 2)
-                                    : "R$ " + locale.toString(subBru, 'f', 2) + " (R$ " +
-                                      locale.toString(subLiq, 'f', 2) + ")");          // soma
-  xlsx.write("N30", locale.toString(desconto, 'f', 2) + "%");                              // desconto
-  xlsx.write("N31", "R$ " + locale.toString(subLiq - (desconto / 100. * subLiq), 'f', 2)); // total
-  xlsx.write("N32", "R$ " + locale.toString(query.value("frete").toDouble(), 'f', 2));     // frete
-  xlsx.write("N33", "R$ " + locale.toString(query.value("total").toDouble(), 'f', 2));     // total final
-  xlsx.write("B29", query.value("prazoEntrega").toString() + " dias");
+  xlsx.write(maior ? "N46" : "N29", subLiq > subBru ? "R$ " + locale.toString(subLiq, 'f', 2)
+                                                    : "R$ " + locale.toString(subBru, 'f', 2) + " (R$ " +
+                                                      locale.toString(subLiq, 'f', 2) + ")");          // soma
+  xlsx.write(maior ? "N47" : "N30", locale.toString(desconto, 'f', 2) + "%");                              // desconto
+  xlsx.write(maior ? "N48" : "N31", "R$ " + locale.toString(subLiq - (desconto / 100. * subLiq), 'f', 2)); // total
+  xlsx.write(maior ? "N49" : "N32", "R$ " + locale.toString(query.value("frete").toDouble(), 'f', 2));     // frete
+  xlsx.write(maior ? "N50" : "N33", "R$ " + locale.toString(query.value("total").toDouble(), 'f', 2)); // total final
+  xlsx.write(maior ? "B46" : "B29", query.value("prazoEntrega").toString() + " dias");
 
   QSqlQuery queryPgt1(
         "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
@@ -141,6 +145,8 @@ void Excel::gerarExcel() {
                  locale.toString(queryPgt1.value("valor").toDouble(), 'f', 2) +
                  (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
                  queryPgt1.value("dataEmissao").toDate().toString("dd-MM-yyyy");
+
+  if (queryPgt1.value("valor") == 0) pgt1 = "";
 
   QSqlQuery queryPgt2(
         "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
@@ -174,11 +180,11 @@ void Excel::gerarExcel() {
 
   if (queryPgt3.value("valor") == 0) pgt3 = "";
 
-  xlsx.write("B30", pgt1);
-  xlsx.write("B31", pgt2);
-  xlsx.write("B32", pgt3);
+  xlsx.write(maior ? "B47" : "B30", pgt1);
+  xlsx.write(maior ? "B48" : "B31", pgt2);
+  xlsx.write(maior ? "B49" : "B32", pgt3);
 
-  xlsx.write("B33", query.value("observacao"));
+  xlsx.write(maior ? "B50" : "B33", query.value("observacao").toString().replace("\n", " "));
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     xlsx.write("A" + QString::number(12 + row), modelItem.data(row, "fornecedor"));

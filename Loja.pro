@@ -62,6 +62,7 @@ SOURCES += src/apagaorcamento.cpp \
     src/usersession.cpp \
     src/validadedialog.cpp \
     src/venda.cpp \
+    src/vendasmes.cpp \
     src/widgetcompra.cpp \
     src/widgetcompraconfirmar.cpp \
     src/widgetcomprafaturar.cpp \
@@ -132,6 +133,7 @@ HEADERS  += src/apagaorcamento.h \
     src/usersession.h \
     src/validadedialog.h \
     src/venda.h \
+    src/vendasmes.h \
     src/widgetcompra.h \
     src/widgetcompraconfirmar.h \
     src/widgetcomprafaturar.h \
@@ -177,6 +179,7 @@ FORMS += ui/apagaorcamento.ui \
     ui/userconfig.ui \
     ui/validadedialog.ui \
     ui/venda.ui \
+    ui/vendasmes.ui \
     ui/widgetcompra.ui \
     ui/widgetcompraconfirmar.ui \
     ui/widgetcomprafaturar.ui \

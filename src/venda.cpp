@@ -283,6 +283,12 @@ bool Venda::verifyFields() {
     return false;
   }
 
+  if (ui->itemBoxEnderecoFat->text().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Deve selecionar um endereço de faturamento!");
+    ui->itemBoxEnderecoFat->setFocus();
+    return false;
+  }
+
   if (not qFuzzyCompare(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() +
                         ui->doubleSpinBoxPgt3->value(),
                         ui->doubleSpinBoxTotalPag->value())) {
@@ -295,20 +301,16 @@ bool Venda::verifyFields() {
     ui->doubleSpinBoxPgt1->setFocus();
     return false;
   }
+
   if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 2.");
     ui->doubleSpinBoxPgt2->setFocus();
     return false;
   }
+
   if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 3.");
     ui->doubleSpinBoxPgt3->setFocus();
-    return false;
-  }
-
-  if (ui->itemBoxEnderecoFat->text().isEmpty()) {
-    QMessageBox::critical(this, "Erro!", "Deve selecionar um endereço de faturamento!");
-    ui->itemBoxEnderecoFat->setFocus();
     return false;
   }
 
@@ -889,7 +891,7 @@ void Venda::generateId() {
 }
 
 void Venda::on_pushButtonDevolucao_clicked() {
-  // TODO: adicionar credito ao cliente
+  // TODO: perguntar se deseja adicionar credito ao cliente (apenas para os pagamentos pagos)
   QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja fazer devolução?",
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Devolução");

@@ -23,15 +23,27 @@ class InputDialog : public QDialog {
     void setFilter(const QString &id);
 
   private slots:
-    void on_pushButtonSalvar_clicked();
+    void on_comboBoxPgt1_currentTextChanged(const QString &text);
+    void on_comboBoxPgt2_currentTextChanged(const QString &text);
+    void on_comboBoxPgt3_currentTextChanged(const QString &text);
     void on_dateEditEvento_dateChanged(const QDate &date);
+    void on_doubleSpinBoxPgt1_editingFinished();
+    void on_doubleSpinBoxPgt2_editingFinished();
+    void on_doubleSpinBoxPgt3_editingFinished();
+    void on_pushButtonLimparPag_clicked();
+    void on_pushButtonSalvar_clicked();
 
   private:
     // attributes
     Ui::InputDialog *ui;
     SqlTableModel model;
+    SqlTableModel modelFluxoCaixa;
     // methods
     void setupTables();
+    void calculoSpinBox1() const;
+    void calculoSpinBox2() const;
+    void montarFluxoCaixa();
+    void resetarPagamentos();
 };
 
 #endif // INPUTDIALOG_H

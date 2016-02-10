@@ -6,41 +6,530 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>661</width>
-    <height>354</height>
+    <width>854</width>
+    <height>391</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Informações</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="1">
-    <widget class="QPushButton" name="pushButtonSalvar">
+   <item row="0" column="1" rowspan="4">
+    <widget class="QFrame" name="framePagamentos">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="text">
-      <string>Salvar</string>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_14">
+      <item row="0" column="0">
+       <widget class="TableView" name="tableFluxoCaixa">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>350</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>false</bool>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="4">
+         <widget class="QDateEdit" name="dateEditPgt1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="displayFormat">
+           <string>dd/MM/yy</string>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QComboBox" name="comboBoxPgt1Parc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <item>
+           <property name="text">
+            <string>1x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>6x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>7x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>9x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10x</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLineEdit" name="lineEditPgt1">
+          <property name="placeholderText">
+           <string>Observação</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBoxPgt1">
+          <property name="minimumSize">
+           <size>
+            <width>140</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="showGroupSeparator" stdset="0">
+           <bool>true</bool>
+          </property>
+          <property name="prefix">
+           <string>R$ </string>
+          </property>
+          <property name="maximum">
+           <double>999999.989999999990687</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Pgt. 1</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="0">
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBoxPgt3">
+          <property name="minimumSize">
+           <size>
+            <width>140</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="showGroupSeparator" stdset="0">
+           <bool>true</bool>
+          </property>
+          <property name="prefix">
+           <string>R$ </string>
+          </property>
+          <property name="maximum">
+           <double>999999.989999999990687</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QDateEdit" name="dateEditPgt3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="currentSection">
+           <enum>QDateTimeEdit::DaySection</enum>
+          </property>
+          <property name="displayFormat">
+           <string>dd/MM/yy</string>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Pgt. 3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QComboBox" name="comboBoxPgt3Parc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <item>
+           <property name="text">
+            <string>1x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>6x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>7x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>9x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10x</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLineEdit" name="lineEditPgt3">
+          <property name="placeholderText">
+           <string>Observação</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="2">
+         <widget class="QComboBox" name="comboBoxPgt2Parc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <item>
+           <property name="text">
+            <string>1x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>6x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>7x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>9x</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10x</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="showGroupSeparator" stdset="0">
+           <bool>true</bool>
+          </property>
+          <property name="prefix">
+           <string>R$ </string>
+          </property>
+          <property name="maximum">
+           <double>999999.989999999990687</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLineEdit" name="lineEditPgt2">
+          <property name="placeholderText">
+           <string>Observação</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Pgt. 2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBoxPgt2">
+          <property name="minimumSize">
+           <size>
+            <width>140</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QDateEdit" name="dateEditPgt2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="displayFormat">
+           <string>dd/MM/yy</string>
+          </property>
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QPushButton" name="pushButtonLimparPag">
+          <property name="text">
+           <string>Limpar pagamentos</string>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelRestante">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Total:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxTotalPag">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="showGroupSeparator" stdset="0">
+           <bool>true</bool>
+          </property>
+          <property name="prefix">
+           <string>R$ </string>
+          </property>
+          <property name="maximum">
+           <double>999999.989999999990687</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" colspan="2">
+   <item row="1" column="0">
     <widget class="QGroupBox" name="groupBoxDataPreco">
      <property name="title">
       <string/>
@@ -58,7 +547,7 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="0" colspan="2">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBoxData">
      <property name="title">
       <string/>
@@ -106,6 +595,39 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonSalvar">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Salvar</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

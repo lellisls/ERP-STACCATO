@@ -230,28 +230,6 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     }
   }
 
-  QSqlQuery query;
-
-  for (auto const &row : lista) {
-    query.prepare("INSERT INTO conta_a_pagar_has_pagamento (dataEmissao, idCompra, idLoja, valor, tipo, parcela, "
-                  "observacao, status) VALUES (:dataEmissao, :idCompra, :idLoja, :valor, :tipo, :parcela, :observacao, "
-                  ":status)");
-    query.bindValue(":dataEmissao", QDate::currentDate().toString("yyyy-MM-dd"));
-    query.bindValue(":idCompra", id);
-    query.bindValue(":idLoja", UserSession::loja());
-    query.bindValue(":valor", modelProdutos.data(row, "preco"));
-    query.bindValue(":tipo", "A CONFIRMAR");
-    query.bindValue(":parcela", 1);
-    query.bindValue(":observacao", "");
-    query.bindValue(":status", "PENDENTE");
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando conta a pagar pagamento: " + query.lastError().text());
-      QSqlQuery("ROLLBACK").exec();
-      return;
-    }
-  }
-
   if (not modelProdutos.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
                           modelProdutos.lastError().text());

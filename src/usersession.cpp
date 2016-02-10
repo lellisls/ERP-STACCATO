@@ -10,7 +10,7 @@ QSqlQuery *UserSession::query = nullptr;
 
 QSettings m_settings("Staccato", "ERP");
 
-int UserSession::loja() { return (query->value("idLoja").toInt()); }
+int UserSession::idLoja() { return (query->value("idLoja").toInt()); }
 
 int UserSession::idUsuario() { return (query->value("idUsuario").toInt()); }
 

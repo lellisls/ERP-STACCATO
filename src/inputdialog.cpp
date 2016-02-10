@@ -447,7 +447,7 @@ void InputDialog::montarFluxoCaixa() {
         modelFluxoCaixa.insertRow(row);
         modelFluxoCaixa.setData(row, "dataEmissao", QDate::currentDate().toString("yyyy-MM-dd"));
         modelFluxoCaixa.setData(row, "idCompra", model.data(0, "idCompra"));
-        modelFluxoCaixa.setData(row, "idLoja", UserSession::loja());
+        modelFluxoCaixa.setData(row, "idLoja", UserSession::idLoja());
         modelFluxoCaixa.setData(row, "dataPagamento", datePgt.at(i)->date().addMonths(x + temp2));
         modelFluxoCaixa.setData(row, "valor", parcela + (x == 0 ? resto : 0));
         modelFluxoCaixa.setData(row, "tipo", QString::number(i + 1) + ". " + comboPgt.at(i)->currentText());

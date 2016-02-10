@@ -131,7 +131,7 @@ void CadastroUsuario::fillCombobox() {
     ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
 
-  ui->comboBoxLoja->setCurrentValue(UserSession::loja());
+  ui->comboBoxLoja->setCurrentValue(UserSession::idLoja());
 }
 
 void CadastroUsuario::on_pushButtonCadastrar_clicked() { save(); }

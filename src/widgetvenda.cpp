@@ -35,7 +35,7 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
     ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
   }
 
-  ui->comboBoxLojas->setCurrentValue(UserSession::loja());
+  ui->comboBoxLojas->setCurrentValue(UserSession::idLoja());
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->groupBoxLojas->hide();
   ui->radioButtonTodos->click();

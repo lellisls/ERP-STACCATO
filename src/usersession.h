@@ -7,7 +7,7 @@ class UserSession {
   public:
     static bool login(const QString &user, const QString &password);
     static int idUsuario();
-    static int loja();
+    static int idLoja();
     static QString nome();
     static QString tipoUsuario();
     static QString fromLoja(const QString &parameter, const QString &user = nome());

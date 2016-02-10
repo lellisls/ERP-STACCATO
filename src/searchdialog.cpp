@@ -333,7 +333,7 @@ SearchDialog *SearchDialog::usuario(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::vendedor(QWidget *parent) {
-  int idLoja = UserSession::loja();
+  int idLoja = UserSession::idLoja();
 
   QString filtro = (idLoja == 1) ? "" : " AND idLoja = " + QString::number(idLoja);
 

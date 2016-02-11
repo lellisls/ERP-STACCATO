@@ -106,6 +106,12 @@ void ImportarXML::on_pushButtonImportar_clicked() {
     return;
   }
 
+  if (not modelCompra.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela compra: " + modelCompra.lastError().text());
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
   QSqlQuery("COMMIT").exec();
 
   QDialog::accept();

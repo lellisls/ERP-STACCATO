@@ -192,7 +192,7 @@ bool CadastroProduto::savingProcedures() {
   if (not setData("temLote", ui->radioButtonLote->isChecked() ? "SIM" : "NÃO")) return false;
   if (not setData("ui", ui->lineEditUI->text().isEmpty() ? "0" : ui->lineEditUI->text())) return false;
   if (not setData("un", ui->comboBoxUn->currentText())) return false;
-  if (not setData("validade", ui->dateEditValidade->date().toString("yyyy-MM-dd"))) return false;
+  if (not setData("validade", ui->dateEditValidade->date())) return false;
 
   return true;
 }

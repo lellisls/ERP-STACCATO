@@ -252,7 +252,7 @@ bool Orcamento::generateId() {
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro na query: " + query.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro buscando próximo id disponível: " + query.lastError().text());
     return false;
   }
 
@@ -684,20 +684,17 @@ void Orcamento::on_pushButtonReplicar_clicked() {
   Orcamento *replica = new Orcamento(parentWidget());
   replica->ui->pushButtonReplicar->hide();
 
-  // TODO: replace model.data with data(key) and remove this int row
-  int row = mapper.currentIndex();
-
-  replica->ui->itemBoxCliente->setValue(model.data(row, "idCliente"));
-  replica->ui->itemBoxProfissional->setValue(model.data(row, "idProfissional"));
-  replica->ui->itemBoxVendedor->setValue(model.data(row, "idUsuario"));
-  replica->ui->itemBoxEndereco->setValue(model.data(row, "idEnderecoEntrega"));
-  replica->ui->spinBoxValidade->setValue(model.data(row, "validade").toInt());
-  replica->ui->doubleSpinBoxDescontoGlobal->setValue(model.data(row, "descontoPorc").toDouble());
-  replica->ui->doubleSpinBoxFrete->setValue(model.data(row, "frete").toDouble());
-  replica->ui->doubleSpinBoxTotal->setValue(model.data(row, "total").toDouble());
+  replica->ui->itemBoxCliente->setValue(data("idCliente"));
+  replica->ui->itemBoxProfissional->setValue(data("idProfissional"));
+  replica->ui->itemBoxVendedor->setValue(data("idUsuario"));
+  replica->ui->itemBoxEndereco->setValue(data("idEnderecoEntrega"));
+  replica->ui->spinBoxValidade->setValue(data("validade").toInt());
+  replica->ui->doubleSpinBoxDescontoGlobal->setValue(data("descontoPorc").toDouble());
+  replica->ui->doubleSpinBoxFrete->setValue(data("frete").toDouble());
+  replica->ui->doubleSpinBoxTotal->setValue(data("total").toDouble());
   replica->ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
   replica->ui->checkBoxRepresentacao->setChecked(ui->checkBoxRepresentacao->isChecked());
-  replica->ui->lineEditReplicaDe->setText(model.data(row, "idOrcamento").toString());
+  replica->ui->lineEditReplicaDe->setText(data("idOrcamento").toString());
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
     replica->ui->itemBoxProduto->setValue(modelItem.data(row, "idProduto"));

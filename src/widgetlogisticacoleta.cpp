@@ -21,9 +21,7 @@ QString WidgetLogisticaColeta::updateTables() {
 
   model.setFilter("0");
 
-  if (not model.select()) {
-    return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
-  }
+  if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
 
   for (int row = 0; row < model.rowCount(); ++row) {
     ui->table->openPersistentEditor(row, "selecionado");
@@ -155,12 +153,12 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
     }
     //
 
-    if (not model.setData(row, "dataRealColeta", dataColeta.toString("yyyy-MM-dd"))) {
+    if (not model.setData(row, "dataRealColeta", dataColeta)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando data da coleta: " + model.lastError().text());
       return;
     }
 
-    if (not model.setData(row, "dataPrevReceb", dataPrevista.toString("yyyy-MM-dd"))) {
+    if (not model.setData(row, "dataPrevReceb", dataPrevista)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + model.lastError().text());
       return;
     }

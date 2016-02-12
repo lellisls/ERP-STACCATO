@@ -388,4 +388,5 @@ void ImportarXML::parear() {
 
 // TODO: corrigir consumo de estoque para consumir parcialmente de forma correta
 // NOTE: se filtro por compra, é necessário a coluna 'selecionado' para escolher qual linha parear?
-// NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir items na arvore?)
+// NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir
+// items na arvore?)

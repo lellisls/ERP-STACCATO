@@ -18,7 +18,7 @@ class WidgetLogistica : public QWidget {
     QString updateTables();
 
   private slots:
-    void on_table_activated(const QModelIndex &index);
+    void on_tableForn_activated(const QModelIndex &index);
     void on_tabWidgetLogistica_currentChanged(const int &);
 
   private:

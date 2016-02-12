@@ -512,8 +512,8 @@ void ImportaProdutos::guardaNovoPrecoValidade() {
                 ":preco, :validadeInicio, :validadeFim)");
   query.bindValue(":idProduto", model.data(row, "idProduto"));
   query.bindValue(":preco", variantMap.value("precoVenda"));
-  query.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
-  query.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
+  query.bindValue(":validadeInicio", QDate::currentDate());
+  query.bindValue(":validadeFim", QDate::currentDate().addDays(validade));
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro inserindo dados em produto_has_preco: " + query.lastError().text());

@@ -7,25 +7,17 @@ WidgetCompra::~WidgetCompra() { delete ui; }
 
 QString WidgetCompra::updateTables() {
   switch (ui->tabWidget->currentIndex()) {
-    case 0: {
-        ui->widgetPendentes->updateTables();
-        break;
-      }
+    case 0:
+      ui->widgetPendentes->updateTables();
 
-    case 1: {
-        ui->widgetGerar->updateTables();
-        break;
-      }
+    case 1:
+      ui->widgetGerar->updateTables();
 
-    case 2: {
-        ui->widgetConfirmar->updateTables();
-        break;
-      }
+    case 2:
+      ui->widgetConfirmar->updateTables();
 
-    case 3: {
-        ui->widgetFaturar->updateTables();
-        break;
-      }
+    case 3:
+      ui->widgetFaturar->updateTables();
   }
 
   return QString();

@@ -88,6 +88,7 @@ void WidgetCompraPendentes::setupTables() {
   model.setHeaderData("un", "Un.");
   model.setHeaderData("codComercial", "Cód. Com.");
   model.setHeaderData("formComercial", "Form. Com.");
+  model.setHeaderData("status", "Status");
 
   ui->table->setModel(&model);
 
@@ -235,5 +236,4 @@ void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const doubl
   ui->doubleSpinBoxQuantAvulsoCaixas->setValue(value / ui->doubleSpinBoxQuantAvulso->singleStep());
 }
 
-// TODO: change default pushButton (to avoid enter activating single product)
 // TODO: arrumar interface para nao ficar ambiguo entre compras avulsas

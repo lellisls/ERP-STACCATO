@@ -18,7 +18,7 @@ void WidgetLogistica::setupTables() {
   model.setHeaderData("fornecedor", "Fornecedor");
   model.setHeaderData("COUNT(fornecedor)", "Itens");
 
-  ui->table->setModel(&model);
+  ui->tableForn->setModel(&model);
 }
 
 QString WidgetLogistica::updateTables() {
@@ -26,7 +26,7 @@ QString WidgetLogistica::updateTables() {
 
   if (not model.select()) return "Erro lendo tabela: " + model.lastError().text();
 
-  ui->table->resizeColumnsToContents();
+  ui->tableForn->resizeColumnsToContents();
 
   switch (ui->tabWidgetLogistica->currentIndex()) {
     case 0:
@@ -42,7 +42,7 @@ QString WidgetLogistica::updateTables() {
   return QString();
 }
 
-void WidgetLogistica::on_table_activated(const QModelIndex &index) {
+void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
   const QString fornecedor = model.data(index.row(), "fornecedor").toString();
 
   if (ui->tabWidgetLogistica->currentIndex() == 0) {

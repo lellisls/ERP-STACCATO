@@ -148,7 +148,7 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
     }
     //
 
-    if (not model.setData(row, "dataRealReceb", dataReceb.toString("yyyy-MM-dd"))) {
+    if (not model.setData(row, "dataRealReceb", dataReceb)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando data de recebimento: " + model.lastError().text());
       return;
     }

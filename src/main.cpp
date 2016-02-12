@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.19");
+  app.setApplicationVersion("0.2.22");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -81,4 +81,4 @@ void storeSelection() {
 // NOTE: fazer um delegate para 'R$'?
 // NOTE: criar um delegate unidade para concatenar a unidade na coluna quant?
 // TODO: aparentemente nao precisa fazer date.tostring(yyyy/dd/mm) para converter para o formato do bd
-// TODO: colocar coluna 'data' em venda_has_produto (copiar de venda?)
+// TODO: diferenciar portinari loes para questao de comissao no excel

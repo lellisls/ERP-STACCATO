@@ -84,7 +84,7 @@ bool CadastroCliente::savingProcedures() {
   if (not setData("contatoRG", ui->lineEditContatoRG->text())) return false;
   if (not setData("cnpj", ui->lineEditCNPJ->text())) return false;
   if (not setData("inscEstadual", ui->lineEditInscEstadual->text())) return false;
-  if (not setData("dataNasc", ui->dateEdit->date().toString("yyyy-MM-dd"))) return false;
+  if (not setData("dataNasc", ui->dateEdit->date())) return false;
   if (not setData("tel", ui->lineEditTel_Res->text())) return false;
   if (not setData("telCel", ui->lineEditTel_Cel->text())) return false;
   if (not setData("telCom", ui->lineEditTel_Com->text())) return false;

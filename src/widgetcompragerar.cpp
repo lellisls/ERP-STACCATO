@@ -217,13 +217,13 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     }
     //
 
-    if (not modelProdutos.setData(row, "dataRealCompra", dataCompra.toString("yyyy-MM-dd"))) {
+    if (not modelProdutos.setData(row, "dataRealCompra", dataCompra)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando data da compra: " + modelProdutos.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;
     }
 
-    if (not modelProdutos.setData(row, "dataPrevConf", dataPrevista.toString("yyyy-MM-dd"))) {
+    if (not modelProdutos.setData(row, "dataPrevConf", dataPrevista)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + modelProdutos.lastError().text());
       QSqlQuery("ROLLBACK").exec();
       return;

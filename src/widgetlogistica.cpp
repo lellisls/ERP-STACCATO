@@ -45,11 +45,23 @@ QString WidgetLogistica::updateTables() {
 void WidgetLogistica::on_table_activated(const QModelIndex &index) {
   const QString fornecedor = model.data(index.row(), "fornecedor").toString();
 
-  ui->widgetColeta->TableFornLogistica_activated(fornecedor);
-  ui->widgetRecebimento->TableFornLogistica_activated(fornecedor);
+  if (ui->tabWidgetLogistica->currentIndex() == 0) {
+    ui->widgetColeta->TableFornLogistica_activated(fornecedor);
+  }
+
+  if (ui->tabWidgetLogistica->currentIndex() == 1) {
+    ui->widgetRecebimento->TableFornLogistica_activated(fornecedor);
+  }
 }
 
-void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) { updateTables(); }
+void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) {
+  int index = ui->tabWidgetLogistica->currentIndex();
+
+  if (index == 0 or index == 1) ui->frameForn->show();
+  if (index == 2) ui->frameForn->hide();
+
+  updateTables();
+}
 
 // NOTE: arrumar filtros da tela de entrega
 // NOTE: criar tela para organizar caminhão da coleta

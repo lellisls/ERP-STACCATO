@@ -19,6 +19,8 @@ WidgetLogisticaRecebimento::~WidgetLogisticaRecebimento() { delete ui; }
 QString WidgetLogisticaRecebimento::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
+  model.setFilter("0");
+
   if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
 
   for (int row = 0; row < model.rowCount(); ++row) {
@@ -38,6 +40,14 @@ void WidgetLogisticaRecebimento::TableFornLogistica_activated(const QString &for
                           "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
+
+  for (int row = 0; row < model.rowCount(); ++row) {
+    ui->table->openPersistentEditor(row, "selecionado");
+  }
+
+  ui->checkBoxMarcarTodos->setChecked(false);
+
+  ui->table->resizeColumnsToContents();
 }
 
 void WidgetLogisticaRecebimento::setupTables() {

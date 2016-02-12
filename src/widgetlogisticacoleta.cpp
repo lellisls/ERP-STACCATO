@@ -47,6 +47,8 @@ void WidgetLogisticaColeta::TableFornLogistica_activated(const QString &forneced
     ui->table->openPersistentEditor(row, "selecionado");
   }
 
+  ui->checkBoxMarcarTodos->setChecked(false);
+
   ui->table->resizeColumnsToContents();
 }
 

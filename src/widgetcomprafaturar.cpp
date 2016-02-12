@@ -86,18 +86,21 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
                      "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
-                     "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {
+                     "', status = 'EM COLETA' WHERE idCompra = " + idCompra)) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
 
   // salvar status na venda
+  qDebug() << "UPDATE venda_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
+              "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") + "' WHERE idCompra = " + idCompra;
+
   if (not query.exec("UPDATE venda_has_produto SET dataRealFat = '" + dataFat.toString("yyyy-MM-dd") +
-                     "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") +
-                     "', status = 'EM COLETA' WHERE idCompra = " + idCompra + "")) {
+                     "', dataPrevColeta = '" + dataPrevista.toString("yyyy-MM-dd") + "' WHERE idCompra = " +
+                     idCompra)) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
+    QSqlQuery("ROLLBACK").exec(); // TODO: this rollback dont roll anything
     return;
   }
 

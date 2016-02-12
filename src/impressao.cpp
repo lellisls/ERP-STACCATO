@@ -140,7 +140,25 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "dataestoque") paramValue = "";
 
   // MASTER BAND
-  if (paramName == "Marca") paramValue = modelItem.data(recNo, "fornecedor");
+  if (paramName == "Marca") {
+    QSqlQuery query;
+    query.prepare("SELECT ui FROM produto WHERE idProduto = :idProduto");
+    query.bindValue(":idProduto", modelItem.data(recNo, "idProduto"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(parent, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
+      return;
+    }
+
+    QString loes;
+
+    if (query.first()) {
+      loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
+    }
+
+    paramValue = modelItem.data(recNo, "fornecedor").toString() + loes;
+  }
+
   if (paramName == "Código") paramValue = queryProduto.value("codComercial");
 
   if (paramName == "Nome do produto") {

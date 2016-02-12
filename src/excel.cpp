@@ -187,7 +187,22 @@ void Excel::gerarExcel() {
   xlsx.write(maior ? "B50" : "B33", query.value("observacao").toString().replace("\n", " "));
 
   for (int row = 0; row < modelItem.rowCount(); ++row) {
-    xlsx.write("A" + QString::number(12 + row), modelItem.data(row, "fornecedor"));
+    QSqlQuery query;
+    query.prepare("SELECT ui FROM produto WHERE idProduto = :idProduto");
+    query.bindValue(":idProduto", modelItem.data(row, "idProduto"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(parent, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
+      return;
+    }
+
+    QString loes;
+
+    if (query.first()) {
+      loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
+    }
+
+    xlsx.write("A" + QString::number(12 + row), modelItem.data(row, "fornecedor").toString() + loes);
     xlsx.write("B" + QString::number(12 + row), modelItem.data(row, "codComercial"));
     QString formComercial = modelItem.data(row, "formComercial").toString();
     xlsx.write("C" + QString::number(12 + row),

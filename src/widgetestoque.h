@@ -20,6 +20,7 @@ class WidgetEstoque : public QWidget {
   private slots:
     void on_radioButtonMaior_toggled(bool checked);
     void on_table_activated(const QModelIndex &index);
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

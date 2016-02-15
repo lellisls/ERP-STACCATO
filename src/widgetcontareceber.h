@@ -17,6 +17,9 @@ class WidgetContaReceber : public QWidget {
     ~WidgetContaReceber();
     QString updateTables();
 
+  private slots:
+    void on_table_entered(const QModelIndex &);
+
   private:
     // attributes
     Ui::WidgetContaReceber *ui;

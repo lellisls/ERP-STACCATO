@@ -20,6 +20,8 @@ class ProdutosPendentes : public QDialog {
   private slots:
     void on_pushButtonComprar_clicked();
     void on_pushButtonConsumirEstoque_clicked();
+    void on_tableEstoque_entered(const QModelIndex &);
+    void on_tableProdutos_entered(const QModelIndex &);
 
   private:
     // attributes

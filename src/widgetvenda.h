@@ -22,6 +22,7 @@ class WidgetVenda : public QWidget {
     void on_groupBoxStatus_toggled(const bool &enabled);
     void on_pushButtonCalcularTotal_clicked();
     void on_table_activated(const QModelIndex &index);
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

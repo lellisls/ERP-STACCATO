@@ -83,6 +83,8 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
   QMessageBox::information(this, "Aviso!", "Confirmado compra.");
 }
 
+void WidgetCompraConfirmar::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
 // NOTE: permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
 // diferentes: 50 -> 40+10
 // TODO: idVenda esta repetindo (again)

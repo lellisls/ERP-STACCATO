@@ -23,6 +23,7 @@ class WidgetLogisticaEntrega : public QWidget {
     void on_radioButtonEntregaLimpar_clicked();
     void on_radioButtonEntregaPendente_clicked();
     void on_table_activated(const QModelIndex &index);
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

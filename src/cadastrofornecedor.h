@@ -27,6 +27,7 @@ class CadastroFornecedor : public RegisterAddressDialog {
     void on_pushButtonRemover_clicked();
     void on_pushButtonRemoverEnd_clicked();
     void on_tableEndereco_clicked(const QModelIndex &index);
+    void on_tableEndereco_entered(const QModelIndex &);
 
   public:
     void clearEndereco();

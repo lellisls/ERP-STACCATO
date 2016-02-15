@@ -16,6 +16,9 @@ class VendasMes : public QWidget {
     explicit VendasMes(const int usuario, QWidget *parent = 0);
     ~VendasMes();
 
+  private slots:
+    void on_table_entered(const QModelIndex &);
+
   private:
     // attributes
     Ui::VendasMes *ui;

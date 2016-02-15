@@ -272,3 +272,5 @@ void CadastroFornecedor::on_pushButtonRemoverEnd_clicked() {
 void CadastroFornecedor::successMessage() {
   QMessageBox::information(this, "Atenção!", "Fornecedor cadastrado com sucesso!");
 }
+
+void CadastroFornecedor::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }

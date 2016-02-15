@@ -497,5 +497,9 @@ void InputDialog::resetarPagamentos() {
 
 void InputDialog::on_pushButtonLimparPag_clicked() { resetarPagamentos(); }
 
+void InputDialog::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+void InputDialog::on_tableFluxoCaixa_entered(const QModelIndex &) { ui->tableFluxoCaixa->resizeColumnsToContents(); }
+
 // TODO: fluxo de pagamentos deve recalcular total quando os precos forem editados na tabela
 // TODO: nao colocar data no fluxo caixa e adicionar frete

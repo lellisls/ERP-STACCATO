@@ -272,3 +272,5 @@ void WidgetCompraGerar::fixPersistente() {
 
   ui->checkBoxMarcarTodos->setChecked(false);
 }
+
+void WidgetCompraGerar::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }

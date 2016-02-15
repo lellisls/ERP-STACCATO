@@ -55,3 +55,5 @@ void WidgetNfeSaida::on_lineEditBusca_textChanged(const QString &text) {
   model.setFilter(text.isEmpty() ? "" : "(idVenda LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
   ui->table->resizeColumnsToContents();
 }
+
+void WidgetNfeSaida::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

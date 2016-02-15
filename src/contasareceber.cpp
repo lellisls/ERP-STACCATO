@@ -55,3 +55,5 @@ void ContasAReceber::viewConta(const QString &idVenda) {
     ui->table->openPersistentEditor(model.index(row, model.fieldIndex("status")));
   }
 }
+
+void ContasAReceber::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

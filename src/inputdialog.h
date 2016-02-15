@@ -32,6 +32,8 @@ class InputDialog : public QDialog {
     void on_doubleSpinBoxPgt3_editingFinished();
     void on_pushButtonLimparPag_clicked();
     void on_pushButtonSalvar_clicked();
+    void on_table_entered(const QModelIndex &);
+    void on_tableFluxoCaixa_entered(const QModelIndex &);
 
   private:
     // attributes

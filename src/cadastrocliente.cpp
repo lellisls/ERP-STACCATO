@@ -418,4 +418,8 @@ bool CadastroCliente::verifyFields(const bool &isUpdate) {
   return true;
 }
 
-void CadastroCliente::successMessage() { QMessageBox::information(this, "Atenção!", "Cliente cadastrado com sucesso!"); }
+void CadastroCliente::successMessage() {
+  QMessageBox::information(this, "Atenção!", "Cliente cadastrado com sucesso!");
+}
+
+void CadastroCliente::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }

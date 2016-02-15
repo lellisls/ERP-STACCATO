@@ -19,6 +19,7 @@ class WidgetCompraConfirmar : public QWidget {
 
   private slots:
     void on_pushButtonConfirmarCompra_clicked();
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

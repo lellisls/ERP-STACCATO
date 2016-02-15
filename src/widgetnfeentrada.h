@@ -19,6 +19,7 @@ class WidgetNfeEntrada : public QWidget {
 
   private slots:
     void on_table_activated(const QModelIndex &index);
+    void on_table_entered(const QModelIndex &);
 
   private:
     Ui::WidgetNfeEntrada *ui;

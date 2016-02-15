@@ -921,6 +921,8 @@ void Orcamento::on_doubleSpinBoxSubTotalBruto_valueChanged(const double &) {
 
 void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", "Orçamento atualizado com sucesso!"); }
 
+void Orcamento::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
+
 // NOTE: model.submitAll faz mapper voltar para -1, select tambem (talvez porque submitAll chama select)
 // TODO: se produto for estoque/promocao indicar na tela
 // TODO: se produto for estoque permitir vender por peça

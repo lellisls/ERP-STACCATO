@@ -29,3 +29,5 @@ QString WidgetContaPagar::updateTables() {
 
   return QString();
 }
+
+void WidgetContaPagar::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

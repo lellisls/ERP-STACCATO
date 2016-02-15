@@ -54,3 +54,5 @@ void ContasAPagar::viewConta(const QString &idVenda) {
 
   if (model.data(0, "pago").toString() == "SIM") ui->checkBoxPago->setChecked(true);
 }
+
+void ContasAPagar::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

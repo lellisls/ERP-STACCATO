@@ -474,6 +474,9 @@
          <layout class="QGridLayout" name="gridLayout_21">
           <item row="1" column="0">
            <widget class="TableView" name="tableEndereco">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>

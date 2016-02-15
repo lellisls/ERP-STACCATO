@@ -62,3 +62,5 @@ void WidgetLogisticaEntrega::on_table_activated(const QModelIndex &index) {
   EntregasCliente *entregas = new EntregasCliente(this);
   entregas->viewEntrega(model.data(index.row(), "Código").toString());
 }
+
+void WidgetLogisticaEntrega::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

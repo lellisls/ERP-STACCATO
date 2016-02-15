@@ -131,6 +131,8 @@ void WidgetVenda::on_pushButtonCalcularTotal_clicked() {
   vendas->show();
 }
 
+void WidgetVenda::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
 // NOTE: verificar como lidar com brinde/reposicao
 // NOTE: cancelamento de pedido: se todos os itens estiverem pendentes marcar status cancelado, senao fazer processo
 // inverso de estorno

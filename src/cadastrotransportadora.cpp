@@ -258,3 +258,7 @@ bool CadastroTransportadora::viewRegister(const QModelIndex &index) {
 void CadastroTransportadora::successMessage() {
   QMessageBox::information(this, "Atenção!", "Transportadora cadastrada com sucesso!");
 }
+
+void CadastroTransportadora::on_tableEndereco_entered(const QModelIndex &) {
+  ui->tableEndereco->resizeColumnsToContents();
+}

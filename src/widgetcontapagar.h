@@ -17,6 +17,9 @@ class WidgetContaPagar : public QWidget {
     ~WidgetContaPagar();
     QString updateTables();
 
+  private slots:
+    void on_table_entered(const QModelIndex &);
+
   private:
     // attributes
     Ui::WidgetContaPagar *ui;

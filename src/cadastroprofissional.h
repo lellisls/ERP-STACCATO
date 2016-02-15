@@ -33,6 +33,7 @@ class CadastroProfissional : public RegisterAddressDialog {
     void on_pushButtonRemoverEnd_clicked();
     void on_radioButtonPF_toggled(const bool &checked);
     void on_tableEndereco_clicked(const QModelIndex &index);
+    void on_tableEndereco_entered(const QModelIndex &);
 
   private:
     // attributes

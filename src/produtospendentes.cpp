@@ -196,3 +196,7 @@ void ProdutosPendentes::atualizaVenda(const QDate &dataPrevista) {
     return;
   }
 }
+
+void ProdutosPendentes::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
+
+void ProdutosPendentes::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }

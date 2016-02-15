@@ -19,6 +19,7 @@ class ContasAReceber : public QDialog {
 
   private slots:
     void on_pushButtonSalvar_clicked();
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

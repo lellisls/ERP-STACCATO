@@ -35,6 +35,8 @@ class Venda : public RegisterDialog {
     void on_pushButtonImprimir_clicked();
     void on_pushButtonLimparPag_clicked();
     void on_pushButtonVoltar_clicked();
+    void on_tableFluxoCaixa_entered(const QModelIndex &);
+    void on_tableVenda_entered(const QModelIndex &);
 
   signals:
     void finished();

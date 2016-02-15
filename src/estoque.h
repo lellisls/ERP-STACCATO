@@ -19,16 +19,17 @@ class Estoque : public QDialog {
     void criarConsumo(const QVariant &idVendaProduto);
 
   private slots:
-    void on_table_activated(const QModelIndex &index);
     void on_pushButtonExibirNfe_clicked();
+    void on_table_activated(const QModelIndex &index);
+    void on_table_doubleClicked(const QModelIndex &);
 
   private:
     // attributes
     Ui::Estoque *ui;
     SqlTableModel model;
     // methods
-    void setupTables();
     void calcularRestante();
+    void setupTables();
 };
 
 #endif // ESTOQUE_H

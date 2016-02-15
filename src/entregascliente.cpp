@@ -106,4 +106,8 @@ void EntregasCliente::viewEntrega(const QString &idVenda) {
   ui->tableEntregas->resizeColumnsToContents();
 }
 
+void EntregasCliente::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
+
+void EntregasCliente::on_tableEntregas_entered(const QModelIndex &) { ui->tableEntregas->resizeColumnsToContents(); }
+
 // TODO: filtrar a tabela de cima idNfeSaida vazio e a baixo como diferente de vazio

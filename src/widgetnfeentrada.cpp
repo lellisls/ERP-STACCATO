@@ -37,3 +37,5 @@ void WidgetNfeEntrada::on_table_activated(const QModelIndex &index) {
   XML_Viewer *viewer = new XML_Viewer(this);
   viewer->exibirXML(model.data(index.row(), "xml").toByteArray());
 }
+
+void WidgetNfeEntrada::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

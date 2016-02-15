@@ -19,6 +19,8 @@ class EntregasCliente : public QDialog {
 
   private slots:
     void on_pushButtonNFe_clicked();
+    void on_tableEntregas_entered(const QModelIndex &);
+    void on_tableProdutos_entered(const QModelIndex &);
 
   private:
     // attributes

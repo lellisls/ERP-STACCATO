@@ -25,6 +25,9 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="TableView" name="tableProdutos">
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="sortingEnabled">
          <bool>true</bool>
         </property>
@@ -41,6 +44,9 @@
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
        <widget class="TableView" name="tableEntregas">
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
         <property name="sortingEnabled">
          <bool>true</bool>
         </property>

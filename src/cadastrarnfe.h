@@ -22,6 +22,7 @@ class CadastrarNFe : public QDialog {
     void on_pushButtonEnviarNFE_clicked();
     void on_pushButtonGerarNFE_clicked();
     void on_tableItens_activated(const QModelIndex &);
+    void on_tableItens_entered(const QModelIndex &);
     void on_tableItens_pressed(const QModelIndex &);
     void updateImpostos();
 

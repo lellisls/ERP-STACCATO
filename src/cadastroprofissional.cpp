@@ -343,3 +343,7 @@ void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text
 void CadastroProfissional::successMessage() {
   QMessageBox::information(this, "Atenção!", "Profissional cadastrado com sucesso!");
 }
+
+void CadastroProfissional::on_tableEndereco_entered(const QModelIndex &) {
+  ui->tableEndereco->resizeColumnsToContents();
+}

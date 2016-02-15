@@ -791,6 +791,8 @@ void CadastrarNFe::on_pushButtonGerarNFE_clicked() { // NOTE: for testing, remov
   close();
 }
 
+void CadastrarNFe::on_tableItens_entered(const QModelIndex &) { ui->tableItens->resizeColumnsToContents(); }
+
 // TODO: replace querys with models
 // TODO: if acbr folders not set ask user
 // TODO: na emissão da nfe perguntar/mostrar o número da sequência

@@ -33,6 +33,9 @@
    </item>
    <item row="3" column="0" colspan="3">
     <widget class="TableView" name="tableEstoque">
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
@@ -43,6 +46,9 @@
    </item>
    <item row="4" column="0" colspan="3">
     <widget class="TableView" name="tableCompra">
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>

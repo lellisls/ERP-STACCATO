@@ -21,6 +21,7 @@ class WidgetOrcamento : public QWidget {
     void montaFiltro();
     void on_pushButtonCriarOrc_clicked();
     void on_table_activated(const QModelIndex &index);
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

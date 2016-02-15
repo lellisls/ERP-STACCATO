@@ -21,6 +21,7 @@ class WidgetLogisticaColeta : public QWidget {
   private slots:
     void on_checkBoxMarcarTodos_clicked(const bool &);
     void on_pushButtonMarcarColetado_clicked();
+    void on_table_entered(const QModelIndex &);
 
   private:
     // attributes

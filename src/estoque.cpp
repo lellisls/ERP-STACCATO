@@ -142,3 +142,5 @@ void Estoque::criarConsumo(const QVariant &idVendaProduto) {
 
   calcularRestante();
 }
+
+void Estoque::on_table_doubleClicked(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

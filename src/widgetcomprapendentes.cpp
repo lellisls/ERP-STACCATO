@@ -236,4 +236,6 @@ void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const doubl
   ui->doubleSpinBoxQuantAvulsoCaixas->setValue(value / ui->doubleSpinBoxQuantAvulso->singleStep());
 }
 
+void WidgetCompraPendentes::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
 // TODO: arrumar interface para nao ficar ambiguo entre compras avulsas

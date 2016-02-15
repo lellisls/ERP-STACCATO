@@ -44,6 +44,7 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonReplicar_clicked();
     void on_spinBoxCaixas_valueChanged(const int &caixas);
     void on_tableProdutos_clicked(const QModelIndex &index);
+    void on_tableProdutos_entered(const QModelIndex &);
 
   signals:
     void finished();

@@ -23,6 +23,8 @@ class ImportarXML : public QDialog {
     void on_pushButtonImportar_clicked();
     void on_pushButtonProcurar_clicked();
     void on_pushButtonReparear_clicked();
+    void on_tableCompra_entered(const QModelIndex &);
+    void on_tableEstoque_entered(const QModelIndex &);
     void openPersistente();
 
   private:

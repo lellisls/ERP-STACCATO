@@ -22,6 +22,7 @@ class WidgetCompraGerar : public QWidget {
     void on_checkBoxMarcarTodos_clicked(const bool &checked);
     void on_pushButtonGerarCompra_clicked();
     void on_tableForn_activated(const QModelIndex &index);
+    void on_tableProdutos_entered(const QModelIndex &);
 
   private:
     // attributes

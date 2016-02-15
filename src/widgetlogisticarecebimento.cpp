@@ -121,3 +121,5 @@ void WidgetLogisticaRecebimento::on_checkBoxMarcarTodos_clicked(const bool &) {
     ui->table->selectRow(row);
   }
 }
+
+void WidgetLogisticaRecebimento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

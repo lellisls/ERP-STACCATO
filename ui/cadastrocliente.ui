@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1115</width>
-    <height>622</height>
+    <height>647</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -685,6 +685,9 @@
          <layout class="QGridLayout" name="gridLayout_21">
           <item row="1" column="0">
            <widget class="TableView" name="tableEndereco">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>

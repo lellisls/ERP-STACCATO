@@ -954,6 +954,10 @@ void Venda::on_pushButtonDevolucao_clicked() {
   devolucao->viewRegisterById(newId);
 }
 
+void Venda::on_tableVenda_entered(const QModelIndex &) { ui->tableVenda->resizeColumnsToContents(); }
+
+void Venda::on_tableFluxoCaixa_entered(const QModelIndex &) { ui->tableFluxoCaixa->resizeColumnsToContents(); }
+
 // NOTE: adicionar credito cliente como forma de pagamento, preferencialmente deixar escolher apenas no pagamento 1,
 // colocar no spinbox o credito do cliente e setar como maximo, jogar o resto do valor para o pgt. 2
 // NOTE: desconto voltando ao fechar?

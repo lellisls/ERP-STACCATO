@@ -23,10 +23,13 @@ class WidgetNfeSaida : public QWidget {
     void on_radioButtonEnviado_clicked();
     void on_radioButtonTodos_clicked();
     void on_lineEditBusca_textChanged(const QString &text);
+    void on_table_entered(const QModelIndex &);
 
   private:
+    // attributes
     Ui::WidgetNfeSaida *ui;
     SqlTableModel model;
+    // methods
     void setupTables();
 };
 

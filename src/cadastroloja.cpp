@@ -276,3 +276,5 @@ bool CadastroLoja::viewRegister(const QModelIndex &index) {
 }
 
 void CadastroLoja::successMessage() { QMessageBox::information(this, "Atenção!", "Loja cadastrada com sucesso!"); }
+
+void CadastroLoja::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }

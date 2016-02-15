@@ -116,4 +116,6 @@ void WidgetLogisticaColeta::on_checkBoxMarcarTodos_clicked(const bool &) {
   }
 }
 
+void WidgetLogisticaColeta::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
 // TODO: alterar tambem o status da compra?

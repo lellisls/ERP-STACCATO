@@ -40,4 +40,6 @@ void WidgetEstoque::on_table_activated(const QModelIndex &index) {
 
 void WidgetEstoque::on_radioButtonMaior_toggled(bool checked) { model.setFilter(checked ? "Quant > 0" : "Quant = 0"); }
 
+void WidgetEstoque::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
 // NOTE: gerenciar lugares de estoque (cadastro/permissoes)

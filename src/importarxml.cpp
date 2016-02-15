@@ -494,6 +494,10 @@ void ImportarXML::parear() {
   modelEstoque.submitAll();
 }
 
+void ImportarXML::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }
+
+void ImportarXML::on_tableCompra_entered(const QModelIndex &) { ui->tableCompra->resizeColumnsToContents(); }
+
 // TODO: corrigir consumo de estoque para consumir parcialmente de forma correta (criar varias linhas:
 // idEstoqueConsumido 1 - quant -10 // idEstoqueConsumido 2 - quant - 20
 // NOTE: se filtro por compra, é necessário a coluna 'selecionado' para escolher qual linha parear?

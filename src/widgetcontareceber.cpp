@@ -28,3 +28,5 @@ QString WidgetContaReceber::updateTables() {
 
   return QString();
 }
+
+void WidgetContaReceber::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

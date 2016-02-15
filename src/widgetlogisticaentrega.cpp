@@ -2,6 +2,7 @@
 
 #include "doubledelegate.h"
 #include "entregascliente.h"
+#include "orcamentoproxymodel.h"
 #include "ui_widgetlogisticaentrega.h"
 #include "usersession.h"
 #include "widgetlogisticaentrega.h"
@@ -19,9 +20,11 @@ WidgetLogisticaEntrega::~WidgetLogisticaEntrega() { delete ui; }
 
 void WidgetLogisticaEntrega::setupTables() {
   model.setTable("view_venda");
+  model.setFilter("statusEntrega = 'ESTOQUE'");
 
-  ui->table->setModel(&model);
+  ui->table->setModel(new OrcamentoProxyModel(&model, this));
   ui->table->setItemDelegate(new DoubleDelegate(this));
+  ui->table->hideColumn("statusEntrega");
 }
 
 QString WidgetLogisticaEntrega::updateTables() {

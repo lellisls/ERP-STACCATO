@@ -1,11 +1,8 @@
 #include <QDate>
-#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
-#include "checkboxdelegate.h"
-#include "comboboxdelegate.h"
 #include "inputdialog.h"
 #include "ui_widgetlogisticacoleta.h"
 #include "widgetlogisticacoleta.h"
@@ -51,58 +48,16 @@ void WidgetLogisticaColeta::TableFornLogistica_activated(const QString &forneced
 }
 
 void WidgetLogisticaColeta::setupTables() {
-  model.setTable("pedido_fornecedor_has_produto");
+  model.setTable("estoque");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  model.setHeaderData("selecionado", "");
-  model.setHeaderData("fornecedor", "Fornecedor");
-  model.setHeaderData("descricao", "Descrição");
-  model.setHeaderData("colecao", "Coleção");
-  model.setHeaderData("quant", "Quant.");
-  model.setHeaderData("un", "Un.");
-  model.setHeaderData("preco", "Preço");
-  model.setHeaderData("formComercial", "Form. Com.");
-  model.setHeaderData("codComercial", "Cód. Com.");
-  model.setHeaderData("codBarras", "Cód. Bar.");
-  model.setHeaderData("idCompra", "Compra");
-  model.setHeaderData("dataRealFat", "Data Fat.");
-  model.setHeaderData("dataPrevColeta", "Prev. Coleta");
-  model.setHeaderData("status", "Status");
 
   model.setFilter("status = 'EM COLETA'");
 
   ui->table->setModel(&model);
-  ui->table->setItemDelegateForColumn("status", new ComboBoxDelegate(this));
-  ui->table->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
-  ui->table->hideColumn("idPedido");
-  ui->table->hideColumn("idLoja");
-  ui->table->hideColumn("item");
-  ui->table->hideColumn("idProduto");
-  ui->table->hideColumn("prcUnitario");
-  ui->table->hideColumn("parcial");
-  ui->table->hideColumn("desconto");
-  ui->table->hideColumn("parcialDesc");
-  ui->table->hideColumn("descGlobal");
-  ui->table->hideColumn("dataPrevCompra");
-  ui->table->hideColumn("dataRealCompra");
-  ui->table->hideColumn("dataPrevConf");
-  ui->table->hideColumn("dataRealConf");
-  ui->table->hideColumn("dataPrevFat");
-  ui->table->hideColumn("dataRealColeta");
-  ui->table->hideColumn("dataPrevEnt");
-  ui->table->hideColumn("dataRealEnt");
-  ui->table->hideColumn("dataPrevReceb");
-  ui->table->hideColumn("dataRealReceb");
-  ui->table->hideColumn("quantUpd");
 }
 
 void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
-  QList<int> lista;
-
-  for (const auto index : model.match(model.index(0, model.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
-                                      Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
-    lista.append(index.row());
-  }
+  auto lista = ui->table->selectionModel()->selectedRows();
 
   if (lista.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
@@ -115,20 +70,14 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
 
   if (inputDlg->exec() != InputDialog::Accepted) return;
 
-  QDate dataColeta = inputDlg->getDate();
-  QDate dataPrevista = inputDlg->getNextDate();
+  QString dataColeta = inputDlg->getDate().toString("yyyy-MM-dd");
+  QString dataPrevista = inputDlg->getNextDate().toString("yyyy-MM-dd");
 
   model.setFilter(filtro);
   model.select();
 
-  for (const auto row : lista) {
-    if (model.data(row, "status").toString() != "EM COLETA") {
-      model.select();
-      QMessageBox::critical(this, "Erro!", "Produto não estava em coleta!");
-      return;
-    }
-
-    if (not model.setData(row, "status", "EM RECEBIMENTO")) {
+  for (const auto item : lista) {
+    if (not model.setData(item.row(), "status", "EM RECEBIMENTO")) {
       QMessageBox::critical(this, "Erro!", "Erro marcando status EM RECEBIMENTO: " + model.lastError().text());
       return;
     }
@@ -136,13 +85,9 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
     // salvar status na venda
     QSqlQuery query;
 
-    query.prepare("UPDATE venda_has_produto SET dataRealColeta = :dataRealColeta, dataPrevReceb = :dataPrevReceb, "
-                  "status = 'EM RECEBIMENTO' WHERE idCompra = :idCompra");
-    query.bindValue(":dataRealColeta", dataColeta);
-    query.bindValue(":dataPrevReceb", dataPrevista);
-    query.bindValue(":idCompra", model.data(row, "idCompra"));
-
-    if (not query.exec()) {
+    if (not query.exec("UPDATE venda_has_produto SET dataRealColeta = '" + dataColeta + "', dataPrevReceb = '" +
+                       dataPrevista + "', status = 'EM RECEBIMENTO' WHERE idCompra = " +
+                       model.data(item.row(), "idCompra").toString().replace(",", " OR idCompra = "))) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
       return;
     }
@@ -152,16 +97,6 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
       return;
     }
     //
-
-    if (not model.setData(row, "dataRealColeta", dataColeta)) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando data da coleta: " + model.lastError().text());
-      return;
-    }
-
-    if (not model.setData(row, "dataPrevReceb", dataPrevista)) {
-      QMessageBox::critical(this, "Erro!", "Erro guardando data prevista: " + model.lastError().text());
-      return;
-    }
   }
 
   if (not model.submitAll()) {
@@ -175,8 +110,10 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
   QMessageBox::information(this, "Aviso!", "Confirmado coleta.");
 }
 
-void WidgetLogisticaColeta::on_checkBoxMarcarTodos_clicked(const bool &checked) {
+void WidgetLogisticaColeta::on_checkBoxMarcarTodos_clicked(const bool &) {
   for (int row = 0; row < model.rowCount(); ++row) {
-    model.setData(row, "selecionado", checked);
+    ui->table->selectRow(row);
   }
 }
+
+// TODO: alterar tambem o status da compra?

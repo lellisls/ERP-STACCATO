@@ -19,7 +19,7 @@ class WidgetLogisticaRecebimento : public QWidget {
     void TableFornLogistica_activated(const QString &fornecedor);
 
   private slots:
-    void on_checkBoxMarcarTodos_clicked(const bool &checked);
+    void on_checkBoxMarcarTodos_clicked(const bool &);
     void on_pushButtonMarcarRecebido_clicked();
 
   private:

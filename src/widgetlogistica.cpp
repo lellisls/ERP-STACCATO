@@ -13,10 +13,9 @@ WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::
 WidgetLogistica::~WidgetLogistica() { delete ui; }
 
 void WidgetLogistica::setupTables() {
-  model.setTable("view_fornecedor_logistica");
+  model.setTable("view_fornecedor_logistica2");
 
   model.setHeaderData("fornecedor", "Fornecedor");
-  model.setHeaderData("COUNT(fornecedor)", "Itens");
 
   ui->tableForn->setModel(&model);
 }

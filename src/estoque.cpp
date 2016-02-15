@@ -28,10 +28,12 @@ void Estoque::setupTables() {
   }
 
   ui->table->setModel(new EstoqueProxyModel(&model, this));
-  ui->table->hideColumn("idCompra");
-  ui->table->hideColumn("idVendaProduto");
-  ui->table->hideColumn("idProduto");
-  ui->table->hideColumn("idNFe");
+  //  ui->table->hideColumn("idEstoque");
+  //  ui->table->hideColumn("idEstoqueConsumido");
+  //  ui->table->hideColumn("idCompra");
+  //  ui->table->hideColumn("idVendaProduto");
+  //  ui->table->hideColumn("idProduto");
+  //  ui->table->hideColumn("idNFe");
   ui->table->hideColumn("quantUpd");
 }
 
@@ -49,13 +51,23 @@ void Estoque::on_table_activated(const QModelIndex &index) {
   viewer->exibirXML(query.value("xml").toByteArray());
 }
 
-void Estoque::viewRegisterById(const QString &codComercial) { // TODO: change this to idEstoque
-  if (codComercial.isEmpty()) {
+void Estoque::calcularRestante() {
+  double quant = 0;
+
+  for (int row = 0; row < model.rowCount(); ++row) {
+    quant += model.data(row, "quant").toDouble();
+  }
+
+  ui->doubleSpinBoxRestante->setValue(quant);
+}
+
+void Estoque::viewRegisterById(const QString &idEstoque) {
+  if (idEstoque.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Estoque não encontrado!");
     return;
   }
 
-  model.setFilter("codComercial = '" + codComercial + "'");
+  model.setFilter("idEstoque = " + idEstoque);
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
@@ -68,34 +80,36 @@ void Estoque::viewRegisterById(const QString &codComercial) { // TODO: change th
     ui->table->resizeColumnToContents(column);
   }
 
+  calcularRestante();
+
   show();
 }
 
 void Estoque::on_pushButtonExibirNfe_clicked() {
-  QSqlQuery query;
-  query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-  query.bindValue(":idNFe", model.data(0, "idNFe"));
+  QStringList idList = model.data(0, "idNFe").toString().split(",");
 
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando nota fiscal: " + query.lastError().text());
-    return;
+  for (auto id : idList) {
+    QSqlQuery query;
+    query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
+    query.bindValue(":idNFe", id);
+
+    if (not query.exec() or not query.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando nota fiscal: " + query.lastError().text());
+      return;
+    }
+
+    XML_Viewer *viewer = new XML_Viewer(this);
+    viewer->exibirXML(query.value("xml").toByteArray());
   }
-
-  XML_Viewer *viewer = new XML_Viewer(this);
-  viewer->exibirXML(query.value("xml").toByteArray());
 }
 
-void Estoque::criarConsumo() {
-  // TODO: implement
+void Estoque::criarConsumo(const QVariant &idVendaProduto) {
+  showMaximized();
 
   for (int row = 0; row < model.rowCount(); ++row) {
-    QString codComercial = model.data(row, "codComercial").toString();
-    QString idCompra = model.data(row, "idCompra").toString().replace(",", " OR idCompra = ");
-
     QSqlQuery query;
-    if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto "
-                       "= p.idProduto WHERE p.codComercial = '" +
-                       codComercial + "' AND idCompra = " + idCompra + " AND status = 'EM FATURAMENTO'")) {
+
+    if (not query.exec("SELECT * FROM venda_has_produto WHERE idVendaProduto = " + idVendaProduto.toString())) {
       QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + model.lastError().text());
       return;
     }
@@ -117,6 +131,14 @@ void Estoque::criarConsumo() {
       if (not model.setData(newRow, "quantUpd", 4)) return; // DarkGreen
       if (not model.setData(newRow, "idVendaProduto", query.value("idVendaProduto"))) return;
       if (not model.setData(newRow, "idEstoqueConsumido", model.data(row, "idEstoque"))) return;
+      if (not model.setData(newRow, "status", "CONSUMO")) return;
     }
   }
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + model.lastError().text());
+    return;
+  }
+
+  calcularRestante();
 }

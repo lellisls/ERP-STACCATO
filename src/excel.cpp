@@ -198,15 +198,14 @@ void Excel::gerarExcel() {
 
     QString loes;
 
-    if (query.first()) {
-      loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
-    }
+    if (query.first()) loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
 
     xlsx.write("A" + QString::number(12 + row), modelItem.data(row, "fornecedor").toString() + loes);
     xlsx.write("B" + QString::number(12 + row), modelItem.data(row, "codComercial"));
     QString formComercial = modelItem.data(row, "formComercial").toString();
-    xlsx.write("C" + QString::number(12 + row),
-               modelItem.data(row, "produto").toString() + (formComercial.isEmpty() ? "" : " (" + formComercial + ")"));
+    xlsx.write("C" + QString::number(12 + row), modelItem.data(row, "produto").toString() +
+               (formComercial.isEmpty() ? "" : " (" + formComercial + ")") +
+               (loes.isEmpty() ? "" : " -" + loes));
     xlsx.write("H" + QString::number(12 + row), modelItem.data(row, "obs"));
 
     double prcUn = modelItem.data(row, "prcUnitario").toDouble();

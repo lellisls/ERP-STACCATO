@@ -21,5 +21,7 @@ void VendasMes::setupTables(const int usuario) {
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela!");
 
   ui->table->setModel(&model);
-  ui->table->hideColumn("idUsuario");
+//  ui->table->hideColumn("idUsuario");
 }
+
+// TODO: excluir cancelados/devolucao do calculo

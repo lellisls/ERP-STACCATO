@@ -15,7 +15,6 @@ class WidgetCompraFaturar : public QWidget {
   public:
     explicit WidgetCompraFaturar(QWidget *parent = 0);
     ~WidgetCompraFaturar();
-    void tableFornCompras_activated(const QString &fornecedor);
     QString updateTables();
 
   private slots:

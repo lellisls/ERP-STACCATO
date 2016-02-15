@@ -51,6 +51,7 @@ void WidgetVenda::setupTables() {
   model.setTable("view_venda");
 
   ui->table->setModel(new OrcamentoProxyModel(&model, this));
+  ui->table->hideColumn("statusEntrega");
   ui->table->setItemDelegateForColumn("Bruto", doubledelegate);
   ui->table->setItemDelegateForColumn("Líquido", doubledelegate);
   ui->table->setItemDelegateForColumn("Frete", doubledelegate);

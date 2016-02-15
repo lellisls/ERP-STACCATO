@@ -70,6 +70,9 @@
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
+           <property name="minimum">
+            <double>-9999.000000000000000</double>
+           </property>
            <property name="maximum">
             <double>9999.989999999999782</double>
            </property>

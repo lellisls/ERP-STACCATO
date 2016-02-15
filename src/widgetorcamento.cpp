@@ -88,3 +88,7 @@ void WidgetOrcamento::montaFiltro() {
 
   ui->table->resizeColumnsToContents();
 }
+
+// TODO: transformar os filtros em checkbox
+// TODO: colocar tela de total orcamento (copiar do total venda mes)
+// TODO: colocar autoredimensionar no scroll do table

@@ -82,3 +82,5 @@ void storeSelection() {
 // NOTE: criar um delegate unidade para concatenar a unidade na coluna quant?
 // TODO: aparentemente nao precisa fazer date.tostring(yyyy/dd/mm) para converter para o formato do bd
 // TODO: diferenciar portinari loes para questao de comissao no excel
+// TODO: colocar autoredimensionar no scroll dos tables
+// NOTE: opcao de salvar excel/pdf por mes

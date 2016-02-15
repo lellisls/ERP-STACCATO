@@ -196,6 +196,7 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     }
 
     // salvar status na venda
+    // TODO: update only where idVenda matches
     QSqlQuery query;
     query.prepare("UPDATE venda_has_produto SET idCompra = :idCompra, dataRealCompra = :dataRealCompra, dataPrevConf = "
                   ":dataPrevConf, status = 'EM COMPRA' WHERE idProduto = :idProduto");

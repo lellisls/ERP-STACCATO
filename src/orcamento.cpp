@@ -258,14 +258,7 @@ bool Orcamento::generateId() {
 
   int last = 0;
 
-  if (query.first()) {
-    QString temp = query.value("idOrcamento").toString().mid(id.size());
-
-    if (temp.endsWith("O")) temp.remove(temp.size() - 1, 1);
-    if (temp.endsWith("R")) temp.remove(temp.size() - 1, 1);
-
-    last = temp.toInt();
-  }
+  if (query.first()) last = query.value("idOrcamento").toString().remove(id).left(4).toInt();
 
   id += QString("%1").arg(last + 1, 4, 10, QChar('0'));
   id += ui->checkBoxRepresentacao->isChecked() ? "R" : "";
@@ -931,3 +924,4 @@ void Orcamento::successMessage() { QMessageBox::information(this, "Atenção!", 
 // NOTE: model.submitAll faz mapper voltar para -1, select tambem (talvez porque submitAll chama select)
 // TODO: se produto for estoque/promocao indicar na tela
 // TODO: se produto for estoque permitir vender por peça
+// TODO: ao trocar de produto dar clear no desconto

@@ -15,7 +15,8 @@ class Estoque : public QDialog {
   public:
     explicit Estoque(QWidget *parent = 0);
     ~Estoque();
-    void viewRegisterById(const QString &codComercial);
+    void viewRegisterById(const QString &idEstoque);
+    void criarConsumo(const QVariant &idVendaProduto);
 
   private slots:
     void on_table_activated(const QModelIndex &index);
@@ -27,7 +28,7 @@ class Estoque : public QDialog {
     SqlTableModel model;
     // methods
     void setupTables();
-    void criarConsumo();
+    void calcularRestante();
 };
 
 #endif // ESTOQUE_H

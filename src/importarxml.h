@@ -16,6 +16,7 @@ class ImportarXML : public QDialog {
   public:
     explicit ImportarXML(const QString &idCompra, QWidget *parent = 0);
     ~ImportarXML();
+    void setData(const QString &dataReal, const QString &dataPrevista);
 
   private slots:
     void on_pushButtonCancelar_clicked();
@@ -30,6 +31,9 @@ class ImportarXML : public QDialog {
     int idNFe;
     SqlTableModel modelCompra;
     SqlTableModel modelEstoque;
+    QString dataReal;
+    QString dataPrevista;
+    QString idCompra;
 
     enum FieldColors {
       White = 0,     // Não processado

@@ -960,3 +960,10 @@ void Venda::on_pushButtonDevolucao_clicked() {
 // NOTE: colocar sistema para edicao?
 // NOTE: tela de venda dando dialog de confirmacao de fechar/salvar??
 // NOTE: ao cancelar verificar se produto nao aparece mais nas telas de compra
+// TODO: ver o que esta causando observacao sendo salva como html no servidor
+// TODO: corrigir vendido no mes (esta calculando muito errado)
+// TODO: ativar ordenacao
+// TODO: na devolucao marcar status como pendente
+// TODO: marcar idVendaProduto como UNIQUE
+// NOTE: para fazer prazoEntrega por produto primeiro escolher o prazo 'global', setar ele em todos os produtos e depois
+// alterar os produtos que tenham prazo diferenciado

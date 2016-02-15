@@ -71,19 +71,24 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
 void ProdutosPendentes::setupTables() {
   modelProdutos.setTable("view_produto_pendente");
 
+  modelProdutos.setHeaderData("status", "Status");
   modelProdutos.setHeaderData("fornecedor", "Fornecedor");
   modelProdutos.setHeaderData("produto", "Descrição");
+  modelProdutos.setHeaderData("colecao", "Coleção");
   modelProdutos.setHeaderData("formComercial", "Form. Com.");
+  modelProdutos.setHeaderData("caixas", "Caixas");
+  modelProdutos.setHeaderData("kgcx", "Kg./Cx.");
   modelProdutos.setHeaderData("quant", "Quant.");
   modelProdutos.setHeaderData("un", "Un.");
   modelProdutos.setHeaderData("codComercial", "Cód. Com.");
-  modelProdutos.setHeaderData("status", "Status");
-  modelProdutos.setHeaderData("estoque", "Estoque");
+  modelProdutos.setHeaderData("codBarras", "Cód. Barras");
 
   ui->tableProdutos->setModel(&modelProdutos);
+  ui->tableProdutos->hideColumn("idVendaProduto");
+  ui->tableProdutos->hideColumn("idProduto");
+  ui->tableProdutos->hideColumn("idCompra");
   ui->tableProdutos->resizeColumnsToContents();
 
-  //  modelEstoque.setTable("estoque");
   modelEstoque.setTable("view_estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -92,7 +97,6 @@ void ProdutosPendentes::setupTables() {
   }
 
   ui->tableEstoque->setModel(&modelEstoque);
-  ui->tableEstoque->hideColumn("idEstoque");
   ui->tableEstoque->hideColumn("idCompra");
   ui->tableEstoque->hideColumn("idVendaProduto");
   ui->tableEstoque->hideColumn("idProduto");
@@ -121,12 +125,31 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
 }
 
 void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
+  // TODO: verificar se a quantidade é suficiente
+  // TODO: para o consumo de estoque deve selecionar uma linha em cima e uma em baixo
+
+  auto list = ui->tableEstoque->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
+    return;
+  }
+
   Estoque *estoque = new Estoque(this);
-  estoque->viewRegisterById(modelProdutos.data(0, "codComercial").toString());
+  estoque->viewRegisterById(modelEstoque.data(list.first().row(), "idEstoque").toString());
+  estoque->criarConsumo(modelProdutos.data(0, "idVendaProduto"));
   estoque->show();
 
   // NOTE: para criar consumo usar a logica de parear? para os casos em que um unico lote nao seria suficiente para
   // completar a quantidade
+
+  modelEstoque.select();
+  modelProdutos.select();
+
+  // TODO: apos consumir alterar o status do venda_has_produto (verificar logica na parte de faturamento, setar datas
+  // etc)
+
+  // TODO: apos consumir estoque recarregar tabela para mostrar a nova quantidade restante
 }
 
 void ProdutosPendentes::insere(const QDate &dataPrevista) {

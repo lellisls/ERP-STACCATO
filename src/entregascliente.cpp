@@ -73,7 +73,19 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
 
   CadastrarNFe *nfe = new CadastrarNFe(idVenda, this);
   nfe->prepararNFe(lista);
-  nfe->show();
+  //  nfe->show();
+  nfe->exec();
+
+  if (not modelProdutos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelProdutos.lastError().text());
+    return;
+  }
+
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
+  }
+
+  ui->tableProdutos->resizeColumnsToContents();
 }
 
 void EntregasCliente::viewEntrega(const QString &idVenda) {
@@ -93,3 +105,5 @@ void EntregasCliente::viewEntrega(const QString &idVenda) {
   ui->tableProdutos->resizeColumnsToContents();
   ui->tableEntregas->resizeColumnsToContents();
 }
+
+// TODO: filtrar a tabela de cima idNfeSaida vazio e a baixo como diferente de vazio

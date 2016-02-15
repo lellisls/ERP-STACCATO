@@ -70,7 +70,7 @@ void ImportaProdutos::verificaSeRepresentacao() {
   }
 
   if (queryFornecedor.first()) {
-    ui->checkBoxRepresentacao->setChecked(queryFornecedor.value(0).toBool());
+    ui->checkBoxRepresentacao->setChecked(queryFornecedor.value("representacao").toBool());
   }
 }
 
@@ -99,7 +99,6 @@ void ImportaProdutos::atualizaProduto() {
 void ImportaProdutos::importarTabela(const QString &tipo) {
   bool canceled = false;
 
-  QSqlQuery("SET AUTOCOMMIT=0").exec();
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 

@@ -40,34 +40,36 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
   }
 
   if (type == ConfirmarCompra) {
+    // TODO: on table value changed update total on right
+
     ui->groupBoxData->show();
     ui->groupBoxDataPreco->show();
-    //    ui->framePagamentos->show();
+    ui->framePagamentos->show();
 
     ui->labelEvento->setText("Data confirmação:");
     ui->labelProximoEvento->setText("Data prevista faturamento:");
 
     // NOTE: make this runtime changeable
-    //    QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque",
-    //                     "Dinheiro",           "Boleto",           "Transf. Banc."};
+    QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque",
+                     "Dinheiro",           "Boleto",           "Transf. Banc.",     "Crédito"};
 
-    //    ui->comboBoxPgt1->insertItems(0, list);
-    //    ui->comboBoxPgt2->insertItems(0, list);
-    //    ui->comboBoxPgt3->insertItems(0, list);
+    ui->comboBoxPgt1->insertItems(0, list);
+    ui->comboBoxPgt2->insertItems(0, list);
+    ui->comboBoxPgt3->insertItems(0, list);
 
-    //    ui->dateEditPgt1->setDate(QDate::currentDate());
-    //    ui->dateEditPgt2->setDate(QDate::currentDate());
-    //    ui->dateEditPgt3->setDate(QDate::currentDate());
+    ui->dateEditPgt1->setDate(QDate::currentDate());
+    ui->dateEditPgt2->setDate(QDate::currentDate());
+    ui->dateEditPgt3->setDate(QDate::currentDate());
 
-    //    connect(ui->comboBoxPgt1Parc, &QComboBox::currentTextChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->comboBoxPgt2Parc, &QComboBox::currentTextChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->comboBoxPgt3Parc, &QComboBox::currentTextChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->dateEditPgt1, &QDateEdit::dateChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->dateEditPgt2, &QDateEdit::dateChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->dateEditPgt3, &QDateEdit::dateChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->lineEditPgt1, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->lineEditPgt2, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
-    //    connect(ui->lineEditPgt3, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->comboBoxPgt1Parc, &QComboBox::currentTextChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->comboBoxPgt2Parc, &QComboBox::currentTextChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->comboBoxPgt3Parc, &QComboBox::currentTextChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->dateEditPgt1, &QDateEdit::dateChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->dateEditPgt2, &QDateEdit::dateChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->dateEditPgt3, &QDateEdit::dateChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->lineEditPgt1, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->lineEditPgt2, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(ui->lineEditPgt3, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
 
     // NOTE: readd this later
     //    ui->tableView->showColumn(model.fieldIndex("selecionado"));
@@ -120,30 +122,30 @@ void InputDialog::on_pushButtonSalvar_clicked() {
   if (type == ConfirmarCompra) {
     // NOTE: confirmar apenas os que estiverem marcados
 
-//    if (not qFuzzyCompare(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() +
-//                          ui->doubleSpinBoxPgt3->value(),
-//                          ui->doubleSpinBoxTotalPag->value())) {
-//      QMessageBox::critical(this, "Erro!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
-//      return;
-//    }
+    //    if (not qFuzzyCompare(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() +
+    //                          ui->doubleSpinBoxPgt3->value(),
+    //                          ui->doubleSpinBoxTotalPag->value())) {
+    //      QMessageBox::critical(this, "Erro!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
+    //      return;
+    //    }
 
-//    if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
-//      QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 1.");
-//      ui->doubleSpinBoxPgt1->setFocus();
-//      return;
-//    }
+    //    if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
+    //      QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 1.");
+    //      ui->doubleSpinBoxPgt1->setFocus();
+    //      return;
+    //    }
 
-//    if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
-//      QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 2.");
-//      ui->doubleSpinBoxPgt2->setFocus();
-//      return;
-//    }
+    //    if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
+    //      QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 2.");
+    //      ui->doubleSpinBoxPgt2->setFocus();
+    //      return;
+    //    }
 
-//    if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
-//      QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 3.");
-//      ui->doubleSpinBoxPgt3->setFocus();
-//      return;
-//    }
+    //    if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
+    //      QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 3.");
+    //      ui->doubleSpinBoxPgt3->setFocus();
+    //      return;
+    //    }
   }
 
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
@@ -155,13 +157,14 @@ void InputDialog::on_pushButtonSalvar_clicked() {
     return;
   }
 
-//  if (type == ConfirmarCompra) {
-//    if (not modelFluxoCaixa.submitAll()) {
-//      QMessageBox::critical(this, "Erro!", "Erro salvando dados do pagamento: " + modelFluxoCaixa.lastError().text());
-//      QSqlQuery("ROLLBACK").exec();
-//      return;
-//    }
-//  }
+  //  if (type == ConfirmarCompra) {
+  //    if (not modelFluxoCaixa.submitAll()) {
+  //      QMessageBox::critical(this, "Erro!", "Erro salvando dados do pagamento: " +
+  //      modelFluxoCaixa.lastError().text());
+  //      QSqlQuery("ROLLBACK").exec();
+  //      return;
+  //    }
+  //  }
 
   QSqlQuery("COMMIT").exec();
 

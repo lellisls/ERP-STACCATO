@@ -35,7 +35,7 @@ QString WidgetEstoque::updateTables() {
 
 void WidgetEstoque::on_table_activated(const QModelIndex &index) {
   Estoque *estoque = new Estoque(this);
-  estoque->viewRegisterById(model.data(index.row(), "Cód Com").toString());
+  estoque->viewRegisterById(model.data(index.row(), "idEstoque").toString());
 }
 
 void WidgetEstoque::on_radioButtonMaior_toggled(bool checked) { model.setFilter(checked ? "Quant > 0" : "Quant = 0"); }

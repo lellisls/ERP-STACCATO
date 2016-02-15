@@ -152,9 +152,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
 
     QString loes;
 
-    if (query.first()) {
-      loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
-    }
+    if (query.first()) loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
 
     paramValue = modelItem.data(recNo, "fornecedor").toString() + loes;
   }
@@ -162,9 +160,23 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
   if (paramName == "Código") paramValue = queryProduto.value("codComercial");
 
   if (paramName == "Nome do produto") {
+    QSqlQuery query;
+    query.prepare("SELECT ui FROM produto WHERE idProduto = :idProduto");
+    query.bindValue(":idProduto", modelItem.data(recNo, "idProduto"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(parent, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
+      return;
+    }
+
+    QString loes;
+
+    if (query.first()) loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
+
     QString produto = modelItem.data(recNo, "produto").toString();
     QString formComercial = modelItem.data(recNo, "formComercial").toString();
-    paramValue = produto + (formComercial.isEmpty() ? "" : " (" + formComercial + ")");
+    paramValue =
+        produto + (formComercial.isEmpty() ? "" : " (" + formComercial + ")") + (loes.isEmpty() ? "" : " -" + loes);
   }
 
   if (paramName == "Ambiente") paramValue = modelItem.data(recNo, "obs");

@@ -12,7 +12,8 @@
 #include "ui_importarxml.h"
 #include "xml.h"
 
-ImportarXML::ImportarXML(const QString &idCompra, QWidget *parent) : QDialog(parent), ui(new Ui::ImportarXML) {
+ImportarXML::ImportarXML(const QString &idCompra, QWidget *parent)
+  : QDialog(parent), ui(new Ui::ImportarXML), idCompra(idCompra) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -66,9 +67,10 @@ void ImportarXML::setupTables(const QString &idCompra) {
 }
 
 void ImportarXML::on_pushButtonImportar_clicked() {
+  // TODO: colocar inputDialog aqui?
   //--------------
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
-    modelEstoque.setData(row, "status", modelEstoque.data(row, "quant").toDouble() < 0 ? "PRÉ-CONSUMO" : "ESTOQUE");
+    modelEstoque.setData(row, "status", modelEstoque.data(row, "quant").toDouble() < 0 ? "PRÉ-CONSUMO" : "EM COLETA");
   }
   //--------------
 
@@ -82,7 +84,7 @@ void ImportarXML::on_pushButtonImportar_clicked() {
   }
 
   if (not ok) {
-    QMessageBox::critical(this, "Erro!", "Nenhum produto de compra foi pareado!");
+    QMessageBox::critical(this, "Erro!", "Nem todas as compras estão ok!");
     return;
   }
 
@@ -102,15 +104,42 @@ void ImportarXML::on_pushButtonImportar_clicked() {
 
   if (not modelEstoque.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela estoque: " + modelEstoque.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
+    close();
     return;
   }
 
   if (not modelCompra.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela compra: " + modelCompra.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
+    close();
     return;
   }
+
+  //------------------------------
+
+  QSqlQuery query;
+
+  if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
+                     dataPrevista + "', status = 'EM COLETA' WHERE idCompra = " + idCompra)) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
+    close();
+    return;
+  }
+
+  // salvar status na venda
+  if (not query.exec("UPDATE venda_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
+                     dataPrevista + "' WHERE idCompra = " + idCompra)) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    close();
+    return;
+  }
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    close();
+    return;
+  }
+
+  //-------------------------------
 
   QSqlQuery("COMMIT").exec();
 
@@ -122,12 +151,50 @@ void ImportarXML::limparAssociacoes() {
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
     modelEstoque.setData(row, "quantUpd", 0);
 
-    if (modelEstoque.data(row, "quant").toDouble() < 0) modelEstoque.removeRow(row);
+    QString codComercial = modelEstoque.data(row, "codComercial").toString();
+    QString idCompra = modelEstoque.data(row, "idCompra").toString().replace(",", " OR idCompra = ");
+
+    //    if(idCompra.contains("D")) continue;
+
+    QSqlQuery query;
+
+    //    if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON
+    //    v.idProduto "
+    //                       "= p.idProduto WHERE p.codComercial = '" +
+    //                       codComercial + "' AND idCompra = " + idCompra + " AND status = 'EM COLETA'")) {
+    if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto "
+                       "= p.idProduto WHERE p.codComercial = '" +
+                       codComercial + "' AND status = 'EM COLETA'")) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + modelEstoque.lastError().text());
+      close();
+      return;
+    }
+
+    while (query.next()) {
+      QSqlQuery query2;
+
+      if (not query2.exec("UPDATE venda_has_produto SET status = 'EM FATURAMENTO' WHERE idVendaProduto = " +
+                          query.value("idVendaProduto").toString())) {
+        QMessageBox::critical(this, "Erro!",
+                              "Erro atualizando status do produto da venda: " + query2.lastError().text());
+        close();
+        return;
+      }
+    }
+
+    //    if (modelEstoque.data(row, "quant").toDouble() < 0) modelEstoque.removeRow(row);
+    //    if (modelEstoque.data(row, "quantUpd") == DarkGreen) modelEstoque.removeRow(row);
+    if (modelEstoque.data(row, "idVendaProduto") != 0) modelEstoque.removeRow(row);
   }
 
   for (int row = 0; row < modelCompra.rowCount(); ++row) {
     modelCompra.setData(row, "quantUpd", 0);
     modelCompra.setData(row, "quantConsumida", 0);
+  }
+
+  if (not modelEstoque.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro removendo linhas do estoque: " + modelEstoque.lastError().text());
+    return;
   }
 }
 
@@ -152,11 +219,11 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
   QSqlQuery query;
   if (not query.exec("SELECT descricao FROM loja WHERE descricao > '' AND descricao != 'CD'")) {
     QMessageBox::critical(this, "Erro!", "Erro buscando lojas: " + query.lastError().text());
+    close();
     return;
   }
 
-  QStringList lojas;
-  lojas << "CD";
+  QStringList lojas = {"CD"};
 
   while (query.next()) {
     lojas << query.value("descricao").toString();
@@ -172,7 +239,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
   // generate ids for estoque
   if (not modelEstoque.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro gerando id estoque: " + modelEstoque.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
+    close();
     return;
   }
 
@@ -180,7 +247,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
 
   if (not modelEstoque.submitAll() and not modelCompra.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando estoque e compra: " + modelEstoque.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
+    close();
     return;
   }
 
@@ -193,9 +260,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
     }
   }
 
-  if (ok) {
-    ui->pushButtonProcurar->setDisabled(true);
-  }
+  if (ok) ui->pushButtonProcurar->setDisabled(true);
 
   ui->tableEstoque->resizeColumnsToContents();
   ui->tableCompra->resizeColumnsToContents();
@@ -232,9 +297,11 @@ void ImportarXML::associarItens(QModelIndex &item, int row, double &estoqueConsu
 
   QString idEstoqueBaixo = modelCompra.data(item.row(), "idEstoque").toString();
   QString idEstoqueCima = modelEstoque.data(row, "idEstoque").toString();
+
   if (not idEstoqueBaixo.contains(idEstoqueCima)) {
     idEstoqueBaixo = idEstoqueBaixo.isEmpty() ? idEstoqueCima : idEstoqueBaixo + "," + idEstoqueCima;
   }
+
   modelCompra.setData(item.row(), "idEstoque", idEstoqueBaixo);
 
   QStringList idsEstoque = idEstoqueBaixo.split(",");
@@ -265,7 +332,7 @@ void ImportarXML::associarItens(QModelIndex &item, int row, double &estoqueConsu
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro salvando idCompra em NFe: " + query.lastError().text());
-      QSqlQuery("ROLLBACK").exec();
+      close();
       return;
     }
   }
@@ -281,19 +348,45 @@ bool ImportarXML::lerXML(QFile &file) {
 
 void ImportarXML::criarConsumo() {
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
+    if (modelEstoque.data(row, "quant").toDouble() < 0) continue;
+
     QString codComercial = modelEstoque.data(row, "codComercial").toString();
     QString idCompra = modelEstoque.data(row, "idCompra").toString().replace(",", " OR idCompra = ");
 
     QSqlQuery query;
+
     if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto "
                        "= p.idProduto WHERE p.codComercial = '" +
                        codComercial + "' AND idCompra = " + idCompra + " AND status = 'EM FATURAMENTO'")) {
+      //    if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON
+      //    v.idProduto "
+      //                       "= p.idProduto WHERE p.codComercial = '" +
+      //                       codComercial + "' AND status = 'EM FATURAMENTO'")) {
       QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + modelEstoque.lastError().text());
+      close();
       return;
     }
 
+    qDebug() << "query size: " << query.size();
+
     while (query.next()) {
-      if (query.value("quant") > modelEstoque.data(row, "quant")) continue;
+      //----------------------------------
+      auto list = modelEstoque.match(modelEstoque.index(0, modelEstoque.fieldIndex("idEstoque")), Qt::DisplayRole,
+                                     modelEstoque.data(row, "idEstoque"), -1);
+
+      double quantTemp = 0;
+
+      for (auto item : list) {
+        quantTemp += modelEstoque.data(item.row(), "quant").toDouble();
+      }
+
+      //      qDebug() << "idEstoque: " << modelEstoque.data(row, "idEstoque");
+      //      qDebug() << "quant: " << quantTemp;
+      //----------------------------------
+
+      //      if (query.value("quant") > modelEstoque.data(row, "quant")) continue;
+      qDebug() << "venda quant: " << query.value("quant").toDouble();
+      if (query.value("quant") > quantTemp) continue;
 
       int newRow = modelEstoque.rowCount();
 
@@ -309,6 +402,17 @@ void ImportarXML::criarConsumo() {
       if (not modelEstoque.setData(newRow, "quantUpd", DarkGreen)) return;
       if (not modelEstoque.setData(newRow, "idVendaProduto", query.value("idVendaProduto"))) return;
       if (not modelEstoque.setData(newRow, "idEstoqueConsumido", modelEstoque.data(row, "idEstoque"))) return;
+
+      QSqlQuery query2;
+
+      if (not query2.exec("UPDATE venda_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
+                          dataPrevista + "', status = 'EM COLETA' WHERE idVendaProduto = " +
+                          query.value("idVendaProduto").toString())) {
+        QMessageBox::critical(this, "Erro!",
+                              "Erro atualizando status do produto da venda: " + query2.lastError().text());
+        close();
+        return;
+      }
     }
   }
 }
@@ -334,6 +438,11 @@ void ImportarXML::openPersistente() {
   }
 }
 
+void ImportarXML::setData(const QString &dataReal, const QString &dataPrevista) {
+  this->dataReal = dataReal;
+  this->dataPrevista = dataPrevista;
+}
+
 void ImportarXML::parear() {
   limparAssociacoes();
 
@@ -344,7 +453,7 @@ void ImportarXML::parear() {
 
     if (list.size() == 0) {
       if (not modelEstoque.setData(row, "quantUpd", Red)) {
-        QSqlQuery("ROLLBACK").exec();
+        close();
         return;
       }
 
@@ -368,25 +477,31 @@ void ImportarXML::parear() {
   }
 
   //---------------------------
-  bool ok = true;
+  //  bool ok = true;
 
-  for (int row = 0; row < modelCompra.rowCount(); ++row) {
-    if (modelCompra.data(row, "quantUpd") != Green) {
-      ok = false;
-      break;
-    }
-  }
+  //  for (int row = 0; row < modelCompra.rowCount(); ++row) {
+  //    if (modelCompra.data(row, "quantUpd") != Green) {
+  //      ok = false;
+  //      break;
+  //    }
+  //  }
 
-  if (ok) {
-    criarConsumo();
-  }
+  //  if (ok) criarConsumo();
+  criarConsumo();
 
   //---------------------------
 
   modelEstoque.submitAll();
 }
 
-// TODO: corrigir consumo de estoque para consumir parcialmente de forma correta
+// TODO: corrigir consumo de estoque para consumir parcialmente de forma correta (criar varias linhas:
+// idEstoqueConsumido 1 - quant -10 // idEstoqueConsumido 2 - quant - 20
 // NOTE: se filtro por compra, é necessário a coluna 'selecionado' para escolher qual linha parear?
 // NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir
 // items na arvore?)
+// TODO: verificar no servidor os consumos feitos dobrados
+// TODO: deixar editar o codComercial apenas na tabela de cima para evitar inconsistencias
+// TODO: algum erro no reparear que esta sumindo consumos
+// TODO: nao bloquear importacao pela tabela de baixo (para os casos da nota vir com parte dos produtos)
+// TODO: setar selecionado 0 antes de salvar a tabela de baixo
+// TODO: colocar status na tabela estoque mais a esquerda

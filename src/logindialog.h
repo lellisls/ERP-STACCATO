@@ -4,25 +4,25 @@
 #include <QDialog>
 
 namespace Ui {
-  class LoginDialog;
+class LoginDialog;
 }
 
 class LoginDialog : public QDialog {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit LoginDialog(QWidget *parent = 0);
-    ~LoginDialog();
+public:
+  explicit LoginDialog(QWidget *parent = 0);
+  ~LoginDialog();
 
-  private slots:
-    void on_pushButtonConfig_clicked();
-    void on_pushButtonLogin_clicked();
+private slots:
+  void on_pushButtonConfig_clicked();
+  void on_pushButtonLogin_clicked();
 
-  private:
-    // attributes
-    Ui::LoginDialog *ui;
-    // methods
-    bool dbConnect();
+private:
+  // attributes
+  Ui::LoginDialog *ui;
+  // methods
+  bool dbConnect();
 };
 
 #endif // LOGINDIALOG_H

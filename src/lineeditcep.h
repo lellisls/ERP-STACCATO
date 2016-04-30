@@ -4,18 +4,18 @@
 #include <QLineEdit>
 
 class LineEditCEP : public QLineEdit {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit LineEditCEP(QWidget *parent);
-    ~LineEditCEP();
-    bool isValid() const;
+public:
+  explicit LineEditCEP(QWidget *parent);
+  ~LineEditCEP();
+  bool isValid() const;
 
-  private:
-    Q_PROPERTY(QString value READ getValue WRITE setValue STORED false)
+private:
+  Q_PROPERTY(QString value READ getValue WRITE setValue STORED false)
 
-    QString getValue() const;
-    void setValue(const QString &value);
+  QString getValue() const;
+  void setValue(const QString &value);
 };
 
 #endif // LINEEDITCEP_H

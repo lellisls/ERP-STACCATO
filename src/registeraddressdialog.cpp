@@ -6,7 +6,7 @@
 #include "registeraddressdialog.h"
 
 RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString &primaryKey, QWidget *parent)
-  : RegisterDialog(table, primaryKey, parent) {
+    : RegisterDialog(table, primaryKey, parent) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 

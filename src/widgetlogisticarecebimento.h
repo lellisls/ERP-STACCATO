@@ -6,29 +6,29 @@
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class WidgetLogisticaRecebimento;
+class WidgetLogisticaRecebimento;
 }
 
 class WidgetLogisticaRecebimento : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetLogisticaRecebimento(QWidget *parent = 0);
-    ~WidgetLogisticaRecebimento();
-    bool updateTables(QString &error);
-    void TableFornLogistica_activated(const QString &fornecedor);
+public:
+  explicit WidgetLogisticaRecebimento(QWidget *parent = 0);
+  ~WidgetLogisticaRecebimento();
+  bool updateTables(QString &error);
+  void TableFornLogistica_activated(const QString &fornecedor);
 
-  private slots:
-    void on_checkBoxMarcarTodos_clicked(const bool &);
-    void on_pushButtonMarcarRecebido_clicked();
-    void on_table_entered(const QModelIndex &);
+private slots:
+  void on_checkBoxMarcarTodos_clicked(const bool &);
+  void on_pushButtonMarcarRecebido_clicked();
+  void on_table_entered(const QModelIndex &);
 
-  private:
-    // attributes
-    Ui::WidgetLogisticaRecebimento *ui;
-    SqlTableModel model;
-    // methods
-    void setupTables();
+private:
+  // attributes
+  Ui::WidgetLogisticaRecebimento *ui;
+  SqlTableModel model;
+  // methods
+  void setupTables();
 };
 
 #endif // WIDGETLOGISTICARECEBIMENTO_H

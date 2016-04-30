@@ -5,16 +5,16 @@
 
 class ComboBoxDelegate : public QStyledItemDelegate {
 
-  public:
-    explicit ComboBoxDelegate(QObject *parent = 0);
-    ~ComboBoxDelegate();
+public:
+  explicit ComboBoxDelegate(QObject *parent = 0);
+  ~ComboBoxDelegate();
 
-  private:
-    virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override;
-    virtual void setEditorData(QWidget *editor, const QModelIndex &index) const override;
-    virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
-    virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
-                                      const QModelIndex &) const override;
+private:
+  virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override;
+  virtual void setEditorData(QWidget *editor, const QModelIndex &index) const override;
+  virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
+  virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
+                                    const QModelIndex &) const override;
 };
 
 #endif // COMBOBOXDELEGATE_H

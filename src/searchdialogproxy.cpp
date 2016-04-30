@@ -3,7 +3,7 @@
 #include "searchdialogproxy.h"
 
 SearchDialogProxy::SearchDialogProxy(SqlTableModel *model, QObject *parent)
-  : QIdentityProxyModel(parent), column(model->fieldIndex("estoque_promocao")) {
+    : QIdentityProxyModel(parent), column(model->fieldIndex("estoque_promocao")) {
   setSourceModel(model);
 }
 

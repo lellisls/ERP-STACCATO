@@ -6,26 +6,26 @@
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class WidgetContaReceber;
+class WidgetContaReceber;
 }
 
 class WidgetContaReceber : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetContaReceber(QWidget *parent = 0);
-    ~WidgetContaReceber();
-    bool updateTables(QString &error);
+public:
+  explicit WidgetContaReceber(QWidget *parent = 0);
+  ~WidgetContaReceber();
+  bool updateTables(QString &error);
 
-  private slots:
-    void on_table_entered(const QModelIndex &);
+private slots:
+  void on_table_entered(const QModelIndex &);
 
-  private:
-    // attributes
-    Ui::WidgetContaReceber *ui;
-    SqlTableModel model;
-    // methods
-    void setupTables();
+private:
+  // attributes
+  Ui::WidgetContaReceber *ui;
+  SqlTableModel model;
+  // methods
+  void setupTables();
 };
 
 #endif // WIDGETCONTARECEBER_H

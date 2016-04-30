@@ -2,27 +2,27 @@
 #define XML_VIEWER_H
 
 #include <QDialog>
-#include <QStandardItemModel>
 #include <QDomElement>
+#include <QStandardItemModel>
 
 namespace Ui {
-  class XML_Viewer;
+class XML_Viewer;
 }
 
 class XML_Viewer : public QDialog {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit XML_Viewer(QWidget *parent = 0);
-    ~XML_Viewer();
-    void exibirXML(const QByteArray &fileContent);
+public:
+  explicit XML_Viewer(QWidget *parent = 0);
+  ~XML_Viewer();
+  void exibirXML(const QByteArray &fileContent);
 
-  private:
-    // attributes
-    Ui::XML_Viewer *ui;
-    QString fileName;
-    QStandardItemModel model;
-    // methods
+private:
+  // attributes
+  Ui::XML_Viewer *ui;
+  QString fileName;
+  QStandardItemModel model;
+  // methods
 };
 
 #endif // XML_VIEWER_H

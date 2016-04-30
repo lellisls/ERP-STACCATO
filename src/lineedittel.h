@@ -4,14 +4,14 @@
 #include <QLineEdit>
 
 class LineEditTel : public QLineEdit {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit LineEditTel(QWidget *parent);
-    ~LineEditTel();
+public:
+  explicit LineEditTel(QWidget *parent);
+  ~LineEditTel();
 
-  private:
-    void processTel(const QString &value);
+private:
+  void processTel(const QString &value);
 };
 
 #endif // LINEEDITTEL_H

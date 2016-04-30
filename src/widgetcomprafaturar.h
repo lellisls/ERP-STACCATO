@@ -6,27 +6,27 @@
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class WidgetCompraFaturar;
+class WidgetCompraFaturar;
 }
 
 class WidgetCompraFaturar : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetCompraFaturar(QWidget *parent = 0);
-    ~WidgetCompraFaturar();
-    bool updateTables(QString &error);
+public:
+  explicit WidgetCompraFaturar(QWidget *parent = 0);
+  ~WidgetCompraFaturar();
+  bool updateTables(QString &error);
 
-  private slots:
-    void on_pushButtonMarcarFaturado_clicked();
-    void on_table_entered(const QModelIndex &);
+private slots:
+  void on_pushButtonMarcarFaturado_clicked();
+  void on_table_entered(const QModelIndex &);
 
-  private:
-    // attributes
-    Ui::WidgetCompraFaturar *ui;
-    SqlTableModel model;
-    // methods
-    void setupTables();
+private:
+  // attributes
+  Ui::WidgetCompraFaturar *ui;
+  SqlTableModel model;
+  // methods
+  void setupTables();
 };
 
 #endif // WIDGETCOMPRAFATURAR_H

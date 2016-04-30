@@ -184,10 +184,10 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
 void ProdutosPendentes::insere(const QDate &dataPrevista) {
   QSqlQuery query;
   query.prepare(
-        "INSERT INTO pedido_fornecedor_has_produto (idVenda, fornecedor, idProduto, descricao, colecao, quant, un, un2, "
-        "caixas, preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:idVenda, :fornecedor, "
-        ":idProduto, :descricao, :colecao, :quant, :un, :un2, :caixas, :preco, :kgcx, :formComercial, :codComercial, "
-        ":codBarras, :dataPrevCompra)");
+      "INSERT INTO pedido_fornecedor_has_produto (idVenda, fornecedor, idProduto, descricao, colecao, quant, un, un2, "
+      "caixas, preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:idVenda, :fornecedor, "
+      ":idProduto, :descricao, :colecao, :quant, :un, :un2, :caixas, :preco, :kgcx, :formComercial, :codComercial, "
+      ":codBarras, :dataPrevCompra)");
   query.bindValue(":idVenda", modelProdutos.data(0, "idVenda"));
   query.bindValue(":fornecedor", modelProdutos.data(0, "fornecedor"));
   query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));

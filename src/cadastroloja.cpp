@@ -10,7 +10,7 @@
 #include "usersession.h"
 
 CadastroLoja::CadastroLoja(QWidget *parent)
-  : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
+    : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
   ui->setupUi(this);
 
   for (const auto *line : findChildren<QLineEdit *>()) {
@@ -138,7 +138,7 @@ void CadastroLoja::on_pushButtonBuscar_clicked() {
 
 void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {

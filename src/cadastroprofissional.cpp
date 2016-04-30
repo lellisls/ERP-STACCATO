@@ -9,7 +9,7 @@
 #include "usersession.h"
 
 CadastroProfissional::CadastroProfissional(QWidget *parent)
-  : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
+    : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
   for (const auto *line : findChildren<QLineEdit *>()) {
@@ -222,7 +222,7 @@ void CadastroProfissional::on_lineEditCPF_textEdited(const QString &text) {
 
 void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 bool CadastroProfissional::cadastrarEndereco(const bool &isUpdate) {

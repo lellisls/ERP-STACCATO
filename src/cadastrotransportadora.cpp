@@ -9,7 +9,7 @@
 #include "usersession.h"
 
 CadastroTransportadora::CadastroTransportadora(QWidget *parent)
-  : RegisterAddressDialog("transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
+    : RegisterAddressDialog("transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
   for (const auto *line : findChildren<QLineEdit *>()) {
@@ -110,7 +110,7 @@ void CadastroTransportadora::on_pushButtonBuscar_clicked() {
 
 void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {

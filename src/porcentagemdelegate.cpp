@@ -1,7 +1,6 @@
 #include "porcentagemdelegate.h"
 
-PorcentagemDelegate::PorcentagemDelegate(QObject *parent)
-  : QStyledItemDelegate(parent) {}
+PorcentagemDelegate::PorcentagemDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
 
 PorcentagemDelegate::~PorcentagemDelegate() {}
 

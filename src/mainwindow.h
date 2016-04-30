@@ -4,50 +4,50 @@
 #include <QMainWindow>
 
 namespace Ui {
-  class MainWindow;
+class MainWindow;
 }
 
 class MainWindow : public QMainWindow {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+public:
+  explicit MainWindow(QWidget *parent = 0);
+  ~MainWindow();
 
-  public slots:
-    void updateTables();
+public slots:
+  void updateTables();
 
-  private slots:
-    void on_actionCadastrarCliente_triggered();
-    void on_actionCadastrarFornecedor_triggered();
-    void on_actionCadastrarProdutos_triggered();
-    void on_actionCadastrarProfissional_triggered();
-    void on_actionCadastrarUsuario_triggered();
-    void on_actionCalculadora_triggered();
-    void on_actionClaro_triggered();
-    void on_actionConfiguracoes_triggered();
-    void on_actionCriarOrcamento_triggered();
-    void on_actionEscuro_triggered();
-    void on_actionEstoque_triggered();
-    void on_actionGerenciar_Lojas_triggered();
-    void on_actionGerenciar_Transportadoras_triggered();
-    void on_actionProdutos_triggered();
-    void on_actionPromocao_triggered();
-    void on_actionSobre_triggered();
-    void on_tabWidget_currentChanged(const int &);
-    void showStatusBarMessage();
+private slots:
+  void on_actionCadastrarCliente_triggered();
+  void on_actionCadastrarFornecedor_triggered();
+  void on_actionCadastrarProdutos_triggered();
+  void on_actionCadastrarProfissional_triggered();
+  void on_actionCadastrarUsuario_triggered();
+  void on_actionCalculadora_triggered();
+  void on_actionClaro_triggered();
+  void on_actionConfiguracoes_triggered();
+  void on_actionCriarOrcamento_triggered();
+  void on_actionEscuro_triggered();
+  void on_actionEstoque_triggered();
+  void on_actionGerenciar_Lojas_triggered();
+  void on_actionGerenciar_Transportadoras_triggered();
+  void on_actionProdutos_triggered();
+  void on_actionPromocao_triggered();
+  void on_actionSobre_triggered();
+  void on_tabWidget_currentChanged(const int &);
+  void showStatusBarMessage();
 
-  private:
-    // attributes
-    Ui::MainWindow *ui;
-    QPalette defautPalette;
-    QString defaultStyle;
-    QString error;
-    QTimer *timer;
-    // methods
-    bool event(QEvent *event);
-    void darkTheme();
-    void timerStatusBar();
+private:
+  // attributes
+  Ui::MainWindow *ui;
+  QPalette defautPalette;
+  QString defaultStyle;
+  QString error;
+  QTimer *timer;
+  // methods
+  bool event(QEvent *event);
+  void darkTheme();
+  void timerStatusBar();
 };
 
 #endif // MAINWINDOW_H

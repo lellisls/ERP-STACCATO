@@ -18,9 +18,9 @@ bool WidgetCompraDevolucao::updateTables(QString &error) {
     ui->radioButtonFiltroPendente->setChecked(true);
   }
 
-  if (not model.select()){
-   error = "Erro lendo tabela faturamento: " + model.lastError().text();
-   return false;
+  if (not model.select()) {
+    error = "Erro lendo tabela faturamento: " + model.lastError().text();
+    return false;
   }
 
   ui->table->resizeColumnsToContents();

@@ -6,6 +6,7 @@
 #include "sqltablemodel.h"
 
 class OrcamentoProxyModel : public QIdentityProxyModel {
+
 public:
   explicit OrcamentoProxyModel(SqlTableModel *model, QObject *parent);
   ~OrcamentoProxyModel();

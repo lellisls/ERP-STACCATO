@@ -30,39 +30,39 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #include <QTextStream>
 
 class Smtp : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    Smtp(const QString &user, const QString &pass, const QString &host, const int &port = 465,
-         const int &timeout = 10000);
-    ~Smtp();
+public:
+  Smtp(const QString &user, const QString &pass, const QString &host, const int &port = 465,
+       const int &timeout = 10000);
+  ~Smtp();
 
-    void sendMail(const QString &from, const QString &to, const QString &cc, const QString &subject, const QString &body,
-                  const QStringList &files = QStringList());
+  void sendMail(const QString &from, const QString &to, const QString &cc, const QString &subject, const QString &body,
+                const QStringList &files = QStringList());
 
-  signals:
-    void status(const QString &);
+signals:
+  void status(const QString &);
 
-  private slots:
-    void connected();
-    void disconnected();
-    void errorReceived(QAbstractSocket::SocketError socketError);
-    void readyRead();
-    void stateChanged(QAbstractSocket::SocketState socketState);
+private slots:
+  void connected();
+  void disconnected();
+  void errorReceived(QAbstractSocket::SocketError socketError);
+  void readyRead();
+  void stateChanged(QAbstractSocket::SocketState socketState);
 
-  private:
-    enum states { Tls, HandShake, Auth, User, Pass, Rcpt, Mail, Data, Init, Body, Quit, Close };
-    int port;
-    int state;
-    int timeout;
-    QSslSocket *socket;
-    QString from;
-    QString host;
-    QString message;
-    QString pass;
-    QString rcpt;
-    QString response;
-    QString user;
-    QTextStream *t;
+private:
+  enum states { Tls, HandShake, Auth, User, Pass, Rcpt, Mail, Data, Init, Body, Quit, Close };
+  int port;
+  int state;
+  int timeout;
+  QSslSocket *socket;
+  QString from;
+  QString host;
+  QString message;
+  QString pass;
+  QString rcpt;
+  QString response;
+  QString user;
+  QTextStream *t;
 };
 #endif

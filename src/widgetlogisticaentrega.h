@@ -6,31 +6,31 @@
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class WidgetLogisticaEntrega;
+class WidgetLogisticaEntrega;
 }
 
 class WidgetLogisticaEntrega : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetLogisticaEntrega(QWidget *parent = 0);
-    ~WidgetLogisticaEntrega();
-    bool updateTables(QString &error);
+public:
+  explicit WidgetLogisticaEntrega(QWidget *parent = 0);
+  ~WidgetLogisticaEntrega();
+  bool updateTables(QString &error);
 
-  private slots:
-    void on_lineEditBuscaEntregas_textChanged(const QString &text);
-    void on_radioButtonEntregaEnviado_clicked();
-    void on_radioButtonEntregaLimpar_clicked();
-    void on_radioButtonEntregaPendente_clicked();
-    void on_table_activated(const QModelIndex &index);
-    void on_table_entered(const QModelIndex &);
+private slots:
+  void on_lineEditBuscaEntregas_textChanged(const QString &text);
+  void on_radioButtonEntregaEnviado_clicked();
+  void on_radioButtonEntregaLimpar_clicked();
+  void on_radioButtonEntregaPendente_clicked();
+  void on_table_activated(const QModelIndex &index);
+  void on_table_entered(const QModelIndex &);
 
-  private:
-    // attributes
-    Ui::WidgetLogisticaEntrega *ui;
-    SqlTableModel model;
-    // methods
-    void setupTables();
+private:
+  // attributes
+  Ui::WidgetLogisticaEntrega *ui;
+  SqlTableModel model;
+  // methods
+  void setupTables();
 };
 
 #endif // WIDGETLOGISTICAENTREGA_H

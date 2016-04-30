@@ -6,7 +6,7 @@
 #include "usersession.h"
 
 CadastroProduto::CadastroProduto(QWidget *parent)
-  : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
+    : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
   for (const QLineEdit *line : findChildren<QLineEdit *>()) {
@@ -32,9 +32,9 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   ui->itemBoxFornecedor->setRegisterDialog(new CadastroFornecedor(this));
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->pushButtonRemover->setDisabled(true);
-  if(UserSession::tipoUsuario() == "VENDEDOR") {
-      ui->pushButtonCadastrar->setVisible(false);
-      ui->pushButtonNovoCad->setVisible(false);
+  if (UserSession::tipoUsuario() == "VENDEDOR") {
+    ui->pushButtonCadastrar->setVisible(false);
+    ui->pushButtonNovoCad->setVisible(false);
   }
 
   model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table

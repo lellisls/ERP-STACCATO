@@ -9,7 +9,7 @@
 #include "usersession.h"
 
 CadastroFornecedor::CadastroFornecedor(QWidget *parent)
-  : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
+    : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
   for (const auto *line : findChildren<QLineEdit *>()) {
@@ -157,7 +157,7 @@ void CadastroFornecedor::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {

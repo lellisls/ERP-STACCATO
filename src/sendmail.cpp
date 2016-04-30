@@ -6,7 +6,7 @@
 #include "usersession.h"
 
 SendMail::SendMail(QWidget *parent, const QString &text, const QString &arquivo)
-  : QDialog(parent), ui(new Ui::SendMail) {
+    : QDialog(parent), ui(new Ui::SendMail) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -45,7 +45,7 @@ void SendMail::on_pushButtonBuscar_clicked() {
 }
 
 void SendMail::on_pushButtonEnviar_clicked() {
-    // TODO: verificar campos obrigatorios
+  // TODO: verificar campos obrigatorios
 
   progress->show();
 
@@ -58,8 +58,8 @@ void SendMail::on_pushButtonEnviar_clicked() {
                         ui->lineEditPorta->text().toInt());
   connect(smtp, &Smtp::status, this, &SendMail::mailSent);
 
-  smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditCopia->text(), ui->lineEditTitulo->text(),
-                 ui->textEdit->toPlainText(), files);
+  smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditCopia->text(),
+                 ui->lineEditTitulo->text(), ui->textEdit->toPlainText(), files);
 }
 
 void SendMail::mailSent(const QString &status) {

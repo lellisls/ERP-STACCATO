@@ -6,29 +6,29 @@
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class WidgetLogisticaColeta;
+class WidgetLogisticaColeta;
 }
 
 class WidgetLogisticaColeta : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetLogisticaColeta(QWidget *parent = 0);
-    ~WidgetLogisticaColeta();
-    bool updateTables(QString &error);
-    void TableFornLogistica_activated(const QString &fornecedor);
+public:
+  explicit WidgetLogisticaColeta(QWidget *parent = 0);
+  ~WidgetLogisticaColeta();
+  bool updateTables(QString &error);
+  void TableFornLogistica_activated(const QString &fornecedor);
 
-  private slots:
-    void on_checkBoxMarcarTodos_clicked(const bool &);
-    void on_pushButtonMarcarColetado_clicked();
-    void on_table_entered(const QModelIndex &);
+private slots:
+  void on_checkBoxMarcarTodos_clicked(const bool &);
+  void on_pushButtonMarcarColetado_clicked();
+  void on_table_entered(const QModelIndex &);
 
-  private:
-    // attributes
-    Ui::WidgetLogisticaColeta *ui;
-    SqlTableModel model;
-    // methods
-    void setupTables();
+private:
+  // attributes
+  Ui::WidgetLogisticaColeta *ui;
+  SqlTableModel model;
+  // methods
+  void setupTables();
 };
 
 #endif // WIDGETLOGISTICACOLETA_H

@@ -4,18 +4,18 @@
 #include <QComboBox>
 
 class ComboBox : public QComboBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ComboBox(QWidget *parent);
-    ~ComboBox();
-    QVariant getCurrentValue() const;
+public:
+  explicit ComboBox(QWidget *parent);
+  ~ComboBox();
+  QVariant getCurrentValue() const;
 
-  public slots:
-    bool setCurrentValue(const QVariant &value);
+public slots:
+  bool setCurrentValue(const QVariant &value);
 
-  private:
-    Q_PROPERTY(QVariant currentValue READ getCurrentValue WRITE setCurrentValue STORED false)
+private:
+  Q_PROPERTY(QVariant currentValue READ getCurrentValue WRITE setCurrentValue STORED false)
 };
 
 #endif // COMBOBOX_H

@@ -1,7 +1,7 @@
 #include "doubledelegate.h"
 
 DoubleDelegate::DoubleDelegate(QObject *parent, const double &decimais)
-  : QStyledItemDelegate(parent), decimais(decimais) {}
+    : QStyledItemDelegate(parent), decimais(decimais) {}
 
 DoubleDelegate::~DoubleDelegate() {}
 

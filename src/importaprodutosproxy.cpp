@@ -3,7 +3,7 @@
 #include "importaprodutosproxy.h"
 
 ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, QObject *parent)
-  : QIdentityProxyModel(parent), column(model->fieldIndex("descontinuado")) {
+    : QIdentityProxyModel(parent), column(model->fieldIndex("descontinuado")) {
   setSourceModel(model);
 }
 

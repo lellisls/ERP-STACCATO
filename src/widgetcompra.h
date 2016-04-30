@@ -4,22 +4,22 @@
 #include <QWidget>
 
 namespace Ui {
-  class WidgetCompra;
+class WidgetCompra;
 }
 
 class WidgetCompra : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetCompra(QWidget *parent = 0);
-    ~WidgetCompra();
-    bool updateTables(QString &error);
+public:
+  explicit WidgetCompra(QWidget *parent = 0);
+  ~WidgetCompra();
+  bool updateTables(QString &error);
 
-  private slots:
-    void on_tabWidget_currentChanged(const int &);
+private slots:
+  void on_tabWidget_currentChanged(const int &);
 
-  private:
-    Ui::WidgetCompra *ui;
+private:
+  Ui::WidgetCompra *ui;
 };
 
 #endif // WIDGETCOMPRA_H

@@ -12,7 +12,7 @@
 #include "usersession.h"
 
 CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
-  : QDialog(parent), ui(new Ui::CadastrarNFe), idVenda(idVenda) {
+    : QDialog(parent), ui(new Ui::CadastrarNFe), idVenda(idVenda) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -431,7 +431,7 @@ bool CadastrarNFe::writeEmitente(QTextStream &stream) {
 
   QSqlQuery queryLojaEnd;
   queryLojaEnd.prepare(
-        "SELECT cep, logradouro, numero, complemento, bairro, cidade, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
+      "SELECT cep, logradouro, numero, complemento, bairro, cidade, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", modelLoja.data(0, "idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
@@ -590,7 +590,7 @@ bool CadastrarNFe::writeProduto(QTextStream &stream, double &total, double &icms
   for (int row = 0; row < modelProd.rowCount(); ++row) {
     QSqlQuery queryProd;
     queryProd.prepare(
-          "SELECT codComercial, codBarras, descricao, un, precoVenda FROM produto WHERE idProduto = :idProduto");
+        "SELECT codComercial, codBarras, descricao, un, precoVenda FROM produto WHERE idProduto = :idProduto");
     queryProd.bindValue(":idProduto", modelProd.data(row, "idProduto"));
 
     if (not queryProd.exec() or not queryProd.first()) {
@@ -781,10 +781,9 @@ void CadastrarNFe::on_pushButtonGerarNFE_clicked() { // NOTE: for testing, remov
 
   stream << "[DadosAdicionais]" << endl;
 
-  stream << QString("infCpl = ") + "Venda de código " + modelVenda.data(0, "idVenda").toString() +
-            ";END. ENTREGA: " +
-            ";Informações Adicionais de Interesse do Fisco: ICMS RECOLHIDO ANTECIPADAMENTE CONFORME ARTIGO "
-            "3113Y;Total Aproximado de tributos federais, estaduais e municipais: "
+  stream << QString("infCpl = ") + "Venda de código " + modelVenda.data(0, "idVenda").toString() + ";END. ENTREGA: " +
+                ";Informações Adicionais de Interesse do Fisco: ICMS RECOLHIDO ANTECIPADAMENTE CONFORME ARTIGO "
+                "3113Y;Total Aproximado de tributos federais, estaduais e municipais: "
          << endl;
 
   stream << "\")";

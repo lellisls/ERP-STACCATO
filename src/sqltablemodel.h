@@ -4,6 +4,7 @@
 #include <QSqlRelationalTableModel>
 
 class SqlTableModel : public QSqlRelationalTableModel {
+
 public:
   explicit SqlTableModel(QObject *parent = 0);
   bool setData(const int &row, const int &column, const QVariant &value);

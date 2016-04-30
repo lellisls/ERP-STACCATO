@@ -76,4 +76,5 @@ void storeSelection() {
 // NOTE: opcao de salvar excel/pdf por mes
 // NOTE: colocar formato real e comercial do produto (Por exemplo Downtown Hg gr 877,0x877,0x2,0 (90x90 RET) loes)
 // NOTE: escanear papel de venda
-// TODO: arrumar no sql na tabela de pedido_fornecedor_has_produto a coluna preco (calcular quant * prcUnitario, verificar calculo na tela de compra)
+// TODO: arrumar no sql na tabela de pedido_fornecedor_has_produto a coluna preco (calcular quant * prcUnitario,
+// verificar calculo na tela de compra)

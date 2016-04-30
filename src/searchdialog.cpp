@@ -12,7 +12,7 @@
 
 SearchDialog::SearchDialog(const QString &title, const QString &table, const QStringList &indexes,
                            const QString &filter, QWidget *parent)
-  : QDialog(parent), ui(new Ui::SearchDialog), indexes(indexes) {
+    : QDialog(parent), ui(new Ui::SearchDialog), indexes(indexes) {
   ui->setupUi(this);
 
   setWindowTitle(title);
@@ -231,14 +231,33 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
 
 SearchDialog *SearchDialog::produto(QWidget *parent) {
   SearchDialog *sdProd = new SearchDialog(
-                           "Buscar Produto", "produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "idProduto = 0", parent);
+      "Buscar Produto", "produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "idProduto = 0", parent);
 
   sdProd->setPrimaryKey("idProduto");
   sdProd->setTextKeys({"descricao"});
 
-  sdProd->hideColumns({"idProduto", "idFornecedor", "cst", "icms", "custo", "ipi", "markup", "comissao", "origem",
-                       "descontinuado", "temLote", "observacoes", "codBarras", "qtdPallet", "st", "desativado", "cfop",
-                       "ncm", "ncmEx", "atualizarTabelaPreco", "representacao", "estoque_promocao",
+  sdProd->hideColumns({"idProduto",
+                       "idFornecedor",
+                       "cst",
+                       "icms",
+                       "custo",
+                       "ipi",
+                       "markup",
+                       "comissao",
+                       "origem",
+                       "descontinuado",
+                       "temLote",
+                       "observacoes",
+                       "codBarras",
+                       "qtdPallet",
+                       "st",
+                       "desativado",
+                       "cfop",
+                       "ncm",
+                       "ncmEx",
+                       "atualizarTabelaPreco",
+                       "representacao",
+                       "estoque_promocao",
                        "idProdutoRelacionado"});
 
   for (int column = 0; column < sdProd->model.columnCount(); ++column) {
@@ -272,7 +291,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
 
 SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   SearchDialog *sdFornecedor = new SearchDialog(
-                                 "Buscar Fornecedor", "fornecedor", {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "desativado = FALSE", parent);
+      "Buscar Fornecedor", "fornecedor", {"nome_razao", "nomeFantasia", "cpf", "cnpj"}, "desativado = FALSE", parent);
 
   sdFornecedor->setPrimaryKey("idFornecedor");
   sdFornecedor->setTextKeys({"nomeFantasia", "razaoSocial"});
@@ -294,7 +313,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "transportadora",
-  {"razaoSocial", "nomeFantasia"}, "desativado = FALSE", parent);
+                                                    {"razaoSocial", "nomeFantasia"}, "desativado = FALSE", parent);
 
   sdTransportadora->setPrimaryKey("idTransportadora");
   sdTransportadora->setTextKeys({"nomeFantasia"});

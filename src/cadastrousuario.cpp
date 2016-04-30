@@ -9,7 +9,7 @@
 #include "usersession.h"
 
 CadastroUsuario::CadastroUsuario(QWidget *parent)
-  : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
+    : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
   for (const auto *line : findChildren<QLineEdit *>()) {
@@ -163,7 +163,8 @@ bool CadastroUsuario::save() {
 
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " +
-        QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount()));
+                                             QString::number(mapper.currentIndex()) + "\nModel: " +
+                                             QString::number(model.rowCount()));
     QSqlQuery("ROLLBACK").exec();
     viewRegister(model.index(row, 0));
     return false;

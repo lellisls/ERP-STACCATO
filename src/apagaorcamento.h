@@ -1,31 +1,31 @@
 #ifndef APAGAORCAMENTO_H
 #define APAGAORCAMENTO_H
 
-#include <QDialog>
 #include <QDataWidgetMapper>
+#include <QDialog>
 
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class ApagaOrcamento;
+class ApagaOrcamento;
 }
 
 class ApagaOrcamento : public QDialog {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ApagaOrcamento(QWidget *parent = 0);
-    ~ApagaOrcamento();
-    void apagar(const int &index);
+public:
+  explicit ApagaOrcamento(QWidget *parent = 0);
+  ~ApagaOrcamento();
+  void apagar(const int &index);
 
-  private slots:
-    void on_pushButtonSalvar_clicked();
-    void on_pushButtonCancelar_clicked();
+private slots:
+  void on_pushButtonSalvar_clicked();
+  void on_pushButtonCancelar_clicked();
 
-  private:
-    Ui::ApagaOrcamento *ui;
-    SqlTableModel model;
-    int row;
+private:
+  Ui::ApagaOrcamento *ui;
+  SqlTableModel model;
+  int row;
 };
 
 #endif // APAGAORCAMENTO_H

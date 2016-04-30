@@ -4,10 +4,11 @@
 #include <QStyledItemDelegate>
 
 class PorcentagemDelegate : public QStyledItemDelegate {
-  public:
-    explicit PorcentagemDelegate(QObject *parent = 0);
-    ~PorcentagemDelegate();
-    QString displayText(const QVariant &value, const QLocale &locale) const override;
+
+public:
+  explicit PorcentagemDelegate(QObject *parent = 0);
+  ~PorcentagemDelegate();
+  QString displayText(const QVariant &value, const QLocale &locale) const override;
 };
 
 #endif // PORCENTAGEMDELEGATE_H

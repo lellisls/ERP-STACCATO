@@ -6,26 +6,26 @@
 #include "sqltablemodel.h"
 
 namespace Ui {
-  class WidgetCompraDevolucao;
+class WidgetCompraDevolucao;
 }
 
 class WidgetCompraDevolucao : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit WidgetCompraDevolucao(QWidget *parent = 0);
-    ~WidgetCompraDevolucao();
-    bool updateTables(QString &error);
+public:
+  explicit WidgetCompraDevolucao(QWidget *parent = 0);
+  ~WidgetCompraDevolucao();
+  bool updateTables(QString &error);
 
-  private slots:
-    void on_pushButtonRetornarEstoque_clicked();
-    void on_radioButtonFiltroPendente_toggled(bool checked);
-    void on_table_entered(const QModelIndex &);
+private slots:
+  void on_pushButtonRetornarEstoque_clicked();
+  void on_radioButtonFiltroPendente_toggled(bool checked);
+  void on_table_entered(const QModelIndex &);
 
 private:
-    Ui::WidgetCompraDevolucao *ui;
-    SqlTableModel model;
-    void setupTables();
+  Ui::WidgetCompraDevolucao *ui;
+  SqlTableModel model;
+  void setupTables();
 };
 
 #endif // WIDGETCOMPRADEVOLUCAO_H

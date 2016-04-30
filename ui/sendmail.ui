@@ -23,14 +23,14 @@
       <item row="0" column="0">
        <widget class="QLabel" name="labelEmail_3">
         <property name="text">
-         <string>Servidor smtp:</string>
+         <string>Servidor SMTP:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineEditServidor">
         <property name="text">
-         <string>smtp.gmail.com</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -44,7 +44,7 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="lineEditPorta">
         <property name="text">
-         <string>465</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -82,24 +82,24 @@
       <item row="4" column="1">
        <widget class="QLineEdit" name="lineEditDest"/>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="labelTitulo">
         <property name="text">
-         <string>Titulo:</string>
+         <string>Título:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="6" column="1">
        <widget class="QLineEdit" name="lineEditTitulo"/>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="labelAnexo">
         <property name="text">
          <string>Anexos:</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="7" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLineEdit" name="lineEditAnexo"/>
@@ -113,17 +113,17 @@
         </item>
        </layout>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="labelMensagem">
         <property name="text">
          <string>Mensagem:</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
+      <item row="8" column="1">
        <widget class="QTextEdit" name="textEdit"/>
       </item>
-      <item row="8" column="0" colspan="2">
+      <item row="9" column="0" colspan="2">
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
@@ -148,6 +148,16 @@
          </item>
         </layout>
        </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="labelCopia">
+        <property name="text">
+         <string>Cópia:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="lineEditCopia"/>
       </item>
      </layout>
     </widget>

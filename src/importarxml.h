@@ -14,9 +14,8 @@ class ImportarXML : public QDialog {
     Q_OBJECT
 
   public:
-    explicit ImportarXML(const QString &idCompra, QWidget *parent = 0);
+    explicit ImportarXML(const QString &idCompra, const QString &dataReal, const QString &dataPrevista, QWidget *parent = 0);
     ~ImportarXML();
-    void setData(const QString &dataReal, const QString &dataPrevista);
 
   private slots:
     void on_pushButtonCancelar_clicked();

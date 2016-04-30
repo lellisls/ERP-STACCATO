@@ -15,14 +15,14 @@ class WidgetVenda : public QWidget {
   public:
     explicit WidgetVenda(QWidget *parent = 0);
     ~WidgetVenda();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void montaFiltro();
     void on_groupBoxStatus_toggled(const bool &enabled);
-    void on_pushButtonCalcularTotal_clicked();
     void on_table_activated(const QModelIndex &index);
     void on_table_entered(const QModelIndex &);
+    void on_radioButtonProprios_toggled(bool checked);
 
   private:
     // attributes

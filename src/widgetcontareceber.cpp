@@ -19,14 +19,17 @@ void WidgetContaReceber::setupTables() {
   ui->table->hideColumn("idPagamento");
 }
 
-QString WidgetContaReceber::updateTables() {
+bool WidgetContaReceber::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela conta_a_receber_has_pagamento: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela conta_a_receber_has_pagamento: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetContaReceber::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

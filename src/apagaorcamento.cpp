@@ -10,11 +10,11 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::Ap
 
   setAttribute(Qt::WA_DeleteOnClose);
 
-  modelOrc.setTable("orcamento");
-  modelOrc.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  model.setTable("orcamento");
+  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not modelOrc.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela de orçamentos: " + modelOrc.lastError().text());
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela de orçamentos: " + model.lastError().text());
   }
 
   show();
@@ -23,16 +23,23 @@ ApagaOrcamento::ApagaOrcamento(QWidget *parent) : QDialog(parent), ui(new Ui::Ap
 ApagaOrcamento::~ApagaOrcamento() { delete ui; }
 
 void ApagaOrcamento::on_pushButtonSalvar_clicked() {
-  if (ui->lineEditMotivo->text().isEmpty()) {
+  if (ui->plainTextEdit->toPlainText().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Deve preencher o motivo");
     return;
   }
 
-  modelOrc.setData(row, "status", "CANCELADO");
-  modelOrc.setData(row, "motivoCancelamento", ui->lineEditMotivo->text());
+  QString motivo;
 
-  if (not modelOrc.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro cancelando orçamento: " + modelOrc.lastError().text());
+  for (const auto &child : ui->groupBox->findChildren<QRadioButton *>()) {
+    if (child->isChecked()) motivo = child->text();
+  }
+
+  model.setData(row, "status", "PERDIDO");
+  model.setData(row, "motivoCancelamento", motivo);
+  model.setData(row, "observacaoCancelamento", ui->plainTextEdit->toPlainText());
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro cancelando orçamento: " + model.lastError().text());
     return;
   }
 
@@ -43,5 +50,3 @@ void ApagaOrcamento::on_pushButtonSalvar_clicked() {
 void ApagaOrcamento::on_pushButtonCancelar_clicked() { close(); }
 
 void ApagaOrcamento::apagar(const int &index) { row = index; }
-
-// NOTE: colocar opcoes pré-definidas para motivos de cancelamento

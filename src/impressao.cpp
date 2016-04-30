@@ -36,14 +36,16 @@ void Impressao::verificaTipo() {
 }
 
 void Impressao::print() {
-  if (UserSession::settings("User/userFolder").toString().isEmpty()) {
-    QMessageBox::critical(parent, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
-    UserSession::setSettings("User/userFolder", QFileDialog::getExistingDirectory(parent, "Pasta PDF/Excel"));
+  QString folder = type == Orcamento ? "User/OrcamentosFolder" : "User/VendasFolder";
 
-    if (UserSession::settings("User/userFolder").toString().isEmpty()) return;
+  if (UserSession::settings(folder).toString().isEmpty()) {
+    QMessageBox::critical(parent, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
+    UserSession::setSettings(folder, QFileDialog::getExistingDirectory(parent, "Pasta PDF/Excel"));
+
+    if (UserSession::settings(folder).toString().isEmpty()) return;
   }
 
-  QString path = UserSession::settings("User/userFolder").toString();
+  QString path = UserSession::settings(folder).toString();
 
   QDir dir(path);
 
@@ -59,7 +61,12 @@ void Impressao::print() {
     return;
   }
 
-  QFile file(path + "/" + id + ".pdf");
+  setQuerys();
+
+  QString fileName = path + "/" + id + "-" + queryVendedor.value("nome").toString().split(" ").first() + "-" +
+                     queryCliente.value("nome_razao").toString() + ".pdf";
+
+  QFile file(fileName);
 
   if (not file.open(QFile::WriteOnly)) {
     QMessageBox::critical(parent, "Erro!", "Arquivo bloqueado! Por favor feche o arquivo.");
@@ -68,13 +75,11 @@ void Impressao::print() {
 
   file.close();
 
-  setQuerys();
-
   QtRPT *report = new QtRPT(this);
   report->loadReport(modelo.fileName());
   report->recordCount << modelItem.rowCount();
   connect(report, &QtRPT::setValue, this, &Impressao::setValue);
-  report->printPDF(path + "/" + id + ".pdf");
+  report->printPDF(fileName);
 }
 
 void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage) {
@@ -101,7 +106,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
                  queryLojaEnd.value("uf").toString() + " - CEP: " + queryLojaEnd.value("cep").toString() + "\n" +
                  queryLoja.value("tel").toString() + " - " + queryLoja.value("tel2").toString();
 
-  if (paramName == "orcamento") paramValue = id;
+  if (paramName == "orcamento") paramValue = type == Orcamento ? id : query.value("idOrcamento");
   if (paramName == "pedido") paramValue = id;
   if (paramName == "data") paramValue = query.value("data").toDate().toString("dd-MM-yyyy");
   if (paramName == "validade") paramValue = query.value("validade").toString() + " dias";
@@ -114,17 +119,19 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
 
   if (paramName == "endfiscal")
     paramValue = query.value("idEnderecoFaturamento").toInt() == 1
-                 ? "Não há/Retira"
-                 : queryEndFat.value("logradouro").toString() + " - " + queryEndFat.value("numero").toString() +
-                   " - " + queryEndFat.value("bairro").toString() + " - " +
-                   queryEndFat.value("cidade").toString() + " - " + queryEndFat.value("uf").toString();
+                     ? "Não há/Retira"
+                     : queryEndFat.value("logradouro").toString() + " - " + queryEndFat.value("numero").toString() +
+                           " - " + queryEndFat.value("complemento").toString() + " - " +
+                           queryEndFat.value("bairro").toString() + " - " + queryEndFat.value("cidade").toString() +
+                           " - " + queryEndFat.value("uf").toString();
 
   if (paramName == "endentrega")
     paramValue = query.value("idEnderecoEntrega").toInt() == 1
-                 ? "Não há/Retira"
-                 : queryEndEnt.value("logradouro").toString() + " - " + queryEndEnt.value("numero").toString() +
-                   " - " + queryEndEnt.value("bairro").toString() + " - " +
-                   queryEndEnt.value("cidade").toString() + " - " + queryEndEnt.value("uf").toString();
+                     ? "Não há/Retira"
+                     : queryEndEnt.value("logradouro").toString() + " - " + queryEndEnt.value("numero").toString() +
+                           " - " + queryEndEnt.value("complemento").toString() + " - " +
+                           queryEndEnt.value("bairro").toString() + " - " + queryEndEnt.value("cidade").toString() +
+                           " - " + queryEndEnt.value("uf").toString();
 
   if (paramName == "cepentrega") paramValue = queryEndEnt.value("cep");
 
@@ -157,7 +164,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     paramValue = modelItem.data(recNo, "fornecedor").toString() + loes;
   }
 
-  if (paramName == "Código") paramValue = queryProduto.value("codComercial");
+  if (paramName == "Código") paramValue = queryProduto.value("codComercial").toString().left(20);
 
   if (paramName == "Nome do produto") {
     QSqlQuery query;
@@ -179,7 +186,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
         produto + (formComercial.isEmpty() ? "" : " (" + formComercial + ")") + (loes.isEmpty() ? "" : " -" + loes);
   }
 
-  if (paramName == "Ambiente") paramValue = modelItem.data(recNo, "obs");
+  if (paramName == "Ambiente") paramValue = modelItem.data(recNo, "obs").toString().left(45);
 
   if (paramName == "Preço-R$") {
     double prcUn = modelItem.data(recNo, "prcUnitario").toDouble();
@@ -187,16 +194,19 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     double porc = modelItem.data(recNo, "desconto").toDouble();
     QString preco = "R$ " + locale.toString(prcUn, 'f', 2);
     QString precoDesc =
-        desc > 0.01 ? " (-" + locale.toString(porc, 'f', 2) + "% R$ " + locale.toString(prcUn - desc, 'f', 2) + ")"
+        desc > 0.01 ? "\n(-" + locale.toString(porc, 'f', 2) + "% R$ " + locale.toString(prcUn - desc, 'f', 2) + ")"
                     : "";
     QString precoDescNeg = "R$ " + locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
 
     paramValue = porc < 0 ? precoDescNeg : preco + precoDesc;
   }
 
-  if (paramName == "Quant.") paramValue = modelItem.data(recNo, "quant");
+  if (paramName == "Quant.")
+    paramValue = locale.toString(modelItem.data(recNo, "quant").toDouble(), 'f', 4) + "\n" +
+                 modelItem.data(recNo, "caixas").toString() +
+                 (modelItem.data(recNo, "caixas").toInt() == 1 ? " caixa" : " caixas");
 
-  if (paramName == "Unid.") paramValue = modelItem.data(recNo, "un");
+  if (paramName == "Unid.") paramValue = modelItem.data(recNo, "un").toString().left(5);
 
   if (paramName == "TotalProd") {
     double prcUn = modelItem.data(recNo, "prcUnitario").toDouble();
@@ -205,7 +215,7 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
 
     QString total = "R$ " + locale.toString(modelItem.data(recNo, "parcial").toDouble(), 'f', 2);
     QString totalDesc =
-        desc > 0.01 ? " (R$ " + locale.toString(modelItem.data(recNo, "total").toDouble(), 'f', 2) + ")" : "";
+        desc > 0.01 ? "\n(R$ " + locale.toString(modelItem.data(recNo, "total").toDouble(), 'f', 2) + ")" : "";
     QString totalDescNeg = "R$ " + locale.toString(modelItem.data(recNo, "parcialDesc").toDouble(), 'f', 2);
 
     paramValue = porc < 0 ? totalDescNeg : total + totalDesc;
@@ -239,8 +249,8 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     if (type == Orcamento) return;
 
     QSqlQuery queryPgt1(
-          "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-          "' AND tipo LIKE '1%'");
+        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+        "' AND tipo LIKE '1%'");
 
     if (not queryPgt1.exec() or not queryPgt1.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 1: " + queryPgt1.lastError().text());
@@ -257,8 +267,8 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     if (type == Orcamento) return;
 
     QSqlQuery queryPgt2(
-          "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-          "' AND tipo LIKE '2%'");
+        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+        "' AND tipo LIKE '2%'");
 
     if (not queryPgt2.exec() or not queryPgt2.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 2: " + queryPgt2.lastError().text());
@@ -277,8 +287,8 @@ void Impressao::setValue(const int &recNo, const QString &paramName, QVariant &p
     if (type == Orcamento) return;
 
     QSqlQuery queryPgt3(
-          "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-          "' AND tipo LIKE '3%'");
+        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
+        "' AND tipo LIKE '3%'");
 
     if (not queryPgt3.exec() or not queryPgt3.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 3: " + queryPgt3.lastError().text());
@@ -305,8 +315,9 @@ void Impressao::setQuerys() {
       return;
     }
   } else {
-    query.prepare("SELECT data, idEnderecoFaturamento, idEnderecoEntrega, subTotalLiq, descontoPorc, frete, "
-                  "total, observacao, prazoEntrega FROM venda WHERE idVenda = :idVenda");
+    query.prepare(
+        "SELECT idOrcamento, data, idEnderecoFaturamento, idEnderecoEntrega, subTotalLiq, descontoPorc, frete, "
+        "total, observacao, prazoEntrega FROM venda WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", model.data(0, "idVenda"));
 
     if (not query.exec() or not query.first()) {
@@ -316,7 +327,7 @@ void Impressao::setQuerys() {
   }
 
   queryCliente.prepare(
-        "SELECT nome_razao, pfpj, cpf, cnpj, email, tel, telCel FROM cliente WHERE idCliente = :idCliente");
+      "SELECT nome_razao, pfpj, cpf, cnpj, email, tel, telCel FROM cliente WHERE idCliente = :idCliente");
   queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
@@ -324,8 +335,8 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryEndEnt.prepare(
-        "SELECT logradouro, numero, bairro, cidade, uf, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndEnt.prepare("SELECT logradouro, numero, complemento, bairro, cidade, uf, cep FROM cliente_has_endereco WHERE "
+                      "idEndereco = :idEndereco");
   queryEndEnt.bindValue(":idEndereco", model.data(0, "idEnderecoEntrega"));
 
   if (not queryEndEnt.exec() or not queryEndEnt.first()) {
@@ -333,8 +344,8 @@ void Impressao::setQuerys() {
     return;
   }
 
-  queryEndFat.prepare(
-        "SELECT logradouro, numero, bairro, cidade, uf, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndFat.prepare("SELECT logradouro, numero, complemento, bairro, cidade, uf, cep FROM cliente_has_endereco WHERE "
+                      "idEndereco = :idEndereco");
   queryEndFat.bindValue(":idEndereco", model.data(0, "idEnderecoFaturamento"));
 
   if (not queryEndFat.exec() or not queryEndFat.first()) {
@@ -367,7 +378,7 @@ void Impressao::setQuerys() {
   }
 
   queryLojaEnd.prepare(
-        "SELECT logradouro, numero, bairro, cidade, uf, cep FROM loja_has_endereco WHERE idLoja = :idLoja");
+      "SELECT logradouro, numero, bairro, cidade, uf, cep FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", model.data(0, "idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {

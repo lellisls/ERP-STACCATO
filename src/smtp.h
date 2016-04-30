@@ -37,7 +37,7 @@ class Smtp : public QObject {
          const int &timeout = 10000);
     ~Smtp();
 
-    void sendMail(const QString &from, const QString &to, const QString &subject, const QString &body,
+    void sendMail(const QString &from, const QString &to, const QString &cc, const QString &subject, const QString &body,
                   const QStringList &files = QStringList());
 
   signals:

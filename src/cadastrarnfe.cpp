@@ -109,9 +109,9 @@ void CadastrarNFe::guardarNotaBD() {
   }
 
   QSqlQuery queryNota;
-  queryNota.prepare("INSERT INTO nfe (idCompra, tipo, xml, status, chaveAcesso) VALUES (:idCompra, :tipo, "
+  queryNota.prepare("INSERT INTO nfe (idVenda, tipo, xml, status, chaveAcesso) VALUES (:idVenda, :tipo, "
                     ":xml, :status, :chaveAcesso)");
-  queryNota.bindValue(":idCompra", "PLACEHOLDER"); // TODO: replace placeholder
+  queryNota.bindValue(":idVenda", idVenda);
   queryNota.bindValue(":tipo", "SAÍDA");
   queryNota.bindValue(":xml", file.readAll());
   queryNota.bindValue(":status", "PENDENTE");
@@ -778,6 +778,14 @@ void CadastrarNFe::on_pushButtonGerarNFE_clicked() { // NOTE: for testing, remov
   if (not writeProduto(stream, total, icmsTotal)) return;
 
   writeTotal(stream, total, icmsTotal, frete);
+
+  stream << "[DadosAdicionais]" << endl;
+
+  stream << QString("infCpl = ") + "Venda de código " + modelVenda.data(0, "idVenda").toString() +
+            ";END. ENTREGA: " +
+            ";Informações Adicionais de Interesse do Fisco: ICMS RECOLHIDO ANTECIPADAMENTE CONFORME ARTIGO "
+            "3113Y;Total Aproximado de tributos federais, estaduais e municipais: "
+         << endl;
 
   stream << "\")";
   //  stream << "\",1,1)";

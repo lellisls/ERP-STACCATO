@@ -15,7 +15,7 @@ class WidgetLogisticaEntrega : public QWidget {
   public:
     explicit WidgetLogisticaEntrega(QWidget *parent = 0);
     ~WidgetLogisticaEntrega();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_lineEditBuscaEntregas_textChanged(const QString &text);

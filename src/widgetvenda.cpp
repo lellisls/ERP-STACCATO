@@ -3,12 +3,11 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "doubledelegate.h"
 #include "orcamentoproxymodel.h"
+#include "reaisdelegate.h"
 #include "ui_widgetvenda.h"
 #include "usersession.h"
 #include "venda.h"
-#include "vendasmes.h"
 #include "widgetvenda.h"
 
 WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVenda) {
@@ -40,23 +39,18 @@ WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVe
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->groupBoxLojas->hide();
   ui->radioButtonTodos->click();
   if (UserSession::tipoUsuario() == "VENDEDOR") ui->radioButtonProprios->click();
-  if (UserSession::tipoUsuario() != "VENDEDOR") ui->pushButtonCalcularTotal->hide();
 }
 
 WidgetVenda::~WidgetVenda() { delete ui; }
 
 void WidgetVenda::setupTables() {
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
+  ReaisDelegate *reaisDelegate = new ReaisDelegate(this);
 
   model.setTable("view_venda");
 
   ui->table->setModel(new OrcamentoProxyModel(&model, this));
   ui->table->hideColumn("statusEntrega");
-  ui->table->setItemDelegateForColumn("Bruto", doubledelegate);
-  ui->table->setItemDelegateForColumn("Líquido", doubledelegate);
-  ui->table->setItemDelegateForColumn("Frete", doubledelegate);
-  ui->table->setItemDelegateForColumn("Total R$", doubledelegate);
-  ui->table->sortByColumn("Código");
+  ui->table->setItemDelegateForColumn("Total R$", reaisDelegate);
 }
 
 void WidgetVenda::montaFiltro() {
@@ -93,8 +87,8 @@ void WidgetVenda::montaFiltro() {
   const QString textoBusca = ui->lineEditBusca->text();
 
   const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
-                                                     "%') OR (Vendedor LIKE '%" + textoBusca +
-                                                     "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+                                                              "%') OR (Vendedor LIKE '%" + textoBusca +
+                                                              "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
 
   model.setFilter(filtroLoja + filtroRadio + filtroCheck + filtroBusca);
 
@@ -108,17 +102,20 @@ void WidgetVenda::on_groupBoxStatus_toggled(const bool &enabled) {
   }
 }
 
-QString WidgetVenda::updateTables() {
+bool WidgetVenda::updateTables(QString &error) {
   if (model.tableName().isEmpty()) {
     setupTables();
     montaFiltro();
   }
 
-  if (not model.select()) return "Erro lendo tabela vendas: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela vendas: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetVenda::on_table_activated(const QModelIndex &index) {
@@ -126,13 +123,10 @@ void WidgetVenda::on_table_activated(const QModelIndex &index) {
   vendas->viewRegisterById(model.data(index.row(), "Código"));
 }
 
-void WidgetVenda::on_pushButtonCalcularTotal_clicked() {
-  VendasMes *vendas = new VendasMes(UserSession::idUsuario(), this);
-  vendas->show();
-}
-
 void WidgetVenda::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
+void WidgetVenda::on_radioButtonProprios_toggled(bool checked) {
+  if (UserSession::tipoUsuario() == "VENDEDOR") checked ? ui->groupBoxLojas->show() : ui->groupBoxLojas->hide();
+}
+
 // NOTE: verificar como lidar com brinde/reposicao
-// NOTE: cancelamento de pedido: se todos os itens estiverem pendentes marcar status cancelado, senao fazer processo
-// inverso de estorno

@@ -8,7 +8,7 @@
 #include "registerdialog.h"
 
 RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, QWidget *parent = 0)
-  : QDialog(parent), primaryKey(primaryKey), model(this) {
+    : QDialog(parent), primaryKey(primaryKey), model(this) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
@@ -45,6 +45,8 @@ bool RegisterDialog::viewRegisterById(const QVariant &id) {
 }
 
 bool RegisterDialog::viewRegister(const QModelIndex &index) {
+  isUpdate = true;
+
   if (not confirmationMessage()) return false;
 
   clearFields();
@@ -66,7 +68,7 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> &list) {
 bool RegisterDialog::setData(const QString &key, const QVariant value) {
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) return true;
   if (value.type() == QVariant::String and value.toString().remove(".").remove("/").remove("-").isEmpty()) return true;
-  if (value.type() == QVariant::String and value.toString() == "1900-01-01") return true;
+  if (value.type() == QVariant::Date and value.toString() == "1900-01-01") return true;
 
   int currentRow = row != -1 ? row : mapper.currentIndex();
 
@@ -131,23 +133,24 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  if (not model.isDirty() and not isDirty) return true;
+  //  if (not model.isDirty() and not isDirty) return true;
 
-  QMessageBox msgBox;
-  msgBox.setParent(this);
-  msgBox.setLocale(QLocale::Portuguese);
-  msgBox.setText("<strong>O cadastro foi alterado!</strong>");
-  msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
-  msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-  msgBox.setWindowModality(Qt::WindowModal);
-  msgBox.setButtonText(QMessageBox::Save, "Salvar");
-  msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
-  msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
-  msgBox.setDefaultButton(QMessageBox::Save);
+  //  QMessageBox msgBox;
+  //  msgBox.setParent(this);
+  //  msgBox.setLocale(QLocale::Portuguese);
+  //  msgBox.setText("<strong>O cadastro foi alterado!</strong>");
+  //  msgBox.setInformativeText("Se não tinha intenção de fechar, clique em cancelar.");
+  //  msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  //  msgBox.setWindowModality(Qt::WindowModal);
+  //  msgBox.setButtonText(QMessageBox::Save, "Salvar");
+  //  msgBox.setButtonText(QMessageBox::Discard, "Fechar sem salvar");
+  //  msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+  //  msgBox.setDefaultButton(QMessageBox::Save);
 
-  const int ret = msgBox.exec();
+  //  const int ret = msgBox.exec();
 
-  return ret == QMessageBox::Save ? save() : ret == QMessageBox::Discard ? true : false;
+  //  return ret == QMessageBox::Save ? save() : ret == QMessageBox::Discard ? true : false;
+  return true;
 }
 
 void RegisterDialog::errorMessage() { QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este item."); }
@@ -165,7 +168,7 @@ bool RegisterDialog::newRegister() {
   return true;
 }
 
-bool RegisterDialog::save(const bool &isUpdate) {
+bool RegisterDialog::save() {
   if (not verifyFields()) return false;
 
   if (not isUpdate and not model.select()) {
@@ -220,7 +223,7 @@ bool RegisterDialog::save(const bool &isUpdate) {
   return true;
 }
 
-bool RegisterDialog::update() { return save(true); }
+bool RegisterDialog::update() { return save(); }
 
 void RegisterDialog::clearFields() {
   for (auto const &line : findChildren<QLineEdit *>()) {

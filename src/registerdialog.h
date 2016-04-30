@@ -27,6 +27,7 @@ class RegisterDialog : public QDialog {
     // attributes
     bool incompleto = false;
     bool isDirty = false;
+    bool isUpdate = false;
     bool silent = false;
     int row = -1;
     int rowEnd = -1;
@@ -46,7 +47,7 @@ class RegisterDialog : public QDialog {
     QVariant data(const int &row, const QString &key);
     QVariant data(const QString &key);
     virtual bool newRegister();
-    virtual bool save(const bool &isUpdate = false);
+    virtual bool save();
     virtual bool savingProcedures() = 0;
     virtual bool verifyFields() = 0;
     virtual bool verifyRequiredField(QLineEdit *line, const bool &silent = false);

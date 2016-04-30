@@ -35,7 +35,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="3">
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBoxEmailCompra">
      <property name="title">
       <string>E-mail Compra</string>
      </property>
@@ -88,7 +88,7 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="3">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBoxAcbr">
      <property name="title">
       <string>ACBr - Pastas</string>
      </property>
@@ -154,10 +154,10 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEditUserFolder"/>
+       <widget class="QLineEdit" name="lineEditOrcamentosFolder"/>
       </item>
       <item row="1" column="2">
-       <widget class="QPushButton" name="pushButtonUserFolder">
+       <widget class="QPushButton" name="pushButtonOrcamentosFolder">
         <property name="text">
          <string>Navegar...</string>
         </property>
@@ -166,7 +166,24 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Pasta</string>
+         <string>Orçamentos:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lineEditVendasFolder"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="pushButtonVendasFolder">
+        <property name="text">
+         <string>Navegar...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Vendas:</string>
         </property>
        </widget>
       </item>

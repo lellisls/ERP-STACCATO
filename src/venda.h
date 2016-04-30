@@ -13,7 +13,7 @@ class Venda : public RegisterDialog {
   public:
     explicit Venda(QWidget *parent = 0);
     ~Venda();
-    void fecharOrcamento(const QString &idVenda);
+    void fecharOrcamento(const QString &idOrcamento);
 
   private slots:
     void montarFluxoCaixa();
@@ -36,7 +36,6 @@ class Venda : public RegisterDialog {
     void on_pushButtonLimparPag_clicked();
     void on_pushButtonVoltar_clicked();
     void on_tableFluxoCaixa_entered(const QModelIndex &);
-    void on_tableVenda_entered(const QModelIndex &);
 
   signals:
     void finished();
@@ -53,7 +52,7 @@ class Venda : public RegisterDialog {
     SqlTableModel modelFluxoCaixa;
     SqlTableModel modelItem;
     // methods
-    virtual bool save(const bool &isUpdate) override;
+    virtual bool save() override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
     virtual bool viewRegister(const QModelIndex &index) override;

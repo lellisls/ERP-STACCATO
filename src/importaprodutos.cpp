@@ -69,9 +69,7 @@ void ImportaProdutos::verificaSeRepresentacao() {
     return;
   }
 
-  if (queryFornecedor.first()) {
-    ui->checkBoxRepresentacao->setChecked(queryFornecedor.value("representacao").toBool());
-  }
+  if (queryFornecedor.first()) ui->checkBoxRepresentacao->setChecked(queryFornecedor.value("representacao").toBool());
 }
 
 void ImportaProdutos::atualizaProduto() {
@@ -109,7 +107,7 @@ void ImportaProdutos::importarTabela(const QString &tipo) {
 
   if (not db.open()) {
     QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao abrir o arquivo, verifique se o mesmo não está aberto: " +
-                          db.lastError().text());
+                                             db.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
@@ -152,7 +150,7 @@ void ImportaProdutos::importarTabela(const QString &tipo) {
 
   for (int row = 0; row < model.rowCount(); ++row) {
     hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() +
-        model.data(row, "ui").toString()] = row;
+         model.data(row, "ui").toString()] = row;
   }
 
   contaProdutos();
@@ -199,7 +197,8 @@ void ImportaProdutos::importarTabela(const QString &tipo) {
 
 void ImportaProdutos::setProgressDialog() {
   progressDialog = new QProgressDialog(this);
-  progressDialog->reset(); // BUG: Qt 5.5 bug https://bugreports.qt.io/browse/QTBUG-47042
+  progressDialog->reset(); // BUG: Qt 5.5 bug https://bugreports.qt.io/browse/QTBUG-47042 (this is the default now, not
+                           // gonna change)
   progressDialog->setCancelButton(0);
   progressDialog->setLabelText("Importando...");
   progressDialog->setWindowTitle("ERP Staccato");
@@ -372,7 +371,7 @@ void ImportaProdutos::setVariantMap() {
   variantMap.insert("un", QVariant(QVariant::String));
   variantMap.insert("colecao", QVariant(QVariant::String));
   variantMap.insert("m2cx", QVariant(QVariant::Double));
-  variantMap.insert("pccx", QVariant(QVariant::Int));
+  variantMap.insert("pccx", QVariant(QVariant::Double));
   variantMap.insert("kgcx", QVariant(QVariant::Double));
   variantMap.insert("minimo", QVariant(QVariant::Double));
   variantMap.insert("formComercial", QVariant(QVariant::String));
@@ -439,7 +438,6 @@ void ImportaProdutos::consistenciaDados() {
   variantMap.insert("ncm", variantMap.value("ncm").toString().remove(".").remove(",").remove("-").remove(" "));
   variantMap.insert("codBarras", variantMap.value("codBarras").toString().remove(".").remove(","));
   variantMap.insert("codComercial", variantMap.value("codComercial").toString().remove(".").remove(","));
-  variantMap.insert("pccx", variantMap.value("pccx").toInt());
   variantMap.insert("precoVenda",
                     QString::number(variantMap.value("precoVenda").toString().replace(",", ".").toDouble()).toDouble());
   variantMap.insert("custo",
@@ -641,9 +639,7 @@ void ImportaProdutos::insereEmOk(const QString &tipo) {
       return;
     }
 
-    if (query.first()) {
-      model.setData(row, "idProdutoRelacionado", query.value("idProduto"));
-    }
+    if (query.first()) model.setData(row, "idProdutoRelacionado", query.value("idProduto"));
   }
 
   model.setData(row, "idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
@@ -665,7 +661,7 @@ void ImportaProdutos::insereEmOk(const QString &tipo) {
   }
 
   hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() +
-      model.data(row, "ui").toString()] = row;
+       model.data(row, "ui").toString()] = row;
 
   hashAtualizado[row] = true;
 

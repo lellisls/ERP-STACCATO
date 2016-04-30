@@ -13,12 +13,15 @@ WidgetLogisticaColeta::WidgetLogisticaColeta(QWidget *parent) : QWidget(parent),
 
 WidgetLogisticaColeta::~WidgetLogisticaColeta() { delete ui; }
 
-QString WidgetLogisticaColeta::updateTables() {
+bool WidgetLogisticaColeta::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
   model.setFilter("0");
 
-  if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
+    return false;
+  }
 
   for (int row = 0; row < model.rowCount(); ++row) {
     ui->table->openPersistentEditor(row, "selecionado");
@@ -26,7 +29,7 @@ QString WidgetLogisticaColeta::updateTables() {
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetLogisticaColeta::TableFornLogistica_activated(const QString &fornecedor) {
@@ -105,7 +108,9 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
     return;
   }
 
-  updateTables();
+  QString error;
+
+  if (not updateTables(error)) QMessageBox::critical(this, "Erro!", error);
 
   QMessageBox::information(this, "Aviso!", "Confirmado coleta.");
 }
@@ -117,5 +122,3 @@ void WidgetLogisticaColeta::on_checkBoxMarcarTodos_clicked(const bool &) {
 }
 
 void WidgetLogisticaColeta::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
-
-// TODO: alterar tambem o status da compra?

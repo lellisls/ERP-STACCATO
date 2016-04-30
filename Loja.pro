@@ -27,11 +27,14 @@ SOURCES += src/apagaorcamento.cpp \
     src/contasapagar.cpp \
     src/contasareceber.cpp \
     src/dateformatdelegate.cpp \
+    src/devolucao.cpp \
     src/doubledelegate.cpp \
     src/entregascliente.cpp \
     src/estoque.cpp \
     src/estoqueproxymodel.cpp \
     src/excel.cpp \
+    src/followup.cpp \
+    src/followupproxy.cpp \
     src/importaprodutos.cpp \
     src/importaprodutosproxy.cpp \
     src/importarxml.cpp \
@@ -48,6 +51,7 @@ SOURCES += src/apagaorcamento.cpp \
     src/orcamentoproxymodel.cpp \
     src/porcentagemdelegate.cpp \
     src/produtospendentes.cpp \
+    src/reaisdelegate.cpp \
     src/registeraddressdialog.cpp \
     src/registerdialog.cpp \
     src/searchdialog.cpp \
@@ -62,9 +66,9 @@ SOURCES += src/apagaorcamento.cpp \
     src/usersession.cpp \
     src/validadedialog.cpp \
     src/venda.cpp \
-    src/vendasmes.cpp \
     src/widgetcompra.cpp \
     src/widgetcompraconfirmar.cpp \
+    src/widgetcompradevolucao.cpp \
     src/widgetcomprafaturar.cpp \
     src/widgetcompragerar.cpp \
     src/widgetcomprapendentes.cpp \
@@ -75,10 +79,12 @@ SOURCES += src/apagaorcamento.cpp \
     src/widgetlogisticacoleta.cpp \
     src/widgetlogisticaentrega.cpp \
     src/widgetlogisticarecebimento.cpp \
+    src/widgetlogisticarepresentacao.cpp \
     src/widgetnfe.cpp \
     src/widgetnfeentrada.cpp \
     src/widgetnfesaida.cpp \
     src/widgetorcamento.cpp \
+    src/widgetrelatorio.cpp \
     src/widgetvenda.cpp \
     src/xml.cpp \
     src/xml_viewer.cpp
@@ -99,11 +105,14 @@ HEADERS  += src/apagaorcamento.h \
     src/contasapagar.h \
     src/contasareceber.h \
     src/dateformatdelegate.h \
+    src/devolucao.h \
     src/doubledelegate.h \
     src/entregascliente.h \
     src/estoque.h \
     src/estoqueproxymodel.h \
     src/excel.h \
+    src/followup.h \
+    src/followupproxy.h \
     src/importaprodutos.h \
     src/importaprodutosproxy.h \
     src/importarxml.h \
@@ -119,6 +128,7 @@ HEADERS  += src/apagaorcamento.h \
     src/orcamentoproxymodel.h \
     src/porcentagemdelegate.h \
     src/produtospendentes.h \
+    src/reaisdelegate.h \
     src/registeraddressdialog.h \
     src/registerdialog.h \
     src/searchdialog.h \
@@ -133,9 +143,9 @@ HEADERS  += src/apagaorcamento.h \
     src/usersession.h \
     src/validadedialog.h \
     src/venda.h \
-    src/vendasmes.h \
     src/widgetcompra.h \
     src/widgetcompraconfirmar.h \
+    src/widgetcompradevolucao.h \
     src/widgetcomprafaturar.h \
     src/widgetcompragerar.h \
     src/widgetcomprapendentes.h \
@@ -146,10 +156,12 @@ HEADERS  += src/apagaorcamento.h \
     src/widgetlogisticacoleta.h \
     src/widgetlogisticaentrega.h \
     src/widgetlogisticarecebimento.h \
+    src/widgetlogisticarepresentacao.h \
     src/widgetnfe.h \
     src/widgetnfeentrada.h \
     src/widgetnfesaida.h \
     src/widgetorcamento.h \
+    src/widgetrelatorio.h \
     src/widgetvenda.h \
     src/xml.h \
     src/xml_viewer.h
@@ -165,8 +177,10 @@ FORMS += ui/apagaorcamento.ui \
     ui/cadastrousuario.ui \
     ui/contasapagar.ui \
     ui/contasareceber.ui \
+    ui/devolucao.ui \
     ui/entregascliente.ui \
     ui/estoque.ui \
+    ui/followup.ui \
     ui/importaprodutos.ui \
     ui/importarxml.ui \
     ui/inputdialog.ui \
@@ -179,9 +193,9 @@ FORMS += ui/apagaorcamento.ui \
     ui/userconfig.ui \
     ui/validadedialog.ui \
     ui/venda.ui \
-    ui/vendasmes.ui \
     ui/widgetcompra.ui \
     ui/widgetcompraconfirmar.ui \
+    ui/widgetcompradevolucao.ui \
     ui/widgetcomprafaturar.ui \
     ui/widgetcompragerar.ui \
     ui/widgetcomprapendentes.ui \
@@ -192,14 +206,16 @@ FORMS += ui/apagaorcamento.ui \
     ui/widgetlogisticacoleta.ui \
     ui/widgetlogisticaentrega.ui \
     ui/widgetlogisticarecebimento.ui \
+    ui/widgetlogisticarepresentacao.ui \
     ui/widgetnfe.ui \
     ui/widgetnfeentrada.ui \
     ui/widgetnfesaida.ui \
     ui/widgetorcamento.ui \
+    ui/widgetrelatorio.ui \
     ui/widgetvenda.ui \
     ui/xml_viewer.ui
 
-CONFIG += c++14
+CONFIG += c++11
 
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS_DEBUG += -O0

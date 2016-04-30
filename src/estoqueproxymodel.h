@@ -6,13 +6,14 @@
 #include "sqltablemodel.h"
 
 class EstoqueProxyModel : public QIdentityProxyModel {
-  public:
-    explicit EstoqueProxyModel(SqlTableModel *model, QObject *parent = 0);
-    ~EstoqueProxyModel();
-    QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
-  private:
-    const int column;
+public:
+  explicit EstoqueProxyModel(SqlTableModel *model, QObject *parent = 0);
+  ~EstoqueProxyModel();
+  QVariant data(const QModelIndex &proxyIndex, const int role) const override;
+
+private:
+  const int column;
 };
 
 #endif // ESTOQUEPROXYMODEL_H

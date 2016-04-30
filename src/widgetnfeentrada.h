@@ -15,7 +15,7 @@ class WidgetNfeEntrada : public QWidget {
   public:
     explicit WidgetNfeEntrada(QWidget *parent = 0);
     ~WidgetNfeEntrada();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_table_activated(const QModelIndex &index);

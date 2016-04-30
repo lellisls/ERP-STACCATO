@@ -13,7 +13,7 @@ class WidgetNfe : public QWidget {
   public:
     explicit WidgetNfe(QWidget *parent = 0);
     ~WidgetNfe();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_tabWidgetNfe_currentChanged(const int &);

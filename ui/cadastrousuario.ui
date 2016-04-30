@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>384</width>
-    <height>265</height>
+    <width>540</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,7 +114,8 @@
           <string>Nome completo</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 127);</string>
+          <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
          </property>
         </widget>
        </item>
@@ -184,7 +185,8 @@
           <string>Nome de usuário</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 127);</string>
+          <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
          </property>
         </widget>
        </item>
@@ -201,7 +203,8 @@
           <string>Senha</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 127);</string>
+          <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
@@ -221,7 +224,8 @@
           <string>Conf. de senha</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 127);</string>
+          <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
          </property>
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>

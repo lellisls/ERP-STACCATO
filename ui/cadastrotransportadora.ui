@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1274</width>
-    <height>400</height>
+    <height>430</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -131,7 +131,8 @@
              <string>Razão Social</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);</string>
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>
@@ -147,7 +148,8 @@
              <string>Nome Fantasia</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);</string>
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>
@@ -169,7 +171,8 @@
              <string>CNPJ</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);</string>
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>
@@ -191,7 +194,8 @@
              <string>Insc. Estadual</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);</string>
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>
@@ -233,7 +237,8 @@
              <string>Telefone</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);</string>
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>

@@ -46,7 +46,6 @@ void CadastroUsuario::setupTablePermissoes() {
   ui->tablePermissoes->resizeColumnsToContents();
   ui->tablePermissoes->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
   ui->tablePermissoes->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  // NOTE: checkbox em tableWidget
 
   for (int row = 0, rowCount = ui->tablePermissoes->rowCount(); row < rowCount; ++row) {
     for (int column = 0, columnCount = ui->tablePermissoes->columnCount(); column < columnCount; ++column) {
@@ -148,7 +147,7 @@ void CadastroUsuario::on_pushButtonBuscar_clicked() {
   sdUsuario->show();
 }
 
-bool CadastroUsuario::save(const bool &isUpdate) {
+bool CadastroUsuario::save() {
   if (not verifyFields()) return false;
 
   if (not isUpdate and not model.select()) {
@@ -163,8 +162,8 @@ bool CadastroUsuario::save(const bool &isUpdate) {
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate)) + "\nMapper: " +
-        QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
+    QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " +
+        QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount()));
     QSqlQuery("ROLLBACK").exec();
     viewRegister(model.index(row, 0));
     return false;
@@ -196,7 +195,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
   if (not isUpdate) {
     QSqlQuery query;
     query.prepare("CREATE USER :user@'%' IDENTIFIED BY '1234'");
-    query.bindValue(":user", ui->lineEditUser->text());
+    query.bindValue(":user", ui->lineEditUser->text().toLower());
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro criando usuário do banco de dados: " + query.lastError().text());
@@ -206,7 +205,7 @@ bool CadastroUsuario::save(const bool &isUpdate) {
     }
 
     query.prepare("GRANT ALL PRIVILEGES ON *.* TO :user@'%' WITH GRANT OPTION");
-    query.bindValue(":user", ui->lineEditUser->text());
+    query.bindValue(":user", ui->lineEditUser->text().toLower());
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!",

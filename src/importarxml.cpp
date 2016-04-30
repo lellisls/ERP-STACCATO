@@ -1,3 +1,4 @@
+#include <QDate>
 #include <QDebug>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -8,12 +9,13 @@
 #include "checkboxdelegate.h"
 #include "estoqueproxymodel.h"
 #include "importarxml.h"
+#include "inputdialog.h"
 #include "singleeditdelegate.h"
 #include "ui_importarxml.h"
 #include "xml.h"
 
-ImportarXML::ImportarXML(const QString &idCompra, QWidget *parent)
-  : QDialog(parent), ui(new Ui::ImportarXML), idCompra(idCompra) {
+ImportarXML::ImportarXML(const QString &idCompra, const QString &dataReal, const QString &dataPrevista, QWidget *parent)
+    : QDialog(parent), ui(new Ui::ImportarXML), dataReal(dataReal), dataPrevista(dataPrevista), idCompra(idCompra) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -67,31 +69,34 @@ void ImportarXML::setupTables(const QString &idCompra) {
 }
 
 void ImportarXML::on_pushButtonImportar_clicked() {
-  // TODO: colocar inputDialog aqui?
   //--------------
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
     modelEstoque.setData(row, "status", modelEstoque.data(row, "quant").toDouble() < 0 ? "PRÉ-CONSUMO" : "EM COLETA");
   }
-  //--------------
-
-  bool ok = true;
 
   for (int row = 0; row < modelCompra.rowCount(); ++row) {
-    if (modelCompra.data(row, "quantUpd") != Green) {
-      ok = false;
+    modelCompra.setData(row, "selecionado", false);
+  }
+  //--------------
+
+  bool ok = false;
+
+  for (int row = 0; row < modelCompra.rowCount(); ++row) {
+    if (modelCompra.data(row, "quantUpd") == Green) {
+      ok = true;
       break;
     }
   }
 
   if (not ok) {
-    QMessageBox::critical(this, "Erro!", "Nem todas as compras estão ok!");
+    QMessageBox::critical(this, "Erro!", "Nenhuma compra pareada!");
     return;
   }
 
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
     int color = modelEstoque.data(row, "quantUpd").toInt();
 
-    if (color != Green and color != DarkGreen) {
+    if (color == Red) {
       ok = false;
       break;
     }
@@ -114,8 +119,12 @@ void ImportarXML::on_pushButtonImportar_clicked() {
     return;
   }
 
-  //------------------------------
+  // NOTE: todos as linhas em cima devem ser pareadas mas nem todas em baixo precisam ser (como a nota nao pode ser
+  // cadastrada duas vezes seus produtos devem ser todos pareados)
 
+  //------------------------------
+  // TODO: refatorar para mudar status/datas apenas dos produtos que foram faturados/verdes
+  // buscar todas as linhas ok e juntar os idPedidos em uma string para usar na query abaixo
   QSqlQuery query;
 
   if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
@@ -124,22 +133,7 @@ void ImportarXML::on_pushButtonImportar_clicked() {
     close();
     return;
   }
-
-  // salvar status na venda
-  if (not query.exec("UPDATE venda_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
-                     dataPrevista + "' WHERE idCompra = " + idCompra)) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
-    close();
-    return;
-  }
-
-  if (not query.exec("CALL update_venda_status()")) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
-    close();
-    return;
-  }
-
-  //-------------------------------
+  //------------------------------
 
   QSqlQuery("COMMIT").exec();
 
@@ -152,9 +146,6 @@ void ImportarXML::limparAssociacoes() {
     modelEstoque.setData(row, "quantUpd", 0);
 
     QString codComercial = modelEstoque.data(row, "codComercial").toString();
-    QString idCompra = modelEstoque.data(row, "idCompra").toString().replace(",", " OR idCompra = ");
-
-    //    if(idCompra.contains("D")) continue;
 
     QSqlQuery query;
 
@@ -223,7 +214,7 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
     return;
   }
 
-  QStringList lojas = {"CD"};
+  QStringList lojas = {"CD", "Estoque Sul", "Balneário", "Alphaville", "Granja", "Gabriel"};
 
   while (query.next()) {
     lojas << query.value("descricao").toString();
@@ -291,7 +282,8 @@ void ImportarXML::associarItens(QModelIndex &item, int row, double &estoqueConsu
                       qFuzzyCompare((quantConsumida + quantAdicionar), quantCompra) ? Green : Yellow);
 
   QString idCompra = modelCompra.data(item.row(), "idCompra").toString();
-  QString idCompraEstoque = modelEstoque.data(row, "idCompra").toString().remove("0");
+  QString idCompraEstoque = modelEstoque.data(row, "idCompra").toString();
+  if (idCompraEstoque.startsWith("0")) idCompraEstoque.remove(0, 1);
   if (not idCompraEstoque.contains(idCompra)) idCompraEstoque += idCompraEstoque.isEmpty() ? idCompra : "," + idCompra;
   modelEstoque.setData(row, "idCompra", idCompraEstoque);
 
@@ -356,7 +348,7 @@ void ImportarXML::criarConsumo() {
     QSqlQuery query;
 
     if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON v.idProduto "
-                       "= p.idProduto WHERE p.codComercial = '" +
+                       "= p.idProduto WHERE v.codComercial = '" +
                        codComercial + "' AND idCompra = " + idCompra + " AND status = 'EM FATURAMENTO'")) {
       //    if (not query.exec("SELECT quant, idVendaProduto FROM venda_has_produto AS v LEFT JOIN produto AS p ON
       //    v.idProduto "
@@ -366,6 +358,9 @@ void ImportarXML::criarConsumo() {
       close();
       return;
     }
+
+    qDebug() << "codComercial: " << codComercial;
+    qDebug() << "idCompra: " << idCompra;
 
     qDebug() << "query size: " << query.size();
 
@@ -396,7 +391,7 @@ void ImportarXML::criarConsumo() {
         if (not modelEstoque.setData(newRow, column, modelEstoque.data(row, column))) return;
       }
 
-      double quant = query.value("quant").toDouble() * -1;
+      const double quant = query.value("quant").toDouble() * -1;
 
       if (not modelEstoque.setData(newRow, "quant", quant)) return;
       if (not modelEstoque.setData(newRow, "quantUpd", DarkGreen)) return;
@@ -436,11 +431,6 @@ void ImportarXML::openPersistente() {
   for (int row = 0, rowCount = ui->tableCompra->model()->rowCount(); row < rowCount; ++row) {
     ui->tableCompra->openPersistentEditor(row, "selecionado");
   }
-}
-
-void ImportarXML::setData(const QString &dataReal, const QString &dataPrevista) {
-  this->dataReal = dataReal;
-  this->dataPrevista = dataPrevista;
 }
 
 void ImportarXML::parear() {
@@ -503,9 +493,13 @@ void ImportarXML::on_tableCompra_entered(const QModelIndex &) { ui->tableCompra-
 // NOTE: se filtro por compra, é necessário a coluna 'selecionado' para escolher qual linha parear?
 // NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir
 // items na arvore?)
-// TODO: verificar no servidor os consumos feitos dobrados
-// TODO: deixar editar o codComercial apenas na tabela de cima para evitar inconsistencias
-// TODO: algum erro no reparear que esta sumindo consumos
-// TODO: nao bloquear importacao pela tabela de baixo (para os casos da nota vir com parte dos produtos)
 // TODO: setar selecionado 0 antes de salvar a tabela de baixo
-// TODO: colocar status na tabela estoque mais a esquerda
+// NOTE: revisar codigo para verificar se ao pesquisar um produto pelo codComercial+status nao estou alterando outros
+// produtos junto
+// TODO: nao mudar status para em coleta dos produtos que nao foram importados (para o caso de vir apenas parte da
+// compra)
+// TODO: se a quantidade nao bater por m2 calcular por pc e vice versa?
+// TODO: os que estiverem verdes em baixo nao modificar em importacoes sequentes
+// TODO: auto reparear apos mudar cod?
+// TODO: verificar se estou usando nao apenas o codComercial mas tambem o fornecedor para evitar conflitos de codigos
+// repetidos

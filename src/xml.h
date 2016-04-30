@@ -18,7 +18,6 @@ class XML {
     QByteArray fileContent;
     QStandardItemModel model;
     QString fileName;
-    SqlTableModel modelProduto;
 
     QString chaveAcesso;
     // emit

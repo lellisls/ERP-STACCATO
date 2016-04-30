@@ -15,7 +15,7 @@ class WidgetCompraPendentes : public QWidget {
   public:
     explicit WidgetCompraPendentes(QWidget *parent = 0);
     ~WidgetCompraPendentes();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void montaFiltro();

@@ -27,6 +27,7 @@ class InputDialog : public QDialog {
     void on_comboBoxPgt2_currentTextChanged(const QString &text);
     void on_comboBoxPgt3_currentTextChanged(const QString &text);
     void on_dateEditEvento_dateChanged(const QDate &date);
+    void on_doubleSpinBoxFrete_editingFinished();
     void on_doubleSpinBoxPgt1_editingFinished();
     void on_doubleSpinBoxPgt2_editingFinished();
     void on_doubleSpinBoxPgt3_editingFinished();

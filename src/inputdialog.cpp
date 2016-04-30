@@ -40,8 +40,6 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
   }
 
   if (type == ConfirmarCompra) {
-    // TODO: on table value changed update total on right
-
     ui->groupBoxData->show();
     ui->groupBoxDataPreco->show();
     ui->framePagamentos->show();
@@ -51,7 +49,7 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
 
     // NOTE: make this runtime changeable
     QStringList list{"Escolha uma opção!", "Cartão de débito", "Cartão de crédito", "Cheque",
-                     "Dinheiro",           "Boleto",           "Transf. Banc.",     "Crédito"};
+                     "Dinheiro",           "Boleto",           "Transf. Banc."};
 
     ui->comboBoxPgt1->insertItems(0, list);
     ui->comboBoxPgt2->insertItems(0, list);
@@ -70,6 +68,7 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
     connect(ui->lineEditPgt1, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
     connect(ui->lineEditPgt2, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
     connect(ui->lineEditPgt3, &QLineEdit::textChanged, this, &InputDialog::montarFluxoCaixa);
+    connect(&model, &SqlTableModel::dataChanged, this, &InputDialog::resetarPagamentos);
 
     // NOTE: readd this later
     //    ui->tableView->showColumn(model.fieldIndex("selecionado"));
@@ -81,6 +80,7 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
 
   if (type == Faturamento) {
     ui->groupBoxData->show();
+    ui->groupBoxDataPreco->show();
 
     ui->labelEvento->setText("Data faturamento:");
     ui->labelProximoEvento->setText("Data prevista coleta:");
@@ -236,8 +236,9 @@ void InputDialog::setFilter(const QString &id) {
     //--------------------------------
     double preco = 0;
 
+    // TODO: remove this
     for (int row = 0; row < model.rowCount(); ++row) {
-      preco += model.data(row, "preco").toDouble();
+      preco += model.data(row, "preco").toDouble() * model.data(row, "quant").toDouble();
     }
 
     ui->doubleSpinBoxTotalPag->setValue(preco);
@@ -247,7 +248,7 @@ void InputDialog::setFilter(const QString &id) {
     //--------------------------------
   }
 
-  QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
+  if (type != Faturamento) QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
 }
 
 void InputDialog::setupTables() {
@@ -347,6 +348,8 @@ void InputDialog::on_doubleSpinBoxPgt2_editingFinished() {
 }
 
 void InputDialog::on_doubleSpinBoxPgt3_editingFinished() { montarFluxoCaixa(); }
+
+void InputDialog::on_doubleSpinBoxFrete_editingFinished() { resetarPagamentos(); }
 
 void InputDialog::on_comboBoxPgt1_currentTextChanged(const QString &text) {
   if (text == "Escolha uma opção!") return;
@@ -468,6 +471,14 @@ void InputDialog::montarFluxoCaixa() {
 }
 
 void InputDialog::resetarPagamentos() {
+  double total = ui->doubleSpinBoxFrete->value();
+
+  for (int row = 0; row < model.rowCount(); ++row) {
+    total += model.data(row, "preco").toDouble() * model.data(row, "quant").toDouble();
+  }
+
+  ui->doubleSpinBoxTotalPag->setValue(total);
+
   ui->doubleSpinBoxPgt1->setMaximum(ui->doubleSpinBoxTotalPag->value());
   ui->doubleSpinBoxPgt1->setValue(ui->doubleSpinBoxTotalPag->value());
   ui->doubleSpinBoxPgt2->setValue(0);
@@ -501,5 +512,5 @@ void InputDialog::on_table_entered(const QModelIndex &) { ui->table->resizeColum
 
 void InputDialog::on_tableFluxoCaixa_entered(const QModelIndex &) { ui->tableFluxoCaixa->resizeColumnsToContents(); }
 
-// TODO: fluxo de pagamentos deve recalcular total quando os precos forem editados na tabela
-// TODO: nao colocar data no fluxo caixa e adicionar frete
+// TODO: na parte de compra quando for representacao puxar o preco de venda e nao o custo
+// TODO: desabilitar campos no gerarcompra, apenas quant e valor podem ser editados

@@ -45,6 +45,8 @@ void SendMail::on_pushButtonBuscar_clicked() {
 }
 
 void SendMail::on_pushButtonEnviar_clicked() {
+    // TODO: verificar campos obrigatorios
+
   progress->show();
 
   UserSession::setSettings("User/servidorSMTP", ui->lineEditServidor->text());
@@ -56,7 +58,7 @@ void SendMail::on_pushButtonEnviar_clicked() {
                         ui->lineEditPorta->text().toInt());
   connect(smtp, &Smtp::status, this, &SendMail::mailSent);
 
-  smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditTitulo->text(),
+  smtp->sendMail(ui->lineEditEmail->text(), ui->lineEditDest->text(), ui->lineEditCopia->text(), ui->lineEditTitulo->text(),
                  ui->textEdit->toPlainText(), files);
 }
 
@@ -74,3 +76,5 @@ void SendMail::successStatus() {
 void SendMail::failureStatus(const QString &status) {
   QMessageBox::critical(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
 }
+
+// TODO: como tem fornecedor que tem mais de um email, fazer um combobox listando os emails para o usuario escolher

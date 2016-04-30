@@ -19,14 +19,17 @@ void WidgetCompraConfirmar::setupTables() {
   ui->table->setModel(&model);
 }
 
-QString WidgetCompraConfirmar::updateTables() {
+bool WidgetCompraConfirmar::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela compras: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela compras: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
@@ -78,7 +81,12 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
   }
   //
 
-  updateTables();
+  QString error;
+
+  if (not updateTables(error)) {
+    QMessageBox::critical(this, "Erro!", error);
+    return;
+  }
 
   QMessageBox::information(this, "Aviso!", "Confirmado compra.");
 }
@@ -87,4 +95,7 @@ void WidgetCompraConfirmar::on_table_entered(const QModelIndex &) { ui->table->r
 
 // NOTE: permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
 // diferentes: 50 -> 40+10
-// TODO: idVenda esta repetindo (again)
+// NOTE: idVenda esta repetindo (again)
+// TODO: esta puxando valor unitario e nao total
+// TODO: arrumar concatenacao (copiar do faturamento)
+// TODO: arrumar preco na view (deve ser o preco * quant)

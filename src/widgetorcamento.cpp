@@ -2,9 +2,10 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "doubledelegate.h"
+#include "followup.h"
 #include "orcamento.h"
 #include "orcamentoproxymodel.h"
+#include "reaisdelegate.h"
 #include "ui_widgetorcamento.h"
 #include "usersession.h"
 #include "widgetorcamento.h"
@@ -13,46 +14,49 @@ WidgetOrcamento::WidgetOrcamento(QWidget *parent) : QWidget(parent), ui(new Ui::
   ui->setupUi(this);
 
   connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonFechado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->checkBoxCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->checkBoxExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->checkBoxFechado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonProprios, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->radioButtonTodos, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
-  connect(ui->radioButtonValido, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->checkBoxValido, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->checkBoxReplicado, &QCheckBox::toggled, this, &WidgetOrcamento::montaFiltro);
+  connect(ui->checkBoxPerdido, &QCheckBox::toggled, this, &WidgetOrcamento::montaFiltro);
 
   if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->radioButtonProprios->click();
-    ui->radioButtonValido->setChecked(true);
+    ui->checkBoxValido->setChecked(true);
+    ui->checkBoxExpirado->setChecked(true);
+  } else {
+    ui->radioButtonTodos->click();
   }
-
-  ui->radioButtonTodos->click();
 }
 
 WidgetOrcamento::~WidgetOrcamento() { delete ui; }
 
 void WidgetOrcamento::setupTables() {
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
+  ReaisDelegate *reaisDelegate = new ReaisDelegate(this);
 
   model.setTable("view_orcamento");
 
   ui->table->setModel(new OrcamentoProxyModel(&model, this));
-  ui->table->setItemDelegate(doubledelegate);
-  ui->table->sortByColumn("Código");
+  ui->table->setItemDelegateForColumn("Total", reaisDelegate);
 }
 
-QString WidgetOrcamento::updateTables() {
+bool WidgetOrcamento::updateTables(QString &error) {
   if (model.tableName().isEmpty()) {
     setupTables();
     montaFiltro();
   }
 
   if (not model.select()) {
-    return "Erro lendo tabela orçamento: " + model.lastError().text();
+    error = "Erro lendo tabela orçamento: " + model.lastError().text();
+    return false;
   }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetOrcamento::on_table_activated(const QModelIndex &index) {
@@ -69,28 +73,47 @@ void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
 void WidgetOrcamento::montaFiltro() {
   const QString filtroLoja = "(Código LIKE '%" + UserSession::fromLoja("sigla") + "%')";
 
-  QString filtroRadio;
+  const QString filtroRadio = ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::nome() + "'";
 
-  if (ui->radioButtonTodos->isChecked()) filtroRadio = " AND status != 'CANCELADO' AND status != 'FECHADO'";
-  if (ui->radioButtonProprios->isChecked()) filtroRadio = " AND Vendedor = '" + UserSession::nome() + "'";
-  if (ui->radioButtonValido->isChecked()) filtroRadio = " AND status = 'ATIVO'";
-  if (ui->radioButtonExpirado->isChecked()) filtroRadio = " AND status = 'EXPIRADO'";
-  if (ui->radioButtonCancelado->isChecked()) filtroRadio = " AND status = 'CANCELADO'";
-  if (ui->radioButtonFechado->isChecked()) filtroRadio = " AND status = 'FECHADO'";
+  QString filtroCheck;
+
+  for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
+    if (child->isChecked()) {
+      filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'"
+                                           : " OR status = '" + child->text().toUpper() + "'";
+    }
+  }
+
+  filtroCheck = filtroCheck.isEmpty() ? "" : " AND (" + filtroCheck + ")";
 
   const QString textoBusca = ui->lineEditBusca->text();
 
   const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
-                                                     "%') OR (Vendedor LIKE '%" + textoBusca +
-                                                     "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+                                                              "%') OR (Vendedor LIKE '%" + textoBusca +
+                                                              "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
 
-  model.setFilter(filtroLoja + filtroRadio + filtroBusca);
+  model.setFilter(filtroLoja + filtroRadio + filtroCheck + filtroBusca);
 
   ui->table->resizeColumnsToContents();
 }
 
 void WidgetOrcamento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
-// TODO: transformar os filtros em checkbox
-// TODO: colocar tela de total orcamento (copiar do total venda mes)
-// TODO: colocar autoredimensionar no scroll do table
+void WidgetOrcamento::on_pushButtonFollowup_clicked() {
+  auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
+    return;
+  }
+
+  FollowUp *followup = new FollowUp(model.data(list.first().row(), "Código").toString(), this);
+  followup->show();
+}
+
+void WidgetOrcamento::on_groupBoxStatus_toggled(const bool &enabled) {
+  for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
+    child->setEnabled(true);
+    child->setChecked(enabled);
+  }
+}

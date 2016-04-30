@@ -27,6 +27,8 @@ void EntregasCliente::setupTables() {
 
   modelProdutos.setHeaderData("selecionado", "");
 
+  modelProdutos.setFilter("idNfeSaida IS NULL");
+
   if (not modelProdutos.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_has_produto: " + modelProdutos.lastError().text());
   }
@@ -35,8 +37,10 @@ void EntregasCliente::setupTables() {
   ui->tableProdutos->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
   ui->tableProdutos->hideColumn("idVendaProduto");
 
-  modelEntregas.setTable("pedido_transportadora");
+  modelEntregas.setTable("venda_has_produto");
   modelEntregas.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelEntregas.setFilter("idNfeSaida IS NOT NULL");
 
   if (not modelEntregas.select()) {
     QMessageBox::critical(this, "Erro!",
@@ -44,9 +48,12 @@ void EntregasCliente::setupTables() {
   }
 
   ui->tableEntregas->setModel(&modelEntregas);
+  ui->tableEntregas->hideColumn("selecionado");
 }
 
 void EntregasCliente::on_pushButtonNFe_clicked() {
+  // TODO: escolher transportadora para envio dos produtos apos gerar nfe
+  // TODO: colocar InputDlg prev/Real
   QList<int> lista;
 
   for (const auto index :
@@ -109,5 +116,3 @@ void EntregasCliente::viewEntrega(const QString &idVenda) {
 void EntregasCliente::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
 
 void EntregasCliente::on_tableEntregas_entered(const QModelIndex &) { ui->tableEntregas->resizeColumnsToContents(); }
-
-// TODO: filtrar a tabela de cima idNfeSaida vazio e a baixo como diferente de vazio

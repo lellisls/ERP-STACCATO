@@ -96,6 +96,13 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="pushButtonGerarCompra">
+        <property name="text">
+         <string>Gerar compra</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="TableView" name="tableProdutos">
         <property name="mouseTracking">
@@ -121,10 +128,10 @@
         </attribute>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="pushButtonGerarCompra">
+      <item row="3" column="0">
+       <widget class="QPushButton" name="pushButtonTeste">
         <property name="text">
-         <string>Gerar compra</string>
+         <string>Teste Excel</string>
         </property>
        </widget>
       </item>

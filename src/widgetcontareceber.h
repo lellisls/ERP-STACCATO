@@ -15,7 +15,7 @@ class WidgetContaReceber : public QWidget {
   public:
     explicit WidgetContaReceber(QWidget *parent = 0);
     ~WidgetContaReceber();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_table_entered(const QModelIndex &);

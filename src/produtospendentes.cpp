@@ -58,7 +58,7 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
 
   ui->tableProdutos->resizeColumnsToContents();
 
-  modelEstoque.setFilter("`Cód Com` = '" + codComercial + "'");
+  modelEstoque.setFilter("`Cód Com` = '" + codComercial + "' AND Quant > 0");
 
   if (not modelEstoque.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
@@ -82,6 +82,7 @@ void ProdutosPendentes::setupTables() {
   modelProdutos.setHeaderData("un", "Un.");
   modelProdutos.setHeaderData("codComercial", "Cód. Com.");
   modelProdutos.setHeaderData("codBarras", "Cód. Barras");
+  modelProdutos.setHeaderData("custo", "Custo");
 
   ui->tableProdutos->setModel(&modelProdutos);
   ui->tableProdutos->hideColumn("idVendaProduto");
@@ -125,31 +126,59 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
 }
 
 void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
-  // TODO: verificar se a quantidade é suficiente
-  // TODO: para o consumo de estoque deve selecionar uma linha em cima e uma em baixo
+  auto listProduto = ui->tableProdutos->selectionModel()->selectedRows();
 
-  auto list = ui->tableEstoque->selectionModel()->selectedRows();
+  if (listProduto.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum produto selecionado!");
+    return;
+  }
 
-  if (list.size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
+  auto listEstoque = ui->tableEstoque->selectionModel()->selectedRows();
+
+  if (listEstoque.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhuma estoque selecionado!");
+    return;
+  }
+
+  const double quantProduto = modelProdutos.data(listProduto.first().row(), "quant").toDouble();
+  const double quantEstoque = modelEstoque.data(listEstoque.first().row(), "quant").toDouble();
+
+  if (quantProduto > quantEstoque) {
+    QMessageBox::critical(this, "Erro!", "Estoque insuficiente!");
     return;
   }
 
   Estoque *estoque = new Estoque(this);
-  estoque->viewRegisterById(modelEstoque.data(list.first().row(), "idEstoque").toString());
-  estoque->criarConsumo(modelProdutos.data(0, "idVendaProduto"));
+  estoque->viewRegisterById(modelEstoque.data(listEstoque.first().row(), "idEstoque").toString());
+  estoque->criarConsumo(modelProdutos.data(listProduto.first().row(), "idVendaProduto"));
   estoque->show();
 
-  // NOTE: para criar consumo usar a logica de parear? para os casos em que um unico lote nao seria suficiente para
-  // completar a quantidade
+  InputDialog *inputDlg = new InputDialog(InputDialog::Entrega, this);
+
+  if (inputDlg->exec() != InputDialog::Accepted) return;
+
+  const QString dataEntrega = inputDlg->getDate().toString("yyyy-MM-dd");
+
+  QSqlQuery query;
+
+  // TODO: verificar se esta preenchendo dataPrevEnt (nao preenche no pre-consumo)
+
+  if (not query.exec("UPDATE venda_has_produto SET dataPrevEnt = '" + dataEntrega +
+                     "', status = 'ESTOQUE' WHERE idVendaProduto = " +
+                     modelProdutos.data(listProduto.first().row(), "idVendaProduto").toString())) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    close();
+    return;
+  }
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    close();
+    return;
+  }
 
   modelEstoque.select();
   modelProdutos.select();
-
-  // TODO: apos consumir alterar o status do venda_has_produto (verificar logica na parte de faturamento, setar datas
-  // etc)
-
-  // TODO: apos consumir estoque recarregar tabela para mostrar a nova quantidade restante
 }
 
 void ProdutosPendentes::insere(const QDate &dataPrevista) {
@@ -200,3 +229,6 @@ void ProdutosPendentes::atualizaVenda(const QDate &dataPrevista) {
 void ProdutosPendentes::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
 
 void ProdutosPendentes::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }
+
+// TODO: se o estoque estiver em coleta/recebimento alterar status do consumo para 'pré-consumo'
+// TODO: quando compra a soma de dois produtos só um está tendo o status modificado (mudar para selecao de linhas?)

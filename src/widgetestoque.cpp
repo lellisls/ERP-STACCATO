@@ -23,14 +23,17 @@ void WidgetEstoque::setupTables() {
   ui->table->setItemDelegate(new DoubleDelegate(this));
 }
 
-QString WidgetEstoque::updateTables() {
+bool WidgetEstoque::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela estoque: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela estoque: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetEstoque::on_table_activated(const QModelIndex &index) {

@@ -15,7 +15,7 @@ class WidgetLogisticaRecebimento : public QWidget {
   public:
     explicit WidgetLogisticaRecebimento(QWidget *parent = 0);
     ~WidgetLogisticaRecebimento();
-    QString updateTables();
+    bool updateTables(QString &error);
     void TableFornLogistica_activated(const QString &fornecedor);
 
   private slots:

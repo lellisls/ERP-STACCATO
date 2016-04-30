@@ -44,7 +44,6 @@ class Orcamento : public RegisterDialog {
     void on_pushButtonReplicar_clicked();
     void on_spinBoxCaixas_valueChanged(const int &caixas);
     void on_tableProdutos_clicked(const QModelIndex &index);
-    void on_tableProdutos_entered(const QModelIndex &);
 
   signals:
     void finished();
@@ -57,7 +56,6 @@ class Orcamento : public RegisterDialog {
     bool isBlockedTotalItem = false;
     bool isBlockedReais = false;
     bool isBlockedTotal = false;
-    bool isItemUpdate = false;
     double minimoFrete;
     double porcFrete;
     QDataWidgetMapper mapperItem;
@@ -67,7 +65,7 @@ class Orcamento : public RegisterDialog {
     bool generateId();
     bool verificaCadastroCliente();
     virtual bool newRegister() override;
-    virtual bool save(const bool &isUpdate = false) override;
+    virtual bool save() override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
     virtual bool viewRegister(const QModelIndex &index) override;
@@ -76,7 +74,7 @@ class Orcamento : public RegisterDialog {
     virtual void setupMapper() override;
     virtual void successMessage() override;
     virtual void updateMode() override;
-    void adicionarItem();
+    void adicionarItem(bool isUpdate = false);
     void atualizarItem();
     void calcPrecoGlobalTotal();
     void calcPrecoItemTotal();

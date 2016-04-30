@@ -8,18 +8,21 @@
 #include "widgetlogisticarecebimento.h"
 
 WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent)
-  : QWidget(parent), ui(new Ui::WidgetLogisticaRecebimento) {
+    : QWidget(parent), ui(new Ui::WidgetLogisticaRecebimento) {
   ui->setupUi(this);
 }
 
 WidgetLogisticaRecebimento::~WidgetLogisticaRecebimento() { delete ui; }
 
-QString WidgetLogisticaRecebimento::updateTables() {
+bool WidgetLogisticaRecebimento::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
   model.setFilter("0");
 
-  if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
+    return false;
+  }
 
   for (int row = 0; row < model.rowCount(); ++row) {
     ui->table->openPersistentEditor(row, "selecionado");
@@ -27,7 +30,7 @@ QString WidgetLogisticaRecebimento::updateTables() {
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetLogisticaRecebimento::TableFornLogistica_activated(const QString &fornecedor) {
@@ -111,7 +114,9 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
     return;
   }
 
-  updateTables();
+  QString error;
+
+  if (not updateTables(error)) QMessageBox::critical(this, "Erro!", error);
 
   QMessageBox::information(this, "Aviso!", "Confirmado recebimento.");
 }

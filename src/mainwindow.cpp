@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   defaultStyle = style()->objectName();
   defautPalette = qApp->palette();
 
+  if (UserSession::settings("User/tema").toString() == "escuro") darkTheme();
+
   setWindowIcon(QIcon("Staccato.ico"));
   setWindowTitle("ERP Staccato");
 
@@ -54,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tabWidget->setTabEnabled(6, false);
     ui->actionCadastrarUsuario->setVisible(false);
   }
+
+  if (UserSession::tipoUsuario() == "GERENTE DEPARTAMENTO") ui->tabWidget->setTabEnabled(7, false);
 
   timer = new QTimer(this);
 }
@@ -107,42 +111,41 @@ void MainWindow::timerStatusBar() {
 }
 
 void MainWindow::updateTables() {
+  error = QString();
+
   switch (ui->tabWidget->currentIndex()) {
-    case 0: { // Orcamentos
-        error = ui->widgetOrcamento->updateTables();
-        break;
-      }
+  case 0: // Orcamentos
+    ui->widgetOrcamento->updateTables(error);
+    break;
 
-    case 1: { // Vendas
-        error = ui->widgetVenda->updateTables();
-        break;
-      }
+  case 1: // Vendas
+    ui->widgetVenda->updateTables(error);
+    break;
 
-    case 2: { // Compras
-        error = ui->widgetCompra->updateTables();
-        break;
-      }
+  case 2: // Compras
+    ui->widgetCompra->updateTables(error);
+    break;
 
-    case 3: { // Logistica
-        error = ui->widgetLogistica->updateTables();
-        break;
-      }
+  case 3: // Logistica
+    ui->widgetLogistica->updateTables(error);
+    break;
 
-    case 4: { // NFe
-        error = ui->widgetNfe->updateTables();
-        break;
-      }
+  case 4: // NFe
+    ui->widgetNfe->updateTables(error);
+    break;
 
-    case 5: { // Estoque
-        error = ui->widgetEstoque->updateTables();
-        break;
-      }
+  case 5: // Estoque
+    ui->widgetEstoque->updateTables(error);
+    break;
 
-    case 6: { // Contas
-        error = ui->widgetPagar->updateTables();
-        error = ui->widgetReceber->updateTables();
-        break;
-      }
+  case 6: // Contas
+    ui->widgetPagar->updateTables(error);
+    ui->widgetReceber->updateTables(error);
+    break;
+
+  case 7: // Relatório
+    ui->widgetRelatorio->updateTables(error);
+    break;
   }
 
   if (not error.isEmpty()) timerStatusBar();
@@ -155,25 +158,21 @@ void MainWindow::on_actionCadastrarFornecedor_triggered() {
 
 bool MainWindow::event(QEvent *event) {
   switch (event->type()) {
-    case QEvent::WindowActivate: {
-        updateTables();
+  case QEvent::WindowActivate:
+    updateTables();
+    break;
 
-        break;
-      }
+  case QEvent::WindowDeactivate:
+    break;
 
-    case QEvent::WindowDeactivate: {
-        break;
-      }
-
-    default:
-      break;
-  };
+  default:
+    break;
+  }
 
   return QMainWindow::event(event);
 }
 
 void MainWindow::darkTheme() {
-  // FIXME: texto no campo amarelo nao visivel
   qApp->setStyle(QStyleFactory::create("Fusion"));
 
   QPalette darkPalette;
@@ -201,18 +200,22 @@ void MainWindow::on_tabWidget_currentChanged(const int &) { updateTables(); }
 
 void MainWindow::on_actionSobre_triggered() {
   QMessageBox::about(
-        this, "Sobre ERP Staccato",
-        "Versão " + qApp->applicationVersion() +
-        "\nDesenvolvedor: Rodrigo Torres\nCelular/WhatsApp: (12)98138-3504\nE-mail: torres.dark@gmail.com");
+      this, "Sobre ERP Staccato",
+      "Versão " + qApp->applicationVersion() +
+          "\nDesenvolvedor: Rodrigo Torres\nCelular/WhatsApp: (12)98138-3504\nE-mail: torres.dark@gmail.com");
 }
 
 void MainWindow::on_actionClaro_triggered() {
   qApp->setStyle(defaultStyle);
   qApp->setPalette(defautPalette);
   qApp->setStyleSheet(styleSheet());
+  UserSession::setSettings("User/tema", "claro");
 }
 
-void MainWindow::on_actionEscuro_triggered() { darkTheme(); }
+void MainWindow::on_actionEscuro_triggered() {
+  darkTheme();
+  UserSession::setSettings("User/tema", "escuro");
+}
 
 void MainWindow::on_actionConfiguracoes_triggered() {
   UserConfig *config = new UserConfig(this);

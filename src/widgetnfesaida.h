@@ -15,7 +15,7 @@ class WidgetNfeSaida : public QWidget {
   public:
     explicit WidgetNfeSaida(QWidget *parent = 0);
     ~WidgetNfeSaida();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_table_activated(const QModelIndex &index);

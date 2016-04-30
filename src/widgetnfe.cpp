@@ -9,21 +9,25 @@ WidgetNfe::WidgetNfe(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetNfe) {
 
 WidgetNfe::~WidgetNfe() { delete ui; }
 
-QString WidgetNfe::updateTables() {
+bool WidgetNfe::updateTables(QString &error) {
   switch (ui->tabWidgetNfe->currentIndex()) {
-    case 0: {
-        return ui->widgetEntrada->updateTables();
-      }
+  case 0:
+    if (not ui->widgetEntrada->updateTables(error)) return false;
+    break;
 
-    case 1: {
-        return ui->widgetSaida->updateTables();
-      }
+  case 1:
+    if (not ui->widgetSaida->updateTables(error)) return false;
+    break;
   }
 
-  return QString();
+  return true;
 }
 
-void WidgetNfe::on_tabWidgetNfe_currentChanged(const int &) { updateTables(); }
+void WidgetNfe::on_tabWidgetNfe_currentChanged(const int &) {
+  QString error;
+
+  if (not updateTables(error)) QMessageBox::critical(this, "Erro!", error);
+}
 
 void WidgetNfe::on_pushButtonExibirXML_clicked() {
   QString xml = QFileDialog::getOpenFileName(this, "Arquivo XML", QDir::currentPath(), "*.xml");

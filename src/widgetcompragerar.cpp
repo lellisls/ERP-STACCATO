@@ -1,5 +1,6 @@
 #include <QDate>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
@@ -54,6 +55,7 @@ void WidgetCompraGerar::setupTables() {
   ui->tableProdutos->setModel(&modelProdutos);
   ui->tableProdutos->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
   ui->tableProdutos->hideColumn("idCompra");
+  ui->tableProdutos->hideColumn("quantConsumida");
   ui->tableProdutos->hideColumn("idNfe");
   ui->tableProdutos->hideColumn("idEstoque");
   ui->tableProdutos->hideColumn("quantUpd");
@@ -79,21 +81,25 @@ void WidgetCompraGerar::setupTables() {
   ui->tableProdutos->hideColumn("dataRealReceb");
 }
 
-QString WidgetCompraGerar::updateTables() {
+bool WidgetCompraGerar::updateTables(QString &error) {
   if (modelForn.tableName().isEmpty()) setupTables();
 
   auto selection = ui->tableForn->selectionModel()->selectedRows();
 
   auto index = selection.size() > 0 ? selection.first() : QModelIndex();
 
-  if (not modelForn.select()) return "Erro lendo tabela fornecedores: " + modelForn.lastError().text();
+  if (not modelForn.select()) {
+    error = "Erro lendo tabela fornecedores: " + modelForn.lastError().text();
+    return false;
+  }
 
   ui->tableForn->resizeColumnsToContents();
 
   modelProdutos.setFilter("0");
 
   if (not modelProdutos.select()) {
-    return "Erro lendo tabela pedido_fornecedor_has_produto: " + modelProdutos.lastError().text();
+    error = "Erro lendo tabela pedido_fornecedor_has_produto: " + modelProdutos.lastError().text();
+    return false;
   }
 
   if (selection.size() > 0) {
@@ -101,7 +107,7 @@ QString WidgetCompraGerar::updateTables() {
     ui->tableForn->selectRow(index.row());
   }
 
-  return QString();
+  return true;
 }
 
 void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
@@ -153,13 +159,19 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
 
   //------------------------------
 
+  QString anexo;
+
+  if (not gerarExcel(lista, anexo)) return;
+
+  QString textoPadrao = "Texto Padrao Lorem Ipsum";
+
   QMessageBox msgBox(QMessageBox::Question, "Enviar E-mail?", "Deseja enviar e-mail?",
                      QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Enviar");
   msgBox.setButtonText(QMessageBox::No, "Pular");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    SendMail *mail = new SendMail(this);
+    SendMail *mail = new SendMail(this, textoPadrao, anexo);
 
     if (mail->exec() != SendMail::Accepted) {
       QSqlQuery("ROLLBACK").exec();
@@ -196,14 +208,14 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
     }
 
     // salvar status na venda
-    // TODO: update only where idVenda matches
     QSqlQuery query;
     query.prepare("UPDATE venda_has_produto SET idCompra = :idCompra, dataRealCompra = :dataRealCompra, dataPrevConf = "
-                  ":dataPrevConf, status = 'EM COMPRA' WHERE idProduto = :idProduto");
+                  ":dataPrevConf, status = 'EM COMPRA' WHERE idProduto = :idProduto AND idVenda = :idVenda");
     query.bindValue(":idCompra", id);
     query.bindValue(":dataRealCompra", dataCompra);
     query.bindValue(":dataPrevConf", dataPrevista);
     query.bindValue(":idProduto", modelProdutos.data(row, "idProduto"));
+    query.bindValue(":idVenda", modelProdutos.data(row, "idVenda"));
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
@@ -233,14 +245,117 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
 
   if (not modelProdutos.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados da tabela pedido_fornecedor_has_produto: " +
-                          modelProdutos.lastError().text());
+                                             modelProdutos.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
 
   QSqlQuery("COMMIT").exec();
 
-  updateTables();
+  QString error;
+
+  if (not updateTables(error)) QMessageBox::critical(this, "Erro!", error);
+}
+
+bool WidgetCompraGerar::gerarExcel(QList<int> lista, QString &anexo) {
+  QString fornecedor = modelProdutos.data(0, "fornecedor").toString();
+
+  QString arquivoModelo = "OUTROS.xlsx";
+
+  if (fornecedor == "INTERFLOOR") {
+    QMessageBox::critical(this, "Erro!", "Interfloor ainda não disponível, gere o arquivo manualmente.");
+    return false;
+  }
+
+  //  arquivoModelo = fornecedor == "PORTINARI" ? "PORTINARI.xlsx" : "OUTROS.xlsx";
+
+  QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
+
+  if (not modelo.exists()) {
+    QMessageBox::critical(this, "Erro!", "Não encontrou o modelo do Excel!");
+    return false;
+  }
+
+  // set querys?
+
+  QString fileName = QDir::currentPath() + "/arquivo.xlsx";
+
+  QFile file(fileName);
+
+  if (not file.open(QFile::WriteOnly)) {
+    QMessageBox::critical(this, "Erro!", "Arquivo bloqueado! Por favor feche o arquivo.");
+    return false;
+  }
+
+  file.close();
+
+  QLocale locale;
+
+  QXlsx::Document xlsx(arquivoModelo);
+
+  //  QList<int> lista;
+
+  //  for (const auto index :
+  //       modelProdutos.match(modelProdutos.index(0, modelProdutos.fieldIndex("selecionado")), Qt::DisplayRole, true,
+  //       -1,
+  //                           Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
+  //    lista.append(index.row());
+  //  }
+
+  //  if(lista.size() == 0){
+  //      QMessageBox::critical(this, "Erro!", "Lista vazia!");
+  //      return QString();
+  //  }
+
+  //  if (fornecedor == "PORTINARI") {
+  //    // xlsx write...
+  //    xlsx.write("E5", QDate::currentDate().toString("dd-MM-yyyy")); // dd//mm/yyyy
+  //    xlsx.write("F5", "cód. Ped. xyz"); // cod pedido
+
+  //    // for(0..produtos.size
+  //    for (int row = 0; row < lista.size(); ++row) {
+  //      xlsx.write("A" + QString::number(7 + row), QString::number(row + 1)); // item 1,2,3...
+  ////      xlsx.write("B" + QString::number(7 + row), modelProdutos.data(row, "ui")); // fabrica
+  //      xlsx.write("C" + QString::number(7 + row), modelProdutos.data(row, "codComercial")); // cod produto
+  //      xlsx.write("D" + QString::number(7 + row), modelProdutos.data(row, "descricao")); // descricao produto
+  //      xlsx.write("E" + QString::number(7 + row), modelProdutos.data(row, "formComercial")); // formato
+  //      xlsx.write("F" + QString::number(7 + row), ""); // ret/bold
+  //      xlsx.write("G" + QString::number(7 + row), modelProdutos.data(row, "quant")); // quant.
+  //      xlsx.write("H" + QString::number(7 + row), modelProdutos.data(row, "prcUnitario")); // prec. unitario
+  //      xlsx.write("I" + QString::number(7 + row), ""); // promocao
+  //    }
+  //  } else {
+  // xlsx write...
+  xlsx.write("F4", "");                                            // numero pedido
+  xlsx.write("E6", modelProdutos.data(lista.at(0), "fornecedor")); // fornecedor
+  xlsx.write("E8", "");                                            // representante
+  xlsx.write("D10", QDate::currentDate().toString("dd-MM-yyyy"));  // Data: dd//mm/yyyy
+
+  //  for(0..produtos.size)
+  for (int row = 0; row < lista.size(); ++row) {
+    xlsx.write("A" + QString::number(13 + row), QString::number(row + 1));                // item n. 1,2,3...
+    xlsx.write("B" + QString::number(13 + row), modelProdutos.data(row, "codComercial")); // cod produto
+    xlsx.write("C" + QString::number(13 + row), modelProdutos.data(row, "descricao"));    // descricao produto
+    xlsx.write("E" + QString::number(13 + row), modelProdutos.data(row, "prcUnitario"));  // prc. unitario
+    xlsx.write("F" + QString::number(13 + row), modelProdutos.data(row, "un"));           // un.
+    xlsx.write("G" + QString::number(13 + row), modelProdutos.data(row, "quant"));        // qtd.
+    xlsx.write("H" + QString::number(13 + row), modelProdutos.data(row, "preco"));        // valor
+  }
+
+  //    xlsx.write("H36", ""); // total
+  //  }
+
+  if (not xlsx.saveAs(fileName)) {
+    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
+    return false;
+  }
+
+  QMessageBox::information(this, "Ok!", "Arquivo salvo como " + fileName);
+  QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+
+  anexo = fileName;
+
+  return true;
 }
 
 void WidgetCompraGerar::on_checkBoxMarcarTodos_clicked(const bool &checked) {
@@ -274,3 +389,25 @@ void WidgetCompraGerar::fixPersistente() {
 }
 
 void WidgetCompraGerar::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
+
+void WidgetCompraGerar::on_pushButtonTeste_clicked() {
+  QList<int> lista;
+  QStringList ids;
+
+  for (const auto index :
+       modelProdutos.match(modelProdutos.index(0, modelProdutos.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
+                           Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
+    lista.append(index.row());
+    ids.append(modelProdutos.data(index.row(), "idPedido").toString());
+  }
+
+  if (lista.size() == 0) {
+    QMessageBox::critical(this, "Aviso!", "Nenhum item selecionado!");
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QString anexo;
+
+  if (not gerarExcel(lista, anexo)) return;
+}

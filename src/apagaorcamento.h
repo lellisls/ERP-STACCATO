@@ -24,7 +24,7 @@ class ApagaOrcamento : public QDialog {
 
   private:
     Ui::ApagaOrcamento *ui;
-    SqlTableModel modelOrc;
+    SqlTableModel model;
     int row;
 };
 

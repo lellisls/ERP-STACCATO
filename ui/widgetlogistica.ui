@@ -106,6 +106,21 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Caminhões</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Representação</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="WidgetLogisticaRepresentacao" name="widgetRepresentacao" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </item>
@@ -133,6 +148,12 @@
    <class>WidgetLogisticaEntrega</class>
    <extends>QWidget</extends>
    <header>src/widgetlogisticaentrega.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetLogisticaRepresentacao</class>
+   <extends>QWidget</extends>
+   <header>src/widgetlogisticarepresentacao.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

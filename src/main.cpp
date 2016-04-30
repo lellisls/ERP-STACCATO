@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.2.22");
+  app.setApplicationVersion("0.2.38");
   app.setStyle("Fusion");
 
   storeSelection();
@@ -64,23 +64,16 @@ void storeSelection() {
   }
 }
 
-// NOTE: adaptar a funcao de importar tabela para perguntar se é normal, estoque ou promocao e setar a flag de acordo
-// (produtos de estoque sao sempre 1 por caixa?)
 // NOTE: evitar divisoes por zero
-// NOTE: para a tabela de estoque: inserir coluna estoque_promocao para pintar, inserir estoque na tabela produto mas
-// colocar coluna idRelacionado para indicar qual o produto (para usar o idProduto original para vender/etc)
-// NOTE: pegar as querys com 'select *' e reduzir para apenas as colunas necessarias
 // NOTE: verificar comparacoes double: substituir por qFuzzyCompare ou floats
 // NOTE: verificar todos os QSqlQuery.exec
 // NOTE: pesquisar setData e selects/submits sem verificacao
 // NOTE: verificar se tem como buscar id's nao relacionados e apagar produtos descontinuados
-// NOTE: criar enum para tipos de usuario de forma que possa fazer 'tipo >= GERENTE' (criar coluna no bd com numeros
+// NOTE: criar enum para tipos de usuario de forma que possa  'tipo >= GERENTE' (criar coluna no bd com numeros
 // 0,1,2...)
-// NOTE: obrigar atualizar para conectar no servidor?
-// TODO: repassar por todos pedidos/orcamentos imprimindo para verificar quais campos cortam (reduzir fonte?)
-// NOTE: fazer um delegate para 'R$'?
+// NOTE: repassar por todos pedidos/orcamentos imprimindo para verificar quais campos cortam (reduzir fonte?)
 // NOTE: criar um delegate unidade para concatenar a unidade na coluna quant?
-// TODO: aparentemente nao precisa fazer date.tostring(yyyy/dd/mm) para converter para o formato do bd
-// TODO: diferenciar portinari loes para questao de comissao no excel
-// TODO: colocar autoredimensionar no scroll dos tables
 // NOTE: opcao de salvar excel/pdf por mes
+// NOTE: colocar formato real e comercial do produto (Por exemplo Downtown Hg gr 877,0x877,0x2,0 (90x90 RET) loes)
+// NOTE: escanear papel de venda
+// TODO: arrumar no sql na tabela de pedido_fornecedor_has_produto a coluna preco (calcular quant * prcUnitario, verificar calculo na tela de compra)

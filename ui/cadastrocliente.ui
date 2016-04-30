@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1115</width>
-    <height>647</height>
+    <width>1183</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -140,7 +140,8 @@
                      <string>Nome/Razão Social</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 255, 127);</string>
+                     <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
                     </property>
                    </widget>
                   </item>
@@ -554,31 +555,10 @@
               <layout class="QGridLayout" name="gridLayout">
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_11">
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_41">
-                   <property name="text">
-                    <string>Vendedor</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="3" column="0" colspan="2">
                   <widget class="ItemBox" name="itemBoxCliente">
                    <property name="accessibleName">
                     <string>Cliente Vinculado</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_42">
-                   <property name="text">
-                    <string>Profissional</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_43">
-                   <property name="text">
-                    <string>Vinculado ao cliente</string>
                    </property>
                   </widget>
                  </item>
@@ -626,15 +606,43 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QDoubleSpinBox" name="doubleSpinBoxCredito">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                   <property name="maximum">
+                    <double>99999.990000000005239</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0" colspan="2">
+                  <widget class="QLabel" name="label_41">
+                   <property name="text">
+                    <string>Vendedor</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0" colspan="2">
+                  <widget class="QLabel" name="label_42">
+                   <property name="text">
+                    <string>Profissional</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QLabel" name="label_43">
+                   <property name="text">
+                    <string>Vinculado ao cliente</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="2">
                   <widget class="QLabel" name="label_2">
                    <property name="text">
                     <string>Crédito</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="1" column="0" colspan="2">
-                  <widget class="QDoubleSpinBox" name="doubleSpinBoxCredito"/>
                  </item>
                 </layout>
                </item>

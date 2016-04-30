@@ -27,7 +27,7 @@ class CadastroProduto : public RegisterDialog {
     Ui::CadastroProduto *ui;
     // methods
     bool verifyFields(const bool &isUpdate);
-    virtual bool save(const bool &isUpdate = false) override;
+    virtual bool save() override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
     virtual void clearFields() override;

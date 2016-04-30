@@ -22,7 +22,7 @@ QVariant SqlTableModel::data(const int &row, const QString &column) const {
 bool SqlTableModel::setData(const int &row, const int &column, const QVariant &value) {
   if (not QSqlTableModel::setData(QSqlTableModel::index(row, column), value)) {
     QMessageBox::critical(0, "Erro!", "Erro inserindo " + QSqlTableModel::record().fieldName(column) + " na tabela: " +
-                          QSqlTableModel::lastError().text());
+                                          QSqlTableModel::lastError().text());
     return false;
   }
 
@@ -51,3 +51,10 @@ bool SqlTableModel::setData(const int &row, const QString &column, const QVarian
 bool SqlTableModel::setHeaderData(const QString &column, const QVariant &value) {
   return QSqlTableModel::setHeaderData(QSqlTableModel::fieldIndex(column), Qt::Horizontal, value);
 }
+
+Qt::ItemFlags SqlTableModel::flags(const QModelIndex &index) const {
+  return QSqlRelationalTableModel::flags(index);
+  //  | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+}
+
+Qt::DropActions SqlTableModel::supportedDropActions() const { return Qt::MoveAction; }

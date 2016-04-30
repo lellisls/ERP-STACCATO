@@ -11,14 +11,17 @@ WidgetNfeEntrada::WidgetNfeEntrada(QWidget *parent) : QWidget(parent), ui(new Ui
 
 WidgetNfeEntrada::~WidgetNfeEntrada() { delete ui; }
 
-QString WidgetNfeEntrada::updateTables() {
+bool WidgetNfeEntrada::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela NFe: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela NFe: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetNfeEntrada::setupTables() {

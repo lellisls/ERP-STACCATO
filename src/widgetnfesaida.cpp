@@ -9,14 +9,17 @@ WidgetNfeSaida::WidgetNfeSaida(QWidget *parent) : QWidget(parent), ui(new Ui::Wi
 
 WidgetNfeSaida::~WidgetNfeSaida() { delete ui; }
 
-QString WidgetNfeSaida::updateTables() {
+bool WidgetNfeSaida::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela NFe: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela NFe: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetNfeSaida::setupTables() {

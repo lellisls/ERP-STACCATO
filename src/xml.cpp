@@ -9,14 +9,7 @@
 XML::XML(const QByteArray &fileContent, const QString &fileName) : XML(model, fileContent, fileName) {}
 
 XML::XML(QStandardItemModel &model, const QByteArray &fileContent, const QString &fileName)
-  : fileContent(fileContent), fileName(fileName) {
-  modelProduto.setTable("produto");
-  modelProduto.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelProduto.select()) {
-    QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto: " + modelProduto.lastError().text());
-  }
-
+    : fileContent(fileContent), fileName(fileName) {
   if (not fileContent.isEmpty()) {
     QDomDocument document;
     QString error;
@@ -277,14 +270,14 @@ bool XML::cadastrarEstoque() {
   const QString fornecedor = query.value("fornecedor").toString();
 
   query.prepare(
-        "INSERT INTO estoque (idProduto, idXML, fornecedor, descricao, quant, un, codBarras, codComercial, ncm, cfop, "
-        "valorUnid, valor, codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
-        "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, cstIPI, "
-        "cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS) VALUES (:idProduto, :idXML, :fornecedor, "
-        ":descricao, :quant, :un, :codBarras, :codComercial, :ncm, :cfop, :valorUnid, :valor, :codBarrasTrib, :unTrib, "
-        ":quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, :itemPedido, :tipoICMS, :orig, :cstICMS, "
-        ":modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST, :vICMSST, :cEnq, :cstIPI, :cstPIS, :vBCPIS, "
-        ":pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS)");
+      "INSERT INTO estoque (idProduto, idXML, fornecedor, descricao, quant, un, codBarras, codComercial, ncm, cfop, "
+      "valorUnid, valor, codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
+      "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, cstIPI, "
+      "cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS) VALUES (:idProduto, :idXML, :fornecedor, "
+      ":descricao, :quant, :un, :codBarras, :codComercial, :ncm, :cfop, :valorUnid, :valor, :codBarrasTrib, :unTrib, "
+      ":quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, :itemPedido, :tipoICMS, :orig, :cstICMS, "
+      ":modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST, :vICMSST, :cEnq, :cstIPI, :cstPIS, :vBCPIS, "
+      ":pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS)");
   query.bindValue(":idProduto", idProduto);
   query.bindValue(":idXML", idNFe);
   query.bindValue(":fornecedor", fornecedor);
@@ -343,6 +336,8 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
                                    codProd, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
   for (auto item : list) {
+    if (externalModel->data(item.row(), "quant").toDouble() < 0) continue;
+
     QMessageBox msgBox(QMessageBox::Question, "Atenção!",
                        "Produto é do mesmo lote da linha " + QString::number(item.row() + 1) + "?",
                        QMessageBox::Yes | QMessageBox::No, 0);
@@ -382,12 +377,14 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
     return false;
   }
 
-  query.first();
+  int caixas = 0;
 
-  double quantCaixa =
-      ((un == "M²") or (un == "M2") or (un == "ML")) ? query.value("m2cx").toDouble() : query.value("pccx").toDouble();
+  if (query.first()) {
+    double quantCaixa = ((un == "M²") or (un == "M2") or (un == "ML")) ? query.value("m2cx").toDouble()
+                                                                       : query.value("pccx").toDouble();
 
-  int caixas = quant / quantCaixa;
+    caixas = quant / quantCaixa;
+  }
 
   if (not externalModel->setData(row, "idNFe", idNFe)) return false;
   if (not externalModel->setData(row, "fornecedor", xNome)) return false;
@@ -477,5 +474,3 @@ bool XML::verificaExiste() {
 
   return false;
 }
-
-// NOTE: verificar se é possivel otimizar?

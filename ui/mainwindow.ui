@@ -104,6 +104,16 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Relatórios</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="WidgetRelatorio" name="widgetRelatorio" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -333,6 +343,12 @@
    <class>WidgetEstoque</class>
    <extends>QWidget</extends>
    <header>src/widgetestoque.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetRelatorio</class>
+   <extends>QWidget</extends>
+   <header>src/widgetrelatorio.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

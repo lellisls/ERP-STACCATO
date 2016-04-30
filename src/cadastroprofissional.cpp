@@ -23,6 +23,8 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   setupMapper();
   newRegister();
 
+  ui->itemBoxVendedor->setSearchDialog(SearchDialog::vendedor(this));
+
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->tabWidget->setTabEnabled(1, false);
     ui->pushButtonRemover->setDisabled(true);
@@ -52,6 +54,7 @@ void CadastroProfissional::setupUi() {
 }
 
 void CadastroProfissional::setupMapper() {
+  addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
   addMapping(ui->comboBoxTipo, "tipoProf");
   addMapping(ui->lineEditAgencia, "agencia");
   addMapping(ui->lineEditBanco, "banco");
@@ -153,6 +156,7 @@ bool CadastroProfissional::savingProcedures() {
   if (not setData("email", ui->lineEditEmail->text())) return false;
   if (not setData("pfpj", tipoPFPJ)) return false;
   if (not setData("tipoProf", ui->comboBoxTipo->currentText())) return false;
+  if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
   // Dados bancários
   if (not setData("banco", ui->lineEditBanco->text())) return false;
   if (not setData("agencia", ui->lineEditAgencia->text())) return false;

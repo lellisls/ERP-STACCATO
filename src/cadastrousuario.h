@@ -30,7 +30,7 @@ class CadastroUsuario : public RegisterDialog {
     Ui::CadastroUsuario *ui;
     // methods
     bool viewRegister(const QModelIndex &index) override;
-    virtual bool save(const bool &isUpdate = false) override;
+    virtual bool save() override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
     virtual void clearFields() override;

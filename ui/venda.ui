@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1149</width>
+    <width>1177</width>
     <height>633</height>
    </rect>
   </property>
@@ -45,22 +45,6 @@
           <number>0</number>
          </property>
          <layout class="QGridLayout" name="gridLayout_10">
-          <item row="9" column="0" colspan="2">
-           <widget class="QTextEdit" name="textEdit">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>100</height>
-             </size>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="0">
            <widget class="QLabel" name="labelPrazoEntrega">
             <property name="sizePolicy">
@@ -315,6 +299,22 @@
             </property>
            </widget>
           </item>
+          <item row="9" column="0" colspan="2">
+           <widget class="QPlainTextEdit" name="plainTextEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>100</height>
+             </size>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -339,56 +339,7 @@
           <item row="1" column="0">
            <widget class="QFrame" name="framePagamentos_2">
             <layout class="QGridLayout" name="gridLayout_9">
-             <item row="3" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QPushButton" name="pushButtonLimparPag">
-                 <property name="text">
-                  <string>Limpar pagamentos</string>
-                 </property>
-                 <property name="autoDefault">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="labelRestante">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Total:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QDoubleSpinBox" name="doubleSpinBoxTotalPag">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                 <property name="showGroupSeparator" stdset="0">
-                  <bool>true</bool>
-                 </property>
-                 <property name="prefix">
-                  <string>R$ </string>
-                 </property>
-                 <property name="maximum">
-                  <double>999999.989999999990687</double>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item row="0" column="0">
+             <item row="1" column="0" colspan="2">
               <layout class="QGridLayout" name="gridLayout_5">
                <item row="0" column="5">
                 <widget class="QDateEdit" name="dateEditPgt1">
@@ -536,7 +487,204 @@
                </item>
               </layout>
              </item>
-             <item row="2" column="0">
+             <item row="2" column="0" colspan="2">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="3">
+                <widget class="QComboBox" name="comboBoxPgt2Parc">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>45</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>1x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>2x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>3x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>4x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>5x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>6x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>7x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>8x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>9x</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>10x</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>80</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="showGroupSeparator" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="prefix">
+                  <string>R$ </string>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.989999999990687</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QCheckBox" name="checkBoxRep2">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="text">
+                  <string>Fornecedor</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="6">
+                <widget class="QLineEdit" name="lineEditPgt2">
+                 <property name="placeholderText">
+                  <string>Observação</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <widget class="QDateEdit" name="dateEditPgt2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="displayFormat">
+                  <string>dd/MM/yy</string>
+                 </property>
+                 <property name="calendarPopup">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QComboBox" name="comboBoxPgt2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>140</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Pgt. 2</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="4" column="0" colspan="2">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QPushButton" name="pushButtonLimparPag">
+                 <property name="text">
+                  <string>Limpar pagamentos</string>
+                 </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="labelRestante">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Total:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxTotalPag">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="showGroupSeparator" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="prefix">
+                  <string>R$ </string>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.989999999990687</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="3" column="0" colspan="2">
               <layout class="QGridLayout" name="gridLayout_3">
                <item row="0" column="4">
                 <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt3">
@@ -693,79 +841,17 @@
                </item>
               </layout>
              </item>
-             <item row="1" column="0">
-              <layout class="QGridLayout" name="gridLayout_4">
-               <item row="0" column="3">
-                <widget class="QComboBox" name="comboBoxPgt2Parc">
-                 <property name="enabled">
-                  <bool>false</bool>
+             <item row="0" column="0" colspan="2">
+              <layout class="QGridLayout" name="gridLayout_11">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Saldo cliente</string>
                  </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>45</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>1x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>2x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>3x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>4x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>5x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>6x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>7x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>8x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>9x</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>10x</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
-               <item row="0" column="4">
-                <widget class="QDoubleSpinBox" name="doubleSpinBoxPgt2">
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBoxCreditoTotal">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -778,6 +864,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
                  <property name="showGroupSeparator" stdset="0">
                   <bool>true</bool>
                  </property>
@@ -786,56 +875,6 @@
                  </property>
                  <property name="maximum">
                   <double>999999.989999999990687</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QCheckBox" name="checkBoxRep2">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="text">
-                  <string>Fornecedor</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="6">
-                <widget class="QLineEdit" name="lineEditPgt2">
-                 <property name="placeholderText">
-                  <string>Observação</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="5">
-                <widget class="QDateEdit" name="dateEditPgt2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="displayFormat">
-                  <string>dd/MM/yy</string>
-                 </property>
-                 <property name="calendarPopup">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QComboBox" name="comboBoxPgt2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>140</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>Pgt. 2</string>
                  </property>
                 </widget>
                </item>
@@ -1146,6 +1185,9 @@
                <property name="prefix">
                 <string>R$ </string>
                </property>
+               <property name="minimum">
+                <double>-9999999.000000000000000</double>
+               </property>
                <property name="maximum">
                 <double>9999999.000000000000000</double>
                </property>
@@ -1177,8 +1219,14 @@
                <property name="prefix">
                 <string>R$ </string>
                </property>
+               <property name="minimum">
+                <double>-9999999.000000000000000</double>
+               </property>
                <property name="maximum">
                 <double>9999999.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -1208,6 +1256,9 @@
                <property name="prefix">
                 <string>R$ </string>
                </property>
+               <property name="minimum">
+                <double>-9999999.000000000000000</double>
+               </property>
                <property name="maximum">
                 <double>9999999.000000000000000</double>
                </property>
@@ -1229,6 +1280,9 @@
                </property>
                <property name="prefix">
                 <string>R$ </string>
+               </property>
+               <property name="minimum">
+                <double>-9999999.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>9999999.000000000000000</double>
@@ -1296,9 +1350,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCancelamento">
+      <widget class="QPushButton" name="pushButtonDevolucao">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="text">
-        <string>Cancelar Venda</string>
+        <string>Devolução</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -1306,9 +1363,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonDevolucao">
+      <widget class="QPushButton" name="pushButtonCancelamento">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="text">
-        <string>Devolução</string>
+        <string>Cancelamento</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>

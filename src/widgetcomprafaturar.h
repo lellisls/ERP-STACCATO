@@ -15,7 +15,7 @@ class WidgetCompraFaturar : public QWidget {
   public:
     explicit WidgetCompraFaturar(QWidget *parent = 0);
     ~WidgetCompraFaturar();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_pushButtonMarcarFaturado_clicked();

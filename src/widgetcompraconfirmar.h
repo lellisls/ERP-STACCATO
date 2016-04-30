@@ -15,7 +15,7 @@ class WidgetCompraConfirmar : public QWidget {
   public:
     explicit WidgetCompraConfirmar(QWidget *parent = 0);
     ~WidgetCompraConfirmar();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_pushButtonConfirmarCompra_clicked();

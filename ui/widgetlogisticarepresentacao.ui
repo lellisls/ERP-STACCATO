@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>VendasMes</class>
- <widget class="QWidget" name="VendasMes">
+ <class>WidgetLogisticaRepresentacao</class>
+ <widget class="QWidget" name="WidgetLogisticaRepresentacao">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,16 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Vendas Mês</string>
+   <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="TableView" name="table">
-     <property name="mouseTracking">
-      <bool>true</bool>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
+    <widget class="TableView" name="table"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButtonMarcarEntregue">
+     <property name="text">
+      <string>Marcar entregue</string>
      </property>
     </widget>
    </item>

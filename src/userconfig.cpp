@@ -1,9 +1,9 @@
-#include "userconfig.h"
+#include <QFileDialog>
+
 #include "cadastrousuario.h"
 #include "ui_userconfig.h"
+#include "userconfig.h"
 #include "usersession.h"
-
-#include <QFileDialog>
 
 UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig) {
   ui->setupUi(this);
@@ -17,27 +17,31 @@ UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig
   ui->lineEditEmail->setText(UserSession::settings("User/emailCompra").toString());
   ui->lineEditEmailSenha->setText(UserSession::settings("User/emailSenha").toString());
 
-  ui->lineEditUserFolder->setText(UserSession::settings("User/userFolder").toString());
+  ui->lineEditOrcamentosFolder->setText(UserSession::settings("User/OrcamentosFolder").toString());
+  ui->lineEditVendasFolder->setText(UserSession::settings("User/VendasFolder").toString());
+
+  if (UserSession::tipoUsuario() == "VENDEDOR") {
+    ui->groupBoxAcbr->hide();
+    ui->groupBoxEmailCompra->hide();
+  }
+
+  adjustSize();
 }
 
 UserConfig::~UserConfig() { delete ui; }
 
-void UserConfig::on_pushButtonUserFolder_clicked() {
+void UserConfig::on_pushButtonOrcamentosFolder_clicked() {
   QString path = QFileDialog::getExistingDirectory(this, "Pasta PFD/Excel", QDir::currentPath());
 
-  if (path.isEmpty()) {
-    return;
-  }
+  if (path.isEmpty()) return;
 
-  ui->lineEditUserFolder->setText(path);
+  ui->lineEditOrcamentosFolder->setText(path);
 }
 
 void UserConfig::on_pushButtonACBrEntrada_clicked() {
   QString path = QFileDialog::getExistingDirectory(this, "Pasta Entrada ACBr", QDir::currentPath());
 
-  if (path.isEmpty()) {
-    return;
-  }
+  if (path.isEmpty()) return;
 
   ui->lineEditPastaEntACBr->setText(path);
 }
@@ -45,9 +49,7 @@ void UserConfig::on_pushButtonACBrEntrada_clicked() {
 void UserConfig::on_pushButtonACBrSaida_clicked() {
   QString path = QFileDialog::getExistingDirectory(this, "Pasta Saída ACBr", QDir::currentPath());
 
-  if (path.isEmpty()) {
-    return;
-  }
+  if (path.isEmpty()) return;
 
   ui->lineEditPastaSaiACBr->setText(path);
 }
@@ -55,9 +57,7 @@ void UserConfig::on_pushButtonACBrSaida_clicked() {
 void UserConfig::on_pushButtonACBrXML_clicked() {
   QString path = QFileDialog::getExistingDirectory(this, "Pasta XML ACBr", QDir::currentPath());
 
-  if (path.isEmpty()) {
-    return;
-  }
+  if (path.isEmpty()) return;
 
   ui->lineEditPastaXmlACBr->setText(path);
 }
@@ -72,7 +72,8 @@ void UserConfig::on_pushButtonSalvar_clicked() {
   UserSession::setSettings("User/emailCompra", ui->lineEditEmail->text());
   UserSession::setSettings("User/emailSenha", ui->lineEditEmailSenha->text());
 
-  UserSession::setSettings("User/userFolder", ui->lineEditUserFolder->text());
+  UserSession::setSettings("User/OrcamentosFolder", ui->lineEditOrcamentosFolder->text());
+  UserSession::setSettings("User/VendasFolder", ui->lineEditVendasFolder->text());
 
   QDialog::accept();
 
@@ -84,4 +85,12 @@ void UserConfig::on_pushButtonAlterarDados_clicked() {
   usuario->show();
   usuario->viewRegisterById(UserSession::idUsuario());
   usuario->modificarUsuario();
+}
+
+void UserConfig::on_pushButtonVendasFolder_clicked() {
+  QString path = QFileDialog::getExistingDirectory(this, "Pasta PFD/Excel", QDir::currentPath());
+
+  if (path.isEmpty()) return;
+
+  ui->lineEditVendasFolder->setText(path);
 }

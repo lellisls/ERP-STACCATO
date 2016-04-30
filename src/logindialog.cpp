@@ -58,21 +58,25 @@ bool LoginDialog::dbConnect() {
     QString message;
 
     switch (db.lastError().number()) {
-      case 1045:
-        message = "Verifique se o usuário e senha do banco de dados estão corretos.";
-        break;
-      case 2002:
-        message = "Verifique se o servidor está ligado, e acessível pela rede.";
-        break;
-      case 2003:
-        message = "Verifique se o servidor está ligado, e acessível pela rede.";
-        break;
-      case 2005:
-        message = "Verifique se o IP do servidor foi escrito corretamente.";
-        break;
-      default:
-        message = "Erro conectando no banco de dados: " + db.lastError().text();
-        break;
+    case 1045:
+      message = "Verifique se o usuário e senha do banco de dados estão corretos.";
+      break;
+
+    case 2002:
+      message = "Verifique se o servidor está ligado, e acessível pela rede.";
+      break;
+
+    case 2003:
+      message = "Verifique se o servidor está ligado, e acessível pela rede.";
+      break;
+
+    case 2005:
+      message = "Verifique se o IP do servidor foi escrito corretamente.";
+      break;
+
+    default:
+      message = "Erro conectando no banco de dados: " + db.lastError().text();
+      break;
     }
 
     QMessageBox::critical(this, "Erro: Banco de dados inacessível!", message);
@@ -89,8 +93,8 @@ bool LoginDialog::dbConnect() {
 
   if (not hasMydb) {
     QMessageBox::critical(
-          this, "Erro!",
-          "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
+        this, "Erro!",
+        "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
     return false;
   }
 

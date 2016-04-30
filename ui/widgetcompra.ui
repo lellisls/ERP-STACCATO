@@ -17,8 +17,18 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Devoluções</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="WidgetCompraDevolucao" name="widgetDevolucao" native="true"/>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
        <string>Pendentes</string>
@@ -80,6 +90,12 @@
    <class>WidgetCompraFaturar</class>
    <extends>QWidget</extends>
    <header>src/widgetcomprafaturar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetCompraDevolucao</class>
+   <extends>QWidget</extends>
+   <header>src/widgetcompradevolucao.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

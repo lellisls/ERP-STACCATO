@@ -27,14 +27,17 @@ void WidgetLogisticaEntrega::setupTables() {
   ui->table->hideColumn("statusEntrega");
 }
 
-QString WidgetLogisticaEntrega::updateTables() {
+bool WidgetLogisticaEntrega::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela vendas: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela vendas: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetLogisticaEntrega::on_radioButtonEntregaLimpar_clicked() {
@@ -54,7 +57,6 @@ void WidgetLogisticaEntrega::on_radioButtonEntregaPendente_clicked() {
 
 void WidgetLogisticaEntrega::on_lineEditBuscaEntregas_textChanged(const QString &text) {
   model.setFilter(text.isEmpty() ? "" : "(idPedido LIKE '%" + text + "%') OR (status LIKE '%" + text + "%')");
-
   ui->table->resizeColumnsToContents();
 }
 

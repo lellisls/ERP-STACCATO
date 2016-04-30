@@ -21,14 +21,17 @@ void WidgetCompraFaturar::setupTables() {
   ui->table->setModel(&model);
 }
 
-QString WidgetCompraFaturar::updateTables() {
+bool WidgetCompraFaturar::updateTables(QString &error) {
   if (model.tableName().isEmpty()) setupTables();
 
-  if (not model.select()) return "Erro lendo tabela faturamento: " + model.lastError().text();
+  if (not model.select()) {
+    error = "Erro lendo tabela faturamento: " + model.lastError().text();
+    return false;
+  }
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
@@ -39,6 +42,15 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   auto list = ui->table->selectionModel()->selectedRows();
 
+  QSqlQuery query;
+  query.prepare("SELECT representacao FROM fornecedor WHERE razaoSocial = :razaoSocial");
+  query.bindValue(":razaoSocial", model.data(list.first().row(), "Fornecedor"));
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro verificando se fornecedor é representação: " + query.lastError().text());
+    return;
+  }
+
   QString idCompra;
 
   for (auto item : list) {
@@ -46,24 +58,48 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
     idCompra += idCompra.isEmpty() ? id : " OR idCompra = " + id;
   }
 
-  //-----------------------
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
+  inputDlg->setFilter(idCompra);
 
   if (inputDlg->exec() != InputDialog::Accepted) return;
 
-  const QString dataFat = inputDlg->getDate().toString("yyyy-MM-dd");
-  const QString dataPrevista = inputDlg->getNextDate().toString("yyyy-MM-dd");
-  //-----------------------
+  QString dataReal = inputDlg->getDate().toString("yyyy-MM-dd");
+  QString dataPrevista = inputDlg->getNextDate().toString("yyyy-MM-dd");
 
-  ImportarXML *import = new ImportarXML(idCompra, this);
-  import->setData(dataFat, dataPrevista);
-  import->showMaximized();
+  if (query.value("representacao").toBool()) {
+    if (not query.exec("UPDATE pedido_fornecedor_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
+                       dataPrevista + "', status = 'EM COLETA' WHERE idCompra = " + idCompra)) {
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
+      close();
+      return;
+    }
+  } else {
+    ImportarXML *import = new ImportarXML(idCompra, dataReal, dataPrevista, this);
+    import->showMaximized();
 
-  if (import->exec() != QDialog::Accepted) return;
+    if (import->exec() != QDialog::Accepted) return;
+  }
 
-  //----------------------------------------------------------//
+  // salvar status na venda
+  if (not query.exec("UPDATE venda_has_produto SET dataRealFat = '" + dataReal + "', dataPrevColeta = '" +
+                     dataPrevista + "' WHERE idCompra = " + idCompra)) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    close();
+    return;
+  }
 
-  updateTables();
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    close();
+    return;
+  }
+
+  QString error;
+
+  if (not updateTables(error)) {
+    QMessageBox::critical(this, "Erro!", error);
+    return;
+  }
 
   QMessageBox::information(this, "Aviso!", "Confirmado faturamento.");
 }

@@ -36,7 +36,7 @@ class CadastroLoja : public RegisterAddressDialog {
     SqlTableModel modelAlcadas;
     // methods
     bool cadastrarEndereco(const bool &isUpdate);
-    bool viewRegister(const QModelIndex &index);
+    bool viewRegister(const QModelIndex &index) override;
     virtual bool savingProcedures() override;
     virtual bool verifyFields() override;
     virtual void clearFields() override;

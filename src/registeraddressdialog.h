@@ -9,7 +9,7 @@ class RegisterAddressDialog : public RegisterDialog {
     explicit RegisterAddressDialog(const QString &table, const QString &primaryKey, QWidget *parent);
 
   public slots:
-    bool viewRegisterById(const QVariant &id);
+    bool viewRegisterById(const QVariant &id) override;
 
   protected:
     // attributes
@@ -19,7 +19,7 @@ class RegisterAddressDialog : public RegisterDialog {
     bool setDataEnd(const QString &key, const QVariant &value);
     int getCodigoUF(QString uf) const;
     virtual bool newRegister() override;
-    virtual bool save(const bool &isUpdate = false) override;
+    virtual bool save() override;
 };
 
 #endif // REGISTERADDRESSDIALOG_H

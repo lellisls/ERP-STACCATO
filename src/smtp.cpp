@@ -29,9 +29,10 @@ Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const 
   connect(socket, &QAbstractSocket::disconnected, this, &Smtp::disconnected);
 }
 
-void Smtp::sendMail(const QString &from, const QString &to, const QString &subject, const QString &body,
+void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, const QString &subject, const QString &body,
                     const QStringList &files) {
   message = "To: " + to + "\n";
+  message.append("Cc: " + cc + "\n");
   message.append("From: " + from + "\n");
   message.append("Subject: " + subject + "\n");
 
@@ -94,10 +95,12 @@ Smtp::~Smtp() {
 void Smtp::stateChanged(QAbstractSocket::SocketState socketState) {
   qDebug() << "stateChanged " << socketState;
 
-  if (socketState == QAbstractSocket::UnconnectedState) emit status("Não conseguiu conectar ao servidor SMTP!");
+//  if (socketState == QAbstractSocket::UnconnectedState) emit status("Não conseguiu conectar ao servidor SMTP!");
 }
 
-void Smtp::errorReceived(QAbstractSocket::SocketError socketError) { qDebug() << "error " << socketError; }
+void Smtp::errorReceived(QAbstractSocket::SocketError socketError) { qDebug() << "error: " << socketError;
+                                                                   if(socketError == QAbstractSocket::HostNotFoundError) emit status("Não encontrou o servidor SMTP!");
+                                                                   }
 
 void Smtp::disconnected() {
   qDebug() << "disconneted";
@@ -165,13 +168,14 @@ void Smtp::readyRead() {
     t->flush();
     state = Auth;
   } else if (state == Auth and responseLine == "250") {
-    // Trying AUTH
-    qDebug() << "Auth";
-    // NOTE: try using AUTH XOAUTH2 as described in the developers.google below
-    *t << "AUTH LOGIN"
-       << "\r\n";
-    t->flush();
-    state = User;
+      // Trying AUTH
+      qDebug() << "Auth";
+      // NOTE: try using AUTH XOAUTH2 as described in the developers.google below
+      *t << "AUTH LOGIN"
+//      *t << "AUTH XOAUTH2 + base64("user=" {User} "^Aauth=Bearer " {Access Token} "^A^A")"
+         << "\r\n";
+      t->flush();
+      state = User;
   } else if (state == User and responseLine == "334") {
     // Trying User
     qDebug() << "Username";

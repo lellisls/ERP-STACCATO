@@ -31,7 +31,7 @@ RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString
   mapperEnd.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 }
 
-bool RegisterAddressDialog::save(const bool &isUpdate) {
+bool RegisterAddressDialog::save() {
   if (not verifyFields()) return false;
 
   if (not isUpdate and not model.select()) {
@@ -112,6 +112,8 @@ bool RegisterAddressDialog::setDataEnd(const QString &key, const QVariant &value
 
 bool RegisterAddressDialog::newRegister() {
   if (not confirmationMessage()) return false;
+
+  isUpdate = false;
 
   clearFields();
   registerMode();

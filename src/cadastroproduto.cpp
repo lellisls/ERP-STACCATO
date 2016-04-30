@@ -32,6 +32,12 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   ui->itemBoxFornecedor->setRegisterDialog(new CadastroFornecedor(this));
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->pushButtonRemover->setDisabled(true);
+  if(UserSession::tipoUsuario() == "VENDEDOR") {
+      ui->pushButtonCadastrar->setVisible(false);
+      ui->pushButtonNovoCad->setVisible(false);
+  }
+
+  model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }
@@ -214,10 +220,10 @@ void CadastroProduto::calcularMarkup() {
   ui->doubleSpinBoxMarkup->setValue(markup);
 }
 
-bool CadastroProduto::save(const bool &isUpdate) {
+bool CadastroProduto::save() {
   if (not verifyFields(isUpdate)) return false;
 
-  return RegisterDialog::save(isUpdate);
-}
+  // TODO: copy RegisterDialog::save here replacing submitAll with submit
 
-// NOTE: alguma coisa deixando lento (aparentemente a validade)
+  return RegisterDialog::save();
+}

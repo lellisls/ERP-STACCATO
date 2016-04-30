@@ -10,7 +10,7 @@
 #include "usersession.h"
 
 CadastroCliente::CadastroCliente(QWidget *parent)
-  : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
+    : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
   for (const auto *line : findChildren<QLineEdit *>()) {
@@ -95,6 +95,7 @@ bool CadastroCliente::savingProcedures() {
   if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
   if (not setData("pfpj", tipoPFPJ)) return false;
   if (not setData("incompleto", incompleto)) return false;
+  if (not setData("credito", ui->doubleSpinBoxCredito->value())) return false;
 
   return true;
 }
@@ -114,6 +115,7 @@ void CadastroCliente::clearFields() {
 
 void CadastroCliente::setupMapper() {
   addMapping(ui->dateEdit, "dataNasc");
+  addMapping(ui->doubleSpinBoxCredito, "credito");
   addMapping(ui->itemBoxCliente, "idCadastroRel", "value");
   addMapping(ui->itemBoxProfissional, "idProfissionalRel", "value");
   addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
@@ -234,7 +236,7 @@ void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
 
 void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   ui->lineEditCNPJ->setStyleSheet(
-        validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 
   if (not ui->lineEditCNPJ->styleSheet().contains("color: rgb(255, 0, 0)")) {
     QSqlQuery query;
@@ -253,7 +255,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) { // NOTE: pass this to RegisterDialog?
+bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -391,10 +393,10 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-bool CadastroCliente::save(const bool &isUpdate) {
+bool CadastroCliente::save() {
   if (not verifyFields(isUpdate)) return false;
 
-  return RegisterAddressDialog::save(isUpdate);
+  return RegisterAddressDialog::save();
 }
 
 bool CadastroCliente::verifyFields(const bool &isUpdate) {

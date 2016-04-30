@@ -13,7 +13,7 @@ class WidgetCompra : public QWidget {
   public:
     explicit WidgetCompra(QWidget *parent = 0);
     ~WidgetCompra();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_tabWidget_currentChanged(const int &);

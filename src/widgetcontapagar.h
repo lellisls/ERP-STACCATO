@@ -15,7 +15,7 @@ class WidgetContaPagar : public QWidget {
   public:
     explicit WidgetContaPagar(QWidget *parent = 0);
     ~WidgetContaPagar();
-    QString updateTables();
+    bool updateTables(QString &error);
 
   private slots:
     void on_table_entered(const QModelIndex &);

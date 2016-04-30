@@ -6,13 +6,13 @@
 #include "sqltablemodel.h"
 
 class OrcamentoProxyModel : public QIdentityProxyModel {
-  public:
-    explicit OrcamentoProxyModel(SqlTableModel *model, QObject *parent);
-    ~OrcamentoProxyModel();
-    QVariant data(const QModelIndex &proxyIndex, const int role) const override;
+public:
+  explicit OrcamentoProxyModel(SqlTableModel *model, QObject *parent);
+  ~OrcamentoProxyModel();
+  QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
-  private:
-    const int column;
+private:
+  const int column, status;
 };
 
 #endif // ORCAMENTOPROXYMODEL_H

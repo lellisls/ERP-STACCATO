@@ -15,7 +15,7 @@ class WidgetLogisticaColeta : public QWidget {
   public:
     explicit WidgetLogisticaColeta(QWidget *parent = 0);
     ~WidgetLogisticaColeta();
-    QString updateTables();
+    bool updateTables(QString &error);
     void TableFornLogistica_activated(const QString &fornecedor);
 
   private slots:

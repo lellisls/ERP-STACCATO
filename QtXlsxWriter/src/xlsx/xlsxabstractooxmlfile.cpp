@@ -33,7 +33,7 @@ QT_BEGIN_NAMESPACE_XLSX
 
 AbstractOOXmlFilePrivate::AbstractOOXmlFilePrivate(
     AbstractOOXmlFile *q, AbstractOOXmlFile::CreateFlag flag = AbstractOOXmlFile::F_NewFromScratch)
-  : relationships(new Relationships), flag(flag), q_ptr(q) {}
+    : relationships(new Relationships), flag(flag), q_ptr(q) {}
 
 AbstractOOXmlFilePrivate::~AbstractOOXmlFilePrivate() {}
 
@@ -74,7 +74,7 @@ bool AbstractOOXmlFile::loadFromXmlData(const QByteArray &data) {
 /*!
  * \internal
  */
-void AbstractOOXmlFile::setFilePath(const QString path) {
+void AbstractOOXmlFile::setFilePath(const QString &path) {
   Q_D(AbstractOOXmlFile);
   d->filePathInPackage = path;
 }

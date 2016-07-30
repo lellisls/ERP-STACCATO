@@ -16,15 +16,33 @@ int UserSession::idUsuario() { return (query->value("idUsuario").toInt()); }
 
 QString UserSession::nome() { return (query->value("nome").toString()); }
 
-bool UserSession::login(const QString &user, const QString &password) {
+bool UserSession::login(const QString &user, const QString &password, Tipo tipo) {
   initialize();
+
+  if (tipo == Autorizacao) {
+    QSqlQuery query;
+    query.prepare("SELECT idLoja, idUsuario, nome, tipo FROM usuario WHERE user = :user AND passwd = "
+                  "PASSWORD(:password) AND desativado = FALSE AND tipo LIKE '%GERENTE%'");
+    query.bindValue(":user", user);
+    query.bindValue(":password", password);
+
+    if (not query.exec()) {
+      QMessageBox::critical(0, "Erro!", "Erro no login: " + query.lastError().text());
+      return false;
+    }
+
+    return query.first();
+  }
 
   query->prepare("SELECT idLoja, idUsuario, nome, tipo FROM usuario WHERE user = :user AND passwd = "
                  "PASSWORD(:password) AND desativado = FALSE");
   query->bindValue(":user", user);
   query->bindValue(":password", password);
 
-  if (not query->exec()) QMessageBox::critical(0, "Erro!", "Erro no login: " + query->lastError().text());
+  if (not query->exec()) {
+    QMessageBox::critical(0, "Erro!", "Erro no login: " + query->lastError().text());
+    return false;
+  }
 
   return query->first();
 }

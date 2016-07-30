@@ -137,7 +137,8 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 255, 0);</string>
+        <string notr="true">background-color: rgb(0, 255, 0);
+color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">
         <string>Novo item</string>
@@ -162,7 +163,8 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 255, 0);</string>
+        <string notr="true">background-color: rgb(255, 255, 0);
+color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">
         <string>Item atualizado</string>
@@ -187,7 +189,8 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(160, 160, 164);</string>
+        <string notr="true">background-color: rgb(160, 160, 164);
+color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">
         <string>Valor fora do padrão</string>
@@ -215,7 +218,8 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 0, 0);</string>
+        <string notr="true">background-color: rgb(255, 0, 0);
+color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">
         <string>Valor errado</string>
@@ -243,7 +247,8 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 255, 255);</string>
+        <string notr="true">background-color: rgb(0, 255, 255);
+color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">
         <string>Descontinuado</string>

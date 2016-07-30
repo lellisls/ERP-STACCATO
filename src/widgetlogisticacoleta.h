@@ -15,13 +15,17 @@ class WidgetLogisticaColeta : public QWidget {
 public:
   explicit WidgetLogisticaColeta(QWidget *parent = 0);
   ~WidgetLogisticaColeta();
-  bool updateTables(QString &error);
+  bool updateTables();
   void TableFornLogistica_activated(const QString &fornecedor);
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_checkBoxMarcarTodos_clicked(const bool &);
   void on_pushButtonMarcarColetado_clicked();
   void on_table_entered(const QModelIndex &);
+  void on_lineEditBuscaColeta_textChanged(const QString &);
 
 private:
   // attributes

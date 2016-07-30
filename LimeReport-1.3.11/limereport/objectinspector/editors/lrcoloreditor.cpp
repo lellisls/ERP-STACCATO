@@ -29,104 +29,86 @@
  ****************************************************************************/
 #include "lrcoloreditor.h"
 
-#include <QHBoxLayout>
 #include <QColorDialog>
+#include <QHBoxLayout>
 #include <QPaintEvent>
 #include <QPainter>
 
-namespace LimeReport{
+namespace LimeReport {
 
-ColorEditor::ColorEditor(QWidget *parent) :
-    QWidget(parent), m_buttonPressed(false)
-{
-    m_colorIndicator = new ColorIndicator(this);
-    m_colorIndicator->setColor(m_color);
-    m_button = new QToolButton(this);
-    m_button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    m_button->setText("...");
-    m_button->installEventFilter(this);
-    QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addWidget(m_colorIndicator);
-    layout->addWidget(m_button);
-    layout->setSpacing(0);
-    layout->setContentsMargins(1,1,1,1);
-    setFocusProxy(m_button);
-    setAutoFillBackground(true);
-    setLayout(layout);
-    connect(m_button,SIGNAL(clicked()),this,SLOT(slotClicked()));
+ColorEditor::ColorEditor(QWidget *parent) : QWidget(parent), m_buttonPressed(false) {
+  m_colorIndicator = new ColorIndicator(this);
+  m_colorIndicator->setColor(m_color);
+  m_button = new QToolButton(this);
+  m_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  m_button->setText("...");
+  m_button->installEventFilter(this);
+  QHBoxLayout *layout = new QHBoxLayout(this);
+  layout->addWidget(m_colorIndicator);
+  layout->addWidget(m_button);
+  layout->setSpacing(0);
+  layout->setContentsMargins(1, 1, 1, 1);
+  setFocusProxy(m_button);
+  setAutoFillBackground(true);
+  setLayout(layout);
+  connect(m_button, &QAbstractButton::clicked, this, &ColorEditor::slotClicked);
 }
 
-void ColorEditor::setColor(const QColor &value)
-{
-    m_color=value;
-    m_colorIndicator->setColor(m_color);
+void ColorEditor::setColor(const QColor &value) {
+  m_color = value;
+  m_colorIndicator->setColor(m_color);
 }
 
-bool ColorEditor::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj == m_button){
-        if (event->type() == QEvent::FocusOut && !m_buttonPressed){
-            QFocusEvent* focusEvent = dynamic_cast<QFocusEvent*>(event);
-            if (focusEvent && focusEvent->reason()!=Qt::MouseFocusReason){
-                setFocusToParent();
-                emit(editingFinished());
-            }
-            return false;
-        }
+bool ColorEditor::eventFilter(QObject *obj, QEvent *event) {
+  if (obj == m_button) {
+    if (event->type() == QEvent::FocusOut and !m_buttonPressed) {
+      QFocusEvent *focusEvent = dynamic_cast<QFocusEvent *>(event);
+      if (focusEvent and focusEvent->reason() != Qt::MouseFocusReason) {
+        setFocusToParent();
+        emit(editingFinished());
+      }
+      return false;
     }
-    return false;
+  }
+  return false;
 }
 
-void ColorEditor::setFocusToParent(){
-    if (parentWidget())
-        parentWidget()->setFocus();
+void ColorEditor::setFocusToParent() {
+  if (parentWidget()) parentWidget()->setFocus();
 }
 
-void ColorEditor::slotClicked()
-{
-    m_buttonPressed = true;
-    QColorDialog* dialog = new QColorDialog(this);
-    dialog->setCurrentColor(m_color);
-    if (dialog->exec()) m_color=dialog->currentColor();
-    delete dialog;
-    setFocusToParent();
-    emit(editingFinished());
+void ColorEditor::slotClicked() {
+  m_buttonPressed = true;
+  QColorDialog *dialog = new QColorDialog(this);
+  dialog->setCurrentColor(m_color);
+  if (dialog->exec()) m_color = dialog->currentColor();
+  delete dialog;
+  setFocusToParent();
+  emit(editingFinished());
 }
 
-
-void ColorIndicator::paintEvent(QPaintEvent* event)
-{
-    QPainter painter(this);
-    painter.save();
-    painter.setBrush(m_color);
-    painter.setPen(Qt::gray);
-    QRect rect = event->rect().adjusted(3,3,-4,-4);
-    rect.setWidth(rect.height());
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.drawEllipse(rect);
-    painter.restore();
+void ColorIndicator::paintEvent(QPaintEvent *event) {
+  QPainter painter(this);
+  painter.save();
+  painter.setBrush(m_color);
+  painter.setPen(Qt::gray);
+  QRect rect = event->rect().adjusted(3, 3, -4, -4);
+  rect.setWidth(rect.height());
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.drawEllipse(rect);
+  painter.restore();
 }
 
-ColorIndicator::ColorIndicator(QWidget *parent)
-    :QWidget(parent), m_color(Qt::white){
-    setAttribute(Qt::WA_StaticContents);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    setFocusPolicy(Qt::NoFocus);
+ColorIndicator::ColorIndicator(QWidget *parent) : QWidget(parent), m_color(Qt::white) {
+  setAttribute(Qt::WA_StaticContents);
+  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+  setFocusPolicy(Qt::NoFocus);
 }
 
-QColor ColorIndicator::color() const
-{
-    return m_color;
-}
+QColor ColorIndicator::color() const { return m_color; }
 
-void ColorIndicator::setColor(const QColor &color)
-{
-    m_color = color;
-}
+void ColorIndicator::setColor(const QColor &color) { m_color = color; }
 
-QSize ColorIndicator::sizeHint() const
-{
-    return QSize(20,20);
-}
+QSize ColorIndicator::sizeHint() const { return QSize(20, 20); }
 
 } // namespace LimeReport

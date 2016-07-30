@@ -2,10 +2,10 @@
 #define EXCEL_H
 
 #include <QSqlQuery>
+#include <QWidget>
 
-#include "sqltablemodel.h"
+class Excel {
 
-class Excel : public QObject {
 public:
   Excel(QString id, QWidget *parent = 0);
   void gerarExcel();
@@ -19,16 +19,13 @@ private:
   QSqlQuery queryEndFat;
   QSqlQuery queryLoja;
   QSqlQuery queryLojaEnd;
-  QSqlQuery queryOrc;
   QSqlQuery queryProduto;
   QSqlQuery queryProfissional;
   QSqlQuery queryVendedor;
   QString id;
   QWidget *parent;
-  SqlTableModel model;
-  SqlTableModel modelItem;
   // methods
-  void setQuerys();
+  bool setQuerys();
   void verificaTipo();
 };
 

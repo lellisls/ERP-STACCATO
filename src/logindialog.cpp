@@ -1,12 +1,15 @@
 #include <QDate>
+#include <QDebug>
+#include <QInputDialog>
 #include <QMessageBox>
+#include <QSimpleUpdater>
 #include <QSqlError>
 
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include "usersession.h"
 
-LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDialog) {
+LoginDialog::LoginDialog(Tipo tipo, QWidget *parent) : QDialog(parent), ui(new Ui::LoginDialog), tipo(tipo) {
   ui->setupUi(this);
 
   setWindowTitle("ERP Login");
@@ -23,6 +26,18 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent), ui(new Ui::LoginDia
 
   ui->labelHostname->hide();
   ui->lineEditHostname->hide();
+  ui->comboBoxLoja->hide();
+
+  if (tipo == Autorizacao) {
+    ui->pushButtonConfig->hide();
+    ui->lineEditUser->clear();
+    ui->lineEditUser->setFocus();
+    setWindowTitle("Autorização");
+  }
+
+  storeSelection();
+
+  updater();
 
   adjustSize();
 
@@ -34,6 +49,7 @@ LoginDialog::~LoginDialog() { delete ui; }
 void LoginDialog::on_pushButtonConfig_clicked() {
   ui->labelHostname->setVisible(not ui->labelHostname->isVisible());
   ui->lineEditHostname->setVisible(not ui->lineEditHostname->isVisible());
+  ui->comboBoxLoja->setVisible(not ui->comboBoxLoja->isVisible());
   adjustSize();
 }
 
@@ -51,8 +67,7 @@ bool LoginDialog::dbConnect() {
   db.setPassword("1234");
   db.setDatabaseName("mysql");
 
-  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;MYSQL_OPT_CONNECT_TIMEOUT=5;MYSQL_OPT_READ_TIMEOUT=5;"
-                       "MYSQL_OPT_WRITE_TIMEOUT=5");
+  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;");
 
   if (not db.open()) {
     QString message;
@@ -118,8 +133,10 @@ bool LoginDialog::dbConnect() {
       return false;
     }
 
-    if (not query.exec("UPDATE maintenance SET lastInvalidated = '" + QDate::currentDate().toString("yyyy-MM-dd") +
-                       "' WHERE id = 1")) {
+    query.prepare("UPDATE maintenance SET lastInvalidated = :lastInvalidated WHERE id = 1");
+    query.bindValue(":lastInvalidated", QDate::currentDate().toString("yyyy-MM-dd"));
+
+    if (not query.exec()) {
       QMessageBox::critical(this, "Erro", "Erro atualizando lastInvalidated: " + query.lastError().text());
       return false;
     }
@@ -136,16 +153,53 @@ bool LoginDialog::dbConnect() {
 void LoginDialog::on_pushButtonLogin_clicked() {
   UserSession::setSettings("Login/hostname", ui->lineEditHostname->text());
 
-  if (not dbConnect()) return;
+  if (tipo == Login) {
+    if (not dbConnect()) return;
+  }
 
-  if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text())) {
+  if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text(),
+                             tipo == Autorizacao ? UserSession::Autorizacao : UserSession::Padrao)) {
     QMessageBox::critical(this, "Erro!", "Login inválido!");
     ui->lineEditPass->setFocus();
-
     return;
   }
 
   accept();
 
-  UserSession::setSettings("User/lastuser", ui->lineEditUser->text());
+  if (tipo == Login) UserSession::setSettings("User/lastuser", ui->lineEditUser->text());
+}
+
+void LoginDialog::on_lineEditHostname_editingFinished() { updater(); }
+
+void LoginDialog::updater() {
+  QSimpleUpdater *updater = new QSimpleUpdater();
+  updater->setApplicationVersion(qApp->applicationVersion());
+  updater->setReferenceUrl("http://" + UserSession::settings("Login/hostname").toString() + "/versao.txt");
+  updater->setDownloadUrl("http://" + UserSession::settings("Login/hostname").toString() + "/Instalador.exe");
+  updater->setSilent(true);
+  updater->setShowNewestVersionMessage(true);
+  updater->checkForUpdates();
+}
+
+void LoginDialog::storeSelection() {
+  if (UserSession::settings("Login/hostname").toString().isEmpty()) {
+    QStringList items;
+    items << "Alphaville"
+          << "Gabriel"
+          << "Granja";
+
+    QString loja = QInputDialog::getItem(0, "Escolha a loja", "Qual a sua loja?", items, 0, false);
+
+    if (loja == "Alphaville") UserSession::setSettings("Login/hostname", "192.168.2.144");
+    if (loja == "Gabriel") UserSession::setSettings("Login/hostname", "192.168.1.101");
+    if (loja == "Granja") UserSession::setSettings("Login/hostname", "192.168.0.10");
+  }
+}
+
+void LoginDialog::on_comboBoxLoja_currentTextChanged(const QString &loja) {
+  if (loja == "Localhost") ui->lineEditHostname->setText("localhost");
+  if (loja == "Alphaville") ui->lineEditHostname->setText("192.168.2.144");
+  if (loja == "Gabriel") ui->lineEditHostname->setText("192.168.1.101");
+  if (loja == "Granja") ui->lineEditHostname->setText("192.168.0.10");
+  if (loja == "Acesso Externo") ui->lineEditHostname->setText("staccato1.mooo.com");
 }

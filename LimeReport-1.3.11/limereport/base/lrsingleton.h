@@ -32,28 +32,26 @@
 
 #include <cstdlib>
 
-namespace LimeReport{
+namespace LimeReport {
 
-template <typename T>
-class Singleton
-{
+template <typename T> class Singleton {
 public:
-    static T& instance(){
-        if (0==inst){
-            inst = new T();
-            ::atexit( destroy );
-        } else {};
-        return *inst;
-    }
+  static T &instance() {
+    if (0 == inst) {
+      inst = new T();
+      ::atexit(destroy);
+    } else {
+    };
+    return *inst;
+  }
+
 private:
-    static T* inst;
+  static T *inst;
+
 private:
-    static void destroy() {
-        delete inst;
-    }
+  static void destroy() { delete inst; }
 };
 
-template <typename T>
-T* Singleton< T >::inst =0;
+template <typename T> T *Singleton<T>::inst = 0;
 }
 #endif // LRSINGLETON_H

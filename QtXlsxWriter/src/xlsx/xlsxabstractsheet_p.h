@@ -36,27 +36,27 @@
 // We mean it.
 //
 
-#include "xlsxglobal.h"
-#include "xlsxabstractsheet.h"
 #include "xlsxabstractooxmlfile_p.h"
+#include "xlsxabstractsheet.h"
+#include "xlsxglobal.h"
 
 #include <QSharedPointer>
 
 namespace QXlsx {
 
-  class XLSX_AUTOTEST_EXPORT AbstractSheetPrivate : public AbstractOOXmlFilePrivate {
-      Q_DECLARE_PUBLIC(AbstractSheet)
-    public:
-      AbstractSheetPrivate(AbstractSheet *p, AbstractSheet::CreateFlag flag);
-      ~AbstractSheetPrivate();
+class XLSX_AUTOTEST_EXPORT AbstractSheetPrivate : public AbstractOOXmlFilePrivate {
+  Q_DECLARE_PUBLIC(AbstractSheet)
+public:
+  AbstractSheetPrivate(AbstractSheet *p, AbstractSheet::CreateFlag flag);
+  ~AbstractSheetPrivate();
 
-      Workbook *workbook;
-      QSharedPointer<Drawing> drawing;
+  Workbook *workbook;
+  QSharedPointer<Drawing> drawing;
 
-      QString name;
-      int id;
-      AbstractSheet::SheetState sheetState;
-      AbstractSheet::SheetType type;
-  };
+  QString name;
+  int id;
+  AbstractSheet::SheetState sheetState;
+  AbstractSheet::SheetType type;
+};
 }
 #endif // XLSXABSTRACTSHEET_P_H

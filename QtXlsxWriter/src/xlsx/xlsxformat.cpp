@@ -23,8 +23,8 @@
 **
 ****************************************************************************/
 #include "xlsxformat.h"
-#include "xlsxformat_p.h"
 #include "xlsxcolor_p.h"
+#include "xlsxformat_p.h"
 #include "xlsxnumformatparser_p.h"
 #include <QDataStream>
 #include <QDebug>
@@ -32,18 +32,18 @@
 QT_BEGIN_NAMESPACE_XLSX
 
 FormatPrivate::FormatPrivate()
-  : dirty(true), font_dirty(true), font_index_valid(false), font_index(0), fill_dirty(true), fill_index_valid(false),
-    fill_index(0), border_dirty(true), border_index_valid(false), border_index(0), xf_index(-1), xf_indexValid(false),
-    is_dxf_fomat(false), dxf_index(-1), dxf_indexValid(false), theme(0) {}
+    : dirty(true), font_dirty(true), font_index_valid(false), font_index(0), fill_dirty(true), fill_index_valid(false),
+      fill_index(0), border_dirty(true), border_index_valid(false), border_index(0), xf_index(-1), xf_indexValid(false),
+      is_dxf_fomat(false), dxf_index(-1), dxf_indexValid(false), theme(0) {}
 
 FormatPrivate::FormatPrivate(const FormatPrivate &other)
-  : QSharedData(other), dirty(other.dirty), formatKey(other.formatKey), font_dirty(other.font_dirty),
-    font_index_valid(other.font_index_valid), font_key(other.font_key), font_index(other.font_index),
-    fill_dirty(other.fill_dirty), fill_index_valid(other.fill_index_valid), fill_key(other.fill_key),
-    fill_index(other.fill_index), border_dirty(other.border_dirty), border_index_valid(other.border_index_valid),
-    border_key(other.border_key), border_index(other.border_index), xf_index(other.xf_index),
-    xf_indexValid(other.xf_indexValid), is_dxf_fomat(other.is_dxf_fomat), dxf_index(other.dxf_index),
-    dxf_indexValid(other.dxf_indexValid), theme(other.theme), properties(other.properties) {}
+    : QSharedData(other), dirty(other.dirty), formatKey(other.formatKey), font_dirty(other.font_dirty),
+      font_index_valid(other.font_index_valid), font_key(other.font_key), font_index(other.font_index),
+      fill_dirty(other.fill_dirty), fill_index_valid(other.fill_index_valid), fill_key(other.fill_key),
+      fill_index(other.fill_index), border_dirty(other.border_dirty), border_index_valid(other.border_index_valid),
+      border_key(other.border_key), border_index(other.border_index), xf_index(other.xf_index),
+      xf_indexValid(other.xf_indexValid), is_dxf_fomat(other.is_dxf_fomat), dxf_index(other.dxf_index),
+      dxf_indexValid(other.dxf_indexValid), theme(other.theme), properties(other.properties) {}
 
 FormatPrivate::~FormatPrivate() {}
 

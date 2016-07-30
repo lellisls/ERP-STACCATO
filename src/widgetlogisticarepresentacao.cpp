@@ -57,3 +57,7 @@ void WidgetLogisticaRepresentacao::setupTables() {
 void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {}
 
 void WidgetLogisticaRepresentacao::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+// NOTE: botoes dinamicos de acordo com o status
+// NOTE: botao para encerrar ciclo (entrega direta)
+// NOTE: todos os itens na mesma tela

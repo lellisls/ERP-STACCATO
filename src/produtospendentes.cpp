@@ -4,9 +4,11 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "doubledelegate.h"
 #include "estoque.h"
 #include "inputdialog.h"
 #include "produtospendentes.h"
+#include "reaisdelegate.h"
 #include "ui_produtospendentes.h"
 
 ProdutosPendentes::ProdutosPendentes(QWidget *parent) : QDialog(parent), ui(new Ui::ProdutosPendentes) {
@@ -85,6 +87,8 @@ void ProdutosPendentes::setupTables() {
   modelProdutos.setHeaderData("custo", "Custo");
 
   ui->tableProdutos->setModel(&modelProdutos);
+  ui->tableProdutos->setItemDelegateForColumn("quant", new DoubleDelegate(this, 3));
+  ui->tableProdutos->setItemDelegateForColumn("custo", new ReaisDelegate(this));
   ui->tableProdutos->hideColumn("idVendaProduto");
   ui->tableProdutos->hideColumn("idProduto");
   ui->tableProdutos->hideColumn("idCompra");
@@ -92,10 +96,6 @@ void ProdutosPendentes::setupTables() {
 
   modelEstoque.setTable("view_estoque");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  if (not modelEstoque.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
-  }
 
   ui->tableEstoque->setModel(&modelEstoque);
   ui->tableEstoque->hideColumn("idCompra");
@@ -111,8 +111,8 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
   if (inputDlg->exec() != InputDialog::Accepted) return;
   QDate dataPrevista = inputDlg->getNextDate();
 
-  insere(dataPrevista);
-  atualizaVenda(dataPrevista);
+  if (not insere(dataPrevista)) return;
+  if (not atualizaVenda(dataPrevista)) return;
 
   QSqlQuery query;
 
@@ -120,6 +120,8 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
     return;
   }
+
+  QMessageBox::information(this, "Aviso!", "Produto enviado para carrinho!");
 
   QDialog::accept();
   close();
@@ -136,7 +138,7 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
   auto listEstoque = ui->tableEstoque->selectionModel()->selectedRows();
 
   if (listEstoque.size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhuma estoque selecionado!");
+    QMessageBox::critical(this, "Erro!", "Nenhum estoque selecionado!");
     return;
   }
 
@@ -150,7 +152,12 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
 
   Estoque *estoque = new Estoque(this);
   estoque->viewRegisterById(modelEstoque.data(listEstoque.first().row(), "idEstoque").toString());
-  estoque->criarConsumo(modelProdutos.data(listProduto.first().row(), "idVendaProduto"));
+
+  if (not estoque->criarConsumo(modelProdutos.data(listProduto.first().row(), "idVendaProduto").toInt())) {
+    QMessageBox::critical(this, "Erro!", "Erro ao criar consumo!");
+    return;
+  }
+
   estoque->show();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Entrega, this);
@@ -163,9 +170,12 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
 
   // TODO: verificar se esta preenchendo dataPrevEnt (nao preenche no pre-consumo)
 
-  if (not query.exec("UPDATE venda_has_produto SET dataPrevEnt = '" + dataEntrega +
-                     "', status = 'ESTOQUE' WHERE idVendaProduto = " +
-                     modelProdutos.data(listProduto.first().row(), "idVendaProduto").toString())) {
+  query.prepare("UPDATE venda_has_produto SET dataPrevEnt = :dataPrevEnt, status = 'ESTOQUE' WHERE idVendaProduto = "
+                ":idVendaProduto");
+  query.bindValue(":dataPrevEnt", dataEntrega);
+  query.bindValue(":idVendaProduto", modelProdutos.data(listProduto.first().row(), "idVendaProduto").toString());
+
+  if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
     close();
     return;
@@ -179,15 +189,19 @@ void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
 
   modelEstoque.select();
   modelProdutos.select();
+
+  QMessageBox::information(this, "Aviso!", "Produto enviado para carrinho com sucesso.");
+  estoque->close();
+  close();
 }
 
-void ProdutosPendentes::insere(const QDate &dataPrevista) {
+bool ProdutosPendentes::insere(const QDate &dataPrevista) {
   QSqlQuery query;
   query.prepare(
       "INSERT INTO pedido_fornecedor_has_produto (idVenda, fornecedor, idProduto, descricao, colecao, quant, un, un2, "
-      "caixas, preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:idVenda, :fornecedor, "
-      ":idProduto, :descricao, :colecao, :quant, :un, :un2, :caixas, :preco, :kgcx, :formComercial, :codComercial, "
-      ":codBarras, :dataPrevCompra)");
+      "caixas, prcUnitario, preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:idVenda, "
+      ":fornecedor, :idProduto, :descricao, :colecao, :quant, :un, :un2, :caixas, :prcUnitario, :preco, :kgcx, "
+      ":formComercial, :codComercial, :codBarras, :dataPrevCompra)");
   query.bindValue(":idVenda", modelProdutos.data(0, "idVenda"));
   query.bindValue(":fornecedor", modelProdutos.data(0, "fornecedor"));
   query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
@@ -197,7 +211,8 @@ void ProdutosPendentes::insere(const QDate &dataPrevista) {
   query.bindValue(":un", modelProdutos.data(0, "un"));
   query.bindValue(":un2", modelProdutos.data(0, "un2"));
   query.bindValue(":caixas", modelProdutos.data(0, "caixas"));
-  query.bindValue(":preco", modelProdutos.data(0, "custo").toDouble());
+  query.bindValue(":prcUnitario", modelProdutos.data(0, "custo").toDouble());
+  query.bindValue(":preco", modelProdutos.data(0, "custo").toDouble() * ui->doubleSpinBoxComprar->value());
   query.bindValue(":kgcx", modelProdutos.data(0, "kgcx"));
   query.bindValue(":formComercial", modelProdutos.data(0, "formComercial"));
   query.bindValue(":codComercial", modelProdutos.data(0, "codComercial"));
@@ -207,23 +222,29 @@ void ProdutosPendentes::insere(const QDate &dataPrevista) {
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro inserindo dados em pedido_fornecedor_has_produto: " + query.lastError().text());
-    return;
+    return false;
   }
+
+  return true;
 }
 
-void ProdutosPendentes::atualizaVenda(const QDate &dataPrevista) {
-  QSqlQuery query;
-  query.prepare("UPDATE venda_has_produto SET dataPrevCompra = :dataPrevCompra, "
-                "status = 'INICIADO' WHERE idVenda = :idVenda AND idProduto = :idProduto");
-  query.bindValue(":dataPrevCompra", dataPrevista);
-  query.bindValue(":idVenda", modelProdutos.data(0, "idVenda"));
-  query.bindValue(":idProduto", modelProdutos.data(0, "idProduto"));
+bool ProdutosPendentes::atualizaVenda(const QDate &dataPrevista) {
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
+    QSqlQuery query;
+    query.prepare("UPDATE venda_has_produto SET dataPrevCompra = :dataPrevCompra, "
+                  "status = 'INICIADO' WHERE idVenda = :idVenda AND idProduto = :idProduto");
+    query.bindValue(":dataPrevCompra", dataPrevista);
+    query.bindValue(":idVenda", modelProdutos.data(row, "idVenda"));
+    query.bindValue(":idProduto", modelProdutos.data(row, "idProduto"));
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro associando pedido_fornecedor a venda_has_produto: " + query.lastError().text());
-    return;
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro associando pedido_fornecedor a venda_has_produto: " + query.lastError().text());
+      return false;
+    }
   }
+
+  return true;
 }
 
 void ProdutosPendentes::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
@@ -231,4 +252,4 @@ void ProdutosPendentes::on_tableProdutos_entered(const QModelIndex &) { ui->tabl
 void ProdutosPendentes::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }
 
 // TODO: se o estoque estiver em coleta/recebimento alterar status do consumo para 'pré-consumo'
-// TODO: quando compra a soma de dois produtos só um está tendo o status modificado (mudar para selecao de linhas?)
+// TODO: utilizar transactions

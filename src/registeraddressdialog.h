@@ -20,6 +20,11 @@ protected:
   int getCodigoUF(QString uf) const;
   virtual bool newRegister() override;
   virtual bool save() override;
+
+private:
+  void setupTables(const QString &table);
+  bool cadastrar() override;
+  bool isUpdateEnd = false;
 };
 
 #endif // REGISTERADDRESSDIALOG_H

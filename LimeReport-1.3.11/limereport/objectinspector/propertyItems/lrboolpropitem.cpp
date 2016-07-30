@@ -29,64 +29,61 @@
  ****************************************************************************/
 #include "lrboolpropitem.h"
 #include "lrobjectpropitem.h"
-#include <QPainter>
-#include <QStylePainter>
 #include <QApplication>
 #include <QBitmap>
+#include <QPainter>
+#include <QStylePainter>
 
 #include "../editors/lrcheckboxeditor.h"
 
-namespace{
-    LimeReport::ObjectPropItem * createBoolPropItem(
-        QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly)
-    {
-        return new LimeReport::BoolPropItem(object, objects, name, displayName, data, parent, readonly);
-    }
-    bool registred = LimeReport::ObjectPropFactory::instance().registerCreator(LimeReport::APropIdent("bool",""),QObject::tr("bool"),createBoolPropItem);
+namespace {
+LimeReport::ObjectPropItem *createBoolPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                               const QString &name, const QString &displayName, const QVariant &data,
+                                               LimeReport::ObjectPropItem *parent, bool readonly) {
+  return new LimeReport::BoolPropItem(object, objects, name, displayName, data, parent, readonly);
+}
+bool registred = LimeReport::ObjectPropFactory::instance().registerCreator(LimeReport::APropIdent("bool", ""),
+                                                                           QObject::tr("bool"), createBoolPropItem);
 } // namespace
 
 namespace LimeReport {
 
-QWidget *BoolPropItem::createProperyEditor(QWidget *parent) const
-{
-    CheckBoxEditor *editor= new CheckBoxEditor(parent);
-    return editor;
+QWidget *BoolPropItem::createProperyEditor(QWidget *parent) const {
+  CheckBoxEditor *editor = new CheckBoxEditor(parent);
+  return editor;
 }
 
-void BoolPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const
-{
-    CheckBoxEditor *editor =qobject_cast<CheckBoxEditor *>(propertyEditor);
-    editor->setEditing(true);
-    editor->setChecked(propertyValue().toBool());
-    editor->setEditing(false);
+void BoolPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  CheckBoxEditor *editor = qobject_cast<CheckBoxEditor *>(propertyEditor);
+  editor->setEditing(true);
+  editor->setChecked(propertyValue().toBool());
+  editor->setEditing(false);
 }
 
-void BoolPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index)
-{
-    model->setData(index,qobject_cast<CheckBoxEditor*>(propertyEditor)->isChecked());
-    setValueToObject(propertyName(),propertyValue());
+void BoolPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index) {
+  model->setData(index, qobject_cast<CheckBoxEditor *>(propertyEditor)->isChecked());
+  setValueToObject(propertyName(), propertyValue());
 }
 
-bool BoolPropItem::paint(QPainter *painter, const QStyleOptionViewItemV4 &option, const QModelIndex &index)
-{
-    if (index.column()==1){
-        QStyleOptionButton so;
-        int border = (option.rect.height() - QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth))/2;
-        so.rect = option.rect.adjusted(border,border,0,-border);
-        so.rect.setWidth(QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth));
+bool BoolPropItem::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) {
+  if (index.column() == 1) {
+    QStyleOptionButton so;
+    int border = (option.rect.height() - QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth)) / 2;
+    so.rect = option.rect.adjusted(border, border, 0, -border);
+    so.rect.setWidth(QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth));
 
-        if (!isValueReadonly())
-            so.state = QStyle::State_Enabled;
-        else
-            so.state &= ~QStyle::State_Enabled;
+    if (!isValueReadonly())
+      so.state = QStyle::State_Enabled;
+    else
+      so.state &= ~QStyle::State_Enabled;
 
-        so.state |= propertyValue().toBool() ? QStyle::State_On : QStyle::State_Off;
+    so.state |= propertyValue().toBool() ? QStyle::State_On : QStyle::State_Off;
 
-        option.widget->style()->drawPrimitive(QStyle::PE_IndicatorCheckBox,&so,painter);
+    option.widget->style()->drawPrimitive(QStyle::PE_IndicatorCheckBox, &so, painter);
 
-        return true;
-    } else return false;
+    return true;
+  } else
+    return false;
 }
 
 } // namespace LimeReport
-

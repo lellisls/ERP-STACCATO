@@ -37,34 +37,34 @@
 // We mean it.
 //
 
-#include "xlsxrelationships_p.h"
 #include "xlsxabstractooxmlfile.h"
+#include "xlsxrelationships_p.h"
 
 #include <QList>
-#include <QString>
 #include <QSharedPointer>
+#include <QString>
 
 class QIODevice;
 class QXmlStreamWriter;
 
 namespace QXlsx {
 
-  class DrawingAnchor;
-  class Workbook;
-  class AbstractSheet;
-  class MediaFile;
+class DrawingAnchor;
+class Workbook;
+class AbstractSheet;
+class MediaFile;
 
-  class Drawing : public AbstractOOXmlFile {
-    public:
-      Drawing(AbstractSheet *sheet, CreateFlag flag);
-      ~Drawing();
-      void saveToXmlFile(QIODevice *device) const;
-      bool loadFromXmlFile(QIODevice *device);
+class Drawing : public AbstractOOXmlFile {
+public:
+  Drawing(AbstractSheet *sheet, CreateFlag flag);
+  ~Drawing();
+  void saveToXmlFile(QIODevice *device) const;
+  bool loadFromXmlFile(QIODevice *device);
 
-      AbstractSheet *sheet;
-      Workbook *workbook;
-      QList<DrawingAnchor *> anchors;
-  };
+  AbstractSheet *sheet;
+  Workbook *workbook;
+  QList<DrawingAnchor *> anchors;
+};
 
 } // namespace QXlsx
 

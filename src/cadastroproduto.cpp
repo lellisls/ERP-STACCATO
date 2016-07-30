@@ -1,4 +1,6 @@
+#include <QDebug>
 #include <QMessageBox>
+#include <QSqlError>
 
 #include "cadastrofornecedor.h"
 #include "cadastroproduto.h"
@@ -8,10 +10,6 @@
 CadastroProduto::CadastroProduto(QWidget *parent)
     : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
-
-  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
 
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
@@ -32,24 +30,25 @@ CadastroProduto::CadastroProduto(QWidget *parent)
   ui->itemBoxFornecedor->setRegisterDialog(new CadastroFornecedor(this));
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->pushButtonRemover->setDisabled(true);
+
   if (UserSession::tipoUsuario() == "VENDEDOR") {
     ui->pushButtonCadastrar->setVisible(false);
     ui->pushButtonNovoCad->setVisible(false);
   }
 
-  model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table
+  //  model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table
+
+  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }
 
 void CadastroProduto::clearFields() {
-  for (auto const &line : findChildren<QLineEdit *>()) {
-    line->clear();
-  }
+  for (auto const &line : findChildren<QLineEdit *>()) line->clear();
 
-  for (auto const &spinBox : findChildren<QDoubleSpinBox *>()) {
-    spinBox->clear();
-  }
+  for (auto const &spinBox : findChildren<QDoubleSpinBox *>()) spinBox->clear();
 
   ui->radioButtonDesc->setChecked(false);
   ui->radioButtonLote->setChecked(false);
@@ -69,29 +68,8 @@ void CadastroProduto::registerMode() {
   ui->pushButtonRemover->hide();
 }
 
-bool CadastroProduto::verifyFields(const bool &isUpdate) {
-  if (not isUpdate) {
-    QSqlQuery query;
-    query.prepare("SELECT idProduto FROM produto WHERE fornecedor = :fornecedor AND codComercial = :codComercial");
-    query.bindValue(":fornecedor", ui->itemBoxFornecedor->text());
-    query.bindValue(":codComercial", ui->lineEditCodComer->text());
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro verificando se produto já cadastrado!");
-      return false;
-    }
-
-    if (query.first()) {
-      QMessageBox::critical(this, "Erro!", "Código comercial já cadastrado!");
-      return false;
-    }
-  }
-
-  return true;
-}
-
 bool CadastroProduto::verifyFields() {
-  for (auto const &line : ui->frame->findChildren<QLineEdit *>()) {
+  for (auto const &line : findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
 
@@ -135,6 +113,23 @@ bool CadastroProduto::verifyFields() {
     ui->lineEditCodComer->setFocus();
     QMessageBox::critical(this, "Erro!", "Faltou preencher Código comercial!");
     return false;
+  }
+
+  if (not isUpdate) {
+    QSqlQuery query;
+    query.prepare("SELECT idProduto FROM produto WHERE fornecedor = :fornecedor AND codComercial = :codComercial");
+    query.bindValue(":fornecedor", ui->itemBoxFornecedor->text());
+    query.bindValue(":codComercial", ui->lineEditCodComer->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro verificando se produto já cadastrado!");
+      return false;
+    }
+
+    if (query.first()) {
+      QMessageBox::critical(this, "Erro!", "Código comercial já cadastrado!");
+      return false;
+    }
   }
 
   return true;
@@ -220,10 +215,59 @@ void CadastroProduto::calcularMarkup() {
   ui->doubleSpinBoxMarkup->setValue(markup);
 }
 
-bool CadastroProduto::save() {
-  if (not verifyFields(isUpdate)) return false;
+bool CadastroProduto::cadastrar() {
+  if (not verifyFields()) return false;
 
-  // TODO: copy RegisterDialog::save here replacing submitAll with submit
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  return RegisterDialog::save();
+  if (row == -1) {
+    QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
+    return false;
+  }
+
+  if (not isUpdate and not model.insertRow(row)) return false;
+
+  if (not savingProcedures()) return false;
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    QVariant dado = model.data(row, column);
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
+  }
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    return false;
+  }
+
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+
+  return true;
 }
+
+bool CadastroProduto::save() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  isDirty = false;
+
+  viewRegisterById(primaryId);
+
+  if (not silent) successMessage();
+
+  return true;
+}
+
+// TODO: ao cadastrar produtos de representacao marcar coluna representacao como 1
+// TODO: conectar estoque com produtos de estoque/promocao para fazer consumo automatico
+// TODO: marcar se esta descontinuado ou nao
+// TODO: madebene com 2 casas decimais na quant

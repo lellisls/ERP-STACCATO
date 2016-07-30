@@ -23,53 +23,52 @@
 **
 ****************************************************************************/
 #include "xlsxcellreference.h"
-#include <QStringList>
 #include <QMap>
 #include <QRegularExpression>
+#include <QStringList>
 
 QT_BEGIN_NAMESPACE_XLSX
 
 namespace {
 
-  int intPow(int x, int p) {
-    if (p == 0) return 1;
-    if (p == 1) return x;
+int intPow(int x, int p) {
+  if (p == 0) return 1;
+  if (p == 1) return x;
 
-    int tmp = intPow(x, p / 2);
-    if (p % 2 == 0)
-      return tmp * tmp;
-    else
-      return x * tmp * tmp;
-  }
+  int tmp = intPow(x, p / 2);
+  if (p % 2 == 0)
+    return tmp * tmp;
+  else
+    return x * tmp * tmp;
+}
 
-  QString col_to_name(int col_num) {
-    static QMap<int, QString> col_cache;
+QString col_to_name(int col_num) {
+  static QMap<int, QString> col_cache;
 
-    if (not col_cache.contains(col_num)) {
-      QString col_str;
-      int remainder;
-      while (col_num) {
-        remainder = col_num % 26;
-        if (remainder == 0) remainder = 26;
-        col_str.prepend(QChar('A' + remainder - 1));
-        col_num = (col_num - 1) / 26;
-      }
-      col_cache.insert(col_num, col_str);
+  if (not col_cache.contains(col_num)) {
+    QString col_str;
+    while (col_num) {
+      int remainder = col_num % 26;
+      if (remainder == 0) remainder = 26;
+      col_str.prepend(QChar('A' + remainder - 1));
+      col_num = (col_num - 1) / 26;
     }
-
-    return col_cache[col_num];
+    col_cache.insert(col_num, col_str);
   }
 
-  int col_from_name(const QString &col_str) {
-    int col = 0;
-    int expn = 0;
-    for (int i = col_str.size() - 1; i > -1; --i) {
-      col += (col_str[i].unicode() - 'A' + 1) * intPow(26, expn);
-      expn++;
-    }
+  return col_cache[col_num];
+}
 
-    return col;
+int col_from_name(const QString &col_str) {
+  int col = 0;
+  int expn = 0;
+  for (int i = col_str.size() - 1; i > -1; --i) {
+    col += (col_str[i].unicode() - 'A' + 1) * intPow(26, expn);
+    expn++;
   }
+
+  return col;
+}
 } // namespace
 
 /*!

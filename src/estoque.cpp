@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "estoque.h"
 #include "estoqueproxymodel.h"
@@ -23,18 +24,19 @@ void Estoque::setupTables() {
   model.setTable("estoque");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
-  }
+//  if (not model.select()) { // TODO: remover este select e deixar apenas quando for visualizar depois de filtrar?
+//    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
+//  }
 
   ui->table->setModel(new EstoqueProxyModel(&model, this));
-  //  ui->table->hideColumn("idEstoque");
-  //  ui->table->hideColumn("idEstoqueConsumido");
-  //  ui->table->hideColumn("idCompra");
-  //  ui->table->hideColumn("idVendaProduto");
-  //  ui->table->hideColumn("idProduto");
-  //  ui->table->hideColumn("idNFe");
   ui->table->hideColumn("quantUpd");
+
+  modelConsumo.setTable("estoque_has_consumo");
+  modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+//  if (not modelConsumo.select()) {
+//    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelConsumo.lastError().text());
+//  }
 }
 
 void Estoque::on_table_activated(const QModelIndex &index) {
@@ -67,6 +69,7 @@ void Estoque::viewRegisterById(const QString &idEstoque) {
     return;
   }
 
+  qDebug() << "idEstoque: " << idEstoque;
   model.setFilter("idEstoque = " + idEstoque);
 
   if (not model.select()) {
@@ -74,11 +77,7 @@ void Estoque::viewRegisterById(const QString &idEstoque) {
     return;
   }
 
-  for (int column = 0; column < model.columnCount(); ++column) {
-    if (model.fieldIndex("xml") == column) continue;
-
-    ui->table->resizeColumnToContents(column);
-  }
+  ui->table->resizeColumnsToContents();
 
   calcularRestante();
 
@@ -103,44 +102,60 @@ void Estoque::on_pushButtonExibirNfe_clicked() {
   }
 }
 
-void Estoque::criarConsumo(const QVariant &idVendaProduto) {
+bool Estoque::criarConsumo(const int &idVendaProduto) {
   showMaximized();
 
   for (int row = 0; row < model.rowCount(); ++row) {
     QSqlQuery query;
+    query.prepare("SELECT quant FROM venda_has_produto WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":idVendaProduto", idVendaProduto);
 
-    if (not query.exec("SELECT * FROM venda_has_produto WHERE idVendaProduto = " + idVendaProduto.toString())) {
+    if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + model.lastError().text());
-      return;
+      return false;
     }
 
     while (query.next()) {
       if (query.value("quant") > model.data(row, "quant")) continue;
 
-      int newRow = model.rowCount();
+      int newRow = modelConsumo.rowCount();
 
-      model.insertRow(newRow);
+      modelConsumo.insertRow(newRow);
 
-      for (int column = 0; column < model.columnCount(); ++column) {
-        if (not model.setData(newRow, column, model.data(row, column))) return;
+      for (int column = 0, columnCount = model.columnCount(); column < columnCount; ++column) {
+        QString field = model.record().fieldName(column);
+        int index = modelConsumo.fieldIndex(field);
+        QVariant value = model.data(row, column);
+
+        if (index != -1) modelConsumo.setData(newRow, index, value);
       }
 
       double quant = query.value("quant").toDouble() * -1;
 
-      if (not model.setData(newRow, "quant", quant)) return;
-      if (not model.setData(newRow, "quantUpd", 4)) return; // DarkGreen
-      if (not model.setData(newRow, "idVendaProduto", query.value("idVendaProduto"))) return;
-      if (not model.setData(newRow, "idEstoqueConsumido", model.data(row, "idEstoque"))) return;
-      if (not model.setData(newRow, "status", "CONSUMO")) return;
+      if (not modelConsumo.setData(newRow, "quant", quant)) return false;
+      if (not modelConsumo.setData(newRow, "quantUpd", 4)) return false; // DarkGreen
+      if (not modelConsumo.setData(newRow, "idVendaProduto", idVendaProduto)) return false;
+      if (not modelConsumo.setData(newRow, "idEstoque", model.data(row, "idEstoque"))) return false;
+      if (not modelConsumo.setData(newRow, "status", "CONSUMO")) return false;
     }
   }
 
-  if (not model.submitAll()) {
+  if (not modelConsumo.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + model.lastError().text());
-    return;
+    return false;
   }
 
   calcularRestante();
+
+  return true;
 }
 
 void Estoque::on_table_doubleClicked(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+// TODO: colocar data na tabela de estoque para consumo e estoque propriamente dito
+// TODO: ordenar como: forn., cod, produto, quant, un, caixas
+// TODO: busca descricao, cod
+// TODO: pensar em uma forma melhor de relacionar estoque com nfe estoque.idNFe(x,y) -> nfe.idNFe(x) e (y) (tabela de
+// relação?)
+// TODO: atualizar quantidade de caixas pelo sql (usar joins para calcular a quant de caixas)
+// TODO: colocar chaves estrangeiras na tabela estoque

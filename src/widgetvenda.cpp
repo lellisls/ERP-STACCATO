@@ -10,36 +10,7 @@
 #include "venda.h"
 #include "widgetvenda.h"
 
-WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVenda) {
-  ui->setupUi(this);
-
-  connect(ui->checkBoxCancelado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxDevolucao, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmColeta, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmCompra, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmFaturamento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEmRecebimento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxEstoque, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxFinalizado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxIniciado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxPendente, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->comboBoxLojas, &ComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
-  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
-  connect(ui->radioButtonProprios, &QRadioButton::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->radioButtonTodos, &QRadioButton::toggled, this, &WidgetVenda::montaFiltro);
-
-  QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
-
-  while (query.next()) {
-    ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
-  }
-
-  ui->comboBoxLojas->setCurrentValue(UserSession::idLoja());
-
-  if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->groupBoxLojas->hide();
-  ui->radioButtonTodos->click();
-  if (UserSession::tipoUsuario() == "VENDEDOR") ui->radioButtonProprios->click();
-}
+WidgetVenda::WidgetVenda(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetVenda) { ui->setupUi(this); }
 
 WidgetVenda::~WidgetVenda() { delete ui; }
 
@@ -50,7 +21,11 @@ void WidgetVenda::setupTables() {
 
   ui->table->setModel(new OrcamentoProxyModel(&model, this));
   ui->table->hideColumn("statusEntrega");
+  ui->table->hideColumn("idLoja");
+  ui->table->hideColumn("idUsuario");
   ui->table->setItemDelegateForColumn("Total R$", reaisDelegate);
+
+  if (UserSession::tipoUsuario() != "VENDEDOR ESPECIAL") ui->table->hideColumn("Indicou");
 }
 
 void WidgetVenda::montaFiltro() {
@@ -84,13 +59,22 @@ void WidgetVenda::montaFiltro() {
 
   filtroCheck = filtroCheck.isEmpty() ? "" : " AND (" + filtroCheck + ")";
 
+  const QString filtroData =
+      ui->groupBoxMes->isChecked()
+          ? " AND DATE_FORMAT(Data, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'"
+          : "";
+
+  const QString filtroVendedor = ui->comboBoxVendedores->currentText().isEmpty()
+                                     ? ""
+                                     : " AND idUsuario = " + ui->comboBoxVendedores->getCurrentValue().toString();
+
   const QString textoBusca = ui->lineEditBusca->text();
 
   const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
                                                               "%') OR (Vendedor LIKE '%" + textoBusca +
                                                               "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
 
-  model.setFilter(filtroLoja + filtroRadio + filtroCheck + filtroBusca);
+  model.setFilter(filtroLoja + filtroData + filtroVendedor + filtroRadio + filtroCheck + filtroBusca);
 
   ui->table->resizeColumnsToContents();
 }
@@ -102,16 +86,84 @@ void WidgetVenda::on_groupBoxStatus_toggled(const bool &enabled) {
   }
 }
 
-bool WidgetVenda::updateTables(QString &error) {
-  if (model.tableName().isEmpty()) {
-    setupTables();
-    montaFiltro();
+void WidgetVenda::setPermissions() {
+  if (UserSession::tipoUsuario() == "ADMINISTRADOR" or UserSession::tipoUsuario() == "DIRETOR") {
+    QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
+
+    while (query.next()) {
+      ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
+    }
+
+    ui->comboBoxLojas->setCurrentValue(UserSession::idLoja());
   }
 
+  if (UserSession::tipoUsuario() == "GERENTE LOJA") {
+    ui->groupBoxLojas->hide();
+
+    QSqlQuery query("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND idLoja = " +
+                    QString::number(UserSession::idLoja()));
+
+    ui->comboBoxVendedores->addItem("");
+
+    while (query.next()) {
+      ui->comboBoxVendedores->addItem(query.value("user").toString(), query.value("idUsuario"));
+    }
+  }
+
+  if (UserSession::tipoUsuario() == "VENDEDOR") {
+    QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
+
+    while (query.next()) {
+      ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
+    }
+
+    ui->radioButtonProprios->click();
+
+    ui->groupBoxVendedores->hide();
+  } else {
+    ui->radioButtonTodos->click();
+  }
+
+  ui->dateEdit->setDate(QDate::currentDate());
+}
+
+void WidgetVenda::makeConnections() {
+  connect(ui->checkBoxCancelado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxDevolucao, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmColeta, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmCompra, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmFaturamento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEmRecebimento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxEstoque, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxFinalizado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxIniciado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxPendente, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->comboBoxLojas, &ComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->comboBoxVendedores, &ComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->dateEdit, &QDateEdit::dateChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->groupBoxMes, &QGroupBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonProprios, &QRadioButton::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->radioButtonTodos, &QRadioButton::toggled, this, &WidgetVenda::montaFiltro);
+}
+
+bool WidgetVenda::updateTables() {
+  if (model.tableName().isEmpty()) {
+    setPermissions();
+    setupTables();
+    montaFiltro();
+    makeConnections();
+  }
+
+  // TODO: verify if this is still necessary
+  QString filter = model.filter();
+
   if (not model.select()) {
-    error = "Erro lendo tabela vendas: " + model.lastError().text();
+    emit errorSignal("Erro lendo tabela vendas: " + model.lastError().text());
     return false;
   }
+
+  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -127,6 +179,21 @@ void WidgetVenda::on_table_entered(const QModelIndex &) { ui->table->resizeColum
 
 void WidgetVenda::on_radioButtonProprios_toggled(bool checked) {
   if (UserSession::tipoUsuario() == "VENDEDOR") checked ? ui->groupBoxLojas->show() : ui->groupBoxLojas->hide();
+}
+
+void WidgetVenda::on_comboBoxLojas_currentIndexChanged(int) {
+  ui->comboBoxVendedores->clear();
+
+  QSqlQuery query2("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND tipo = 'VENDEDOR'" +
+                   (ui->comboBoxLojas->currentText().isEmpty()
+                        ? ""
+                        : " AND idLoja = " + ui->comboBoxLojas->getCurrentValue().toString()));
+
+  ui->comboBoxVendedores->addItem("");
+
+  while (query2.next()) {
+    ui->comboBoxVendedores->addItem(query2.value("user").toString(), query2.value("idUsuario"));
+  }
 }
 
 // NOTE: verificar como lidar com brinde/reposicao

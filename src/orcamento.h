@@ -2,6 +2,7 @@
 #define ORCAMENTO_H
 
 #include "registerdialog.h"
+#include "searchdialogproxy.h"
 
 namespace Ui {
 class Orcamento;
@@ -42,8 +43,9 @@ private slots:
   void on_pushButtonLimparSelecao_clicked();
   void on_pushButtonRemoverItem_clicked();
   void on_pushButtonReplicar_clicked();
-  void on_spinBoxCaixas_valueChanged(const int &caixas);
+  void on_spinBoxCaixas_valueChanged(const double &caixas);
   void on_tableProdutos_clicked(const QModelIndex &index);
+  void on_comboBoxLoja_currentTextChanged(const QString &);
 
 signals:
   void finished();
@@ -56,19 +58,21 @@ private:
   bool isBlockedTotalItem = false;
   bool isBlockedReais = false;
   bool isBlockedTotal = false;
-  double minimoFrete;
-  double porcFrete;
+  double minimoFrete = 0;
+  double porcFrete = 0;
+  SearchDialogProxy *proxy;
   QDataWidgetMapper mapperItem;
   SqlTableModel modelItem;
   // methods
   bool atualizaReplica();
+  bool cadastrar();
   bool generateId();
   bool verificaCadastroCliente();
   virtual bool newRegister() override;
   virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
-  virtual bool viewRegister(const QModelIndex &index) override;
+  virtual bool viewRegister() override;
   virtual void clearFields() override;
   virtual void registerMode() override;
   virtual void setupMapper() override;

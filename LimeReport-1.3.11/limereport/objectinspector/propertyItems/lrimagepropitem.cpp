@@ -30,42 +30,31 @@
 #include "lrimagepropitem.h"
 #include "editors/lrimageeditor.h"
 
-namespace{
-    LimeReport::ObjectPropItem * createImagePropItem(
-        QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly)
-    {
-        return new LimeReport::ImagePropItem(object, objects, name, displayName, data, parent, readonly);
-    }
-    bool registredImageProp = LimeReport::ObjectPropFactory::instance().registerCreator(LimeReport::APropIdent("QImage",""),QObject::tr("QImage"),createImagePropItem);
+namespace {
+LimeReport::ObjectPropItem *createImagePropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                                const QString &name, const QString &displayName, const QVariant &data,
+                                                LimeReport::ObjectPropItem *parent, bool readonly) {
+  return new LimeReport::ImagePropItem(object, objects, name, displayName, data, parent, readonly);
+}
+bool registredImageProp = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("QImage", ""), QObject::tr("QImage"), createImagePropItem);
 }
 
-namespace LimeReport{
+namespace LimeReport {
 
-QWidget* ImagePropItem::createProperyEditor(QWidget *parent) const
-{
-    return new ImageEditor(parent);
+QWidget *ImagePropItem::createProperyEditor(QWidget *parent) const { return new ImageEditor(parent); }
+
+QString ImagePropItem::displayValue() const { return (propertyValue().isNull()) ? "" : "Picture"; }
+
+void ImagePropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ImageEditor *editor = qobject_cast<ImageEditor *>(propertyEditor);
+  editor->setImage(propertyValue().value<QImage>());
 }
 
-QString ImagePropItem::displayValue() const
-{
-    return (propertyValue().isNull())?"":"Picture";
+void ImagePropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index) {
+  model->setData(index, qobject_cast<ImageEditor *>(propertyEditor)->image());
+  object()->setProperty(propertyName().toLatin1(), propertyValue());
 }
 
-void ImagePropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const
-{
-    ImageEditor *editor =qobject_cast<ImageEditor*>(propertyEditor);
-    editor->setImage(propertyValue().value<QImage>());
-}
-
-void ImagePropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index)
-{
-    model->setData(index,qobject_cast<ImageEditor*>(propertyEditor)->image());
-    object()->setProperty(propertyName().toLatin1(),propertyValue());
-}
-
-QIcon ImagePropItem::iconValue() const
-{
-    return QIcon(QPixmap::fromImage(propertyValue().value<QImage>()));
-}
-
+QIcon ImagePropItem::iconValue() const { return QIcon(QPixmap::fromImage(propertyValue().value<QImage>())); }
 }

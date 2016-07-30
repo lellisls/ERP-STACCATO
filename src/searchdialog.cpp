@@ -87,7 +87,7 @@ void SearchDialog::sendUpdateMessage() {
 
   if (selection.isEmpty()) return;
 
-  emit itemSelected(model.data(selection.first().row(), primaryKey));
+  emit itemSelected(model.data(selection.first().row(), primaryKey).toString());
 }
 
 void SearchDialog::show() {
@@ -183,7 +183,7 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
   sdCliente->setPrimaryKey("idCliente");
   sdCliente->setTextKeys({"nome_razao"});
 
-  sdCliente->hideColumns({"idCliente", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca",
+  sdCliente->hideColumns({"idCliente", "inscEstadual", "idEnderecoFaturamento", "idEnderecoCobranca", "credito",
                           "idEnderecoEntrega", "idUsuarioRel", "idCadastroRel", "idProfissionalRel", "incompleto",
                           "desativado"});
 
@@ -257,6 +257,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
                        "ncmEx",
                        "atualizarTabelaPreco",
                        "representacao",
+                       "multiplo",
                        "estoque_promocao",
                        "idProdutoRelacionado"});
 
@@ -271,6 +272,7 @@ SearchDialog *SearchDialog::produto(QWidget *parent) {
   sdProd->setHeaderData("un2", "Un.2");
   sdProd->setHeaderData("colecao", "Coleção");
   sdProd->setHeaderData("tipo", "Tipo");
+  sdProd->setHeaderData("minimo", "Mínimo");
   sdProd->setHeaderData("m2cx", "M/Cx.");
   sdProd->setHeaderData("pccx", "Pç./Cx.");
   sdProd->setHeaderData("kgcx", "Kg./Cx.");
@@ -312,6 +314,7 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
+  // TODO: pesquisar veiculos no lugar de transportadoras?
   SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "transportadora",
                                                     {"razaoSocial", "nomeFantasia"}, "desativado = FALSE", parent);
 
@@ -324,7 +327,6 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   sdTransportadora->setHeaderData("nomeFantasia", "Nome Fantasia");
   sdTransportadora->setHeaderData("cnpj", "CNPJ");
   sdTransportadora->setHeaderData("inscEstadual", "Insc. Est.");
-  sdTransportadora->setHeaderData("placaVeiculo", "Placa");
   sdTransportadora->setHeaderData("antt", "ANTT");
   sdTransportadora->setHeaderData("tel", "Tel.");
 
@@ -356,8 +358,9 @@ SearchDialog *SearchDialog::vendedor(QWidget *parent) {
 
   QString filtro = (idLoja == 1) ? "" : " AND idLoja = " + QString::number(idLoja);
 
-  SearchDialog *sdVendedor = new SearchDialog("Buscar Vendedor", "usuario", {"nome, tipo"},
-                                              "desativado = FALSE AND tipo = 'VENDEDOR'" + filtro, parent);
+  SearchDialog *sdVendedor =
+      new SearchDialog("Buscar Vendedor", "usuario", {"nome, tipo"},
+                       "desativado = FALSE AND (tipo = 'VENDEDOR' OR tipo = 'VENDEDOR ESPECIAL')" + filtro, parent);
 
   sdVendedor->setPrimaryKey("idUsuario");
   sdVendedor->setTextKeys({"nome"});
@@ -399,8 +402,9 @@ SearchDialog *SearchDialog::profissional(QWidget *parent) {
   sdProfissional->setPrimaryKey("idProfissional");
   sdProfissional->setTextKeys({"nome_razao"});
 
-  sdProfissional->hideColumns({"idProfissional", "inscEstadual", "contatoNome", "contatoCPF", "contatoApelido",
-                               "contatoRG", "banco", "agencia", "cc", "nomeBanco", "cpfBanco", "desativado"});
+  sdProfissional->hideColumns({"idLoja", "idUsuarioRel", "idProfissional", "inscEstadual", "contatoNome", "contatoCPF",
+                               "contatoApelido", "contatoRG", "banco", "agencia", "cc", "nomeBanco", "cpfBanco",
+                               "desativado", "comissao"});
 
   sdProfissional->setHeaderData("pfpj", "Tipo");
   sdProfissional->setHeaderData("nome_razao", "Profissional");
@@ -425,3 +429,5 @@ void SearchDialog::setRepresentacao(const QString &value) { representacao = valu
 void SearchDialog::on_radioButtonProdAtivos_toggled(const bool &) { on_lineEditBusca_textChanged(QString()); }
 
 void SearchDialog::on_radioButtonProdDesc_toggled(const bool &) { on_lineEditBusca_textChanged(QString()); }
+
+// TODO: optimize model to not load everything

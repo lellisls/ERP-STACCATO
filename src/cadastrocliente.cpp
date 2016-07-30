@@ -71,6 +71,23 @@ bool CadastroCliente::verifyFields() {
     return false;
   }
 
+  if (not isUpdate) {
+    QSqlQuery query;
+    query.prepare("SELECT cpf, cnpj FROM cliente WHERE cpf = :cpf OR cnpj = :cnpj");
+    query.bindValue(":cpf", ui->lineEditCPF->text());
+    query.bindValue(":cnpj", ui->lineEditCNPJ->text());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro verificando se CPF/CNPJ já cadastrado!");
+      return false;
+    }
+
+    if (query.first()) {
+      QMessageBox::critical(this, "Erro!", "CPF/CNPJ já cadastrado!");
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -160,8 +177,8 @@ void CadastroCliente::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroCliente::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) return false;
+bool CadastroCliente::viewRegister() {
+  if (not RegisterDialog::viewRegister()) return false;
 
   if (data("idCliente").toString().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "idCliente vazio!");
@@ -286,8 +303,8 @@ bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
   return true;
 }
 
-void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
-  if (not cadastrarEndereco(false)) {
+void CadastroCliente::on_pushButtonAdicionarEnd_clicked() { // TODO: rename to CadastrarEndereco
+  if (not cadastrarEndereco(false)) { // TODO: replace false with use of this.isUpdateEnd
     QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!");
     return;
   }
@@ -394,30 +411,9 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
 }
 
 bool CadastroCliente::save() {
-  if (not verifyFields(isUpdate)) return false;
+  if (not verifyFields()) return false;
 
   return RegisterAddressDialog::save();
-}
-
-bool CadastroCliente::verifyFields(const bool &isUpdate) {
-  if (not isUpdate) {
-    QSqlQuery query;
-    query.prepare("SELECT cpf, cnpj FROM cliente WHERE cpf = :cpf OR cnpj = :cnpj");
-    query.bindValue(":cpf", ui->lineEditCPF->text());
-    query.bindValue(":cnpj", ui->lineEditCNPJ->text());
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro verificando se CPF/CNPJ já cadastrado!");
-      return false;
-    }
-
-    if (query.first()) {
-      QMessageBox::critical(this, "Erro!", "CPF/CNPJ já cadastrado!");
-      return false;
-    }
-  }
-
-  return true;
 }
 
 void CadastroCliente::successMessage() {

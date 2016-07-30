@@ -30,38 +30,39 @@
 #ifndef LRITEMSBORDERSEDITORWIDGET_H
 #define LRITEMSBORDERSEDITORWIDGET_H
 
-#include <QToolBar>
-#include "lrreportdesignwidget.h"
 #include "lritemeditorwidget.h"
+#include "lrreportdesignwidget.h"
+#include <QToolBar>
 
-namespace LimeReport{
+namespace LimeReport {
 
-class ItemsBordersEditorWidget : public ItemEditorWidget
-{
-    Q_OBJECT
+class ItemsBordersEditorWidget : public ItemEditorWidget {
+  Q_OBJECT
 public:
-    explicit ItemsBordersEditorWidget(ReportDesignWidget* reportEditor, const QString &title, QWidget *parent = 0);
-    explicit ItemsBordersEditorWidget(ReportDesignWidget* reportEditor, QWidget *parent = 0);
+  explicit ItemsBordersEditorWidget(ReportDesignWidget *reportEditor, const QString &title, QWidget *parent = 0);
+  explicit ItemsBordersEditorWidget(ReportDesignWidget *reportEditor, QWidget *parent = 0);
 private slots:
-    void noBordesClicked();
-    void allBordesClicked();
-    void buttonClicked(bool);
+  void noBordesClicked();
+  void allBordesClicked();
+  void buttonClicked(bool);
+
 protected:
-    void setItemEvent(BaseDesignIntf *item);
-    void properyChangedEvent(const QString &property, const QVariant &oldValue, const QVariant &newValue);
+  void setItemEvent(BaseDesignIntf *item);
+  void properyChangedEvent(const QString &property, const QVariant &oldValue, const QVariant &newValue);
+
 private:
-    void initEditor();
-    void updateValues(BaseDesignIntf::BorderLines borders);
-    BaseDesignIntf::BorderLines createBorders();
-    QAction* m_noLines;
-    QAction* m_leftLine;
-    QAction* m_rightLine;
-    QAction* m_topLine;
-    QAction* m_bottomLine;
-    QAction* m_allLines;
-    bool m_changing;
+  void initEditor();
+  void updateValues(BaseDesignIntf::BorderLines borders);
+  BaseDesignIntf::BorderLines createBorders();
+  QAction *m_noLines;
+  QAction *m_leftLine;
+  QAction *m_rightLine;
+  QAction *m_topLine;
+  QAction *m_bottomLine;
+  QAction *m_allLines;
+  bool m_changing;
 };
 
-}//namespace LimeReport
+} // namespace LimeReport
 
 #endif // LRITEMSBORDERSEDITORWIDGET_H

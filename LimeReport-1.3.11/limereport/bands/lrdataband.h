@@ -30,62 +30,63 @@
 #ifndef LRDATABAND_H
 #define LRDATABAND_H
 
-#include "lrbanddesignintf.h"
-#include "lrbasedesignintf.h"
 #include <QObject>
 
-namespace LimeReport{
+#include "lrbanddesignintf.h"
+#include "lrbasedesignintf.h"
 
-class DataBand : public DataBandDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(bool keepSubdetailTogether READ tryToKeepTogether WRITE setTryToKeepTogether)
-    Q_PROPERTY(bool splittable READ isSplittable WRITE setSplittable )
-    Q_PROPERTY(bool keepFooterTogether READ keepFooterTogether WRITE setKeepFooterTogether)
-    Q_PROPERTY(bool sliceLastRow READ sliceLastRow WRITE setSliceLastRow)
-    Q_PROPERTY(int columnsCount READ columnsCount WRITE setColumnsCount)
-    Q_PROPERTY(BandColumnsLayoutType columnsFillDirection  READ columnsFillDirection WRITE setColumnsFillDirection)
-    Q_PROPERTY(bool startNewPage READ startNewPage WRITE setStartNewPage)
-    Q_PROPERTY(bool startFromNewPage READ startFromNewPage WRITE setStartFromNewPage)
+namespace LimeReport {
+
+class DataBand : public DataBandDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(bool keepSubdetailTogether READ tryToKeepTogether WRITE setTryToKeepTogether)
+  Q_PROPERTY(bool splittable READ isSplittable WRITE setSplittable)
+  Q_PROPERTY(bool keepFooterTogether READ keepFooterTogether WRITE setKeepFooterTogether)
+  Q_PROPERTY(bool sliceLastRow READ sliceLastRow WRITE setSliceLastRow)
+  Q_PROPERTY(int columnsCount READ columnsCount WRITE setColumnsCount)
+  Q_PROPERTY(BandColumnsLayoutType columnsFillDirection READ columnsFillDirection WRITE setColumnsFillDirection)
+  Q_PROPERTY(bool startNewPage READ startNewPage WRITE setStartNewPage)
+  Q_PROPERTY(bool startFromNewPage READ startFromNewPage WRITE setStartFromNewPage)
 public:
-    DataBand(QObject* owner = 0, QGraphicsItem* parent=0);
-    bool isUnique() const;
-    bool isData() const {return true;}
+  DataBand(QObject *owner = 0, QGraphicsItem *parent = 0);
+  bool isUnique() const;
+  bool isData() const { return true; }
+
 protected:
-    QColor bandColor() const;
+  QColor bandColor() const;
+
 private:
-    BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
+  BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
 };
 
-class DataHeaderBand : public BandDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(bool reprintOnEachPage READ reprintOnEachPage WRITE setReprintOnEachPage)
-    Q_PROPERTY(int columnsCount READ columnsCount WRITE setColumnsCount)
+class DataHeaderBand : public BandDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(bool reprintOnEachPage READ reprintOnEachPage WRITE setReprintOnEachPage)
+  Q_PROPERTY(int columnsCount READ columnsCount WRITE setColumnsCount)
 public:
-    DataHeaderBand(QObject* owner=0, QGraphicsItem* parent=0);
-    bool isUnique() const {return false;}
-    bool isHeader() const {return true;}
-    QColor bandColor() const {return QColor(Qt::darkGreen);}
+  DataHeaderBand(QObject *owner = 0, QGraphicsItem *parent = 0);
+  bool isUnique() const { return false; }
+  bool isHeader() const { return true; }
+  QColor bandColor() const { return QColor(Qt::darkGreen); }
+
 private:
-    BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0){
-        return new DataHeaderBand(owner,parent);
-    }
+  BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0) {
+    return new DataHeaderBand(owner, parent);
+  }
 };
 
-class DataFooterBand : public BandDesignIntf
-{
-    Q_OBJECT
+class DataFooterBand : public BandDesignIntf {
+  Q_OBJECT
 public:
-    DataFooterBand(QObject* owner=0, QGraphicsItem* parent=0);
-    bool isUnique() const {return false;}
-    bool isFooter() const {return true;}
-    QColor bandColor() const{return QColor(Qt::darkGreen);}
-private:
-    BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0){
-        return new DataFooterBand(owner,parent);
-    }
-};
+  DataFooterBand(QObject *owner = 0, QGraphicsItem *parent = 0);
+  bool isUnique() const { return false; }
+  bool isFooter() const { return true; }
+  QColor bandColor() const { return QColor(Qt::darkGreen); }
 
+private:
+  BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0) {
+    return new DataFooterBand(owner, parent);
+  }
+};
 }
 #endif // LRDATABAND_H

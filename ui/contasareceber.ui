@@ -48,42 +48,10 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QDateTimeEdit" name="dateTimeEdit"/>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="checkBox">
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="text">
-        <string>Pago</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>table</tabstop>
-  <tabstop>dateTimeEdit</tabstop>
-  <tabstop>checkBox</tabstop>
   <tabstop>pushButtonSalvar</tabstop>
  </tabstops>
  <resources/>

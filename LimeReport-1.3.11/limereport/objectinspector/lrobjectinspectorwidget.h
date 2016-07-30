@@ -30,35 +30,37 @@
 #ifndef LROBJECTINSPECTORWIDGET_H
 #define LROBJECTINSPECTORWIDGET_H
 
-#include <QTreeView>
 #include <QMap>
+#include <QTreeView>
+
 #include "lrobjectitemmodel.h"
 #include "lrpropertydelegate.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-class ObjectInspectorWidget : public QTreeView
-{
-    Q_OBJECT
+class ObjectInspectorWidget : public QTreeView {
+  Q_OBJECT
 public:
-    ObjectInspectorWidget(QWidget * parent=0);
-    ~ObjectInspectorWidget();
-    QColor getColor(const int index) const;
-    virtual void reset();
-    virtual void commitActiveEditorData();
+  explicit ObjectInspectorWidget(QWidget *parent = 0);
+  ~ObjectInspectorWidget();
+  QColor getColor(const int index) const;
+  virtual void reset();
+  virtual void commitActiveEditorData();
+
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void drawRow(QPainter *painter, const QStyleOptionViewItem &options, const QModelIndex &index) const;
-    void keyPressEvent(QKeyEvent *event);
-private:
-    void initColorMap();
-    LimeReport::ObjectPropItem* nodeFromIndex(QModelIndex index) const;
+  void mousePressEvent(QMouseEvent *event);
+  void drawRow(QPainter *painter, const QStyleOptionViewItem &options, const QModelIndex &index) const;
+  void keyPressEvent(QKeyEvent *event);
 
 private:
-    QVector<QColor> m_colors;
-    PropertyDelegate *m_propertyDelegate;
+  void initColorMap();
+  LimeReport::ObjectPropItem *nodeFromIndex(QModelIndex index) const;
+
+private:
+  QVector<QColor> m_colors;
+  PropertyDelegate *m_propertyDelegate;
 };
 
-} //namespace LimeReport
+} // namespace LimeReport
 
 #endif // LROBJECTINSPECTORWIDGET_H

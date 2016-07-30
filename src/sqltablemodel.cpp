@@ -1,3 +1,5 @@
+#include <QDate>
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -30,20 +32,28 @@ bool SqlTableModel::setData(const int &row, const int &column, const QVariant &v
 }
 
 bool SqlTableModel::setData(const int &row, const QString &column, const QVariant &value) {
+  QTime time;
   if (row == -1) {
     QMessageBox::critical(0, "Erro!", "Erro: linha -1 SqlTableModel");
     return false;
   }
+
+//  qDebug() << "time1D: " << time.restart();
 
   if (QSqlTableModel::fieldIndex(column) == -1) {
     QMessageBox::critical(0, "Erro!", "Chave " + column + " não encontrada na tabela " + QSqlTableModel::tableName());
     return false;
   }
 
+//  qDebug() << "time2D: " << time.restart();
+
   if (not QSqlTableModel::setData(QSqlTableModel::index(row, QSqlTableModel::fieldIndex(column)), value)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo " + column + " na tabela: " + QSqlTableModel::lastError().text());
+    QMessageBox::critical(0, "Erro!", "Erro inserindo " + column + " na tabela " + tableName() + ": " +
+                                          QSqlTableModel::lastError().text());
     return false;
   }
+
+//  qDebug() << "time3D: " << time.restart() << " - r:" << row << " c:" << column << " v:" << value;
 
   return true;
 }
@@ -53,8 +63,10 @@ bool SqlTableModel::setHeaderData(const QString &column, const QVariant &value) 
 }
 
 Qt::ItemFlags SqlTableModel::flags(const QModelIndex &index) const {
+  //  Qt::ItemFlags defaultFlags = QSqlRelationalTableModel::flags(index);
+  //  return defaultFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+
   return QSqlRelationalTableModel::flags(index);
-  //  | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 Qt::DropActions SqlTableModel::supportedDropActions() const { return Qt::MoveAction; }

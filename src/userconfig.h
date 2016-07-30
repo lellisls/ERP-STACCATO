@@ -22,6 +22,7 @@ private slots:
   void on_pushButtonSalvar_clicked();
   void on_pushButtonOrcamentosFolder_clicked();
   void on_pushButtonVendasFolder_clicked();
+  void on_pushButtonComprasFolder_clicked();
 
 private:
   Ui::UserConfig *ui;

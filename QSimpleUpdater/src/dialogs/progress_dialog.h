@@ -18,24 +18,24 @@
 #include <QDialog>
 
 namespace Ui {
-  class ProgressDialog;
+class ProgressDialog;
 }
 
 class ProgressDialog : public QDialog {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ProgressDialog(QWidget *parent = 0);
-    ~ProgressDialog();
+public:
+  explicit ProgressDialog(QWidget *parent = 0);
+  ~ProgressDialog();
 
-  signals:
-    void cancelClicked();
+signals:
+  void cancelClicked();
 
-  private slots:
-    void cancel(void);
+private slots:
+  void cancel(void);
 
-  private:
-    Ui::ProgressDialog *ui;
+private:
+  Ui::ProgressDialog *ui;
 };
 
 #endif // PROGRESS_DIALOG_H

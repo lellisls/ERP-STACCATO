@@ -31,18 +31,19 @@
 #define LRPAGEHEADER_H
 
 #include <QObject>
+
 #include "lrbanddesignintf.h"
 #include "lrbasedesignintf.h"
 
 namespace LimeReport {
-class PageHeader : public LimeReport::BandDesignIntf
-{
-    Q_OBJECT
+class PageHeader : public LimeReport::BandDesignIntf {
+  Q_OBJECT
 public:
-    PageHeader(QObject* owner = 0, QGraphicsItem* parent=0);
+  PageHeader(QObject *owner = 0, QGraphicsItem *parent = 0);
+
 protected:
-    virtual BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
-    QColor bandColor() const;
+  virtual BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
+  QColor bandColor() const;
 };
 }
 #endif // LRPAGEHEADER_H

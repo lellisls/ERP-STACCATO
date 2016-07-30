@@ -32,20 +32,18 @@
 
 #include <QTreeWidget>
 
-namespace LimeReport{
+namespace LimeReport {
 
-
-class DataBrowserTree : public QTreeWidget
-{
-    Q_OBJECT
+class DataBrowserTree : public QTreeWidget {
+  Q_OBJECT
 public:
-    enum NodeType{Connection,Table,Row,Category,Variable};
-    explicit DataBrowserTree(QWidget *parent = 0);
+  enum NodeType { Connection, Table, Row, Category, Variable };
+  explicit DataBrowserTree(QWidget *parent = 0);
+
 protected:
-    QMimeData* mimeData(const QList<QTreeWidgetItem *> items) const;
+  QMimeData *mimeData(const QList<QTreeWidgetItem *> items) const;
 
 public slots:
-
 };
 
 } // namespace LimeReport

@@ -28,76 +28,75 @@
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
 #include "lrdatasourcepropitem.h"
-#include "lrobjectpropitem.h"
-#include "lrbasedesignintf.h"
-#include "lrreportengine_p.h"
 #include "../editors/lrcomboboxeditor.h"
+#include "lrbasedesignintf.h"
+#include "lrobjectpropitem.h"
+#include "lrreportengine_p.h"
 #include <QComboBox>
 
-namespace{
-    LimeReport::ObjectPropItem * createDatasourcePropItem(
-        QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly)
-    {
-        return new LimeReport::DatasourcePropItem(object, objects, name, displayName, data, parent, readonly);
-    }
-
-    LimeReport::ObjectPropItem* createFieldPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly){
-        return new LimeReport::FieldPropItem(object, objects, name, displayName, data, parent, readonly);
-    }
-
-    bool registredDatasouceProp = LimeReport::ObjectPropFactory::instance().registerCreator(
-        LimeReport::APropIdent("datasource","LimeReport::DataBandDesignIntf"),QObject::tr("datasource"),createDatasourcePropItem
-    );
-    bool registredImageDatasouceProp = LimeReport::ObjectPropFactory::instance().registerCreator(
-        LimeReport::APropIdent("datasource","LimeReport::ImageItem"),QObject::tr("datasource"),createDatasourcePropItem
-    );
-    bool registredImageFieldProp = LimeReport::ObjectPropFactory::instance().registerCreator(
-        LimeReport::APropIdent("field","LimeReport::ImageItem"),QObject::tr("field"),createFieldPropItem
-    );
+namespace {
+LimeReport::ObjectPropItem *createDatasourcePropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                                     const QString &name, const QString &displayName,
+                                                     const QVariant &data, LimeReport::ObjectPropItem *parent,
+                                                     bool readonly) {
+  return new LimeReport::DatasourcePropItem(object, objects, name, displayName, data, parent, readonly);
 }
 
-QWidget* LimeReport::DatasourcePropItem::createProperyEditor(QWidget *parent) const{
-    ComboBoxEditor *editor = new ComboBoxEditor(parent,true);
-    editor->setEditable(true);
-    LimeReport::BaseDesignIntf *item=dynamic_cast<LimeReport::BaseDesignIntf*>(object());
-    if (item){
-       editor->addItems(item->reportEditor()->dataManager()->dataSourceNames());
-    }
-    return editor;
+LimeReport::ObjectPropItem *createFieldPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                                const QString &name, const QString &displayName, const QVariant &data,
+                                                LimeReport::ObjectPropItem *parent, bool readonly) {
+  return new LimeReport::FieldPropItem(object, objects, name, displayName, data, parent, readonly);
 }
 
-void LimeReport::DatasourcePropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const{
-    ComboBoxEditor *editor=qobject_cast<ComboBoxEditor *>(propertyEditor);
-    editor->setTextValue(propertyValue().toString());
+bool registredDatasouceProp = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("datasource", "LimeReport::DataBandDesignIntf"), QObject::tr("datasource"),
+    createDatasourcePropItem);
+bool registredImageDatasouceProp = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("datasource", "LimeReport::ImageItem"), QObject::tr("datasource"), createDatasourcePropItem);
+bool registredImageFieldProp = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("field", "LimeReport::ImageItem"), QObject::tr("field"), createFieldPropItem);
 }
 
-void LimeReport::DatasourcePropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index){
-    model->setData(index,qobject_cast<ComboBoxEditor*>(propertyEditor)->text());
-    object()->setProperty(propertyName().toLatin1(),propertyValue());
+QWidget *LimeReport::DatasourcePropItem::createProperyEditor(QWidget *parent) const {
+  ComboBoxEditor *editor = new ComboBoxEditor(parent, true);
+  editor->setEditable(true);
+  LimeReport::BaseDesignIntf *item = dynamic_cast<LimeReport::BaseDesignIntf *>(object());
+  if (item) {
+    editor->addItems(item->reportEditor()->dataManager()->dataSourceNames());
+  }
+  return editor;
 }
 
-
-QWidget *LimeReport::FieldPropItem::createProperyEditor(QWidget *parent) const
-{
-    ComboBoxEditor *editor = new ComboBoxEditor(parent);
-    editor->setEditable(true);
-    LimeReport::BaseDesignIntf *item=dynamic_cast<LimeReport::BaseDesignIntf*>(object());
-    int propertyIndex = object()->metaObject()->indexOfProperty("datasource");
-
-    if (item && propertyIndex>0){
-       editor->addItems(item->reportEditor()->dataManager()->fieldNames(object()->property("datasource").toString()));
-    }
-    return editor;
+void LimeReport::DatasourcePropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ComboBoxEditor *editor = qobject_cast<ComboBoxEditor *>(propertyEditor);
+  editor->setTextValue(propertyValue().toString());
 }
 
-void LimeReport::FieldPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const
-{
-    ComboBoxEditor *editor=qobject_cast<ComboBoxEditor *>(propertyEditor);
-    editor->setTextValue(propertyValue().toString());
+void LimeReport::DatasourcePropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model,
+                                                  const QModelIndex &index) {
+  model->setData(index, qobject_cast<ComboBoxEditor *>(propertyEditor)->text());
+  object()->setProperty(propertyName().toLatin1(), propertyValue());
 }
 
-void LimeReport::FieldPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index)
-{
-    model->setData(index,qobject_cast<ComboBoxEditor*>(propertyEditor)->text());
-    object()->setProperty(propertyName().toLatin1(),propertyValue());
+QWidget *LimeReport::FieldPropItem::createProperyEditor(QWidget *parent) const {
+  ComboBoxEditor *editor = new ComboBoxEditor(parent);
+  editor->setEditable(true);
+  LimeReport::BaseDesignIntf *item = dynamic_cast<LimeReport::BaseDesignIntf *>(object());
+  int propertyIndex = object()->metaObject()->indexOfProperty("datasource");
+
+  if (item and propertyIndex > 0) {
+    editor->addItems(item->reportEditor()->dataManager()->fieldNames(object()->property("datasource").toString()));
+  }
+  return editor;
+}
+
+void LimeReport::FieldPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ComboBoxEditor *editor = qobject_cast<ComboBoxEditor *>(propertyEditor);
+  editor->setTextValue(propertyValue().toString());
+}
+
+void LimeReport::FieldPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model,
+                                             const QModelIndex &index) {
+  model->setData(index, qobject_cast<ComboBoxEditor *>(propertyEditor)->text());
+  object()->setProperty(propertyName().toLatin1(), propertyValue());
 }

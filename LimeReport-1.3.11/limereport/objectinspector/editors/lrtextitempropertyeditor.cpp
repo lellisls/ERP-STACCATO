@@ -31,29 +31,17 @@
 #include "ui_ltextitempropertyeditor.h"
 #include <QCompleter>
 
-namespace LimeReport{
+namespace LimeReport {
 
-TextItemPropertyEditor::TextItemPropertyEditor(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::TextItemPropertyEditor)
-{
-    ui->setupUi(this);
-    ui->textEdit->setAcceptRichText(false);
+TextItemPropertyEditor::TextItemPropertyEditor(QWidget *parent) : QDialog(parent), ui(new Ui::TextItemPropertyEditor) {
+  ui->setupUi(this);
+  ui->textEdit->setAcceptRichText(false);
 }
 
-TextItemPropertyEditor::~TextItemPropertyEditor()
-{
-    delete ui;
-}
+TextItemPropertyEditor::~TextItemPropertyEditor() { delete ui; }
 
-void TextItemPropertyEditor::setText(const QString &value)
-{
-    ui->textEdit->setPlainText(value);
-}
+void TextItemPropertyEditor::setText(const QString &value) { ui->textEdit->setPlainText(value); }
 
-QString TextItemPropertyEditor::text()
-{
-    return ui->textEdit->toPlainText();
-}
+QString TextItemPropertyEditor::text() { return ui->textEdit->toPlainText(); }
 
-} //namespace LimeReport
+} // namespace LimeReport

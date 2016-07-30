@@ -15,14 +15,18 @@ class WidgetVenda : public QWidget {
 public:
   explicit WidgetVenda(QWidget *parent = 0);
   ~WidgetVenda();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void montaFiltro();
+  void on_comboBoxLojas_currentIndexChanged(int);
   void on_groupBoxStatus_toggled(const bool &enabled);
+  void on_radioButtonProprios_toggled(bool checked);
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
-  void on_radioButtonProprios_toggled(bool checked);
 
 private:
   // attributes
@@ -30,6 +34,8 @@ private:
   SqlTableModel model;
   // methods
   void setupTables();
+  void setPermissions();
+  void makeConnections();
 };
 
 #endif // WIDGETVENDA_H

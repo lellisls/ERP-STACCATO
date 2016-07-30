@@ -1,13 +1,5 @@
-#include <QDebug>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QStyleFactory>
-
-#include "ui_xml_viewer.h"
-#include "usersession.h"
 #include "xml.h"
+#include "ui_xml_viewer.h"
 #include "xml_viewer.h"
 
 XML_Viewer::XML_Viewer(QWidget *parent) : QDialog(parent), ui(new Ui::XML_Viewer) {
@@ -27,7 +19,8 @@ XML_Viewer::~XML_Viewer() { delete ui; }
 void XML_Viewer::exibirXML(const QByteArray &fileContent) {
   if (fileContent.isEmpty()) return;
 
-  XML xml(model, fileContent);
+  XML xml(fileContent);
+  xml.montarArvore(model);
 
   ui->treeView->expandAll();
 

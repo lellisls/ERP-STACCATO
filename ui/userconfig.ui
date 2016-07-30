@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>498</width>
-    <height>413</height>
+    <width>636</width>
+    <height>525</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>525</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Configurações do usuário</string>
@@ -56,33 +62,43 @@
       <item row="3" column="1">
        <widget class="QLineEdit" name="lineEditPortaSMTP"/>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_4">
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Servidor SMTP</string>
+         <string>Senha:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Porta</string>
+         <string>Servidor SMTP:</string>
         </property>
        </widget>
       </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>E-mail</string>
+         <string>E-mail:</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_7">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Senha</string>
+         <string>Porta:</string>
         </property>
        </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Cópia p/:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="lineEditEmailCopia"/>
       </item>
      </layout>
     </widget>
@@ -96,15 +112,15 @@
       <item row="5" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>XML</string>
+         <string>XML:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QLineEdit" name="lineEditPastaXmlACBr"/>
-      </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="lineEditPastaEntACBr"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="lineEditPastaXmlACBr"/>
       </item>
       <item row="3" column="1">
        <widget class="QLineEdit" name="lineEditPastaSaiACBr"/>
@@ -112,19 +128,26 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Entrada</string>
+         <string>Entrada:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Saída</string>
+         <string>Saída:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
        <widget class="QPushButton" name="pushButtonACBrEntrada">
+        <property name="text">
+         <string>Navegar...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QPushButton" name="pushButtonACBrXML">
         <property name="text">
          <string>Navegar...</string>
         </property>
@@ -137,12 +160,15 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="2">
-       <widget class="QPushButton" name="pushButtonACBrXML">
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>Navegar...</string>
+         <string>Loja:</string>
         </property>
        </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="ItemBox" name="itemBoxLoja"/>
       </item>
      </layout>
     </widget>
@@ -156,12 +182,15 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="lineEditOrcamentosFolder"/>
       </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="pushButtonOrcamentosFolder">
+      <item row="2" column="2">
+       <widget class="QPushButton" name="pushButtonVendasFolder">
         <property name="text">
          <string>Navegar...</string>
         </property>
        </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lineEditVendasFolder"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_8">
@@ -170,11 +199,8 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEditVendasFolder"/>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="pushButtonVendasFolder">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="pushButtonOrcamentosFolder">
         <property name="text">
          <string>Navegar...</string>
         </property>
@@ -184,6 +210,23 @@
        <widget class="QLabel" name="label_9">
         <property name="text">
          <string>Vendas:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelCompras">
+        <property name="text">
+         <string>Compras:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lineEditComprasFolder"/>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="pushButtonComprasFolder">
+        <property name="text">
+         <string>Navegar...</string>
         </property>
        </widget>
       </item>
@@ -199,6 +242,32 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ItemBox</class>
+   <extends>QLineEdit</extends>
+   <header>src/itembox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>lineEditPastaEntACBr</tabstop>
+  <tabstop>pushButtonACBrEntrada</tabstop>
+  <tabstop>lineEditPastaSaiACBr</tabstop>
+  <tabstop>pushButtonACBrSaida</tabstop>
+  <tabstop>lineEditPastaXmlACBr</tabstop>
+  <tabstop>pushButtonACBrXML</tabstop>
+  <tabstop>lineEditServidorSMTP</tabstop>
+  <tabstop>lineEditPortaSMTP</tabstop>
+  <tabstop>lineEditEmail</tabstop>
+  <tabstop>lineEditEmailSenha</tabstop>
+  <tabstop>lineEditEmailCopia</tabstop>
+  <tabstop>lineEditOrcamentosFolder</tabstop>
+  <tabstop>pushButtonOrcamentosFolder</tabstop>
+  <tabstop>lineEditVendasFolder</tabstop>
+  <tabstop>pushButtonVendasFolder</tabstop>
+  <tabstop>pushButtonAlterarDados</tabstop>
+  <tabstop>pushButtonSalvar</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

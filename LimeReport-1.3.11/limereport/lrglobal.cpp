@@ -27,14 +27,15 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
-#include <QString>
-#include <QDebug>
 #include "lrglobal.h"
+#include <QDebug>
+#include <QString>
 
-QString LimeReport::extractClassName(QString className)
-{
-    int startPos=className.lastIndexOf("::");
-    if(startPos==-1) startPos=0;
-    else startPos+=2;
-    return className.right(className.length()-startPos);
+QString LimeReport::extractClassName(QString className) {
+  int startPos = className.lastIndexOf("::");
+  if (startPos == -1)
+    startPos = 0;
+  else
+    startPos += 2;
+  return className.right(className.length() - startPos);
 }

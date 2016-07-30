@@ -6,11 +6,9 @@
 class SingleEditDelegate : public QStyledItemDelegate {
 
 public:
-  SingleEditDelegate(int column, QObject *parent = 0);
+  explicit SingleEditDelegate(QObject *parent = 0);
   virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-private:
-  int column;
+  virtual QString displayText(const QVariant &value, const QLocale &locale) const override;
 };
 
 #endif // SINGLEEDITDELEGATE_H

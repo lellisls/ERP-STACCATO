@@ -15,21 +15,11 @@ QWidget *CheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 }
 
 void CheckBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-  if (auto *cb = qobject_cast<QCheckBox *>(editor)) {
-    cb->setChecked(index.data(Qt::EditRole).toBool());
-    return;
-  }
-
-  QStyledItemDelegate::setEditorData(editor, index);
+  qobject_cast<QCheckBox *>(editor)->setChecked(index.data(Qt::EditRole).toBool());
 }
 
 void CheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-  if (auto *cb = qobject_cast<QCheckBox *>(editor)) {
-    model->setData(index, cb->isChecked(), Qt::EditRole);
-    return;
-  }
-
-  QStyledItemDelegate::setModelData(editor, model, index);
+  model->setData(index, qobject_cast<QCheckBox *>(editor)->isChecked(), Qt::EditRole);
 }
 
 void CheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,

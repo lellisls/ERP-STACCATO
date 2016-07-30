@@ -15,12 +15,16 @@ class WidgetCompraDevolucao : public QWidget {
 public:
   explicit WidgetCompraDevolucao(QWidget *parent = 0);
   ~WidgetCompraDevolucao();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_pushButtonRetornarEstoque_clicked();
   void on_radioButtonFiltroPendente_toggled(bool checked);
   void on_table_entered(const QModelIndex &);
+  void on_pushButtonDevolucaoFornecedor_clicked();
 
 private:
   Ui::WidgetCompraDevolucao *ui;

@@ -33,19 +33,18 @@
 
 namespace LimeReport {
 
-DataBrowserTree::DataBrowserTree(QWidget *parent) :
-    QTreeWidget(parent){}
+DataBrowserTree::DataBrowserTree(QWidget *parent) : QTreeWidget(parent) {}
 
-QMimeData *DataBrowserTree::mimeData(const QList<QTreeWidgetItem *> items) const
-{
-    QMimeData* result = QTreeWidget::mimeData(items);
-    if (items.at(0)->type()==Row){
-        result->setText("field:$D{"+items.at(0)->parent()->text(0)+"."+items.at(0)->data(0,Qt::DisplayRole).toString()+"}");
-    }
-    if (items.at(0)->type()==Variable){
-        result->setText("variable:$V{"+items.at(0)->text(0)+"}");
-    }
-    return result;
+QMimeData *DataBrowserTree::mimeData(const QList<QTreeWidgetItem *> items) const {
+  QMimeData *result = QTreeWidget::mimeData(items);
+  if (items.at(0)->type() == Row) {
+    result->setText("field:$D{" + items.at(0)->parent()->text(0) + "." +
+                    items.at(0)->data(0, Qt::DisplayRole).toString() + "}");
+  }
+  if (items.at(0)->type() == Variable) {
+    result->setText("variable:$V{" + items.at(0)->text(0) + "}");
+  }
+  return result;
 }
 
 } // namespace LimeReport

@@ -28,43 +28,35 @@
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
 #include "lrpageheader.h"
-#include "lrdesignelementsfactory.h"
 #include "lrbanddesignintf.h"
 #include "lrbasedesignintf.h"
-#include "lrpageitemdesignintf.h"
+#include "lrdesignelementsfactory.h"
 #include "lrglobal.h"
+#include "lrpageitemdesignintf.h"
 
-const QString xmlTag ="PageHeader";
+const QString xmlTag = "PageHeader";
 
-namespace{
+namespace {
 
-LimeReport::BaseDesignIntf * createBand(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::PageHeader(owner,parent);
+LimeReport::BaseDesignIntf *createBand(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::PageHeader(owner, parent);
 }
 
 bool registred = LimeReport::DesignElementsFactory::instance().registerCreator(
-        xmlTag,
-        LimeReport::ItemAttribs(QObject::tr("Page Header"),LimeReport::Const::bandTAG),
-        createBand
-    );
+    xmlTag, LimeReport::ItemAttribs(QObject::tr("Page Header"), LimeReport::Const::bandTAG), createBand);
 }
 
-namespace LimeReport{
+namespace LimeReport {
 
-PageHeader::PageHeader(QObject* owner, QGraphicsItem *parent)
-: BandDesignIntf(LimeReport::BandDesignIntf::PageHeader,xmlTag,owner,parent) {
-    setBandTypeText(tr("Page Header"));
-    setMarkerColor(bandColor());
+PageHeader::PageHeader(QObject *owner, QGraphicsItem *parent)
+    : BandDesignIntf(LimeReport::BandDesignIntf::PageHeader, xmlTag, owner, parent) {
+  setBandTypeText(tr("Page Header"));
+  setMarkerColor(bandColor());
 }
 
-BaseDesignIntf *PageHeader::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new PageHeader(owner,parent);
+BaseDesignIntf *PageHeader::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new PageHeader(owner, parent);
 }
 
-QColor PageHeader::bandColor() const
-{
-    return QColor(246,120,12);
-}
-
+QColor PageHeader::bandColor() const { return QColor(246, 120, 12); }
 }

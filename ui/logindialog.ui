@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>204</width>
-    <height>126</height>
+    <height>146</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,17 @@
    <locale language="Portuguese" country="Brazil"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="2" column="5">
-    <widget class="QPushButton" name="pushButtonLogin">
+   <item row="1" column="5">
+    <widget class="QLineEdit" name="lineEditPass">
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QLabel" name="labelPass">
      <property name="text">
-      <string>Login</string>
+      <string>Senha:</string>
      </property>
     </widget>
    </item>
@@ -44,13 +51,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="5">
-    <widget class="QLineEdit" name="lineEditPass">
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="4">
     <widget class="QLabel" name="labelUser">
      <property name="text">
@@ -58,10 +58,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="4">
-    <widget class="QLabel" name="labelPass">
+   <item row="3" column="5">
+    <widget class="QLineEdit" name="lineEditHostname">
      <property name="text">
-      <string>Senha:</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -71,15 +71,49 @@
    <item row="3" column="4">
     <widget class="QLabel" name="labelHostname">
      <property name="text">
-      <string>IP:</string>
+      <string>Loja:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="5">
-    <widget class="QLineEdit" name="lineEditHostname">
+   <item row="2" column="5">
+    <widget class="QPushButton" name="pushButtonLogin">
      <property name="text">
-      <string/>
+      <string>Login</string>
      </property>
+    </widget>
+   </item>
+   <item row="4" column="5">
+    <widget class="QComboBox" name="comboBoxLoja">
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Localhost</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Alphaville</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Gabriel</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Granja</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Acesso Externo</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>

@@ -33,28 +33,28 @@
 #include <QDialog>
 #include <QWidget>
 
-namespace LimeReport{
+namespace LimeReport {
 
 namespace Ui {
-    class TextItemPropertyEditor;
+class TextItemPropertyEditor;
 }
 
-class TextItemPropertyEditor : public QDialog
-{
-    Q_OBJECT
+class TextItemPropertyEditor : public QDialog {
+  Q_OBJECT
 public:
-    explicit TextItemPropertyEditor(QWidget *parent = 0);
-    ~TextItemPropertyEditor();
-    void setText(const QString &value);
-    QString text();
+  explicit TextItemPropertyEditor(QWidget *parent = 0);
+  ~TextItemPropertyEditor();
+  void setText(const QString &value);
+  QString text();
 public slots:
-    void pbSaveCliked(){ emit editingFinished();}
+  void pbSaveCliked() { emit editingFinished(); }
 signals:
-    void editingFinished();
+  void editingFinished();
+
 private:
-    Ui::TextItemPropertyEditor *ui;
+  Ui::TextItemPropertyEditor *ui;
 };
 
-} //namespace LimeReport
+} // namespace LimeReport
 
 #endif // ATEXTITEMPROPERTYEDITOR_H

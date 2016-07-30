@@ -24,117 +24,116 @@
 ****************************************************************************/
 #include "xlsxdocpropsapp_p.h"
 
-#include <QXmlStreamWriter>
-#include <QXmlStreamReader>
+#include <QBuffer>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
-#include <QDateTime>
 #include <QVariant>
-#include <QBuffer>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 namespace QXlsx {
 
-  DocPropsApp::DocPropsApp(CreateFlag flag) : AbstractOOXmlFile(flag) {}
+DocPropsApp::DocPropsApp(CreateFlag flag) : AbstractOOXmlFile(flag) {}
 
-  void DocPropsApp::addPartTitle(const QString &title) { m_titlesOfPartsList.append(title); }
+void DocPropsApp::addPartTitle(const QString &title) { m_titlesOfPartsList.append(title); }
 
-  void DocPropsApp::addHeadingPair(const QString &name, int value) { m_headingPairsList.append(qMakePair(name, value)); }
+void DocPropsApp::addHeadingPair(const QString &name, int value) { m_headingPairsList.append(qMakePair(name, value)); }
 
-  bool DocPropsApp::setProperty(const QString &name, const QString &value) {
-    static QStringList validKeys;
-    if (validKeys.isEmpty()) {
-      validKeys << QStringLiteral("manager") << QStringLiteral("company");
-    }
-
-    if (not validKeys.contains(name)) return false;
-
-    if (value.isEmpty())
-      m_properties.remove(name);
-    else
-      m_properties[name] = value;
-
-    return true;
+bool DocPropsApp::setProperty(const QString &name, const QString &value) {
+  static QStringList validKeys;
+  if (validKeys.isEmpty()) {
+    validKeys << QStringLiteral("manager") << QStringLiteral("company");
   }
 
-  QString DocPropsApp::property(const QString &name) const {
-    if (m_properties.contains(name)) return m_properties[name];
+  if (not validKeys.contains(name)) return false;
 
-    return QString();
+  if (value.isEmpty())
+    m_properties.remove(name);
+  else
+    m_properties[name] = value;
+
+  return true;
+}
+
+QString DocPropsApp::property(const QString &name) const {
+  if (m_properties.contains(name)) return m_properties[name];
+
+  return QString();
+}
+
+QStringList DocPropsApp::propertyNames() const { return m_properties.keys(); }
+
+void DocPropsApp::saveToXmlFile(QIODevice *device) const {
+  QXmlStreamWriter writer(device);
+  QString vt = QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
+
+  writer.writeStartDocument(QStringLiteral("1.0"), true);
+  writer.writeStartElement(QStringLiteral("Properties"));
+  writer.writeDefaultNamespace(
+      QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"));
+  writer.writeNamespace(vt, QStringLiteral("vt"));
+  writer.writeTextElement(QStringLiteral("Application"), QStringLiteral("Microsoft Excel"));
+  writer.writeTextElement(QStringLiteral("DocSecurity"), QStringLiteral("0"));
+  writer.writeTextElement(QStringLiteral("ScaleCrop"), QStringLiteral("false"));
+
+  writer.writeStartElement(QStringLiteral("HeadingPairs"));
+  writer.writeStartElement(vt, QStringLiteral("vector"));
+  writer.writeAttribute(QStringLiteral("size"), QString::number(m_headingPairsList.size() * 2));
+  writer.writeAttribute(QStringLiteral("baseType"), QStringLiteral("variant"));
+  for (auto const &pair : m_headingPairsList) {
+    writer.writeStartElement(vt, QStringLiteral("variant"));
+    writer.writeTextElement(vt, QStringLiteral("lpstr"), pair.first);
+    writer.writeEndElement(); // vt:variant
+    writer.writeStartElement(vt, QStringLiteral("variant"));
+    writer.writeTextElement(vt, QStringLiteral("i4"), QString::number(pair.second));
+    writer.writeEndElement(); // vt:variant
   }
+  writer.writeEndElement(); // vt:vector
+  writer.writeEndElement(); // HeadingPairs
 
-  QStringList DocPropsApp::propertyNames() const { return m_properties.keys(); }
+  writer.writeStartElement(QStringLiteral("TitlesOfParts"));
+  writer.writeStartElement(vt, QStringLiteral("vector"));
+  writer.writeAttribute(QStringLiteral("size"), QString::number(m_titlesOfPartsList.size()));
+  writer.writeAttribute(QStringLiteral("baseType"), QStringLiteral("lpstr"));
+  for (auto const &title : m_titlesOfPartsList) writer.writeTextElement(vt, QStringLiteral("lpstr"), title);
+  writer.writeEndElement(); // vt:vector
+  writer.writeEndElement(); // TitlesOfParts
 
-  void DocPropsApp::saveToXmlFile(QIODevice *device) const {
-    QXmlStreamWriter writer(device);
-    QString vt = QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
+  if (m_properties.contains(QStringLiteral("manager")))
+    writer.writeTextElement(QStringLiteral("Manager"), m_properties[QStringLiteral("manager")]);
+  // Not like "manager", "company" always exists for Excel generated file.
+  writer.writeTextElement(QStringLiteral("Company"), m_properties.contains(QStringLiteral("company"))
+                                                         ? m_properties[QStringLiteral("company")]
+                                                         : QString());
+  writer.writeTextElement(QStringLiteral("LinksUpToDate"), QStringLiteral("false"));
+  writer.writeTextElement(QStringLiteral("SharedDoc"), QStringLiteral("false"));
+  writer.writeTextElement(QStringLiteral("HyperlinksChanged"), QStringLiteral("false"));
+  writer.writeTextElement(QStringLiteral("AppVersion"), QStringLiteral("12.0000"));
 
-    writer.writeStartDocument(QStringLiteral("1.0"), true);
-    writer.writeStartElement(QStringLiteral("Properties"));
-    writer.writeDefaultNamespace(
-          QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"));
-    writer.writeNamespace(vt, QStringLiteral("vt"));
-    writer.writeTextElement(QStringLiteral("Application"), QStringLiteral("Microsoft Excel"));
-    writer.writeTextElement(QStringLiteral("DocSecurity"), QStringLiteral("0"));
-    writer.writeTextElement(QStringLiteral("ScaleCrop"), QStringLiteral("false"));
+  writer.writeEndElement(); // Properties
+  writer.writeEndDocument();
+}
 
-    writer.writeStartElement(QStringLiteral("HeadingPairs"));
-    writer.writeStartElement(vt, QStringLiteral("vector"));
-    writer.writeAttribute(QStringLiteral("size"), QString::number(m_headingPairsList.size() * 2));
-    writer.writeAttribute(QStringLiteral("baseType"), QStringLiteral("variant"));
-    for (auto const &pair : m_headingPairsList) {
-      writer.writeStartElement(vt, QStringLiteral("variant"));
-      writer.writeTextElement(vt, QStringLiteral("lpstr"), pair.first);
-      writer.writeEndElement(); // vt:variant
-      writer.writeStartElement(vt, QStringLiteral("variant"));
-      writer.writeTextElement(vt, QStringLiteral("i4"), QString::number(pair.second));
-      writer.writeEndElement(); // vt:variant
-    }
-    writer.writeEndElement(); // vt:vector
-    writer.writeEndElement(); // HeadingPairs
+bool DocPropsApp::loadFromXmlFile(QIODevice *device) {
+  QXmlStreamReader reader(device);
+  while (not reader.atEnd()) {
+    QXmlStreamReader::TokenType token = reader.readNext();
+    if (token == QXmlStreamReader::StartElement) {
+      if (reader.name() == QLatin1String("Properties")) continue;
 
-    writer.writeStartElement(QStringLiteral("TitlesOfParts"));
-    writer.writeStartElement(vt, QStringLiteral("vector"));
-    writer.writeAttribute(QStringLiteral("size"), QString::number(m_titlesOfPartsList.size()));
-    writer.writeAttribute(QStringLiteral("baseType"), QStringLiteral("lpstr"));
-    for (auto const &title : m_titlesOfPartsList)
-      writer.writeTextElement(vt, QStringLiteral("lpstr"), title);
-    writer.writeEndElement(); // vt:vector
-    writer.writeEndElement(); // TitlesOfParts
-
-    if (m_properties.contains(QStringLiteral("manager")))
-      writer.writeTextElement(QStringLiteral("Manager"), m_properties[QStringLiteral("manager")]);
-    // Not like "manager", "company" always exists for Excel generated file.
-    writer.writeTextElement(QStringLiteral("Company"), m_properties.contains(QStringLiteral("company"))
-                            ? m_properties[QStringLiteral("company")]
-                            : QString());
-    writer.writeTextElement(QStringLiteral("LinksUpToDate"), QStringLiteral("false"));
-    writer.writeTextElement(QStringLiteral("SharedDoc"), QStringLiteral("false"));
-    writer.writeTextElement(QStringLiteral("HyperlinksChanged"), QStringLiteral("false"));
-    writer.writeTextElement(QStringLiteral("AppVersion"), QStringLiteral("12.0000"));
-
-    writer.writeEndElement(); // Properties
-    writer.writeEndDocument();
-  }
-
-  bool DocPropsApp::loadFromXmlFile(QIODevice *device) {
-    QXmlStreamReader reader(device);
-    while (not reader.atEnd()) {
-      QXmlStreamReader::TokenType token = reader.readNext();
-      if (token == QXmlStreamReader::StartElement) {
-        if (reader.name() == QLatin1String("Properties")) continue;
-
-        if (reader.name() == QStringLiteral("Manager")) {
-          setProperty(QStringLiteral("manager"), reader.readElementText());
-        } else if (reader.name() == QStringLiteral("Company")) {
-          setProperty(QStringLiteral("company"), reader.readElementText());
-        }
-      }
-
-      if (reader.hasError()) {
-        qDebug("Error when read doc props app file.");
+      if (reader.name() == QStringLiteral("Manager")) {
+        setProperty(QStringLiteral("manager"), reader.readElementText());
+      } else if (reader.name() == QStringLiteral("Company")) {
+        setProperty(QStringLiteral("company"), reader.readElementText());
       }
     }
-    return true;
+
+    if (reader.hasError()) {
+      qDebug("Error when read doc props app file.");
+    }
   }
+  return true;
+}
 
 } // namespace

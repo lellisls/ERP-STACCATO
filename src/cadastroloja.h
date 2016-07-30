@@ -16,17 +16,23 @@ public:
 
 private slots:
   void on_checkBoxMostrarInativos_clicked(const bool &checked);
+  void on_checkBoxMostrarInativosConta_clicked(bool checked);
   void on_lineEditCEP_textChanged(const QString &cep);
   void on_lineEditCNPJ_textEdited(const QString &text);
+  void on_pushButtonAdicionarConta_clicked();
   void on_pushButtonAdicionarEnd_clicked();
   void on_pushButtonAtualizar_clicked();
+  void on_pushButtonAtualizarConta_clicked();
   void on_pushButtonAtualizarEnd_clicked();
   void on_pushButtonBuscar_clicked();
   void on_pushButtonCadastrar_clicked();
+  void on_pushButtonContaLimpar_clicked();
   void on_pushButtonEndLimpar_clicked();
   void on_pushButtonNovoCad_clicked();
   void on_pushButtonRemover_clicked();
+  void on_pushButtonRemoverConta_clicked();
   void on_pushButtonRemoverEnd_clicked();
+  void on_tableConta_clicked(const QModelIndex &index);
   void on_tableEndereco_clicked(const QModelIndex &index);
   void on_tableEndereco_entered(const QModelIndex &);
 
@@ -34,9 +40,15 @@ private:
   // attributes
   Ui::CadastroLoja *ui;
   SqlTableModel modelAlcadas;
+  SqlTableModel modelConta;
+  QDataWidgetMapper mapperConta;
   // methods
+  bool cadastrar();
+  bool cadastrarConta(const bool &isUpdate);
   bool cadastrarEndereco(const bool &isUpdate);
-  bool viewRegister(const QModelIndex &index) override;
+  bool viewRegister() override;
+  virtual bool newRegister() override;
+  virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
   virtual void clearFields() override;
@@ -44,7 +56,9 @@ private:
   virtual void setupMapper() override;
   virtual void successMessage() override;
   virtual void updateMode() override;
+  void clearConta();
   void clearEndereco();
+  void novaConta();
   void novoEndereco();
   void setupTables();
   void setupUi();

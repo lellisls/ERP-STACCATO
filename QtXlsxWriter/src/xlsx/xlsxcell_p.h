@@ -36,31 +36,32 @@
 // We mean it.
 //
 
-#include "xlsxglobal.h"
-#include "xlsxcell.h"
-#include "xlsxcellrange.h"
-#include "xlsxrichstring.h"
-#include "xlsxcellformula.h"
 #include <QList>
 #include <QSharedPointer>
+
+#include "xlsxcell.h"
+#include "xlsxcellformula.h"
+#include "xlsxcellrange.h"
+#include "xlsxglobal.h"
+#include "xlsxrichstring.h"
 
 QT_BEGIN_NAMESPACE_XLSX
 
 class CellPrivate {
-    Q_DECLARE_PUBLIC(Cell)
-  public:
-    CellPrivate(Cell *p);
-    CellPrivate(const CellPrivate *const cp);
+  Q_DECLARE_PUBLIC(Cell)
+public:
+  explicit CellPrivate(Cell *p);
+  explicit CellPrivate(const CellPrivate *const cp);
 
-    QVariant value;
-    CellFormula formula;
-    Cell::CellType cellType;
-    Format format;
+  QVariant value;
+  CellFormula formula;
+  Cell::CellType cellType;
+  Format format;
 
-    RichString richString;
+  RichString richString;
 
-    Worksheet *parent;
-    Cell *q_ptr;
+  Worksheet *parent;
+  Cell *q_ptr;
 };
 
 QT_END_NAMESPACE_XLSX

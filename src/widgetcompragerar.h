@@ -15,13 +15,15 @@ class WidgetCompraGerar : public QWidget {
 public:
   explicit WidgetCompraGerar(QWidget *parent = 0);
   ~WidgetCompraGerar();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
-  void fixPersistente();
+  void calcularPreco();
   void on_checkBoxMarcarTodos_clicked(const bool &checked);
   void on_pushButtonGerarCompra_clicked();
-  void on_pushButtonTeste_clicked();
   void on_tableForn_activated(const QModelIndex &index);
   void on_tableProdutos_entered(const QModelIndex &);
 
@@ -30,9 +32,11 @@ private:
   Ui::WidgetCompraGerar *ui;
   SqlTableModel modelProdutos;
   SqlTableModel modelForn;
+  int oc;
   // methods
   void setupTables();
-  bool gerarExcel(QList<int> lista, QString &anexo);
+  bool gerarExcel(QList<int> &lista, QString &anexo);
+  bool gerarCompra();
 };
 
 #endif // WIDGETCOMPRAGERAR_H

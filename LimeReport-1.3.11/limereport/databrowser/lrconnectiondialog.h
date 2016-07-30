@@ -31,38 +31,41 @@
 #define LRCONNECTIONDIALOG_H
 
 #include <QDialog>
+
 #include "lrdatadesignintf.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
 namespace Ui {
-    class ConnectionDialog;
+class ConnectionDialog;
 }
 
-class ConnectionDialog : public QDialog
-{
-    Q_OBJECT
+class ConnectionDialog : public QDialog {
+  Q_OBJECT
 public:
-    explicit ConnectionDialog(LimeReport::IConnectionController* conControl, LimeReport::ConnectionDesc* connectionDesc=0, QWidget *parent = 0);
-    ~ConnectionDialog();
+  explicit ConnectionDialog(LimeReport::IConnectionController *conControl,
+                            LimeReport::ConnectionDesc *connectionDesc = 0, QWidget *parent = 0);
+  ~ConnectionDialog();
+
 protected:
-    void showEvent(QShowEvent *);
-    void init();
-    void checkFieldsFill();
-    bool checkConnection();
-    LimeReport::ConnectionDesc* uiToConnection(LimeReport::ConnectionDesc *conDesc = 0);
-    void connectionToUI();
+  void showEvent(QShowEvent *);
+  void init();
+  void checkFieldsFill();
+  bool checkConnection();
+  LimeReport::ConnectionDesc *uiToConnection(LimeReport::ConnectionDesc *conDesc = 0);
+  void connectionToUI();
 signals:
-    void conectionRegistred(LimeReport::ConnectionDesc* connectionDesc);
+  void conectionRegistred(LimeReport::ConnectionDesc *connectionDesc);
 private slots:
-    void slotAccept();
-    void slotCheckConnection();
-    void on_toolButton_clicked();
+  void slotAccept();
+  void slotCheckConnection();
+  void on_toolButton_clicked();
+
 private:
-    Ui::ConnectionDialog *ui;
-    LimeReport::ConnectionDesc* m_connection;
-    bool m_changeMode;
-    LimeReport::IConnectionController* m_controller;
+  Ui::ConnectionDialog *ui;
+  LimeReport::ConnectionDesc *m_connection;
+  bool m_changeMode;
+  LimeReport::IConnectionController *m_controller;
 };
 
 } // namespace LimeReport

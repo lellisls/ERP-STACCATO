@@ -24,29 +24,29 @@
 ****************************************************************************/
 
 #include "xlsxdocument.h"
-#include "xlsxdocument_p.h"
-#include "xlsxworkbook.h"
-#include "xlsxworksheet.h"
+#include "xlsxchart.h"
 #include "xlsxcontenttypes_p.h"
-#include "xlsxrelationships_p.h"
-#include "xlsxstyles_p.h"
-#include "xlsxtheme_p.h"
 #include "xlsxdocpropsapp_p.h"
 #include "xlsxdocpropscore_p.h"
-#include "xlsxsharedstrings_p.h"
-#include "xlsxutility_p.h"
-#include "xlsxworkbook_p.h"
+#include "xlsxdocument_p.h"
 #include "xlsxdrawing_p.h"
 #include "xlsxmediafile_p.h"
-#include "xlsxchart.h"
+#include "xlsxrelationships_p.h"
+#include "xlsxsharedstrings_p.h"
+#include "xlsxstyles_p.h"
+#include "xlsxtheme_p.h"
+#include "xlsxutility_p.h"
+#include "xlsxworkbook.h"
+#include "xlsxworkbook_p.h"
+#include "xlsxworksheet.h"
 #include "xlsxzipreader_p.h"
 #include "xlsxzipwriter_p.h"
 
-#include <QFile>
-#include <QPointF>
 #include <QBuffer>
 #include <QDir>
+#include <QFile>
 #include <QMessageBox>
+#include <QPointF>
 
 QT_BEGIN_NAMESPACE_XLSX
 
@@ -118,8 +118,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device) {
 
     DocPropsCore props(DocPropsCore::F_LoadFromExists);
     props.loadFromXmlData(zipReader.fileData(docPropsCore_Name));
-    for (auto const &name : props.propertyNames())
-      q->setDocumentProperty(name, props.property(name));
+    for (auto const &name : props.propertyNames()) q->setDocumentProperty(name, props.property(name));
   }
 
   // load app property
@@ -131,8 +130,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device) {
 
     DocPropsApp props(DocPropsApp::F_LoadFromExists);
     props.loadFromXmlData(zipReader.fileData(docPropsApp_Name));
-    for (auto const &name : props.propertyNames())
-      q->setDocumentProperty(name, props.property(name));
+    for (auto const &name : props.propertyNames()) q->setDocumentProperty(name, props.property(name));
   }
 
   // load workbook now, Get the workbook file path from the root rels file

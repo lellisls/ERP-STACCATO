@@ -15,7 +15,10 @@ class WidgetLogistica : public QWidget {
 public:
   explicit WidgetLogistica(QWidget *parent = 0);
   ~WidgetLogistica();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_tableForn_activated(const QModelIndex &index);

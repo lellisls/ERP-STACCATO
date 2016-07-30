@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1274</width>
-    <height>430</height>
+    <width>1176</width>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,197 +36,57 @@
        <string>Nova transportadora</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="3" column="0">
-        <widget class="TableView" name="tableEndereco">
-         <property name="mouseTracking">
-          <bool>true</bool>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QAbstractScrollArea::AdjustToContents</enum>
-         </property>
-         <property name="editTriggers">
-          <set>QAbstractItemView::NoEditTriggers</set>
-         </property>
-         <property name="tabKeyNavigation">
-          <bool>false</bool>
-         </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="selectionMode">
-          <enum>QAbstractItemView::SingleSelection</enum>
-         </property>
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-         <attribute name="horizontalHeaderStretchLastSection">
-          <bool>false</bool>
-         </attribute>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_7">
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBoxVeiculo">
          <property name="title">
-          <string>Info. Transportadora</string>
+          <string>Veículo</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_38">
-            <property name="text">
-             <string>Razão Social</string>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditCarga">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>Telefone</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="label_54">
+           <widget class="QLabel" name="labelCarga">
             <property name="text">
-             <string>Nome Fantasia</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_39">
-            <property name="text">
-             <string>CNPJ</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="label_53">
-            <property name="text">
-             <string>Insc. Estadual</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="5">
-           <widget class="QLabel" name="label_57">
-            <property name="text">
-             <string>Telefone</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="7">
-           <widget class="QLabel" name="label_55">
-            <property name="text">
-             <string>Cód. ANTT</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="8">
-           <widget class="QLabel" name="label_56">
-            <property name="text">
-             <string>Placa do veículo</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLineEdit" name="lineEditRazaoSocial">
-            <property name="minimumSize">
-             <size>
-              <width>120</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="accessibleName">
-             <string>Razão Social</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);
-color: rgb(0, 0, 0);</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEditNomeFantasia">
-            <property name="minimumSize">
-             <size>
-              <width>120</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="accessibleName">
-             <string>Nome Fantasia</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);
-color: rgb(0, 0, 0);</string>
+             <string>Carga (KG)</string>
             </property>
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QLineEdit" name="lineEditCNPJ">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>135</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="accessibleName">
-             <string>CNPJ</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);
-color: rgb(0, 0, 0);</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3" colspan="2">
-           <widget class="QLineEdit" name="lineEditInscEstadual">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>135</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="accessibleName">
-             <string>Insc. Estadual</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 127);
-color: rgb(0, 0, 0);</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="7">
-           <widget class="QLineEdit" name="lineEditANTT">
-            <property name="minimumSize">
-             <size>
-              <width>120</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="accessibleName">
-             <string>Código ANTT</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="8">
            <widget class="QLineEdit" name="lineEditPlaca">
             <property name="minimumSize">
              <size>
-              <width>120</width>
+              <width>35</width>
               <height>0</height>
              </size>
             </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="accessibleName">
-             <string>Placa do veículo</string>
+             <string>UF</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="5">
-           <widget class="LineEditTel" name="lineEditTel">
+          <item row="1" column="0">
+           <widget class="QLineEdit" name="lineEditModelo">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -239,68 +99,27 @@ color: rgb(0, 0, 0);</string>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 127);
 color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelCarga_2">
+            <property name="text">
+             <string>Modelo</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="labelUF_2">
+            <property name="text">
+             <string>Placa do veículo</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="3" column="1">
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QPushButton" name="pushButtonAdicionarEnd">
-           <property name="text">
-            <string>Adicionar End.</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonAtualizarEnd">
-           <property name="text">
-            <string>Atualizar End.</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonEndLimpar">
-           <property name="text">
-            <string>Limpar seleção</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonRemoverEnd">
-           <property name="text">
-            <string>Remover end.</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBoxMostrarInativos">
-           <property name="text">
-            <string>Mostrar Inativos</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0" colspan="2">
+       <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBoxEndereco">
          <property name="title">
           <string>Endereço</string>
@@ -309,7 +128,7 @@ color: rgb(0, 0, 0);</string>
           <item row="0" column="0">
            <widget class="QLabel" name="labelDescricao">
             <property name="text">
-             <string>Descricao</string>
+             <string>Descrição</string>
             </property>
            </widget>
           </item>
@@ -517,6 +336,333 @@ color: rgb(0, 0, 0);</string>
          </layout>
         </widget>
        </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="title">
+          <string>Info. Transportadora</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_53">
+            <property name="text">
+             <string>Insc. Estadual</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_39">
+            <property name="text">
+             <string>CNPJ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_54">
+            <property name="text">
+             <string>Nome Fantasia</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_38">
+            <property name="text">
+             <string>Razão Social</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditNomeFantasia">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>Nome Fantasia</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QLabel" name="label_57">
+            <property name="text">
+             <string>Telefone</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_55">
+            <property name="text">
+             <string>Cód. ANTT</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLineEdit" name="lineEditRazaoSocial">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>Razão Social</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLineEdit" name="lineEditCNPJ">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>135</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>CNPJ</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3" colspan="2">
+           <widget class="QLineEdit" name="lineEditInscEstadual">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>135</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>Insc. Estadual</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="8">
+           <widget class="QLineEdit" name="lineEditANTT">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>Código ANTT</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="LineEditTel" name="lineEditTel">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="accessibleName">
+             <string>Telefone</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 127);
+color: rgb(0, 0, 0);</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="TableView" name="tableEndereco">
+         <property name="mouseTracking">
+          <bool>true</bool>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::AdjustToContents</enum>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="tabKeyNavigation">
+          <bool>false</bool>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QPushButton" name="pushButtonAdicionarEnd">
+           <property name="text">
+            <string>Adicionar End.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonAtualizarEnd">
+           <property name="text">
+            <string>Atualizar End.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonEndLimpar">
+           <property name="text">
+            <string>Limpar seleção</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonRemoverEnd">
+           <property name="text">
+            <string>Remover End.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBoxMostrarInativos">
+           <property name="text">
+            <string>Mostrar Inativos</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="1">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QPushButton" name="pushButtonAdicionarVeiculo">
+           <property name="text">
+            <string>Adicionar Veíc.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonAtualizarVeiculo">
+           <property name="text">
+            <string>Atualizar Veíc.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonVeiculoLimpar">
+           <property name="text">
+            <string>Limpar seleção</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonRemoverVeiculo">
+           <property name="text">
+            <string>Remover Veíc.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBoxMostrarInativosVeiculo">
+           <property name="text">
+            <string>Mostrar Inativos</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="TableView" name="tableVeiculo">
+         <property name="mouseTracking">
+          <bool>true</bool>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::AdjustToContents</enum>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="tabKeyNavigation">
+          <bool>false</bool>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -619,7 +765,15 @@ color: rgb(0, 0, 0);</string>
   <tabstop>lineEditInscEstadual</tabstop>
   <tabstop>lineEditTel</tabstop>
   <tabstop>lineEditANTT</tabstop>
+  <tabstop>lineEditModelo</tabstop>
+  <tabstop>lineEditCarga</tabstop>
   <tabstop>lineEditPlaca</tabstop>
+  <tabstop>tableVeiculo</tabstop>
+  <tabstop>pushButtonAdicionarVeiculo</tabstop>
+  <tabstop>pushButtonAtualizarVeiculo</tabstop>
+  <tabstop>pushButtonVeiculoLimpar</tabstop>
+  <tabstop>pushButtonRemoverVeiculo</tabstop>
+  <tabstop>checkBoxMostrarInativosVeiculo</tabstop>
   <tabstop>comboBoxTipoEnd</tabstop>
   <tabstop>lineEditCEP</tabstop>
   <tabstop>lineEditLogradouro</tabstop>

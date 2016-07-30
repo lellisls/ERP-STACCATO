@@ -12,7 +12,7 @@ class RegisterDialog : public QDialog {
 
 public:
   explicit RegisterDialog(const QString &table, const QString &primaryKey, QWidget *parent);
-  virtual bool viewRegister(const QModelIndex &index);
+  virtual bool viewRegister();
 
 public slots:
   virtual bool viewRegisterById(const QVariant &id);
@@ -32,10 +32,12 @@ protected:
   int row = -1;
   int rowEnd = -1;
   QDataWidgetMapper mapper;
+  QString primaryId;
   QString primaryKey;
   QStringList textKeys;
   SqlTableModel model;
   // methods
+  virtual bool cadastrar();
   bool confirmationMessage();
   bool setData(const QString &key, const QVariant value);
   bool update();

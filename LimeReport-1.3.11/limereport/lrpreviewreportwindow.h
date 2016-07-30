@@ -30,16 +30,16 @@
 #ifndef LRPREVIEWREPORTWINDOW_H
 #define LRPREVIEWREPORTWINDOW_H
 
-#include <QMainWindow>
-#include <QDomComment>
-#include <QSpinBox>
 #include <QComboBox>
+#include <QDomComment>
+#include <QMainWindow>
+#include <QSpinBox>
 
 #include "lrpagedesignintf.h"
+#include "lrpreviewreportwidget.h"
 #include "lrreportrender.h"
 #include "serializators/lrstorageintf.h"
 #include "serializators/lrxmlreader.h"
-#include "lrpreviewreportwidget.h"
 
 namespace LimeReport {
 
@@ -47,61 +47,62 @@ namespace Ui {
 class PreviewReportWindow;
 }
 
-class PreviewReportWindow : public QMainWindow
-{
-    Q_OBJECT   
+class PreviewReportWindow : public QMainWindow {
+  Q_OBJECT
 public:
-    explicit PreviewReportWindow(ReportEnginePrivate *report, QWidget *parent = 0, QSettings* settings=0, Qt::WindowFlags flags=0);
-    ~PreviewReportWindow();
-    void setReportReader(ItemsReaderIntf::Ptr reader);
-    void setPages(ReportPages pages);
-    void exec();
-    void initPreview(int pagesCount);
-    void setSettings(QSettings* value);
-    void setErrorMessages(const QStringList& value);
-    QSettings* settings();
+  explicit PreviewReportWindow(ReportEnginePrivate *report, QWidget *parent = 0, QSettings *settings = 0,
+                               Qt::WindowFlags flags = 0);
+  ~PreviewReportWindow();
+  void setReportReader(ItemsReaderIntf::Ptr reader);
+  void setPages(ReportPages pages);
+  void exec();
+  void initPreview(int pagesCount);
+  void setSettings(QSettings *value);
+  void setErrorMessages(const QStringList &value);
+  QSettings *settings();
+
 protected:
-    void writeSetting();
-    void restoreSetting();
-    void closeEvent(QCloseEvent *);
-    void resizeEvent(QResizeEvent *e);
-    void moveEvent(QMoveEvent *e);
+  void writeSetting();
+  void restoreSetting();
+  void closeEvent(QCloseEvent *);
+  void resizeEvent(QResizeEvent *e);
+  void moveEvent(QMoveEvent *e);
 public slots:
-    void slotPrint();
-    void slotPriorPage();
-    void slotNextPage();
-    void slotZoomIn();
-    void slotZoomOut();
-    void slotPageNavigatorChanged(int value);
-    void slotShowErrors();
-    void on_actionSaveToFile_triggered();
-    void slotFirstPage();
-    void slotLastPage();
-    void slotPrintToPDF();
-    void slotPageChanged(int pageIndex);
+  void slotPrint();
+  void slotPriorPage();
+  void slotNextPage();
+  void slotZoomIn();
+  void slotZoomOut();
+  void slotPageNavigatorChanged(int value);
+  void slotShowErrors();
+  void on_actionSaveToFile_triggered();
+  void slotFirstPage();
+  void slotLastPage();
+  void slotPrintToPDF();
+  void slotPageChanged(int pageIndex);
 private slots:
-    void on_actionFit_page_width_triggered();
-    void on_actionFit_page_triggered();
-    void on_actionOne_to_one_triggered();
-    void scaleComboboxChanged(QString text);
-    void slotScalePercentChanged(int percent);    
-    void on_actionShowMessages_toggled(bool value);
+  void on_actionFit_page_width_triggered();
+  void on_actionFit_page_triggered();
+  void on_actionOne_to_one_triggered();
+  void scaleComboboxChanged(QString text);
+  void slotScalePercentChanged(int percent);
+  void on_actionShowMessages_toggled(bool value);
 
 private:
-    ItemsReaderIntf* reader();
-    void initPercentCombobox();
-    //bool pageIsVisible(PageItemDesignIntf::Ptr page);
-    //QRectF calcPageShift(PageItemDesignIntf::Ptr page);
+  ItemsReaderIntf *reader();
+  void initPercentCombobox();
+  // bool pageIsVisible(PageItemDesignIntf::Ptr page);
+  // QRectF calcPageShift(PageItemDesignIntf::Ptr page);
 private:
-    Ui::PreviewReportWindow *ui;
-    QSpinBox* m_pagesNavigator;
-    QSharedPointer<ItemsReaderIntf> m_reader;
-    QEventLoop m_eventLoop;
-    bool m_changingPage;
-    QSettings* m_settings;
-    bool m_ownedSettings;
-    PreviewReportWidget* m_previewReportWidget;
-    QComboBox* m_scalePercent;
+  Ui::PreviewReportWindow *ui;
+  QSpinBox *m_pagesNavigator;
+  QSharedPointer<ItemsReaderIntf> m_reader;
+  QEventLoop m_eventLoop;
+  bool m_changingPage;
+  QSettings *m_settings;
+  bool m_ownedSettings;
+  PreviewReportWidget *m_previewReportWidget;
+  QComboBox *m_scalePercent;
 };
-} //namespace LimeReport
+} // namespace LimeReport
 #endif // LRPREVIEWREPORTWINDOW_H

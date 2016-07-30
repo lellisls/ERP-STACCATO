@@ -31,36 +31,29 @@
 #include "lrdesignelementsfactory.h"
 #include "lrglobal.h"
 
-const QString xmlTag ="PageFooter";
+const QString xmlTag = "PageFooter";
 
-namespace{
-LimeReport::BaseDesignIntf * createBand(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::PageFooter(owner,parent);
+namespace {
+LimeReport::BaseDesignIntf *createBand(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::PageFooter(owner, parent);
 }
 
 bool registred = LimeReport::DesignElementsFactory::instance().registerCreator(
-        xmlTag,
-        LimeReport::ItemAttribs(QObject::tr("Page Footer"),LimeReport::Const::bandTAG),
-        createBand
-    );
+    xmlTag, LimeReport::ItemAttribs(QObject::tr("Page Footer"), LimeReport::Const::bandTAG), createBand);
 }
 
-namespace LimeReport{
+namespace LimeReport {
 
 PageFooter::PageFooter(QObject *owner, QGraphicsItem *parent)
-    : BandDesignIntf(LimeReport::BandDesignIntf::PageFooter,xmlTag,owner,parent) {
-        setBandTypeText( tr("Page Footer") );
-        setMarkerColor(bandColor());
+    : BandDesignIntf(LimeReport::BandDesignIntf::PageFooter, xmlTag, owner, parent) {
+  setBandTypeText(tr("Page Footer"));
+  setMarkerColor(bandColor());
 }
 
-BaseDesignIntf *PageFooter::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new PageFooter(owner,parent);
+BaseDesignIntf *PageFooter::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new PageFooter(owner, parent);
 }
 
-QColor PageFooter::bandColor() const
-{
-   return QColor(246,120,12);
-}
+QColor PageFooter::bandColor() const { return QColor(246, 120, 12); }
 
 } // namespace LimeReport

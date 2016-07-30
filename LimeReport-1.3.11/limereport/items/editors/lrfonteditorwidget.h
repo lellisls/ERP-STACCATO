@@ -30,44 +30,46 @@
 #ifndef LRFONTEDITORWIDGET_H
 #define LRFONTEDITORWIDGET_H
 
-#include <QToolBar>
+#include <QAction>
 #include <QFontComboBox>
 #include <QStringListModel>
-#include <QAction>
+#include <QToolBar>
 
-#include "lrreportdesignwidget.h"
 #include "lritemeditorwidget.h"
+#include "lrreportdesignwidget.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-class FontEditorWidget :public ItemEditorWidget{
-    Q_OBJECT
+class FontEditorWidget : public ItemEditorWidget {
+  Q_OBJECT
 public:
-    explicit FontEditorWidget(ReportDesignWidget* reportEditor, const QString &title, QWidget *parent = 0);
-    explicit FontEditorWidget(ReportDesignWidget* reportEditor, QWidget *parent = 0);
+  explicit FontEditorWidget(ReportDesignWidget *reportEditor, const QString &title, QWidget *parent = 0);
+  explicit FontEditorWidget(ReportDesignWidget *reportEditor, QWidget *parent = 0);
+
 protected:
-    void setItemEvent(BaseDesignIntf *item);
+  void setItemEvent(BaseDesignIntf *item);
 private slots:
-    void slotFontChanged(const QFont& font);
-    void slotFontSizeChanged(const QString& value);
-    void slotFontAttribsChanged(bool);
-    void slotPropertyChanged(const QString& objectName, const QString& property, const QVariant &oldValue, const QVariant &newValue);
+  void slotFontChanged(const QFont &font);
+  void slotFontSizeChanged(const QString &value);
+  void slotFontAttribsChanged(bool);
+  void slotPropertyChanged(const QString &objectName, const QString &property, const QVariant &oldValue,
+                           const QVariant &newValue);
+
 private:
-    void initEditor();
-    void updateValues(const QFont &font);
+  void initEditor();
+  void updateValues(const QFont &font);
 
-    QFontComboBox* m_fontNameEditor;
-    QComboBox* m_fontSizeEditor;
-    QStringListModel m_fontSizeModel;
+  QFontComboBox *m_fontNameEditor;
+  QComboBox *m_fontSizeEditor;
+  QStringListModel m_fontSizeModel;
 
-    QAction* m_fontBold;
-    QAction* m_fontItalic;
-    QAction* m_fontUnderline;
+  QAction *m_fontBold;
+  QAction *m_fontItalic;
+  QAction *m_fontUnderline;
 
-    bool m_ignoreSlots;
-
+  bool m_ignoreSlots;
 };
 
-} //namespace LimeReport
+} // namespace LimeReport
 
 #endif // LRFONTEDITORWIDGET_H

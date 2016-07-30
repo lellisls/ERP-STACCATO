@@ -30,19 +30,13 @@
 #include "lraboutdialog.h"
 #include "ui_lraboutdialog.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-AboutDialog::AboutDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AboutDialog)
-{
-    ui->setupUi(this);
-    ui->lblVersion->setText(QString("Version %1").arg(LIMEREPORT_VERSION_STR));
+AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui(new Ui::AboutDialog) {
+  ui->setupUi(this);
+  ui->lblVersion->setText(QString("Version %1").arg(LIMEREPORT_VERSION_STR));
 }
 
-AboutDialog::~AboutDialog()
-{
-    delete ui;
-}
+AboutDialog::~AboutDialog() { delete ui; }
 
-} //namespace LimeReport
+} // namespace LimeReport

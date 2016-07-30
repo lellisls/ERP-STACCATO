@@ -32,7 +32,7 @@
 QT_BEGIN_NAMESPACE_XLSX
 
 CellFormulaPrivate::CellFormulaPrivate(const QString &formula_, const CellRange &ref_, CellFormula::FormulaType type_)
-  : formula(formula_), type(type_), reference(ref_), ca(false), si(0) {
+    : formula(formula_), type(type_), reference(ref_), ca(false), si(0) {
   // Remove the formula '=' sign if exists
   if (formula.startsWith(QLatin1String("=")))
     formula.remove(0, 1);
@@ -41,8 +41,8 @@ CellFormulaPrivate::CellFormulaPrivate(const QString &formula_, const CellRange 
 }
 
 CellFormulaPrivate::CellFormulaPrivate(const CellFormulaPrivate &other)
-  : QSharedData(other), formula(other.formula), type(other.type), reference(other.reference), ca(other.ca),
-    si(other.si) {}
+    : QSharedData(other), formula(other.formula), type(other.type), reference(other.reference), ca(other.ca),
+      si(other.si) {}
 
 CellFormulaPrivate::~CellFormulaPrivate() {}
 
@@ -72,19 +72,19 @@ CellFormula::CellFormula() {
  *  Creates a new formula with the given \a formula and \a type.
  */
 CellFormula::CellFormula(const char *formula, FormulaType type)
-  : d(new CellFormulaPrivate(QString::fromLatin1(formula), CellRange(), type)) {}
+    : d(new CellFormulaPrivate(QString::fromLatin1(formula), CellRange(), type)) {}
 
 /*!
  *  Creates a new formula with the given \a formula and \a type.
  */
 CellFormula::CellFormula(const QString &formula, FormulaType type)
-  : d(new CellFormulaPrivate(formula, CellRange(), type)) {}
+    : d(new CellFormulaPrivate(formula, CellRange(), type)) {}
 
 /*!
  *  Creates a new formula with the given \a formula, \a ref and \a type.
  */
 CellFormula::CellFormula(const QString &formula, const CellRange &ref, FormulaType type)
-  : d(new CellFormulaPrivate(formula, ref, type)) {}
+    : d(new CellFormulaPrivate(formula, ref, type)) {}
 
 /*!
    Creates a new formula with the same attributes as the \a other formula.
@@ -138,14 +138,14 @@ bool CellFormula::saveToXml(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("f"));
   QString t;
   switch (d->type) {
-    case CellFormula::ArrayType:
-      t = QStringLiteral("array");
-      break;
-    case CellFormula::SharedType:
-      t = QStringLiteral("shared");
-      break;
-    default:
-      break;
+  case CellFormula::ArrayType:
+    t = QStringLiteral("array");
+    break;
+  case CellFormula::SharedType:
+    t = QStringLiteral("shared");
+    break;
+  default:
+    break;
   }
   if (not t.isEmpty()) writer.writeAttribute(QStringLiteral("t"), t);
   if (d->reference.isValid()) writer.writeAttribute(QStringLiteral("ref"), d->reference.toString());

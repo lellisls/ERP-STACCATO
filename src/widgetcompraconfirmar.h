@@ -15,7 +15,10 @@ class WidgetCompraConfirmar : public QWidget {
 public:
   explicit WidgetCompraConfirmar(QWidget *parent = 0);
   ~WidgetCompraConfirmar();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_pushButtonConfirmarCompra_clicked();
@@ -27,6 +30,7 @@ private:
   SqlTableModel model;
   // methods
   void setupTables();
+  bool confirmarCompra();
 };
 
 #endif // WIDGETCOMPRACONFIRMAR_H

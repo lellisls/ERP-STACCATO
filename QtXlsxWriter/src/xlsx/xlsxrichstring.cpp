@@ -23,8 +23,8 @@
 **
 ****************************************************************************/
 #include "xlsxrichstring.h"
-#include "xlsxrichstring_p.h"
 #include "xlsxformat_p.h"
+#include "xlsxrichstring_p.h"
 #include <QDebug>
 #include <QTextDocument>
 #include <QTextFragment>
@@ -34,8 +34,8 @@ QT_BEGIN_NAMESPACE_XLSX
 RichStringPrivate::RichStringPrivate() : _dirty(true) {}
 
 RichStringPrivate::RichStringPrivate(const RichStringPrivate &other)
-  : QSharedData(other), fragmentTexts(other.fragmentTexts), fragmentFormats(other.fragmentFormats),
-    _idKey(other.idKey()), _dirty(other._dirty) {}
+    : QSharedData(other), fragmentTexts(other.fragmentTexts), fragmentFormats(other.fragmentFormats),
+      _idKey(other.idKey()), _dirty(other._dirty) {}
 
 RichStringPrivate::~RichStringPrivate() {}
 
@@ -130,7 +130,7 @@ void RichString::setHtml(const QString &text) {
   doc.setHtml(text);
   QTextBlock block = doc.firstBlock();
   QTextBlock::iterator it;
-  for (it = block.begin(); not (it.atEnd()); ++it) {
+  for (it = block.begin(); not(it.atEnd()); ++it) {
     QTextFragment textFragment = it.fragment();
     if (textFragment.isValid()) {
       Format fmt;

@@ -3,17 +3,15 @@
 
 #include <QSqlQuery>
 
+#include "lrreportengine.h"
 #include "sqltablemodel.h"
 
-class Impressao : public QObject {
-  Q_OBJECT
+class Impressao {
 
 public:
   Impressao(QString id, QWidget *parent = 0);
+  Impressao(const Impressao &) = delete;
   void print();
-
-private slots:
-  void setValue(const int &recNo, const QString &paramName, QVariant &paramValue, const int &reportPage);
 
 private:
   // attributes
@@ -25,14 +23,13 @@ private:
   QSqlQuery queryLoja;
   QSqlQuery queryLojaEnd;
   QSqlQuery query;
-  QSqlQuery queryProduto;
   QSqlQuery queryProfissional;
   QSqlQuery queryVendedor;
   QWidget *parent;
-  SqlTableModel model;
   SqlTableModel modelItem;
+  LimeReport::ReportEngine *report;
   // methods
-  void setQuerys();
+  bool setQuerys();
   void verificaTipo();
 };
 

@@ -28,234 +28,202 @@
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
 #include "lrimageitem.h"
+#include "lrdatasourcemanager.h"
 #include "lrdesignelementsfactory.h"
 #include "lrglobal.h"
-#include "lrdatasourcemanager.h"
 
-namespace{
+namespace {
 
 const QString xmlTag = "ImageItem";
 
-LimeReport::BaseDesignIntf * createImageItem(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::ImageItem(owner,parent);
+LimeReport::BaseDesignIntf *createImageItem(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::ImageItem(owner, parent);
 }
 bool registred = LimeReport::DesignElementsFactory::instance().registerCreator(
-                     xmlTag, LimeReport::ItemAttribs(QObject::tr("Image Item"),"Item"), createImageItem
-                 );
+    xmlTag, LimeReport::ItemAttribs(QObject::tr("Image Item"), "Item"), createImageItem);
 }
 
-namespace LimeReport{
+namespace LimeReport {
 
-ImageItem::ImageItem(QObject* owner,QGraphicsItem* parent)
-    :ItemDesignIntf(xmlTag,owner,parent),m_autoSize(false), m_scale(true), m_keepAspectRatio(true), m_center(true){}
-
-BaseDesignIntf *ImageItem::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new ImageItem(owner,parent);
+ImageItem::ImageItem(QObject *owner, QGraphicsItem *parent)
+    : ItemDesignIntf(xmlTag, owner, parent), m_autoSize(false), m_scale(true), m_keepAspectRatio(true), m_center(true) {
 }
 
-void ImageItem::updateItemSize(DataSourceManager* dataManager, RenderPass pass, int maxHeight)
-{
-   if (!m_datasource.isEmpty() && !m_field.isEmpty() && m_picture.isNull()){
-       IDataSource* ds = dataManager->dataSource(m_datasource);
-       if (ds) {
-          QVariant data = ds->data(m_field);
-          if (data.isValid()){
-              if (data.type()==QVariant::Image){
-                m_picture =  data.value<QImage>();
-              } else
-                m_picture.loadFromData(data.toByteArray());
-          }
-       }
-   }
-   if (m_autoSize){
-       setWidth(m_picture.width());
-       setHeight(m_picture.height());
-   }
-   BaseDesignIntf::updateItemSize(dataManager, pass, maxHeight);
+BaseDesignIntf *ImageItem::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new ImageItem(owner, parent);
 }
 
-bool ImageItem::isNeedUpdateSize(RenderPass) const
-{
-    return m_picture.isNull() || m_autoSize;
+void ImageItem::updateItemSize(DataSourceManager *dataManager, RenderPass pass, int maxHeight) {
+  if (!m_datasource.isEmpty() and !m_field.isEmpty() and m_picture.isNull()) {
+    IDataSource *ds = dataManager->dataSource(m_datasource);
+    if (ds) {
+      QVariant data = ds->data(m_field);
+      if (data.isValid()) {
+        if (data.type() == QVariant::Image) {
+          m_picture = data.value<QImage>();
+        } else
+          m_picture.loadFromData(data.toByteArray());
+      }
+    }
+  }
+  if (m_autoSize) {
+    setWidth(m_picture.width());
+    setHeight(m_picture.height());
+  }
+  BaseDesignIntf::updateItemSize(dataManager, pass, maxHeight);
 }
 
-qreal ImageItem::minHeight() const{
-    if (!m_picture.isNull() && autoSize())
-    {
-        return m_picture.height();
+bool ImageItem::isNeedUpdateSize(RenderPass) const { return m_picture.isNull() or m_autoSize; }
+
+qreal ImageItem::minHeight() const {
+  if (!m_picture.isNull() and autoSize()) {
+    return m_picture.height();
+  } else {
+    return 0;
+  }
+}
+
+bool ImageItem::center() const { return m_center; }
+
+void ImageItem::setCenter(bool center) {
+  if (m_center != center) {
+    m_center = center;
+    update();
+    notify("center", !center, center);
+  }
+}
+
+bool ImageItem::keepAspectRatio() const { return m_keepAspectRatio; }
+
+void ImageItem::setKeepAspectRatio(bool keepAspectRatio) {
+  if (m_keepAspectRatio != keepAspectRatio) {
+    m_keepAspectRatio = keepAspectRatio;
+    update();
+    notify("keepAspectRatio", !keepAspectRatio, keepAspectRatio);
+  }
+}
+
+bool ImageItem::scale() const { return m_scale; }
+
+void ImageItem::setScale(bool scale) {
+  if (m_scale != scale) {
+    m_scale = scale;
+    update();
+    notify("scale", !scale, scale);
+  }
+}
+bool ImageItem::autoSize() const { return m_autoSize; }
+
+void ImageItem::setAutoSize(bool autoSize) {
+  if (m_autoSize != autoSize) {
+    m_autoSize = autoSize;
+    if (m_autoSize and !m_picture.isNull()) {
+      setWidth(image().width());
+      setHeight(image().height());
+      setPosibleResizeDirectionFlags(Fixed);
     } else {
-        return 0;
+      setPosibleResizeDirectionFlags(AllDirections);
     }
+    update();
+    notify("autoSize", !autoSize, autoSize);
+  }
 }
 
-bool ImageItem::center() const
-{
-    return m_center;
+QString ImageItem::field() const { return m_field; }
+
+void ImageItem::setField(const QString &field) {
+  if (m_field != field) {
+    QString oldValue = m_field;
+    m_field = field;
+    update();
+    notify("field", oldValue, field);
+  }
 }
 
-void ImageItem::setCenter(bool center)
-{
-    if (m_center != center){
-        m_center = center;
-        update();
-        notify("center",!center,center);
-    }
+QString ImageItem::datasource() const { return m_datasource; }
+
+void ImageItem::setDatasource(const QString &datasource) {
+  if (m_datasource != datasource) {
+    QString oldValue = m_datasource;
+    m_datasource = datasource;
+    update();
+    notify("datasource", oldValue, datasource);
+  }
 }
 
-bool ImageItem::keepAspectRatio() const
-{
-    return m_keepAspectRatio;
-}
+void ImageItem::paint(QPainter *ppainter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+  ppainter->save();
+  if (isSelected())
+    ppainter->setOpacity(Const::SELECTION_OPACITY);
+  else
+    ppainter->setOpacity(qreal(opacity()) / 100);
 
-void ImageItem::setKeepAspectRatio(bool keepAspectRatio)
-{
-    if (m_keepAspectRatio != keepAspectRatio){
-        m_keepAspectRatio = keepAspectRatio;
-        update();
-        notify("keepAspectRatio",!keepAspectRatio,keepAspectRatio);
-    }
-}
+  QPointF point = rect().topLeft();
+  QImage img;
 
-bool ImageItem::scale() const
-{
-    return m_scale;
-}
+  if (m_scale and !image().isNull()) {
+    img = image().scaled(rect().width(), rect().height(),
+                         keepAspectRatio() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+  } else {
+    img = image();
+  }
 
-void ImageItem::setScale(bool scale)
-{
-    if (m_scale != scale){
-        m_scale = scale;
-        update();
-        notify("scale",!scale,scale);
-    }
-}
-bool ImageItem::autoSize() const
-{
-    return m_autoSize;
-}
+  qreal shiftHeight = rect().height() - img.height();
+  qreal shiftWidth = rect().width() - img.width();
 
-void ImageItem::setAutoSize(bool autoSize)
-{
-    if (m_autoSize != autoSize){
-        m_autoSize = autoSize;
-        if (m_autoSize && !m_picture.isNull()){
-            setWidth(image().width());
-            setHeight(image().height());
-            setPosibleResizeDirectionFlags(Fixed);
-        } else {
-            setPosibleResizeDirectionFlags(AllDirections);
-        }
-        update();
-        notify("autoSize",!autoSize,autoSize);
-    }
-}
+  if (m_center) {
+    if (shiftHeight < 0 or shiftWidth < 0) {
+      qreal cutX = 0;
+      qreal cutY = 0;
+      qreal cutWidth = img.width();
+      qreal cutHeigth = img.height();
 
-QString ImageItem::field() const
-{
-    return m_field;
-}
+      if (shiftWidth > 0) {
+        point.setX(point.x() + shiftWidth / 2);
+      } else {
+        cutX = fabs(shiftWidth / 2);
+        cutWidth += shiftWidth;
+      }
 
-void ImageItem::setField(const QString &field)
-{
-    if (m_field != field){
-        QString oldValue = m_field;
-        m_field = field;
-        update();
-        notify("field",oldValue,field);
-    }
-}
+      if (shiftHeight > 0) {
+        point.setY(point.x() + shiftHeight / 2);
+      } else {
+        cutY = fabs(shiftHeight / 2);
+        cutHeigth += shiftHeight;
+      }
 
-QString ImageItem::datasource() const
-{
-    return m_datasource;
-}
-
-void ImageItem::setDatasource(const QString &datasource)
-{
-    if (m_datasource != datasource){
-        QString oldValue = m_datasource;
-        m_datasource = datasource;
-        update();
-        notify("datasource",oldValue,datasource);
-    }
-}
-
-
-void ImageItem::paint(QPainter *ppainter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    ppainter->save();
-    if (isSelected()) ppainter->setOpacity(Const::SELECTION_OPACITY);
-    else ppainter->setOpacity(qreal(opacity())/100);
-
-    QPointF point = rect().topLeft();
-    QImage img;
-
-    if (m_scale && !image().isNull()){
-        img = image().scaled(rect().width(), rect().height(), keepAspectRatio() ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+      img = img.copy(cutX, cutY, cutWidth, cutHeigth);
     } else {
-        img = image();
+      point.setX(point.x() + shiftWidth / 2);
+      point.setY(point.y() + shiftHeight / 2);
     }
+  }
 
-    qreal shiftHeight = rect().height() - img.height();
-    qreal shiftWidth = rect().width() - img.width();
-
-    if (m_center){
-        if (shiftHeight<0 || shiftWidth<0){
-            qreal cutX = 0;
-            qreal cutY = 0;
-            qreal cutWidth = img.width();
-            qreal cutHeigth = img.height();
-
-            if (shiftWidth > 0){
-                point.setX(point.x()+shiftWidth/2);
-            } else {
-                cutX = fabs(shiftWidth/2);
-                cutWidth += shiftWidth;
-            }
-
-            if (shiftHeight > 0){
-                point.setY(point.x()+shiftHeight/2);
-            } else {
-                cutY = fabs(shiftHeight/2);
-                cutHeigth += shiftHeight;
-            }
-
-            img = img.copy(cutX,cutY,cutWidth,cutHeigth);
-        } else {
-            point.setX(point.x()+shiftWidth/2);
-            point.setY(point.y()+shiftHeight/2);
-        }
-    }
-
-    if (img.isNull() && itemMode()==DesignMode){
-        QString text;
-        ppainter->setFont(transformToSceneFont(QFont("Arial",10)));
-        if (!datasource().isEmpty() && !field().isEmpty())
-            text = datasource()+"."+field();
-        else text = tr("Image");
-        ppainter->drawText(rect().adjusted(4,4,-4,-4), Qt::AlignCenter, text );
-    } else {
-        ppainter->drawImage(point,img);
-    }
-    ItemDesignIntf::paint(ppainter,option,widget);
-    ppainter->restore();
+  if (img.isNull() and itemMode() == DesignMode) {
+    QString text;
+    ppainter->setFont(transformToSceneFont(QFont("Arial", 10)));
+    if (!datasource().isEmpty() and !field().isEmpty())
+      text = datasource() + "." + field();
+    else
+      text = tr("Image");
+    ppainter->drawText(rect().adjusted(4, 4, -4, -4), Qt::AlignCenter, text);
+  } else {
+    ppainter->drawImage(point, img);
+  }
+  ItemDesignIntf::paint(ppainter, option, widget);
+  ppainter->restore();
 }
 
-void ImageItem::setImage(QImage value)
-{
-    if (m_picture!=value){
-        QImage oldValue = m_picture;
-        m_picture=value;
-        if (m_autoSize){
-            setWidth(m_picture.width());
-            setHeight(m_picture.height());
-        }
-        update();
-        notify("image",oldValue,value);
+void ImageItem::setImage(QImage value) {
+  if (m_picture != value) {
+    QImage oldValue = m_picture;
+    m_picture = value;
+    if (m_autoSize) {
+      setWidth(m_picture.width());
+      setHeight(m_picture.height());
     }
+    update();
+    notify("image", oldValue, value);
+  }
 }
-
-
-
 }

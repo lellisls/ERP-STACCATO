@@ -27,8 +27,8 @@
 #include "xlsxformat.h"
 #include "xlsxformat_p.h"
 #include "xlsxutility_p.h"
-#include "xlsxworksheet.h"
 #include "xlsxworkbook.h"
+#include "xlsxworksheet.h"
 #include <QDateTime>
 
 QT_BEGIN_NAMESPACE_XLSX
@@ -36,8 +36,8 @@ QT_BEGIN_NAMESPACE_XLSX
 CellPrivate::CellPrivate(Cell *p) : q_ptr(p) {}
 
 CellPrivate::CellPrivate(const CellPrivate *const cp)
-  : value(cp->value), formula(cp->formula), cellType(cp->cellType), format(cp->format), richString(cp->richString),
-    parent(cp->parent) {}
+    : value(cp->value), formula(cp->formula), cellType(cp->cellType), format(cp->format), richString(cp->richString),
+      parent(cp->parent) {}
 
 /*!
   \class Cell
@@ -61,7 +61,7 @@ CellPrivate::CellPrivate(const CellPrivate *const cp)
  * Created by Worksheet only.
  */
 Cell::Cell(const QVariant &data, CellType type, const Format &format, Worksheet *parent)
-  : d_ptr(new CellPrivate(this)) {
+    : d_ptr(new CellPrivate(this)) {
   d_ptr->value = data;
   d_ptr->cellType = type;
   d_ptr->format = format;

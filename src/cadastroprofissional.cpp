@@ -39,6 +39,8 @@ void CadastroProfissional::setupTables() {
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idProfissional"));
   ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("created"));
+  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("lastUpdated"));
 }
 
 void CadastroProfissional::setupUi() {
@@ -102,8 +104,8 @@ void CadastroProfissional::updateMode() {
   ui->pushButtonRemover->show();
 }
 
-bool CadastroProfissional::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) return false;
+bool CadastroProfissional::viewRegister() {
+  if (not RegisterDialog::viewRegister()) return false;
 
   modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() + " AND desativado = FALSE");
 
@@ -351,3 +353,5 @@ void CadastroProfissional::successMessage() {
 void CadastroProfissional::on_tableEndereco_entered(const QModelIndex &) {
   ui->tableEndereco->resizeColumnsToContents();
 }
+
+// TODO: colocar comissao e qual loja esta associado

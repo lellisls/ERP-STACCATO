@@ -32,13 +32,11 @@
 #include <QObject>
 namespace LimeReport {
 
-class SerializatorIntf
-{
+class SerializatorIntf {
 public:
-    virtual QVariant loadValue()=0;
-    virtual void save(const QVariant& value,QString name)=0;
-    virtual ~SerializatorIntf(){}
+  virtual QVariant loadValue() = 0;
+  virtual void save(const QVariant &value, QString name) = 0;
+  virtual ~SerializatorIntf() {}
 };
-
 }
 #endif // LRSERIALIZATORINTF_H

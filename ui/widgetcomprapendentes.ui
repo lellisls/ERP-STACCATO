@@ -143,6 +143,9 @@
       </item>
       <item row="1" column="3">
        <widget class="QDoubleSpinBox" name="doubleSpinBoxQuantAvulso">
+        <property name="decimals">
+         <number>3</number>
+        </property>
         <property name="maximum">
          <double>99999.990000000005239</double>
         </property>

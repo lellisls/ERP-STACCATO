@@ -30,42 +30,45 @@
 #ifndef LRRECTPROPTEM_H
 #define LRRECTPROPTEM_H
 #include "lrobjectpropitem.h"
-#include <QRectF>
 #include <QMetaProperty>
+#include <QRectF>
 
-namespace LimeReport{
+namespace LimeReport {
 
-class RectPropItem : public ObjectPropItem{
-    Q_OBJECT
+class RectPropItem : public ObjectPropItem {
+  Q_OBJECT
 public:
-    RectPropItem():ObjectPropItem(){}
-    RectPropItem(QObject *object, ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& value, ObjectPropItem* parent, bool readonly=true);
-    QString displayValue() const;
+  RectPropItem() : ObjectPropItem() {}
+  RectPropItem(QObject *object, ObjectsList *objects, const QString &name, const QString &displayName,
+               const QVariant &value, ObjectPropItem *parent, bool readonly = true);
+  QString displayValue() const;
 };
 
-class RectMMPropItem : public ObjectPropItem{
-    Q_OBJECT
+class RectMMPropItem : public ObjectPropItem {
+  Q_OBJECT
 public:
-    RectMMPropItem():ObjectPropItem(){}
-    RectMMPropItem(QObject *object, ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& value, ObjectPropItem* parent, bool readonly=true);
-    QString displayValue() const;
+  RectMMPropItem() : ObjectPropItem() {}
+  RectMMPropItem(QObject *object, ObjectsList *objects, const QString &name, const QString &displayName,
+                 const QVariant &value, ObjectPropItem *parent, bool readonly = true);
+  QString displayValue() const;
 public slots:
-    void itemPosChanged(QObject* /*object*/, QPointF newPos, QPointF oldPos);
-    void itemGeometryChanged(QObject* object, QRectF newGeometry, QRectF oldGeometry);
+  void itemPosChanged(QObject * /*object*/, QPointF newPos, QPointF oldPos);
+  void itemGeometryChanged(QObject *object, QRectF newGeometry, QRectF oldGeometry);
+
 private:
-    void setValue(const QString& propertyName, qreal propertyValue);
+  void setValue(const QString &propertyName, qreal propertyValue);
 };
 
-class RectMMValuePropItem : public ObjectPropItem{
-    Q_OBJECT
+class RectMMValuePropItem : public ObjectPropItem {
+  Q_OBJECT
 public:
-    RectMMValuePropItem():ObjectPropItem(){}
-    RectMMValuePropItem(QObject *object, ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& value, ObjectPropItem* parent, bool readonly );
-    QString displayValue() const;
-    QWidget* createProperyEditor(QWidget *) const;
-    void setPropertyEditorData(QWidget *, const QModelIndex &) const;
-    void setModelData(QWidget *, QAbstractItemModel *, const QModelIndex &);
+  RectMMValuePropItem() : ObjectPropItem() {}
+  RectMMValuePropItem(QObject *object, ObjectsList *objects, const QString &name, const QString &displayName,
+                      const QVariant &value, ObjectPropItem *parent, bool readonly);
+  QString displayValue() const;
+  QWidget *createProperyEditor(QWidget *) const;
+  void setPropertyEditorData(QWidget *, const QModelIndex &) const;
+  void setModelData(QWidget *, QAbstractItemModel *, const QModelIndex &);
 };
-
 }
 #endif // LRRECTPROPTEM_H

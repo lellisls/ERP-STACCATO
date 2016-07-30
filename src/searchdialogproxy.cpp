@@ -17,5 +17,11 @@ QVariant SearchDialogProxy::data(const QModelIndex &proxyIndex, int role) const 
     if (value == 2) return QBrush(Qt::green);  // promocao
   }
 
+  if (role == Qt::ForegroundRole) {
+    const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
+
+    if (value == 1 or value == 2) return QBrush(Qt::black); // estoque/promocao
+  }
+
   return QIdentityProxyModel::data(proxyIndex, role);
 }

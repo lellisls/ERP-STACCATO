@@ -15,9 +15,13 @@ class WidgetCompraFaturar : public QWidget {
 public:
   explicit WidgetCompraFaturar(QWidget *parent = 0);
   ~WidgetCompraFaturar();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
+  void on_checkBoxRepresentacao_toggled(bool checked);
   void on_pushButtonMarcarFaturado_clicked();
   void on_table_entered(const QModelIndex &);
 
@@ -27,6 +31,7 @@ private:
   SqlTableModel model;
   // methods
   void setupTables();
+  bool faturarCompra();
 };
 
 #endif // WIDGETCOMPRAFATURAR_H

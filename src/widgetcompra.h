@@ -13,7 +13,10 @@ class WidgetCompra : public QWidget {
 public:
   explicit WidgetCompra(QWidget *parent = 0);
   ~WidgetCompra();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_tabWidget_currentChanged(const int &);

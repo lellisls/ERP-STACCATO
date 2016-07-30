@@ -3,7 +3,7 @@
 #include "followupproxy.h"
 
 FollowUpProxy::FollowUpProxy(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), column(model->fieldIndex("semaforo")) {
+    : QIdentityProxyModel(parent), semaforo(model->fieldIndex("semaforo")) {
   setSourceModel(model);
 }
 
@@ -12,7 +12,7 @@ FollowUpProxy::~FollowUpProxy() {}
 QVariant FollowUpProxy::data(const QModelIndex &proxyIndex, int role) const {
   if (role == Qt::BackgroundRole) {
 
-    const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
+    const int value = QIdentityProxyModel::data(index(proxyIndex.row(), semaforo), Qt::DisplayRole).toInt();
 
     if (value == Quente) return QBrush(QColor(255, 66, 66));
     if (value == Morno) return QBrush(QColor(255, 170, 0));

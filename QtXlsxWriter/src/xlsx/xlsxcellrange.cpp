@@ -24,8 +24,8 @@
 ****************************************************************************/
 #include "xlsxcellrange.h"
 #include "xlsxcellreference.h"
-#include <QString>
 #include <QPoint>
+#include <QString>
 #include <QStringList>
 
 QT_BEGIN_NAMESPACE_XLSX
@@ -54,7 +54,7 @@ CellRange::CellRange() : top(-1), left(-1), bottom(-2), right(-2) {}
 CellRange::CellRange(int top, int left, int bottom, int right) : top(top), left(left), bottom(bottom), right(right) {}
 
 CellRange::CellRange(const CellReference &topLeft, const CellReference &bottomRight)
-  : top(topLeft.row()), left(topLeft.column()), bottom(bottomRight.row()), right(bottomRight.column()) {}
+    : top(topLeft.row()), left(topLeft.column()), bottom(bottomRight.row()), right(bottomRight.column()) {}
 
 /*!
     \overload
@@ -91,7 +91,7 @@ void CellRange::init(const QString &range) {
     other range.
 */
 CellRange::CellRange(const CellRange &other)
-  : top(other.top), left(other.left), bottom(other.bottom), right(other.right) {}
+    : top(other.top), left(other.left), bottom(other.bottom), right(other.right) {}
 
 /*!
     Destroys the range.

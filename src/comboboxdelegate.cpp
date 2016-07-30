@@ -1,8 +1,11 @@
 #include <QComboBox>
+#include <QMessageBox>
+#include <QSqlError>
+#include <QSqlQuery>
 
 #include "comboboxdelegate.h"
 
-ComboBoxDelegate::ComboBoxDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
+ComboBoxDelegate::ComboBoxDelegate(Tipo tipo, QObject *parent) : QStyledItemDelegate(parent), tipo(tipo) {}
 
 ComboBoxDelegate::~ComboBoxDelegate() {}
 
@@ -10,10 +13,38 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
   QComboBox *editor = new QComboBox(parent);
 
   QStringList list;
-  list << "Pendente"
-       << "Comprar"
-       << "Pago"
-       << "Recebido";
+
+  if (tipo == Status) {
+    list << "Pendente"
+         << "Comprar"
+         << "Pago"
+         << "Recebido";
+  }
+
+  if (tipo == StatusReceber) {
+    list << "Pendente"
+         << "Recebido";
+  }
+
+  if (tipo == StatusPagar) {
+    list << "Pendente"
+         << "Pago";
+  }
+
+  if (tipo == Conta) {
+    QSqlQuery query;
+
+    if (not query.exec("SELECT banco, agencia, conta FROM loja_has_conta")) {
+      QMessageBox::critical(parent, "Erro!", "Erro lendo contas da loja: " + query.lastError().text());
+    }
+
+    list << "";
+
+    while (query.next()) {
+      list << query.value("banco").toString() + " - " + query.value("agencia").toString() + " - " +
+                  query.value("conta").toString();
+    }
+  }
 
   editor->addItems(list);
 

@@ -15,10 +15,14 @@ class WidgetContaPagar : public QWidget {
 public:
   explicit WidgetContaPagar(QWidget *parent = 0);
   ~WidgetContaPagar();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_table_entered(const QModelIndex &);
+  void on_table_activated(const QModelIndex &index);
 
 private:
   // attributes

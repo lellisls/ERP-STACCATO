@@ -30,82 +30,87 @@
 #ifndef LRSQLEDITDIALOG_H
 #define LRSQLEDITDIALOG_H
 
-#include <stdexcept>
-#include <QDialog>
 #include <QCompleter>
+#include <QDialog>
 #include <QSettings>
-#include "lrreportengine_p.h"
-#include "lrdatasourcemanager.h"
-#include "lrdatadesignintf.h"
+#include <stdexcept>
 
-namespace LimeReport{
+#include "lrdatadesignintf.h"
+#include "lrdatasourcemanager.h"
+#include "lrreportengine_p.h"
+
+namespace LimeReport {
 
 namespace Ui {
-    class SQLEditDialog;
+class SQLEditDialog;
 }
 
 struct SQLEditResult;
 
-class SQLEditDialog : public QDialog
-{
-    Q_OBJECT
+class SQLEditDialog : public QDialog {
+  Q_OBJECT
 
 public:
-    enum SQLDialogMode {AddMode,EditMode};
-    explicit SQLEditDialog(QWidget *parent, LimeReport::DataSourceManager* dataSources,SQLDialogMode dialogMode);
-    void setDataSources(LimeReport::DataSourceManager *dataSources,QString datasourceName="");
-    void setDefaultConnection(QString defaultConnection);
-    ~SQLEditDialog();
-    QSettings* settings();
-    void setSettings(QSettings* value, bool owned = false);
+  enum SQLDialogMode { AddMode, EditMode };
+  explicit SQLEditDialog(QWidget *parent, LimeReport::DataSourceManager *dataSources, SQLDialogMode dialogMode);
+  void setDataSources(LimeReport::DataSourceManager *dataSources, QString datasourceName = "");
+  void setDefaultConnection(QString defaultConnection);
+  ~SQLEditDialog();
+  QSettings *settings();
+  void setSettings(QSettings *value, bool owned = false);
+
 signals:
-    void signalSqlEditingFinished(SQLEditResult result);
+  void signalSqlEditingFinished(SQLEditResult result);
+
 protected:
-    void showEvent(QShowEvent *);
-    void closeEvent(QCloseEvent*);
-    void hideEvent(QHideEvent*);
-    void check();
-    void initConnections();
+  void showEvent(QShowEvent *);
+  void closeEvent(QCloseEvent *);
+  void hideEvent(QHideEvent *);
+  void check();
+  void initConnections();
+
 private slots:
-    void accept();
-    void slotDataSourceNameEditing();
-    void on_cbSubdetail_clicked(bool checked);
-    void on_rbProxy_clicked(bool checked);
-    void on_rbSubQuery_clicked(bool checked);
-    void on_pbAddField_clicked();
-    void initQueryMode();
-    void initSubQueryMode();
-    void initProxyMode();
-    void slotPreviewData();
-    void slotHidePreview();
+  void accept();
+  void slotDataSourceNameEditing();
+  void on_cbSubdetail_clicked(bool checked);
+  void on_rbProxy_clicked(bool checked);
+  void on_rbSubQuery_clicked(bool checked);
+  void on_pbAddField_clicked();
+  void initQueryMode();
+  void initSubQueryMode();
+  void initProxyMode();
+  void slotPreviewData();
+  void slotHidePreview();
+
 private:
-    void writeSetting();
-    void readSettings();
-    void hidePreview();
+  void writeSetting();
+  void readSettings();
+  void hidePreview();
+
 private:
-    Ui::SQLEditDialog *ui;
-    LimeReport::DataSourceManager* m_datasources;
-    SQLDialogMode m_dialogMode;
-    QString m_oldDatasourceName;
-    QCompleter* m_masterDatasources;
-    QString m_defaultConnection;
-    QSettings* m_settings;
-    bool m_ownedSettings;
-    QSharedPointer<QAbstractItemModel> m_previewModel;
+  Ui::SQLEditDialog *ui;
+  LimeReport::DataSourceManager *m_datasources;
+  SQLDialogMode m_dialogMode;
+  QString m_oldDatasourceName;
+  QCompleter *m_masterDatasources;
+  QString m_defaultConnection;
+  QSettings *m_settings;
+  bool m_ownedSettings;
+  QSharedPointer<QAbstractItemModel> m_previewModel;
 };
 
-struct SQLEditResult{
-    enum ResultMode{Query,SubQuery,SubProxy};
-    QString connectionName;
-    QString datasourceName;
-    QString oldDatasourceName;
-    QString sql;
-    bool subdetail;
-    ResultMode resultMode;
-    QString masterDatasource;
-    QString childDataSource;
-    SQLEditDialog::SQLDialogMode dialogMode;
-    QList<LimeReport::FieldsCorrelation> fieldMap;
+struct SQLEditResult {
+  enum ResultMode { Query, SubQuery, SubProxy };
+  QString connectionName;
+  QString datasourceName;
+  QString oldDatasourceName;
+  QString sql;
+  bool subdetail;
+  ResultMode resultMode;
+  QString masterDatasource;
+  QString childDataSource;
+  SQLEditDialog::SQLDialogMode dialogMode;
+  QList<LimeReport::FieldsCorrelation> fieldMap;
 };
 
 } // namespace LimeReport

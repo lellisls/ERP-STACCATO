@@ -16,7 +16,7 @@ public:
   explicit Estoque(QWidget *parent = 0);
   ~Estoque();
   void viewRegisterById(const QString &idEstoque);
-  void criarConsumo(const QVariant &idVendaProduto);
+  bool criarConsumo(const int &idVendaProduto);
 
 private slots:
   void on_pushButtonExibirNfe_clicked();
@@ -27,6 +27,7 @@ private:
   // attributes
   Ui::Estoque *ui;
   SqlTableModel model;
+  SqlTableModel modelConsumo;
   // methods
   void calcularRestante();
   void setupTables();

@@ -25,41 +25,42 @@
 #ifndef XLSXABSTRACTSHEET_H
 #define XLSXABSTRACTSHEET_H
 
-#include "xlsxabstractooxmlfile.h"
-#include <QStringList>
 #include <QSharedPointer>
+#include <QStringList>
+
+#include "xlsxabstractooxmlfile.h"
 
 QT_BEGIN_NAMESPACE_XLSX
 class Workbook;
 class Drawing;
 class AbstractSheetPrivate;
 class Q_XLSX_EXPORT AbstractSheet : public AbstractOOXmlFile {
-    Q_DECLARE_PRIVATE(AbstractSheet)
-  public:
-    enum SheetType { ST_WorkSheet, ST_ChartSheet, ST_DialogSheet, ST_MacroSheet };
+  Q_DECLARE_PRIVATE(AbstractSheet)
+public:
+  enum SheetType { ST_WorkSheet, ST_ChartSheet, ST_DialogSheet, ST_MacroSheet };
 
-    enum SheetState { SS_Visible, SS_Hidden, SS_VeryHidden };
+  enum SheetState { SS_Visible, SS_Hidden, SS_VeryHidden };
 
-    QString sheetName() const;
-    SheetType sheetType() const;
-    SheetState sheetState() const;
-    void setSheetState(SheetState ss);
-    bool isHidden() const;
-    bool isVisible() const;
-    void setHidden(bool hidden);
-    void setVisible(bool visible);
+  QString sheetName() const;
+  SheetType sheetType() const;
+  SheetState sheetState() const;
+  void setSheetState(SheetState ss);
+  bool isHidden() const;
+  bool isVisible() const;
+  void setHidden(bool hidden);
+  void setVisible(bool visible);
 
-    Workbook *workbook() const;
+  Workbook *workbook() const;
 
-  protected:
-    friend class Workbook;
-    AbstractSheet(const QString &sheetName, int sheetId, Workbook *book, AbstractSheetPrivate *d);
-    virtual AbstractSheet *copy(const QString &distName, int distId) const = 0;
-    void setSheetName(const QString &sheetName);
-    void setSheetType(SheetType type);
-    int sheetId() const;
+protected:
+  friend class Workbook;
+  AbstractSheet(const QString &sheetName, int sheetId, Workbook *book, AbstractSheetPrivate *d);
+  virtual AbstractSheet *copy(const QString &distName, int distId) const = 0;
+  void setSheetName(const QString &sheetName);
+  void setSheetType(SheetType type);
+  int sheetId() const;
 
-    Drawing *drawing() const;
+  Drawing *drawing() const;
 };
 
 QT_END_NAMESPACE_XLSX

@@ -22,11 +22,51 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="TableView" name="tableProdutos">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Highlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>51</red>
+              <green>153</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Highlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>51</red>
+              <green>153</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Highlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>51</red>
+              <green>153</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
         <property name="mouseTracking">
          <bool>true</bool>
         </property>
         <property name="sizeAdjustPolicy">
          <enum>QAbstractScrollArea::AdjustToContents</enum>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::SingleSelection</enum>
@@ -60,8 +100,11 @@
          </item>
          <item row="0" column="3">
           <widget class="QDoubleSpinBox" name="doubleSpinBoxComprar">
+           <property name="decimals">
+            <number>3</number>
+           </property>
            <property name="maximum">
-            <double>9999.989999999999782</double>
+            <double>99999.990000000005239</double>
            </property>
           </widget>
          </item>
@@ -72,6 +115,9 @@
            </property>
            <property name="buttonSymbols">
             <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="decimals">
+            <number>3</number>
            </property>
            <property name="minimum">
             <double>-9999.000000000000000</double>
@@ -155,8 +201,48 @@
       </item>
       <item row="0" column="0" colspan="3">
        <widget class="TableView" name="tableEstoque">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Highlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>51</red>
+              <green>153</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Highlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>51</red>
+              <green>153</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Highlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>51</red>
+              <green>153</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
         <property name="mouseTracking">
          <bool>true</bool>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::SingleSelection</enum>

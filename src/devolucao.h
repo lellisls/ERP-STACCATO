@@ -25,6 +25,8 @@ private slots:
   void on_pushButtonDevolverItem_clicked();
   void on_doubleSpinBoxTotalItem_valueChanged(double value);
 
+  void on_groupBoxCredito_toggled(bool);
+
 private:
   // attributes
   Ui::Devolucao *ui;
@@ -41,6 +43,8 @@ private:
   void criarDevolucao(QModelIndexList list);
   void inserirItens(QModelIndexList list);
   void criarContas();
+  void atualizarDevolucao();
+  void salvarCredito();
 };
 
 #endif // DEVOLUCAO_H

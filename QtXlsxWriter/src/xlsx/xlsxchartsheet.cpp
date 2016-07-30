@@ -23,21 +23,21 @@
 **
 ****************************************************************************/
 #include "xlsxchartsheet.h"
+#include "xlsxchart.h"
 #include "xlsxchartsheet_p.h"
-#include "xlsxworkbook.h"
-#include "xlsxutility_p.h"
 #include "xlsxdrawing_p.h"
 #include "xlsxdrawinganchor_p.h"
-#include "xlsxchart.h"
+#include "xlsxutility_p.h"
+#include "xlsxworkbook.h"
 
+#include <QDir>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
-#include <QDir>
 
 QT_BEGIN_NAMESPACE_XLSX
 
 ChartsheetPrivate::ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag)
-  : AbstractSheetPrivate(p, flag), chart(0) {}
+    : AbstractSheetPrivate(p, flag), chart(0) {}
 
 ChartsheetPrivate::~ChartsheetPrivate() {}
 
@@ -51,7 +51,7 @@ ChartsheetPrivate::~ChartsheetPrivate() {}
  * \internal
  */
 Chartsheet::Chartsheet(const QString &name, int id, Workbook *workbook, CreateFlag flag)
-  : AbstractSheet(name, id, workbook, new ChartsheetPrivate(this, flag)) {
+    : AbstractSheet(name, id, workbook, new ChartsheetPrivate(this, flag)) {
   setSheetType(ST_ChartSheet);
 
   if (flag == Chartsheet::F_NewFromScratch) {

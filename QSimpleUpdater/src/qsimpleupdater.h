@@ -18,79 +18,79 @@
 
 #define SUPPORTS_SSL not defined(Q_OS_IOS)
 
-#include <QUrl>
-#include <QIcon>
-#include <QPixmap>
-#include <QMessageBox>
 #include <QApplication>
+#include <QDesktopServices>
+#include <QIcon>
+#include <QMessageBox>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QDesktopServices>
-#include <QNetworkAccessManager>
+#include <QPixmap>
+#include <QUrl>
 
 #if SUPPORTS_SSL
 #include <QSsl>
-#include <QSslError>
 #include <QSslConfiguration>
+#include <QSslError>
 #endif
 
 #include "dialogs/download_dialog.h"
 #include "dialogs/progress_dialog.h"
 
 class QSimpleUpdater : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit QSimpleUpdater(QObject *parent = 0);
+public:
+  explicit QSimpleUpdater(QObject *parent = 0);
 
-    QString changeLog() const;
-    QString latestVersion() const;
-    QString installedVersion() const;
+  QString changeLog() const;
+  QString latestVersion() const;
+  QString installedVersion() const;
 
-    bool silent() const;
-    bool newerVersionAvailable() const;
+  bool silent() const;
+  bool newerVersionAvailable() const;
 
-    void checkForUpdates(void);
-    void openDownloadLink(void);
-    void downloadLatestVersion(void);
+  void checkForUpdates(void);
+  void openDownloadLink(void);
+  void downloadLatestVersion(void);
 
-  public slots:
-    void setSilent(bool silent);
-    void setDownloadUrl(const QString &url);
-    void setReferenceUrl(const QString &url);
-    void setChangelogUrl(const QString &url);
-    void setShowNewestVersionMessage(bool show);
-    void setShowUpdateAvailableMessage(bool show);
-    void setApplicationVersion(const QString &version);
+public slots:
+  void setSilent(bool silent);
+  void setDownloadUrl(const QString &url);
+  void setReferenceUrl(const QString &url);
+  void setChangelogUrl(const QString &url);
+  void setShowNewestVersionMessage(bool show);
+  void setShowUpdateAvailableMessage(bool show);
+  void setApplicationVersion(const QString &version);
 
-  signals:
-    void checkingFinished(void);
+signals:
+  void checkingFinished(void);
 
-  private slots:
-    void cancel(void);
-    void showErrorMessage(void);
-    void onCheckingFinished(void);
-    void checkDownloadedVersion(QNetworkReply *reply);
-    void processDownloadedChangelog(QNetworkReply *reply);
-    void ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &error);
+private slots:
+  void cancel(void);
+  void showErrorMessage(void);
+  void onCheckingFinished(void);
+  void checkDownloadedVersion(QNetworkReply *reply);
+  void processDownloadedChangelog(QNetworkReply *reply);
+  void ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &error);
 
-  private:
-    QString m_changelog;
-    QString m_latest_version;
-    QString m_installed_version;
-    QNetworkAccessManager *m_manager;
+private:
+  QString m_changelog;
+  QString m_latest_version;
+  QString m_installed_version;
+  QNetworkAccessManager *m_manager;
 
-    QUrl m_download_url;
-    QUrl m_reference_url;
-    QUrl m_changelog_url;
+  QUrl m_download_url;
+  QUrl m_reference_url;
+  QUrl m_changelog_url;
 
-    bool m_silent;
-    bool m_show_newest_version;
-    bool m_show_update_available;
-    bool m_new_version_available;
+  bool m_silent;
+  bool m_show_newest_version;
+  bool m_show_update_available;
+  bool m_new_version_available;
 
-    DownloadDialog *m_downloadDialog;
-    ProgressDialog *m_progressDialog;
+  DownloadDialog *m_downloadDialog;
+  ProgressDialog *m_progressDialog;
 };
 
 #endif

@@ -31,67 +31,70 @@
 #include "../objectinspector/editors/lrcomboboxeditor.h"
 #include "lrbasedesignintf.h"
 #include "lritemdesignintf.h"
-#include "lrpagedesignintf.h"
 #include "lrobjectpropitem.h"
+#include "lrpagedesignintf.h"
 
-
-namespace{
-    LimeReport::ObjectPropItem * createLocationPropItem(
-        QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly)
-    {
-        return new LimeReport::ItemLocationPropItem(object, objects, name, displayName, data, parent, readonly);
-    }
-    bool registred = LimeReport::ObjectPropFactory::instance().registerCreator(
-        LimeReport::APropIdent("itemLocation","LimeReport::ItemDesignIntf"),QObject::tr("itemLocation"),createLocationPropItem
-    );
+namespace {
+LimeReport::ObjectPropItem *createLocationPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                                   const QString &name, const QString &displayName,
+                                                   const QVariant &data, LimeReport::ObjectPropItem *parent,
+                                                   bool readonly) {
+  return new LimeReport::ItemLocationPropItem(object, objects, name, displayName, data, parent, readonly);
+}
+bool registred = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("itemLocation", "LimeReport::ItemDesignIntf"), QObject::tr("itemLocation"),
+    createLocationPropItem);
 }
 
-LimeReport::ItemLocationPropItem::ItemLocationPropItem(QObject* object, ObjectsList* objects, const QString &name, const QString &displayName, const QVariant &value, ObjectPropItem* parent, bool readonly)
-  :LimeReport::ObjectPropItem(object, objects, name, displayName, value, parent, readonly){
-    m_locationMap.insert("Band",LimeReport::ItemDesignIntf::Band);
-    m_locationMap.insert("Page",LimeReport::ItemDesignIntf::Page);
+LimeReport::ItemLocationPropItem::ItemLocationPropItem(QObject *object, ObjectsList *objects, const QString &name,
+                                                       const QString &displayName, const QVariant &value,
+                                                       ObjectPropItem *parent, bool readonly)
+    : LimeReport::ObjectPropItem(object, objects, name, displayName, value, parent, readonly) {
+  m_locationMap.insert("Band", LimeReport::ItemDesignIntf::Band);
+  m_locationMap.insert("Page", LimeReport::ItemDesignIntf::Page);
 }
 
-
-QWidget * LimeReport::ItemLocationPropItem::createProperyEditor(QWidget *parent) const{
-    ComboBoxEditor *editor = new ComboBoxEditor(parent);
-    connect(editor,SIGNAL(currentIndexChanged(QString)),this,SLOT(slotLocationChanged(QString)));
-    LimeReport::BaseDesignIntf *item=dynamic_cast<LimeReport::BaseDesignIntf*>(object());
-    if (item){
-        QStringList locationTypes;
-        foreach(QString location,m_locationMap.keys()){
-            locationTypes.append(location);
-        }
-        editor->addItems(locationTypes);
-    }
-    return editor;
+QWidget *LimeReport::ItemLocationPropItem::createProperyEditor(QWidget *parent) const {
+  ComboBoxEditor *editor = new ComboBoxEditor(parent);
+  connect(editor, &ComboBoxEditor::currentIndexChanged, this, &ItemLocationPropItem::slotLocationChanged);
+  LimeReport::BaseDesignIntf *item = dynamic_cast<LimeReport::BaseDesignIntf *>(object());
+  if (item) {
+    QStringList locationTypes;
+    foreach (QString location, m_locationMap.keys()) { locationTypes.append(location); }
+    editor->addItems(locationTypes);
+  }
+  return editor;
 }
 
-QString LimeReport::ItemLocationPropItem::displayValue() const{
-    return locationToString(static_cast<LimeReport::ItemDesignIntf::LocationType>(propertyValue().toInt()));
+QString LimeReport::ItemLocationPropItem::displayValue() const {
+  return locationToString(static_cast<LimeReport::ItemDesignIntf::LocationType>(propertyValue().toInt()));
 }
 
-void LimeReport::ItemLocationPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const{
-    ComboBoxEditor *editor=qobject_cast<ComboBoxEditor *>(propertyEditor);
-    editor->setTextValue(locationToString(propertyValue().toInt()));
+void LimeReport::ItemLocationPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ComboBoxEditor *editor = qobject_cast<ComboBoxEditor *>(propertyEditor);
+  editor->setTextValue(locationToString(propertyValue().toInt()));
 }
 
-void LimeReport::ItemLocationPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index){
-    object()->setProperty(propertyName().toLatin1(),stringToLocation(qobject_cast<ComboBoxEditor*>(propertyEditor)->text()));
-    model->setData(index,object()->property(propertyName().toLatin1()));
+void LimeReport::ItemLocationPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model,
+                                                    const QModelIndex &index) {
+  object()->setProperty(propertyName().toLatin1(),
+                        stringToLocation(qobject_cast<ComboBoxEditor *>(propertyEditor)->text()));
+  model->setData(index, object()->property(propertyName().toLatin1()));
 }
 
-QString LimeReport::ItemLocationPropItem::locationToString(LimeReport::ItemDesignIntf::LocationType location) const{
-    return m_locationMap.key(location);
+QString LimeReport::ItemLocationPropItem::locationToString(LimeReport::ItemDesignIntf::LocationType location) const {
+  return m_locationMap.key(location);
 }
 
-LimeReport::ItemDesignIntf::LocationType LimeReport::ItemLocationPropItem::stringToLocation(const QString &locationName){
-    return m_locationMap.value(locationName);
+LimeReport::ItemDesignIntf::LocationType
+LimeReport::ItemLocationPropItem::stringToLocation(const QString &locationName) {
+  return m_locationMap.value(locationName);
 }
 
-void LimeReport::ItemLocationPropItem::slotLocationChanged(const QString &text){
-    if ( locationToString(object()->property(propertyName().toLatin1()).toInt())!=text){
-      object()->setProperty(propertyName().toLatin1(),stringToLocation(text));
-      dynamic_cast<ComboBoxEditor*>(sender())->setTextValue(locationToString(object()->property(propertyName().toLatin1()).toInt()));
-    }
+void LimeReport::ItemLocationPropItem::slotLocationChanged(const QString &text) {
+  if (locationToString(object()->property(propertyName().toLatin1()).toInt()) != text) {
+    object()->setProperty(propertyName().toLatin1(), stringToLocation(text));
+    dynamic_cast<ComboBoxEditor *>(sender())->setTextValue(
+        locationToString(object()->property(propertyName().toLatin1()).toInt()));
+  }
 }

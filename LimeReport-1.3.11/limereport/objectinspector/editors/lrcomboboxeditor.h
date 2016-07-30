@@ -30,49 +30,56 @@
 #ifndef LRCOMBOBOXEDITOR_H
 #define LRCOMBOBOXEDITOR_H
 
-#include <QWidget>
 #include <QComboBox>
+#include <QWidget>
 //#include <QPushButton>
 
 class QToolButton;
 
-namespace LimeReport{
+namespace LimeReport {
 
-class InternalComboBox :public QComboBox{
-    Q_OBJECT
+class InternalComboBox : public QComboBox {
+  Q_OBJECT
 public:
-    InternalComboBox(QWidget* parent=0):QComboBox(parent),m_popup(false){}
-    void showPopup(){m_popup = true;QComboBox::showPopup();}
-    void hidePopup(){QComboBox::hidePopup(); m_popup = false;}
-    bool isPopup(){return m_popup;}
-private:
-    bool m_popup;
+  explicit InternalComboBox(QWidget *parent = 0) : QComboBox(parent), m_popup(false) {}
+  void showPopup() {
+    m_popup = true;
+    QComboBox::showPopup();
+  }
+  void hidePopup() {
+    QComboBox::hidePopup();
+    m_popup = false;
+  }
+  bool isPopup() { return m_popup; }
 
+private:
+  bool m_popup;
 };
 
-class ComboBoxEditor : public QWidget
-{
-    Q_OBJECT
+class ComboBoxEditor : public QWidget {
+  Q_OBJECT
 public:
-    //explicit ComboBoxEditor(QWidget *parent = 0);
-    ComboBoxEditor(QWidget *parent=0, bool clearable=false);
-    void addItems(const QStringList& values);
-    void setTextValue(const QString& value);
-    QString text();
-    void setEditable(bool value);
+  // explicit ComboBoxEditor(QWidget *parent = 0);
+  ComboBoxEditor(QWidget *parent = 0, bool clearable = false);
+  void addItems(const QStringList &values);
+  void setTextValue(const QString &value);
+  QString text();
+  void setEditable(bool value);
 signals:
-    void editingFinished();
-    void currentIndexChanged(const QString&);
+  void editingFinished();
+  void currentIndexChanged(const QString &);
+
 protected:
-    void resizeEvent(QResizeEvent *e);
+  void resizeEvent(QResizeEvent *e);
 private slots:
-    void slotClearButtonClicked();
-    void slotCurrentIndexChanged(const QString& value);
+  void slotClearButtonClicked();
+  void slotCurrentIndexChanged(const QString &value);
+
 private:
-    bool eventFilter(QObject *target, QEvent *event);
-    InternalComboBox* m_comboBox;
-    QToolButton* m_buttonClear;
-    bool m_settingValues;
+  bool eventFilter(QObject *target, QEvent *event);
+  InternalComboBox *m_comboBox;
+  QToolButton *m_buttonClear;
+  bool m_settingValues;
 };
 
 } // namespace LimeReport

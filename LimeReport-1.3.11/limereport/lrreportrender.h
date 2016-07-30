@@ -30,145 +30,151 @@
 #ifndef LRREPORTRENDER_H
 #define LRREPORTRENDER_H
 #include <QObject>
+
 #include "lrcollection.h"
 #include "lrdatasourcemanager.h"
 #include "lrpageitemdesignintf.h"
 #include "serializators/lrstorageintf.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
 class PageDesignIntf;
 class BandDesignIntf;
 
-class GroupBandsHolder: public QList<BandDesignIntf*>{
+class GroupBandsHolder : public QList<BandDesignIntf *> {
 public:
-    GroupBandsHolder(bool tryToKeepTogether):QList<BandDesignIntf*>(),m_tryToKeepTogether(tryToKeepTogether),
-        m_dataGroup(true), m_footerGroup(false){}
-    bool tryToKeepTogether(){return m_tryToKeepTogether;}
-    void setTryToKeepTogether(bool value){m_tryToKeepTogether=value;}
-    bool isDataGroup(){return m_dataGroup;}
-    bool isFooterGroup(){ return m_footerGroup;}
-    void setIsFooterGroup(){m_footerGroup=true;m_dataGroup=false;}
+  explicit GroupBandsHolder(bool tryToKeepTogether)
+      : QList<BandDesignIntf *>(), m_tryToKeepTogether(tryToKeepTogether), m_dataGroup(true), m_footerGroup(false) {}
+  bool tryToKeepTogether() { return m_tryToKeepTogether; }
+  void setTryToKeepTogether(bool value) { m_tryToKeepTogether = value; }
+  bool isDataGroup() { return m_dataGroup; }
+  bool isFooterGroup() { return m_footerGroup; }
+  void setIsFooterGroup() {
+    m_footerGroup = true;
+    m_dataGroup = false;
+  }
+
 private:
-    bool m_tryToKeepTogether;
-    bool m_dataGroup;
-    bool m_footerGroup;
+  bool m_tryToKeepTogether;
+  bool m_dataGroup;
+  bool m_footerGroup;
 };
 
 typedef QList<PageItemDesignIntf::Ptr> ReportPages;
 
-struct PagesRange{
-    int firstPage;
-    int lastPage;
+struct PagesRange {
+  int firstPage;
+  int lastPage;
 };
 
-class ReportRender: public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(QObject* datasourcesManager READ datasources())
+class ReportRender : public QObject {
+  Q_OBJECT
+  Q_PROPERTY(QObject *datasourcesManager READ datasources())
 public:
-    enum DataRenderMode {StartNewPageAsNeeded, NotStartNewPage, ForcedStartPage};
-    enum BandPrintMode {PrintAlwaysPrintable, PrintNotAlwaysPrintable };
-    typedef QSharedPointer<ReportRender> Ptr;    
-    ~ReportRender();
-    ReportRender(QObject *parent = 0);
-    void setDatasources(DataSourceManager* value);
-    DataSourceManager*  datasources(){return m_datasources;}
-    int     pageCount();
-    PageItemDesignIntf::Ptr pageAt(int index);
-    QString renderPageToString(PageDesignIntf *patternPage);
-    ReportPages renderPageToPages(PageDesignIntf *patternPage);
+  enum DataRenderMode { StartNewPageAsNeeded, NotStartNewPage, ForcedStartPage };
+  enum BandPrintMode { PrintAlwaysPrintable, PrintNotAlwaysPrintable };
+  typedef QSharedPointer<ReportRender> Ptr;
+  ~ReportRender();
+  explicit ReportRender(QObject *parent = 0);
+  void setDatasources(DataSourceManager *value);
+  DataSourceManager *datasources() { return m_datasources; }
+  int pageCount();
+  PageItemDesignIntf::Ptr pageAt(int index);
+  QString renderPageToString(PageDesignIntf *patternPage);
+  ReportPages renderPageToPages(PageDesignIntf *patternPage);
 signals:
-    void    pageRendered(int renderedPageCount);
+  void pageRendered(int renderedPageCount);
 public slots:
-    void    cancelRender();
+  void cancelRender();
+
 private:
-    void    renderPage(PageDesignIntf *patternPage);
-    void    initDatasources();
-    void    initRenderPage();
-    void    initVariables();
-    void    clearPageMap();
-    void    renderBand(BandDesignIntf *patternBand, DataRenderMode mode = NotStartNewPage, bool isLast = false);
-    void    renderDataBand(BandDesignIntf* dataBand);
-    void    renderPageHeader(PageItemDesignIntf* patternPage);
-    void    renderPageFooter(PageItemDesignIntf* patternPage);
-    void    renderPageItems(PageItemDesignIntf* patternPage);
-    qreal   calcPageFooterHeight(PageItemDesignIntf* patternPage);
-    qreal   calcSlicePercent(qreal height);
-    void    renderChildHeader(BandDesignIntf* parent, BandPrintMode printMode);
-    void    renderChildFooter(BandDesignIntf* parent, BandPrintMode printMode);
-    void    renderChildBands(BandDesignIntf* parentBand);
-    void    renderGroupHeader(BandDesignIntf* parentBand, IDataSource* dataSource, bool firstTime);
-    void    renderGroupFooter(BandDesignIntf* parentBand);
+  void renderPage(PageDesignIntf *patternPage);
+  void initDatasources();
+  void initRenderPage();
+  void initVariables();
+  void clearPageMap();
+  void renderBand(BandDesignIntf *patternBand, DataRenderMode mode = NotStartNewPage, bool isLast = false);
+  void renderDataBand(BandDesignIntf *dataBand);
+  void renderPageHeader(PageItemDesignIntf *patternPage);
+  void renderPageFooter(PageItemDesignIntf *patternPage);
+  void renderPageItems(PageItemDesignIntf *patternPage);
+  qreal calcPageFooterHeight(PageItemDesignIntf *patternPage);
+  qreal calcSlicePercent(qreal height);
+  void renderChildHeader(BandDesignIntf *parent, BandPrintMode printMode);
+  void renderChildFooter(BandDesignIntf *parent, BandPrintMode printMode);
+  void renderChildBands(BandDesignIntf *parentBand);
+  void renderGroupHeader(BandDesignIntf *parentBand, IDataSource *dataSource, bool firstTime);
+  void renderGroupFooter(BandDesignIntf *parentBand);
 
-    void    initGroupFunctions();
-    void    extractGroupsFunction(BandDesignIntf* band);
-    void    replaceGroupsFunction(BandDesignIntf* band);
+  void initGroupFunctions();
+  void extractGroupsFunction(BandDesignIntf *band);
+  void replaceGroupsFunction(BandDesignIntf *band);
 
-    void    popPageFooterGroupValues(BandDesignIntf* dataBand);
-    void    pushPageFooterGroupValues(BandDesignIntf* dataBand);
+  void popPageFooterGroupValues(BandDesignIntf *dataBand);
+  void pushPageFooterGroupValues(BandDesignIntf *dataBand);
 
-    enum    GroupType{DATA,FOOTER};
-    void    closeGroup(BandDesignIntf* band);
-    void    openDataGroup(BandDesignIntf* band);
-    void    closeDataGroup(BandDesignIntf* band);
-    void    openFooterGroup(BandDesignIntf* band);
-    void    closeFooterGroup(BandDesignIntf* band);
-    void    cutGroups();
-    void    checkFooterGroup(BandDesignIntf* groupBand);
-    void    pasteGroups();
-    void    checkLostHeadersOnPrevPage();
+  enum GroupType { DATA, FOOTER };
+  void closeGroup(BandDesignIntf *band);
+  void openDataGroup(BandDesignIntf *band);
+  void closeDataGroup(BandDesignIntf *band);
+  void openFooterGroup(BandDesignIntf *band);
+  void closeFooterGroup(BandDesignIntf *band);
+  void cutGroups();
+  void checkFooterGroup(BandDesignIntf *groupBand);
+  void pasteGroups();
+  void checkLostHeadersOnPrevPage();
 
-    BandDesignIntf* findEnclosingGroup();
-    bool    registerBand(BandDesignIntf* band, bool registerInChildren=true);
-    BandDesignIntf *sliceBand(BandDesignIntf* band, BandDesignIntf *patternBand, bool isLast);
-    void    secondRenderPass();
-    BandDesignIntf* saveUppperPartReturnBottom(BandDesignIntf *band, int height, BandDesignIntf *patternBand);
-    BandDesignIntf* renderData(BandDesignIntf* patternBand);
-    void    startNewColumn();
-    void    startNewPage();
-    void    resetPageNumber();
-    int     findLastPageNumber(int currentPage);
-    void    savePage();
-    QString toString();
-    void initColumns();
-    bool isNeedToRearrangeColumnsItems();
-    BandDesignIntf* lastColumnItem(int columnIndex);
-    void rearrangeColumnsItems();
-    int  columnItemsCount(int columnIndex);
-    qreal columnHeigth(int columnIndex);
-    qreal maxColumnHeight();
-    void renameChildItems(BaseDesignIntf *item);
+  BandDesignIntf *findEnclosingGroup();
+  bool registerBand(BandDesignIntf *band, bool registerInChildren = true);
+  BandDesignIntf *sliceBand(BandDesignIntf *band, BandDesignIntf *patternBand, bool isLast);
+  void secondRenderPass();
+  BandDesignIntf *saveUppperPartReturnBottom(BandDesignIntf *band, int height, BandDesignIntf *patternBand);
+  BandDesignIntf *renderData(BandDesignIntf *patternBand);
+  void startNewColumn();
+  void startNewPage();
+  void resetPageNumber();
+  int findLastPageNumber(int currentPage);
+  void savePage();
+  QString toString();
+  void initColumns();
+  bool isNeedToRearrangeColumnsItems();
+  BandDesignIntf *lastColumnItem(int columnIndex);
+  void rearrangeColumnsItems();
+  int columnItemsCount(int columnIndex);
+  qreal columnHeigth(int columnIndex);
+  qreal maxColumnHeight();
+  void renameChildItems(BaseDesignIntf *item);
+
 private:
-    DataSourceManager* m_datasources;
-    PageItemDesignIntf* m_renderPageItem;
-    PageItemDesignIntf* m_patternPageItem;
-    QList<PageItemDesignIntf::Ptr> m_renderedPages;
-    QMultiMap< BandDesignIntf*, GroupBandsHolder* > m_childBands;
-    QList<BandDesignIntf*> m_reprintableBands;
-//    QList<BandDesignIntf*> m_lastRenderedHeaders;
+  DataSourceManager *m_datasources;
+  PageItemDesignIntf *m_renderPageItem;
+  PageItemDesignIntf *m_patternPageItem;
+  QList<PageItemDesignIntf::Ptr> m_renderedPages;
+  QMultiMap<BandDesignIntf *, GroupBandsHolder *> m_childBands;
+  QList<BandDesignIntf *> m_reprintableBands;
+  //    QList<BandDesignIntf*> m_lastRenderedHeaders;
 
-    //int m_maxHeightByColumn[0];
-    //int m_currentStartDataPos;
-    int m_currentIndex;
-    int m_pageCount;
+  // int m_maxHeightByColumn[0];
+  // int m_currentStartDataPos;
+  int m_currentIndex;
+  int m_pageCount;
 
-    QMap<QString,QVariant> m_popupedValues;
-    QMultiMap<BandDesignIntf*,QString> m_popupedExpression;
+  QMap<QString, QVariant> m_popupedValues;
+  QMultiMap<BandDesignIntf *, QString> m_popupedExpression;
 
-    qreal           m_pageFooterHeight;
-    qreal           m_dataAreaSize;
-    qreal           m_reportFooterHeight;
-    int             m_renderedDataBandCount;
-    BandDesignIntf* m_lastDataBand;
-    BandDesignIntf* m_lastRenderedFooter;
-    bool            m_renderCanceled;
-    QVector<qreal>  m_maxHeightByColumn;
-    QVector<qreal>  m_currentStartDataPos;
-    int             m_currentColumn;
-    QList<PagesRange> m_ranges;
-    QVector<BandDesignIntf*> m_columnedBandItems;
-    unsigned long long m_curentNameIndex;
+  qreal m_pageFooterHeight;
+  qreal m_dataAreaSize;
+  qreal m_reportFooterHeight;
+  int m_renderedDataBandCount;
+  int m_currentColumn;
+  BandDesignIntf *m_lastDataBand;
+  BandDesignIntf *m_lastRenderedFooter;
+  bool m_renderCanceled;
+  QVector<qreal> m_maxHeightByColumn;
+  QVector<qreal> m_currentStartDataPos;
+  QList<PagesRange> m_ranges;
+  QVector<BandDesignIntf *> m_columnedBandItems;
+  unsigned long long m_curentNameIndex;
 };
 } // namespace LimeReport
 #endif // LRREPORTRENDER_H

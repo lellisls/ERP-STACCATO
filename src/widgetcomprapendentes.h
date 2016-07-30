@@ -15,7 +15,10 @@ class WidgetCompraPendentes : public QWidget {
 public:
   explicit WidgetCompraPendentes(QWidget *parent = 0);
   ~WidgetCompraPendentes();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void montaFiltro();
@@ -32,9 +35,9 @@ private:
   Ui::WidgetCompraPendentes *ui;
   SqlTableModel model;
   // methods
-  bool atualiza(const QSqlQuery &query);
   bool insere(const QDate &dataPrevista);
   void setupTables();
+  void makeConnections();
 };
 
 #endif // WIDGETCOMPRAPENDENTES_H

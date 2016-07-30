@@ -30,45 +30,49 @@
 #ifndef LRCOLOREDITOR_H
 #define LRCOLOREDITOR_H
 
-#include <QWidget>
 #include <QPushButton>
 #include <QToolButton>
+#include <QWidget>
 
-namespace LimeReport{
+namespace LimeReport {
 
-class ColorIndicator : public QWidget{
-    Q_OBJECT
+class ColorIndicator : public QWidget {
+  Q_OBJECT
 public:
-    ColorIndicator(QWidget* parent = 0);
-    QColor color() const;
-    void setColor(const QColor &color);
-    QSize sizeHint() const;
+  explicit ColorIndicator(QWidget *parent = 0);
+  QColor color() const;
+  void setColor(const QColor &color);
+  QSize sizeHint() const;
+
 protected:
-    void paintEvent(QPaintEvent *event);
+  void paintEvent(QPaintEvent *event);
+
 private:
-    QColor m_color;
+  QColor m_color;
 };
 
-class ColorEditor : public QWidget
-{
-    Q_OBJECT
+class ColorEditor : public QWidget {
+  Q_OBJECT
 public:
-    explicit ColorEditor(QWidget *parent = 0);
-    QColor color(){return m_color;}
-    void setColor(const QColor& value);
+  explicit ColorEditor(QWidget *parent = 0);
+  QColor color() { return m_color; }
+  void setColor(const QColor &value);
+
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+  bool eventFilter(QObject *obj, QEvent *event);
+
 private:
-    void setFocusToParent();
+  void setFocusToParent();
 signals:
-   void editingFinished();
+  void editingFinished();
 private slots:
-   void slotClicked();
+  void slotClicked();
+
 private:
-   QColor m_color;
-   QToolButton* m_button;
-   ColorIndicator* m_colorIndicator;
-   bool m_buttonPressed;
+  QColor m_color;
+  QToolButton *m_button;
+  ColorIndicator *m_colorIndicator;
+  bool m_buttonPressed;
 };
 
 } // namespace LimeReport

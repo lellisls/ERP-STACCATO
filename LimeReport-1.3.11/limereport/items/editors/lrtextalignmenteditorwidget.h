@@ -30,44 +30,46 @@
 #ifndef LRTEXTALIGNMENTEDITORWIDGET_H
 #define LRTEXTALIGNMENTEDITORWIDGET_H
 
-#include "lrreportdesignwidget.h"
 #include "lritemeditorwidget.h"
-#include <QToolBar>
+#include "lrreportdesignwidget.h"
 #include <QAction>
+#include <QToolBar>
 
-namespace LimeReport{
+namespace LimeReport {
 
-class TextAlignmentEditorWidget:public ItemEditorWidget
-{
-    Q_OBJECT
+class TextAlignmentEditorWidget : public ItemEditorWidget {
+  Q_OBJECT
 public:
-    explicit TextAlignmentEditorWidget(ReportDesignWidget* reportEditor, const QString &title, QWidget *parent = 0);
-    explicit TextAlignmentEditorWidget(ReportDesignWidget* reportEditor, QWidget *parent = 0);
-    explicit TextAlignmentEditorWidget(PageDesignIntf* page, const QString &title, QWidget *parent = 0);
-    explicit TextAlignmentEditorWidget(PageDesignIntf* page, QWidget *parent = 0);
+  explicit TextAlignmentEditorWidget(ReportDesignWidget *reportEditor, const QString &title, QWidget *parent = 0);
+  explicit TextAlignmentEditorWidget(ReportDesignWidget *reportEditor, QWidget *parent = 0);
+  explicit TextAlignmentEditorWidget(PageDesignIntf *page, const QString &title, QWidget *parent = 0);
+  explicit TextAlignmentEditorWidget(PageDesignIntf *page, QWidget *parent = 0);
+
 protected:
-    void setItemEvent(BaseDesignIntf *item);
+  void setItemEvent(BaseDesignIntf *item);
+
 private:
-    void initEditor();
-    void updateValues(const Qt::Alignment& align);
-    Qt::Alignment createAlignment();
+  void initEditor();
+  void updateValues(const Qt::Alignment &align);
+  Qt::Alignment createAlignment();
 private slots:
-    void slotTextHAttribsChanged(bool);
-    void slotTextVAttribsChanged(bool);
-    void slotPropertyChanged(const QString& objectName, const QString& property, const QVariant &oldValue, const QVariant &newValue);
+  void slotTextHAttribsChanged(bool);
+  void slotTextVAttribsChanged(bool);
+  void slotPropertyChanged(const QString &objectName, const QString &property, const QVariant &oldValue,
+                           const QVariant &newValue);
+
 private:
-    bool m_textAttibutesIsChanging;
+  bool m_textAttibutesIsChanging;
 
-    QAction* m_textAliginLeft;
-    QAction* m_textAliginRight;
-    QAction* m_textAliginHCenter;
-    QAction* m_textAliginJustify;
-    QAction* m_textAliginTop;
-    QAction* m_textAliginBottom;
-    QAction* m_textAliginVCenter;
-
+  QAction *m_textAliginLeft;
+  QAction *m_textAliginRight;
+  QAction *m_textAliginHCenter;
+  QAction *m_textAliginJustify;
+  QAction *m_textAliginTop;
+  QAction *m_textAliginBottom;
+  QAction *m_textAliginVCenter;
 };
 
-} //namespace LimeReport
+} // namespace LimeReport
 
 #endif // LRTEXTALIGNMENTEDITORWIDGET_H

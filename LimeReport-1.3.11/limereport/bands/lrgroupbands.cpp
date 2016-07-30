@@ -28,155 +28,110 @@
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
 #include "lrgroupbands.h"
-#include "lrglobal.h"
 #include "lrdatasourcemanager.h"
-
+#include "lrglobal.h"
 
 const QString xmlTagHeader = QLatin1String("GroupHeader");
 const QString xmlTagFooter = QLatin1String("GroupFooter");
 
-namespace{
+namespace {
 
-LimeReport::BaseDesignIntf* createHeader(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::GroupBandHeader(owner,parent);
+LimeReport::BaseDesignIntf *createHeader(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::GroupBandHeader(owner, parent);
 }
 
 bool registredHeader = LimeReport::DesignElementsFactory::instance().registerCreator(
-       xmlTagHeader,
-        LimeReport::ItemAttribs(QObject::tr("GroupHeader"),LimeReport::Const::bandTAG),
-        createHeader
-    );
+    xmlTagHeader, LimeReport::ItemAttribs(QObject::tr("GroupHeader"), LimeReport::Const::bandTAG), createHeader);
 
-LimeReport::BaseDesignIntf * createFooter(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::GroupBandFooter(owner,parent);
+LimeReport::BaseDesignIntf *createFooter(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::GroupBandFooter(owner, parent);
 }
 
 bool registredFooter = LimeReport::DesignElementsFactory::instance().registerCreator(
-        xmlTagFooter,
-        LimeReport::ItemAttribs(QObject::tr("GroupFooter"),LimeReport::Const::bandTAG),
-        createFooter
-    );
-
+    xmlTagFooter, LimeReport::ItemAttribs(QObject::tr("GroupFooter"), LimeReport::Const::bandTAG), createFooter);
 }
 
-namespace LimeReport{
+namespace LimeReport {
 
 GroupBandHeader::GroupBandHeader(QObject *owner, QGraphicsItem *parent)
-    : BandDesignIntf(BandDesignIntf::GroupHeader, xmlTagHeader, owner,parent),
-      m_groupFiledName(""), m_groupStarted(false), m_resetPageNumber(false)
-{
-    setBandTypeText(tr("GroupHeader"));
-    setFixedPos(false);
-    setMarkerColor(bandColor());
+    : BandDesignIntf(BandDesignIntf::GroupHeader, xmlTagHeader, owner, parent), m_groupFiledName(""),
+      m_groupStarted(false), m_resetPageNumber(false) {
+  setBandTypeText(tr("GroupHeader"));
+  setFixedPos(false);
+  setMarkerColor(bandColor());
 }
 
-bool GroupBandHeader::isUnique() const
-{
-    return false;
-}
+bool GroupBandHeader::isUnique() const { return false; }
 
-//bool GroupBandHeader::tryToKeepTogether()
+// bool GroupBandHeader::tryToKeepTogether()
 //{
 //    return m_tryToKeepTogether;
 //}
 
-BaseDesignIntf *GroupBandHeader::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new GroupBandHeader(owner, parent);
+BaseDesignIntf *GroupBandHeader::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new GroupBandHeader(owner, parent);
 }
 
-void GroupBandHeader::startGroup(DataSourceManager* dataManager)
-{
-    m_groupStarted=true;
+void GroupBandHeader::startGroup(DataSourceManager *dataManager) {
+  m_groupStarted = true;
 
-    QString lineVar = QLatin1String("line_")+objectName().toLower();
-    dataManager->setReportVariable(lineVar,1);
+  QString lineVar = QLatin1String("line_") + objectName().toLower();
+  dataManager->setReportVariable(lineVar, 1);
 
-    if ((dataManager->dataSource(parentBand()->datasourceName()))){
-        IDataSource* ds = dataManager->dataSource(parentBand()->datasourceName());
-        if (ds->columnIndexByName(m_groupFiledName)!=-1)
-            m_groupFieldValue=ds->data(m_groupFiledName);
-    }
+  if ((dataManager->dataSource(parentBand()->datasourceName()))) {
+    IDataSource *ds = dataManager->dataSource(parentBand()->datasourceName());
+    if (ds->columnIndexByName(m_groupFiledName) != -1) m_groupFieldValue = ds->data(m_groupFiledName);
+  }
 }
 
-QColor GroupBandHeader::bandColor() const
-{
-    return QColor(Qt::darkBlue);
+QColor GroupBandHeader::bandColor() const { return QColor(Qt::darkBlue); }
+
+bool GroupBandHeader::isNeedToClose(DataSourceManager *dataManager) {
+  // if (m_groupFieldValue.isNull()) return false;
+
+  if (!m_groupStarted) return false;
+  if (m_groupFiledName.isNull() or m_groupFiledName.isEmpty()) dataManager->putError("Group Field Not found");
+  if ((dataManager->dataSource(parentBand()->datasourceName()))) {
+    IDataSource *ds = dataManager->dataSource(parentBand()->datasourceName());
+    if (ds->data(m_groupFiledName).isNull() and m_groupFieldValue.isNull()) return false;
+    return ds->data(m_groupFiledName) != m_groupFieldValue;
+  }
+
+  return false;
 }
 
-bool GroupBandHeader::isNeedToClose(DataSourceManager* dataManager)
-{
-    //if (m_groupFieldValue.isNull()) return false;
-
-    if (!m_groupStarted) return false;
-    if (m_groupFiledName.isNull() || m_groupFiledName.isEmpty())
-        dataManager->putError("Group Field Not found");
-    if ((dataManager->dataSource(parentBand()->datasourceName()))){
-        IDataSource* ds = dataManager->dataSource(parentBand()->datasourceName());
-        if (ds->data(m_groupFiledName).isNull() && m_groupFieldValue.isNull()) return false;
-        return ds->data(m_groupFiledName)!=m_groupFieldValue;
-    }
-
-    return false;
+bool GroupBandHeader::isStarted() {
+  return m_groupStarted; //! m_groupFieldValue.isNull();
 }
 
-bool GroupBandHeader::isStarted()
-{
-    return m_groupStarted;//!m_groupFieldValue.isNull();
+void GroupBandHeader::closeGroup() {
+  m_groupFieldValue = QVariant();
+  m_groupStarted = false;
 }
 
-void GroupBandHeader::closeGroup()
-{
-    m_groupFieldValue=QVariant();
-    m_groupStarted=false;
-}
+int GroupBandHeader::index() { return bandIndex(); }
 
-int GroupBandHeader::index()
-{
-    return bandIndex();
-}
+bool GroupBandHeader::startNewPage() const { return BandDesignIntf::startNewPage(); }
 
-bool GroupBandHeader::startNewPage() const
-{
-    return BandDesignIntf::startNewPage();
-}
+void GroupBandHeader::setStartNewPage(bool startNewPage) { BandDesignIntf::setStartNewPage(startNewPage); }
 
-void GroupBandHeader::setStartNewPage(bool startNewPage)
-{
-    BandDesignIntf::setStartNewPage(startNewPage);
-}
+bool GroupBandHeader::resetPageNumber() const { return m_resetPageNumber; }
 
-bool GroupBandHeader::resetPageNumber() const
-{
-    return m_resetPageNumber;
-}
-
-void GroupBandHeader::setResetPageNumber(bool resetPageNumber)
-{
-    m_resetPageNumber = resetPageNumber;
-}
+void GroupBandHeader::setResetPageNumber(bool resetPageNumber) { m_resetPageNumber = resetPageNumber; }
 
 GroupBandFooter::GroupBandFooter(QObject *owner, QGraphicsItem *parent)
-    :BandDesignIntf(BandDesignIntf::GroupFooter, xmlTagFooter, owner,parent)
-{
-    setBandTypeText(tr("GroupFooter"));
-    setFixedPos(false);
-    setMarkerColor(bandColor());
+    : BandDesignIntf(BandDesignIntf::GroupFooter, xmlTagFooter, owner, parent) {
+  setBandTypeText(tr("GroupFooter"));
+  setFixedPos(false);
+  setMarkerColor(bandColor());
 }
 
-bool GroupBandFooter::isUnique() const
-{
-    return false;
+bool GroupBandFooter::isUnique() const { return false; }
+
+QColor GroupBandFooter::bandColor() const { return QColor(Qt::darkBlue); }
+
+BaseDesignIntf *GroupBandFooter::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new GroupBandFooter(owner, parent);
 }
 
-QColor GroupBandFooter::bandColor() const
-{
-    return QColor(Qt::darkBlue);
-}
-
-BaseDesignIntf *GroupBandFooter::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new GroupBandFooter(owner,parent);
-}
-
-} //namespace LimeReport
+} // namespace LimeReport

@@ -33,72 +33,80 @@
 #include <QString>
 #include <QtXml>
 
-#include "serializators/lrxmlwriter.h"
 #include "lrdesignelementsfactory.h"
+#include "serializators/lrxmlwriter.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-class XMLReader : public ItemsReaderIntf
-{
+class XMLReader : public ItemsReaderIntf {
 public:
-    XMLReader();
-    XMLReader(QSharedPointer<QDomDocument> doc);
+  XMLReader();
+  explicit XMLReader(QSharedPointer<QDomDocument> doc);
+
 protected:
+  virtual bool first();
+  virtual bool next();
+  virtual bool prior();
+  virtual QString itemType();
+  virtual QString itemClassName();
+  virtual bool readItem(QObject *item);
+  virtual int firstLevelItemsCount();
+  virtual bool prepareReader(QDomDocument *doc);
 
-    virtual bool first();
-    virtual bool next();
-    virtual bool prior();
-    virtual QString itemType();
-    virtual QString itemClassName();
-    virtual bool readItem(QObject *item);
-    virtual int firstLevelItemsCount();
-    virtual bool prepareReader(QDomDocument *doc);
+  void readItemFromNode(QObject *item, QDomElement *node);
+  void readProperty(QObject *item, QDomElement *node);
+  void readQObject(QObject *item, QDomElement *node);
+  void readCollection(QObject *item, QDomElement *node);
+  QVariant getValue(QDomElement *node);
 
-    void readItemFromNode(QObject *item, QDomElement *node);
-    void readProperty(QObject *item, QDomElement *node);
-    void readQObject(QObject *item, QDomElement *node);
-    void readCollection(QObject *item, QDomElement *node);
-    QVariant getValue(QDomElement *node);
+  virtual QString lastError();
 
-    virtual QString lastError();
 protected:
-    bool extractFirstNode();
-    QString m_error;
+  bool extractFirstNode();
+  QString m_error;
+
 private:
-    QSharedPointer<QDomDocument> m_doc;
-    QDomElement m_curNode;
-    QDomElement m_firstNode;
+  QSharedPointer<QDomDocument> m_doc;
+  QDomElement m_curNode;
+  QDomElement m_firstNode;
 };
 
-class FileXMLReader : public XMLReader{
+class FileXMLReader : public XMLReader {
 public:
-    static ItemsReaderIntf::Ptr create(QString fileName){ return ItemsReaderIntf::Ptr(new FileXMLReader(fileName));}
+  static ItemsReaderIntf::Ptr create(QString fileName) { return ItemsReaderIntf::Ptr(new FileXMLReader(fileName)); }
+
 protected:
-    virtual bool prepareReader(QDomDocument *doc);
+  virtual bool prepareReader(QDomDocument *doc);
+
 private:
-    FileXMLReader(QString fileName);
-    QString m_fileName;
+  explicit FileXMLReader(QString fileName);
+  QString m_fileName;
 };
 
-class StringXMLreader : public XMLReader{
+class StringXMLreader : public XMLReader {
 public:
-    static ItemsReaderIntf::Ptr create(QString content){ return ItemsReaderIntf::Ptr(new StringXMLreader(content));}
+  static ItemsReaderIntf::Ptr create(QString content) { return ItemsReaderIntf::Ptr(new StringXMLreader(content)); }
+
 protected:
-    virtual bool prepareReader(QDomDocument *doc);
+  virtual bool prepareReader(QDomDocument *doc);
+
 private:
-    StringXMLreader(QString content) : m_content(content){}
-    QString m_content;
+  explicit StringXMLreader(QString content) : m_content(content) {}
+  QString m_content;
 };
 
-class ByteArrayXMLReader : public XMLReader{
+class ByteArrayXMLReader : public XMLReader {
 public:
-    static ItemsReaderIntf::Ptr create(QByteArray* content){ return ItemsReaderIntf::Ptr(new ByteArrayXMLReader(content));}
-protected:
-    virtual bool prepareReader(QDomDocument *doc);
-private:
-    ByteArrayXMLReader(QByteArray* content): m_content(content){}
-    QByteArray* m_content;
-};
+  static ItemsReaderIntf::Ptr create(QByteArray *content) {
+    return ItemsReaderIntf::Ptr(new ByteArrayXMLReader(content));
+  }
 
+protected:
+  virtual bool prepareReader(QDomDocument *doc);
+
+private:
+  explicit ByteArrayXMLReader(QByteArray *content) : m_content(content) {}
+  QByteArray *m_content;
+};
 }
 #endif // LRXMLREADER_H

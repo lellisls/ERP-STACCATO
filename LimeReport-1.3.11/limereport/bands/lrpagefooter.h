@@ -30,20 +30,21 @@
 #ifndef LRPAGEFOOTER_H
 #define LRPAGEFOOTER_H
 
-#include "lrbanddesignintf.h"
-#include "lrbasedesignintf.h"
 #include <QObject>
 
-namespace LimeReport{
-class PageFooter : public LimeReport::BandDesignIntf
-{
-    Q_OBJECT
+#include "lrbanddesignintf.h"
+#include "lrbasedesignintf.h"
+
+namespace LimeReport {
+class PageFooter : public LimeReport::BandDesignIntf {
+  Q_OBJECT
 public:
-    PageFooter(QObject* owner = 0, QGraphicsItem* parent=0);
-    virtual BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
-    virtual bool isFooter() const {return true;}
+  PageFooter(QObject *owner = 0, QGraphicsItem *parent = 0);
+  virtual BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
+  virtual bool isFooter() const { return true; }
+
 protected:
-    QColor bandColor() const;
+  QColor bandColor() const;
 };
 }
 

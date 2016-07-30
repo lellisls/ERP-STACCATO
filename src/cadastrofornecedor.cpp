@@ -90,6 +90,7 @@ bool CadastroFornecedor::savingProcedures() {
   if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
   if (not setData("nextel", ui->lineEditNextel->text())) return false;
   if (not setData("email", ui->lineEditEmail->text())) return false;
+  if (not setData("coleta", ui->checkBoxColeta->isChecked())) return false;
 
   return true;
 }
@@ -118,6 +119,7 @@ void CadastroFornecedor::setupMapper() {
   addMapping(ui->lineEditTel_Cel, "telCel");
   addMapping(ui->lineEditTel_Com, "telCom");
   addMapping(ui->lineEditTel_Res, "tel");
+  addMapping(ui->checkBoxColeta, "coleta");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
@@ -156,8 +158,9 @@ void CadastroFornecedor::on_pushButtonNovoCad_clicked() { newRegister(); }
 void CadastroFornecedor::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroFornecedor::on_lineEditCNPJ_textEdited(const QString &text) {
-  ui->lineEditCNPJ->setStyleSheet(
-      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+  ui->lineEditCNPJ->setStyleSheet(validaCNPJ(QString(text).remove(".").remove("/").remove("-"))
+                                      ? "background-color: rgb(255, 255, 127)"
+                                      : "background-color: rgb(255, 255, 127);color: rgb(255, 0, 0)");
 }
 
 void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {
@@ -233,8 +236,8 @@ void CadastroFornecedor::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-bool CadastroFornecedor::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) return false;
+bool CadastroFornecedor::viewRegister() {
+  if (not RegisterDialog::viewRegister()) return false;
 
   modelEnd.setFilter("idFornecedor = " + data("idFornecedor").toString() + " AND desativado = FALSE");
 

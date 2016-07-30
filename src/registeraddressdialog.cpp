@@ -10,8 +10,13 @@ RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
+  setupTables(table);
+}
+
+void RegisterAddressDialog::setupTables(const QString &table) {
   modelEnd.setTable(table + "_has_endereco");
   modelEnd.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   modelEnd.setHeaderData("descricao", "Descrição");
   modelEnd.setHeaderData("cep", "CEP");
   modelEnd.setHeaderData("logradouro", "Logradouro");
@@ -20,7 +25,8 @@ RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString
   modelEnd.setHeaderData("bairro", "Bairro");
   modelEnd.setHeaderData("cidade", "Cidade");
   modelEnd.setHeaderData("uf", "UF");
-  modelEnd.setFilter("idEndereco = 0");
+
+  modelEnd.setFilter("0");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!",
@@ -31,63 +37,59 @@ RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString
   mapperEnd.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 }
 
-bool RegisterAddressDialog::save() {
+bool RegisterAddressDialog::cadastrar() {
   if (not verifyFields()) return false;
-
-  if (not isUpdate and not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-    viewRegister(model.index(row, 0));
-    return false;
-  }
-
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
 
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Erro linha -1");
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
 
-  if (not isUpdate) model.insertRow(row);
+  if (not isUpdate and not model.insertRow(row)) return false;
 
-  if (not savingProcedures()) {
-    errorMessage();
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
-    return false;
-  }
+  if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
     QVariant dado = model.data(row, column);
-    if (dado.type() == QVariant::String) model.setData(row, column, dado.toString().toUpper());
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
   }
 
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro: " + model.lastError().text());
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
 
-  const int id = data(row, primaryKey).isValid() ? data(row, primaryKey).toInt() : model.query().lastInsertId().toInt();
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    modelEnd.setData(row, primaryKey, id);
+    if (not modelEnd.setData(row, primaryKey, primaryId)) return false;
   }
 
   for (int column = 0; column < modelEnd.rowCount(); ++column) {
     QVariant dado = modelEnd.data(row, column);
-    if (dado.type() == QVariant::String) modelEnd.setData(row, column, dado.toString().toUpper());
+    if (dado.type() == QVariant::String) {
+      if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
+    }
   }
 
   if (not modelEnd.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
+    return false;
+  }
+
+  return true;
+}
+
+bool RegisterAddressDialog::save() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
     QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -95,7 +97,7 @@ bool RegisterAddressDialog::save() {
 
   isDirty = false;
 
-  viewRegister(model.index(row, 0));
+  viewRegisterById(primaryId);
 
   if (not silent) successMessage();
 

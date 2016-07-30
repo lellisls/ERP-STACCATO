@@ -3,7 +3,7 @@
 
 #include <QIdentityProxyModel>
 
-#include <src/sqltablemodel.h>
+#include "sqltablemodel.h"
 
 class SearchDialogProxy : public QIdentityProxyModel {
 

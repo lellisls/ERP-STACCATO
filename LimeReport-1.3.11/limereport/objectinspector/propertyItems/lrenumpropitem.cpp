@@ -33,75 +33,67 @@
 
 namespace {
 
-LimeReport::ObjectPropItem * createEnumPropItem(
-        QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly)
-{
-    return new LimeReport::EnumPropItem(object, objects, name, displayName, data, parent, readonly);
+LimeReport::ObjectPropItem *createEnumPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                               const QString &name, const QString &displayName, const QVariant &data,
+                                               LimeReport::ObjectPropItem *parent, bool readonly) {
+  return new LimeReport::EnumPropItem(object, objects, name, displayName, data, parent, readonly);
 }
-bool registred = LimeReport::ObjectPropFactory::instance().registerCreator(
-    LimeReport::APropIdent("enum",""),QObject::tr("enum"),createEnumPropItem
-);
-
+bool registred = LimeReport::ObjectPropFactory::instance().registerCreator(LimeReport::APropIdent("enum", ""),
+                                                                           QObject::tr("enum"), createEnumPropItem);
 }
 
 namespace LimeReport {
 
-QWidget *EnumPropItem::createProperyEditor(QWidget *parent) const
-{
-    ComboBoxEditor *editor = new ComboBoxEditor(parent,false);
-    connect(editor,SIGNAL(currentIndexChanged(QString)),this,SLOT(slotEnumChanged(QString)));
+QWidget *EnumPropItem::createProperyEditor(QWidget *parent) const {
+  ComboBoxEditor *editor = new ComboBoxEditor(parent, false);
+  connect(editor, &ComboBoxEditor::currentIndexChanged, this, &EnumPropItem::slotEnumChanged);
 
-    QStringList enumValues;
-    QMetaEnum propEnum = object()->metaObject()->property(object()->metaObject()->indexOfProperty(propertyName().toLatin1())).enumerator();
-    for (int i=0;i<propEnum.keyCount();i++){
-        if (m_acceptableValues.isEmpty()) enumValues.append(propEnum.key(i));
-        else {
-            if (m_acceptableValues.contains(propEnum.value(i))){
-                enumValues.append(propEnum.key(i));
-            }
-        }
+  QStringList enumValues;
+  QMetaEnum propEnum =
+      object()->metaObject()->property(object()->metaObject()->indexOfProperty(propertyName().toLatin1())).enumerator();
+  for (int i = 0; i < propEnum.keyCount(); i++) {
+    if (m_acceptableValues.isEmpty())
+      enumValues.append(propEnum.key(i));
+    else {
+      if (m_acceptableValues.contains(propEnum.value(i))) {
+        enumValues.append(propEnum.key(i));
+      }
     }
-    editor->addItems(enumValues);
-    return editor;
+  }
+  editor->addItems(enumValues);
+  return editor;
 }
 
-void EnumPropItem::slotEnumChanged(const QString &text)
-{
-    if ( nameByType(object()->property(propertyName().toLatin1()).toInt())!=text){
-        beginChangeValue();
-        setPropertyValue(typeByName(text));
-        setValueToObject(propertyName(),typeByName(text));
-        endChangeValue();
-    }
+void EnumPropItem::slotEnumChanged(const QString &text) {
+  if (nameByType(object()->property(propertyName().toLatin1()).toInt()) != text) {
+    beginChangeValue();
+    setPropertyValue(typeByName(text));
+    setValueToObject(propertyName(), typeByName(text));
+    endChangeValue();
+  }
 }
 
-void EnumPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const
-{
-    ComboBoxEditor *editor=qobject_cast<ComboBoxEditor *>(propertyEditor);
-    editor->setTextValue(nameByType(propertyValue().toInt()));
+void EnumPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ComboBoxEditor *editor = qobject_cast<ComboBoxEditor *>(propertyEditor);
+  editor->setTextValue(nameByType(propertyValue().toInt()));
 }
 
-void EnumPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index)
-{
-    setValueToObject(propertyName(),typeByName(qobject_cast<ComboBoxEditor*>(propertyEditor)->text()));
-    model->setData(index,object()->property(propertyName().toLatin1()));
+void EnumPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index) {
+  setValueToObject(propertyName(), typeByName(qobject_cast<ComboBoxEditor *>(propertyEditor)->text()));
+  model->setData(index, object()->property(propertyName().toLatin1()));
 }
 
-QString EnumPropItem::nameByType(int value) const
-{
-    QMetaEnum propEnum = object()->metaObject()->property(object()->metaObject()->indexOfProperty(propertyName().toLatin1())).enumerator();
-    return propEnum.valueToKey(value);
+QString EnumPropItem::nameByType(int value) const {
+  QMetaEnum propEnum =
+      object()->metaObject()->property(object()->metaObject()->indexOfProperty(propertyName().toLatin1())).enumerator();
+  return propEnum.valueToKey(value);
 }
 
-int EnumPropItem::typeByName(const QString &value) const
-{
-    QMetaEnum propEnum = object()->metaObject()->property(object()->metaObject()->indexOfProperty(propertyName().toLatin1())).enumerator();
-    return propEnum.keyToValue(value.toLatin1());
+int EnumPropItem::typeByName(const QString &value) const {
+  QMetaEnum propEnum =
+      object()->metaObject()->property(object()->metaObject()->indexOfProperty(propertyName().toLatin1())).enumerator();
+  return propEnum.keyToValue(value.toLatin1());
 }
 
-QString EnumPropItem::displayValue() const
-{
-    return nameByType((propertyValue().toInt()));
-}
-
+QString EnumPropItem::displayValue() const { return nameByType((propertyValue().toInt())); }
 }

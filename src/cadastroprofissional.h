@@ -41,7 +41,7 @@ private:
   QString tipoPFPJ;
   // methods
   bool cadastrarEndereco(const bool &isUpdate);
-  bool viewRegister(const QModelIndex &index) override;
+  bool viewRegister() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
   virtual void clearFields() override;

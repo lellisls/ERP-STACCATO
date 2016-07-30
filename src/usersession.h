@@ -6,7 +6,8 @@
 class UserSession {
 
 public:
-  static bool login(const QString &user, const QString &password);
+  enum Tipo { Padrao, Autorizacao };
+  static bool login(const QString &user, const QString &password, Tipo tipo = Padrao);
   static int idUsuario();
   static int idLoja();
   static QString nome();

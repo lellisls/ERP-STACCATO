@@ -1,42 +1,14 @@
 #include <QDebug>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
 #include "xml.h"
 
-XML::XML(const QByteArray &fileContent, const QString &fileName) : XML(model, fileContent, fileName) {}
-
-XML::XML(QStandardItemModel &model, const QByteArray &fileContent, const QString &fileName)
-    : fileContent(fileContent), fileName(fileName) {
-  if (not fileContent.isEmpty()) {
-    QDomDocument document;
-    QString error;
-
-    if (not document.setContent(fileContent, &error)) {
-      QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + error);
-      return;
-    }
-
-    QDomElement root = document.firstChildElement();
-    QDomNamedNodeMap map = root.attributes();
-    QString attributes = root.nodeName();
-
-    if (map.size() > 0) {
-      for (int i = 0; i < map.size(); ++i) {
-        attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
-      }
-    }
-
-    QStandardItem *rootItem = new QStandardItem(attributes);
-
-    model.appendRow(rootItem);
-
-    readChild(root, rootItem);
-
-    lerValores(model.item(0, 0));
-  }
+XML::XML(const QByteArray &fileContent, const QString &fileName) : fileContent(fileContent), fileName(fileName) {
+  montarArvore(model);
 }
 
 void XML::readChild(QDomElement &element, QStandardItem *elementItem) {
@@ -64,22 +36,18 @@ void XML::readChild(QDomElement &element, QStandardItem *elementItem) {
   }
 }
 
-bool XML::lerValores(const QStandardItem *item) {
+void XML::lerValores(const QStandardItem *item) {
   for (int row = 0; row < item->rowCount(); ++row) {
     for (int col = 0; col < item->columnCount(); ++col) {
       QStandardItem *child = item->child(row, col);
       QString text = child->text();
 
       if (text.left(6) == "infNFe") chaveAcesso = text.mid(text.indexOf("Id=") + 7, 44);
+      if (text.left(3) == "nNF") nNF = text.remove(0, 6);
 
       if (child->parent()->text() == "emit" and text.left(7) == "xFant -") xFant = text.remove(0, 8);
       if (child->parent()->text() == "emit" and text.left(7) == "xNome -") xNome = text.remove(0, 8);
       if (child->parent()->text() == "dest" and text.left(6) == "CNPJ -") cnpj = text.remove(0, 7);
-
-      if (child->parent()->text() == "dest" and text.left(5) == "CPF -") {
-        QMessageBox::critical(0, "Erro!", "Destinatário da nota é pessoa física!");
-        return false;
-      }
 
       lerDadosProduto(child);
       lerICMSProduto(child);
@@ -88,16 +56,12 @@ bool XML::lerValores(const QStandardItem *item) {
       lerCOFINSProduto(child);
       lerTotais(child);
 
-      if (child->hasChildren()) {
-        if (not lerValores(child)) return false;
-      }
+      if (child->hasChildren()) lerValores(child);
     }
   }
-
-  return true;
 }
 
-void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel) {
+bool XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel &externalModel) {
   for (int row = 0; row < item->rowCount(); ++row) {
     for (int col = 0; col < item->columnCount(); ++col) {
       QStandardItem *child = item->child(row, col);
@@ -105,12 +69,14 @@ void XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalMo
 
       if (text.mid(0, 10) == "det nItem=") {
         lerValores(child);
-        inserirItemSql(externalModel);
+        if (not inserirItemSql(externalModel)) return false;
       }
 
       if (child->hasChildren()) inserirNoSqlModel(child, externalModel);
     }
   }
+
+  return true;
 }
 
 bool XML::cadastrarNFe(const QString &tipo) {
@@ -138,11 +104,10 @@ bool XML::cadastrarNFe(const QString &tipo) {
     return false;
   }
 
-  query.prepare("INSERT INTO nfe (idCompra, tipo, chaveAcesso, xml) VALUES (:idCompra, :tipo, "
-                ":chaveAcesso, :xml)");
-  query.bindValue(":idCompra", "PLACEHOLDER");
+  query.prepare("INSERT INTO nfe (tipo, chaveAcesso, numeroNFe, xml) VALUES (:tipo, :chaveAcesso, :numeroNFe, :xml)");
   query.bindValue(":tipo", tipo);
   query.bindValue(":chaveAcesso", chaveAcesso);
+  query.bindValue(":numeroNFe", nNF);
   query.bindValue(":xml", file.readAll());
 
   if (not query.exec()) {
@@ -256,8 +221,10 @@ void XML::lerTotais(const QStandardItem *child) {
 
 bool XML::cadastrarEstoque() {
   QSqlQuery query;
+  query.prepare("SELECT fornecedor FROM produto WHERE codComercial = :codComercial");
+  query.bindValue(":codComercial", codProd);
 
-  if (not query.exec("SELECT fornecedor FROM produto WHERE codComercial = '" + codProd + "'")) {
+  if (not query.exec()) {
     QMessageBox::critical(0, "Erro!", "Erro buscando fornecedor: " + query.lastError().text());
     return false;
   }
@@ -329,14 +296,44 @@ bool XML::cadastrarEstoque() {
   return true;
 }
 
-void XML::mostrarNoSqlModel(SqlTableModel &externalModel) { inserirNoSqlModel(model.item(0, 0), &externalModel); }
+void XML::montarArvore(QStandardItemModel &model) {
+  if (fileContent.isEmpty()) return;
 
-bool XML::inserirItemSql(SqlTableModel *externalModel) {
-  auto list = externalModel->match(externalModel->index(0, externalModel->fieldIndex("codComercial")), Qt::DisplayRole,
-                                   codProd, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
+  QDomDocument document;
+  QString error;
+
+  if (not document.setContent(fileContent, &error)) {
+    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + error);
+    return;
+  }
+
+  QDomElement root = document.firstChildElement();
+  QDomNamedNodeMap map = root.attributes();
+  QString attributes = root.nodeName();
+
+  if (map.size() > 0) {
+    for (int i = 0; i < map.size(); ++i) {
+      attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+    }
+  }
+
+  QStandardItem *rootItem = new QStandardItem(attributes);
+
+  model.appendRow(rootItem);
+
+  readChild(root, rootItem);
+
+  lerValores(model.item(0, 0));
+}
+
+bool XML::mostrarNoSqlModel(SqlTableModel &externalModel) { return inserirNoSqlModel(model.item(0, 0), externalModel); }
+
+bool XML::inserirItemSql(SqlTableModel &externalModel) {
+  auto list = externalModel.match(externalModel.index(0, externalModel.fieldIndex("codComercial")), Qt::DisplayRole,
+                                  codProd, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
   for (auto item : list) {
-    if (externalModel->data(item.row(), "quant").toDouble() < 0) continue;
+    if (externalModel.data(item.row(), "quant").toDouble() < 0) continue;
 
     QMessageBox msgBox(QMessageBox::Question, "Atenção!",
                        "Produto é do mesmo lote da linha " + QString::number(item.row() + 1) + "?",
@@ -347,24 +344,33 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
     if (msgBox.exec() == QMessageBox::Yes) {
       int row = item.row();
 
-      double newQuant = externalModel->data(row, "quant").toDouble();
+      double newQuant = quant + externalModel.data(row, "quant").toDouble();
 
-      if (not externalModel->setData(row, "quant", quant + newQuant)) return false;
+      if (not externalModel.setData(row, "quant", newQuant)) return false;
 
-      QString id = externalModel->data(row, "idNFe").toString();
+      if (not externalModel.submitAll()) {
+        QMessageBox::critical(0, "Erro!", "Erro salvando estoque: " + externalModel.lastError().text());
+        return false;
+      }
 
-      if (not id.contains(QString::number(idNFe))) id = id + "," + QString::number(idNFe);
+      QSqlQuery query;
+      query.prepare("INSERT INTO estoque_has_nfe (idEstoque, idNFe) VALUES (:idEstoque, :idNFe)");
+      query.bindValue(":idEstoque", externalModel.data(row, "idEstoque"));
+      query.bindValue(":idNFe", idNFe);
 
-      externalModel->setData(row, "idNFe", id);
+      if (not query.exec()) {
+        QMessageBox::critical(0, "Erro!", "Erro cadastrando em estoque_has_nfe: " + query.lastError().text());
+        return false;
+      }
 
       return true;
     }
   }
 
-  int row = externalModel->rowCount();
+  int row = externalModel.rowCount();
 
-  if (not externalModel->insertRow(row)) {
-    QMessageBox::critical(0, "Erro!", "Erro inserindo linha na tabela: " + externalModel->lastError().text());
+  if (not externalModel.insertRow(row)) {
+    QMessageBox::critical(0, "Erro!", "Erro inserindo linha na tabela: " + externalModel.lastError().text());
     return false;
   }
 
@@ -378,59 +384,89 @@ bool XML::inserirItemSql(SqlTableModel *externalModel) {
   }
 
   int caixas = 0;
+  int idProduto = 0;
 
   if (query.first()) {
     double quantCaixa = ((un == "M²") or (un == "M2") or (un == "ML")) ? query.value("m2cx").toDouble()
                                                                        : query.value("pccx").toDouble();
 
     caixas = quant / quantCaixa;
+
+    idProduto = query.value("idProduto").toInt();
   }
 
-  if (not externalModel->setData(row, "idNFe", idNFe)) return false;
-  if (not externalModel->setData(row, "fornecedor", xNome)) return false;
-  if (not externalModel->setData(row, "local", "TEMP")) return false;
-  if (not externalModel->setData(row, "idProduto", query.first() ? query.value("idProduto").toInt() : 0)) return false;
-  if (not externalModel->setData(row, "descricao", descricao)) return false;
-  if (not externalModel->setData(row, "quant", quant)) return false;
-  if (not externalModel->setData(row, "un", un)) return false;
-  if (not externalModel->setData(row, "caixas", caixas)) return false;
-  if (not externalModel->setData(row, "codBarras", codBarras)) return false;
-  if (not externalModel->setData(row, "codComercial", codProd)) return false;
-  if (not externalModel->setData(row, "ncm", ncm)) return false;
-  if (not externalModel->setData(row, "cfop", cfop)) return false;
-  if (not externalModel->setData(row, "valorUnid", valorUnid)) return false;
-  if (not externalModel->setData(row, "valor", valor)) return false;
-  if (not externalModel->setData(row, "codBarrasTrib", codBarrasTrib)) return false;
-  if (not externalModel->setData(row, "unTrib", unTrib)) return false;
-  if (not externalModel->setData(row, "quantTrib", quantTrib)) return false;
-  if (not externalModel->setData(row, "valorTrib", valorTrib)) return false;
-  if (not externalModel->setData(row, "desconto", desconto)) return false;
-  if (not externalModel->setData(row, "compoeTotal", compoeTotal)) return false;
-  if (not externalModel->setData(row, "numeroPedido", numeroPedido)) return false;
-  if (not externalModel->setData(row, "itemPedido", itemPedido)) return false;
-  if (not externalModel->setData(row, "tipoICMS", tipoICMS)) return false;
-  if (not externalModel->setData(row, "orig", orig)) return false;
-  if (not externalModel->setData(row, "cstICMS", cstICMS)) return false;
-  if (not externalModel->setData(row, "modBC", modBC)) return false;
-  if (not externalModel->setData(row, "vBC", vBC)) return false;
-  if (not externalModel->setData(row, "pICMS", pICMS)) return false;
-  if (not externalModel->setData(row, "vICMS", vICMS)) return false;
-  if (not externalModel->setData(row, "modBCST", modBCST)) return false;
-  if (not externalModel->setData(row, "pMVAST", pMVAST)) return false;
-  if (not externalModel->setData(row, "vBCST", vBCST)) return false;
-  if (not externalModel->setData(row, "pICMSST", pICMSST)) return false;
-  if (not externalModel->setData(row, "vICMSST", vICMSST)) return false;
-  if (not externalModel->setData(row, "cEnq", cEnq)) return false;
-  if (not externalModel->setData(row, "cstIPI", cstIPI)) return false;
-  if (not externalModel->setData(row, "cstPIS", cstPIS)) return false;
-  if (not externalModel->setData(row, "vBCPIS", vBCPIS)) return false;
-  if (not externalModel->setData(row, "pPIS", pPIS)) return false;
-  if (not externalModel->setData(row, "vPIS", vPIS)) return false;
-  if (not externalModel->setData(row, "cstCOFINS", cstCOFINS)) return false;
-  if (not externalModel->setData(row, "vBCCOFINS", vBCCOFINS)) return false;
-  if (not externalModel->setData(row, "pCOFINS", pCOFINS)) return false;
-  if (not externalModel->setData(row, "vCOFINS", vCOFINS)) return false;
-  if (not externalModel->setData(row, "status", "TEMP")) return false;
+  if (not query.exec("SELECT descricao FROM loja WHERE descricao > '' AND descricao != 'CD'")) {
+    QMessageBox::critical(0, "Erro!", "Erro buscando lojas: " + query.lastError().text());
+    return false;
+  }
+
+  QStringList lojas = {"CD", "Estoque Sul", "Balneário"}; // TODO: tornar dinamico
+
+  while (query.next()) {
+    lojas << query.value("descricao").toString();
+  }
+
+  QString local = QInputDialog::getItem(0, "Local", "Local do depósito:", lojas, 0, false);
+  //
+
+  if (not externalModel.setData(row, "fornecedor", xNome)) return false;
+  if (not externalModel.setData(row, "local", local)) return false;
+  if (not externalModel.setData(row, "idProduto", idProduto)) return false;
+  if (not externalModel.setData(row, "descricao", descricao)) return false;
+  if (not externalModel.setData(row, "quant", quant)) return false;
+  if (not externalModel.setData(row, "un", un)) return false;
+  if (not externalModel.setData(row, "caixas", caixas)) return false;
+  if (not externalModel.setData(row, "codBarras", codBarras)) return false;
+  if (not externalModel.setData(row, "codComercial", codProd)) return false;
+  if (not externalModel.setData(row, "ncm", ncm)) return false;
+  if (not externalModel.setData(row, "cfop", cfop)) return false;
+  if (not externalModel.setData(row, "valorUnid", valorUnid)) return false;
+  if (not externalModel.setData(row, "valor", valor)) return false;
+  if (not externalModel.setData(row, "codBarrasTrib", codBarrasTrib)) return false;
+  if (not externalModel.setData(row, "unTrib", unTrib)) return false;
+  if (not externalModel.setData(row, "quantTrib", quantTrib)) return false;
+  if (not externalModel.setData(row, "valorTrib", valorTrib)) return false;
+  if (not externalModel.setData(row, "desconto", desconto)) return false;
+  if (not externalModel.setData(row, "compoeTotal", compoeTotal)) return false;
+  if (not externalModel.setData(row, "numeroPedido", numeroPedido)) return false;
+  if (not externalModel.setData(row, "itemPedido", itemPedido)) return false;
+  if (not externalModel.setData(row, "tipoICMS", tipoICMS)) return false;
+  if (not externalModel.setData(row, "orig", orig)) return false;
+  if (not externalModel.setData(row, "cstICMS", cstICMS)) return false;
+  if (not externalModel.setData(row, "modBC", modBC)) return false;
+  if (not externalModel.setData(row, "vBC", vBC)) return false;
+  if (not externalModel.setData(row, "pICMS", pICMS)) return false;
+  if (not externalModel.setData(row, "vICMS", vICMS)) return false;
+  if (not externalModel.setData(row, "modBCST", modBCST)) return false;
+  if (not externalModel.setData(row, "pMVAST", pMVAST)) return false;
+  if (not externalModel.setData(row, "vBCST", vBCST)) return false;
+  if (not externalModel.setData(row, "pICMSST", pICMSST)) return false;
+  if (not externalModel.setData(row, "vICMSST", vICMSST)) return false;
+  if (not externalModel.setData(row, "cEnq", cEnq)) return false;
+  if (not externalModel.setData(row, "cstIPI", cstIPI)) return false;
+  if (not externalModel.setData(row, "cstPIS", cstPIS)) return false;
+  if (not externalModel.setData(row, "vBCPIS", vBCPIS)) return false;
+  if (not externalModel.setData(row, "pPIS", pPIS)) return false;
+  if (not externalModel.setData(row, "vPIS", vPIS)) return false;
+  if (not externalModel.setData(row, "cstCOFINS", cstCOFINS)) return false;
+  if (not externalModel.setData(row, "vBCCOFINS", vBCCOFINS)) return false;
+  if (not externalModel.setData(row, "pCOFINS", pCOFINS)) return false;
+  if (not externalModel.setData(row, "vCOFINS", vCOFINS)) return false;
+  if (not externalModel.setData(row, "status", "TEMP")) return false;
+
+  if (not externalModel.submitAll()) {
+    QMessageBox::critical(0, "Erro!", "Erro gerando id estoque: " + externalModel.lastError().text());
+    return false;
+  }
+
+  query.prepare("INSERT INTO estoque_has_nfe (idEstoque, idNFe) VALUES (:idEstoque, :idNFe)");
+  query.bindValue(":idEstoque", externalModel.data(row, "idEstoque"));
+  query.bindValue(":idNFe", idNFe);
+
+  if (not query.exec()) {
+    QMessageBox::critical(0, "Erro!", "Erro cadastrando em estoque_has_nfe: " + query.lastError().text());
+    return false;
+  }
 
   return true;
 }

@@ -40,44 +40,47 @@ private:
   int validade;
   QHash<int, bool> hashAtualizado;
   QHash<QString, int> hash;
+  int i = 0;
+  QString tipo; // TODO: transform to enum
   QMap<QString, int> fornecedores;
   QProgressDialog *progressDialog;
   QSqlDatabase db;
   QString file;
   QString fornecedor;
-  QString ids;
+  QStringList idsFornecedor;
   QVariantMap variantMap;
   SqlTableModel model;
   SqlTableModel modelErro;
   // methods
   bool camposForaDoPadrao();
+  bool importar();
   bool readFile();
   bool readValidade();
   bool verificaSeProdutoJaCadastrado();
   bool verificaTabela(const QSqlRecord &record);
-  int buscarCadastrarFornecedor(const QString &fornecedor);
+  bool buscarCadastrarFornecedor(const QString &fornecedor, int &id);
   virtual void closeEvent(QCloseEvent *event) override;
-  void atualizaCamposProduto();
-  void atualizaProduto();
-  void cadastraFornecedores();
-  void cadastraProduto(const QString &tipo);
+  bool atualizaCamposProduto();
+  bool atualizaProduto();
+  bool cadastraFornecedores();
+  bool cadastraProduto();
   void consistenciaDados();
   void contaProdutos();
-  void expiraPrecosAntigos();
-  void guardaNovoPrecoValidade();
-  void importarTabela(const QString &tipo);
-  void insereEmErro();
-  void insereEmOk(const QString &tipo);
+  bool expiraPrecosAntigos();
+  bool guardaNovoPrecoValidade();
+  void importarTabela();
+  bool insereEmErro();
+  bool insereEmOk();
   void leituraProduto(const QSqlQuery &query, const QSqlRecord &record);
-  void marcaProdutoNaoDescontinuado();
-  void marcaTodosProdutosDescontinuados(const QString &tipo);
+  bool marcaProdutoNaoDescontinuado();
+  bool marcaTodosProdutosDescontinuados();
   void mostraApenasEstesFornecedores();
-  void pintarCamposForaDoPadrao(const int &row);
+  bool pintarCamposForaDoPadrao(const int &row);
   void salvar();
   void setProgressDialog();
   void setupTables();
   void setVariantMap();
-  void verificaSeRepresentacao();
+  bool verificaSeRepresentacao();
 
   enum FieldColors {
     White = 0,  // no change

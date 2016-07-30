@@ -15,7 +15,10 @@ class WidgetEstoque : public QWidget {
 public:
   explicit WidgetEstoque(QWidget *parent = 0);
   ~WidgetEstoque();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_radioButtonMaior_toggled(bool checked);

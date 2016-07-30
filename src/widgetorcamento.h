@@ -15,15 +15,19 @@ class WidgetOrcamento : public QWidget {
 public:
   explicit WidgetOrcamento(QWidget *parent = 0);
   ~WidgetOrcamento();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void montaFiltro();
+  void on_comboBoxLojas_currentIndexChanged(int);
+  void on_groupBoxStatus_toggled(const bool &enabled);
   void on_pushButtonCriarOrc_clicked();
+  void on_pushButtonFollowup_clicked();
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
-  void on_pushButtonFollowup_clicked();
-  void on_groupBoxStatus_toggled(const bool &enabled);
 
 private:
   // attributes
@@ -31,6 +35,8 @@ private:
   SqlTableModel model;
   // methods
   void setupTables();
+  void setPermissions();
+  void makeConnections();
 };
 
 #endif // WIDGETORCAMENTO_H

@@ -88,10 +88,10 @@ void TextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *style, Q
   switch (m_angle) {
   case Angle0:
     hOffset = fakeMarginSize();
-    if ((tmpSize.height() > 0) && (m_alignment & Qt::AlignVCenter)) {
+    if ((tmpSize.height() > 0) and (m_alignment & Qt::AlignVCenter)) {
       vOffset = tmpSize.height() / 2;
     }
-    if ((tmpSize.height() > 0) && (m_alignment & Qt::AlignBottom)) // allow html
+    if ((tmpSize.height() > 0) and (m_alignment & Qt::AlignBottom)) // allow html
       vOffset = tmpSize.height();
     painter->translate(hOffset, vOffset);
     break;
@@ -111,10 +111,10 @@ void TextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *style, Q
   case Angle180:
     hOffset = width() - fakeMarginSize();
     vOffset = height() - fakeMarginSize();
-    if ((tmpSize.width() > 0) && (m_alignment & Qt::AlignVCenter)) {
+    if ((tmpSize.width() > 0) and (m_alignment & Qt::AlignVCenter)) {
       vOffset = tmpSize.height() / 2 + m_text->size().height();
     }
-    if ((tmpSize.height() > 0) && (m_alignment & Qt::AlignBottom)) {
+    if ((tmpSize.height() > 0) and (m_alignment & Qt::AlignBottom)) {
       vOffset = (m_text->size().height());
     }
     painter->translate(hOffset, vOffset);
@@ -206,11 +206,11 @@ void TextItem::updateItemSize(DataSourceManager *dataManager, RenderPass pass, i
   if (isNeedExpandContent()) expandContent(dataManager, pass);
   if (!isLoading()) initText();
 
-  if (m_textSize.width() > width() && ((m_autoWidth == MaxWordLength) || (m_autoWidth == MaxStringLength))) {
+  if (m_textSize.width() > width() and ((m_autoWidth == MaxWordLength) or (m_autoWidth == MaxStringLength))) {
     setWidth(m_textSize.width() + fakeMarginSize() * 2);
   }
 
-  if ((m_textSize.height() > height()) && (m_autoHeight)) {
+  if ((m_textSize.height() > height()) and (m_autoHeight)) {
     setHeight(m_textSize.height() + 5);
   }
   BaseDesignIntf::updateItemSize(dataManager, pass, maxHeight);
@@ -256,7 +256,7 @@ void TextItem::initText() {
   m_text->setDocumentMargin(0);
   m_text->setDefaultTextOption(to);
   m_text->setDefaultFont(transformToSceneFont(font()));
-  if ((m_angle == Angle0) || (m_angle == Angle180)) {
+  if ((m_angle == Angle0) or (m_angle == Angle180)) {
     m_text->setTextWidth(rect().width() - fakeMarginSize() * 2);
   } else {
     m_text->setTextWidth(rect().height() - fakeMarginSize() * 2);
@@ -294,19 +294,19 @@ bool TextItem::trimValue() const { return m_trimValue; }
 void TextItem::setTrimValue(bool trimValue) { m_trimValue = trimValue; }
 
 void TextItem::geometryChangedEvent(QRectF, QRectF) {
-  //    if ((m_angle==Angle0)||(m_angle==Angle180)){
-  //        m_text->setTextWidth(rect().width()-fakeMarginSize()*2);
-  //    } else {
-  //        m_text->setTextWidth(rect().height()-fakeMarginSize()*2);
-  //    }
-  //    m_textSize=m_text->size();
+  //  if ((m_angle == Angle0) or (m_angle == Angle180)) {
+  //    m_text->setTextWidth(rect().width() - fakeMarginSize() * 2);
+  //  } else {
+  //    m_text->setTextWidth(rect().height() - fakeMarginSize() * 2);
+  //  }
+  //  m_textSize = m_text->size();
   if (itemMode() == DesignMode) initText();
 }
 
 bool TextItem::isNeedUpdateSize(RenderPass pass) const {
   Q_UNUSED(pass)
-  bool res = (m_textSize.height() > geometry().height() && autoHeight()) ||
-             (m_textSize.width() > geometry().width() && autoWidth()) || isNeedExpandContent();
+  bool res = (m_textSize.height() > geometry().height() and autoHeight()) or
+             (m_textSize.width() > geometry().width() and autoWidth()) or isNeedExpandContent();
   return res;
 }
 
@@ -325,7 +325,7 @@ void TextItem::setAlignment(Qt::Alignment value) {
 
 void TextItem::expandContent(DataSourceManager *dataManager, RenderPass pass) {
   QString context = content();
-  ExpandType expandType = (allowHTML() && !allowHTMLInFields()) ? ReplaceHTMLSymbols : NoEscapeSymbols;
+  ExpandType expandType = (allowHTML() and !allowHTMLInFields()) ? ReplaceHTMLSymbols : NoEscapeSymbols;
   switch (pass) {
   case FirstPass:
     context = expandUserVariables(context, pass, expandType, dataManager);
@@ -429,7 +429,7 @@ BaseDesignIntf *TextItem::cloneEmpty(int height, QObject *owner, QGraphicsItem *
 
 void TextItem::objectLoadFinished() {
   ItemDesignIntf::objectLoadFinished();
-  if (itemMode() == DesignMode || !isNeedExpandContent()) {
+  if (itemMode() == DesignMode or !isNeedExpandContent()) {
     initText();
   }
 }

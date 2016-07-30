@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>WidgetLogistica</class>
  <widget class="QWidget" name="WidgetLogistica">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -76,6 +79,16 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Agendar Coleta</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="WidgetLogisticaAgendarColeta" name="widgetAgendarColeta" native="true"/>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">
         <string>Coleta</string>
@@ -95,6 +108,11 @@
          <widget class="WidgetLogisticaRecebimento" name="widgetRecebimento" native="true"/>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Agendar Entrega</string>
+       </attribute>
       </widget>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">
@@ -154,6 +172,12 @@
    <class>WidgetLogisticaRepresentacao</class>
    <extends>QWidget</extends>
    <header>src/widgetlogisticarepresentacao.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetLogisticaAgendarColeta</class>
+   <extends>QWidget</extends>
+   <header>src/widgetlogisticaagendarcoleta.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

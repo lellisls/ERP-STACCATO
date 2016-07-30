@@ -15,13 +15,17 @@ class WidgetLogisticaRecebimento : public QWidget {
 public:
   explicit WidgetLogisticaRecebimento(QWidget *parent = 0);
   ~WidgetLogisticaRecebimento();
-  bool updateTables(QString &error);
+  bool updateTables();
   void TableFornLogistica_activated(const QString &fornecedor);
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_checkBoxMarcarTodos_clicked(const bool &);
   void on_pushButtonMarcarRecebido_clicked();
   void on_table_entered(const QModelIndex &);
+  void on_lineEditBuscaRecebimento_textChanged(const QString &text);
 
 private:
   // attributes

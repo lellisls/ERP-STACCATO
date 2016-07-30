@@ -16,6 +16,7 @@ public:
 
 public slots:
   void updateTables();
+  void timerStatusBar(QString error);
 
 private slots:
   void on_actionCadastrarCliente_triggered();
@@ -47,7 +48,6 @@ private:
   // methods
   bool event(QEvent *event);
   void darkTheme();
-  void timerStatusBar();
 };
 
 #endif // MAINWINDOW_H

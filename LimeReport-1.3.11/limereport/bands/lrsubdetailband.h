@@ -33,59 +33,63 @@
 #include "lrbanddesignintf.h"
 #include "lrbasedesignintf.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-class SubDetailBand : public DataBandDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(bool splittable READ isSplittable WRITE setSplittable)
-    Q_PROPERTY(int columnsCount READ columnsCount WRITE setColumnsCount)
-    Q_PROPERTY(BandColumnsLayoutType columnsFillDirection  READ columnsFillDirection WRITE setColumnsFillDirection)
+class SubDetailBand : public DataBandDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(bool splittable READ isSplittable WRITE setSplittable)
+  Q_PROPERTY(int columnsCount READ columnsCount WRITE setColumnsCount)
+  Q_PROPERTY(BandColumnsLayoutType columnsFillDirection READ columnsFillDirection WRITE setColumnsFillDirection)
 public:
-    SubDetailBand(QObject* owner = 0, QGraphicsItem* parent=0);
-    bool isUnique() const {return false;}
-    bool isHasHeader() const;
-    bool isHasFooter() const;
+  SubDetailBand(QObject *owner = 0, QGraphicsItem *parent = 0);
+  bool isUnique() const { return false; }
+  bool isHasHeader() const;
+  bool isHasFooter() const;
+
 private:
-    virtual BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
+  virtual BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
+
 protected:
-    virtual QColor bandColor() const;
+  virtual QColor bandColor() const;
 };
 
-class SubDetailHeaderBand : public BandDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(bool printAlways READ printAlways() WRITE setPrintAlways())
+class SubDetailHeaderBand : public BandDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(bool printAlways READ printAlways() WRITE setPrintAlways())
 public:
-    SubDetailHeaderBand(QObject* owner = 0, QGraphicsItem* parent=0);
-    bool isUnique() const;
-    void setPrintAlways(bool value){m_printAlways=value;}
-    bool printAlways(){return m_printAlways;}
+  SubDetailHeaderBand(QObject *owner = 0, QGraphicsItem *parent = 0);
+  bool isUnique() const;
+  void setPrintAlways(bool value) { m_printAlways = value; }
+  bool printAlways() { return m_printAlways; }
+
 protected:
-    QColor bandColor() const;
+  QColor bandColor() const;
+
 private:
-    BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
+  BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
+
 private:
-    bool m_printAlways;
+  bool m_printAlways;
 };
 
-class SubDetailFooterBand : public BandDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(bool printAlways READ printAlways() WRITE setPrintAlways())
+class SubDetailFooterBand : public BandDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(bool printAlways READ printAlways() WRITE setPrintAlways())
 public:
-    SubDetailFooterBand(QObject* owner = 0, QGraphicsItem* parent=0);
-    void setPrintAlways(bool value){m_printAlways=value;}
-    bool printAlways(){return m_printAlways;}
-    virtual bool isUnique() const;
-    bool isFooter() const{return true;}
-protected:
-    QColor bandColor() const;
-private:
-    BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
-private:
-    bool m_printAlways;
-};
+  SubDetailFooterBand(QObject *owner = 0, QGraphicsItem *parent = 0);
+  void setPrintAlways(bool value) { m_printAlways = value; }
+  bool printAlways() { return m_printAlways; }
+  virtual bool isUnique() const;
+  bool isFooter() const { return true; }
 
+protected:
+  QColor bandColor() const;
+
+private:
+  BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
+
+private:
+  bool m_printAlways;
+};
 }
 #endif // LRSUBDETAILBAND_H

@@ -97,10 +97,41 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_36">
         <item row="0" column="0">
-         <widget class="WidgetContaPagar" name="widgetPagar" native="true"/>
-        </item>
-        <item row="0" column="1">
-         <widget class="WidgetContaReceber" name="widgetReceber" native="true"/>
+         <widget class="QTabWidget" name="tabWidget_2">
+          <property name="currentIndex">
+           <number>2</number>
+          </property>
+          <widget class="QWidget" name="tab_4">
+           <attribute name="title">
+            <string>Fluxo de Caixa</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="0">
+             <widget class="QTableView" name="tableView"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>Contas a Pagar</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <widget class="WidgetContaPagar" name="widgetPagar" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_3">
+           <attribute name="title">
+            <string>Contas a Receber</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="WidgetContaReceber" name="widgetReceber" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>

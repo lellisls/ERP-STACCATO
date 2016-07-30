@@ -31,19 +31,20 @@
 #define LRREPORTHEADER_H
 
 #include <QObject>
+
 #include "lrbanddesignintf.h"
 #include "lrbasedesignintf.h"
 
-namespace LimeReport{
-class ReportHeader : public LimeReport::BandDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(bool splittable READ isSplittable WRITE setSplittable )
+namespace LimeReport {
+class ReportHeader : public LimeReport::BandDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(bool splittable READ isSplittable WRITE setSplittable)
 public:
-    ReportHeader(QObject* owner = 0, QGraphicsItem *parent=0);
-    virtual BaseDesignIntf* createSameTypeItem(QObject* owner=0, QGraphicsItem* parent=0);
+  ReportHeader(QObject *owner = 0, QGraphicsItem *parent = 0);
+  virtual BaseDesignIntf *createSameTypeItem(QObject *owner = 0, QGraphicsItem *parent = 0);
+
 protected:
-    QColor bandColor() const;
+  QColor bandColor() const;
 };
 }
 #endif // LRREPORTHEADER_H

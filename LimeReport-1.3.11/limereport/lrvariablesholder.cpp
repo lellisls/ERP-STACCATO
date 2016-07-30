@@ -27,121 +27,95 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
-#include "lrvariablesholder.h"
-#include <stdexcept>
-#include <QStringList>
 #include <QDebug>
+#include <QStringList>
+#include <stdexcept>
 
-namespace LimeReport{
+#include "lrvariablesholder.h"
 
-AVariablesHolder::AVariablesHolder(QObject *parent) :
-    QObject(parent)
-{
+namespace LimeReport {
+
+AVariablesHolder::AVariablesHolder(QObject *parent) : QObject(parent) {}
+
+AVariablesHolder::~AVariablesHolder() {
+  qDeleteAll(m_varNames);
+  m_varNames.clear();
+  m_userVariables.clear();
 }
 
-AVariablesHolder::~AVariablesHolder()
-{
-    QMap<QString,VarDesc*>::iterator it = m_varNames.begin();
-    while(it!=m_varNames.end()){
-        delete *it;
-        it++;
-    }
-    m_varNames.clear();
-    m_userVariables.clear();
+void AVariablesHolder::addVariable(const QString &name, const QVariant &value, VarDesc::VarType type, RenderPass pass) {
+  if (!m_varNames.contains(name)) {
+    VarDesc *varValue = new VarDesc;
+    varValue->setName(name);
+    varValue->setValue(value);
+    varValue->setVarType(type);
+    varValue->setRenderPass(pass);
+    m_varNames.insert(name, varValue);
+    if (type == VarDesc::User) m_userVariables.append(varValue);
+  } else {
+    throw ReportError(tr("variable with name ") + name + tr(" already exists !!"));
+  }
 }
 
-void AVariablesHolder::addVariable(const QString& name, const QVariant& value, VarDesc::VarType type, RenderPass pass)
-{
-    if (!m_varNames.contains(name)){
-        VarDesc* varValue = new VarDesc;
-        varValue->setName(name);
-        varValue->setValue(value);
-        varValue->setVarType(type);
-        varValue->setRenderPass(pass);
-        m_varNames.insert(name,varValue);
-        if (type==VarDesc::User)
-            m_userVariables.append(varValue);
+QVariant AVariablesHolder::variable(const QString &name) {
+  if (m_varNames.contains(name))
+    return m_varNames.value(name)->value();
+  else
+    return QVariant();
+}
+
+VarDesc::VarType AVariablesHolder::variableType(const QString &name) {
+  if (m_varNames.contains(name))
+    return m_varNames.value(name)->varType();
+  else
+    throw ReportError(tr("variable with name ") + name + tr(" does not exists !!"));
+}
+
+void AVariablesHolder::deleteVariable(const QString &name) {
+  if (m_varNames.contains(name)) {
+    m_userVariables.removeOne(m_varNames.value(name));
+    delete m_varNames.value(name);
+    m_varNames.remove(name);
+  }
+}
+
+void AVariablesHolder::changeVariable(const QString &name, const QVariant &value) {
+  if (m_varNames.contains(name)) {
+    m_varNames.value(name)->setValue(value);
+  } else
+    throw ReportError(tr("variable with name ") + name + tr(" does not exists !!"));
+}
+
+void AVariablesHolder::clearUserVariables() {
+  QMap<QString, VarDesc *>::iterator it = m_varNames.begin();
+  while (it != m_varNames.end()) {
+    if (it.value()->varType() == VarDesc::User) {
+      m_userVariables.removeAll(it.value());
+      delete it.value();
+      it = m_varNames.erase(it);
     } else {
-        throw ReportError(tr("variable with name ")+name+tr(" already exists !!"));
+      ++it;
     }
+  }
 }
 
-QVariant AVariablesHolder::variable(const QString &name)
-{
-    if (m_varNames.contains(name))
-        return m_varNames.value(name)->value();
-    else return QVariant();
+bool AVariablesHolder::containsVariable(const QString &name) { return m_varNames.contains(name); }
+
+int AVariablesHolder::userVariablesCount() { return m_userVariables.count(); }
+
+VarDesc *AVariablesHolder::userVariableAt(int index) { return m_userVariables.at(index); }
+
+QStringList AVariablesHolder::variableNames() {
+  QStringList result;
+  foreach (QString varName, m_varNames.keys()) { result << varName; }
+  return result;
 }
 
-VarDesc::VarType AVariablesHolder::variableType(const QString &name)
-{
-    if (m_varNames.contains(name))
-        return m_varNames.value(name)->varType();
-    else throw ReportError(tr("variable with name ")+name+tr(" does not exists !!"));
+RenderPass AVariablesHolder::variablePass(const QString &name) {
+  if (m_varNames.contains(name))
+    return m_varNames.value(name)->renderPass();
+  else
+    throw ReportError(tr("variable with name ") + name + tr(" does not exists !!"));
 }
 
-void AVariablesHolder::deleteVariable(const QString &name)
-{
-    if (m_varNames.contains(name)) {
-        m_userVariables.removeOne(m_varNames.value(name));
-        delete m_varNames.value(name);
-        m_varNames.remove(name);
-    }
-}
-
-void AVariablesHolder::changeVariable(const QString &name, const QVariant &value)
-{
-    if(m_varNames.contains(name)) {
-        m_varNames.value(name)->setValue(value);
-    } else
-        throw ReportError(tr("variable with name ")+name+tr(" does not exists !!"));
-}
-
-void AVariablesHolder::clearUserVariables()
-{
-    QMap<QString,VarDesc*>::iterator it = m_varNames.begin();
-    while (it != m_varNames.end()){
-        if (it.value()->varType()==VarDesc::User){
-            m_userVariables.removeAll(it.value());
-            delete it.value();
-            it = m_varNames.erase(it);
-        } else {
-            ++it;
-        }
-
-    }
-
-}
-
-bool AVariablesHolder::containsVariable(const QString &name)
-{
-    return m_varNames.contains(name);
-}
-
-int AVariablesHolder::userVariablesCount()
-{
-    return m_userVariables.count();
-}
-
-VarDesc *AVariablesHolder::userVariableAt(int index)
-{
-    return m_userVariables.at(index);
-}
-
-QStringList AVariablesHolder::variableNames()
-{
-    QStringList result;
-    foreach(QString varName,m_varNames.keys()){
-        result<<varName;
-    }
-    return result;
-}
-
-RenderPass AVariablesHolder::variablePass(const QString &name)
-{
-    if (m_varNames.contains(name))
-        return m_varNames.value(name)->renderPass();
-    else throw ReportError(tr("variable with name ")+name+tr(" does not exists !!"));
-}
-
-}// namespace LimeReport
+} // namespace LimeReport

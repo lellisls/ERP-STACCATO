@@ -30,53 +30,50 @@
 #ifndef LRATTRIBABSTRACTFACTORY_H
 #define LRATTRIBABSTRACTFACTORY_H
 
-#include "lrsingleton.h"
-#include "lrglobal.h"
-#include <stdexcept>
 #include <QMap>
 #include <QString>
+#include <stdexcept>
 
-namespace LimeReport{
+#include "lrglobal.h"
+#include "lrsingleton.h"
 
-template
-<
-    typename AbstractProduct,
-    typename IdentifierType,
-    typename ProductCreator,
-    typename Attribs
->
+namespace LimeReport {
+
+template <typename AbstractProduct, typename IdentifierType, typename ProductCreator, typename Attribs>
 class AttribsAbstractFactory
-  : public Singleton< AttribsAbstractFactory< AbstractProduct,IdentifierType,ProductCreator,Attribs > >
-{
+    : public Singleton<AttribsAbstractFactory<AbstractProduct, IdentifierType, ProductCreator, Attribs>> {
 private:
-    typedef QMap<IdentifierType,ProductCreator> FactoryMap;
-    typedef QMap<IdentifierType,Attribs> AliasMap;
-    friend class Singleton< AttribsAbstractFactory< AbstractProduct,IdentifierType,ProductCreator,Attribs > >;
-public:
-    bool registerCreator(const IdentifierType& id, Attribs attribs, ProductCreator creator){
-        return (m_factoryMap.insert(id,creator).value()==creator)&&
-               (m_attribsMap.insert(id,attribs).value()==attribs);
-    }
-    bool unregisterCreator(const IdentifierType& id){
-        return (m_factoryMap.remove(id)==1)&&(m_attribsMap.remove(id)==1);
-    }
-    ProductCreator objectCreator(const IdentifierType& id){
-        if (m_factoryMap.contains(id)){
-            return m_factoryMap[id];
-        } else return 0;
-    }
-    QString attribs(const IdentifierType& id){
-        if (m_attribsMap.contains(id)){
-            return m_attribsMap.value(id);
-        } else return "";
-    }
-    const FactoryMap& map(){return m_factoryMap;}
-    const AliasMap& attribsMap(){return m_attribsMap;}
-    int mapElementCount(){return m_factoryMap.count();}
-private:    
-    FactoryMap m_factoryMap;
-    AliasMap m_attribsMap;
-};
+  typedef QMap<IdentifierType, ProductCreator> FactoryMap;
+  typedef QMap<IdentifierType, Attribs> AliasMap;
+  friend class Singleton<AttribsAbstractFactory<AbstractProduct, IdentifierType, ProductCreator, Attribs>>;
 
+public:
+  bool registerCreator(const IdentifierType &id, Attribs attribs, ProductCreator creator) {
+    return (m_factoryMap.insert(id, creator).value() == creator) and
+           (m_attribsMap.insert(id, attribs).value() == attribs);
+  }
+  bool unregisterCreator(const IdentifierType &id) {
+    return (m_factoryMap.remove(id) == 1) and (m_attribsMap.remove(id) == 1);
+  }
+  ProductCreator objectCreator(const IdentifierType &id) {
+    if (m_factoryMap.contains(id)) {
+      return m_factoryMap[id];
+    } else
+      return 0;
+  }
+  QString attribs(const IdentifierType &id) {
+    if (m_attribsMap.contains(id)) {
+      return m_attribsMap.value(id);
+    } else
+      return "";
+  }
+  const FactoryMap &map() { return m_factoryMap; }
+  const AliasMap &attribsMap() { return m_attribsMap; }
+  int mapElementCount() { return m_factoryMap.count(); }
+
+private:
+  FactoryMap m_factoryMap;
+  AliasMap m_attribsMap;
+};
 }
 #endif // LRATTRIBABSTRACTFACTORY_H

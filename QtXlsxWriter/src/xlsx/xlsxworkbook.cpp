@@ -23,22 +23,22 @@
 **
 ****************************************************************************/
 #include "xlsxworkbook.h"
-#include "xlsxworkbook_p.h"
-#include "xlsxsharedstrings_p.h"
-#include "xlsxworksheet.h"
 #include "xlsxchartsheet.h"
-#include "xlsxstyles_p.h"
 #include "xlsxformat.h"
-#include "xlsxworksheet_p.h"
 #include "xlsxformat_p.h"
 #include "xlsxmediafile_p.h"
+#include "xlsxsharedstrings_p.h"
+#include "xlsxstyles_p.h"
 #include "xlsxutility_p.h"
+#include "xlsxworkbook_p.h"
+#include "xlsxworksheet.h"
+#include "xlsxworksheet_p.h"
 
-#include <QXmlStreamWriter>
-#include <QXmlStreamReader>
-#include <QFile>
 #include <QBuffer>
 #include <QDir>
+#include <QFile>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 QT_BEGIN_NAMESPACE_XLSX
 
@@ -539,7 +539,7 @@ bool Workbook::loadFromXmlFile(QIODevice *device) {
         if (attrs.hasAttribute(QLatin1String("date1904"))) d->date1904 = true;
       } else if (reader.name() == QLatin1String("bookviews")) {
         while (
-               not(reader.name() == QLatin1String("bookviews") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+            not(reader.name() == QLatin1String("bookviews") and reader.tokenType() == QXmlStreamReader::EndElement)) {
           reader.readNextStartElement();
           if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("workbookView")) {

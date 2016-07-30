@@ -152,6 +152,11 @@ color: rgb(0, 0, 0);</string>
          </item>
          <item>
           <property name="text">
+           <string>VENDEDOR ESPECIAL</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>GERENTE LOJA</string>
           </property>
          </item>

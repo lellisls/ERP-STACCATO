@@ -30,5 +30,7 @@ QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) con
     }
   }
 
+  if (role == Qt::ForegroundRole) return QBrush(Qt::black);
+
   return QIdentityProxyModel::data(proxyIndex, role);
 }

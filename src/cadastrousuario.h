@@ -29,7 +29,7 @@ private:
   // attributes
   Ui::CadastroUsuario *ui;
   // methods
-  bool viewRegister(const QModelIndex &index) override;
+  bool viewRegister() override;
   virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
@@ -38,6 +38,7 @@ private:
   virtual void setupMapper() override;
   virtual void successMessage() override;
   virtual void updateMode() override;
+  bool cadastrar();
 };
 
 #endif // CADASTRARUSUARIO_H

@@ -36,35 +36,35 @@
 // We mean it.
 //
 
-#include "xlsxglobal.h"
 #include "xlsxabstractooxmlfile.h"
+#include "xlsxglobal.h"
 #include <QList>
+#include <QMap>
 #include <QPair>
 #include <QStringList>
-#include <QMap>
 
 class QIODevice;
 
 namespace QXlsx {
 
-  class XLSX_AUTOTEST_EXPORT DocPropsApp : public AbstractOOXmlFile {
-    public:
-      DocPropsApp(CreateFlag flag);
+class XLSX_AUTOTEST_EXPORT DocPropsApp : public AbstractOOXmlFile {
+public:
+  explicit DocPropsApp(CreateFlag flag);
 
-      void addPartTitle(const QString &title);
-      void addHeadingPair(const QString &name, int value);
+  void addPartTitle(const QString &title);
+  void addHeadingPair(const QString &name, int value);
 
-      bool setProperty(const QString &name, const QString &value);
-      QString property(const QString &name) const;
-      QStringList propertyNames() const;
+  bool setProperty(const QString &name, const QString &value);
+  QString property(const QString &name) const;
+  QStringList propertyNames() const;
 
-      void saveToXmlFile(QIODevice *device) const;
-      bool loadFromXmlFile(QIODevice *device);
+  void saveToXmlFile(QIODevice *device) const;
+  bool loadFromXmlFile(QIODevice *device);
 
-    private:
-      QStringList m_titlesOfPartsList;
-      QList<QPair<QString, int>> m_headingPairsList;
-      QMap<QString, QString> m_properties;
-  };
+private:
+  QStringList m_titlesOfPartsList;
+  QList<QPair<QString, int>> m_headingPairsList;
+  QMap<QString, QString> m_properties;
+};
 }
 #endif // XLSXDOCPROPSAPP_H

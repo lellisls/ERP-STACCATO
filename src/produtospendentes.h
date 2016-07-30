@@ -30,8 +30,8 @@ private:
   SqlTableModel modelEstoque;
   SqlTableModel modelProdutos;
   // methods
-  void atualizaVenda(const QDate &dataPrevista);
-  void insere(const QDate &dataPrevista);
+  bool atualizaVenda(const QDate &dataPrevista);
+  bool insere(const QDate &dataPrevista);
   void setupTables();
 };
 

@@ -36,19 +36,19 @@
 // We mean it.
 //
 
-#include "xlsxglobal.h"
-#include "xlsxchartsheet.h"
 #include "xlsxabstractsheet_p.h"
+#include "xlsxchartsheet.h"
+#include "xlsxglobal.h"
 
 namespace QXlsx {
 
-  class XLSX_AUTOTEST_EXPORT ChartsheetPrivate : public AbstractSheetPrivate {
-      Q_DECLARE_PUBLIC(Chartsheet)
-    public:
-      ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag);
-      ~ChartsheetPrivate();
+class XLSX_AUTOTEST_EXPORT ChartsheetPrivate : public AbstractSheetPrivate {
+  Q_DECLARE_PUBLIC(Chartsheet)
+public:
+  ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag);
+  ~ChartsheetPrivate();
 
-      Chart *chart;
-  };
+  Chart *chart;
+};
 }
 #endif // XLSXCHARTSHEET_P_H

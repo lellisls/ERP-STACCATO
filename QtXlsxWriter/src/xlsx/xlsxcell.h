@@ -25,9 +25,10 @@
 #ifndef QXLSX_XLSXCELL_H
 #define QXLSX_XLSXCELL_H
 
-#include "xlsxglobal.h"
-#include "xlsxformat.h"
 #include <QVariant>
+
+#include "xlsxformat.h"
+#include "xlsxglobal.h"
 
 QT_BEGIN_NAMESPACE_XLSX
 
@@ -38,39 +39,40 @@ class CellPrivate;
 class WorksheetPrivate;
 
 class Q_XLSX_EXPORT Cell {
-    Q_DECLARE_PRIVATE(Cell)
-  public:
-    enum CellType {
-      BooleanType, // t="b"
-      NumberType, // t="n" (default)
-      ErrorType, // t="e"
-      SharedStringType, // t="s"
-      StringType, // t="str"
-      InlineStringType // t="inlineStr"
-    };
+  Q_DECLARE_PRIVATE(Cell)
+public:
+  enum CellType {
+    BooleanType,      // t="b"
+    NumberType,       // t="n" (default)
+    ErrorType,        // t="e"
+    SharedStringType, // t="s"
+    StringType,       // t="str"
+    InlineStringType  // t="inlineStr"
+  };
 
-    CellType cellType() const;
-    QVariant value() const;
-    Format format() const;
+  CellType cellType() const;
+  QVariant value() const;
+  Format format() const;
 
-    bool hasFormula() const;
-    CellFormula formula() const;
+  bool hasFormula() const;
+  CellFormula formula() const;
 
-    bool isDateTime() const;
-    QDateTime dateTime() const;
+  bool isDateTime() const;
+  QDateTime dateTime() const;
 
-    bool isRichString() const;
+  bool isRichString() const;
 
-    ~Cell();
+  ~Cell();
+  Cell(const Cell &) = delete;
 
-  private:
-    friend class Worksheet;
-    friend class WorksheetPrivate;
+private:
+  friend class Worksheet;
+  friend class WorksheetPrivate;
 
-    Cell(const QVariant &data = QVariant(), CellType type = NumberType, const Format &format = Format(),
-         Worksheet *parent = 0);
-    Cell(const Cell *const cell);
-    CellPrivate *const d_ptr;
+  Cell(const QVariant &data = QVariant(), CellType type = NumberType, const Format &format = Format(),
+       Worksheet *parent = 0);
+  explicit Cell(const Cell *const cell);
+  CellPrivate *const d_ptr;
 };
 
 QT_END_NAMESPACE_XLSX

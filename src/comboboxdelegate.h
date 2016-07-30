@@ -6,10 +6,12 @@
 class ComboBoxDelegate : public QStyledItemDelegate {
 
 public:
-  explicit ComboBoxDelegate(QObject *parent = 0);
+  enum Tipo { Status, StatusReceber, StatusPagar, Conta };
+  explicit ComboBoxDelegate(Tipo tipo, QObject *parent = 0);
   ~ComboBoxDelegate();
 
 private:
+  Tipo tipo;
   virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override;
   virtual void setEditorData(QWidget *editor, const QModelIndex &index) const override;
   virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;

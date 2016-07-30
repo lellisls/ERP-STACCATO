@@ -23,13 +23,17 @@ void WidgetEstoque::setupTables() {
   ui->table->setItemDelegate(new DoubleDelegate(this));
 }
 
-bool WidgetEstoque::updateTables(QString &error) {
+bool WidgetEstoque::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
+  QString filter = model.filter();
+
   if (not model.select()) {
-    error = "Erro lendo tabela estoque: " + model.lastError().text();
+    emit errorSignal("Erro lendo tabela estoque: " + model.lastError().text());
     return false;
   }
+
+  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 

@@ -10,12 +10,14 @@ public:
   explicit LineEditDecimal(QWidget *parent = 0);
   double getValue() const;
   void setValue(const double &value);
+  void setDecimais(double value);
 
 private:
   Q_PROPERTY(double value READ getValue WRITE setValue STORED false)
   // attributes
-  double bottom;
-  double top;
+  double bottom = 0;
+  double top = 99999999;
+  double decimais = 2;
   // methods
   double getBottom() const;
   void setBottom(const double &value);

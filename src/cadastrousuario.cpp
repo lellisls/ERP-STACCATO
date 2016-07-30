@@ -62,7 +62,7 @@ void CadastroUsuario::setupTablePermissoes() {
 }
 
 bool CadastroUsuario::verifyFields() {
-  for (auto const &line : ui->gridLayout_2->findChildren<QLineEdit *>()) {
+  for (auto const &line : ui->tab->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
 
@@ -114,8 +114,8 @@ bool CadastroUsuario::savingProcedures() {
   return true;
 }
 
-bool CadastroUsuario::viewRegister(const QModelIndex &index) {
-  if (not RegisterDialog::viewRegister(index)) return false;
+bool CadastroUsuario::viewRegister() {
+  if (not RegisterDialog::viewRegister()) return false;
 
   ui->lineEditPasswd->setText("********");
   ui->lineEditPasswd_2->setText("********");
@@ -147,17 +147,8 @@ void CadastroUsuario::on_pushButtonBuscar_clicked() {
   sdUsuario->show();
 }
 
-bool CadastroUsuario::save() {
+bool CadastroUsuario::cadastrar() {
   if (not verifyFields()) return false;
-
-  if (not isUpdate and not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-    viewRegister(model.index(row, 0));
-    return false;
-  }
-
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
 
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
@@ -165,33 +156,27 @@ bool CadastroUsuario::save() {
     QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " +
                                              QString::number(mapper.currentIndex()) + "\nModel: " +
                                              QString::number(model.rowCount()));
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
 
-  if (not isUpdate) model.insertRow(row);
+  if (not isUpdate and not model.insertRow(row)) return false;
 
-  if (not savingProcedures()) {
-    errorMessage();
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
-    return false;
-  }
+  if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
     QVariant dado = model.data(row, column);
-    if (dado.type() == QVariant::String) model.setData(row, column, dado.toString().toUpper());
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
   }
 
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
-    errorMessage();
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
+
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
 
   if (not isUpdate) {
     QSqlQuery query;
@@ -200,8 +185,6 @@ bool CadastroUsuario::save() {
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro criando usuário do banco de dados: " + query.lastError().text());
-      QSqlQuery("ROLLBACK").exec();
-      viewRegister(model.index(row, 0));
       return false;
     }
 
@@ -211,19 +194,29 @@ bool CadastroUsuario::save() {
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!",
                             "Erro guardando privilégios do usuário do banco de dados: " + query.lastError().text());
-      QSqlQuery("ROLLBACK").exec();
-      viewRegister(model.index(row, 0));
       return false;
     }
 
     QSqlQuery("FLUSH PRIVILEGES").exec();
   }
 
+  return true;
+}
+
+bool CadastroUsuario::save() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
   QSqlQuery("COMMIT").exec();
 
   isDirty = false;
 
-  viewRegister(model.index(row, 0));
+  viewRegisterById(primaryId);
 
   if (not silent) successMessage();
 

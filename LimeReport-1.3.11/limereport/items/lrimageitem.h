@@ -31,56 +31,55 @@
 #define LRIMAGEITEM_H
 #include "lritemdesignintf.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-class ImageItem : public LimeReport::ItemDesignIntf
-{
-    Q_OBJECT
-    Q_PROPERTY(QImage image READ image WRITE setImage)
-    Q_PROPERTY(int opacity READ opacity WRITE setOpacity)
-    Q_PROPERTY(QString datasource READ datasource WRITE setDatasource)
-    Q_PROPERTY(QString field READ field WRITE setField)
-    Q_PROPERTY(bool autoSize READ autoSize WRITE setAutoSize)
-    Q_PROPERTY(bool scale READ scale WRITE setScale)
-    Q_PROPERTY(bool keepAspectRatio READ keepAspectRatio WRITE setKeepAspectRatio)
-    Q_PROPERTY(bool center READ center WRITE setCenter)
+class ImageItem : public LimeReport::ItemDesignIntf {
+  Q_OBJECT
+  Q_PROPERTY(QImage image READ image WRITE setImage)
+  Q_PROPERTY(int opacity READ opacity WRITE setOpacity)
+  Q_PROPERTY(QString datasource READ datasource WRITE setDatasource)
+  Q_PROPERTY(QString field READ field WRITE setField)
+  Q_PROPERTY(bool autoSize READ autoSize WRITE setAutoSize)
+  Q_PROPERTY(bool scale READ scale WRITE setScale)
+  Q_PROPERTY(bool keepAspectRatio READ keepAspectRatio WRITE setKeepAspectRatio)
+  Q_PROPERTY(bool center READ center WRITE setCenter)
 public:
-    ImageItem(QObject *owner, QGraphicsItem *parent);
-    virtual void paint(QPainter *ppainter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void setImage(QImage value);
-    QImage image(){return m_picture;}
-    void setContent(const QString &value){m_content=value;}
-    QString datasource() const;
-    void setDatasource(const QString &datasource);
-    QString field() const;
-    void setField(const QString &field);
+  ImageItem(QObject *owner, QGraphicsItem *parent);
+  virtual void paint(QPainter *ppainter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+  void setImage(QImage value);
+  QImage image() { return m_picture; }
+  void setContent(const QString &value) { m_content = value; }
+  QString datasource() const;
+  void setDatasource(const QString &datasource);
+  QString field() const;
+  void setField(const QString &field);
 
-    bool autoSize() const;
-    void setAutoSize(bool autoSize);
-    bool scale() const;
-    void setScale(bool scale);
-    bool keepAspectRatio() const;
-    void setKeepAspectRatio(bool keepAspectRatio);
-    bool center() const;
-    void setCenter(bool center);
+  bool autoSize() const;
+  void setAutoSize(bool autoSize);
+  bool scale() const;
+  void setScale(bool scale);
+  bool keepAspectRatio() const;
+  void setKeepAspectRatio(bool keepAspectRatio);
+  bool center() const;
+  void setCenter(bool center);
 
-    qreal minHeight() const;
+  qreal minHeight() const;
 
 protected:
-    BaseDesignIntf* createSameTypeItem(QObject *owner, QGraphicsItem *parent);
-    void updateItemSize(DataSourceManager *dataManager, RenderPass pass, int maxHeight);
-    bool isNeedUpdateSize(RenderPass) const;
-    bool drawDesignBorders() const {return m_picture.isNull();}
-private:
-    QImage m_picture;
-    QString m_content;
-    QString m_datasource;
-    QString m_field;
-    bool    m_autoSize;
-    bool    m_scale;
-    bool    m_keepAspectRatio;
-    bool    m_center;
-};
+  BaseDesignIntf *createSameTypeItem(QObject *owner, QGraphicsItem *parent);
+  void updateItemSize(DataSourceManager *dataManager, RenderPass pass, int maxHeight);
+  bool isNeedUpdateSize(RenderPass) const;
+  bool drawDesignBorders() const { return m_picture.isNull(); }
 
+private:
+  QImage m_picture;
+  QString m_content;
+  QString m_datasource;
+  QString m_field;
+  bool m_autoSize;
+  bool m_scale;
+  bool m_keepAspectRatio;
+  bool m_center;
+};
 }
 #endif // LRIMAGEITEM_H

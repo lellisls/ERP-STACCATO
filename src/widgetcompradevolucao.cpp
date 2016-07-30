@@ -12,16 +12,20 @@ WidgetCompraDevolucao::WidgetCompraDevolucao(QWidget *parent) : QWidget(parent),
 
 WidgetCompraDevolucao::~WidgetCompraDevolucao() { delete ui; }
 
-bool WidgetCompraDevolucao::updateTables(QString &error) {
+bool WidgetCompraDevolucao::updateTables() {
   if (model.tableName().isEmpty()) {
     setupTables();
     ui->radioButtonFiltroPendente->setChecked(true);
   }
 
+  QString filter = model.filter();
+
   if (not model.select()) {
-    error = "Erro lendo tabela faturamento: " + model.lastError().text();
+    emit errorSignal("Erro lendo tabela faturamento: " + model.lastError().text());
     return false;
   }
+
+  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -40,6 +44,36 @@ void WidgetCompraDevolucao::setupTables() {
   ui->table->sortByColumn("idVenda");
   ui->table->hideColumn("selecionado");
   ui->table->resizeColumnsToContents();
+}
+
+void WidgetCompraDevolucao::on_pushButtonDevolucaoFornecedor_clicked() {
+  auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Não selecionou nenhuma linha!");
+    return;
+  }
+
+  QString status = model.data(list.first().row(), "status").toString();
+
+  if (status == "PENDENTE" or status == "INICIADO" or status == "EM COMPRA" or status == "EM FATURAMENTO") {
+    // se nao faturado nao faz nada
+    model.setData(list.first().row(), "status", "PROCESSADO");
+
+    QSqlQuery query;
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'CANCELADO' WHERE idVenda = :idVenda AND "
+                  "codComercial = :codComercial");
+    query.bindValue(":idVenda", model.data(list.first().row(), "idVenda"));
+    query.bindValue(":codComercial", model.data(list.first().row(), "codComercial"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro marcando compra como cancelada: " + query.lastError().text());
+      return;
+    }
+  } else {
+    QMessageBox::critical(this, "Erro!", "Ainda não implementado!");
+    return;
+  }
 }
 
 void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() {

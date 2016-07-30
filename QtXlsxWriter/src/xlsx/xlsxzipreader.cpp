@@ -29,26 +29,24 @@
 
 namespace QXlsx {
 
-  ZipReader::ZipReader(const QString &filePath) : m_reader(new QZipReader(filePath)) { init(); }
+ZipReader::ZipReader(const QString &filePath) : m_reader(new QZipReader(filePath)) { init(); }
 
-  ZipReader::ZipReader(QIODevice *device) : m_reader(new QZipReader(device)) { init(); }
+ZipReader::ZipReader(QIODevice *device) : m_reader(new QZipReader(device)) { init(); }
 
-  ZipReader::~ZipReader() {}
+ZipReader::~ZipReader() {}
 
-  void ZipReader::init() {
-    QList<QZipReader::FileInfo> allFiles = m_reader->fileInfoList();
+void ZipReader::init() {
+  const auto allFiles = m_reader->fileInfoList();
 
-    for (const auto &fi : allFiles) {
-      if (fi.isFile) {
-        m_filePaths.append(fi.filePath);
-      }
-    }
+  for (const auto &fi : allFiles) {
+    if (fi.isFile) m_filePaths.append(fi.filePath);
   }
+}
 
-  bool ZipReader::exists() const { return m_reader->exists(); }
+bool ZipReader::exists() const { return m_reader->exists(); }
 
-  QStringList ZipReader::filePaths() const { return m_filePaths; }
+QStringList ZipReader::filePaths() const { return m_filePaths; }
 
-  QByteArray ZipReader::fileData(const QString &fileName) const { return m_reader->fileData(fileName); }
+QByteArray ZipReader::fileData(const QString &fileName) const { return m_reader->fileData(fileName); }
 
 } // namespace QXlsx

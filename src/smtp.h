@@ -60,7 +60,7 @@ private:
   QString host;
   QString message;
   QString pass;
-  QString rcpt;
+  QStringList rcpt;
   QString response;
   QString user;
   QTextStream *t;

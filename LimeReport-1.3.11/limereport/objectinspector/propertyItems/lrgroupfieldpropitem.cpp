@@ -32,45 +32,41 @@
 #include "lrgroupbands.h"
 #include "lrreportengine_p.h"
 
-namespace  {
-    LimeReport::ObjectPropItem* createFieldPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly){
-        return new LimeReport::GroupFieldPropItem(object, objects, name, displayName, data, parent, readonly);
-    }
-    bool registredGroupFieldProp = LimeReport::ObjectPropFactory::instance().registerCreator(
-        LimeReport::APropIdent("groupFieldName","LimeReport::GroupBandHeader"),QObject::tr("field"),createFieldPropItem
-    );
+namespace {
+LimeReport::ObjectPropItem *createFieldPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                                const QString &name, const QString &displayName, const QVariant &data,
+                                                LimeReport::ObjectPropItem *parent, bool readonly) {
+  return new LimeReport::GroupFieldPropItem(object, objects, name, displayName, data, parent, readonly);
+}
+bool registredGroupFieldProp = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("groupFieldName", "LimeReport::GroupBandHeader"), QObject::tr("field"), createFieldPropItem);
 }
 namespace LimeReport {
 
-QWidget *GroupFieldPropItem::createProperyEditor(QWidget *parent) const
-{
-    ComboBoxEditor *editor = new ComboBoxEditor(parent,true);
-    editor->setEditable(true);
-    GroupBandHeader *item=dynamic_cast<GroupBandHeader*>(object());
-    if (item){
-        DataBandDesignIntf* dataBand = dynamic_cast<DataBandDesignIntf*>(item->parentBand());
-        if (dataBand){
-            int propertyIndex = dataBand->metaObject()->indexOfProperty("datasource");
+QWidget *GroupFieldPropItem::createProperyEditor(QWidget *parent) const {
+  ComboBoxEditor *editor = new ComboBoxEditor(parent, true);
+  editor->setEditable(true);
+  GroupBandHeader *item = dynamic_cast<GroupBandHeader *>(object());
+  if (item) {
+    DataBandDesignIntf *dataBand = dynamic_cast<DataBandDesignIntf *>(item->parentBand());
+    if (dataBand) {
+      int propertyIndex = dataBand->metaObject()->indexOfProperty("datasource");
 
-            if (item && propertyIndex>0){
-               editor->addItems(item->reportEditor()->dataManager()->fieldNames(dataBand->property("datasource").toString()));
-            }
-        }
+      if (item and propertyIndex > 0) {
+        editor->addItems(item->reportEditor()->dataManager()->fieldNames(dataBand->property("datasource").toString()));
+      }
     }
-    return editor;
+  }
+  return editor;
 }
 
-void GroupFieldPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const
-{
-    ComboBoxEditor *editor=qobject_cast<ComboBoxEditor *>(propertyEditor);
-    editor->setTextValue(propertyValue().toString());
+void GroupFieldPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ComboBoxEditor *editor = qobject_cast<ComboBoxEditor *>(propertyEditor);
+  editor->setTextValue(propertyValue().toString());
 }
 
-void GroupFieldPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index)
-{
-    model->setData(index,qobject_cast<ComboBoxEditor*>(propertyEditor)->text());
-    object()->setProperty(propertyName().toLatin1(),propertyValue());
+void GroupFieldPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index) {
+  model->setData(index, qobject_cast<ComboBoxEditor *>(propertyEditor)->text());
+  object()->setProperty(propertyName().toLatin1(), propertyValue());
 }
-
 }
-

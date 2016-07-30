@@ -10,19 +10,7 @@
 #include "usersession.h"
 #include "xlsxdocument.h"
 
-Excel::Excel(QString id, QWidget *parent) : QObject(parent), id(id), parent(parent) {
-  verificaTipo();
-
-  model.setTable(type == Orcamento ? "orcamento" : "venda");
-  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  model.setFilter(type == Orcamento ? "idOrcamento = '" + id + "'" : "idVenda = '" + id + "'");
-  model.select();
-
-  modelItem.setTable((type == Orcamento ? "orcamento" : "venda") + QString("_has_produto"));
-  modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelItem.setFilter(type == Orcamento ? "idOrcamento = '" + id + "'" : "idVenda = '" + id + "'");
-  modelItem.select();
-}
+Excel::Excel(QString id, QWidget *parent) : id(id), parent(parent) { verificaTipo(); }
 
 void Excel::verificaTipo() {
   QSqlQuery query;
@@ -56,7 +44,7 @@ void Excel::gerarExcel() {
     return;
   }
 
-  QString arquivoModelo = "modelo.xlsx";
+  QString arquivoModelo = "modelo pedido.xlsx";
 
   QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
 
@@ -65,16 +53,17 @@ void Excel::gerarExcel() {
     return;
   }
 
-  setQuerys();
+  if (not setQuerys()) {
+    QMessageBox::critical(parent, "Erro!", "Processo interrompido, ocorreu algum erro!");
+    return;
+  }
 
   QString fileName = path + "/" + id + "-" + queryVendedor.value("nome").toString().split(" ").first() + "-" +
-                     queryCliente.value("nome_razao").toString() + ".xlsx";
-  qDebug() << "nome_razao: " << queryCliente.value("nome_razao").toString();
-  qDebug() << "fileName: " << fileName;
+                     queryCliente.value("nome_razao").toString().replace("/", "-") + ".xlsx";
   QFile file(fileName);
 
   if (not file.open(QFile::WriteOnly)) {
-    QMessageBox::critical(parent, "Erro!", "Arquivo bloqueado! Por favor feche o arquivo.");
+    QMessageBox::critical(parent, "Erro!", "Não foi possível abrir o arquivo para escrita: " + fileName);
     return;
   }
 
@@ -196,10 +185,13 @@ void Excel::gerarExcel() {
 
   xlsx.write("B117", query.value("observacao").toString().replace("\n", " "));
 
-  for (int row = 0; row < modelItem.rowCount(); ++row) {
+  int row = 0;
+  queryProduto.first();
+
+  do {
     QSqlQuery query;
     query.prepare("SELECT ui FROM produto WHERE idProduto = :idProduto");
-    query.bindValue(":idProduto", modelItem.data(row, "idProduto"));
+    query.bindValue(":idProduto", queryProduto.value("idProduto"));
 
     if (not query.exec()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
@@ -210,35 +202,39 @@ void Excel::gerarExcel() {
 
     if (query.first()) loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
 
-    xlsx.write("A" + QString::number(12 + row), modelItem.data(row, "fornecedor").toString() + loes);
-    xlsx.write("B" + QString::number(12 + row), modelItem.data(row, "codComercial"));
-    QString formComercial = modelItem.data(row, "formComercial").toString();
-    xlsx.write("C" + QString::number(12 + row), modelItem.data(row, "produto").toString() +
+    xlsx.write("A" + QString::number(12 + row), queryProduto.value("fornecedor").toString() + loes);
+    xlsx.write("B" + QString::number(12 + row), queryProduto.value("codComercial").toString());
+    QString formComercial = queryProduto.value("formComercial").toString();
+    xlsx.write("C" + QString::number(12 + row), queryProduto.value("produto").toString() +
                                                     (formComercial.isEmpty() ? "" : " (" + formComercial + ")") +
                                                     (loes.isEmpty() ? "" : " -" + loes));
-    xlsx.write("H" + QString::number(12 + row), modelItem.data(row, "obs"));
+    xlsx.write("H" + QString::number(12 + row), queryProduto.value("obs").toString());
 
-    double prcUn = modelItem.data(row, "prcUnitario").toDouble();
-    double desc = prcUn * modelItem.data(row, "desconto").toDouble() / 100.;
-    double porc = modelItem.data(row, "desconto").toDouble();
+    double prcUn = queryProduto.value("prcUnitario").toDouble();
+    double desc = prcUn * queryProduto.value("desconto").toDouble() / 100.;
+    // TODO: considerar descontoGlobal
+    double porc = queryProduto.value("desconto").toDouble();
+
     QString preco = "R$ " + locale.toString(prcUn, 'f', 2);
     QString precoDesc =
         desc > 0.01 ? " (-" + locale.toString(porc, 'f', 2) + "% R$ " + locale.toString(prcUn - desc, 'f', 2) + ")"
                     : "";
     QString precoDescNeg = "R$ " + locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
     xlsx.write("K" + QString::number(12 + row), porc < 0 ? precoDescNeg : preco + precoDesc);
-    xlsx.write("L" + QString::number(12 + row), modelItem.data(row, "quant"));
-    xlsx.write("M" + QString::number(12 + row), modelItem.data(row, "un"));
-    QString total = "R$ " + locale.toString(modelItem.data(row, "parcial").toDouble(), 'f', 2);
+    xlsx.write("L" + QString::number(12 + row), queryProduto.value("quant").toDouble());
+    xlsx.write("M" + QString::number(12 + row), queryProduto.value("un").toString());
+    QString total = "R$ " + locale.toString(queryProduto.value("parcial").toDouble(), 'f', 2);
     QString totalDesc =
-        desc > 0.01 ? " (R$ " + locale.toString(modelItem.data(row, "parcialDesc").toDouble(), 'f', 2) + ")" : "";
-    QString totalDescNeg = "R$ " + locale.toString(modelItem.data(row, "parcialDesc").toDouble(), 'f', 2);
+        desc > 0.01 ? " (R$ " + locale.toString(queryProduto.value("parcialDesc").toDouble(), 'f', 2) + ")" : "";
+    QString totalDescNeg = "R$ " + locale.toString(queryProduto.value("parcialDesc").toDouble(), 'f', 2);
     xlsx.write("N" + QString::number(12 + row), porc < 0 ? totalDescNeg : total + totalDesc);
 
     if (desc > 0.01) xlsx.setColumnWidth(11, 28);
-  }
 
-  for (int row = modelItem.rowCount() + 12; row < 111; ++row) { // TODO: adjust to 200 products
+    ++row;
+  } while (queryProduto.next());
+
+  for (int row = queryProduto.size() + 12; row < 111; ++row) {
     xlsx.setRowHeight(row, 0);
   }
 
@@ -251,85 +247,98 @@ void Excel::gerarExcel() {
   QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
 }
 
-void Excel::setQuerys() {
+bool Excel::setQuerys() {
   if (type == Orcamento) {
-    query.prepare("SELECT data, subTotalLiq, subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM "
-                  "orcamento WHERE idOrcamento = :idOrcamento");
-    query.bindValue(":idOrcamento", model.data(0, "idOrcamento"));
+    query.prepare("SELECT idLoja, idUsuario, idProfissional, idEnderecoEntrega, idCliente, data, subTotalLiq, "
+                  "subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM orcamento WHERE idOrcamento "
+                  "= :idOrcamento");
+    query.bindValue(":idOrcamento", id);
+
+    queryProduto.prepare("SELECT * FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento"); // TODO: replace *
+    queryProduto.bindValue(":idOrcamento", id);
   }
 
   if (type == Venda) {
     query.prepare(
-        "SELECT idOrcamento, data, subTotalLiq, subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM "
-        "venda WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", model.data(0, "idVenda"));
+        "SELECT idLoja, idUsuario, idProfissional, idEnderecoFaturamento, idEnderecoEntrega, idCliente, idOrcamento, "
+        "data, subTotalLiq, subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM venda WHERE idVenda "
+        "= :idVenda");
+    query.bindValue(":idVenda", id);
+
+    queryProduto.prepare("SELECT * FROM venda_has_produto WHERE idVenda = :idVenda"); // TODO: replace *
+    queryProduto.bindValue(":idVenda", id);
   }
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::critical(parent, "Erro!", "Erro buscando dados da venda: " + query.lastError().text());
-    return;
+    QMessageBox::critical(parent, "Erro!", "Erro buscando dados da venda/orçamento: " + query.lastError().text());
+    return false;
+  }
+
+  if (not queryProduto.exec() or not queryProduto.first()) {
+    QMessageBox::critical(parent, "Erro!", "Erro buscando dados dos produtos: " + query.lastError().text());
+    return false;
   }
 
   queryCliente.prepare(
       "SELECT nome_razao, email, cpf, cnpj, pfpj, tel, telCel FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", model.data(0, "idCliente"));
+  queryCliente.bindValue(":idCliente", query.value("idCliente"));
 
   if (not queryCliente.exec() or not queryCliente.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando cliente: " + queryCliente.lastError().text());
-    return;
+    return false;
   }
 
   queryEndEnt.prepare(
       "SELECT logradouro, numero, bairro, cidade, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
-  queryEndEnt.bindValue(":idEndereco", model.data(0, "idEnderecoEntrega"));
+  queryEndEnt.bindValue(":idEndereco", query.value("idEnderecoEntrega"));
 
   if (not queryEndEnt.exec() or not queryEndEnt.first()) {
     QMessageBox::critical(parent, "Erro!",
                           "Erro buscando dados do endereço entrega: " + queryEndEnt.lastError().text());
-    return;
+    return false;
   }
 
   queryEndFat.prepare(
       "SELECT logradouro, numero, bairro, cidade, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
-  queryEndFat.bindValue(":idEndereco", model.data(0, "idEnderecoFaturamento"));
+  queryEndFat.bindValue(":idEndereco", query.value(type == Venda ? "idEnderecoFaturamento" : "idEnderecoEntrega"));
 
   if (not queryEndFat.exec() or not queryEndFat.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando dados do endereço: " + queryEndFat.lastError().text());
-    return;
+    return false;
   }
 
   queryProfissional.prepare("SELECT nome_razao, tel, email FROM profissional WHERE idProfissional = :idProfissional");
-  queryProfissional.bindValue(":idProfissional", model.data(0, "idProfissional"));
+  queryProfissional.bindValue(":idProfissional", query.value("idProfissional"));
 
   if (not queryProfissional.exec() or not queryProfissional.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando profissional: " + queryProfissional.lastError().text());
-    return;
+    return false;
   }
 
   queryVendedor.prepare("SELECT nome, email FROM usuario WHERE idUsuario = :idUsuario");
-  queryVendedor.bindValue(":idUsuario", model.data(0, "idUsuario"));
+  queryVendedor.bindValue(":idUsuario", query.value("idUsuario"));
 
   if (not queryVendedor.exec() or not queryVendedor.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando vendedor: " + queryVendedor.lastError().text());
-    return;
+    return false;
   }
 
   queryLoja.prepare("SELECT tel, tel2 FROM loja WHERE idLoja = :idLoja");
-  queryLoja.bindValue(":idLoja", model.data(0, "idLoja"));
+  queryLoja.bindValue(":idLoja", query.value("idLoja"));
 
   if (not queryLoja.exec() or not queryLoja.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando loja: " + queryLoja.lastError().text());
-    return;
+    return false;
   }
 
   queryLojaEnd.prepare(
       "SELECT logradouro, numero, bairro, cidade, cep, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
-  queryLojaEnd.bindValue(":idLoja", model.data(0, "idLoja"));
+  queryLojaEnd.bindValue(":idLoja", query.value("idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando endereço loja: " + queryLojaEnd.lastError().text());
-    return;
+    return false;
   }
-}
 
-// TODO: gerar arquivos na raiz nao esta funcionando
+  return true;
+}

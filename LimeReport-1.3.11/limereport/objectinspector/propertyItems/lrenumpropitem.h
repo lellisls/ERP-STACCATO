@@ -32,29 +32,33 @@
 
 #include "lrobjectpropitem.h"
 
-namespace LimeReport{
-class EnumPropItem : public ObjectPropItem
-{
-    Q_OBJECT
+namespace LimeReport {
+class EnumPropItem : public ObjectPropItem {
+  Q_OBJECT
 public:
-    EnumPropItem():ObjectPropItem(){}
-    EnumPropItem(QObject* object, ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& value,ObjectPropItem* parent, bool readonly)
-        :ObjectPropItem(object, objects, name, displayName, value, parent, readonly),m_settingValue(false){}
-    EnumPropItem(QObject* object, ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& value,ObjectPropItem* parent, bool readonly, QVector<int> acceptableValues)
-        :ObjectPropItem(object, objects, name, displayName, value, parent, readonly),m_acceptableValues(acceptableValues),m_settingValue(false){}
-    QWidget*    createProperyEditor(QWidget *parent) const;
-    QString     displayValue() const;
-    void        setPropertyEditorData(QWidget * propertyEditor, const QModelIndex &) const;
-    void        setModelData(QWidget * propertyEditor, QAbstractItemModel * model, const QModelIndex & index);
-    QVector<int>        acceptableValues() const {return m_acceptableValues;}
+  EnumPropItem() : ObjectPropItem() {}
+  EnumPropItem(QObject *object, ObjectsList *objects, const QString &name, const QString &displayName,
+               const QVariant &value, ObjectPropItem *parent, bool readonly)
+      : ObjectPropItem(object, objects, name, displayName, value, parent, readonly), m_settingValue(false) {}
+  EnumPropItem(QObject *object, ObjectsList *objects, const QString &name, const QString &displayName,
+               const QVariant &value, ObjectPropItem *parent, bool readonly, QVector<int> acceptableValues)
+      : ObjectPropItem(object, objects, name, displayName, value, parent, readonly),
+        m_acceptableValues(acceptableValues), m_settingValue(false) {}
+  QWidget *createProperyEditor(QWidget *parent) const;
+  QString displayValue() const;
+  void setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const;
+  void setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index);
+  QVector<int> acceptableValues() const { return m_acceptableValues; }
+
 protected:
-    QString nameByType(int propertyValue) const;
-    int     typeByName(const QString& propertyValue) const;
+  QString nameByType(int propertyValue) const;
+  int typeByName(const QString &propertyValue) const;
 private slots:
-    void slotEnumChanged(const QString& text);
+  void slotEnumChanged(const QString &text);
+
 private:
-    QVector<int> m_acceptableValues;
-    bool m_settingValue;
+  QVector<int> m_acceptableValues;
+  bool m_settingValue;
 };
 }
 #endif // LRENUMPROPITEM_H

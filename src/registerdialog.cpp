@@ -14,6 +14,8 @@ RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, 
 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  model.setFilter("0");
+  model.select();
 
   mapper.setModel(&model);
   mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -24,27 +26,33 @@ RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, 
 }
 
 bool RegisterDialog::viewRegisterById(const QVariant &id) {
+  primaryId = id.toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro", "Erro id -1!");
+    return false;
+  }
+
+  model.setFilter(primaryKey + " = '" + primaryId + "'");
+
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro ao acessar a tabela " + model.tableName() + ": " + model.lastError().text());
     return false;
   }
 
-  const QModelIndexList indexList = model.match(model.index(0, model.fieldIndex(primaryKey)), Qt::DisplayRole, id, 1,
-                                                Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
-
-  if (indexList.isEmpty()) {
+  if (model.rowCount() == 0) {
     QMessageBox::critical(this, "Erro!", "Item não encontrado.");
     close();
     return false;
   }
 
-  if (not viewRegister(indexList.first())) return false;
+  if (not viewRegister()) return false;
 
   return true;
 }
 
-bool RegisterDialog::viewRegister(const QModelIndex &index) {
+bool RegisterDialog::viewRegister() {
   isUpdate = true;
 
   if (not confirmationMessage()) return false;
@@ -52,7 +60,12 @@ bool RegisterDialog::viewRegister(const QModelIndex &index) {
   clearFields();
   updateMode();
 
-  mapper.setCurrentIndex(index.row());
+  if (not primaryId.isEmpty()) {
+    model.setFilter(primaryKey + " = '" + primaryId + "'");
+    model.select();
+  }
+
+  mapper.setCurrentIndex(0);
 
   return true;
 }
@@ -133,6 +146,7 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
 }
 
 bool RegisterDialog::confirmationMessage() {
+  // NOTE: find a better way
   //  if (not model.isDirty() and not isDirty) return true;
 
   //  QMessageBox msgBox;
@@ -168,47 +182,45 @@ bool RegisterDialog::newRegister() {
   return true;
 }
 
-bool RegisterDialog::save() {
+bool RegisterDialog::cadastrar() {
   if (not verifyFields()) return false;
-
-  if (not isUpdate and not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-    viewRegister(model.index(row, 0));
-    return false;
-  }
-
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
 
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
     QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
 
-  if (not isUpdate) model.insertRow(row);
+  if (not isUpdate and not model.insertRow(row)) return false;
 
-  if (not savingProcedures()) {
-    errorMessage();
-    QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
-    return false;
-  }
+  if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
     QVariant dado = model.data(row, column);
-    if (dado.type() == QVariant::String) model.setData(row, column, dado.toString().toUpper());
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
   }
 
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
-    errorMessage();
+    return false;
+  }
+
+  primaryId =
+      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+
+  return true;
+}
+
+bool RegisterDialog::save() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
     QSqlQuery("ROLLBACK").exec();
-    viewRegister(model.index(row, 0));
     return false;
   }
 
@@ -216,7 +228,7 @@ bool RegisterDialog::save() {
 
   isDirty = false;
 
-  viewRegister(model.index(row, 0));
+  viewRegisterById(primaryId);
 
   if (not silent) successMessage();
 

@@ -11,7 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Loja
 TEMPLATE = app
 
-SOURCES += src/apagaorcamento.cpp \
+SOURCES += \
+    src/baixaorcamento.cpp \
     src/cadastrarnfe.cpp \
     src/cadastrocliente.cpp \
     src/cadastrofornecedor.cpp \
@@ -47,6 +48,7 @@ SOURCES += src/apagaorcamento.cpp \
     src/logindialog.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/noeditdelegate.cpp \
     src/orcamento.cpp \
     src/orcamentoproxymodel.cpp \
     src/porcentagemdelegate.cpp \
@@ -76,6 +78,7 @@ SOURCES += src/apagaorcamento.cpp \
     src/widgetcontareceber.cpp \
     src/widgetestoque.cpp \
     src/widgetlogistica.cpp \
+    src/widgetlogisticaagendarcoleta.cpp \
     src/widgetlogisticacoleta.cpp \
     src/widgetlogisticaentrega.cpp \
     src/widgetlogisticarecebimento.cpp \
@@ -89,7 +92,8 @@ SOURCES += src/apagaorcamento.cpp \
     src/xml.cpp \
     src/xml_viewer.cpp
 
-HEADERS  += src/apagaorcamento.h \
+HEADERS  += \
+    src/baixaorcamento.h \
     src/cadastrarnfe.h \
     src/cadastrocliente.h \
     src/cadastrofornecedor.h \
@@ -124,6 +128,7 @@ HEADERS  += src/apagaorcamento.h \
     src/lineedittel.h \
     src/logindialog.h \
     src/mainwindow.h \
+    src/noeditdelegate.h \
     src/orcamento.h \
     src/orcamentoproxymodel.h \
     src/porcentagemdelegate.h \
@@ -153,6 +158,7 @@ HEADERS  += src/apagaorcamento.h \
     src/widgetcontareceber.h \
     src/widgetestoque.h \
     src/widgetlogistica.h \
+    src/widgetlogisticaagendarcoleta.h \
     src/widgetlogisticacoleta.h \
     src/widgetlogisticaentrega.h \
     src/widgetlogisticarecebimento.h \
@@ -166,7 +172,8 @@ HEADERS  += src/apagaorcamento.h \
     src/xml.h \
     src/xml_viewer.h
 
-FORMS += ui/apagaorcamento.ui \
+FORMS += \
+    ui/baixaorcamento.ui \
     ui/cadastrarnfe.ui \
     ui/cadastrocliente.ui \
     ui/cadastrofornecedor.ui \
@@ -203,6 +210,7 @@ FORMS += ui/apagaorcamento.ui \
     ui/widgetcontareceber.ui \
     ui/widgetestoque.ui \
     ui/widgetlogistica.ui \
+    ui/widgetlogisticaagendarcoleta.ui \
     ui/widgetlogisticacoleta.ui \
     ui/widgetlogisticaentrega.ui \
     ui/widgetlogisticarecebimento.ui \
@@ -215,15 +223,15 @@ FORMS += ui/apagaorcamento.ui \
     ui/widgetvenda.ui \
     ui/xml_viewer.ui
 
-CONFIG += c++11
+CONFIG += c++14
 
 QMAKE_CXXFLAGS += -Wall
 QMAKE_CXXFLAGS_DEBUG += -O0
-#QMAKE_CXXFLAGS_RELEASE  = -Ofast
-QMAKE_CXXFLAGS_RELEASE  = -O0
+QMAKE_CXXFLAGS_RELEASE  = -Ofast
+#QMAKE_CXXFLAGS_RELEASE  = -O0
 QMAKE_LFLAGS_DEBUG += -O0
-#QMAKE_LFLAGS_RELEASE += -O3
-QMAKE_LFLAGS_RELEASE += -O0
+QMAKE_LFLAGS_RELEASE += -O3
+#QMAKE_LFLAGS_RELEASE += -O0
 
 #QMAKE_CXXFLAGS += -flto
 #QMAKE_LFLAGS += -flto -fuse-linker-plugin
@@ -235,6 +243,6 @@ RC_ICONS = Staccato.ico
 
 CONFIG -= console
 
-include(QtRptProject/QtRPT/QtRPT.pri)
 include(QtXlsxWriter/src/xlsx/qtxlsx.pri)
 include(QSimpleUpdater/qsimpleupdater.pri)
+include(LimeReport-1.3.11/limereport/limereport.pri)

@@ -31,57 +31,52 @@
 #include "editors/lrcoloreditor.h"
 #include <QPainter>
 
-namespace{
-    LimeReport::ObjectPropItem * createColorPropItem(
-        QObject *object, LimeReport::ObjectPropItem::ObjectsList* objects, const QString& name, const QString& displayName, const QVariant& data, LimeReport::ObjectPropItem* parent, bool readonly)
-    {
-        return new LimeReport::ColorPropItem(object, objects, name, displayName, data, parent, readonly);
+namespace {
+LimeReport::ObjectPropItem *createColorPropItem(QObject *object, LimeReport::ObjectPropItem::ObjectsList *objects,
+                                                const QString &name, const QString &displayName, const QVariant &data,
+                                                LimeReport::ObjectPropItem *parent, bool readonly) {
+  return new LimeReport::ColorPropItem(object, objects, name, displayName, data, parent, readonly);
+}
+bool registredColorProp = LimeReport::ObjectPropFactory::instance().registerCreator(
+    LimeReport::APropIdent("QColor", ""), QObject::tr("QColor"), createColorPropItem);
+}
+
+namespace LimeReport {
+
+void ColorPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const {
+  ColorEditor *editor = qobject_cast<ColorEditor *>(propertyEditor);
+  editor->setColor(propertyValue().value<QColor>());
+}
+
+void ColorPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index) {
+  model->setData(index, qobject_cast<ColorEditor *>(propertyEditor)->color());
+  setValueToObject(propertyName(), propertyValue());
+}
+
+bool ColorPropItem::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) {
+  if (index.column() == 1) {
+    painter->save();
+    QPen pen;
+
+    if (option.state & QStyle::State_Selected) {
+      pen.setWidth(2);
+      pen.setColor(option.palette.brightText().color());
+    } else {
+      pen.setColor(Qt::gray);
     }
-    bool registredColorProp = LimeReport::ObjectPropFactory::instance().registerCreator(LimeReport::APropIdent("QColor",""),QObject::tr("QColor"),createColorPropItem);
+
+    painter->setPen(pen);
+
+    painter->setBrush(propertyValue().value<QColor>());
+    QRect rect = option.rect.adjusted(4, 4, -4, -6);
+    rect.setWidth(rect.height());
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->drawEllipse(rect);
+    painter->restore();
+    return true;
+  } else
+    return false;
 }
 
-namespace LimeReport{
-
-void ColorPropItem::setPropertyEditorData(QWidget *propertyEditor, const QModelIndex &) const
-{
-    ColorEditor *editor =qobject_cast<ColorEditor*>(propertyEditor);
-    editor->setColor(propertyValue().value<QColor>());
-}
-
-void ColorPropItem::setModelData(QWidget *propertyEditor, QAbstractItemModel *model, const QModelIndex &index)
-{
-    model->setData(index,qobject_cast<ColorEditor*>(propertyEditor)->color());
-    setValueToObject(propertyName(),propertyValue());
-}
-
-bool ColorPropItem::paint(QPainter *painter, const QStyleOptionViewItemV4 &option, const QModelIndex &index)
-{
-    if (index.column()==1){
-        painter->save();
-        QPen pen;
-
-        if (option.state & QStyle::State_Selected){
-            pen.setWidth(2);
-            pen.setColor(option.palette.brightText().color());
-        }else {
-            pen.setColor(Qt::gray);
-        }
-
-        painter->setPen(pen);
-
-        painter->setBrush(propertyValue().value<QColor>());
-        QRect rect = option.rect.adjusted(4,4,-4,-6);
-        rect.setWidth(rect.height());
-        painter->setRenderHint(QPainter::Antialiasing);
-        painter->drawEllipse(rect);
-        painter->restore();
-        return true;
-    } else return false;
-}
-
-QWidget *ColorPropItem::createProperyEditor(QWidget *parent) const
-{
-    return new ColorEditor(parent);
-}
-
+QWidget *ColorPropItem::createProperyEditor(QWidget *parent) const { return new ColorEditor(parent); }
 }

@@ -31,47 +31,47 @@
 #define LRITEMSALIGNEDITORWIDGET_H
 
 #include "lrreportdesignwidget.h"
-#include <QToolBar>
 #include <QAction>
+#include <QToolBar>
 
-namespace LimeReport{
+namespace LimeReport {
 
-class ItemsAlignmentEditorWidget : public QToolBar
-{
-    Q_OBJECT
+class ItemsAlignmentEditorWidget : public QToolBar {
+  Q_OBJECT
 public:
-    explicit ItemsAlignmentEditorWidget(ReportDesignWidget* reportEditor, const QString &title, QWidget *parent = 0);
-    explicit ItemsAlignmentEditorWidget(ReportDesignWidget* reportEditor, QWidget *parent = 0);
-    explicit ItemsAlignmentEditorWidget(PageDesignIntf* page, const QString &title, QWidget *parent = 0);
-    explicit ItemsAlignmentEditorWidget(PageDesignIntf* page, QWidget *parent = 0);
+  explicit ItemsAlignmentEditorWidget(ReportDesignWidget *reportEditor, const QString &title, QWidget *parent = 0);
+  explicit ItemsAlignmentEditorWidget(ReportDesignWidget *reportEditor, QWidget *parent = 0);
+  explicit ItemsAlignmentEditorWidget(PageDesignIntf *page, const QString &title, QWidget *parent = 0);
+  explicit ItemsAlignmentEditorWidget(PageDesignIntf *page, QWidget *parent = 0);
 private slots:
-    void slotBrinToFront();
-    void slotSendToBack();
-    void slotAlignToLeft();
-    void slotAlignToRight();
-    void slotAlignToVCenter();
-    void slotAlignToTop();
-    void slotAlignToBottom();
-    void slotAlignToHCenter();
-    void slotSameHeight();
-    void slotSameWidth();
-private:
-    void initEditor();
-    ReportDesignWidget* m_reportEditor;
-    PageDesignIntf* m_page;
+  void slotBrinToFront();
+  void slotSendToBack();
+  void slotAlignToLeft();
+  void slotAlignToRight();
+  void slotAlignToVCenter();
+  void slotAlignToTop();
+  void slotAlignToBottom();
+  void slotAlignToHCenter();
+  void slotSameHeight();
+  void slotSameWidth();
 
-    QAction* m_bringToFront;
-    QAction* m_sendToBack;
-    QAction* m_alignToLeft;
-    QAction* m_alignToRight;
-    QAction* m_alignToVCenter;
-    QAction* m_alignToTop;
-    QAction* m_alignToBottom;
-    QAction* m_alignToHCenter;
-    QAction* m_sameHeight;
-    QAction* m_sameWidth;
+private:
+  void initEditor();
+  ReportDesignWidget *m_reportEditor;
+  PageDesignIntf *m_page;
+
+  QAction *m_bringToFront;
+  QAction *m_sendToBack;
+  QAction *m_alignToLeft;
+  QAction *m_alignToRight;
+  QAction *m_alignToVCenter;
+  QAction *m_alignToTop;
+  QAction *m_alignToBottom;
+  QAction *m_alignToHCenter;
+  QAction *m_sameHeight;
+  QAction *m_sameWidth;
 };
 
-} //namespace LimeReport
+} // namespace LimeReport
 
 #endif // LRITEMSALIGNEDITORWIDGET_H

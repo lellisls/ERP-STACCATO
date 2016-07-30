@@ -1,34 +1,21 @@
 #include <QDate>
-#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
 #include "inputdialog.h"
 #include "produtospendentes.h"
-#include "searchdialog.h"
 #include "ui_widgetcomprapendentes.h"
 #include "widgetcomprapendentes.h"
 
 WidgetCompraPendentes::WidgetCompraPendentes(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraPendentes) {
   ui->setupUi(this);
 
-  connect(ui->checkBoxFiltroPendentes, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroIniciados, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroCompra, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroFaturamento, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroColeta, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroRecebimento, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroEstoque, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetCompraPendentes::montaFiltro);
-
   ui->itemBoxProduto->setSearchDialog(SearchDialog::produto(this));
 
   connect(ui->itemBoxProduto, &QLineEdit::textChanged, this, &WidgetCompraPendentes::setarDadosAvulso);
 
   ui->checkBoxFiltroPendentes->setChecked(true);
-
-  QSqlQuery("set lc_time_names = 'pt_BR'").exec();
 }
 
 WidgetCompraPendentes::~WidgetCompraPendentes() { delete ui; }
@@ -59,16 +46,32 @@ void WidgetCompraPendentes::setarDadosAvulso() {
   ui->lineEditUn->setText(un);
 }
 
-bool WidgetCompraPendentes::updateTables(QString &error) {
+void WidgetCompraPendentes::makeConnections() {
+  connect(ui->checkBoxFiltroPendentes, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroIniciados, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroCompra, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroFaturamento, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroColeta, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroRecebimento, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroEstoque, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetCompraPendentes::montaFiltro);
+}
+
+bool WidgetCompraPendentes::updateTables() {
   if (model.tableName().isEmpty()) {
     setupTables();
     montaFiltro();
+    makeConnections();
   }
 
+  QString filter = model.filter();
+
   if (not model.select()) {
-    error = "Erro lendo tabela produtos pendentes: " + model.lastError().text();
+    emit errorSignal("Erro lendo tabela produtos pendentes: " + model.lastError().text());
     return false;
   }
+
+  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -130,7 +133,7 @@ void WidgetCompraPendentes::montaFiltro() {
     }
   }
 
-  filtroCheck = "(" + filtroCheck + ")";
+  filtroCheck = filtroCheck.isEmpty() ? "" : "(" + filtroCheck + ")";
 
   const QString textoBusca = ui->lineEditBusca->text();
 
@@ -147,47 +150,26 @@ void WidgetCompraPendentes::montaFiltro() {
 }
 
 void WidgetCompraPendentes::on_pushButtonComprarAvulso_clicked() {
+  if (ui->itemBoxProduto->text().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum produto selecionado!");
+    return;
+  }
+
+  if (ui->doubleSpinBoxQuantAvulso->value() == 0.) {
+    QMessageBox::critical(this, "Erro!", "Deve escolher uma quantidade!");
+    return;
+  }
+
   InputDialog *inputDlg = new InputDialog(InputDialog::Carrinho, this);
 
   if (inputDlg->exec() != InputDialog::Accepted) return;
 
   QDate dataPrevista = inputDlg->getNextDate();
 
-  //  QSqlQuery query;
-  //  query.prepare("SELECT quant FROM pedido_fornecedor_has_produto WHERE idProduto = :idProduto AND status =
-  //  'PENDENTE'");
-  //  query.bindValue(":idProduto", ui->itemBoxProduto->value());
-
-  //  if (not query.exec()) {
-  //    QMessageBox::critical(this, "Erro!", "Erro buscando produto: " + query.lastError().text());
-  //    return;
-  //  }
-
   insere(dataPrevista) ? QMessageBox::information(this, "Aviso!", "Produto enviado para compras com sucesso!")
                        : QMessageBox::critical(this, "Erro!", "Erro ao enviar produto para compras!");
 
-  //  bool ok = query.first() ? atualiza(query) : insere(dataPrevista);
-
-  //  if (ok) QMessageBox::information(this, "Aviso!", "Produto enviado para compras com sucesso!");
-  //  if (not ok) QMessageBox::critical(this, "Erro!", "Erro ao enviar produto para compras!");
-
   ui->itemBoxProduto->clear();
-}
-
-bool WidgetCompraPendentes::atualiza(const QSqlQuery &query) {
-  QSqlQuery query2;
-  query2.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant WHERE idProduto = :idProduto AND "
-                 "status = 'PENDENTE'");
-  query2.bindValue(":quant", query.value("quant").toDouble() + ui->doubleSpinBoxQuantAvulso->value());
-  query2.bindValue(":idProduto", ui->itemBoxProduto->value());
-
-  if (not query2.exec()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro atualizando pedido_fornecedor_has_produto: " + query2.lastError().text());
-    return false;
-  }
-
-  return true;
 }
 
 bool WidgetCompraPendentes::insere(const QDate &dataPrevista) {
@@ -196,23 +178,17 @@ bool WidgetCompraPendentes::insere(const QDate &dataPrevista) {
                 "codBarras FROM produto WHERE idProduto = :idProduto");
   query.bindValue(":idProduto", ui->itemBoxProduto->value());
 
-  if (not query.exec()) {
+  if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando produto: " + query.lastError().text());
-    return false;
-  }
-
-  if (not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Não encontrou produto!");
     return false;
   }
 
   QSqlQuery query2;
   query2.prepare(
       "INSERT INTO pedido_fornecedor_has_produto (fornecedor, idProduto, descricao, colecao, quant, un, un2, caixas, "
-      "preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, :idProduto, "
-      ":descricao, :colecao, :quant, :un, :un2, :caixas, :preco, :kgcx, :formComercial, :codComercial, :codBarras, "
-      ":dataPrevCompra)");
-
+      "prcUnitario, preco, kgcx, formComercial, codComercial, codBarras, dataPrevCompra) VALUES (:fornecedor, "
+      ":idProduto, :descricao, :colecao, :quant, :un, :un2, :caixas, :prcUnitario, :preco, :kgcx, :formComercial, "
+      ":codComercial, :codBarras, :dataPrevCompra)");
   query2.bindValue(":fornecedor", query.value("fornecedor"));
   query2.bindValue(":idProduto", query.value("idProduto"));
   query2.bindValue(":descricao", query.value("descricao"));
@@ -221,6 +197,7 @@ bool WidgetCompraPendentes::insere(const QDate &dataPrevista) {
   query2.bindValue(":un", query.value("un"));
   query2.bindValue(":un2", query.value("un2"));
   query2.bindValue(":caixas", ui->doubleSpinBoxQuantAvulsoCaixas->value());
+  query2.bindValue(":prcUnitario", query.value("custo").toDouble());
   query2.bindValue(":preco", query.value("custo").toDouble() * ui->doubleSpinBoxQuantAvulso->value());
   query2.bindValue(":kgcx", query.value("kgcx"));
   query2.bindValue(":formComercial", query.value("formComercial"));
@@ -246,3 +223,5 @@ void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const doubl
 }
 
 void WidgetCompraPendentes::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+// TODO: ' faz busca parar de funcionar

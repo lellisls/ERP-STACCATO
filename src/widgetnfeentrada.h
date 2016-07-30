@@ -15,11 +15,15 @@ class WidgetNfeEntrada : public QWidget {
 public:
   explicit WidgetNfeEntrada(QWidget *parent = 0);
   ~WidgetNfeEntrada();
-  bool updateTables(QString &error);
+  bool updateTables();
+
+signals:
+  void errorSignal(QString error);
 
 private slots:
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
+  void on_lineEditBusca_textChanged(const QString &text);
 
 private:
   Ui::WidgetNfeEntrada *ui;

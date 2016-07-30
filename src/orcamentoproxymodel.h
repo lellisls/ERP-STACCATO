@@ -13,7 +13,9 @@ public:
   QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
 private:
-  const int column, status;
+  const int dias, status, followup, semaforo;
+
+  enum FieldColors { Quente = 1, Morno = 2, Frio = 3 };
 };
 
 #endif // ORCAMENTOPROXYMODEL_H

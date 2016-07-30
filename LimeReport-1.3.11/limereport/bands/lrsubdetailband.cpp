@@ -31,124 +31,85 @@
 #include "lrdesignelementsfactory.h"
 #include "lrglobal.h"
 
-
 const QString xmlTagBand = QLatin1String("SubDetail");
 const QString xmlTagHeader = QLatin1String("SubDetailHeader");
 const QString xmlTagFooter = QLatin1String("SubDetailFooter");
 const QColor BAND_COLOR = Qt::red;
 
-namespace{
+namespace {
 
-LimeReport::BaseDesignIntf * createBand(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::SubDetailBand(owner,parent);
+LimeReport::BaseDesignIntf *createBand(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::SubDetailBand(owner, parent);
 }
 
 bool registred = LimeReport::DesignElementsFactory::instance().registerCreator(
-        xmlTagBand,
-        LimeReport::ItemAttribs(QObject::tr("SubDetail"),LimeReport::Const::bandTAG),
-        createBand
-    );
+    xmlTagBand, LimeReport::ItemAttribs(QObject::tr("SubDetail"), LimeReport::Const::bandTAG), createBand);
 
-LimeReport::BaseDesignIntf * createHeader(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::SubDetailHeaderBand(owner,parent);
+LimeReport::BaseDesignIntf *createHeader(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::SubDetailHeaderBand(owner, parent);
 }
 
 bool registredHeader = LimeReport::DesignElementsFactory::instance().registerCreator(
-       xmlTagHeader,
-        LimeReport::ItemAttribs(QObject::tr("SubDetailHeader"),LimeReport::Const::bandTAG),
-        createHeader
-    );
+    xmlTagHeader, LimeReport::ItemAttribs(QObject::tr("SubDetailHeader"), LimeReport::Const::bandTAG), createHeader);
 
-LimeReport::BaseDesignIntf * createFooter(QObject* owner, LimeReport::BaseDesignIntf*  parent){
-    return new LimeReport::SubDetailFooterBand(owner,parent);
+LimeReport::BaseDesignIntf *createFooter(QObject *owner, LimeReport::BaseDesignIntf *parent) {
+  return new LimeReport::SubDetailFooterBand(owner, parent);
 }
 
 bool registredFooter = LimeReport::DesignElementsFactory::instance().registerCreator(
-        xmlTagFooter,
-        LimeReport::ItemAttribs(QObject::tr("SubDetailFooter"),LimeReport::Const::bandTAG),
-        createFooter
-    );
+    xmlTagFooter, LimeReport::ItemAttribs(QObject::tr("SubDetailFooter"), LimeReport::Const::bandTAG), createFooter);
 
 } // namespace
 
-namespace LimeReport{
+namespace LimeReport {
 
-//SubDetailBand
+// SubDetailBand
 
 SubDetailBand::SubDetailBand(QObject *owner, QGraphicsItem *parent)
-    : DataBandDesignIntf(BandDesignIntf::SubDetailBand, xmlTagBand, owner,parent)
-{
-    setBandTypeText(tr("SubDetail"));
-    setFixedPos(false);
-    setMarkerColor(bandColor());
+    : DataBandDesignIntf(BandDesignIntf::SubDetailBand, xmlTagBand, owner, parent) {
+  setBandTypeText(tr("SubDetail"));
+  setFixedPos(false);
+  setMarkerColor(bandColor());
 }
 
-bool SubDetailBand::isHasHeader() const
-{
-    return isConnectedToBand(BandDesignIntf::SubDetailHeader);
+bool SubDetailBand::isHasHeader() const { return isConnectedToBand(BandDesignIntf::SubDetailHeader); }
+
+bool SubDetailBand::isHasFooter() const { return isConnectedToBand(BandDesignIntf::SubDetailFooter); }
+
+BaseDesignIntf *SubDetailBand::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new SubDetailBand(owner, parent);
 }
 
-bool SubDetailBand::isHasFooter() const
-{
-    return isConnectedToBand(BandDesignIntf::SubDetailFooter);
-}
+QColor SubDetailBand::bandColor() const { return BAND_COLOR; }
 
-BaseDesignIntf *SubDetailBand::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new SubDetailBand(owner,parent);
-}
-
-QColor SubDetailBand::bandColor() const
-{
-    return BAND_COLOR;
-}
-
-//SubDetailHeaderBand
+// SubDetailHeaderBand
 
 SubDetailHeaderBand::SubDetailHeaderBand(QObject *owner, QGraphicsItem *parent)
-    :BandDesignIntf(BandDesignIntf::SubDetailHeader,xmlTagHeader,owner,parent), m_printAlways(false)
-{
-    setBandTypeText(tr("SubDetailHeader"));
-    setMarkerColor(bandColor());
+    : BandDesignIntf(BandDesignIntf::SubDetailHeader, xmlTagHeader, owner, parent), m_printAlways(false) {
+  setBandTypeText(tr("SubDetailHeader"));
+  setMarkerColor(bandColor());
 }
 
-bool SubDetailHeaderBand::isUnique() const
-{
-    return false;
+bool SubDetailHeaderBand::isUnique() const { return false; }
+
+QColor SubDetailHeaderBand::bandColor() const { return BAND_COLOR; }
+
+BaseDesignIntf *SubDetailHeaderBand::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new SubDetailHeaderBand(owner, parent);
 }
 
-QColor SubDetailHeaderBand::bandColor() const
-{
-    return BAND_COLOR;
-}
-
-BaseDesignIntf *SubDetailHeaderBand::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new SubDetailHeaderBand(owner,parent);
-}
-
-//SubDetailFooterBand
+// SubDetailFooterBand
 
 SubDetailFooterBand::SubDetailFooterBand(QObject *owner, QGraphicsItem *parent)
-    : BandDesignIntf(BandDesignIntf::SubDetailFooter,xmlTagFooter,owner,parent), m_printAlways(false)
-{
-    setMarkerColor(bandColor());
+    : BandDesignIntf(BandDesignIntf::SubDetailFooter, xmlTagFooter, owner, parent), m_printAlways(false) {
+  setMarkerColor(bandColor());
 }
 
-bool SubDetailFooterBand::isUnique() const
-{
-    return false;
+bool SubDetailFooterBand::isUnique() const { return false; }
+
+QColor SubDetailFooterBand::bandColor() const { return BAND_COLOR; }
+
+BaseDesignIntf *SubDetailFooterBand::createSameTypeItem(QObject *owner, QGraphicsItem *parent) {
+  return new SubDetailFooterBand(owner, parent);
 }
-
-QColor SubDetailFooterBand::bandColor() const
-{
-    return BAND_COLOR;
-}
-
-BaseDesignIntf *SubDetailFooterBand::createSameTypeItem(QObject *owner, QGraphicsItem *parent)
-{
-    return new SubDetailFooterBand(owner,parent);
-}
-
-
 }

@@ -39,39 +39,39 @@
 
 #include "xlsxglobal.h"
 
-#include <QString>
 #include <QByteArray>
+#include <QString>
 
 namespace QXlsx {
 
-  class MediaFile {
-    public:
-      MediaFile(const QString &fileName);
-      MediaFile(const QByteArray &bytes, const QString &suffix, const QString &mimeType = QString());
+class MediaFile {
+public:
+  explicit MediaFile(const QString &fileName);
+  MediaFile(const QByteArray &bytes, const QString &suffix, const QString &mimeType = QString());
 
-      void set(const QByteArray &bytes, const QString &suffix, const QString &mimeType = QString());
-      QString suffix() const;
-      QString mimeType() const;
-      QByteArray contents() const;
+  void set(const QByteArray &bytes, const QString &suffix, const QString &mimeType = QString());
+  QString suffix() const;
+  QString mimeType() const;
+  QByteArray contents() const;
 
-      bool isIndexValid() const;
-      int index() const;
-      void setIndex(int idx);
-      QByteArray hashKey() const;
+  bool isIndexValid() const;
+  int index() const;
+  void setIndex(int idx);
+  QByteArray hashKey() const;
 
-      void setFileName(const QString &name);
-      QString fileName() const;
+  void setFileName(const QString &name);
+  QString fileName() const;
 
-    private:
-      QString m_fileName; //...
-      QByteArray m_contents;
-      QString m_suffix;
-      QString m_mimeType;
+private:
+  QString m_fileName; //...
+  QByteArray m_contents;
+  QString m_suffix;
+  QString m_mimeType;
 
-      int m_index;
-      bool m_indexValid;
-      QByteArray m_hashKey;
-  };
+  int m_index;
+  bool m_indexValid;
+  QByteArray m_hashKey;
+};
 
 } // namespace QXlsx
 

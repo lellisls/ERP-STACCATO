@@ -9,11 +9,11 @@
 class XML {
 
 public:
-  XML(const QByteArray &fileContent, const QString &fileName);
-  XML(QStandardItemModel &model, const QByteArray &fileContent, const QString &fileName = QString());
+  XML(const QByteArray &fileContent, const QString &fileName = QString());
   bool cadastrarEstoque();
   bool cadastrarNFe(const QString &tipo);
-  void mostrarNoSqlModel(SqlTableModel &externalModel);
+  bool mostrarNoSqlModel(SqlTableModel &externalModel);
+  void montarArvore(QStandardItemModel &model);
 
 private:
   QByteArray fileContent;
@@ -21,6 +21,7 @@ private:
   QString fileName;
 
   QString chaveAcesso;
+  QString nNF;
   // emit
   QString xFant;
   QString xNome;
@@ -92,11 +93,11 @@ private:
   int idNFe = 0;
 
   // methods
-  bool inserirItemSql(SqlTableModel *externalModel);
-  bool lerValores(const QStandardItem *item);
+  bool inserirItemSql(SqlTableModel &externalModel);
+  void lerValores(const QStandardItem *item);
   bool verificaCNPJ();
   bool verificaExiste();
-  void inserirNoSqlModel(const QStandardItem *item, SqlTableModel *externalModel);
+  bool inserirNoSqlModel(const QStandardItem *item, SqlTableModel &externalModel);
   void lerCOFINSProduto(const QStandardItem *child);
   void lerDadosProduto(const QStandardItem *child);
   void lerICMSProduto(const QStandardItem *child);

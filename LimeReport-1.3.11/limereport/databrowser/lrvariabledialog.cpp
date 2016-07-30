@@ -28,72 +28,55 @@
  *   GNU General Public License for more details.                          *
  ****************************************************************************/
 #include "lrvariabledialog.h"
-#include "ui_lrvariabledialog.h"
 #include "lrglobal.h"
-#include <stdexcept>
+#include "ui_lrvariabledialog.h"
 #include <QMessageBox>
+#include <stdexcept>
 
-LRVariableDialog::LRVariableDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::LRVariableDialog),
-    m_variableName(""),
-    m_variablesContainer(0),
-    m_changeMode(false),
-    m_oldVariableName("")
-{
-    ui->setupUi(this);
-    ui->cbbType->setVisible(false);
-    ui->lblType->setVisible(false);
+LRVariableDialog::LRVariableDialog(QWidget *parent)
+    : QDialog(parent), ui(new Ui::LRVariableDialog), m_variableName(""), m_variablesContainer(0), m_changeMode(false),
+      m_oldVariableName("") {
+  ui->setupUi(this);
+  ui->cbbType->setVisible(false);
+  ui->lblType->setVisible(false);
 }
 
-LRVariableDialog::~LRVariableDialog()
-{
-    delete ui;
+LRVariableDialog::~LRVariableDialog() { delete ui; }
+
+void LRVariableDialog::setVariableContainer(LimeReport::IVariablesContainer *value) { m_variablesContainer = value; }
+
+void LRVariableDialog::setVariableName(const QString &value) {
+  m_variableName = value;
+  m_changeMode = true;
+  m_oldVariableName = value;
 }
 
-void LRVariableDialog::setVariableContainer(LimeReport::IVariablesContainer *value)
-{
-    m_variablesContainer=value;
+void LRVariableDialog::showEvent(QShowEvent *) {
+  ui->leName->setText(m_variableName);
+  if (!m_variableName.isEmpty() and m_variablesContainer and m_variablesContainer->containsVariable(m_variableName)) {
+    ui->leValue->setText(m_variablesContainer->variable(m_variableName).toString());
+  }
 }
 
-void LRVariableDialog::setVariableName(const QString &value)
-{
-    m_variableName=value;
-    m_changeMode=true;
-    m_oldVariableName=value;
-}
-
-void LRVariableDialog::showEvent(QShowEvent *)
-{
-    ui->leName->setText(m_variableName);
-    if (!m_variableName.isEmpty()&&m_variablesContainer&&m_variablesContainer->containsVariable(m_variableName)){
-        ui->leValue->setText(m_variablesContainer->variable(m_variableName).toString());
-    }
-}
-
-void LRVariableDialog::accept()
-{
-    try{
-    if (m_variablesContainer&&!ui->leName->text().isEmpty()){
-        if (m_changeMode){
-            if (m_oldVariableName==ui->leName->text()){
-                m_variablesContainer->changeVariable(m_oldVariableName,value());
-            } else {
-                m_variablesContainer->deleteVariable(m_oldVariableName);
-                m_variablesContainer->addVariable(ui->leName->text(),value());
-            }
+void LRVariableDialog::accept() {
+  try {
+    if (m_variablesContainer and !ui->leName->text().isEmpty()) {
+      if (m_changeMode) {
+        if (m_oldVariableName == ui->leName->text()) {
+          m_variablesContainer->changeVariable(m_oldVariableName, value());
         } else {
-            m_variablesContainer->addVariable(ui->leName->text(),value());
+          m_variablesContainer->deleteVariable(m_oldVariableName);
+          m_variablesContainer->addVariable(ui->leName->text(), value());
         }
-        emit signalVariableAccepted(ui->leName->text());
-        QDialog::accept();
+      } else {
+        m_variablesContainer->addVariable(ui->leName->text(), value());
+      }
+      emit signalVariableAccepted(ui->leName->text());
+      QDialog::accept();
     }
-    } catch (LimeReport::ReportError &exception){
-        QMessageBox::critical(this,tr("Attention"),exception.what());
-    }
+  } catch (LimeReport::ReportError &exception) {
+    QMessageBox::critical(this, tr("Attention"), exception.what());
+  }
 }
 
-QVariant LRVariableDialog::value()
-{
-    return ui->leValue->text();
-}
+QVariant LRVariableDialog::value() { return ui->leValue->text(); }

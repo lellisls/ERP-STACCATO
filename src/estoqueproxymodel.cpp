@@ -20,5 +20,7 @@ QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int role) 
     if (value == 5) return QBrush(Qt::cyan);      // Devolução
   }
 
+  if (role == Qt::ForegroundRole) return QBrush(Qt::black);
+
   return QIdentityProxyModel::data(proxyIndex, role);
 }

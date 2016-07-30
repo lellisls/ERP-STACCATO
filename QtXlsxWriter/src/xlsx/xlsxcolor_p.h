@@ -38,50 +38,50 @@
 //
 
 #include "xlsxglobal.h"
-#include <QVariant>
 #include <QColor>
+#include <QVariant>
 
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
 namespace QXlsx {
 
-  class Styles;
+class Styles;
 
-  class Q_XLSX_EXPORT XlsxColor {
-    public:
-      explicit XlsxColor(const QColor &color = QColor());
-      explicit XlsxColor(const QString &theme, const QString &tint = QString());
-      explicit XlsxColor(int index);
+class Q_XLSX_EXPORT XlsxColor {
+public:
+  explicit XlsxColor(const QColor &color = QColor());
+  explicit XlsxColor(const QString &theme, const QString &tint = QString());
+  explicit XlsxColor(int index);
 
-      bool isThemeColor() const;
-      bool isIndexedColor() const;
-      bool isRgbColor() const;
-      bool isInvalid() const;
+  bool isThemeColor() const;
+  bool isIndexedColor() const;
+  bool isRgbColor() const;
+  bool isInvalid() const;
 
-      QColor rgbColor() const;
-      int indexedColor() const;
-      QStringList themeColor() const;
+  QColor rgbColor() const;
+  int indexedColor() const;
+  QStringList themeColor() const;
 
-      operator QVariant() const;
+  operator QVariant() const;
 
-      static QColor fromARGBString(const QString &c);
-      static QString toARGBString(const QColor &c);
+  static QColor fromARGBString(const QString &c);
+  static QString toARGBString(const QColor &c);
 
-      bool saveToXml(QXmlStreamWriter &writer, const QString &node = QString()) const;
-      bool loadFromXml(QXmlStreamReader &reader);
+  bool saveToXml(QXmlStreamWriter &writer, const QString &node = QString()) const;
+  bool loadFromXml(QXmlStreamReader &reader);
 
-    private:
-      QVariant val;
-  };
+private:
+  QVariant val;
+};
 
 #if not defined(QT_NO_DATASTREAM)
-  Q_XLSX_EXPORT QDataStream &operator<<(QDataStream &, const XlsxColor &);
-  Q_XLSX_EXPORT QDataStream &operator>>(QDataStream &, XlsxColor &);
+Q_XLSX_EXPORT QDataStream &operator<<(QDataStream &, const XlsxColor &);
+Q_XLSX_EXPORT QDataStream &operator>>(QDataStream &, XlsxColor &);
 #endif
 
 #ifndef QT_NO_DEBUG_STREAM
-  Q_XLSX_EXPORT QDebug operator<<(QDebug dbg, const XlsxColor &c);
+Q_XLSX_EXPORT QDebug operator<<(QDebug dbg, const XlsxColor &c);
 #endif
 
 } // namespace QXlsx

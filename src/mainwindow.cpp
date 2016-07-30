@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->actionCadastrarFornecedor->setDisabled(true);
   }
 
-  if (UserSession::tipoUsuario() == "VENDEDOR") {
+  if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
     ui->tabWidget->setTabEnabled(2, false);
     ui->tabWidget->setTabEnabled(3, false);
     ui->tabWidget->setTabEnabled(4, false);
@@ -104,51 +104,58 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
 
 void MainWindow::showStatusBarMessage() { ui->statusBar->showMessage(error, 125); }
 
-void MainWindow::timerStatusBar() {
+void MainWindow::timerStatusBar(QString error) {
+  this->error = error;
   disconnect(timer, &QTimer::timeout, this, &MainWindow::showStatusBarMessage);
   connect(timer, &QTimer::timeout, this, &MainWindow::showStatusBarMessage);
   timer->start(250);
 }
 
 void MainWindow::updateTables() {
-  error = QString();
+  connect(ui->widgetOrcamento, &WidgetOrcamento::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetVenda, &WidgetVenda::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetCompra, &WidgetCompra::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetLogistica, &WidgetLogistica::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetNfe, &WidgetNfe::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetEstoque, &WidgetEstoque::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetPagar, &WidgetContaPagar::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetReceber, &WidgetContaReceber::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetRelatorio, &WidgetRelatorio::errorSignal, this, &MainWindow::timerStatusBar);
 
   switch (ui->tabWidget->currentIndex()) {
   case 0: // Orcamentos
-    ui->widgetOrcamento->updateTables(error);
+    ui->widgetOrcamento->updateTables();
     break;
 
   case 1: // Vendas
-    ui->widgetVenda->updateTables(error);
+    ui->widgetVenda->updateTables();
     break;
 
   case 2: // Compras
-    ui->widgetCompra->updateTables(error);
+    ui->widgetCompra->updateTables();
     break;
 
   case 3: // Logistica
-    ui->widgetLogistica->updateTables(error);
+    ui->widgetLogistica->updateTables();
     break;
 
   case 4: // NFe
-    ui->widgetNfe->updateTables(error);
+    ui->widgetNfe->updateTables();
     break;
 
   case 5: // Estoque
-    ui->widgetEstoque->updateTables(error);
+    ui->widgetEstoque->updateTables();
     break;
 
   case 6: // Contas
-    ui->widgetPagar->updateTables(error);
-    ui->widgetReceber->updateTables(error);
+    ui->widgetPagar->updateTables();
+    ui->widgetReceber->updateTables();
     break;
 
   case 7: // Relatório
-    ui->widgetRelatorio->updateTables(error);
+    ui->widgetRelatorio->updateTables();
     break;
   }
-
-  if (not error.isEmpty()) timerStatusBar();
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {

@@ -39,33 +39,33 @@ class Worksheet;
 class WorksheetPrivate;
 
 class Q_XLSX_EXPORT CellFormula {
-  public:
-    enum FormulaType { NormalType, ArrayType, DataTableType, SharedType };
+public:
+  enum FormulaType { NormalType, ArrayType, DataTableType, SharedType };
 
-    CellFormula();
-    CellFormula(const char *formula, FormulaType type = NormalType);
-    CellFormula(const QString &formula, FormulaType type = NormalType);
-    CellFormula(const QString &formula, const CellRange &ref, FormulaType type);
-    CellFormula(const CellFormula &other);
-    ~CellFormula();
-    CellFormula &operator=(const CellFormula &other);
-    bool isValid() const;
+  CellFormula();
+  CellFormula(const char *formula, FormulaType type = NormalType);
+  CellFormula(const QString &formula, FormulaType type = NormalType);
+  CellFormula(const QString &formula, const CellRange &ref, FormulaType type);
+  CellFormula(const CellFormula &other);
+  ~CellFormula();
+  CellFormula &operator=(const CellFormula &other);
+  bool isValid() const;
 
-    FormulaType formulaType() const;
-    QString formulaText() const;
-    CellRange reference() const;
-    int sharedIndex() const;
+  FormulaType formulaType() const;
+  QString formulaText() const;
+  CellRange reference() const;
+  int sharedIndex() const;
 
-    bool operator==(const CellFormula &formula) const;
-    bool operator!=(const CellFormula &formula) const;
+  bool operator==(const CellFormula &formula) const;
+  bool operator!=(const CellFormula &formula) const;
 
-    bool saveToXml(QXmlStreamWriter &writer) const;
-    bool loadFromXml(QXmlStreamReader &reader);
+  bool saveToXml(QXmlStreamWriter &writer) const;
+  bool loadFromXml(QXmlStreamReader &reader);
 
-  private:
-    friend class Worksheet;
-    friend class WorksheetPrivate;
-    QExplicitlySharedDataPointer<CellFormulaPrivate> d;
+private:
+  friend class Worksheet;
+  friend class WorksheetPrivate;
+  QExplicitlySharedDataPointer<CellFormulaPrivate> d;
 };
 
 QT_END_NAMESPACE_XLSX

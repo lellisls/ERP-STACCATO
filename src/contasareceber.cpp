@@ -16,9 +16,7 @@ ContasAReceber::ContasAReceber(QWidget *parent) : QDialog(parent), ui(new Ui::Co
 
   setupTables();
 
-  ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
-
-  show();
+  showMaximized();
 }
 
 ContasAReceber::~ContasAReceber() { delete ui; }
@@ -34,26 +32,44 @@ void ContasAReceber::setupTables() {
 
   ui->table->setModel(&model);
   ui->table->setItemDelegate(new DoubleDelegate(this));
-  ui->table->setItemDelegateForColumn(model.fieldIndex("status"), new ComboBoxDelegate(this));
+  ui->table->setItemDelegateForColumn(model.fieldIndex("status"),
+                                      new ComboBoxDelegate(ComboBoxDelegate::StatusReceber, this));
+  ui->table->setItemDelegateForColumn(model.fieldIndex("contaDestino"),
+                                      new ComboBoxDelegate(ComboBoxDelegate::Conta, this));
   ui->table->hideColumn(model.fieldIndex("idPagamento"));
   ui->table->hideColumn(model.fieldIndex("idVenda"));
   ui->table->hideColumn(model.fieldIndex("idLoja"));
+  ui->table->hideColumn(model.fieldIndex("created"));
+  ui->table->hideColumn(model.fieldIndex("lastUpdated"));
 }
 
-void ContasAReceber::on_pushButtonSalvar_clicked() { close(); }
+void ContasAReceber::on_pushButtonSalvar_clicked() {
+  // TODO: verificar consistencia dos dados antes de salvar
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + model.lastError().text());
+    return;
+  }
+
+  close();
+}
 
 void ContasAReceber::viewConta(const QString &idVenda) {
   this->idVenda = idVenda;
 
-  model.setFilter("idVenda = '" + idVenda + "'");
+  setWindowTitle(windowTitle() + " - " + idVenda);
 
-  ui->checkBox->setChecked(model.data(0, "pago").toString() == "SIM" ? true : false);
+  model.setFilter("idVenda = '" + idVenda + "'");
 
   ui->table->resizeColumnsToContents();
 
   for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
     ui->table->openPersistentEditor(model.index(row, model.fieldIndex("status")));
+    ui->table->openPersistentEditor(model.index(row, model.fieldIndex("contaDestino")));
   }
 }
 
 void ContasAReceber::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+// TODO: colocar coluna para indicar quem paga (seja cliente ou fornecedor rep.)
+// TODO: criar tela para dar baixa

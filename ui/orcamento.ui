@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1072</width>
-    <height>705</height>
+    <width>1136</width>
+    <height>796</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -411,7 +411,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto sobre todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="correctionMode">
              <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
@@ -436,7 +436,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobre todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="suffix">
              <string> %</string>
@@ -597,9 +597,6 @@
           </item>
           <item row="3" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxFrete">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
             <property name="wrapping">
              <bool>false</bool>
             </property>
@@ -662,6 +659,13 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
+               <widget class="QLabel" name="labelLoja">
+                <property name="text">
+                 <string>Loja:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="labelOrcamento">
                 <property name="text">
                  <string>Orçamento:</string>
@@ -682,6 +686,19 @@
                </widget>
               </item>
               <item>
+               <widget class="QLabel" name="labelVendedorIndicou">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Vendedor que indicou:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="labelCliente">
                 <property name="text">
                  <string>Cliente:</string>
@@ -692,6 +709,9 @@
             </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="ComboBox" name="comboBoxLoja"/>
+              </item>
               <item>
                <widget class="QLineEdit" name="lineEditOrcamento">
                 <property name="toolTip">
@@ -707,6 +727,9 @@
               </item>
               <item>
                <widget class="ItemBox" name="itemBoxVendedor"/>
+              </item>
+              <item>
+               <widget class="ItemBox" name="itemBoxVendedorIndicou"/>
               </item>
               <item>
                <widget class="ItemBox" name="itemBoxCliente"/>
@@ -945,24 +968,10 @@
           </item>
           <item row="1" column="0">
            <layout class="QGridLayout" name="gridLayout_7">
-            <item row="0" column="2">
-             <widget class="QLabel" name="labelFormComercial">
-              <property name="text">
-               <string>Formato</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QLabel" name="labelCodComercial">
               <property name="text">
                <string>Código</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="labelFornecedor">
-              <property name="text">
-               <string>Fornecedor</string>
               </property>
              </widget>
             </item>
@@ -973,25 +982,17 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEditCodComercial">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
+            <item row="0" column="2">
+             <widget class="QLabel" name="labelFormComercial">
+              <property name="text">
+               <string>Formato</string>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Código comercial do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelFornecedor">
+              <property name="text">
+               <string>Fornecedor</string>
               </property>
              </widget>
             </item>
@@ -1008,35 +1009,6 @@
               </property>
               <property name="readOnly">
                <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QLineEdit" name="lineEditFormComercial">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Formato do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="labelObs">
-              <property name="text">
-               <string>Obs.</string>
               </property>
              </widget>
             </item>
@@ -1062,6 +1034,57 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEditCodComercial">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Código comercial do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QLabel" name="labelObs">
+              <property name="text">
+               <string>Obs.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLineEdit" name="lineEditFormComercial">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Formato do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="4">
              <widget class="QLineEdit" name="lineEditObs">
               <property name="minimumSize">
@@ -1078,26 +1101,8 @@
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="4">
-             <widget class="QLabel" name="labelMinimo">
-              <property name="text">
-               <string>Mínimo</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="labelCaixas">
-              <property name="text">
-               <string>Caixas</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QSpinBox" name="spinBoxCaixas">
+            <item row="1" column="5">
+             <widget class="QSpinBox" name="spinBoxEstoquePromocao">
               <property name="maximumSize">
                <size>
                 <width>55</width>
@@ -1115,6 +1120,68 @@
               </property>
              </widget>
             </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="1" column="2">
+             <widget class="QDoubleSpinBox" name="spinBoxCaixas">
+              <property name="maximumSize">
+               <size>
+                <width>55</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="maximum">
+               <double>9999.989999999999782</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="5">
+             <widget class="QLabel" name="labelCaixa">
+              <property name="text">
+               <string>Un./Cx.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="5">
+             <widget class="QDoubleSpinBox" name="spinBoxUnCx">
+              <property name="maximumSize">
+               <size>
+                <width>55</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidades por caixa&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="labelCaixas">
+              <property name="text">
+               <string>Caixas</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="1">
              <widget class="QLabel" name="labelPrecoUn">
               <property name="text">
@@ -1122,24 +1189,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="labelQuant">
+            <item row="0" column="4">
+             <widget class="QLabel" name="labelMinimo">
               <property name="text">
-               <string>Quant.</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QLabel" name="labelUn">
-              <property name="text">
-               <string>Unidade</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="7">
-             <widget class="QLabel" name="labelTotalItem">
-              <property name="text">
-               <string>Total</string>
+               <string>Mínimo</string>
               </property>
              </widget>
             </item>
@@ -1153,7 +1206,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="6">
+            <item row="1" column="7">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxDesconto">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto por item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1173,6 +1226,27 @@
              </widget>
             </item>
             <item row="0" column="6">
+             <widget class="QLabel" name="labelUn">
+              <property name="text">
+               <string>Unidade</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="labelQuant">
+              <property name="text">
+               <string>Quant.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="8">
+             <widget class="QLabel" name="labelTotalItem">
+              <property name="text">
+               <string>Total</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="7">
              <widget class="QLabel" name="labelDesconto">
               <property name="text">
                <string>Desconto</string>
@@ -1195,7 +1269,14 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="5">
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelProduto">
+              <property name="text">
+               <string>Produto</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="6">
              <widget class="QLineEdit" name="lineEditUn">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1226,13 +1307,6 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="labelProduto">
-              <property name="text">
-               <string>Produto</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="3">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxQuant">
               <property name="maximumSize">
@@ -1255,10 +1329,10 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="7">
+            <item row="1" column="8">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxTotalItem">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do orçamento, com desconto final.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Valor total do item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wrapping">
                <bool>false</bool>
@@ -1278,33 +1352,24 @@
              </widget>
             </item>
             <item row="1" column="4">
-             <widget class="QLineEdit" name="lineEditMinimo">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>50</width>
-                <height>0</height>
-               </size>
-              </property>
+             <widget class="QDoubleSpinBox" name="spinBoxMinimo">
               <property name="maximumSize">
                <size>
-                <width>0</width>
+                <width>55</width>
                 <height>16777215</height>
                </size>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidade padrão do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string/>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade mínima&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="readOnly">
                <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
               </property>
              </widget>
             </item>
@@ -1350,14 +1415,19 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TableView</class>
-   <extends>QTableView</extends>
-   <header>src/tableview.h</header>
-  </customwidget>
-  <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>
    <header>src/itembox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>src/combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>src/tableview.h</header>
   </customwidget>
   <customwidget>
    <class>LineEditDecimal</class>

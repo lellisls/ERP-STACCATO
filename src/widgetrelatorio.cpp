@@ -1,29 +1,18 @@
-#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "doubledelegate.h"
 #include "porcentagemdelegate.h"
 #include "reaisdelegate.h"
 #include "ui_widgetrelatorio.h"
 #include "usersession.h"
 #include "widgetrelatorio.h"
 
-WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) {
-  ui->setupUi(this);
-
-  if (UserSession::tipoUsuario() == "VENDEDOR") {
-    ui->labelTotalLoja->hide();
-    ui->tableTotalLoja->hide();
-    ui->labelGeral->hide();
-    ui->doubleSpinBoxGeral->hide();
-  }
-}
+WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) { ui->setupUi(this); }
 
 WidgetRelatorio::~WidgetRelatorio() { delete ui; }
 
 void WidgetRelatorio::setFilterTotaisVendedor() {
-  if (UserSession::tipoUsuario() == "VENDEDOR") {
+  if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
     modelTotalVendedor.setFilter("Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND idUsuario = " +
                                  QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor");
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
@@ -43,7 +32,7 @@ void WidgetRelatorio::setFilterTotaisLoja() {
   }
 }
 
-bool WidgetRelatorio::setupTables(QString &error) {
+bool WidgetRelatorio::setupTables() {
   ReaisDelegate *reaisDelegate = new ReaisDelegate(this);
   PorcentagemDelegate *porcentagemDelegate = new PorcentagemDelegate(this);
 
@@ -53,7 +42,7 @@ bool WidgetRelatorio::setupTables(QString &error) {
   setFilterRelatorio();
 
   if (not modelRelatorio.select()) {
-    error = "Erro lendo tabela relatorio: " + modelRelatorio.lastError().text();
+    emit errorSignal("Erro lendo tabela relatorio: " + modelRelatorio.lastError().text());
     return false;
   }
 
@@ -73,7 +62,7 @@ bool WidgetRelatorio::setupTables(QString &error) {
   setFilterTotaisVendedor();
 
   if (not modelTotalVendedor.select()) {
-    error = "Erro lendo view_relatorio_vendedor: " + modelTotalVendedor.lastError().text();
+    emit errorSignal("Erro lendo view_relatorio_vendedor: " + modelTotalVendedor.lastError().text());
     return false;
   }
 
@@ -93,7 +82,7 @@ bool WidgetRelatorio::setupTables(QString &error) {
   setFilterTotaisLoja();
 
   if (not modelTotalLoja.select()) {
-    error = "Erro lendo view_relatorio_vendedor: " + modelTotalLoja.lastError().text();
+    emit errorSignal("Erro lendo view_relatorio_vendedor: " + modelTotalLoja.lastError().text());
     return false;
   }
 
@@ -126,7 +115,7 @@ void WidgetRelatorio::calcularTotalGeral() {
 void WidgetRelatorio::setFilterRelatorio() {
   QDate date = ui->dateEditMes->date();
 
-  if (UserSession::tipoUsuario() == "VENDEDOR") {
+  if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
     modelRelatorio.setFilter("Mês = '" + date.toString("yyyy-MM") + "' AND idUsuario = " +
                              QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor, idVenda");
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
@@ -137,7 +126,9 @@ void WidgetRelatorio::setFilterRelatorio() {
   }
 }
 
-void WidgetRelatorio::on_dateEditMes_dateChanged(const QDate &) {
+void WidgetRelatorio::on_dateEditMes_dateChanged(const QDate &) { updateTables(); }
+
+void WidgetRelatorio::updateTables2() {
   setFilterRelatorio();
   setFilterTotaisVendedor();
   setFilterTotaisLoja();
@@ -162,6 +153,10 @@ void WidgetRelatorio::on_dateEditMes_dateChanged(const QDate &) {
   modelOrcamento.setTable("view_resumo_relatorio");
   modelOrcamento.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+  if (UserSession::tipoUsuario() == "GERENTE LOJA") {
+    modelOrcamento.setFilter("Loja = '" + UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor");
+  }
+
   if (not modelOrcamento.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo view_resumo_relatorio: " + modelOrcamento.lastError().text());
   }
@@ -173,19 +168,32 @@ void WidgetRelatorio::on_dateEditMes_dateChanged(const QDate &) {
   ui->tableResumoOrcamento->setItemDelegateForColumn("Fechados Mes", new ReaisDelegate(this));
   ui->tableResumoOrcamento->setItemDelegateForColumn("Perdidos Mes", new ReaisDelegate(this));
   ui->tableResumoOrcamento->setItemDelegateForColumn("Validos Mes", new ReaisDelegate(this));
+  ui->tableResumoOrcamento->setItemDelegateForColumn("% Fechados / Gerados", new PorcentagemDelegate(this));
+  ui->tableResumoOrcamento->setItemDelegateForColumn("% Fechados / Carteira", new PorcentagemDelegate(this));
   ui->tableResumoOrcamento->resizeColumnsToContents();
 }
 
 void WidgetRelatorio::on_tableRelatorio_entered(const QModelIndex &) { ui->tableRelatorio->resizeColumnsToContents(); }
 
-bool WidgetRelatorio::updateTables(QString &error) {
+bool WidgetRelatorio::updateTables() {
   if (modelRelatorio.tableName().isEmpty()) {
+    if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
+      ui->labelTotalLoja->hide();
+      ui->tableTotalLoja->hide();
+      ui->labelGeral->hide();
+      ui->doubleSpinBoxGeral->hide();
+      ui->groupBoxResumoOrcamento->hide();
+    }
+
     ui->dateEditMes->setDate(QDate::currentDate());
 
-    if (not setupTables(error)) return false;
+    if (not setupTables()) return false;
 
     calcularTotalGeral();
   }
+
+  // TODO: refactor
+  updateTables2();
 
   ui->tableRelatorio->resizeColumnsToContents();
   ui->tableTotalVendedor->resizeColumnsToContents();

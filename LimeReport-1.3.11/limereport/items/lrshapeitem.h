@@ -31,54 +31,53 @@
 #define LRSHAPEITEM_H
 #include "lritemdesignintf.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-class ShapeItem: public LimeReport::ItemDesignIntf
-{
-    Q_OBJECT
-    Q_ENUMS(ShapeType)
-    Q_PROPERTY(ShapeType shape READ shapeType WRITE setShapeType)
-    Q_PROPERTY(QColor shapeColor READ shapeColor WRITE setShapeColor)
-    Q_PROPERTY(QColor shapeBrushColor READ shapeBrushColor WRITE setShapeBrushColor)
-    Q_PROPERTY(Qt::BrushStyle shapeBrush READ shapeBrushType WRITE setShapeBrushType)
-    Q_PROPERTY(qreal lineWidth READ lineWidth WRITE setLineWidth)
-    Q_PROPERTY(Qt::PenStyle penStyle READ penStyle WRITE setPenStyle)
-    Q_PROPERTY(int opacity READ opacity WRITE setOpacity)
-    Q_PROPERTY(int cornerRadius READ cornerRadius WRITE setCornerRadius)
+class ShapeItem : public LimeReport::ItemDesignIntf {
+  Q_OBJECT
+  Q_ENUMS(ShapeType)
+  Q_PROPERTY(ShapeType shape READ shapeType WRITE setShapeType)
+  Q_PROPERTY(QColor shapeColor READ shapeColor WRITE setShapeColor)
+  Q_PROPERTY(QColor shapeBrushColor READ shapeBrushColor WRITE setShapeBrushColor)
+  Q_PROPERTY(Qt::BrushStyle shapeBrush READ shapeBrushType WRITE setShapeBrushType)
+  Q_PROPERTY(qreal lineWidth READ lineWidth WRITE setLineWidth)
+  Q_PROPERTY(Qt::PenStyle penStyle READ penStyle WRITE setPenStyle)
+  Q_PROPERTY(int opacity READ opacity WRITE setOpacity)
+  Q_PROPERTY(int cornerRadius READ cornerRadius WRITE setCornerRadius)
 public:
-    enum ShapeType{HorizontalLine,VerticalLine,Ellipse,Rectangle};
-    ShapeItem(QObject *owner, QGraphicsItem *parent);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void    setShapeColor(QColor value);
-    QColor  shapeColor() const {return m_shapeColor;}
-    void    setShapeBrushColor(QColor value);
-    QColor  shapeBrushColor() const {return m_shapeBrushColor;}
-    void    setShapeBrushType(Qt::BrushStyle value);
-    Qt::BrushStyle shapeBrushType() const {return m_shapeBrushType;}
-    void        setShapeType(ShapeType value);
-    ShapeType   shapeType() const {return m_shape;}
-    void    setLineWidth(qreal value);
-    qreal   lineWidth() const {return m_lineWidth;}
-    Qt::PenStyle penStyle() const;
-    void setPenStyle(const Qt::PenStyle &value);
-    int opacity() const;
-    void setOpacity(int opacity);
-    int cornerRadius() const;
-    void setCornerRadius(int cornerRadius);
+  enum ShapeType { HorizontalLine, VerticalLine, Ellipse, Rectangle };
+  ShapeItem(QObject *owner, QGraphicsItem *parent);
+  virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+  void setShapeColor(QColor value);
+  QColor shapeColor() const { return m_shapeColor; }
+  void setShapeBrushColor(QColor value);
+  QColor shapeBrushColor() const { return m_shapeBrushColor; }
+  void setShapeBrushType(Qt::BrushStyle value);
+  Qt::BrushStyle shapeBrushType() const { return m_shapeBrushType; }
+  void setShapeType(ShapeType value);
+  ShapeType shapeType() const { return m_shape; }
+  void setLineWidth(qreal value);
+  qreal lineWidth() const { return m_lineWidth; }
+  Qt::PenStyle penStyle() const;
+  void setPenStyle(const Qt::PenStyle &value);
+  int opacity() const;
+  void setOpacity(int opacity);
+  int cornerRadius() const;
+  void setCornerRadius(int cornerRadius);
 
 protected:
-    BaseDesignIntf* createSameTypeItem(QObject *owner, QGraphicsItem *parent);
-    bool drawDesignBorders() const {return false;}
-private:
-    ShapeType m_shape;
-    QColor m_shapeColor;
-    QColor m_shapeBrushColor;
-    Qt::BrushStyle m_shapeBrushType;
-    qreal m_lineWidth;
-    Qt::PenStyle m_penStyle;
-    int m_opacity;
-    int m_cornerRadius;
-};
+  BaseDesignIntf *createSameTypeItem(QObject *owner, QGraphicsItem *parent);
+  bool drawDesignBorders() const { return false; }
 
+private:
+  ShapeType m_shape;
+  QColor m_shapeColor;
+  QColor m_shapeBrushColor;
+  Qt::BrushStyle m_shapeBrushType;
+  qreal m_lineWidth;
+  Qt::PenStyle m_penStyle;
+  int m_opacity;
+  int m_cornerRadius;
+};
 }
 #endif // LRSHAPEITEM_H

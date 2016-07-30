@@ -19,15 +19,16 @@ public:
   ~InputDialog();
   QDate getDate();
   QDate getNextDate();
-  void setFilter(const QStringList &ids);
-  void setFilter(const QString &id);
+  bool setFilter(const QString &id);
+  bool setFilter(const QStringList &id);
 
 private slots:
+  void calcularTotal();
   void on_comboBoxPgt1_currentTextChanged(const QString &text);
   void on_comboBoxPgt2_currentTextChanged(const QString &text);
   void on_comboBoxPgt3_currentTextChanged(const QString &text);
   void on_dateEditEvento_dateChanged(const QDate &date);
-  void on_doubleSpinBoxFrete_editingFinished();
+  void on_doubleSpinBoxFrete_valueChanged(double);
   void on_doubleSpinBoxPgt1_editingFinished();
   void on_doubleSpinBoxPgt2_editingFinished();
   void on_doubleSpinBoxPgt3_editingFinished();
@@ -47,6 +48,8 @@ private:
   void calculoSpinBox2() const;
   void montarFluxoCaixa();
   void resetarPagamentos();
+  void updateTableData(const QModelIndex &topLeft);
+  bool cadastrar();
 };
 
 #endif // INPUTDIALOG_H

@@ -26,7 +26,6 @@ private:
   // attributes
   Ui::CadastroProduto *ui;
   // methods
-  bool verifyFields(const bool &isUpdate);
   virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
@@ -35,6 +34,7 @@ private:
   virtual void setupMapper() override;
   virtual void updateMode() override;
   void calcularMarkup();
+  bool cadastrar();
 };
 
 #endif // CADASTROPRODUTO_H

@@ -45,17 +45,17 @@
 QT_BEGIN_NAMESPACE_XLSX
 
 class XLSX_AUTOTEST_EXPORT AbstractOOXmlFilePrivate {
-    Q_DECLARE_PUBLIC(AbstractOOXmlFile)
+  Q_DECLARE_PUBLIC(AbstractOOXmlFile)
 
-  public:
-    AbstractOOXmlFilePrivate(AbstractOOXmlFile *q, AbstractOOXmlFile::CreateFlag flag);
-    virtual ~AbstractOOXmlFilePrivate();
+public:
+  AbstractOOXmlFilePrivate(AbstractOOXmlFile *q, AbstractOOXmlFile::CreateFlag flag);
+  virtual ~AbstractOOXmlFilePrivate();
 
-    QString filePathInPackage; // such as "xl/worksheets/sheet1.xml"
-    // used when load the .xlsx file
-    Relationships *relationships;
-    AbstractOOXmlFile::CreateFlag flag;
-    AbstractOOXmlFile *q_ptr;
+  QString filePathInPackage; // such as "xl/worksheets/sheet1.xml"
+  // used when load the .xlsx file
+  Relationships *relationships;
+  AbstractOOXmlFile::CreateFlag flag;
+  AbstractOOXmlFile *q_ptr;
 };
 
 QT_END_NAMESPACE_XLSX

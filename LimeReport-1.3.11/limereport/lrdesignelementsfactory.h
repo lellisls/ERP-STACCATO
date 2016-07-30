@@ -30,36 +30,34 @@
 #ifndef LRDESIGNELEMENTSFACTORY_H
 #define LRDESIGNELEMENTSFACTORY_H
 
+#include "lrattribsabstractfactory.h"
 #include "lrbanddesignintf.h"
 #include "lrpageheader.h"
-#include "lrattribsabstractfactory.h"
 #include "lrsimpleabstractfactory.h"
 #include "lrsingleton.h"
 
-namespace LimeReport{
+namespace LimeReport {
 
-typedef BaseDesignIntf* (*CreateBand)(QObject* owner, BaseDesignIntf*  parent);
+typedef BaseDesignIntf *(*CreateBand)(QObject *owner, BaseDesignIntf *parent);
 
-struct ItemAttribs{
-    QString m_alias;
-    QString m_tag;
-    ItemAttribs(){}
-    ItemAttribs(const QString& alias, const QString& tag):m_alias(alias),m_tag(tag){}
-    bool operator==( const ItemAttribs &right) const {
-        return (m_alias==right.m_alias) && (m_tag==right.m_tag);
-    }
+struct ItemAttribs {
+  QString m_alias;
+  QString m_tag;
+  ItemAttribs() {}
+  ItemAttribs(const QString &alias, const QString &tag) : m_alias(alias), m_tag(tag) {}
+  bool operator==(const ItemAttribs &right) const { return (m_alias == right.m_alias) and (m_tag == right.m_tag); }
 };
 
-class DesignElementsFactory : public AttribsAbstractFactory<LimeReport::BaseDesignIntf, QString, CreateBand, ItemAttribs>
-{
+class DesignElementsFactory
+    : public AttribsAbstractFactory<LimeReport::BaseDesignIntf, QString, CreateBand, ItemAttribs> {
 private:
-    friend class Singleton<DesignElementsFactory>;
-private:
-    DesignElementsFactory(){}
-    ~DesignElementsFactory(){}
-    DesignElementsFactory(const DesignElementsFactory&){}
-    DesignElementsFactory& operator = (const DesignElementsFactory&){return *this;}
-};
+  friend class Singleton<DesignElementsFactory>;
 
+private:
+  DesignElementsFactory() {}
+  ~DesignElementsFactory() {}
+  DesignElementsFactory(const DesignElementsFactory &) {}
+  DesignElementsFactory &operator=(const DesignElementsFactory &) { return *this; }
+};
 }
 #endif // LRDESIGNELEMENTSFACTORY_H

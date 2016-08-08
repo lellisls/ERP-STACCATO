@@ -21,6 +21,7 @@ SOURCES += \
     src/cadastroprofissional.cpp \
     src/cadastrotransportadora.cpp \
     src/cadastrousuario.cpp \
+    src/calendarioentregas.cpp \
     src/cepcompleter.cpp \
     src/checkboxdelegate.cpp \
     src/combobox.cpp \
@@ -102,6 +103,7 @@ HEADERS  += \
     src/cadastroprofissional.h \
     src/cadastrotransportadora.h \
     src/cadastrousuario.h \
+    src/calendarioentregas.h \
     src/cepcompleter.h \
     src/checkboxdelegate.h \
     src/combobox.h \
@@ -182,6 +184,7 @@ FORMS += \
     ui/cadastroprofissional.ui \
     ui/cadastrotransportadora.ui \
     ui/cadastrousuario.ui \
+    ui/calendarioentregas.ui \
     ui/contasapagar.ui \
     ui/contasareceber.ui \
     ui/devolucao.ui \

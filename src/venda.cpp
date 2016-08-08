@@ -244,12 +244,9 @@ void Venda::prepararVenda(const QString &idOrcamento) {
     const int rowItem = modelItem.rowCount();
     modelItem.insertRow(rowItem);
 
-    if (not modelItem.setData(rowItem, "idVenda", queryProdutos.value("idOrcamento"))) return;
-
     for (int column = 0, columnCount = queryProdutos.record().count(); column < columnCount; ++column) {
       QString field = queryProdutos.record().fieldName(column);
 
-      if (field == "idVenda") continue;
       if (modelItem.fieldIndex(field) == -1) continue;
       if (not modelItem.setData(rowItem, field, queryProdutos.value(field))) return;
     }
@@ -267,9 +264,8 @@ void Venda::prepararVenda(const QString &idOrcamento) {
   if (not model.setData(row, "idUsuarioIndicou", queryOrc.value("idUsuarioIndicou"))) return;
   if (not model.setData(row, "idCliente", queryOrc.value("idCliente"))) return;
   if (not model.setData(row, "idEnderecoEntrega", queryOrc.value("idEnderecoEntrega"))) return;
-  if (not model.setData(row, "idEnderecoFaturamento", queryOrc.value("idEnderecoFaturamento"))) return;
   if (not model.setData(row, "idProfissional", queryOrc.value("idProfissional"))) return;
-  if (not model.setData(row, "data", queryOrc.value("data"))) return;
+  if (not model.setData(row, "dataOrc", queryOrc.value("data"))) return;
   if (not model.setData(row, "subTotalBru", queryOrc.value("subTotalBru"))) return;
   if (not model.setData(row, "subTotalLiq", queryOrc.value("subTotalLiq"))) return;
   if (not model.setData(row, "frete", queryOrc.value("frete"))) return;
@@ -292,8 +288,6 @@ void Venda::prepararVenda(const QString &idOrcamento) {
   ui->itemBoxCliente->setValue(queryOrc.value("idCliente"));
   ui->itemBoxProfissional->setValue(queryOrc.value("idProfissional"));
   ui->itemBoxEndereco->setValue(queryOrc.value("idEnderecoEntrega"));
-
-  ui->dateTimeEditOrc->setDateTime(data("data").toDateTime());
 
   ui->tableVenda->resizeColumnsToContents();
 
@@ -781,24 +775,15 @@ void Venda::on_pushButtonGerarExcel_clicked() {
 }
 
 bool Venda::atualizarCredito() {
-  double creditoRestante = 0;
+  double creditoRestante = ui->doubleSpinBoxCreditoTotal->value();
 
-  if (ui->comboBoxPgt1->currentText() == "Conta Cliente") {
-    creditoRestante = ui->doubleSpinBoxCreditoTotal->value() - ui->doubleSpinBoxPgt1->value();
-  }
-
-  if (ui->comboBoxPgt2->currentText() == "Conta Cliente") {
-    creditoRestante = ui->doubleSpinBoxCreditoTotal->value() - ui->doubleSpinBoxPgt2->value();
-  }
-
-  if (ui->comboBoxPgt3->currentText() == "Conta Cliente") {
-    creditoRestante = ui->doubleSpinBoxCreditoTotal->value() - ui->doubleSpinBoxPgt3->value();
-  }
-
-  QSqlQuery query;
+  if (ui->comboBoxPgt1->currentText() == "Conta Cliente") creditoRestante -= ui->doubleSpinBoxPgt1->value();
+  if (ui->comboBoxPgt2->currentText() == "Conta Cliente") creditoRestante -= ui->doubleSpinBoxPgt2->value();
+  if (ui->comboBoxPgt3->currentText() == "Conta Cliente") creditoRestante -= ui->doubleSpinBoxPgt3->value();
 
   if (ui->comboBoxPgt1->currentText() == "Conta Cliente" or ui->comboBoxPgt2->currentText() == "Conta Cliente" or
       ui->comboBoxPgt3->currentText() == "Conta Cliente") {
+    QSqlQuery query;
     query.prepare("UPDATE cliente SET credito = :credito WHERE idCliente = :idCliente");
     query.bindValue(":credito", creditoRestante);
     query.bindValue(":idCliente", data("idCliente"));
@@ -993,7 +978,10 @@ void Venda::on_pushButtonCancelamento_clicked() {
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not cancelamento()) QSqlQuery("ROLLBACK").exec();
+  if (not cancelamento()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
 
   QSqlQuery("COMMIT").exec();
 
@@ -1006,7 +994,7 @@ bool Venda::generateId() {
                UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
 
   QSqlQuery query;
-  query.prepare("SELECT idVenda FROM venda WHERE idVenda LIKE :id ORDER BY idVenda DESC LIMIT 1");
+  query.prepare("SELECT MAX(idVenda) AS idVenda FROM venda WHERE idVenda LIKE :id");
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {
@@ -1067,14 +1055,12 @@ void Venda::on_pushButtonPgtLoja_clicked() {
   ui->checkBoxRep3->setChecked(false);
 }
 
-// NOTE: desconto voltando ao fechar?
-// NOTE: colocar sistema para edicao?
 // NOTE: ao cancelar verificar se produto nao aparece mais nas telas de compra
 // NOTE: para fazer prazoEntrega por produto primeiro escolher o prazo 'global', setar ele em todos os produtos e depois
 // alterar os produtos que tenham prazo diferenciado
 // NOTE: alguma coisa disparando isDirty no pedido fechado
 // NOTE: bloquear desconto maximo por classe de funcionario
 // TODO: alterar coluna estoque_promocao quando for estoque/promocao
-// TODO: pensar em algo para os vendedores nao esquecerem de preencher end. fat. (nao copiar o de entrega?)
 // TODO: para os casos de rep. gerar tambem comissao em conta_a_receber para 30 dias
 // TODO: bloquear utilizacao de conta cliente se nao houver saldo suficiente
+// TODO: deixar para gerar id no final? (para nao acontecer de dois usuarios pedirem o mesmo id)

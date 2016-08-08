@@ -53,7 +53,7 @@ private:
   QString criarChaveAcesso();
   QString removeDiacritics(const QString &str) const;
   void guardarNotaBD();
-  void setupTables(QString idVenda);
+  void setupTables();
   void writeIdentificacao(QTextStream &stream) const;
   void writeTotal(QTextStream &stream) const;
 };

@@ -20,7 +20,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
 
-  setupTables(idVenda);
+  setupTables();
 
   mapper.setModel(&modelProd);
   mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -59,7 +59,7 @@ CadastrarNFe::CadastrarNFe(QString idVenda, QWidget *parent)
 
 CadastrarNFe::~CadastrarNFe() { delete ui; }
 
-void CadastrarNFe::setupTables(QString idVenda) {
+void CadastrarNFe::setupTables() {
   modelVenda.setTable("venda");
   modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
   modelVenda.setFilter("idVenda = '" + idVenda + "'");

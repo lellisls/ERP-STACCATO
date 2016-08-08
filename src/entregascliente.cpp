@@ -223,3 +223,7 @@ void EntregasCliente::on_checkBoxMarcarTodos_clicked(bool checked) {
 void EntregasCliente::on_pushButtonImprimir_clicked() {
   // TODO: botao para imprimir danfe
 }
+
+void EntregasCliente::on_pushButtonReagendar_clicked() {
+  // TODO: implement
+}

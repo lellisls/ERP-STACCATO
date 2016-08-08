@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1272</width>
-    <height>428</height>
+    <height>393</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,25 +118,6 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QFrame" name="frameDesconto">
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
           <item row="3" column="1">
            <widget class="QFrame" name="frameFrete">
             <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -152,6 +133,29 @@
                 </size>
                </property>
               </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelFrete_2">
+               <property name="text">
+                <string>Descontos:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxAdicionais">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="prefix">
+                <string>- R$ </string>
+               </property>
+               <property name="maximum">
+                <double>999999.989999999990687</double>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="labelFrete">

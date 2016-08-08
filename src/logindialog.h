@@ -16,10 +16,10 @@ public:
   ~LoginDialog();
 
 private slots:
+  void on_comboBoxLoja_currentTextChanged(const QString &loja);
+  void on_lineEditHostname_textChanged(const QString &);
   void on_pushButtonConfig_clicked();
   void on_pushButtonLogin_clicked();
-  void on_lineEditHostname_editingFinished();
-  void on_comboBoxLoja_currentTextChanged(const QString &loja);
 
 private:
   // attributes
@@ -27,8 +27,8 @@ private:
   Tipo tipo;
   // methods
   bool dbConnect();
-  void updater();
   void storeSelection();
+  void updater();
 };
 
 #endif // LOGINDIALOG_H

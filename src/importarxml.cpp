@@ -1,5 +1,4 @@
 #include <QDebug>
-#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -272,6 +271,8 @@ void ImportarXML::on_pushButtonImportar_clicked() {
   //------------------------------
   QSqlQuery query;
   for (auto idCompra : idsCompra) {
+    // TODO: se fornecedor coleta=0 mudar status para EM RECEBIMENTO com prazo ~8 dias
+
     query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealFat = :dataRealFat, status = 'EM COLETA' WHERE "
                   "idCompra = :idCompra AND quantUpd = 1");
     query.bindValue(":dataRealFat", dataReal);
@@ -289,7 +290,7 @@ void ImportarXML::on_pushButtonImportar_clicked() {
   close();
 }
 
-void ImportarXML::limparAssociacoes() {
+void ImportarXML::limparAssociacoes() { // TODO: test setData´s
   for (int row = 0; row < modelCompra.rowCount(); ++row) {
     modelCompra.setData(row, "quantUpd", 0);
     modelCompra.setData(row, "quantConsumida", 0);
@@ -324,13 +325,15 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
   QFile file(filePath);
 
   //
-
   if (not file.open(QFile::ReadOnly)) {
     QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + file.errorString());
     return;
   }
 
-  if (not lerXML(file)) return;
+  if (not lerXML(file)) {
+    close();
+    return;
+  }
 
   file.close();
 
@@ -409,7 +412,7 @@ void ImportarXML::associarItens(int rowCompra, int rowEstoque, double &estoqueCo
 }
 
 bool ImportarXML::lerXML(QFile &file) {
-  XML xml(file.readAll());
+  XML xml(file.readAll(), file.fileName());
   if (not xml.cadastrarNFe("ENTRADA")) return false;
   if (not xml.mostrarNoSqlModel(modelEstoque)) return false;
 
@@ -515,6 +518,22 @@ void ImportarXML::parear() {
       continue;
     }
 
+    QSqlQuery query;
+    query.prepare("SELECT idProduto FROM produto WHERE codComercial = :codComercial");
+    query.bindValue(":codComercial", modelEstoque.data(rowEstoque, "codComercial"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(0, "Erro!", "Erro lendo tabela produto: " + query.lastError().text());
+      return;
+    }
+
+    if (not query.first()) {
+      QMessageBox::critical(0, "Erro!", "Não encontrou o produto!");
+      return;
+    }
+
+    modelEstoque.setData(rowEstoque, "idProduto", query.value("idProduto"));
+
     double estoqueConsumido = 0;
 
     //------------------------ procurar quantidades iguais
@@ -556,9 +575,9 @@ void ImportarXML::on_pushButtonRemover_clicked() {
     return;
   }
 
-  QSqlQuery query;
-
   for (auto item : list) {
+    QSqlQuery query;
+
     query.prepare("DELETE FROM estoque_has_nfe WHERE idEstoque = :idEstoque");
     query.bindValue(":idEstoque", modelEstoque.data(item.row(), "idEstoque"));
 
@@ -583,7 +602,8 @@ void ImportarXML::on_pushButtonRemover_clicked() {
     return;
   }
 
-  // TODO: descadastrar nota?
+  // TODO: descadastrar nota? (pegar id da nota antes de remover estoque e apos a remocao verificar se nfe ainda possui
+  // algum relacao em estoque_has_nfe, senao houver remover nfe
 }
 
 void ImportarXML::on_tableConsumo_entered(const QModelIndex &) { ui->tableConsumo->resizeColumnsToContents(); }
@@ -600,9 +620,8 @@ void ImportarXML::on_tableConsumo_entered(const QModelIndex &) { ui->tableConsum
 // compra)
 // TODO: se a quantidade nao bater por m2 calcular por pc e vice versa?
 // TODO: os que estiverem verdes em baixo nao modificar em importacoes sequentes
-// TODO: auto reparear apos mudar cod?
 // TODO: verificar se estou usando nao apenas o codComercial mas tambem o fornecedor para evitar conflitos de codigos
 // repetidos
-// TODO: calcular valor de caixa
 // TODO: calcular valores proporcionais para o consumo
 // TODO: deixar no consumo idNFe vazio para posteriormente guardar a nota de saida?
+// TODO: use mysql::savepoints to restore to a point before importing a wrong xml

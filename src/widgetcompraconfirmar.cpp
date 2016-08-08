@@ -42,7 +42,10 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not confirmarCompra()) QSqlQuery("ROLLBACK").exec();
+  if (not confirmarCompra()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
 
   QSqlQuery("COMMIT").exec();
 
@@ -69,9 +72,8 @@ bool WidgetCompraConfirmar::confirmarCompra() {
   const QDate dataPrevista = inputDlg->getNextDate();
 
   QSqlQuery query;
-  // TODO: atualizar apenas os que foram confirmados no InputDialog
   query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealConf = :dataRealConf, dataPrevFat = :dataPrevFat, "
-                "status = 'EM FATURAMENTO' WHERE idCompra = :idCompra");
+                "status = 'EM FATURAMENTO' WHERE idCompra = :idCompra AND selecionado = 1");
   query.bindValue(":dataRealConf", dataConf);
   query.bindValue(":dataPrevFat", dataPrevista);
   query.bindValue(":idCompra", idCompra);
@@ -82,8 +84,9 @@ bool WidgetCompraConfirmar::confirmarCompra() {
   }
 
   // salvar status na venda
-  query.prepare("UPDATE venda_has_produto SET dataRealConf = :dataRealConf, dataPrevFat = :dataPrevFat, status = 'EM "
-                "FATURAMENTO' WHERE idCompra = :idCompra");
+  query.prepare("UPDATE venda_has_produto SET dataRealConf = :dataRealConf, dataPrevFat = :dataPrevFat, "
+                "status = 'EM FATURAMENTO' WHERE idProduto IN (SELECT idProduto FROM pedido_fornecedor_has_produto "
+                "WHERE idCompra = :idCompra AND selecionado = 1)");
   query.bindValue(":dataRealConf", dataConf);
   query.bindValue(":dataPrevFat", dataPrevista);
   query.bindValue(":idCompra", idCompra);

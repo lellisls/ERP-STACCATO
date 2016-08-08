@@ -253,3 +253,4 @@ void ProdutosPendentes::on_tableEstoque_entered(const QModelIndex &) { ui->table
 
 // TODO: se o estoque estiver em coleta/recebimento alterar status do consumo para 'pré-consumo'
 // TODO: utilizar transactions
+// TODO: se o estoque for consumido gerar comissao 2% senao gerar comissao padrao

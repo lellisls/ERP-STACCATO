@@ -169,8 +169,6 @@ void LoginDialog::on_pushButtonLogin_clicked() {
   if (tipo == Login) UserSession::setSettings("User/lastuser", ui->lineEditUser->text());
 }
 
-void LoginDialog::on_lineEditHostname_editingFinished() { updater(); }
-
 void LoginDialog::updater() {
   QSimpleUpdater *updater = new QSimpleUpdater();
   updater->setApplicationVersion(qApp->applicationVersion());
@@ -203,3 +201,5 @@ void LoginDialog::on_comboBoxLoja_currentTextChanged(const QString &loja) {
   if (loja == "Granja") ui->lineEditHostname->setText("192.168.0.10");
   if (loja == "Acesso Externo") ui->lineEditHostname->setText("staccato1.mooo.com");
 }
+
+void LoginDialog::on_lineEditHostname_textChanged(const QString &) { updater(); }

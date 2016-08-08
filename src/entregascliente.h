@@ -18,12 +18,12 @@ public:
   void viewEntrega(const QString &idVenda);
 
 private slots:
+  void on_checkBoxMarcarTodos_clicked(bool checked);
+  void on_pushButtonImprimir_clicked();
   void on_pushButtonNFe_clicked();
+  void on_pushButtonReagendar_clicked();
   void on_tableEntregas_entered(const QModelIndex &);
   void on_tableProdutos_entered(const QModelIndex &);
-  void on_checkBoxMarcarTodos_clicked(bool checked);
-
-  void on_pushButtonImprimir_clicked();
 
 private:
   // attributes

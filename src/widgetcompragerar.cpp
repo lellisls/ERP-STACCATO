@@ -257,7 +257,10 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not gerarCompra()) QSqlQuery("ROLLBACK").exec();
+  if (not gerarCompra()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
 
   QSqlQuery("COMMIT").exec();
 
@@ -296,7 +299,7 @@ bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo) {
   input.setIntValue(oc);
   input.setLabelText("Qual a OC?");
 
-  if (input.exec() == QInputDialog::Rejected) return false;
+  if (input.exec() != QInputDialog::Accepted) return false;
 
   oc = input.intValue();
 

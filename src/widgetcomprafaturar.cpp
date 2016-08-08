@@ -62,9 +62,7 @@ bool WidgetCompraFaturar::faturarCompra() {
 
   QStringList idsCompra;
 
-  for (auto item : list) {
-    idsCompra << model.data(item.row(), "Compra").toString();
-  }
+  for (auto item : list) idsCompra << model.data(item.row(), "Compra").toString();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
   if (not inputDlg->setFilter(idsCompra)) return false;
@@ -118,7 +116,10 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not faturarCompra()) QSqlQuery("ROLLBACK").exec();
+  if (not faturarCompra()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
 
   QSqlQuery("COMMIT").exec();
 

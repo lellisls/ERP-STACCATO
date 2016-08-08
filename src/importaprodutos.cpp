@@ -185,7 +185,10 @@ void ImportaProdutos::importarTabela() {
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not importar()) QSqlQuery("ROLLBACK").exec();
+  if (not importar()) {
+    QSqlQuery("ROLLBACK").exec();
+    close();
+  }
 }
 
 void ImportaProdutos::setProgressDialog() {

@@ -288,8 +288,7 @@ bool Orcamento::generateId() {
                "-" + QDate::currentDate().toString("yy");
 
   QSqlQuery query;
-  query.prepare("SELECT idOrcamento FROM orcamento WHERE idOrcamento LIKE :id "
-                "ORDER BY idOrcamento DESC LIMIT 1");
+  query.prepare("SELECT MAX(idOrcamento) AS idOrcamento FROM orcamento WHERE idOrcamento LIKE :id");
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {

@@ -1,5 +1,8 @@
+#include <QDesktopServices>
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QSqlError>
+#include <xlsxdocument.h>
 
 #include "porcentagemdelegate.h"
 #include "reaisdelegate.h"
@@ -7,7 +10,10 @@
 #include "usersession.h"
 #include "widgetrelatorio.h"
 
-WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) { ui->setupUi(this); }
+WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) {
+  ui->setupUi(this);
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->pushButtonExcel->hide();
+}
 
 WidgetRelatorio::~WidgetRelatorio() { delete ui; }
 
@@ -206,4 +212,70 @@ void WidgetRelatorio::on_tableTotalLoja_entered(const QModelIndex &) { ui->table
 
 void WidgetRelatorio::on_tableTotalVendedor_entered(const QModelIndex &) {
   ui->tableTotalVendedor->resizeColumnsToContents();
+}
+
+void WidgetRelatorio::on_pushButtonExcel_clicked() {
+  QString dir = QFileDialog::getExistingDirectory(this, "Pasta para salvar relatório");
+
+  QString arquivoModelo = "relatorio.xlsx";
+
+  QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
+
+  if (not modelo.exists()) {
+    QMessageBox::critical(this, "Erro!", "Não encontrou o modelo do Excel!");
+    return;
+  }
+
+  QString fileName = dir + "/relatorio-" + ui->dateEditMes->date().toString("MM-yyyy") + ".xlsx";
+
+  QFile file(fileName);
+
+  if (not file.open(QFile::WriteOnly)) {
+    QMessageBox::critical(this, "Erro!", "Não foi possível abrir o arquivo para escrita: " + fileName);
+    return;
+  }
+
+  file.close();
+
+  QXlsx::Document xlsx(arquivoModelo);
+
+  xlsx.selectSheet("Sheet1");
+
+  char column = 'A';
+
+  for (int col = 0; col < modelRelatorio.columnCount(); ++col, ++column) {
+    xlsx.write(column + QString::number(1), modelRelatorio.headerData(col, Qt::Horizontal).toString());
+  };
+
+  column = 'A';
+
+  for (int row = 0; row < modelRelatorio.rowCount(); ++row) {
+    for (int col = 0; col < modelRelatorio.columnCount(); ++col, ++column) {
+      xlsx.write(column + QString::number(row + 2), modelRelatorio.data(row, col));
+    }
+    column = 'A';
+  }
+
+  xlsx.selectSheet("Sheet2");
+
+  for (int col = 0; col < modelTotalVendedor.columnCount(); ++col, ++column) {
+    xlsx.write(column + QString::number(1), modelTotalVendedor.headerData(col, Qt::Horizontal).toString());
+  };
+
+  column = 'A';
+
+  for (int row = 0; row < modelTotalVendedor.rowCount(); ++row) {
+    for (int col = 0; col < modelTotalVendedor.columnCount(); ++col, ++column) {
+      xlsx.write(column + QString::number(row + 2), modelTotalVendedor.data(row, col));
+    }
+    column = 'A';
+  }
+
+  if (not xlsx.saveAs(fileName)) {
+    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
+    return;
+  }
+
+  QMessageBox::information(this, "Ok!", "Arquivo salvo como " + fileName);
+  QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
 }

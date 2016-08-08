@@ -23,6 +23,7 @@ signals:
 
 private slots:
   void on_dateEditMes_dateChanged(const QDate &);
+  void on_pushButtonExcel_clicked();
   void on_tableRelatorio_entered(const QModelIndex &);
   void on_tableTotalLoja_entered(const QModelIndex &);
   void on_tableTotalVendedor_entered(const QModelIndex &);

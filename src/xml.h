@@ -19,6 +19,7 @@ private:
   QByteArray fileContent;
   QStandardItemModel model;
   QString fileName;
+  QString local;
 
   QString chaveAcesso;
   QString nNF;
@@ -88,6 +89,8 @@ private:
   double vCOFINS_Total = 0;
   double vOutro_Total = 0;
   double vNF_Total = 0;
+  // transportadora
+  QString xNomeTransp;
 
   // xml
   int idNFe = 0;

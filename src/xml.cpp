@@ -42,12 +42,14 @@ void XML::lerValores(const QStandardItem *item) {
       QStandardItem *child = item->child(row, col);
       QString text = child->text();
 
+      // TODO: se nao achar chaveAcesso (notas de correcao etc) retornar e cancelar
       if (text.left(6) == "infNFe") chaveAcesso = text.mid(text.indexOf("Id=") + 7, 44);
       if (text.left(3) == "nNF") nNF = text.remove(0, 6);
 
       if (child->parent()->text() == "emit" and text.left(7) == "xFant -") xFant = text.remove(0, 8);
       if (child->parent()->text() == "emit" and text.left(7) == "xNome -") xNome = text.remove(0, 8);
       if (child->parent()->text() == "dest" and text.left(6) == "CNPJ -") cnpj = text.remove(0, 7);
+      if (child->parent()->text() == "transporta" and text.left(7) == "xNome -") xNomeTransp = text.remove(0, 8);
 
       lerDadosProduto(child);
       lerICMSProduto(child);
@@ -82,21 +84,6 @@ bool XML::inserirNoSqlModel(const QStandardItem *item, SqlTableModel &externalMo
 bool XML::cadastrarNFe(const QString &tipo) {
   if (not verificaCNPJ() or verificaExiste()) return false;
 
-  QSqlQuery query;
-
-  query.prepare("SELECT idNFe FROM nfe WHERE chaveAcesso = :chaveAcesso");
-  query.bindValue(":chaveAcesso", chaveAcesso);
-
-  if (not query.exec()) {
-    QMessageBox::critical(0, "Erro!", "Erro verificando se nota já cadastrada: " + query.lastError().text());
-    return false;
-  }
-
-  if (query.first()) {
-    idNFe = query.value("idNFe").toInt();
-    return true;
-  }
-
   QFile file(fileName);
 
   if (not file.open(QFile::ReadOnly)) {
@@ -104,11 +91,14 @@ bool XML::cadastrarNFe(const QString &tipo) {
     return false;
   }
 
-  query.prepare("INSERT INTO nfe (tipo, chaveAcesso, numeroNFe, xml) VALUES (:tipo, :chaveAcesso, :numeroNFe, :xml)");
+  QSqlQuery query;
+  query.prepare("INSERT INTO nfe (tipo, chaveAcesso, numeroNFe, xml, transportadora) VALUES (:tipo, :chaveAcesso, "
+                ":numeroNFe, :xml, :transportadora)");
   query.bindValue(":tipo", tipo);
   query.bindValue(":chaveAcesso", chaveAcesso);
   query.bindValue(":numeroNFe", nNF);
   query.bindValue(":xml", file.readAll());
+  query.bindValue(":transportadora", xNomeTransp);
 
   if (not query.exec()) {
     QMessageBox::critical(0, "Erro!", "Erro cadastrando XML no estoque: " + query.lastError().text());
@@ -326,7 +316,35 @@ void XML::montarArvore(QStandardItemModel &model) {
   lerValores(model.item(0, 0));
 }
 
-bool XML::mostrarNoSqlModel(SqlTableModel &externalModel) { return inserirNoSqlModel(model.item(0, 0), externalModel); }
+bool XML::mostrarNoSqlModel(SqlTableModel &externalModel) {
+  QStringList lojas = {"CD", "Estoque Sul", "Balneário"}; // TODO: tornar dinamico
+
+  QSqlQuery query;
+
+  if (not query.exec("SELECT descricao FROM loja WHERE descricao > '' AND descricao != 'CD'")) {
+    QMessageBox::critical(0, "Erro!", "Erro buscando lojas: " + query.lastError().text());
+    return false;
+  }
+
+  while (query.next()) {
+    lojas << query.value("descricao").toString();
+  }
+
+  QInputDialog input;
+  input.setInputMode(QInputDialog::TextInput);
+  input.setCancelButtonText("Cancelar");
+  input.setWindowTitle("Local");
+  input.setLabelText("Local do depósito:");
+  input.setComboBoxItems(lojas);
+  input.setComboBoxEditable(false);
+
+  if (input.exec() != QInputDialog::Accepted) return false;
+
+  local = input.textValue();
+  //
+
+  return inserirNoSqlModel(model.item(0, 0), externalModel);
+}
 
 bool XML::inserirItemSql(SqlTableModel &externalModel) {
   auto list = externalModel.match(externalModel.index(0, externalModel.fieldIndex("codComercial")), Qt::DisplayRole,
@@ -394,20 +412,6 @@ bool XML::inserirItemSql(SqlTableModel &externalModel) {
 
     idProduto = query.value("idProduto").toInt();
   }
-
-  if (not query.exec("SELECT descricao FROM loja WHERE descricao > '' AND descricao != 'CD'")) {
-    QMessageBox::critical(0, "Erro!", "Erro buscando lojas: " + query.lastError().text());
-    return false;
-  }
-
-  QStringList lojas = {"CD", "Estoque Sul", "Balneário"}; // TODO: tornar dinamico
-
-  while (query.next()) {
-    lojas << query.value("descricao").toString();
-  }
-
-  QString local = QInputDialog::getItem(0, "Local", "Local do depósito:", lojas, 0, false);
-  //
 
   if (not externalModel.setData(row, "fornecedor", xNome)) return false;
   if (not externalModel.setData(row, "local", local)) return false;

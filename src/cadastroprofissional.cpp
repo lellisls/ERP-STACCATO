@@ -12,7 +12,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
     : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (auto const *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 
@@ -44,15 +44,16 @@ void CadastroProfissional::setupTables() {
 }
 
 void CadastroProfissional::setupUi() {
+  ui->lineEditAgencia->setInputMask("9999-9;_");
   ui->lineEditCEP->setInputMask("99999-999;_");
-  ui->lineEditUF->setInputMask(">AA;_");
-  ui->lineEditCPF->setInputMask("999.999.999-99;_");
+  ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
+  ui->lineEditCNPJBancario->setInputMask("99.999.999/9999-99;_");
   ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
-  ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
-  ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
+  ui->lineEditCPF->setInputMask("999.999.999-99;_");
   ui->lineEditCPFBancario->setInputMask("999.999.999-99;_");
-  ui->lineEditAgencia->setInputMask("9999-9;_");
+  ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
+  ui->lineEditUF->setInputMask(">AA;_");
 }
 
 void CadastroProfissional::setupMapper() {
@@ -71,6 +72,7 @@ void CadastroProfissional::setupMapper() {
   addMapping(ui->lineEditContatoRG, "contatoRG");
   addMapping(ui->lineEditCPF, "cpf");
   addMapping(ui->lineEditCPFBancario, "cpfBanco");
+  addMapping(ui->lineEditCNPJBancario, "cnpjBanco");
   addMapping(ui->lineEditEmail, "email");
   addMapping(ui->lineEditIdNextel, "idNextel");
   addMapping(ui->lineEditInscEstadual, "inscEstadual");
@@ -81,6 +83,8 @@ void CadastroProfissional::setupMapper() {
   addMapping(ui->lineEditTel_Cel, "telCel");
   addMapping(ui->lineEditTel_Com, "telCom");
   addMapping(ui->lineEditTel_Res, "tel");
+  addMapping(ui->doubleSpinBoxComissao, "comissao");
+  //  addMapping(ui->checkBoxPoupanca, "poupanca");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
@@ -113,6 +117,8 @@ bool CadastroProfissional::viewRegister() {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço profissional: " + modelEnd.lastError().text());
     return false;
   }
+
+  ui->checkBoxPoupanca->setChecked(data("poupanca").toBool());
 
   ui->tableEndereco->resizeColumnsToContents();
 
@@ -159,12 +165,15 @@ bool CadastroProfissional::savingProcedures() {
   if (not setData("pfpj", tipoPFPJ)) return false;
   if (not setData("tipoProf", ui->comboBoxTipo->currentText())) return false;
   if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
+  if (not setData("comissao", ui->doubleSpinBoxComissao->value())) return false;
   // Dados bancários
   if (not setData("banco", ui->lineEditBanco->text())) return false;
   if (not setData("agencia", ui->lineEditAgencia->text())) return false;
   if (not setData("cc", ui->lineEditCC->text())) return false;
   if (not setData("nomeBanco", ui->lineEditNomeBancario->text())) return false;
   if (not setData("cpfBanco", ui->lineEditCPFBancario->text())) return false;
+  if (not setData("cnpjBanco", ui->lineEditCNPJBancario->text())) return false;
+  if (not setData("poupanca", ui->checkBoxPoupanca->isChecked())) return false;
 
   return true;
 }
@@ -183,9 +192,7 @@ void CadastroProfissional::clearFields() {
   ui->radioButtonPF->setChecked(true);
   novoEndereco();
 
-  for (auto const &box : findChildren<ItemBox *>()) {
-    box->clear();
-  }
+  for (auto const &box : findChildren<ItemBox *>()) box->clear();
 
   setupUi();
 
@@ -305,6 +312,10 @@ void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text)
 void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() +
                      (checked ? "" : " AND desativado = FALSE"));
+
+  if (not modelEnd.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
+  }
 }
 
 void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
@@ -346,6 +357,11 @@ void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text
                                                                                           : "color: rgb(255, 0, 0)");
 }
 
+void CadastroProfissional::on_lineEditCNPJBancario_textEdited(const QString &text) {
+  ui->lineEditCNPJBancario->setStyleSheet(
+      validaCNPJ(QString(text).remove(".").remove("-").remove("/")) ? "" : "color: rgb(255, 0, 0)");
+}
+
 void CadastroProfissional::successMessage() {
   QMessageBox::information(this, "Atenção!", "Profissional cadastrado com sucesso!");
 }
@@ -355,3 +371,15 @@ void CadastroProfissional::on_tableEndereco_entered(const QModelIndex &) {
 }
 
 // TODO: colocar comissao e qual loja esta associado
+
+void CadastroProfissional::on_lineEditProfissional_editingFinished() {
+  ui->lineEditNomeBancario->setText(ui->lineEditProfissional->text());
+}
+
+void CadastroProfissional::on_lineEditCPF_editingFinished() {
+  ui->lineEditCPFBancario->setText(ui->lineEditCPF->text());
+}
+
+void CadastroProfissional::on_lineEditCNPJ_editingFinished() {
+  ui->lineEditCNPJBancario->setText(ui->lineEditCNPJ->text());
+}

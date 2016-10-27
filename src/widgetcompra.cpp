@@ -38,3 +38,5 @@ bool WidgetCompra::updateTables() {
 }
 
 void WidgetCompra::on_tabWidget_currentChanged(const int &) { updateTables(); }
+
+// TODO: esta cortando, só arruma ao redimensionar tela

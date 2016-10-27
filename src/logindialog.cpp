@@ -36,11 +36,7 @@ LoginDialog::LoginDialog(Tipo tipo, QWidget *parent) : QDialog(parent), ui(new U
   }
 
   storeSelection();
-
-  updater();
-
   adjustSize();
-
   accept();
 }
 
@@ -151,11 +147,7 @@ bool LoginDialog::dbConnect() {
 }
 
 void LoginDialog::on_pushButtonLogin_clicked() {
-  UserSession::setSettings("Login/hostname", ui->lineEditHostname->text());
-
-  if (tipo == Login) {
-    if (not dbConnect()) return;
-  }
+  if (tipo == Login and not dbConnect()) return;
 
   if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text(),
                              tipo == Autorizacao ? UserSession::Autorizacao : UserSession::Padrao)) {
@@ -199,7 +191,10 @@ void LoginDialog::on_comboBoxLoja_currentTextChanged(const QString &loja) {
   if (loja == "Alphaville") ui->lineEditHostname->setText("192.168.2.144");
   if (loja == "Gabriel") ui->lineEditHostname->setText("192.168.1.101");
   if (loja == "Granja") ui->lineEditHostname->setText("192.168.0.10");
-  if (loja == "Acesso Externo") ui->lineEditHostname->setText("staccato1.mooo.com");
+  if (loja == "Acesso Externo") ui->lineEditHostname->setText("177.139.188.75");
 }
 
-void LoginDialog::on_lineEditHostname_textChanged(const QString &) { updater(); }
+void LoginDialog::on_lineEditHostname_textChanged(const QString &) {
+  UserSession::setSettings("Login/hostname", ui->lineEditHostname->text());
+  updater();
+}

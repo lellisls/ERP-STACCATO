@@ -17,7 +17,7 @@ WidgetEstoque::~WidgetEstoque() { delete ui; }
 void WidgetEstoque::setupTables() {
   model.setTable("view_estoque");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  model.setFilter("Quant > 0");
+  model.setFilter("`Quant Rest` > 0");
 
   ui->table->setModel(&model);
   ui->table->setItemDelegate(new DoubleDelegate(this));
@@ -26,14 +26,10 @@ void WidgetEstoque::setupTables() {
 bool WidgetEstoque::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela estoque: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -45,7 +41,7 @@ void WidgetEstoque::on_table_activated(const QModelIndex &index) {
   estoque->viewRegisterById(model.data(index.row(), "idEstoque").toString());
 }
 
-void WidgetEstoque::on_radioButtonMaior_toggled(bool checked) { model.setFilter(checked ? "Quant > 0" : "Quant = 0"); }
+void WidgetEstoque::on_radioButtonMaior_toggled(bool checked) { model.setFilter(checked ? "`Quant Rest` > 0" : "`Quant Rest` <= 0"); }
 
 void WidgetEstoque::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 

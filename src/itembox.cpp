@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QMouseEvent>
 
 #include "itembox.h"
@@ -28,9 +29,10 @@ ItemBox::~ItemBox() {}
 
 void ItemBox::resizeEvent(QResizeEvent *event) {
   QLineEdit::resizeEvent(event);
+
   const QSize size = m_searchButton->minimumSizeHint();
   int x = rect().right();
-  int y = (rect().height() - size.height()) / 2.;
+  int y = (rect().height() - size.height()) / 2;
 
   if (m_searchDialog) {
     x -= size.width();
@@ -86,13 +88,13 @@ void ItemBox::setValue(const QVariant &value) {
   QLineEdit::setToolTip(text());
 }
 
-void ItemBox::setReadOnlyItemBox(const bool &readOnly) {
-  readOnlyItemBox = readOnly;
+void ItemBox::setReadOnlyItemBox(const bool isReadOnly) {
+  isReadOnlyItemBox = isReadOnly;
 
-  m_plusButton->setHidden(readOnly);
-  m_plusButton->setDisabled(readOnly);
-  m_searchButton->setHidden(readOnly);
-  m_searchButton->setDisabled(readOnly);
+  m_plusButton->setHidden(isReadOnly);
+  m_plusButton->setDisabled(isReadOnly);
+  m_searchButton->setHidden(isReadOnly);
+  m_searchButton->setDisabled(isReadOnly);
 }
 
 void ItemBox::clear() {
@@ -114,7 +116,7 @@ void ItemBox::changeItem(const QVariant &value) {
 }
 
 void ItemBox::mouseDoubleClickEvent(QMouseEvent *event) {
-  if (readOnlyItemBox) return;
+  if (isReadOnlyItemBox) return;
 
   search();
   event->accept();

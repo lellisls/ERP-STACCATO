@@ -13,9 +13,9 @@ CadastroCliente::CadastroCliente(QWidget *parent)
     : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  //  for (auto const *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
 
   ui->itemBoxCliente->setSearchDialog(SearchDialog::cliente(this));
   ui->itemBoxProfissional->setSearchDialog(SearchDialog::profissional(this));
@@ -304,7 +304,7 @@ bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
 }
 
 void CadastroCliente::on_pushButtonAdicionarEnd_clicked() { // TODO: rename to CadastrarEndereco
-  if (not cadastrarEndereco(false)) { // TODO: replace false with use of this.isUpdateEnd
+  if (not cadastrarEndereco(false)) {                       // TODO: replace false with use of this.isUpdateEnd
     QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!");
     return;
   }
@@ -387,6 +387,10 @@ void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idCliente = " + data("idCliente").toString() + (checked ? "" : " AND desativado = FALSE"));
+
+  if (not modelEnd.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
+  }
 }
 
 void CadastroCliente::on_pushButtonRemoverEnd_clicked() {

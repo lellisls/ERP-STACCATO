@@ -15,10 +15,14 @@ class WidgetLogisticaRepresentacao : public QWidget {
 public:
   explicit WidgetLogisticaRepresentacao(QWidget *parent = 0);
   ~WidgetLogisticaRepresentacao();
-  QString updateTables();
+  bool updateTables();
   void TableFornLogistica_activated(const QString &fornecedor);
 
+signals:
+  void errorSignal(QString error);
+
 private slots:
+  void on_lineEditBusca_textChanged(const QString &text);
   void on_pushButtonMarcarEntregue_clicked();
   void on_table_entered(const QModelIndex &);
 

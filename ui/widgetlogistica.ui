@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>703</width>
+    <width>1386</width>
     <height>450</height>
    </rect>
   </property>
@@ -83,17 +83,17 @@
        <attribute name="title">
         <string>Agendar Coleta</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
          <widget class="WidgetLogisticaAgendarColeta" name="widgetAgendarColeta" native="true"/>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_5">
+      <widget class="QWidget" name="tab_8">
        <attribute name="title">
         <string>Coleta</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
+       <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <widget class="WidgetLogisticaColeta" name="widgetColeta" native="true"/>
         </item>
@@ -113,6 +113,11 @@
        <attribute name="title">
         <string>Agendar Entrega</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="WidgetLogisticaEntrega" name="widgetAgendaEntrega" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">
@@ -120,7 +125,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_27">
         <item row="0" column="0">
-         <widget class="WidgetLogisticaEntrega" name="widgetEntrega" native="true"/>
+         <widget class="CalendarioEntregas" name="widgetCalendarioEntrega" native="true"/>
         </item>
        </layout>
       </widget>
@@ -139,6 +144,11 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>Entregues</string>
+       </attribute>
+      </widget>
      </widget>
     </widget>
    </item>
@@ -149,12 +159,6 @@
    <class>TableView</class>
    <extends>QTableView</extends>
    <header>src/tableview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>WidgetLogisticaColeta</class>
-   <extends>QWidget</extends>
-   <header>src/widgetlogisticacoleta.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>WidgetLogisticaRecebimento</class>
@@ -178,6 +182,18 @@
    <class>WidgetLogisticaAgendarColeta</class>
    <extends>QWidget</extends>
    <header>src/widgetlogisticaagendarcoleta.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CalendarioEntregas</class>
+   <extends>QWidget</extends>
+   <header>src/calendarioentregas.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetLogisticaColeta</class>
+   <extends>QWidget</extends>
+   <header>src/widgetlogisticacoleta.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

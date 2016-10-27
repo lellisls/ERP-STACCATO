@@ -19,6 +19,8 @@ public:
 private slots:
   void on_checkBoxFreteManual_clicked(const bool &checked);
   void on_checkBoxRepresentacao_toggled(const bool &checked);
+  void on_comboBoxLoja_currentTextChanged(const QString &);
+  void on_doubleSpinBoxCaixas_valueChanged(const double &caixas);
   void on_doubleSpinBoxDesconto_valueChanged(const double &);
   void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
   void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
@@ -43,29 +45,28 @@ private slots:
   void on_pushButtonLimparSelecao_clicked();
   void on_pushButtonRemoverItem_clicked();
   void on_pushButtonReplicar_clicked();
-  void on_spinBoxCaixas_valueChanged(const double &caixas);
   void on_tableProdutos_clicked(const QModelIndex &index);
-  void on_comboBoxLoja_currentTextChanged(const QString &);
 
 signals:
   void finished();
 
 private:
   // attributes
-  Ui::Orcamento *ui;
   bool isBlockedDesconto = false;
   bool isBlockedGlobal = false;
-  bool isBlockedTotalItem = false;
   bool isBlockedReais = false;
   bool isBlockedTotal = false;
+  bool isBlockedTotalItem = false;
+  bool isReadOnly = false; // TODO: use this to set if is readOnly instead of verifying validity and status everytime
   double minimoFrete = 0;
   double porcFrete = 0;
-  SearchDialogProxy *proxy;
   QDataWidgetMapper mapperItem;
+  SearchDialogProxy *proxy;
   SqlTableModel modelItem;
+  Ui::Orcamento *ui;
   // methods
   bool atualizaReplica();
-  bool cadastrar();
+  bool cadastrar() override;
   bool generateId();
   bool verificaCadastroCliente();
   virtual bool newRegister() override;

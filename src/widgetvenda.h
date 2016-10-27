@@ -16,6 +16,7 @@ public:
   explicit WidgetVenda(QWidget *parent = 0);
   ~WidgetVenda();
   bool updateTables();
+  void setFinanceiro();
 
 signals:
   void errorSignal(QString error);
@@ -24,18 +25,21 @@ private slots:
   void montaFiltro();
   void on_comboBoxLojas_currentIndexChanged(int);
   void on_groupBoxStatus_toggled(const bool &enabled);
+  void on_groupBoxStatusFinanceiro_toggled(const bool &enabled);
+  void on_pushButtonFollowup_clicked();
   void on_radioButtonProprios_toggled(bool checked);
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::WidgetVenda *ui;
+  bool financeiro = false;
   SqlTableModel model;
+  Ui::WidgetVenda *ui;
   // methods
-  void setupTables();
-  void setPermissions();
   void makeConnections();
+  void setPermissions();
+  void setupTables();
 };
 
 #endif // WIDGETVENDA_H

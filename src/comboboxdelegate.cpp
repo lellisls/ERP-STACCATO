@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 
 #include "comboboxdelegate.h"
+#include "usersession.h"
 
 ComboBoxDelegate::ComboBoxDelegate(Tipo tipo, QObject *parent) : QStyledItemDelegate(parent), tipo(tipo) {}
 
@@ -15,20 +16,39 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
   QStringList list;
 
   if (tipo == Status) {
-    list << "Pendente"
-         << "Comprar"
-         << "Pago"
-         << "Recebido";
+    list << "PENDENTE"
+         << "COMPRAR"
+         << "PAGO"
+         << "RECEBIDO";
   }
 
   if (tipo == StatusReceber) {
-    list << "Pendente"
-         << "Recebido";
+    list << "PENDENTE"
+         << "RECEBIDO"
+         << "CANCELADO"
+         << "DEVOLVIDO";
   }
 
   if (tipo == StatusPagar) {
-    list << "Pendente"
-         << "Pago";
+    list << "PENDENTE"
+         << "PAGO"
+         << "CANCELADO";
+  }
+
+  if (tipo == Pagamento) {
+    QSqlQuery query;
+    query.prepare("SELECT pagamento FROM view_pagamento_loja WHERE idLoja = :idLoja");
+    query.bindValue(":idLoja", UserSession::idLoja());
+
+    if (not query.exec()) {
+      QMessageBox::critical(parent, "Erro!", "Erro lendo formas de pagamentos: " + query.lastError().text());
+    }
+
+    list << "";
+
+    while (query.next()) list << query.value("pagamento").toString();
+
+    list << "Conta Cliente";
   }
 
   if (tipo == Conta) {
@@ -44,6 +64,18 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
       list << query.value("banco").toString() + " - " + query.value("agencia").toString() + " - " +
                   query.value("conta").toString();
     }
+  }
+
+  if (tipo == Grupo) {
+    QSqlQuery query;
+
+    if (not query.exec("SELECT tipo FROM despesa")) {
+      QMessageBox::critical(parent, "Erro!", "Erro lendo grupos de despesa: " + query.lastError().text());
+    }
+
+    list << "";
+
+    while (query.next()) list << query.value("tipo").toString();
   }
 
   editor->addItems(list);

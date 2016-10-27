@@ -14,6 +14,7 @@ public:
 
 private:
   const int column;
+  const int column2;
 };
 
 #endif // SEARCHDIALOGPROXY_H

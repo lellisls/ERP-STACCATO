@@ -10,6 +10,10 @@ WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   ui->splitter_6->setStretchFactor(0, 0);
   ui->splitter_6->setStretchFactor(1, 1);
+
+  ui->tabWidgetLogistica->setTabEnabled(5, false);
+  ui->tabWidgetLogistica->setTabEnabled(6, false);
+  ui->tabWidgetLogistica->setTabEnabled(7, false);
 }
 
 WidgetLogistica::~WidgetLogistica() { delete ui; }
@@ -17,42 +21,55 @@ WidgetLogistica::~WidgetLogistica() { delete ui; }
 void WidgetLogistica::setupTables() {
   model.setTable("view_fornecedor_logistica");
 
-  model.setHeaderData("fornecedor", "Fornecedor");
-
   ui->tableForn->setModel(&model);
 }
 
 bool WidgetLogistica::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela: " + model.lastError().text());
     return false;
   }
 
-  model.setFilter(filter);
-
   ui->tableForn->resizeColumnsToContents();
 
+  connect(ui->widgetCalendarioEntrega, &CalendarioEntregas::errorSignal, this, &WidgetLogistica::errorSignal);
   connect(ui->widgetAgendarColeta, &WidgetLogisticaAgendarColeta::errorSignal, this, &WidgetLogistica::errorSignal);
-  connect(ui->widgetColeta, &WidgetLogisticaColeta::errorSignal, this, &WidgetLogistica::errorSignal);
   connect(ui->widgetRecebimento, &WidgetLogisticaRecebimento::errorSignal, this, &WidgetLogistica::errorSignal);
-  connect(ui->widgetEntrega, &WidgetLogisticaEntrega::errorSignal, this, &WidgetLogistica::errorSignal);
+  connect(ui->widgetAgendaEntrega, &WidgetLogisticaEntrega::errorSignal, this, &WidgetLogistica::errorSignal);
 
   switch (ui->tabWidgetLogistica->currentIndex()) {
-  case 0:
+  case 0: {
+    ui->frameForn->show();
+    model.setTable("view_fornecedor_logistica_agendar_coleta");
+    model.select();
     return ui->widgetAgendarColeta->updateTables();
+  }
 
-  case 1:
+  case 1: {
+    ui->frameForn->show();
+    model.setTable("view_fornecedor_logistica_coleta");
+    model.select();
     return ui->widgetColeta->updateTables();
+  }
 
-  case 2:
+  case 2: {
+    ui->frameForn->show();
+    model.setTable("view_fornecedor_logistica_recebimento");
+    model.select();
     return ui->widgetRecebimento->updateTables();
+  }
 
-  case 4:
-    return ui->widgetEntrega->updateTables();
+  case 3: {
+    ui->frameForn->hide();
+    return ui->widgetAgendaEntrega->updateTables();
+  }
+
+  case 4: {
+    ui->frameForn->hide();
+    return ui->widgetCalendarioEntrega->updateTables();
+  }
   }
 
   return true;
@@ -63,6 +80,7 @@ void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
 
   int currentIndex = ui->tabWidgetLogistica->currentIndex();
 
+  // TODO: usar o texto no lugar do indice
   switch (currentIndex) {
   case 0:
     ui->widgetAgendarColeta->TableFornLogistica_activated(fornecedor);
@@ -81,7 +99,7 @@ void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
     break;
 
   case 6:
-    ui->widgetRecebimento->TableFornLogistica_activated(fornecedor);
+    ui->widgetRepresentacao->TableFornLogistica_activated(fornecedor);
     break;
   }
 }
@@ -89,8 +107,8 @@ void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
 void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) {
   int index = ui->tabWidgetLogistica->currentIndex();
 
-  if (index == 0 or index == 1) ui->frameForn->show();
-  //  if (index == 2) ui->frameForn->hide();
+  if (index == 0 or index == 1) model.setTable("view_fornecedor_logistica");
+  if (index == 6) model.setTable("view_fornecedor_logistica_representacao");
 
   updateTables();
 }

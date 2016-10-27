@@ -12,7 +12,7 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
     : RegisterAddressDialog("transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (auto const *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 

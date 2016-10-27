@@ -7,6 +7,7 @@
 #include <QSqlError>
 
 #include "checkboxdelegate.h"
+#include "excel.h"
 #include "inputdialog.h"
 #include "reaisdelegate.h"
 #include "sendmail.h"
@@ -27,11 +28,9 @@ WidgetCompraGerar::~WidgetCompraGerar() { delete ui; }
 void WidgetCompraGerar::calcularPreco() {
   double preco = 0;
 
-  auto list = ui->tableProdutos->selectionModel()->selectedRows();
+  const auto list = ui->tableProdutos->selectionModel()->selectedRows();
 
-  for (auto item : list) {
-    preco += modelProdutos.data(item.row(), "preco").toDouble();
-  }
+  for (auto const &item : list) preco += modelProdutos.data(item.row(), "preco").toDouble();
 
   ui->doubleSpinBox->setValue(preco);
 }
@@ -73,6 +72,7 @@ void WidgetCompraGerar::setupTables() {
   //  ui->tableProdutos->setItemDelegateForColumn("selecionado", new CheckBoxDelegate(this));
   ui->tableProdutos->setItemDelegateForColumn("prcUnitario", new ReaisDelegate(this));
   ui->tableProdutos->setItemDelegateForColumn("preco", new ReaisDelegate(this));
+  ui->tableProdutos->hideColumn("statusFinanceiro");
   ui->tableProdutos->hideColumn("selecionado");
   ui->tableProdutos->hideColumn("ordemCompra");
   ui->tableProdutos->hideColumn("idCompra");
@@ -106,11 +106,11 @@ void WidgetCompraGerar::setupTables() {
 bool WidgetCompraGerar::updateTables() {
   if (modelForn.tableName().isEmpty()) setupTables();
 
-  auto selection = ui->tableForn->selectionModel()->selectedRows();
+  const auto selection = ui->tableForn->selectionModel()->selectedRows();
 
-  auto index = selection.size() > 0 ? selection.first() : QModelIndex();
+  const auto index = selection.size() > 0 ? selection.first() : QModelIndex();
 
-  QString filter = modelForn.filter();
+  const QString filter = modelForn.filter();
 
   if (not modelForn.select()) {
     emit errorSignal("Erro lendo tabela fornecedores: " + modelForn.lastError().text());
@@ -121,14 +121,14 @@ bool WidgetCompraGerar::updateTables() {
 
   ui->tableForn->resizeColumnsToContents();
 
-  filter = modelProdutos.filter();
+  const QString filter2 = modelProdutos.filter();
 
   if (not modelProdutos.select()) {
     emit errorSignal("Erro lendo tabela pedido_fornecedor_has_produto: " + modelProdutos.lastError().text());
     return false;
   }
 
-  modelProdutos.setFilter(filter);
+  modelProdutos.setFilter(filter2);
 
   if (selection.size() > 0) {
     on_tableForn_activated(index);
@@ -145,7 +145,7 @@ bool WidgetCompraGerar::gerarCompra() {
     return false;
   }
 
-  auto list = ui->tableProdutos->selectionModel()->selectedRows();
+  const auto list = ui->tableProdutos->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Aviso!", "Nenhum item selecionado!");
@@ -155,12 +155,12 @@ bool WidgetCompraGerar::gerarCompra() {
   QList<int> lista;
   QStringList ids;
 
-  for (const auto index : list) {
+  for (auto const &index : list) {
     lista.append(index.row());
     ids.append(modelProdutos.data(index.row(), "idPedido").toString());
   }
 
-  QString filtro = modelProdutos.filter();
+  const QString filtro = modelProdutos.filter();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::GerarCompra, this);
   if (not inputDlg->setFilter(ids)) return false;
@@ -175,18 +175,53 @@ bool WidgetCompraGerar::gerarCompra() {
 
   QStringList produtos;
 
-  for (const auto row : lista) {
-    QString produto = modelProdutos.data(row, "descricao").toString() + ", Quant: " +
-                      modelProdutos.data(row, "quant").toString() + ", R$ " +
-                      modelProdutos.data(row, "preco").toString().replace(".", ",");
-    produtos.append(produto);
+  for (auto const &row : lista) {
+    produtos.append(modelProdutos.data(row, "descricao").toString() + ", Quant: " +
+                    modelProdutos.data(row, "quant").toString() + ", R$ " +
+                    modelProdutos.data(row, "preco").toString().replace(".", ","));
   }
 
   //------------------------------
 
+  QSqlQuery query;
+  query.prepare("SELECT representacao FROM fornecedor WHERE razaoSocial = :razaoSocial");
+  query.bindValue(":razaoSocial", modelProdutos.data(0, "fornecedor").toString());
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando dados do fornecedor: " + query.lastError().text());
+    return false;
+  }
+
+  //
+
+  QSqlQuery queryOC;
+
+  if (not queryOC.exec("SELECT MAX(ordemCompra) + 1 FROM pedido_fornecedor_has_produto") or not queryOC.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando próximo O.C.!");
+    return false;
+  }
+
+  oc = queryOC.value(0).toInt();
+
+  QInputDialog input;
+  input.setInputMode(QInputDialog::IntInput);
+  input.setCancelButtonText("Cancelar");
+  input.setIntMinimum(0);
+  input.setIntMaximum(99999);
+  input.setIntValue(oc);
+  input.setLabelText("Qual a OC?");
+
+  if (input.exec() != QInputDialog::Accepted) return false;
+
+  oc = input.intValue();
+
+  //
+
   QString anexo;
 
-  if (not gerarExcel(lista, anexo)) return false;
+  const bool isRepresentacao = query.value("representacao").toBool();
+
+  if (not gerarExcel(lista, anexo, isRepresentacao)) return false;
 
   QMessageBox msgBox(QMessageBox::Question, "Enviar E-mail?", "Deseja enviar e-mail?",
                      QMessageBox::Yes | QMessageBox::No, this);
@@ -194,8 +229,10 @@ bool WidgetCompraGerar::gerarCompra() {
   msgBox.setButtonText(QMessageBox::No, "Pular");
 
   if (msgBox.exec() == QMessageBox::Yes) {
-    int row = ui->tableForn->selectionModel()->selectedRows().first().row();
-    SendMail *mail = new SendMail(this, anexo, modelForn.data(row, "fornecedor").toString());
+    const int row = ui->tableForn->selectionModel()->selectedRows().first().row();
+    const QString fornecedor = modelForn.data(row, "fornecedor").toString();
+
+    SendMail *mail = new SendMail(this, anexo, fornecedor);
 
     if (mail->exec() != SendMail::Accepted) return false;
   }
@@ -203,9 +240,7 @@ bool WidgetCompraGerar::gerarCompra() {
   modelProdutos.setFilter(filtro);
   modelProdutos.select();
 
-  QString id;
-
-  for (const auto row : lista) {
+  for (auto const &row : lista) {
     if (not modelProdutos.setData(row, "status", "EM COMPRA")) return false;
 
     QSqlQuery queryId;
@@ -215,7 +250,7 @@ bool WidgetCompraGerar::gerarCompra() {
       return false;
     }
 
-    id = queryId.first() ? QString::number(queryId.value("idCompra").toInt() + 1) : "1";
+    const QString id = queryId.first() ? QString::number(queryId.value("idCompra").toInt() + 1) : "1";
 
     if (not modelProdutos.setData(row, "idCompra", id)) return false;
     if (not modelProdutos.setData(row, "ordemCompra", oc)) return false;
@@ -269,11 +304,18 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
   QMessageBox::information(this, "Aviso!", "Compra gerada com sucesso!");
 }
 
-bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo) {
-  QString fornecedor = modelProdutos.data(lista.at(0), "fornecedor").toString();
-  QString idVenda = modelProdutos.data(lista.at(0), "idVenda").toString();
+bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo, const bool representacao) {
+  if (representacao) {
+    Excel *excel = new Excel(modelProdutos.data(lista.at(0), "idVenda").toString());
+    excel->gerarExcel(oc, true);
+    anexo = excel->getFileName();
+    return true;
+  }
 
-  QString arquivoModelo = "modelo compras.xlsx";
+  const QString fornecedor = modelProdutos.data(lista.at(0), "fornecedor").toString();
+  const QString idVenda = modelProdutos.data(lista.at(0), "idVenda").toString();
+
+  const QString arquivoModelo = "modelo compras.xlsx";
 
   QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
 
@@ -282,29 +324,10 @@ bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo) {
     return false;
   }
 
-  QSqlQuery queryOC;
+  const QString fileName = UserSession::settings("User/ComprasFolder").toString() + "/" + QString::number(oc) + " " +
+                           idVenda + " " + fornecedor + ".xlsx";
 
-  if (not queryOC.exec("SELECT MAX(ordemCompra) FROM pedido_fornecedor_has_produto") or not queryOC.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando próximo O.C.!");
-    return false;
-  }
-
-  oc = queryOC.value(0).isNull() ? 6500 : queryOC.value(0).toInt() + 1;
-
-  QInputDialog input;
-  input.setInputMode(QInputDialog::IntInput);
-  input.setCancelButtonText("Cancelar");
-  input.setIntMinimum(0);
-  input.setIntMaximum(99999);
-  input.setIntValue(oc);
-  input.setLabelText("Qual a OC?");
-
-  if (input.exec() != QInputDialog::Accepted) return false;
-
-  oc = input.intValue();
-
-  QString fileName = UserSession::settings("User/ComprasFolder").toString() + "/" + QString::number(oc) + " " +
-                     idVenda + " " + fornecedor + ".xlsx";
+  anexo = fileName;
 
   QFile file(fileName);
 
@@ -326,7 +349,7 @@ bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo) {
 
   QXlsx::Document xlsx(arquivoModelo);
 
-  bool isQuartzo = modelProdutos.data(lista.at(0), "fornecedor").toString() == "QUARTZOBRAS";
+  const bool isQuartzo = modelProdutos.data(lista.at(0), "fornecedor").toString() == "QUARTZOBRAS";
 
   xlsx.write("E4", oc);                                                                             // ordem compra
   xlsx.write("E5", idVenda);                                                                        // idVenda
@@ -359,9 +382,7 @@ bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo) {
     xlsx.write("H200", total * 4.68 / 100);
   }
 
-  for (int row = lista.size() + 13; row < 200; ++row) {
-    xlsx.setRowHeight(row, 0);
-  }
+  for (int row = lista.size() + 13; row < 200; ++row) xlsx.setRowHeight(row, 0);
 
   if (not xlsx.saveAs(fileName)) {
     QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
@@ -370,8 +391,6 @@ bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo) {
 
   QMessageBox::information(this, "Ok!", "Arquivo salvo como " + fileName);
   QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
-
-  anexo = fileName;
 
   return true;
 }
@@ -395,6 +414,3 @@ void WidgetCompraGerar::on_tableForn_activated(const QModelIndex &index) {
 }
 
 void WidgetCompraGerar::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
-
-// TODO: gerar pdf junto do excel
-// TODO: colocar coluna para usuario adicionar informacoes (estilo observacao)

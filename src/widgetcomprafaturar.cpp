@@ -21,20 +21,17 @@ void WidgetCompraFaturar::setupTables() {
 
   ui->table->setModel(&model);
   ui->table->setItemDelegateForColumn("Total", new ReaisDelegate(this));
+  ui->table->hideColumn("idCompra");
   ui->table->hideColumn("representacao");
 }
 
 bool WidgetCompraFaturar::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela faturamento: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -42,7 +39,7 @@ bool WidgetCompraFaturar::updateTables() {
 }
 
 bool WidgetCompraFaturar::faturarCompra() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Não selecionou nenhuma compra!");
@@ -58,20 +55,20 @@ bool WidgetCompraFaturar::faturarCompra() {
     return false;
   }
 
-  bool representacao = query.value("representacao").toBool();
+  const bool representacao = query.value("representacao").toBool();
 
   QStringList idsCompra;
 
-  for (auto item : list) idsCompra << model.data(item.row(), "Compra").toString();
+  for (auto const &item : list) idsCompra << model.data(item.row(), "idCompra").toString();
 
   InputDialog *inputDlg = new InputDialog(InputDialog::Faturamento, this);
   if (not inputDlg->setFilter(idsCompra)) return false;
   if (inputDlg->exec() != InputDialog::Accepted) return false;
 
-  QString dataReal = inputDlg->getDate().toString("yyyy-MM-dd");
+  const QDate dataReal = inputDlg->getDate();
 
   if (representacao) {
-    for (auto idCompra : idsCompra) {
+    for (auto const &idCompra : idsCompra) {
       query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealFat = :dataRealFat, status = 'EM COLETA' WHERE "
                     "idCompra = :idCompra");
       query.bindValue(":dataRealFat", dataReal);
@@ -91,7 +88,7 @@ bool WidgetCompraFaturar::faturarCompra() {
   }
 
   // salvar status na venda
-  for (auto idCompra : idsCompra) {
+  for (auto const &idCompra : idsCompra) {
     query.prepare("UPDATE venda_has_produto SET dataRealFat = :dataRealFat WHERE idCompra = :idCompra");
     query.bindValue(":dataRealFat", dataReal);
     query.bindValue(":idCompra", idCompra);
@@ -131,6 +128,9 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 void WidgetCompraFaturar::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetCompraFaturar::on_checkBoxRepresentacao_toggled(bool checked) {
-  if (checked) model.setFilter("representacao = 1");
-  if (not checked) model.setFilter("representacao = 0");
+  model.setFilter("representacao = " + QString(checked ? "1" : "0"));
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }
+
+// TODO: mostrar datas previstas

@@ -18,9 +18,7 @@ void WidgetOrcamento::setPermissions() {
   if (UserSession::tipoUsuario() == "ADMINISTRADOR" or UserSession::tipoUsuario() == "DIRETOR") {
     QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
 
-    while (query.next()) {
-      ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
-    }
+    while (query.next()) ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
 
     ui->comboBoxLojas->setCurrentValue(UserSession::idLoja());
   }
@@ -33,23 +31,18 @@ void WidgetOrcamento::setPermissions() {
 
     ui->comboBoxVendedores->addItem("");
 
-    while (query.next()) {
-      ui->comboBoxVendedores->addItem(query.value("user").toString(), query.value("idUsuario"));
-    }
+    while (query.next()) ui->comboBoxVendedores->addItem(query.value("user").toString(), query.value("idUsuario"));
   }
 
   if (UserSession::tipoUsuario() == "VENDEDOR") {
     QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
 
-    while (query.next()) {
-      ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
-    }
+    while (query.next()) ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
 
     ui->radioButtonProprios->click();
     ui->checkBoxValido->setChecked(true);
     ui->checkBoxExpirado->setChecked(true);
 
-    //    ui->groupBoxLojas->hide();
     ui->groupBoxVendedores->hide();
   } else {
     ui->radioButtonTodos->click();
@@ -93,14 +86,10 @@ bool WidgetOrcamento::updateTables() {
     makeConnections();
   }
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela orçamento: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -147,9 +136,9 @@ void WidgetOrcamento::montaFiltro() {
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
-                                                              "%') OR (Vendedor LIKE '%" + textoBusca +
-                                                              "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+  const QString filtroBusca = textoBusca.isEmpty() ? ""
+                                                   : " AND ((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" +
+                                                         textoBusca + "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
 
   model.setFilter(filtroLoja + filtroData + filtroVendedor + filtroRadio + filtroCheck + filtroBusca);
 
@@ -166,7 +155,7 @@ void WidgetOrcamento::on_pushButtonFollowup_clicked() {
     return;
   }
 
-  FollowUp *followup = new FollowUp(model.data(list.first().row(), "Código").toString(), this);
+  FollowUp *followup = new FollowUp(model.data(list.first().row(), "Código").toString(), FollowUp::Orcamento, this);
   followup->show();
 }
 
@@ -187,7 +176,5 @@ void WidgetOrcamento::on_comboBoxLojas_currentIndexChanged(int) {
 
   ui->comboBoxVendedores->addItem("");
 
-  while (query2.next()) {
-    ui->comboBoxVendedores->addItem(query2.value("user").toString(), query2.value("idUsuario"));
-  }
+  while (query2.next()) ui->comboBoxVendedores->addItem(query2.value("user").toString(), query2.value("idUsuario"));
 }

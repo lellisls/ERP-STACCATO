@@ -1,8 +1,11 @@
 #include <QDate>
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "excel.h"
+#include "impressao.h"
 #include "inputdialog.h"
 #include "produtospendentes.h"
 #include "ui_widgetcomprapendentes.h"
@@ -38,10 +41,13 @@ void WidgetCompraPendentes::setarDadosAvulso() {
     return;
   }
 
-  QString un = query.value("un").toString();
+  const QString un = query.value("un").toString();
 
   ui->doubleSpinBoxQuantAvulso->setSingleStep(
       query.value(un.contains("M2") or un.contains("M²") or un.contains("ML") ? "m2cx" : "pccx").toDouble());
+
+  ui->doubleSpinBoxQuantAvulso->setValue(0);
+  ui->doubleSpinBoxQuantAvulsoCaixas->setValue(0);
 
   ui->lineEditUn->setText(un);
 }
@@ -64,14 +70,10 @@ bool WidgetCompraPendentes::updateTables() {
     makeConnections();
   }
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela produtos pendentes: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -137,14 +139,19 @@ void WidgetCompraPendentes::montaFiltro() {
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  const QString filtroBusca =
-      textoBusca.isEmpty() ? "" : QString(filtroCheck.isEmpty() ? "" : " AND ") + "((idVenda LIKE '%" + textoBusca +
-                                      "%') OR (fornecedor LIKE '%" + textoBusca + "%') OR (produto LIKE '%" +
-                                      textoBusca + "%') OR (`codComercial` LIKE '%" + textoBusca + "%'))";
+  const QString filtroBusca = textoBusca.isEmpty()
+                                  ? ""
+                                  : QString(filtroCheck.isEmpty() ? "" : " AND ") + "((idVenda LIKE '%" + textoBusca +
+                                        "%') OR (fornecedor LIKE '%" + textoBusca + "%') OR (produto LIKE '%" +
+                                        textoBusca + "%') OR (`codComercial` LIKE '%" + textoBusca + "%'))";
 
   const QString filtroStatus = QString((filtroCheck + filtroBusca).isEmpty() ? "" : " AND ") + "status != 'CANCELADO'";
 
   model.setFilter(filtroCheck + filtroBusca + filtroStatus + " AND quant > 0");
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro na busca: " + model.lastError().text());
+  }
 
   ui->table->resizeColumnsToContents();
 }
@@ -164,7 +171,7 @@ void WidgetCompraPendentes::on_pushButtonComprarAvulso_clicked() {
 
   if (inputDlg->exec() != InputDialog::Accepted) return;
 
-  QDate dataPrevista = inputDlg->getNextDate();
+  const QDate dataPrevista = inputDlg->getNextDate();
 
   insere(dataPrevista) ? QMessageBox::information(this, "Aviso!", "Produto enviado para compras com sucesso!")
                        : QMessageBox::critical(this, "Erro!", "Erro ao enviar produto para compras!");
@@ -223,5 +230,29 @@ void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const doubl
 }
 
 void WidgetCompraPendentes::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+void WidgetCompraPendentes::on_pushButtonExcel_clicked() {
+  const auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  Excel *excel = new Excel(model.data(list.first().row(), "idVenda").toString(), this);
+  excel->gerarExcel();
+}
+
+void WidgetCompraPendentes::on_pushButtonPDF_clicked() {
+  const auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  Impressao *impressao = new Impressao(model.data(list.first().row(), "idVenda").toString(), this);
+  impressao->print();
+}
 
 // TODO: ' faz busca parar de funcionar

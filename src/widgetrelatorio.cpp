@@ -18,23 +18,40 @@ WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::
 WidgetRelatorio::~WidgetRelatorio() { delete ui; }
 
 void WidgetRelatorio::setFilterTotaisVendedor() {
+  QString filter;
+
   if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-    modelTotalVendedor.setFilter("Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND idUsuario = " +
-                                 QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor");
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND idUsuario = " +
+             QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor";
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    modelTotalVendedor.setFilter("Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" +
-                                 UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor");
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" +
+             UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor";
   } else {
-    modelTotalVendedor.setFilter("Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' ORDER BY Loja, Vendedor");
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' ORDER BY Loja, Vendedor";
+  }
+
+  modelTotalVendedor.setFilter(filter);
+
+  if (not modelTotalVendedor.select()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro lendo tabela relatorio_vendedor: " + modelTotalVendedor.lastError().text());
   }
 }
 
 void WidgetRelatorio::setFilterTotaisLoja() {
+  QString filter;
+
   if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    modelTotalLoja.setFilter("Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" +
-                             UserSession::fromLoja("descricao") + "' ORDER BY Loja");
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" +
+             UserSession::fromLoja("descricao") + "' ORDER BY Loja";
   } else {
-    modelTotalLoja.setFilter("Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' ORDER BY Loja");
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' ORDER BY Loja";
+  }
+
+  modelTotalLoja.setFilter(filter);
+
+  if (not modelTotalLoja.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela relatorio_loja: " + modelTotalLoja.lastError().text());
   }
 }
 
@@ -115,20 +132,27 @@ void WidgetRelatorio::calcularTotalGeral() {
 
   ui->doubleSpinBoxGeral->setValue(totalGeral);
   ui->doubleSpinBoxValorComissao->setValue(comissao);
-  ui->doubleSpinBoxPorcentagemComissao->setValue(porcentagem * 100 / modelTotalLoja.rowCount());
+  ui->doubleSpinBoxPorcentagemComissao->setValue(porcentagem / modelTotalLoja.rowCount());
 }
 
 void WidgetRelatorio::setFilterRelatorio() {
   QDate date = ui->dateEditMes->date();
+  QString filter;
 
   if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-    modelRelatorio.setFilter("Mês = '" + date.toString("yyyy-MM") + "' AND idUsuario = " +
-                             QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor, idVenda");
+    filter = "Mês = '" + date.toString("yyyy-MM") + "' AND idUsuario = " + QString::number(UserSession::idUsuario()) +
+             " ORDER BY Loja, Vendedor, idVenda";
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    modelRelatorio.setFilter("Mês = '" + date.toString("yyyy-MM") + "' AND Loja = '" +
-                             UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor, idVenda");
+    filter = "Mês = '" + date.toString("yyyy-MM") + "' AND Loja = '" + UserSession::fromLoja("descricao") +
+             "' ORDER BY Loja, Vendedor, idVenda";
   } else {
-    modelRelatorio.setFilter("Mês = '" + date.toString("yyyy-MM") + "' ORDER BY Loja, Vendedor, idVenda");
+    filter = "Mês = '" + date.toString("yyyy-MM") + "' ORDER BY Loja, Vendedor, idVenda";
+  }
+
+  modelRelatorio.setFilter(filter);
+
+  if (not modelRelatorio.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela relatorio: " + modelRelatorio.lastError().text());
   }
 }
 
@@ -279,3 +303,5 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
   QMessageBox::information(this, "Ok!", "Arquivo salvo como " + fileName);
   QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
 }
+
+// TODO: mostrar tela de resumo de orcamentos para vendedores

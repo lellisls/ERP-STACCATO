@@ -542,7 +542,7 @@ void Styles::writeSubBorder(QXmlStreamWriter &writer, const QString &type, int s
 void Styles::writeCellXfs(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("cellXfs"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(m_xf_formatsList.size()));
-  for (const auto &format : m_xf_formatsList) {
+  for (auto const &format : m_xf_formatsList) {
     int xf_id = 0;
     writer.writeStartElement(QStringLiteral("xf"));
     writer.writeAttribute(QStringLiteral("numFmtId"), QString::number(format.numberFormatIndex()));
@@ -622,7 +622,7 @@ void Styles::writeCellXfs(QXmlStreamWriter &writer) const {
 void Styles::writeDxfs(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("dxfs"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(m_dxf_formatsList.size()));
-  for (const auto &format : m_dxf_formatsList) writeDxf(writer, format);
+  for (auto const &format : m_dxf_formatsList) writeDxf(writer, format);
   writer.writeEndElement(); // dxfs
 }
 
@@ -651,7 +651,7 @@ void Styles::writeColors(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("colors"));
 
   writer.writeStartElement(QStringLiteral("indexedColors"));
-  for (const auto color : m_indexedColors) {
+  for (auto const &color : m_indexedColors) {
     writer.writeEmptyElement(QStringLiteral("rgbColor"));
     writer.writeAttribute(QStringLiteral("rgb"), XlsxColor::toARGBString(color));
   }

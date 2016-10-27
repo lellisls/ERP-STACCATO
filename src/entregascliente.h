@@ -19,6 +19,7 @@ public:
 
 private slots:
   void on_checkBoxMarcarTodos_clicked(bool checked);
+  void on_pushButtonConfirmarEntrega_clicked();
   void on_pushButtonImprimir_clicked();
   void on_pushButtonNFe_clicked();
   void on_pushButtonReagendar_clicked();

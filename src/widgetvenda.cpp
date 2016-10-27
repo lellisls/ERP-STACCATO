@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 
+#include "followup.h"
 #include "orcamentoproxymodel.h"
 #include "reaisdelegate.h"
 #include "ui_widgetvenda.h"
@@ -23,9 +24,13 @@ void WidgetVenda::setupTables() {
   ui->table->hideColumn("statusEntrega");
   ui->table->hideColumn("idLoja");
   ui->table->hideColumn("idUsuario");
+  ui->table->hideColumn("Data Próx Followup");
+  ui->table->hideColumn("Observação");
   ui->table->setItemDelegateForColumn("Total R$", reaisDelegate);
 
   if (UserSession::tipoUsuario() != "VENDEDOR ESPECIAL") ui->table->hideColumn("Indicou");
+
+  ui->pushButtonFollowup->hide();
 }
 
 void WidgetVenda::montaFiltro() {
@@ -50,10 +55,19 @@ void WidgetVenda::montaFiltro() {
 
   QString filtroCheck;
 
-  for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
-    if (child->isChecked()) {
-      filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'"
-                                           : " OR status = '" + child->text().toUpper() + "'";
+  if (financeiro) {
+    for (auto const &child : ui->groupBoxStatusFinanceiro->findChildren<QCheckBox *>()) {
+      if (child->isChecked()) {
+        filtroCheck += filtroCheck.isEmpty() ? "`Status Financeiro` = '" + child->text().toUpper() + "'"
+                                             : " OR `Status Financeiro` = '" + child->text().toUpper() + "'";
+      }
+    }
+  } else {
+    for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
+      if (child->isChecked()) {
+        filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'"
+                                             : " OR status = '" + child->text().toUpper() + "'";
+      }
     }
   }
 
@@ -70,9 +84,9 @@ void WidgetVenda::montaFiltro() {
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  const QString filtroBusca = textoBusca.isEmpty() ? "" : " AND ((Código LIKE '%" + textoBusca +
-                                                              "%') OR (Vendedor LIKE '%" + textoBusca +
-                                                              "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+  const QString filtroBusca = textoBusca.isEmpty() ? ""
+                                                   : " AND ((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" +
+                                                         textoBusca + "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
 
   model.setFilter(filtroLoja + filtroData + filtroVendedor + filtroRadio + filtroCheck + filtroBusca);
 
@@ -90,9 +104,7 @@ void WidgetVenda::setPermissions() {
   if (UserSession::tipoUsuario() == "ADMINISTRADOR" or UserSession::tipoUsuario() == "DIRETOR") {
     QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
 
-    while (query.next()) {
-      ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
-    }
+    while (query.next()) ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
 
     ui->comboBoxLojas->setCurrentValue(UserSession::idLoja());
   }
@@ -105,17 +117,13 @@ void WidgetVenda::setPermissions() {
 
     ui->comboBoxVendedores->addItem("");
 
-    while (query.next()) {
-      ui->comboBoxVendedores->addItem(query.value("user").toString(), query.value("idUsuario"));
-    }
+    while (query.next()) ui->comboBoxVendedores->addItem(query.value("user").toString(), query.value("idUsuario"));
   }
 
   if (UserSession::tipoUsuario() == "VENDEDOR") {
     QSqlQuery query("SELECT descricao, idLoja FROM loja WHERE desativado = FALSE");
 
-    while (query.next()) {
-      ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
-    }
+    while (query.next()) ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
 
     ui->radioButtonProprios->click();
 
@@ -129,7 +137,7 @@ void WidgetVenda::setPermissions() {
 
 void WidgetVenda::makeConnections() {
   connect(ui->checkBoxCancelado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxDevolucao, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxDevolvido, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxEmColeta, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxEmCompra, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxEmFaturamento, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
@@ -155,15 +163,10 @@ bool WidgetVenda::updateTables() {
     makeConnections();
   }
 
-  // TODO: verify if this is still necessary
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela vendas: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -172,6 +175,7 @@ bool WidgetVenda::updateTables() {
 
 void WidgetVenda::on_table_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
+  if (financeiro) vendas->setFinanceiro();
   vendas->viewRegisterById(model.data(index.row(), "Código"));
 }
 
@@ -196,4 +200,40 @@ void WidgetVenda::on_comboBoxLojas_currentIndexChanged(int) {
   }
 }
 
+void WidgetVenda::setFinanceiro() {
+  ui->table->showColumn(model.fieldIndex("Status Financeiro"));
+  ui->pushButtonFollowup->show();
+  ui->table->showColumn(model.fieldIndex("Data Próx Followup"));
+  ui->table->showColumn(model.fieldIndex("Observação"));
+  ui->groupBoxStatus->hide();
+  financeiro = true;
+
+  connect(ui->checkBoxPendente2, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxLiberado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+  connect(ui->checkBoxConferido, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
+}
+
+void WidgetVenda::on_pushButtonFollowup_clicked() {
+  auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
+    return;
+  }
+
+  FollowUp *followup = new FollowUp(model.data(list.first().row(), "Código").toString(), FollowUp::Venda, this);
+  followup->show();
+}
+
+void WidgetVenda::on_groupBoxStatusFinanceiro_toggled(const bool &enabled) {
+  for (auto const &child : ui->groupBoxStatusFinanceiro->findChildren<QCheckBox *>()) {
+    child->setEnabled(true);
+    child->setChecked(enabled);
+  }
+}
+
 // NOTE: verificar como lidar com brinde/reposicao
+// TODO: arrumar update_venda_status para nao mudar status para devolvido em devolucoes parciais; nao alterar o status
+// 'devolvido' de devolucoes
+// TODO: ao abrir no financeiro setar o status atual em vez de mostrar 'PENDENTE'
+// TODO: fazer followup pós-venda

@@ -2,6 +2,7 @@
 #define IMPORTARXML_H
 
 #include <QDataWidgetMapper>
+#include <QDate>
 #include <QFileDialog>
 
 #include "sqltablemodel.h"
@@ -14,7 +15,7 @@ class ImportarXML : public QDialog {
   Q_OBJECT
 
 public:
-  explicit ImportarXML(const QStringList &idsCompra, const QString &dataReal, QWidget *parent = 0);
+  explicit ImportarXML(const QStringList &idsCompra, const QDate &dataReal, QWidget *parent = 0);
   ~ImportarXML();
 
 private slots:
@@ -34,7 +35,7 @@ private:
   SqlTableModel modelCompra;
   SqlTableModel modelEstoque;
   SqlTableModel modelConsumo;
-  QString dataReal;
+  QDate dataReal;
   QStringList idsCompra;
 
   enum FieldColors {
@@ -46,11 +47,13 @@ private:
   };
 
   // methods
+  bool associarItens(int rowCompra, int rowEstoque, double &estoqueConsumido);
+  bool criarConsumo();
+  bool importar();
   bool lerXML(QFile &file);
-  void associarItens(int rowCompra, int rowEstoque, double &estoqueConsumido);
-  void criarConsumo();
-  void limparAssociacoes();
-  void parear();
+  bool limparAssociacoes();
+  bool parear();
+  bool procurar();
   void setupTables(const QStringList &idsCompra);
 };
 

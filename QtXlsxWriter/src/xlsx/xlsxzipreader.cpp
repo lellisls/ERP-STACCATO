@@ -38,7 +38,7 @@ ZipReader::~ZipReader() {}
 void ZipReader::init() {
   const auto allFiles = m_reader->fileInfoList();
 
-  for (const auto &fi : allFiles) {
+  for (auto const &fi : allFiles) {
     if (fi.isFile) m_filePaths.append(fi.filePath);
   }
 }

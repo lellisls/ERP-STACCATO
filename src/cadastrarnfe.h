@@ -44,15 +44,16 @@ private:
   SqlTableModel modelVenda;
   QDataWidgetMapper mapper;
   // methods
+  bool cadastrar(const bool test = false);
+  bool calculaDigitoVerificador(QString &chave);
+  bool criarChaveAcesso(QString &chave);
+  bool guardarNotaBD();
   bool writeDestinatario(QTextStream &stream);
   bool writeEmitente(QTextStream &stream);
   bool writeProduto(QTextStream &stream);
-  bool writeTXT(bool test = false);
-  QString calculaDigitoVerificador(const QString &chave);
+  bool writeTXT(const bool test = false);
   QString clearStr(const QString &str) const;
-  QString criarChaveAcesso();
   QString removeDiacritics(const QString &str) const;
-  void guardarNotaBD();
   void setupTables();
   void writeIdentificacao(QTextStream &stream) const;
   void writeTotal(QTextStream &stream) const;

@@ -15,8 +15,12 @@ Impressao::Impressao(QString id, QWidget *parent) : id(id), parent(parent) {
 
   modelItem.setTable((type == Orcamento ? "orcamento" : "venda") + QString("_has_produto"));
   modelItem.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   modelItem.setFilter(type == Orcamento ? "idOrcamento = '" + id + "'" : "idVenda = '" + id + "'");
-  modelItem.select();
+
+  if (not modelItem.select()) {
+    QMessageBox::critical(parent, "Erro!", "Erro lendo tabela: " + modelItem.lastError().text());
+  }
 
   report = new LimeReport::ReportEngine(parent);
 }
@@ -53,24 +57,6 @@ void Impressao::print() {
 
   if (not report->loadFromFile(type == Orcamento ? "orcamento.lrxml" : "venda.lrxml")) {
     QMessageBox::critical(parent, "Erro!", "Não encontrou o modelo de impressão!");
-    return;
-  }
-
-  if (type == Orcamento) {
-    query.prepare("SELECT data, validade, idEnderecoFaturamento, idEnderecoEntrega, subTotalLiq, descontoPorc, frete, "
-                  "total, observacao, prazoEntrega FROM orcamento WHERE idOrcamento = :idOrcamento");
-    query.bindValue(":idOrcamento", id);
-  }
-
-  if (type == Venda) {
-    query.prepare(
-        "SELECT data, idOrcamento, idEnderecoFaturamento, idEnderecoEntrega, subTotalLiq, descontoPorc, frete, "
-        "total, observacao, prazoEntrega FROM venda WHERE idVenda = :idVenda");
-    query.bindValue(":idVenda", id);
-  }
-
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(parent, "Erro!", "Erro buscando dados da venda/orcamento: " + query.lastError().text());
     return;
   }
 
@@ -118,8 +104,9 @@ void Impressao::print() {
     QLocale locale;
 
     report->dataManager()->setReportVariable("Soma", locale.toString(query.value("subTotalLiq").toDouble(), 'f', 2));
-    report->dataManager()->setReportVariable("Desconto",
-                                             locale.toString(query.value("descontoPorc").toDouble(), 'f', 2));
+    report->dataManager()->setReportVariable(
+        "Desconto", "R$ " + locale.toString(query.value("descontoReais").toDouble(), 'f', 2) + " (" +
+                        locale.toString(query.value("descontoPorc").toDouble(), 'f', 2) + "%)");
     double value = query.value("total").toDouble() - query.value("frete").toDouble();
     report->dataManager()->setReportVariable("Total", locale.toString(value, 'f', 2));
     report->dataManager()->setReportVariable("Frete", locale.toString(query.value("frete").toDouble(), 'f', 2));
@@ -171,8 +158,9 @@ void Impressao::print() {
     QLocale locale;
 
     report->dataManager()->setReportVariable("Soma", locale.toString(query.value("subTotalLiq").toDouble(), 'f', 2));
-    report->dataManager()->setReportVariable("Desconto",
-                                             locale.toString(query.value("descontoPorc").toDouble(), 'f', 2));
+    report->dataManager()->setReportVariable(
+        "Desconto", "R$ " + locale.toString(query.value("descontoReais").toDouble(), 'f', 2) + " (" +
+                        locale.toString(query.value("descontoPorc").toDouble(), 'f', 2) + "%)");
     double value = query.value("total").toDouble() - query.value("frete").toDouble();
     report->dataManager()->setReportVariable("Total", locale.toString(value, 'f', 2));
     report->dataManager()->setReportVariable("Frete", locale.toString(query.value("frete").toDouble(), 'f', 2));
@@ -181,54 +169,60 @@ void Impressao::print() {
     report->dataManager()->setReportVariable("PrazoEntrega", query.value("prazoEntrega").toString() + " dias");
 
     QSqlQuery queryPgt1(
-        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-        "' AND tipo LIKE '1%'");
+        "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento"
+        " WHERE idVenda = '" +
+        id + "' AND tipo LIKE '1%' AND tipo != '1. Comissão' AND tipo != '1. Taxa Cartão' AND status != 'CANCELADO'");
 
     if (not queryPgt1.exec() or not queryPgt1.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 1: " + queryPgt1.lastError().text());
       return;
     }
 
-    QString pgt1 = queryPgt1.value("tipo").toString() + " - " + queryPgt1.value("COUNT(valor)").toString() +
-                   "x de R$ " + locale.toString(queryPgt1.value("valor").toDouble(), 'f', 2) +
-                   (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                   queryPgt1.value("dataEmissao").toDate().toString("dd-MM-yyyy");
+    const QString pgt1 = queryPgt1.value("tipo").toString() + " - " + queryPgt1.value("COUNT(valor)").toString() +
+                         "x de R$ " + locale.toString(queryPgt1.value("valor").toDouble(), 'f', 2) +
+                         (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                         queryPgt1.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                         queryPgt1.value("observacao").toString();
 
     report->dataManager()->setReportVariable("FormaPagamento1", pgt1);
 
     QSqlQuery queryPgt2(
-        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-        "' AND tipo LIKE '2%'");
+        "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento "
+        "WHERE idVenda = '" +
+        id + "' AND tipo LIKE '2%' AND tipo != '2. Comissão' AND tipo != '2. Taxa Cartão' AND status != 'CANCELADO'");
 
     if (not queryPgt2.exec() or not queryPgt2.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 2: " + queryPgt2.lastError().text());
       return;
     }
 
-    QString pgt2 = queryPgt2.value("tipo").toString() + " - " + queryPgt2.value("COUNT(valor)").toString() +
-                   "x de R$ " + locale.toString(queryPgt2.value("valor").toDouble(), 'f', 2) +
-                   (queryPgt2.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                   queryPgt2.value("dataEmissao").toDate().toString("dd-MM-yyyy");
-
-    if (queryPgt2.value("valor") == 0) pgt2 = "";
+    const QString pgt2 = queryPgt2.value("valor") == 0
+                             ? ""
+                             : queryPgt2.value("tipo").toString() + " - " + queryPgt2.value("COUNT(valor)").toString() +
+                                   "x de R$ " + locale.toString(queryPgt2.value("valor").toDouble(), 'f', 2) +
+                                   (queryPgt2.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                   queryPgt2.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                   queryPgt2.value("observacao").toString();
 
     report->dataManager()->setReportVariable("FormaPagamento2", pgt2);
 
     QSqlQuery queryPgt3(
-        "SELECT tipo, COUNT(valor), valor, dataEmissao FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-        "' AND tipo LIKE '3%'");
+        "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento"
+        " WHERE idVenda = '" +
+        id + "' AND tipo LIKE '3%' AND tipo != '3. Comissão' AND tipo != '3. Taxa Cartão' AND status != 'CANCELADO'");
 
     if (not queryPgt3.exec() or not queryPgt3.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 3: " + queryPgt3.lastError().text());
       return;
     }
 
-    QString pgt3 = queryPgt3.value("tipo").toString() + " - " + queryPgt3.value("COUNT(valor)").toString() +
-                   "x de R$ " + locale.toString(queryPgt3.value("valor").toDouble(), 'f', 2) +
-                   (queryPgt3.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                   queryPgt3.value("dataEmissao").toDate().toString("dd-MM-yyyy");
-
-    if (queryPgt3.value("valor") == 0) pgt3 = "";
+    const QString pgt3 = queryPgt3.value("valor") == 0
+                             ? ""
+                             : queryPgt3.value("tipo").toString() + " - " + queryPgt3.value("COUNT(valor)").toString() +
+                                   "x de R$ " + locale.toString(queryPgt3.value("valor").toDouble(), 'f', 2) +
+                                   (queryPgt3.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                   queryPgt3.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                   queryPgt3.value("observacao").toString();
 
     report->dataManager()->setReportVariable("FormaPagamento3", pgt3);
   }
@@ -261,17 +255,16 @@ void Impressao::print() {
 
 bool Impressao::setQuerys() {
   if (type == Orcamento) {
-    query.prepare("SELECT idCliente, idProfissional, idUsuario, idLoja, data, validade, idEnderecoEntrega, "
-                  "subTotalLiq, descontoPorc, frete, "
-                  "total, observacao, prazoEntrega FROM orcamento WHERE idOrcamento = :idOrcamento");
+    query.prepare("SELECT idCliente, idProfissional, idUsuario, idLoja, data, validade, idEnderecoFaturamento, "
+                  "idEnderecoEntrega, subTotalLiq, descontoPorc, descontoReais, frete, total, observacao, prazoEntrega "
+                  "FROM orcamento WHERE idOrcamento = :idOrcamento");
     query.bindValue(":idOrcamento", id);
   }
 
   if (type == Venda) {
     query.prepare("SELECT idCliente, idProfissional, idUsuario, idLoja, idOrcamento, data, idEnderecoFaturamento, "
-                  "idEnderecoEntrega, "
-                  "subTotalLiq, descontoPorc, frete, "
-                  "total, observacao, prazoEntrega FROM venda WHERE idVenda = :idVenda");
+                  "idEnderecoEntrega, subTotalLiq, descontoPorc, descontoReais, frete, total, observacao, prazoEntrega "
+                  "FROM venda WHERE idVenda = :idVenda");
     query.bindValue(":idVenda", id);
   }
 
@@ -342,3 +335,6 @@ bool Impressao::setQuerys() {
 
   return true;
 }
+
+// TODO: colocar bairro loja numa linha separada
+// TODO: colocar formas de pagamento 4 e 5

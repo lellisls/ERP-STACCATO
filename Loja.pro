@@ -11,7 +11,37 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Loja
 TEMPLATE = app
 
+CONFIG += c++14
+
+QMAKE_CXXFLAGS += -Wall -Wextra
+QMAKE_CXXFLAGS_DEBUG += -O0
+#QMAKE_CXXFLAGS_RELEASE  = -Ofast
+QMAKE_CXXFLAGS_RELEASE  = -O0
+QMAKE_LFLAGS_DEBUG += -O0
+#QMAKE_LFLAGS_RELEASE += -O3
+QMAKE_LFLAGS_RELEASE += -O0
+
+#QMAKE_CXXFLAGS += -flto
+#QMAKE_LFLAGS += -flto -fuse-linker-plugin
+
+macx{
+QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++11
+QMAKE_LFLAGS += -stdlib=libc++
+}
+
+RESOURCES += \
+    qrs/resources.qrc
+
+RC_ICONS = Staccato.ico
+
+CONFIG -= console
+
+include(QtXlsxWriter/src/xlsx/qtxlsx.pri)
+include(QSimpleUpdater/qsimpleupdater.pri)
+include(LimeReport-1.3.11/limereport/limereport.pri)
+
 SOURCES += \
+    src/adiantarrecebimento.cpp \
     src/baixaorcamento.cpp \
     src/cadastrarnfe.cpp \
     src/cadastrocliente.cpp \
@@ -26,8 +56,7 @@ SOURCES += \
     src/checkboxdelegate.cpp \
     src/combobox.cpp \
     src/comboboxdelegate.cpp \
-    src/contasapagar.cpp \
-    src/contasareceber.cpp \
+    src/contas.cpp \
     src/dateformatdelegate.cpp \
     src/devolucao.cpp \
     src/doubledelegate.cpp \
@@ -42,9 +71,12 @@ SOURCES += \
     src/importarxml.cpp \
     src/impressao.cpp \
     src/inputdialog.cpp \
+    src/inserirlancamento.cpp \
     src/itembox.cpp \
+    src/itemboxdelegate.cpp \
     src/lineeditcep.cpp \
     src/lineeditdecimal.cpp \
+    src/lineeditdelegate.cpp \
     src/lineedittel.cpp \
     src/logindialog.cpp \
     src/main.cpp \
@@ -75,9 +107,10 @@ SOURCES += \
     src/widgetcomprafaturar.cpp \
     src/widgetcompragerar.cpp \
     src/widgetcomprapendentes.cpp \
-    src/widgetcontapagar.cpp \
-    src/widgetcontareceber.cpp \
     src/widgetestoque.cpp \
+    src/widgetfinanceiro.cpp \
+    src/widgetfinanceirocompra.cpp \
+    src/widgetfluxocaixa.cpp \
     src/widgetlogistica.cpp \
     src/widgetlogisticaagendarcoleta.cpp \
     src/widgetlogisticacoleta.cpp \
@@ -88,12 +121,15 @@ SOURCES += \
     src/widgetnfeentrada.cpp \
     src/widgetnfesaida.cpp \
     src/widgetorcamento.cpp \
+    src/widgetpagamento.cpp \
+    src/widgetreceberresumo.cpp \
     src/widgetrelatorio.cpp \
     src/widgetvenda.cpp \
     src/xml.cpp \
     src/xml_viewer.cpp
 
 HEADERS  += \
+    src/adiantarrecebimento.h \
     src/baixaorcamento.h \
     src/cadastrarnfe.h \
     src/cadastrocliente.h \
@@ -108,8 +144,7 @@ HEADERS  += \
     src/checkboxdelegate.h \
     src/combobox.h \
     src/comboboxdelegate.h \
-    src/contasapagar.h \
-    src/contasareceber.h \
+    src/contas.h \
     src/dateformatdelegate.h \
     src/devolucao.h \
     src/doubledelegate.h \
@@ -124,9 +159,12 @@ HEADERS  += \
     src/importarxml.h \
     src/impressao.h \
     src/inputdialog.h \
+    src/inserirlancamento.h \
     src/itembox.h \
+    src/itemboxdelegate.h \
     src/lineeditcep.h \
     src/lineeditdecimal.h \
+    src/lineeditdelegate.h \
     src/lineedittel.h \
     src/logindialog.h \
     src/mainwindow.h \
@@ -156,9 +194,10 @@ HEADERS  += \
     src/widgetcomprafaturar.h \
     src/widgetcompragerar.h \
     src/widgetcomprapendentes.h \
-    src/widgetcontapagar.h \
-    src/widgetcontareceber.h \
     src/widgetestoque.h \
+    src/widgetfinanceiro.h \
+    src/widgetfinanceirocompra.h\
+    src/widgetfluxocaixa.h \
     src/widgetlogistica.h \
     src/widgetlogisticaagendarcoleta.h \
     src/widgetlogisticacoleta.h \
@@ -169,12 +208,15 @@ HEADERS  += \
     src/widgetnfeentrada.h \
     src/widgetnfesaida.h \
     src/widgetorcamento.h \
+    src/widgetpagamento.h \
+    src/widgetreceberresumo.h \
     src/widgetrelatorio.h \
     src/widgetvenda.h \
     src/xml.h \
     src/xml_viewer.h
 
 FORMS += \
+    ui/adiantarrecebimento.ui \
     ui/baixaorcamento.ui \
     ui/cadastrarnfe.ui \
     ui/cadastrocliente.ui \
@@ -185,8 +227,7 @@ FORMS += \
     ui/cadastrotransportadora.ui \
     ui/cadastrousuario.ui \
     ui/calendarioentregas.ui \
-    ui/contasapagar.ui \
-    ui/contasareceber.ui \
+    ui/contas.ui \
     ui/devolucao.ui \
     ui/entregascliente.ui \
     ui/estoque.ui \
@@ -194,6 +235,7 @@ FORMS += \
     ui/importaprodutos.ui \
     ui/importarxml.ui \
     ui/inputdialog.ui \
+    ui/inserirlancamento.ui \
     ui/logindialog.ui \
     ui/mainwindow.ui \
     ui/orcamento.ui \
@@ -209,9 +251,10 @@ FORMS += \
     ui/widgetcomprafaturar.ui \
     ui/widgetcompragerar.ui \
     ui/widgetcomprapendentes.ui \
-    ui/widgetcontapagar.ui \
-    ui/widgetcontareceber.ui \
     ui/widgetestoque.ui \
+    ui/widgetfinanceiro.ui \
+    ui/widgetfinanceirocompra.ui \
+    ui/widgetfluxocaixa.ui \
     ui/widgetlogistica.ui \
     ui/widgetlogisticaagendarcoleta.ui \
     ui/widgetlogisticacoleta.ui \
@@ -222,30 +265,9 @@ FORMS += \
     ui/widgetnfeentrada.ui \
     ui/widgetnfesaida.ui \
     ui/widgetorcamento.ui \
+    ui/widgetpagamento.ui \
+    ui/widgetreceberresumo.ui \
     ui/widgetrelatorio.ui \
     ui/widgetvenda.ui \
     ui/xml_viewer.ui
 
-CONFIG += c++14
-
-QMAKE_CXXFLAGS += -Wall
-QMAKE_CXXFLAGS_DEBUG += -O0
-QMAKE_CXXFLAGS_RELEASE  = -Ofast
-#QMAKE_CXXFLAGS_RELEASE  = -O0
-QMAKE_LFLAGS_DEBUG += -O0
-QMAKE_LFLAGS_RELEASE += -O3
-#QMAKE_LFLAGS_RELEASE += -O0
-
-#QMAKE_CXXFLAGS += -flto
-#QMAKE_LFLAGS += -flto -fuse-linker-plugin
-
-RESOURCES += \
-    qrs/resources.qrc
-
-RC_ICONS = Staccato.ico
-
-CONFIG -= console
-
-include(QtXlsxWriter/src/xlsx/qtxlsx.pri)
-include(QSimpleUpdater/qsimpleupdater.pri)
-include(LimeReport-1.3.11/limereport/limereport.pri)

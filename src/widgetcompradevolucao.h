@@ -21,14 +21,16 @@ signals:
   void errorSignal(QString error);
 
 private slots:
+  void on_pushButtonDevolucaoFornecedor_clicked();
   void on_pushButtonRetornarEstoque_clicked();
   void on_radioButtonFiltroPendente_toggled(bool checked);
   void on_table_entered(const QModelIndex &);
-  void on_pushButtonDevolucaoFornecedor_clicked();
 
 private:
-  Ui::WidgetCompraDevolucao *ui;
+  // attributes
   SqlTableModel model;
+  Ui::WidgetCompraDevolucao *ui;
+  // methods
   void setupTables();
 };
 

@@ -25,12 +25,13 @@ private slots:
 
 private:
   // attributes
-  Ui::ProdutosPendentes *ui;
   QString codComercial;
   SqlTableModel modelEstoque;
   SqlTableModel modelProdutos;
+  Ui::ProdutosPendentes *ui;
   // methods
   bool atualizaVenda(const QDate &dataPrevista);
+  bool cadastrar();
   bool insere(const QDate &dataPrevista);
   void setupTables();
 };

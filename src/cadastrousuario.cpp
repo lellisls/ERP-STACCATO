@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 
 #include "cadastrousuario.h"
+#include "checkboxdelegate.h"
 #include "searchdialog.h"
 #include "ui_cadastrousuario.h"
 #include "usersession.h"
@@ -12,24 +13,43 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
     : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  //  for (auto const *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
 
-  setupTablePermissoes();
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->table->hide();
+
+  setupTables();
   fillCombobox();
-
-  ui->tablePermissoes->setEnabled(false);
-  ui->tablePermissoes->setToolTip("Função indisponível nesta versão!");
-  ui->tablePermissoes->resizeColumnsToContents();
-
-  ui->tabWidget->setTabEnabled(1, false);
-
   setupMapper();
   newRegister();
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }
+
+void CadastroUsuario::setupTables() {
+  modelPermissoes.setTable("usuario_has_permissao");
+  modelPermissoes.setEditStrategy(SqlTableModel::OnManualSubmit);
+
+  modelPermissoes.setHeaderData("view_tab_orcamento", "Ver Orçamentos?");
+  modelPermissoes.setHeaderData("view_tab_venda", "Ver Vendas?");
+  modelPermissoes.setHeaderData("view_tab_compra", "Ver Compras?");
+  modelPermissoes.setHeaderData("view_tab_logistica", "Ver Logística?");
+  modelPermissoes.setHeaderData("view_tab_nfe", "Ver NFe?");
+  modelPermissoes.setHeaderData("view_tab_estoque", "Ver Estoque?");
+  modelPermissoes.setHeaderData("view_tab_financeiro", "Ver Financeiro?");
+  modelPermissoes.setHeaderData("view_tab_relatorio", "Ver Relatório?");
+
+  modelPermissoes.setFilter("0");
+
+  if (not modelPermissoes.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela permissões: " + modelPermissoes.lastError().text());
+  }
+
+  ui->table->setModel(&modelPermissoes);
+  ui->table->hideColumn("idUsuario");
+  ui->table->setItemDelegate(new CheckBoxDelegate(this));
+}
 
 void CadastroUsuario::modificarUsuario() {
   ui->pushButtonBuscar->hide();
@@ -40,25 +60,6 @@ void CadastroUsuario::modificarUsuario() {
   ui->lineEditUser->setDisabled(true);
   ui->comboBoxLoja->setDisabled(true);
   ui->comboBoxTipo->setDisabled(true);
-}
-
-void CadastroUsuario::setupTablePermissoes() {
-  ui->tablePermissoes->resizeColumnsToContents();
-  ui->tablePermissoes->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-  ui->tablePermissoes->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-  for (int row = 0, rowCount = ui->tablePermissoes->rowCount(); row < rowCount; ++row) {
-    for (int column = 0, columnCount = ui->tablePermissoes->columnCount(); column < columnCount; ++column) {
-      QWidget *widget = new QWidget();
-      QCheckBox *checkBox = new QCheckBox();
-      QHBoxLayout *layout = new QHBoxLayout(widget);
-      layout->addWidget(checkBox);
-      layout->setAlignment(Qt::AlignCenter);
-      layout->setContentsMargins(0, 0, 0, 0);
-      widget->setLayout(layout);
-      ui->tablePermissoes->setCellWidget(row, column, widget);
-    }
-  }
 }
 
 bool CadastroUsuario::verifyFields() {
@@ -107,7 +108,7 @@ bool CadastroUsuario::savingProcedures() {
 
   if (ui->lineEditPasswd->text() != "********") {
     QSqlQuery query("SELECT PASSWORD('" + ui->lineEditPasswd->text() + "')");
-    query.first();
+    if (not query.first()) return false;
     if (not setData("passwd", query.value(0))) return false;
   }
 
@@ -120,15 +121,19 @@ bool CadastroUsuario::viewRegister() {
   ui->lineEditPasswd->setText("********");
   ui->lineEditPasswd_2->setText("********");
 
+  modelPermissoes.setFilter("idUsuario = " + data("idUsuario").toString());
+
+  for (int row = 0; row < modelPermissoes.rowCount(); ++row) {
+    for (int col = 0; col < modelPermissoes.columnCount(); ++col) ui->table->openPersistentEditor(row, col);
+  }
+
   return true;
 }
 
 void CadastroUsuario::fillCombobox() {
   QSqlQuery query("SELECT descricao, idLoja FROM loja");
 
-  while (query.next()) {
-    ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));
-  }
+  while (query.next()) ui->comboBoxLoja->addItem(query.value("descricao").toString(), query.value("idLoja"));
 
   ui->comboBoxLoja->setCurrentValue(UserSession::idLoja());
 }
@@ -164,7 +169,7 @@ bool CadastroUsuario::cadastrar() {
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(row, column);
     if (dado.type() == QVariant::String) {
       if (not model.setData(row, column, dado.toString().toUpper())) return false;
     }
@@ -176,7 +181,8 @@ bool CadastroUsuario::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId =
+      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
 
   if (not isUpdate) {
     QSqlQuery query;
@@ -198,6 +204,25 @@ bool CadastroUsuario::cadastrar() {
     }
 
     QSqlQuery("FLUSH PRIVILEGES").exec();
+
+    //
+
+    const int row2 = modelPermissoes.rowCount();
+    modelPermissoes.insertRow(row2);
+
+    modelPermissoes.setData(row2, "idUsuario", primaryId);
+
+    if (not modelPermissoes.submitAll()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando permissões: " + modelPermissoes.lastError().text());
+      return false;
+    }
+  }
+
+  if (isUpdate) {
+    if (not modelPermissoes.submitAll()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando permissões: " + modelPermissoes.lastError().text());
+      return false;
+    }
   }
 
   return true;
@@ -240,3 +265,6 @@ void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
     return;
   }
 }
+
+// TODO: colocar uma segunda aba (para admins) para setar quais os tipos de funcionarios e quais permissoes base eles
+// possuem

@@ -1,8 +1,12 @@
+#include <QCompleter>
+#include <QDate>
 #include <QDebug>
 #include <QDesktopServices>
 #include <QLabel>
 #include <QMessageBox>
 #include <QShortcut>
+#include <QSqlError>
+#include <QSqlRecord>
 #include <QStyleFactory>
 #include <QTimer>
 #include <QUrl>
@@ -48,18 +52,70 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->actionCadastrarFornecedor->setDisabled(true);
   }
 
-  if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
-    ui->tabWidget->setTabEnabled(5, false);
-    ui->tabWidget->setTabEnabled(6, false);
-    ui->actionCadastrarUsuario->setVisible(false);
+  //
+
+  QSqlQuery query;
+  query.prepare("SELECT * FROM usuario_has_permissao WHERE idUsuario = :idUsuario");
+  query.bindValue(":idUsuario", UserSession::idUsuario());
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo permissões: " + query.lastError().text());
   }
 
-  if (UserSession::tipoUsuario() == "GERENTE DEPARTAMENTO") ui->tabWidget->setTabEnabled(7, false);
+  ui->tabWidget->setTabEnabled(0, query.value("view_tab_orcamento").toBool());
+  ui->tabWidget->setTabEnabled(1, query.value("view_tab_venda").toBool());
+  ui->tabWidget->setTabEnabled(2, query.value("view_tab_compra").toBool());
+  ui->tabWidget->setTabEnabled(3, query.value("view_tab_logistica").toBool());
+  ui->tabWidget->setTabEnabled(4, query.value("view_tab_nfe").toBool());
+  ui->tabWidget->setTabEnabled(5, query.value("view_tab_estoque").toBool());
+  ui->tabWidget->setTabEnabled(6, query.value("view_tab_financeiro").toBool());
+  ui->tabWidget->setTabEnabled(7, query.value("view_tab_relatorio").toBool());
+  //
 
   timer = new QTimer(this);
+
+  // DO THIS FOR estoque_has_consumo too (and other tables that might have 'caixas'
+
+  //  QSqlQuery query2;
+
+  //  query2.exec("SELECT * FROM estoque");
+
+  //  while (query2.next()) {
+  //    QSqlQuery query3;
+
+  //    query3.exec("SELECT * FROM produto WHERE idProduto = " + query2.value("idProduto").toString());
+  //    if (not query3.first()) continue;
+
+  //    QString un = query2.value("un").toString();
+
+  //    int caixas = 0;
+
+  //    if (un == "KG") {
+  //      if (query3.value("kgcx").toDouble() <= 0.) continue;
+
+  //      caixas = query2.value("quant").toDouble() / query3.value("kgcx").toDouble();
+
+  //    } else if (un == "M2" or un == "M²") {
+  //      if (query3.value("m2cx").toDouble() <= 0.) continue;
+
+  //      caixas = query2.value("quant").toDouble() / query3.value("m2cx").toDouble();
+
+  //    } else {
+  //      if (query3.value("pccx").toDouble() <= 0.) continue;
+
+  //      caixas = query2.value("quant").toDouble() / query3.value("pccx").toDouble();
+  //    }
+
+  //    qDebug() << "idEstoque: " << query2.value("idEstoque").toString()
+  //             << " before: " << query2.value("caixas").toDouble() << " - after: " << caixas;
+
+  //    if (caixas <= 0) continue;
+
+  //    QSqlQuery query4;
+
+  //    query4.exec("UPDATE estoque SET caixas = " + QString::number(caixas) + " WHERE idEstoque = " +
+  //                query2.value("idEstoque").toString());
+  //  }
 }
 
 MainWindow::~MainWindow() {
@@ -118,8 +174,7 @@ void MainWindow::updateTables() {
   connect(ui->widgetLogistica, &WidgetLogistica::errorSignal, this, &MainWindow::timerStatusBar);
   connect(ui->widgetNfe, &WidgetNfe::errorSignal, this, &MainWindow::timerStatusBar);
   connect(ui->widgetEstoque, &WidgetEstoque::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetPagar, &WidgetContaPagar::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetReceber, &WidgetContaReceber::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetFinanceiro, &WidgetFinanceiro::errorSignal, this, &MainWindow::timerStatusBar);
   connect(ui->widgetRelatorio, &WidgetRelatorio::errorSignal, this, &MainWindow::timerStatusBar);
 
   switch (ui->tabWidget->currentIndex()) {
@@ -147,9 +202,8 @@ void MainWindow::updateTables() {
     ui->widgetEstoque->updateTables();
     break;
 
-  case 6: // Contas
-    ui->widgetPagar->updateTables();
-    ui->widgetReceber->updateTables();
+  case 6: // Financeiro
+    ui->widgetFinanceiro->updateTables();
     break;
 
   case 7: // Relatório
@@ -249,3 +303,7 @@ void MainWindow::on_actionPromocao_triggered() {
 }
 
 // NOTE: colocar logo da staccato na mainwindow
+// TODO: implementar tela financeiro->compras
+// TODO: transformar o tabWidget do financeiro em seu proprio widget
+// TODO: verificar se as conexoes de errorSignal dos subwidgets nao deveriam ir para o construtor para evitar de serem
+// conectadas a cada updateTables()

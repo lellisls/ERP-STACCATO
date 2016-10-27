@@ -17,10 +17,14 @@ public:
 private slots:
   void on_checkBoxMostrarInativos_clicked(const bool &checked);
   void on_lineEditCEP_textChanged(const QString &cep);
+  void on_lineEditCNPJ_editingFinished();
   void on_lineEditCNPJ_textEdited(const QString &text);
+  void on_lineEditCNPJBancario_textEdited(const QString &text);
   void on_lineEditContatoCPF_textEdited(const QString &text);
+  void on_lineEditCPF_editingFinished();
   void on_lineEditCPF_textEdited(const QString &text);
   void on_lineEditCPFBancario_textEdited(const QString &text);
+  void on_lineEditProfissional_editingFinished();
   void on_pushButtonAdicionarEnd_clicked();
   void on_pushButtonAtualizar_clicked();
   void on_pushButtonAtualizarEnd_clicked();
@@ -37,8 +41,8 @@ private slots:
 
 private:
   // attributes
-  Ui::CadastroProfissional *ui;
   QString tipoPFPJ;
+  Ui::CadastroProfissional *ui;
   // methods
   bool cadastrarEndereco(const bool &isUpdate);
   bool viewRegister() override;

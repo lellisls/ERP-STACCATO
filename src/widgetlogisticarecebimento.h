@@ -23,15 +23,17 @@ signals:
 
 private slots:
   void on_checkBoxMarcarTodos_clicked(const bool &);
+  void on_lineEditBuscaRecebimento_textChanged(const QString &text);
   void on_pushButtonMarcarRecebido_clicked();
   void on_table_entered(const QModelIndex &);
-  void on_lineEditBuscaRecebimento_textChanged(const QString &text);
 
 private:
   // attributes
-  Ui::WidgetLogisticaRecebimento *ui;
+  QString fornecedor;
   SqlTableModel model;
+  Ui::WidgetLogisticaRecebimento *ui;
   // methods
+  bool processRows(QModelIndexList list);
   void setupTables();
 };
 

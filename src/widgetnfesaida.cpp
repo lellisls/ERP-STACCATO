@@ -15,14 +15,10 @@ WidgetNfeSaida::~WidgetNfeSaida() { delete ui; }
 bool WidgetNfeSaida::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela NFe: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -59,22 +55,34 @@ void WidgetNfeSaida::on_table_activated(const QModelIndex &index) {
 
 void WidgetNfeSaida::on_radioButtonAutorizado_clicked() {
   model.setFilter("status = 'AUTORIZADO'");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+
   ui->table->resizeColumnsToContents();
 }
 
 void WidgetNfeSaida::on_radioButtonEnviado_clicked() {
   model.setFilter("status = 'ENVIADO'");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+
   ui->table->resizeColumnsToContents();
 }
 
 void WidgetNfeSaida::on_radioButtonTodos_clicked() {
   model.setFilter("");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+
   ui->table->resizeColumnsToContents();
 }
 
 void WidgetNfeSaida::on_lineEditBusca_textChanged(const QString &text) {
   model.setFilter("tipo = 'SAÍDA' AND (NFe LIKE '%" + text + "%' OR Venda LIKE '%" + text + "%' OR CPF LIKE '%" + text +
                   "%' OR CNPJ LIKE '%" + text + "%' OR Cliente LIKE '%" + text + "%')");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+
   ui->table->resizeColumnsToContents();
 }
 

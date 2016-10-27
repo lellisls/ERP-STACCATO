@@ -10,7 +10,6 @@ class XML {
 
 public:
   XML(const QByteArray &fileContent, const QString &fileName = QString());
-  bool cadastrarEstoque();
   bool cadastrarNFe(const QString &tipo);
   bool mostrarNoSqlModel(SqlTableModel &externalModel);
   void montarArvore(QStandardItemModel &model);

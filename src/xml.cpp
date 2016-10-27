@@ -42,7 +42,6 @@ void XML::lerValores(const QStandardItem *item) {
       QStandardItem *child = item->child(row, col);
       QString text = child->text();
 
-      // TODO: se nao achar chaveAcesso (notas de correcao etc) retornar e cancelar
       if (text.left(6) == "infNFe") chaveAcesso = text.mid(text.indexOf("Id=") + 7, 44);
       if (text.left(3) == "nNF") nNF = text.remove(0, 6);
 
@@ -132,7 +131,7 @@ void XML::lerDadosProduto(const QStandardItem *child) {
     if (text.left(7) == "vDesc -") desconto = text.remove(0, 8).toDouble();
     if (text.left(8) == "indTot -") compoeTotal = text.remove(0, 9).toInt();
     if (text.left(6) == "xPed -") numeroPedido = text.remove(0, 7);
-    if (text.left(10) == "nItemPed -") itemPedido = text.remove(0, 11).toDouble();
+    if (text.left(10) == "nItemPed -") itemPedido = text.remove(0, 11).toInt();
   }
 }
 
@@ -209,83 +208,6 @@ void XML::lerTotais(const QStandardItem *child) {
   }
 }
 
-bool XML::cadastrarEstoque() {
-  QSqlQuery query;
-  query.prepare("SELECT fornecedor FROM produto WHERE codComercial = :codComercial");
-  query.bindValue(":codComercial", codProd);
-
-  if (not query.exec()) {
-    QMessageBox::critical(0, "Erro!", "Erro buscando fornecedor: " + query.lastError().text());
-    return false;
-  }
-
-  if (not query.first()) {
-    QMessageBox::warning(0, "Aviso!", "Produto não cadastrado, fornecedor em branco.");
-    return false;
-  }
-
-  const QString fornecedor = query.value("fornecedor").toString();
-
-  query.prepare(
-      "INSERT INTO estoque (idProduto, idXML, fornecedor, descricao, quant, un, codBarras, codComercial, ncm, cfop, "
-      "valorUnid, valor, codBarrasTrib, unTrib, quantTrib, valorTrib, desconto, compoeTotal, numeroPedido, itemPedido, "
-      "tipoICMS, orig, cstICMS, modBC, vBC, pICMS, vICMS, modBCST, pMVAST, vBCST, pICMSST, vICMSST, cEnq, cstIPI, "
-      "cstPIS, vBCPIS, pPIS, vPIS, cstCOFINS, vBCCOFINS, pCOFINS, vCOFINS) VALUES (:idProduto, :idXML, :fornecedor, "
-      ":descricao, :quant, :un, :codBarras, :codComercial, :ncm, :cfop, :valorUnid, :valor, :codBarrasTrib, :unTrib, "
-      ":quantTrib, :valorTrib, :desconto, :compoeTotal, :numeroPedido, :itemPedido, :tipoICMS, :orig, :cstICMS, "
-      ":modBC, :vBC, :pICMS, :vICMS, :modBCST, :pMVAST, :vBCST, :pICMSST, :vICMSST, :cEnq, :cstIPI, :cstPIS, :vBCPIS, "
-      ":pPIS, :vPIS, :cstCOFINS, :vBCCOFINS, :pCOFINS, :vCOFINS)");
-  query.bindValue(":idProduto", idProduto);
-  query.bindValue(":idXML", idNFe);
-  query.bindValue(":fornecedor", fornecedor);
-  query.bindValue(":descricao", descricao);
-  query.bindValue(":quant", quant);
-  query.bindValue(":un", un);
-  query.bindValue(":codBarras", codBarras);
-  query.bindValue(":codComercial", codProd);
-  query.bindValue(":ncm", ncm);
-  query.bindValue(":cfop", cfop);
-  query.bindValue(":valorUnid", valorUnid);
-  query.bindValue(":valor", valor);
-  query.bindValue(":codBarrasTrib", codBarrasTrib);
-  query.bindValue(":unTrib", unTrib);
-  query.bindValue(":quantTrib", quantTrib);
-  query.bindValue(":valorTrib", valorTrib);
-  query.bindValue(":desconto", desconto);
-  query.bindValue(":compoeTotal", compoeTotal);
-  query.bindValue(":numeroPedido", numeroPedido);
-  query.bindValue(":itemPedido", itemPedido);
-  query.bindValue(":tipoICMS", tipoICMS);
-  query.bindValue(":orig", orig);
-  query.bindValue(":cstICMS", cstICMS);
-  query.bindValue(":modBC", modBC);
-  query.bindValue(":vBC", vBC);
-  query.bindValue(":pICMS", pICMS);
-  query.bindValue(":vICMS", vICMS);
-  query.bindValue(":modBCST", modBCST);
-  query.bindValue(":pMVAST", pMVAST);
-  query.bindValue(":vBCST", vBCST);
-  query.bindValue(":pICMSST", pICMSST);
-  query.bindValue(":vICMSST", vICMSST);
-  query.bindValue(":cEnq", cEnq);
-  query.bindValue(":cstIPI", cstIPI);
-  query.bindValue(":cstPIS", cstPIS);
-  query.bindValue(":vBCPIS", vBCPIS);
-  query.bindValue(":pPIS", pPIS);
-  query.bindValue(":vPIS", vPIS);
-  query.bindValue(":cstCOFINS", cstCOFINS);
-  query.bindValue(":vBCCOFINS", vBCCOFINS);
-  query.bindValue(":pCOFINS", pCOFINS);
-  query.bindValue(":vCOFINS", vCOFINS);
-
-  if (not query.exec()) {
-    QMessageBox::critical(0, "Erro!", "Erro: " + query.lastError().text());
-    return false;
-  }
-
-  return true;
-}
-
 void XML::montarArvore(QStandardItemModel &model) {
   if (fileContent.isEmpty()) return;
 
@@ -317,18 +239,18 @@ void XML::montarArvore(QStandardItemModel &model) {
 }
 
 bool XML::mostrarNoSqlModel(SqlTableModel &externalModel) {
-  QStringList lojas = {"CD", "Estoque Sul", "Balneário"}; // TODO: tornar dinamico
+  QStringList lojas;
 
   QSqlQuery query;
 
-  if (not query.exec("SELECT descricao FROM loja WHERE descricao > '' AND descricao != 'CD'")) {
+  if (not query.exec("SELECT descricao FROM loja WHERE descricao != '' and descricao != 'CD'")) {
     QMessageBox::critical(0, "Erro!", "Erro buscando lojas: " + query.lastError().text());
     return false;
   }
 
-  while (query.next()) {
-    lojas << query.value("descricao").toString();
-  }
+  lojas << "CD";
+
+  while (query.next()) lojas << query.value("descricao").toString();
 
   QInputDialog input;
   input.setInputMode(QInputDialog::TextInput);
@@ -350,7 +272,7 @@ bool XML::inserirItemSql(SqlTableModel &externalModel) {
   auto list = externalModel.match(externalModel.index(0, externalModel.fieldIndex("codComercial")), Qt::DisplayRole,
                                   codProd, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
-  for (auto item : list) {
+  for (auto const &item : list) {
     if (externalModel.data(item.row(), "quant").toDouble() < 0) continue;
 
     QMessageBox msgBox(QMessageBox::Question, "Atenção!",
@@ -485,9 +407,7 @@ bool XML::verificaCNPJ() {
 
   QStringList list;
 
-  while (queryLoja.next()) {
-    list << queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-");
-  }
+  while (queryLoja.next()) list << queryLoja.value("cnpj").toString().remove(".").remove("/").remove("-");
 
   if (not list.contains(cnpj)) {
     QMessageBox::critical(0, "Erro!", "CNPJ do destinatário difere do CNPJ da loja!");

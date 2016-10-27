@@ -19,31 +19,47 @@ private slots:
   void on_checkBoxMostrarInativosConta_clicked(bool checked);
   void on_lineEditCEP_textChanged(const QString &cep);
   void on_lineEditCNPJ_textEdited(const QString &text);
+  void on_pushButtonAdicionaAssociacao_clicked();
   void on_pushButtonAdicionarConta_clicked();
   void on_pushButtonAdicionarEnd_clicked();
+  void on_pushButtonAdicionarPagamento_clicked();
   void on_pushButtonAtualizar_clicked();
   void on_pushButtonAtualizarConta_clicked();
   void on_pushButtonAtualizarEnd_clicked();
+  void on_pushButtonAtualizarPagamento_clicked();
+  void on_pushButtonAtualizarTaxas_clicked();
   void on_pushButtonBuscar_clicked();
   void on_pushButtonCadastrar_clicked();
+  void on_pushButtonCadastrarTipo_clicked();
   void on_pushButtonContaLimpar_clicked();
   void on_pushButtonEndLimpar_clicked();
   void on_pushButtonNovoCad_clicked();
+  void on_pushButtonRemoveAssociacao_clicked();
   void on_pushButtonRemover_clicked();
   void on_pushButtonRemoverConta_clicked();
   void on_pushButtonRemoverEnd_clicked();
+  void on_pushButtonRemoverPagamento_clicked();
   void on_tableConta_clicked(const QModelIndex &index);
   void on_tableEndereco_clicked(const QModelIndex &index);
   void on_tableEndereco_entered(const QModelIndex &);
+  void on_tablePagamentos_clicked(const QModelIndex &index);
 
 private:
   // attributes
   Ui::CadastroLoja *ui;
+  SqlTableModel modelAssocia1;
+  SqlTableModel modelAssocia2;
   SqlTableModel modelAlcadas;
+  SqlTableModel modelPermissoes;
   SqlTableModel modelConta;
+  //
+  SqlTableModel modelPagamentos;
+  SqlTableModel modelTaxas;
+  //
   QDataWidgetMapper mapperConta;
+  QDataWidgetMapper mapperPagamento;
   // methods
-  bool cadastrar();
+  bool cadastrar() override;
   bool cadastrarConta(const bool &isUpdate);
   bool cadastrarEndereco(const bool &isUpdate);
   bool viewRegister() override;

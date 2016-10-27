@@ -9,20 +9,14 @@ class LineEditDecimal : public QLineEdit {
 public:
   explicit LineEditDecimal(QWidget *parent = 0);
   double getValue() const;
-  void setValue(const double &value);
-  void setDecimais(double value);
+  void setValue(const double value);
+  void setDecimais(const int value);
 
 private:
   Q_PROPERTY(double value READ getValue WRITE setValue STORED false)
   // attributes
-  double bottom = 0;
-  double top = 99999999;
-  double decimais = 2;
+  int decimais = 2;
   // methods
-  double getBottom() const;
-  void setBottom(const double &value);
-  double getTop() const;
-  void setTop(const double &value);
 };
 
 #endif // LINEEDITDECIMAL_H

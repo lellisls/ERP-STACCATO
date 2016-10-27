@@ -5,6 +5,7 @@
 
 #include "cadastroloja.h"
 #include "cepcompleter.h"
+#include "porcentagemdelegate.h"
 #include "searchdialog.h"
 #include "ui_cadastroloja.h"
 #include "usersession.h"
@@ -13,14 +14,16 @@ CadastroLoja::CadastroLoja(QWidget *parent)
     : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
   ui->setupUi(this);
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  //  for (auto const *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
 
   setupUi();
   setupTables();
   setupMapper();
   newRegister();
+
+  ui->pushButtonAtualizarPagamento->hide();
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
@@ -38,9 +41,43 @@ void CadastroLoja::setupUi() {
 }
 
 void CadastroLoja::setupTables() {
-  modelAlcadas.setTable("alcadas");
+
+  modelAssocia1.setTable("forma_pagamento");
+  modelAssocia1.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelAssocia1.setHeaderData("pagamento", "Pagamento");
+  modelAssocia1.setHeaderData("parcelas", "Parcelas");
+
+  if (not modelAssocia1.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela forma_pagamento: " + modelAssocia1.lastError().text());
+  }
+
+  ui->tableAssocia1->setModel(&modelAssocia1);
+  ui->tableAssocia1->hideColumn("idPagamento");
+
+  //
+
+  modelAssocia2.setTable("view_pagamento_loja");
+  modelAssocia2.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelAssocia2.setHeaderData("pagamento", "Pagamento");
+
+  if (not modelAssocia2.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela view_pagamento_loja: " + modelAssocia2.lastError().text());
+  }
+
+  ui->tableAssocia2->setModel(&modelAssocia2);
+  ui->tableAssocia2->hideColumn("idLoja");
+  ui->tableAssocia2->hideColumn("idPagamento");
+  //
+
+  //  modelAlcadas.setTable("alcadas");
+  modelAlcadas.setTable("usuario_has_tipo");
   modelAlcadas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::idLoja()));
+
+  modelAlcadas.setHeaderData("tipo", "Tipo");
+
+  //  modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::idLoja()));
 
   if (not modelAlcadas.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela de alçadas: " + modelAlcadas.lastError().text());
@@ -48,9 +85,20 @@ void CadastroLoja::setupTables() {
   }
 
   ui->tableAlcadas->setModel(&modelAlcadas);
-  ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idAlcada"));
-  ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idLoja"));
+  ui->tableAlcadas->hideColumn("idTipo");
+  //  ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idAlcada"));
+  //  ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idLoja"));
   ui->tableAlcadas->resizeColumnsToContents();
+
+  //
+
+  modelPermissoes.setTable("usuario_has_permissao");
+  modelPermissoes.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  if (not modelPermissoes.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela de permissões: " + modelPermissoes.lastError().text());
+    return;
+  }
 
   //
 
@@ -70,21 +118,46 @@ void CadastroLoja::setupTables() {
   modelConta.setHeaderData("agencia", "Agência");
   modelConta.setHeaderData("conta", "Conta");
 
-  if (not modelConta.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta: " + modelConta.lastError().text());
-    return;
-  }
+  //  if (not modelConta.select()) {
+  //    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta: " + modelConta.lastError().text());
+  //    return;
+  //  }
 
   ui->tableConta->setModel(&modelConta);
   ui->tableConta->hideColumn("idConta");
   ui->tableConta->hideColumn("idLoja");
   ui->tableConta->hideColumn("desativado");
+
+  //
+  modelPagamentos.setTable("forma_pagamento");
+  modelPagamentos.setEditStrategy(SqlTableModel::OnManualSubmit);
+
+  modelPagamentos.setHeaderData("pagamento", "Pagamento");
+  modelPagamentos.setHeaderData("parcelas", "Parcelas");
+
+  //  modelPagamentos.select();
+
+  ui->tablePagamentos->setModel(&modelPagamentos);
+  ui->tablePagamentos->hideColumn("idPagamento");
+
+  modelTaxas.setTable("forma_pagamento_has_taxa");
+  modelTaxas.setEditStrategy(SqlTableModel::OnManualSubmit);
+
+  modelTaxas.setHeaderData("parcela", "Quant. Parcelas");
+  modelTaxas.setHeaderData("taxa", "Taxa");
+
+  //  modelTaxas.setFilter("0");
+  //  modelTaxas.select();
+
+  ui->tableTaxas->setModel(&modelTaxas);
+  ui->tableTaxas->hideColumn("idTaxa");
+  ui->tableTaxas->hideColumn("idPagamento");
+  ui->tableTaxas->setItemDelegateForColumn("taxa", new PorcentagemDelegate(this));
+  //
 }
 
 void CadastroLoja::clearFields() {
-  for (auto const &line : findChildren<QLineEdit *>()) {
-    line->clear();
-  }
+  for (auto const &line : findChildren<QLineEdit *>()) line->clear();
 }
 
 bool CadastroLoja::verifyFields() {
@@ -114,6 +187,10 @@ void CadastroLoja::registerMode() {
   ui->pushButtonCadastrar->show();
   ui->pushButtonAtualizar->hide();
   ui->pushButtonRemover->hide();
+
+  ui->tabWidget->setTabEnabled(1, false);
+  ui->tabWidget->setTabEnabled(2, false);
+  ui->tabWidget->setTabEnabled(3, false);
 }
 
 void CadastroLoja::updateMode() {
@@ -144,9 +221,15 @@ void CadastroLoja::setupMapper() {
   mapperEnd.addMapping(ui->lineEditUF, modelEnd.fieldIndex("uf"));
 
   mapperConta.setModel(&modelConta);
+  mapperConta.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
   mapperConta.addMapping(ui->lineEditBanco, modelConta.fieldIndex("banco"));
   mapperConta.addMapping(ui->lineEditAgencia, modelConta.fieldIndex("agencia"));
   mapperConta.addMapping(ui->lineEditConta, modelConta.fieldIndex("conta"));
+
+  mapperPagamento.setModel(&modelPagamentos);
+  mapperPagamento.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
+  mapperPagamento.addMapping(ui->lineEditPagamento, modelPagamentos.fieldIndex("pagamento"));
+  mapperPagamento.addMapping(ui->spinBoxParcelas, modelPagamentos.fieldIndex("parcelas"));
 }
 
 void CadastroLoja::on_pushButtonCadastrar_clicked() { save(); }
@@ -212,6 +295,11 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
 
 void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   modelEnd.setFilter("idLoja = " + data("idLoja").toString() + (checked ? "" : " AND desativado = FALSE"));
+
+  if (not modelEnd.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
+  }
+
   ui->tableEndereco->resizeColumnsToContents();
 }
 
@@ -291,7 +379,7 @@ void CadastroLoja::on_tableEndereco_clicked(const QModelIndex &index) {
 bool CadastroLoja::viewRegister() {
   if (not RegisterDialog::viewRegister()) return false;
 
-  modelEnd.setFilter("idLoja = '" + primaryId + "' AND desativado = FALSE");
+  modelEnd.setFilter("idLoja = " + primaryId + " AND desativado = FALSE");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço da loja: " + modelEnd.lastError().text());
@@ -302,7 +390,7 @@ bool CadastroLoja::viewRegister() {
 
   //
 
-  modelConta.setFilter("idLoja = '" + primaryId + "' AND desativado = FALSE");
+  modelConta.setFilter("idLoja = " + primaryId + " AND desativado = FALSE");
 
   if (not modelConta.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta: " + modelConta.lastError().text());
@@ -310,6 +398,29 @@ bool CadastroLoja::viewRegister() {
   }
 
   ui->tableConta->resizeColumnsToContents();
+
+  //  modelPagamentos.setFilter("idLoja = " + primaryId);
+
+  if (not modelPagamentos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pagamento: " + modelPagamentos.lastError().text());
+    return false;
+  }
+
+  modelTaxas.setFilter("0");
+
+  ui->tabWidget->setTabEnabled(1, true);
+  ui->tabWidget->setTabEnabled(2, true);
+  ui->tabWidget->setTabEnabled(3, true);
+
+  //
+
+  modelAssocia2.setFilter("idLoja = " + data("idLoja").toString());
+
+  if (not modelAssocia2.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela view_pagamento_loja: " + modelAssocia2.lastError().text());
+  }
+
+  //
 
   return true;
 }
@@ -333,7 +444,7 @@ bool CadastroLoja::cadastrar() {
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(row, column);
     if (dado.type() == QVariant::String) {
       if (not model.setData(row, column, dado.toString().toUpper())) return false;
     }
@@ -354,7 +465,7 @@ bool CadastroLoja::cadastrar() {
   }
 
   for (int column = 0; column < modelEnd.rowCount(); ++column) {
-    QVariant dado = modelEnd.data(row, column);
+    const QVariant dado = modelEnd.data(row, column);
     if (dado.type() == QVariant::String) {
       if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
     }
@@ -437,7 +548,7 @@ bool CadastroLoja::cadastrarConta(const bool &isUpdate) {
     if (not verifyRequiredField(line)) return false;
   }
 
-  int rowConta = isUpdate ? mapperConta.currentIndex() : modelConta.rowCount();
+  const int rowConta = isUpdate ? mapperConta.currentIndex() : modelConta.rowCount();
 
   if (not isUpdate) modelConta.insertRow(rowConta);
 
@@ -506,5 +617,195 @@ void CadastroLoja::on_pushButtonRemoverConta_clicked() {
 
 void CadastroLoja::on_checkBoxMostrarInativosConta_clicked(bool checked) {
   modelConta.setFilter("idLoja = " + data("idLoja").toString() + (checked ? "" : " AND desativado = FALSE"));
+
+  if (not modelConta.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela contas: " + modelConta.lastError().text());
+  }
+
   ui->tableEndereco->resizeColumnsToContents();
 }
+
+void CadastroLoja::on_pushButtonAdicionarPagamento_clicked() { // TODO: wrap in a transaction and test setdatas?
+  const int row = modelPagamentos.rowCount();
+  modelPagamentos.insertRow(row);
+
+  //  modelPagamentos.setData(row, "idLoja", data("idLoja"));
+  modelPagamentos.setData(row, "pagamento", ui->lineEditPagamento->text());
+  modelPagamentos.setData(row, "parcelas", ui->spinBoxParcelas->value());
+
+  modelPagamentos.submitAll();
+
+  const int id = modelPagamentos.query().lastInsertId().toInt();
+
+  for (int i = 0; i < ui->spinBoxParcelas->value(); ++i) {
+    const int row = modelTaxas.rowCount();
+    modelTaxas.insertRow(row);
+
+    modelTaxas.setData(row, "idPagamento", id);
+    modelTaxas.setData(row, "parcela", i + 1);
+    modelTaxas.setData(row, "taxa", 0);
+  }
+
+  modelTaxas.submitAll();
+
+  modelTaxas.setFilter("idPagamento = " + QString::number(id));
+
+  if (not modelTaxas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela taxas: " + modelTaxas.lastError().text());
+  }
+}
+
+void CadastroLoja::on_tablePagamentos_clicked(const QModelIndex &index) {
+  const int id = modelPagamentos.data(index.row(), "idPagamento").toInt();
+
+  modelTaxas.setFilter("idPagamento = " + QString::number(id));
+
+  if (not modelTaxas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela taxas: " + modelTaxas.lastError().text());
+  }
+
+  mapperPagamento.setCurrentModelIndex(index);
+
+  ui->pushButtonAdicionarPagamento->hide();
+  ui->pushButtonAtualizarPagamento->show();
+}
+
+void CadastroLoja::on_pushButtonRemoverPagamento_clicked() {
+  const auto list = ui->tablePagamentos->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  const int id = modelPagamentos.data(list.first().row(), "idPagamento").toInt();
+
+  QSqlQuery query;
+  query.prepare("DELETE FROM forma_pagamento WHERE idPagamento = :idPagamento");
+  query.bindValue(":idPagamento", id);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro apagando pagamentos: " + query.lastError().text());
+    return;
+  }
+
+  if (not modelPagamentos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pagamentos: " + modelPagamentos.lastError().text());
+  }
+
+  modelTaxas.setFilter("0");
+
+  ui->lineEditPagamento->clear();
+  ui->spinBoxParcelas->clear();
+
+  ui->pushButtonAtualizarPagamento->hide();
+  ui->pushButtonAdicionarPagamento->show();
+}
+
+void CadastroLoja::on_pushButtonAtualizarPagamento_clicked() {
+  modelPagamentos.setData(mapperPagamento.currentIndex(), "pagamento", ui->lineEditPagamento->text());
+  modelPagamentos.setData(mapperPagamento.currentIndex(), "parcelas", ui->spinBoxParcelas->value());
+
+  modelTaxas.removeRows(0, modelTaxas.rowCount());
+
+  for (int i = 0; i < ui->spinBoxParcelas->value(); ++i) {
+    const int row = modelTaxas.rowCount();
+    modelTaxas.insertRow(row);
+
+    modelTaxas.setData(row, "idPagamento", modelPagamentos.data(mapperPagamento.currentIndex(), "idPagamento"));
+    modelTaxas.setData(row, "parcela", i + 1);
+    modelTaxas.setData(row, "taxa", 0);
+  }
+
+  if (not modelPagamentos.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando dados: " + modelPagamentos.lastError().text());
+  }
+
+  if (not modelTaxas.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando taxas: " + modelTaxas.lastError().text());
+  }
+
+  modelTaxas.setFilter("0");
+
+  ui->lineEditPagamento->clear();
+  ui->spinBoxParcelas->clear();
+
+  ui->pushButtonAtualizarPagamento->hide();
+  ui->pushButtonAdicionarPagamento->show();
+}
+
+void CadastroLoja::on_pushButtonAtualizarTaxas_clicked() {
+  if (not modelTaxas.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando taxas: " + modelTaxas.lastError().text());
+  }
+
+  QMessageBox::information(this, "Aviso!", "Taxas atualizadas!");
+}
+
+void CadastroLoja::on_pushButtonCadastrarTipo_clicked() {
+  const int row = modelAlcadas.rowCount();
+  modelAlcadas.insertRow(row);
+
+  modelAlcadas.setData(row, "tipo", ui->lineEditTipo->text());
+
+  if (not modelAlcadas.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro cadastrando tipo: " + modelAlcadas.lastError().text());
+  }
+
+  if (not modelAlcadas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela alçadas: " + modelAlcadas.lastError().text());
+  }
+
+  ui->tableAlcadas->resizeColumnsToContents();
+}
+
+void CadastroLoja::on_pushButtonAdicionaAssociacao_clicked() {
+  const auto list = ui->tableAssocia1->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  for (auto const &index : list) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO forma_pagamento_has_loja (idPagamento, idLoja) VALUES (:idPagamento, :idLoja)");
+    query.bindValue(":idPagamento", modelAssocia1.data(index.row(), "idPagamento"));
+    query.bindValue(":idLoja", data("idLoja").toInt());
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro cadastrando associacao: " + query.lastError().text());
+    }
+  }
+
+  if (not modelAssocia2.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela view_pagamento_loja: " + modelAssocia2.lastError().text());
+  }
+}
+
+void CadastroLoja::on_pushButtonRemoveAssociacao_clicked() {
+  const auto list = ui->tableAssocia2->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  for (auto const &index : list) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM forma_pagamento_has_loja WHERE idPagamento = :idPagamento AND idLoja = :idLoja");
+    query.bindValue(":idPagamento", modelAssocia2.data(index.row(), "idPagamento"));
+    query.bindValue(":idLoja", modelAssocia2.data(index.row(), "idLoja"));
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro removendo associacao: " + query.lastError().text());
+    }
+  }
+
+  modelAssocia2.select();
+}
+
+// TODO: remover aba 'alcadas' e passar funcionalidade para cadastroUsuario
+// TODO: montar aba alcadas
+// TODO: montar aba pagamentos
+// TODO: add 'created' and 'lastUpdated' to tables in bd

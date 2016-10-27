@@ -85,13 +85,13 @@ bool CadastroProduto::verifyFields() {
     return false;
   }
 
-  if (ui->doubleSpinBoxCusto->value() == 0) {
+  if (ui->doubleSpinBoxCusto->value() == 0.) {
     ui->doubleSpinBoxCusto->setFocus();
     QMessageBox::critical(this, "Erro!", "Custo inválido!");
     return false;
   }
 
-  if (ui->doubleSpinBoxVenda->value() == 0) {
+  if (ui->doubleSpinBoxVenda->value() == 0.) {
     ui->doubleSpinBoxVenda->setFocus();
     QMessageBox::critical(this, "Erro!", "Preço inválido!");
     return false;

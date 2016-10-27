@@ -123,9 +123,7 @@ void QSimpleUpdater::checkForUpdates(void) {
 
   m_manager->get(QNetworkRequest(m_reference_url));
 
-  if (not silent()) {
-    m_progressDialog->show();
-  }
+  if (not silent()) m_progressDialog->show();
 }
 
 /*!
@@ -135,9 +133,7 @@ void QSimpleUpdater::checkForUpdates(void) {
  */
 
 void QSimpleUpdater::openDownloadLink(void) {
-  if (not m_download_url.isEmpty()) {
-    QDesktopServices::openUrl(m_download_url);
-  }
+  if (not m_download_url.isEmpty()) QDesktopServices::openUrl(m_download_url);
 }
 
 /*!
@@ -164,9 +160,7 @@ QString QSimpleUpdater::installedVersion() const { return m_installed_version; }
  */
 
 void QSimpleUpdater::downloadLatestVersion(void) {
-  if (not m_download_url.isEmpty()) {
-    m_downloadDialog->beginDownload(m_download_url);
-  }
+  if (not m_download_url.isEmpty()) m_downloadDialog->beginDownload(m_download_url);
 }
 
 /*!
@@ -394,9 +388,9 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
     QStringList _installed = m_installed_version.split(".");
 
     for (int i = 0, size = qMin(_installed.size(), _download.size()); i < size; ++i) {
-      if (_download.at(i) == _installed.at(i)) continue;
-      if (_download.at(i) > _installed.at(i)) _new_update = true;
-      if (_download.at(i) < _installed.at(i)) break;
+      if (_download.at(i).toInt() == _installed.at(i).toInt()) continue;
+      if (_download.at(i).toInt() > _installed.at(i).toInt()) _new_update = true;
+      if (_download.at(i).toInt() < _installed.at(i).toInt()) break;
     }
   }
 

@@ -23,11 +23,11 @@ private slots:
   void on_pushButtonCadastrar_clicked();
   void on_pushButtonNovoCad_clicked();
   void on_pushButtonRemover_clicked();
-  void setupTablePermissoes();
 
 private:
   // attributes
   Ui::CadastroUsuario *ui;
+  SqlTableModel modelPermissoes;
   // methods
   bool viewRegister() override;
   virtual bool save() override;
@@ -38,7 +38,8 @@ private:
   virtual void setupMapper() override;
   virtual void successMessage() override;
   virtual void updateMode() override;
-  bool cadastrar();
+  bool cadastrar() override;
+  void setupTables();
 };
 
 #endif // CADASTRARUSUARIO_H

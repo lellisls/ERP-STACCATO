@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1057</width>
-    <height>511</height>
+    <width>990</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,11 +17,42 @@
    <locale language="Portuguese" country="Brazil"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <widget class="QTableView" name="table">
-     <property name="mouseTracking">
-      <bool>true</bool>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Eventos pagos</string>
      </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="TableView" name="table_2">
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Eventos pendentes</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="TableView" name="table">
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="0" column="1">
@@ -30,6 +61,9 @@
       <widget class="QPushButton" name="pushButtonSalvar">
        <property name="text">
         <string>Salvar</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -48,46 +82,16 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="checkBoxPago">
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="text">
-        <string>Pago</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QDateTimeEdit" name="dateTimeEdit">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>src/tableview.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
-  <tabstop>table</tabstop>
-  <tabstop>dateTimeEdit</tabstop>
-  <tabstop>checkBoxPago</tabstop>
   <tabstop>pushButtonSalvar</tabstop>
  </tabstops>
  <resources/>

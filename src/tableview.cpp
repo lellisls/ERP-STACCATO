@@ -48,6 +48,17 @@ void TableView::openPersistentEditor(const int &row, const QString &column) {
   }
 }
 
+void TableView::openPersistentEditor(const int &row, const int &column) {
+  if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
+    QTableView::openPersistentEditor(model->index(row, column));
+    return;
+  }
+
+  if (auto *model = qobject_cast<QSqlTableModel *>(QTableView::model())) {
+    QTableView::openPersistentEditor(model->index(row, column));
+  }
+}
+
 void TableView::setItemDelegateForColumn(const int &column, QAbstractItemDelegate *delegate) {
   QTableView::setItemDelegateForColumn(column, delegate);
 }

@@ -13,7 +13,8 @@ class FollowUp : public QDialog {
   Q_OBJECT
 
 public:
-  explicit FollowUp(QString idOrcamento, QWidget *parent = 0);
+  enum Tipo { Orcamento, Venda };
+  explicit FollowUp(const QString &id, const Tipo tipo, QWidget *parent = 0);
   ~FollowUp();
 
 private slots:
@@ -22,14 +23,15 @@ private slots:
 
 private:
   // attributes
-  Ui::FollowUp *ui;
   int row;
-  QString idOrcamento;
+  QString id;
   SqlTableModel model;
+  Tipo tipo;
+  Ui::FollowUp *ui;
   // methods
-  void setupTables();
   bool savingProcedures();
   bool verifyFields();
+  void setupTables();
 };
 
 #endif // FOLLOWUP_H

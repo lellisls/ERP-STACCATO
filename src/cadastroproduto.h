@@ -34,7 +34,7 @@ private:
   virtual void setupMapper() override;
   virtual void updateMode() override;
   void calcularMarkup();
-  bool cadastrar();
+  bool cadastrar() override;
 };
 
 #endif // CADASTROPRODUTO_H

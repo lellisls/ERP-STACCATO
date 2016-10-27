@@ -37,7 +37,6 @@ protected:
   QStringList textKeys;
   SqlTableModel model;
   // methods
-  virtual bool cadastrar();
   bool confirmationMessage();
   bool setData(const QString &key, const QVariant value);
   bool update();
@@ -48,6 +47,7 @@ protected:
   QStringList getTextKeys() const;
   QVariant data(const int &row, const QString &key);
   QVariant data(const QString &key);
+  virtual bool cadastrar();
   virtual bool newRegister();
   virtual bool save();
   virtual bool savingProcedures() = 0;

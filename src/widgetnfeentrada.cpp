@@ -16,14 +16,10 @@ WidgetNfeEntrada::~WidgetNfeEntrada() { delete ui; }
 bool WidgetNfeEntrada::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela NFe: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -36,6 +32,8 @@ void WidgetNfeEntrada::setupTables() {
   model.setTable("view_nfe");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
   model.setFilter("tipo = 'ENTRADA'");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 
   ui->table->setModel(&model);
   ui->table->hideColumn("Venda");
@@ -65,4 +63,6 @@ void WidgetNfeEntrada::on_table_entered(const QModelIndex &) { ui->table->resize
 
 void WidgetNfeEntrada::on_lineEditBusca_textChanged(const QString &text) {
   model.setFilter("tipo = 'ENTRADA' AND (NFe LIKE '%" + text + "%' OR OC LIKE '%" + text + "%')");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }

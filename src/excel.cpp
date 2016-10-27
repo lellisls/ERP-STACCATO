@@ -25,14 +25,15 @@ void Excel::verificaTipo() {
   type = query.first() ? Orcamento : Venda;
 }
 
-void Excel::gerarExcel() {
+bool Excel::gerarExcel(const int oc, const bool representacao) {
+  // TODO: instead of returning fileName, return a bool and return fileName by parameter
   QString folder = type == Orcamento ? "User/OrcamentosFolder" : "User/VendasFolder";
 
   if (UserSession::settings(folder).toString().isEmpty()) {
     QMessageBox::critical(parent, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
     UserSession::setSettings(folder, QFileDialog::getExistingDirectory(parent, "Pasta PDF/Excel"));
 
-    if (UserSession::settings(folder).toString().isEmpty()) return;
+    if (UserSession::settings(folder).toString().isEmpty()) return false;
   }
 
   QString path = UserSession::settings(folder).toString();
@@ -41,7 +42,7 @@ void Excel::gerarExcel() {
 
   if (not dir.exists() and not dir.mkdir(path)) {
     QMessageBox::critical(parent, "Erro!", "Erro ao criar a pasta escolhida nas configurações!");
-    return;
+    return false;
   }
 
   QString arquivoModelo = "modelo pedido.xlsx";
@@ -50,21 +51,22 @@ void Excel::gerarExcel() {
 
   if (not modelo.exists()) {
     QMessageBox::critical(parent, "Erro!", "Não encontrou o modelo do Excel!");
-    return;
+    return false;
   }
 
   if (not setQuerys()) {
     QMessageBox::critical(parent, "Erro!", "Processo interrompido, ocorreu algum erro!");
-    return;
+    return false;
   }
 
-  QString fileName = path + "/" + id + "-" + queryVendedor.value("nome").toString().split(" ").first() + "-" +
-                     queryCliente.value("nome_razao").toString().replace("/", "-") + ".xlsx";
+  fileName = path + "/" + id + "-" + queryVendedor.value("nome").toString().split(" ").first() + "-" +
+             queryCliente.value("nome_razao").toString().replace("/", "-") + ".xlsx";
+
   QFile file(fileName);
 
   if (not file.open(QFile::WriteOnly)) {
     QMessageBox::critical(parent, "Erro!", "Não foi possível abrir o arquivo para escrita: " + fileName);
-    return;
+    return false;
   }
 
   file.close();
@@ -73,32 +75,46 @@ void Excel::gerarExcel() {
 
   QXlsx::Document xlsx(arquivoModelo);
 
-  QString endLoja = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() +
-                    " - " + queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() +
-                    " - " + queryLojaEnd.value("uf").toString() + " - CEP: " + queryLojaEnd.value("cep").toString() +
-                    "\n" + queryLoja.value("tel").toString() + " - " + queryLoja.value("tel2").toString();
+  QString endLoja = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() + " " +
+                    queryLojaEnd.value("complemento").toString() + " - " + queryLojaEnd.value("bairro").toString() +
+                    "\n" + queryLojaEnd.value("cidade").toString() + " - " + queryLojaEnd.value("uf").toString() +
+                    " - CEP: " + queryLojaEnd.value("cep").toString() + "\n" + queryLoja.value("tel").toString() +
+                    " - " + queryLoja.value("tel2").toString();
 
   QString endEntrega = queryEndEnt.value("logradouro").toString().isEmpty()
                            ? "Não há/Retira"
                            : queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() +
-                                 " - " + queryEndEnt.value("bairro").toString() + ", " +
-                                 queryEndEnt.value("cidade").toString();
+                                 " " + queryEndEnt.value("complemento").toString() + " - " +
+                                 queryEndEnt.value("bairro").toString() + ", " + queryEndEnt.value("cidade").toString();
 
   QString endFat = queryEndFat.value("logradouro").toString().isEmpty()
                        ? "Não há/Retira"
                        : queryEndFat.value("logradouro").toString() + " " + queryEndFat.value("numero").toString() +
-                             " - " + queryEndFat.value("bairro").toString() + ", " +
-                             queryEndFat.value("cidade").toString();
+                             " " + queryEndFat.value("complemento").toString() + " - " +
+                             queryEndFat.value("bairro").toString() + ", " + queryEndFat.value("cidade").toString();
 
   xlsx.write("A5", endLoja);
 
   if (type == Venda) {
-    xlsx.write("C2", "Pedido:");
-    xlsx.write("H2", "Orçamento:");
-    xlsx.write("I2", query.value("idOrcamento").toString());
+    if (representacao) {
+      xlsx.write("C2", "Pedido:");
+      xlsx.write("D2", "OC " + QString::number(oc) + " " + id);
+      QXlsx::Format format;
+      format.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
+      format.setFontBold(true);
+      format.setTopBorderStyle(QXlsx::Format::BorderMedium);
+      format.setBottomBorderStyle(QXlsx::Format::BorderThin);
+      xlsx.mergeCells(QXlsx::CellRange("D2:K2"), format);
+    } else {
+      xlsx.write("C2", "Pedido:");
+      xlsx.write("D2", id);
+      xlsx.write("H2", "Orçamento:");
+      xlsx.write("I2", query.value("idOrcamento").toString());
+    }
   }
 
-  xlsx.write("D2", id);
+  if (type == Orcamento) xlsx.write("D2", id);
+
   xlsx.write("D3", queryCliente.value("nome_razao"));
   xlsx.write("D4", queryCliente.value("email"));
   xlsx.write("D5", endFat);
@@ -115,9 +131,9 @@ void Excel::gerarExcel() {
   xlsx.write("H7", queryProfissional.value("tel"));
   xlsx.write("K7", queryProfissional.value("email"));
 
-  double subLiq = query.value("subTotalLiq").toDouble();
-  double subBru = query.value("subTotalBru").toDouble();
-  double desconto = query.value("descontoPorc").toDouble();
+  const double subLiq = query.value("subTotalLiq").toDouble();
+  const double subBru = query.value("subTotalBru").toDouble();
+  const double desconto = query.value("descontoPorc").toDouble();
   xlsx.write("N113", subLiq > subBru ? "R$ " + locale.toString(subLiq, 'f', 2)
                                      : "R$ " + locale.toString(subBru, 'f', 2) + " (R$ " +
                                            locale.toString(subLiq, 'f', 2) + ")");          // soma
@@ -128,56 +144,58 @@ void Excel::gerarExcel() {
   xlsx.write("B113", query.value("prazoEntrega").toString() + " dias");
 
   QSqlQuery queryPgt1(
-      "SELECT tipo, COUNT(valor), valor, dataPagamento FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-      "' AND tipo LIKE '1%'");
+      "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento WHERE"
+      " idVenda = '" +
+      id + "' AND tipo LIKE '1%' AND tipo != '1. Comissão' AND tipo != '1. Taxa Cartão' AND status != 'CANCELADO'");
 
   if (not queryPgt1.exec() or not queryPgt1.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 1: " + queryPgt1.lastError().text());
-    return;
+    return false;
   }
 
-  QString pgt1 = queryPgt1.value("tipo").toString() + " - " + queryPgt1.value("COUNT(valor)").toString() + "x de R$ " +
-                 locale.toString(queryPgt1.value("valor").toDouble(), 'f', 2) +
-                 (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                 queryPgt1.value("dataPagamento").toDate().toString("dd-MM-yyyy");
-
-  if (queryPgt1.value("valor") == 0) {
-    pgt1 = "";
-  }
+  const QString pgt1 = queryPgt1.value("valor") == 0
+                           ? ""
+                           : queryPgt1.value("tipo").toString() + " - " + queryPgt1.value("COUNT(valor)").toString() +
+                                 "x de R$ " + locale.toString(queryPgt1.value("valor").toDouble(), 'f', 2) +
+                                 (queryPgt1.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                 queryPgt1.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                 queryPgt1.value("observacao").toString();
 
   QSqlQuery queryPgt2(
-      "SELECT tipo, COUNT(valor), valor, dataPagamento FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-      "' AND tipo LIKE '2%'");
+      "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento WHERE "
+      "idVenda = '" +
+      id + "' AND tipo LIKE '2%' AND tipo != '2. Comissão' AND tipo != '2. Taxa Cartão' AND status != 'CANCELADO'");
 
   if (not queryPgt2.exec() or not queryPgt2.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 2: " + queryPgt2.lastError().text());
-    return;
+    return false;
   }
 
-  QString pgt2 = queryPgt2.value("tipo").toString() + " - " + queryPgt2.value("COUNT(valor)").toString() + "x de R$ " +
-                 locale.toString(queryPgt2.value("valor").toDouble(), 'f', 2) +
-                 (queryPgt2.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                 queryPgt2.value("dataPagamento").toDate().toString("dd-MM-yyyy");
-
-  if (queryPgt2.value("valor") == 0) {
-    pgt2 = "";
-  }
+  const QString pgt2 = queryPgt2.value("valor") == 0
+                           ? ""
+                           : queryPgt2.value("tipo").toString() + " - " + queryPgt2.value("COUNT(valor)").toString() +
+                                 "x de R$ " + locale.toString(queryPgt2.value("valor").toDouble(), 'f', 2) +
+                                 (queryPgt2.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                 queryPgt2.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                 queryPgt2.value("observacao").toString();
 
   QSqlQuery queryPgt3(
-      "SELECT tipo, COUNT(valor), valor, dataPagamento FROM conta_a_receber_has_pagamento WHERE idVenda = '" + id +
-      "' AND tipo LIKE '3%'");
+      "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento "
+      "WHERE idVenda = '" +
+      id + "' AND tipo LIKE '3%' AND tipo != '3. Comissão' AND tipo != '3. Taxa Cartão' AND status != 'CANCELADO'");
 
   if (not queryPgt3.exec() or not queryPgt3.first()) {
     QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 3: " + queryPgt3.lastError().text());
-    return;
+    return false;
   }
 
-  QString pgt3 = queryPgt3.value("tipo").toString() + " - " + queryPgt3.value("COUNT(valor)").toString() + "x de R$ " +
-                 locale.toString(queryPgt3.value("valor").toDouble(), 'f', 2) +
-                 (queryPgt3.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
-                 queryPgt3.value("dataPagamento").toDate().toString("dd-MM-yyyy");
-
-  if (queryPgt3.value("valor") == 0) pgt3 = "";
+  const QString pgt3 = queryPgt3.value("valor") == 0
+                           ? ""
+                           : queryPgt3.value("tipo").toString() + " - " + queryPgt3.value("COUNT(valor)").toString() +
+                                 "x de R$ " + locale.toString(queryPgt3.value("valor").toDouble(), 'f', 2) +
+                                 (queryPgt3.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                 queryPgt3.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                 queryPgt3.value("observacao").toString();
 
   xlsx.write("B114", pgt1);
   xlsx.write("B115", pgt2);
@@ -195,7 +213,7 @@ void Excel::gerarExcel() {
 
     if (not query.exec()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
-      return;
+      return false;
     }
 
     QString loes;
@@ -234,22 +252,27 @@ void Excel::gerarExcel() {
     ++row;
   } while (queryProduto.next());
 
-  for (int row = queryProduto.size() + 12; row < 111; ++row) {
-    xlsx.setRowHeight(row, 0);
-  }
+  for (int row = queryProduto.size() + 12; row < 111; ++row) xlsx.setRowHeight(row, 0);
 
   if (not xlsx.saveAs(fileName)) {
     QMessageBox::critical(parent, "Erro!", "Ocorreu algum erro ao salvar o arquivo.");
-    return;
+    return false;
   }
 
   QMessageBox::information(parent, "Ok!", "Arquivo salvo como " + fileName);
   QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+
+  return true;
+}
+
+QString Excel::getFileName() const
+{
+    return fileName;
 }
 
 bool Excel::setQuerys() {
-  if (type == Orcamento) {
-    query.prepare("SELECT idLoja, idUsuario, idProfissional, idEnderecoEntrega, idCliente, data, subTotalLiq, "
+    if (type == Orcamento) {
+        query.prepare("SELECT idLoja, idUsuario, idProfissional, idEnderecoEntrega, idCliente, data, subTotalLiq, "
                   "subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM orcamento WHERE idOrcamento "
                   "= :idOrcamento");
     query.bindValue(":idOrcamento", id);
@@ -288,8 +311,8 @@ bool Excel::setQuerys() {
     return false;
   }
 
-  queryEndEnt.prepare(
-      "SELECT logradouro, numero, bairro, cidade, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndEnt.prepare("SELECT logradouro, numero, complemento, bairro, cidade, cep FROM cliente_has_endereco WHERE "
+                      "idEndereco = :idEndereco");
   queryEndEnt.bindValue(":idEndereco", query.value("idEnderecoEntrega"));
 
   if (not queryEndEnt.exec() or not queryEndEnt.first()) {
@@ -298,8 +321,8 @@ bool Excel::setQuerys() {
     return false;
   }
 
-  queryEndFat.prepare(
-      "SELECT logradouro, numero, bairro, cidade, cep FROM cliente_has_endereco WHERE idEndereco = :idEndereco");
+  queryEndFat.prepare("SELECT logradouro, numero, complemento, bairro, cidade, cep FROM cliente_has_endereco WHERE "
+                      "idEndereco = :idEndereco");
   queryEndFat.bindValue(":idEndereco", query.value(type == Venda ? "idEnderecoFaturamento" : "idEnderecoEntrega"));
 
   if (not queryEndFat.exec() or not queryEndFat.first()) {
@@ -332,7 +355,7 @@ bool Excel::setQuerys() {
   }
 
   queryLojaEnd.prepare(
-      "SELECT logradouro, numero, bairro, cidade, cep, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
+      "SELECT logradouro, numero, complemento, bairro, cidade, cep, uf FROM loja_has_endereco WHERE idLoja = :idLoja");
   queryLojaEnd.bindValue(":idLoja", query.value("idLoja"));
 
   if (not queryLojaEnd.exec() or not queryLojaEnd.first()) {
@@ -342,3 +365,5 @@ bool Excel::setQuerys() {
 
   return true;
 }
+
+// TODO: colocar formas de pagamento 4 e 5

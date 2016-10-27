@@ -17,24 +17,23 @@ public:
   ~WidgetLogisticaEntrega();
   bool updateTables();
 
-private slots:
-  void on_lineEditBuscaEntregas_textChanged(const QString &text);
-  void on_radioButtonEntregaEnviado_clicked();
-  void on_radioButtonEntregaLimpar_clicked();
-  void on_radioButtonEntregaPendente_clicked();
-  void on_table_activated(const QModelIndex &index);
-  void on_table_entered(const QModelIndex &);
-  void on_table_clicked(const QModelIndex &index);
-
 signals:
   void errorSignal(QString error);
 
+private slots:
+  void on_pushButtonAgendar_clicked();
+  void on_tableProdutos_entered(const QModelIndex &);
+  void on_tableVendas_clicked(const QModelIndex &index);
+  void on_tableVendas_entered(const QModelIndex &);
+
 private:
   // attributes
+  SqlTableModel modelProdutos;
+  SqlTableModel modelVendas;
   Ui::WidgetLogisticaEntrega *ui;
-  SqlTableModel model;
-  SqlTableModel model2;
   // methods
+  bool processRows(QModelIndexList list);
+  void montaFiltro();
   void setupTables();
 };
 

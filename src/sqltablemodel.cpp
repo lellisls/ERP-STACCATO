@@ -32,28 +32,21 @@ bool SqlTableModel::setData(const int &row, const int &column, const QVariant &v
 }
 
 bool SqlTableModel::setData(const int &row, const QString &column, const QVariant &value) {
-  QTime time;
   if (row == -1) {
     QMessageBox::critical(0, "Erro!", "Erro: linha -1 SqlTableModel");
     return false;
   }
-
-//  qDebug() << "time1D: " << time.restart();
 
   if (QSqlTableModel::fieldIndex(column) == -1) {
     QMessageBox::critical(0, "Erro!", "Chave " + column + " não encontrada na tabela " + QSqlTableModel::tableName());
     return false;
   }
 
-//  qDebug() << "time2D: " << time.restart();
-
   if (not QSqlTableModel::setData(QSqlTableModel::index(row, QSqlTableModel::fieldIndex(column)), value)) {
     QMessageBox::critical(0, "Erro!", "Erro inserindo " + column + " na tabela " + tableName() + ": " +
                                           QSqlTableModel::lastError().text());
     return false;
   }
-
-//  qDebug() << "time3D: " << time.restart() << " - r:" << row << " c:" << column << " v:" << value;
 
   return true;
 }

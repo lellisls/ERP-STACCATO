@@ -26,18 +26,20 @@ private slots:
   void on_doubleSpinBoxQuantAvulsoCaixas_valueChanged(const double &value);
   void on_groupBoxStatus_toggled(const bool &enabled);
   void on_pushButtonComprarAvulso_clicked();
+  void on_pushButtonExcel_clicked();
+  void on_pushButtonPDF_clicked();
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
   void setarDadosAvulso();
 
 private:
   // attributes
-  Ui::WidgetCompraPendentes *ui;
   SqlTableModel model;
+  Ui::WidgetCompraPendentes *ui;
   // methods
   bool insere(const QDate &dataPrevista);
-  void setupTables();
   void makeConnections();
+  void setupTables();
 };
 
 #endif // WIDGETCOMPRAPENDENTES_H

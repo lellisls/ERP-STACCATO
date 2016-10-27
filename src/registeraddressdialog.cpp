@@ -120,7 +120,7 @@ bool RegisterAddressDialog::newRegister() {
   clearFields();
   registerMode();
 
-  modelEnd.setFilter("idEndereco = 0");
+  modelEnd.setFilter("0");
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());

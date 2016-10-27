@@ -23,16 +23,21 @@ signals:
   void errorSignal(QString error);
 
 private slots:
-  void on_pushButton_clicked();
   void calcularPeso();
+  void on_pushButtonAgendarColeta_clicked();
+  void on_pushButtonMontarCarga_clicked();
   void on_pushButtonSendLeft_clicked();
   void on_pushButtonSendRight_clicked();
+  void on_tableEstoque_entered(const QModelIndex &);
 
 private:
-  Ui::WidgetLogisticaAgendarColeta *ui;
+  // attributes
+  QStandardItemModel *treeModel;
   SqlTableModel modelEstoque;
   SqlTableModel modelTransp;
-  QStandardItemModel *treeModel;
+  Ui::WidgetLogisticaAgendarColeta *ui;
+  // methods
+  bool processRows(const QModelIndexList &list);
   void setupTables();
 };
 

@@ -24,43 +24,24 @@ void Estoque::setupTables() {
   model.setTable("estoque");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-//  if (not model.select()) { // TODO: remover este select e deixar apenas quando for visualizar depois de filtrar?
-//    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
-//  }
-
-  ui->table->setModel(new EstoqueProxyModel(&model, this));
-  ui->table->hideColumn("quantUpd");
+  ui->tableEstoque->setModel(new EstoqueProxyModel(&model, this));
+  ui->tableEstoque->hideColumn("quantUpd");
 
   modelConsumo.setTable("estoque_has_consumo");
   modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-//  if (not modelConsumo.select()) {
-//    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelConsumo.lastError().text());
-//  }
+  ui->tableConsumo->setModel(&modelConsumo);
 }
 
-void Estoque::on_table_activated(const QModelIndex &index) {
-  QSqlQuery query;
-  query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-  query.bindValue(":idNFe", model.data(index.row(), "idNFe"));
-
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando XML da NFe: " + query.lastError().text());
-    return;
-  }
-
-  XML_Viewer *viewer = new XML_Viewer(this);
-  viewer->exibirXML(query.value("xml").toByteArray());
-}
+void Estoque::on_tableEstoque_activated(const QModelIndex &) { exibirNota(); }
 
 void Estoque::calcularRestante() {
-  double quant = 0;
+  double quant = model.data(0, "quant").toDouble();
 
-  for (int row = 0; row < model.rowCount(); ++row) {
-    quant += model.data(row, "quant").toDouble();
-  }
+  for (int row = 0; row < modelConsumo.rowCount(); ++row) quant += modelConsumo.data(row, "quant").toDouble();
 
   ui->doubleSpinBoxRestante->setValue(quant);
+  ui->doubleSpinBoxRestante->setSuffix(" " + model.data(0, "un").toString());
 }
 
 void Estoque::viewRegisterById(const QString &idEstoque) {
@@ -69,7 +50,6 @@ void Estoque::viewRegisterById(const QString &idEstoque) {
     return;
   }
 
-  qDebug() << "idEstoque: " << idEstoque;
   model.setFilter("idEstoque = " + idEstoque);
 
   if (not model.select()) {
@@ -77,29 +57,37 @@ void Estoque::viewRegisterById(const QString &idEstoque) {
     return;
   }
 
-  ui->table->resizeColumnsToContents();
+  ui->tableEstoque->resizeColumnsToContents();
+
+  modelConsumo.setFilter("idEstoque = " + idEstoque);
+
+  if (not modelConsumo.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque consumo: " + model.lastError().text());
+    return;
+  }
+
+  ui->tableConsumo->resizeColumnsToContents();
 
   calcularRestante();
 
   show();
 }
 
-void Estoque::on_pushButtonExibirNfe_clicked() {
-  QStringList idList = model.data(0, "idNFe").toString().split(",");
+void Estoque::on_pushButtonExibirNfe_clicked() { exibirNota(); }
 
-  for (auto id : idList) {
-    QSqlQuery query;
-    query.prepare("SELECT xml FROM nfe WHERE idNFe = :idNFe");
-    query.bindValue(":idNFe", id);
+void Estoque::exibirNota() {
+  QSqlQuery query;
+  query.prepare("SELECT xml FROM estoque e LEFT JOIN estoque_has_nfe ehn ON e.idEstoque = ehn.idEstoque LEFT JOIN "
+                "nfe n ON ehn.idNFe = n.idNFe WHERE e.idEstoque = :idEstoque");
+  query.bindValue(":idEstoque", model.data(0, "idEstoque"));
 
-    if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando nota fiscal: " + query.lastError().text());
-      return;
-    }
-
-    XML_Viewer *viewer = new XML_Viewer(this);
-    viewer->exibirXML(query.value("xml").toByteArray());
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando nfe: " + query.lastError().text());
+    return;
   }
+
+  XML_Viewer *viewer = new XML_Viewer(this);
+  viewer->exibirXML(query.value("xml").toByteArray());
 }
 
 bool Estoque::criarConsumo(const int &idVendaProduto) {
@@ -118,19 +106,19 @@ bool Estoque::criarConsumo(const int &idVendaProduto) {
     while (query.next()) {
       if (query.value("quant") > model.data(row, "quant")) continue;
 
-      int newRow = modelConsumo.rowCount();
+      const int newRow = modelConsumo.rowCount();
 
       modelConsumo.insertRow(newRow);
 
       for (int column = 0, columnCount = model.columnCount(); column < columnCount; ++column) {
-        QString field = model.record().fieldName(column);
-        int index = modelConsumo.fieldIndex(field);
-        QVariant value = model.data(row, column);
+        const QString field = model.record().fieldName(column);
+        const int index = modelConsumo.fieldIndex(field);
+        const QVariant value = model.data(row, column);
 
         if (index != -1) modelConsumo.setData(newRow, index, value);
       }
 
-      double quant = query.value("quant").toDouble() * -1;
+      const double quant = query.value("quant").toDouble() * -1;
 
       if (not modelConsumo.setData(newRow, "quant", quant)) return false;
       if (not modelConsumo.setData(newRow, "quantUpd", 4)) return false; // DarkGreen
@@ -150,12 +138,14 @@ bool Estoque::criarConsumo(const int &idVendaProduto) {
   return true;
 }
 
-void Estoque::on_table_doubleClicked(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+void Estoque::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }
+
+void Estoque::on_tableConsumo_entered(const QModelIndex &) { ui->tableConsumo->resizeColumnsToContents(); }
 
 // TODO: colocar data na tabela de estoque para consumo e estoque propriamente dito
 // TODO: ordenar como: forn., cod, produto, quant, un, caixas
 // TODO: busca descricao, cod
-// TODO: pensar em uma forma melhor de relacionar estoque com nfe estoque.idNFe(x,y) -> nfe.idNFe(x) e (y) (tabela de
-// relação?)
 // TODO: atualizar quantidade de caixas pelo sql (usar joins para calcular a quant de caixas)
 // TODO: colocar chaves estrangeiras na tabela estoque
+// TODO: tabela estoque possui coluna 'ordemCompra' guardando um valor mas pode possuir varios valores pelas relacoes
+// com pedido_fornecedor_has_produto. remover coluna?

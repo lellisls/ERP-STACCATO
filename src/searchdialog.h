@@ -20,18 +20,21 @@ public:
   void show();
   void showMaximized();
   void setFilter(const QString &value);
+  QString getFilter() const;
   void setRepresentacao(const QString &value);
   QString getText(const QVariant &value);
+  void setFornecedorRep(const QString &value);
 
   // Factory Methods
   static SearchDialog *cliente(QWidget *parent);
-  static SearchDialog *fornecedor(QWidget *parent);
-  static SearchDialog *usuario(QWidget *parent);
-  static SearchDialog *profissional(QWidget *parent);
+  static SearchDialog *conta(QWidget *parent);
   static SearchDialog *enderecoCliente(QWidget *parent);
+  static SearchDialog *fornecedor(QWidget *parent);
   static SearchDialog *loja(QWidget *parent);
   static SearchDialog *produto(QWidget *parent);
+  static SearchDialog *profissional(QWidget *parent);
   static SearchDialog *transportadora(QWidget *parent);
+  static SearchDialog *usuario(QWidget *parent);
   static SearchDialog *vendedor(QWidget *parent);
 
 signals:
@@ -52,6 +55,7 @@ private:
   QString filter;
   QString primaryKey;
   QString representacao;
+  QString fornecedorRep;
   QStringList indexes;
   QStringList textKeys;
   QVector<QPair<QString, QString>> headerData;

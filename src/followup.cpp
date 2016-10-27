@@ -6,8 +6,8 @@
 #include "ui_followup.h"
 #include "usersession.h"
 
-FollowUp::FollowUp(QString idOrcamento, QWidget *parent)
-    : QDialog(parent), ui(new Ui::FollowUp), idOrcamento(idOrcamento) {
+FollowUp::FollowUp(const QString &id, const Tipo tipo, QWidget *parent)
+    : QDialog(parent), id(id), tipo(tipo), ui(new Ui::FollowUp) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -59,7 +59,7 @@ bool FollowUp::verifyFields() {
 }
 
 void FollowUp::setupTables() {
-  model.setTable("orcamento_has_followup");
+  model.setTable(QString(tipo == Orcamento ? "orcamento" : "venda") + "_has_followup");
   model.setEditStrategy(SqlTableModel::OnManualSubmit);
 
   model.setHeaderData("idOrcamento", "Orçamento");
@@ -67,14 +67,15 @@ void FollowUp::setupTables() {
   model.setHeaderData("dataFollowup", "Data");
   model.setHeaderData("dataProxFollowup", "Próx. Data");
 
-  model.setFilter("idOrcamento LIKE '" + idOrcamento.left(12) + "%'");
+  model.setFilter(tipo == Orcamento ? "idOrcamento LIKE '" + id.left(12) + "%'" : "idVenda = '" + id + "'");
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela orcamento_has_followup: " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela followup: " + model.lastError().text());
     return;
   }
 
   ui->table->setModel(new FollowUpProxy(&model, this));
+  ui->table->hideColumn("idVenda");
   ui->table->hideColumn("idFollowup");
   ui->table->hideColumn("idLoja");
   ui->table->hideColumn("idUsuario");
@@ -86,12 +87,12 @@ void FollowUp::setupTables() {
 }
 
 bool FollowUp::savingProcedures() {
-  if (not model.setData(row, "idOrcamento", idOrcamento)) return false;
+  if (not model.setData(row, tipo == Orcamento ? "idOrcamento" : "idVenda", id)) return false;
   if (not model.setData(row, "idLoja", UserSession::idLoja())) return false;
   if (not model.setData(row, "idUsuario", UserSession::idUsuario())) return false;
-  int semaforo = ui->radioButtonQuente->isChecked() ? 1 : ui->radioButtonMorno->isChecked()
-                                                              ? 2
-                                                              : ui->radioButtonFrio->isChecked() ? 3 : 0;
+  int semaforo = ui->radioButtonQuente->isChecked()
+                     ? 1
+                     : ui->radioButtonMorno->isChecked() ? 2 : ui->radioButtonFrio->isChecked() ? 3 : 0;
   if (not model.setData(row, "semaforo", semaforo)) return false;
   if (not model.setData(row, "observacao", ui->plainTextEdit->toPlainText())) return false;
   if (not model.setData(row, "dataFollowup", ui->dateFollowup->dateTime())) return false;

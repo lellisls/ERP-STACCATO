@@ -149,7 +149,7 @@ color: rgb(0, 0, 0);</string>
        </item>
       </layout>
      </item>
-     <item row="1" column="0" colspan="2">
+     <item row="1" column="0" colspan="3">
       <widget class="TableView" name="table">
        <property name="mouseTracking">
         <bool>true</bool>

@@ -27,6 +27,8 @@ QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int role
     } else {
       QString statusValue = QIdentityProxyModel::data(index(proxyIndex.row(), status), Qt::DisplayRole).toString();
       if (statusValue == "FECHADO") return QBrush(Qt::green);
+      if (statusValue == "CANCELADO") return QBrush(Qt::yellow);
+      if (statusValue == "PERDIDO") return QBrush(Qt::yellow);
     }
   }
 

@@ -24,6 +24,8 @@ EntregasCliente::EntregasCliente(QWidget *parent) : QDialog(parent), ui(new Ui::
 EntregasCliente::~EntregasCliente() { delete ui; }
 
 void EntregasCliente::setupTables() {
+  // TODO: disable sort or fix delegate
+
   modelProdutos.setTable("venda_has_produto");
   modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -131,23 +133,20 @@ void EntregasCliente::setupTables() {
 }
 
 void EntregasCliente::on_pushButtonNFe_clicked() {
-  // TODO: escolher transportadora para envio dos produtos apos gerar nfe
-  // TODO: colocar InputDlg prev/Real
   QList<int> lista;
 
-  for (const auto index :
+  for (auto const &index :
        modelProdutos.match(modelProdutos.index(0, modelProdutos.fieldIndex("selecionado")), Qt::DisplayRole, true, -1,
                            Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap))) {
-    // NOTE: readd these (these wont be necessary after filtering the table to show only the ready to send
-    //    if (modelProdutos.data(index.row(), "idNfeSaida").toInt() != 0) {
-    //      QMessageBox::critical(this, "Erro!", "Produto já possui nota emitida!");
-    //      return;
-    //    }
+    if (modelProdutos.data(index.row(), "idNfeSaida").toInt() != 0) {
+      QMessageBox::critical(this, "Erro!", "Produto já possui nota emitida!");
+      return;
+    }
 
-    //    if (modelProdutos.data(index.row(), "status").toString() != "ESTOQUE") {
-    //      QMessageBox::critical(this, "Erro!", "Produto não está em estoque!");
-    //      return;
-    //    }
+    if (modelProdutos.data(index.row(), "status").toString() != "ESTOQUE") {
+      QMessageBox::critical(this, "Erro!", "Produto não está em estoque!");
+      return;
+    }
 
     lista.append(modelProdutos.data(index.row(), "idVendaProduto").toInt());
   }
@@ -169,7 +168,6 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
 
   CadastrarNFe *nfe = new CadastrarNFe(idVenda, this);
   nfe->prepararNFe(lista);
-  //  nfe->show();
   nfe->exec();
 
   if (not modelProdutos.select()) {
@@ -177,11 +175,16 @@ void EntregasCliente::on_pushButtonNFe_clicked() {
     return;
   }
 
-  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
-    ui->tableProdutos->openPersistentEditor(row, "selecionado");
-  }
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) ui->tableProdutos->openPersistentEditor(row, "selecionado");
 
   ui->tableProdutos->resizeColumnsToContents();
+
+  if (not modelEntregas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela entregas: " + modelEntregas.lastError().text());
+    return;
+  }
+
+  ui->tableEntregas->resizeColumnsToContents();
 }
 
 void EntregasCliente::viewEntrega(const QString &idVenda) {
@@ -202,9 +205,7 @@ void EntregasCliente::viewEntrega(const QString &idVenda) {
     return;
   }
 
-  for (int row = 0; row < modelProdutos.rowCount(); ++row) {
-    ui->tableProdutos->openPersistentEditor(row, "selecionado");
-  }
+  for (int row = 0; row < modelProdutos.rowCount(); ++row) ui->tableProdutos->openPersistentEditor(row, "selecionado");
 
   ui->tableProdutos->resizeColumnsToContents();
   ui->tableEntregas->resizeColumnsToContents();
@@ -222,8 +223,15 @@ void EntregasCliente::on_checkBoxMarcarTodos_clicked(bool checked) {
 
 void EntregasCliente::on_pushButtonImprimir_clicked() {
   // TODO: botao para imprimir danfe
+  QMessageBox::critical(this, "Erro!", "Ainda não implementado!");
 }
 
 void EntregasCliente::on_pushButtonReagendar_clicked() {
   // TODO: implement
+  QMessageBox::critical(this, "Erro!", "Ainda não implementado!");
+}
+
+void EntregasCliente::on_pushButtonConfirmarEntrega_clicked() {
+  // TODO: implement
+  QMessageBox::critical(this, "Erro!", "Ainda não implementado!");
 }

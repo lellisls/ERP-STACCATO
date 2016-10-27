@@ -43,7 +43,7 @@ private:
   QDataWidgetMapper mapperVeiculo;
   SqlTableModel modelVeiculo;
   // methods
-  bool cadastrar();
+  bool cadastrar() override;
   bool cadastrarEndereco(const bool &isUpdate);
   bool cadastrarVeiculo(const bool &isUpdate);
   virtual bool save() override;

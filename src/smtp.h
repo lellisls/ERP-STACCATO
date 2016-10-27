@@ -33,7 +33,7 @@ class Smtp : public QObject {
   Q_OBJECT
 
 public:
-  Smtp(const QString &user, const QString &pass, const QString &host, const int &port = 465,
+  Smtp(const QString &user, const QString &pass, const QString &host, const quint16 &port = 465,
        const int &timeout = 10000);
   ~Smtp();
 
@@ -52,7 +52,7 @@ private slots:
 
 private:
   enum states { Tls, HandShake, Auth, User, Pass, Rcpt, Mail, Data, Init, Body, Quit, Close };
-  int port;
+  quint16 port;
   int state;
   int timeout;
   QSslSocket *socket;

@@ -20,7 +20,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 #include <QResource>
 
-Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const int &port, const int &timeout)
+Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const quint16 &port, const int &timeout)
     : port(port), timeout(timeout), host(host), pass(pass), user(user) {
   socket = new QSslSocket(this);
 
@@ -62,7 +62,7 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, c
   if (not files.isEmpty()) {
     //    qDebug() << "Files to be sent: " << files.size();
 
-    for (const auto filePath : files) {
+    for (auto const &filePath : files) {
       QFile file(filePath);
 
       if (file.exists()) {

@@ -376,6 +376,20 @@
                     </property>
                    </widget>
                   </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="label_54">
+                    <property name="text">
+                     <string>Apelido/Nome Fantasia</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="labelCliente">
+                    <property name="text">
+                     <string>Nome/Razão Social</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="2" column="5">
                    <widget class="QComboBox" name="comboBoxTipo">
                     <property name="accessibleName">
@@ -401,20 +415,6 @@
                       <string>OUTRO</string>
                      </property>
                     </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="labelCliente">
-                    <property name="text">
-                     <string>Nome/Razão Social</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLabel" name="label_54">
-                    <property name="text">
-                     <string>Apelido/Nome Fantasia</string>
-                    </property>
                    </widget>
                   </item>
                   <item row="1" column="4">
@@ -445,6 +445,38 @@
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 255, 127);
 color: rgb(0, 0, 0);</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QLineEdit" name="lineEditCNPJ">
+                    <property name="minimumSize">
+                     <size>
+                      <width>100</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>135</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="accessibleName">
+                     <string>CNPJ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLineEdit" name="lineEditNomeFantasia">
+                    <property name="minimumSize">
+                     <size>
+                      <width>120</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="accessibleName">
+                     <string>Apelido/Nome Fantasia</string>
                     </property>
                    </widget>
                   </item>
@@ -486,38 +518,6 @@ color: rgb(0, 0, 0);</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="1">
-                   <widget class="QLineEdit" name="lineEditNomeFantasia">
-                    <property name="minimumSize">
-                     <size>
-                      <width>120</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="accessibleName">
-                     <string>Apelido/Nome Fantasia</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="3">
-                   <widget class="QLineEdit" name="lineEditCNPJ">
-                    <property name="minimumSize">
-                     <size>
-                      <width>100</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>135</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="accessibleName">
-                     <string>CNPJ</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="2" column="6">
                    <widget class="ItemBox" name="itemBoxVendedor">
                     <property name="accessibleName">
@@ -529,6 +529,20 @@ color: rgb(0, 0, 0);</string>
                    <widget class="QLabel" name="labelTipo_2">
                     <property name="text">
                      <string>Vendedor vinculado</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="7">
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>RT</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="7">
+                   <widget class="QDoubleSpinBox" name="doubleSpinBoxComissao">
+                    <property name="suffix">
+                     <string>%</string>
                     </property>
                    </widget>
                   </item>
@@ -823,6 +837,13 @@ color: rgb(0, 0, 0);</string>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_4">
+            <item row="2" column="0">
+             <widget class="QLabel" name="labelBanco_4">
+              <property name="text">
+               <string>CNPJ:</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="labelBanco_3">
               <property name="text">
@@ -830,25 +851,29 @@ color: rgb(0, 0, 0);</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEditCPFBancario"/>
-            </item>
-            <item row="2" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="labelBanco">
               <property name="text">
                <string>Banco:</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QLabel" name="labelAgencia">
               <property name="text">
                <string>Agência:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEditNomeBancario"/>
+            <item row="6" column="0">
+             <widget class="QLabel" name="labelCC">
+              <property name="text">
+               <string>C/C:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QLineEdit" name="lineEditCC"/>
             </item>
             <item row="0" column="0">
              <widget class="QLabel" name="labelBanco_2">
@@ -857,21 +882,27 @@ color: rgb(0, 0, 0);</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEditBanco"/>
-            </item>
-            <item row="5" column="1">
-             <widget class="QLineEdit" name="lineEditCC"/>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLineEdit" name="lineEditAgencia"/>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="labelCC">
+            <item row="6" column="2">
+             <widget class="QCheckBox" name="checkBoxPoupanca">
               <property name="text">
-               <string>C/C:</string>
+               <string>Poupança</string>
               </property>
              </widget>
+            </item>
+            <item row="5" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEditAgencia"/>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEditBanco"/>
+            </item>
+            <item row="2" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEditCNPJBancario"/>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEditCPFBancario"/>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QLineEdit" name="lineEditNomeBancario"/>
             </item>
            </layout>
           </item>
@@ -1018,6 +1049,8 @@ color: rgb(0, 0, 0);</string>
   <tabstop>lineEditCNPJ</tabstop>
   <tabstop>lineEditInscEstadual</tabstop>
   <tabstop>comboBoxTipo</tabstop>
+  <tabstop>itemBoxVendedor</tabstop>
+  <tabstop>doubleSpinBoxComissao</tabstop>
   <tabstop>lineEditContatoNome</tabstop>
   <tabstop>lineEditContatoCPF</tabstop>
   <tabstop>lineEditContatoApelido</tabstop>
@@ -1044,9 +1077,11 @@ color: rgb(0, 0, 0);</string>
   <tabstop>checkBoxMostrarInativos</tabstop>
   <tabstop>lineEditNomeBancario</tabstop>
   <tabstop>lineEditCPFBancario</tabstop>
+  <tabstop>lineEditCNPJBancario</tabstop>
   <tabstop>lineEditBanco</tabstop>
   <tabstop>lineEditAgencia</tabstop>
   <tabstop>lineEditCC</tabstop>
+  <tabstop>checkBoxPoupanca</tabstop>
   <tabstop>pushButtonCadastrar</tabstop>
   <tabstop>pushButtonAtualizar</tabstop>
   <tabstop>pushButtonBuscar</tabstop>

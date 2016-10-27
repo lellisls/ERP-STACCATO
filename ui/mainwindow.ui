@@ -93,45 +93,11 @@
       </widget>
       <widget class="QWidget" name="tabContas">
        <attribute name="title">
-        <string>Contas</string>
+        <string>Financeiro</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_36">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidget_2">
-          <property name="currentIndex">
-           <number>2</number>
-          </property>
-          <widget class="QWidget" name="tab_4">
-           <attribute name="title">
-            <string>Fluxo de Caixa</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_7">
-            <item row="0" column="0">
-             <widget class="QTableView" name="tableView"/>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_2">
-           <attribute name="title">
-            <string>Contas a Pagar</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="0">
-             <widget class="WidgetContaPagar" name="widgetPagar" native="true"/>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_3">
-           <attribute name="title">
-            <string>Contas a Receber</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="0">
-             <widget class="WidgetContaReceber" name="widgetReceber" native="true"/>
-            </item>
-           </layout>
-          </widget>
-         </widget>
+         <widget class="WidgetFinanceiro" name="widgetFinanceiro" native="true"/>
         </item>
        </layout>
       </widget>
@@ -329,18 +295,6 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>WidgetContaReceber</class>
-   <extends>QWidget</extends>
-   <header>src/widgetcontareceber.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>WidgetContaPagar</class>
-   <extends>QWidget</extends>
-   <header>src/widgetcontapagar.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>WidgetOrcamento</class>
    <extends>QWidget</extends>
    <header>src/widgetorcamento.h</header>
@@ -380,6 +334,12 @@
    <class>WidgetRelatorio</class>
    <extends>QWidget</extends>
    <header>src/widgetrelatorio.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetFinanceiro</class>
+   <extends>QWidget</extends>
+   <header>src/widgetfinanceiro.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

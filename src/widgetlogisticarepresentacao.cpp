@@ -9,24 +9,27 @@
 WidgetLogisticaRepresentacao::WidgetLogisticaRepresentacao(QWidget *parent)
     : QWidget(parent), ui(new Ui::WidgetLogisticaRepresentacao) {
   ui->setupUi(this);
+
+  //  setupTables();
 }
 
 WidgetLogisticaRepresentacao::~WidgetLogisticaRepresentacao() { delete ui; }
 
-QString WidgetLogisticaRepresentacao::updateTables() {
+bool WidgetLogisticaRepresentacao::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
   model.setFilter("0");
 
-  if (not model.select()) return "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text();
+  if (not model.select()) {
+    emit errorSignal("Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    return false;
+  }
 
-  //    for (int row = 0; row < model.rowCount(); ++row) {
-  //      ui->table->openPersistentEditor(row, "selecionado");
-  //    }
+  //  for (int row = 0; row < model.rowCount(); ++row) ui->table->openPersistentEditor(row, "selecionado");
 
   ui->table->resizeColumnsToContents();
 
-  return QString();
+  return true;
 }
 
 void WidgetLogisticaRepresentacao::TableFornLogistica_activated(const QString &fornecedor) {
@@ -42,21 +45,31 @@ void WidgetLogisticaRepresentacao::TableFornLogistica_activated(const QString &f
   //      ui->table->openPersistentEditor(row, "selecionado");
   //    }
 
-  ui->table->resizeColumnsToContents();
+  //  ui->table->resizeColumnsToContents();
 }
 
 void WidgetLogisticaRepresentacao::setupTables() {
-  model.setTable("pedido_fornecedor_has_produto");
+  model.setTable("view_logistica_representacao");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  model.setFilter("status = 'EM RECEBIMENTO'");
+  //  model.setFilter("status = 'EM RECEBIMENTO'");
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 
   ui->table->setModel(&model);
+  ui->table->hideColumn("fornecedor");
+  ui->table->hideColumn("status");
 }
 
 void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {}
 
 void WidgetLogisticaRepresentacao::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+void WidgetLogisticaRepresentacao::on_lineEditBusca_textChanged(const QString &text) {
+  model.setFilter("Código LIKE '%" + text + "%' OR Cliente LIKE '%" + text + "%'"); // TODO: readd fornecedor
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+}
 
 // NOTE: botoes dinamicos de acordo com o status
 // NOTE: botao para encerrar ciclo (entrega direta)

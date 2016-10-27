@@ -15,7 +15,8 @@ RegisterDialog::RegisterDialog(const QString &table, const QString &primaryKey, 
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
   model.setFilter("0");
-  model.select();
+
+  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 
   mapper.setModel(&model);
   mapper.setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -62,7 +63,8 @@ bool RegisterDialog::viewRegister() {
 
   if (not primaryId.isEmpty()) {
     model.setFilter(primaryKey + " = '" + primaryId + "'");
-    model.select();
+
+    if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
   }
 
   mapper.setCurrentIndex(0);
@@ -197,7 +199,8 @@ bool RegisterDialog::cadastrar() {
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(row, column);
+
     if (dado.type() == QVariant::String) {
       if (not model.setData(row, column, dado.toString().toUpper())) return false;
     }
@@ -238,9 +241,7 @@ bool RegisterDialog::save() {
 bool RegisterDialog::update() { return save(); }
 
 void RegisterDialog::clearFields() {
-  for (auto const &line : findChildren<QLineEdit *>()) {
-    line->clear();
-  }
+  for (auto const &line : findChildren<QLineEdit *>()) line->clear();
 }
 
 void RegisterDialog::remove() {
@@ -268,34 +269,28 @@ bool RegisterDialog::validaCNPJ(const QString &text) {
 
   QVector<int> sub2;
 
-  for (int i = 0, size = sub.size(); i < size; ++i) {
-    sub2.push_back(sub.at(i).digitValue());
-  }
+  for (int i = 0, size = sub.size(); i < size; ++i) sub2.push_back(sub.at(i).digitValue());
 
   const QVector<int> multiplicadores = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 
   int soma = 0;
 
-  for (int i = 0; i < 12; ++i) {
-    soma += sub2.at(i) * multiplicadores.at(i);
-  }
+  for (int i = 0; i < 12; ++i) soma += sub2.at(i) * multiplicadores.at(i);
 
   int resto = soma % 11;
 
-  int digito1 = resto < 2 ? 0 : 11 - resto;
+  const int digito1 = resto < 2 ? 0 : 11 - resto;
 
   sub2.push_back(digito1);
 
   const QVector<int> multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
   soma = 0;
 
-  for (int i = 0; i < 13; ++i) {
-    soma += sub2.at(i) * multiplicadores2.at(i);
-  }
+  for (int i = 0; i < 13; ++i) soma += sub2.at(i) * multiplicadores2.at(i);
 
   resto = soma % 11;
 
-  int digito2 = resto < 2 ? 0 : 11 - resto;
+  const int digito2 = resto < 2 ? 0 : 11 - resto;
 
   if (digito1 != text.at(12).digitValue() or digito2 != text.at(13).digitValue()) {
     QMessageBox::critical(this, "Erro!", "CNPJ inválido!");
@@ -311,7 +306,7 @@ bool RegisterDialog::validaCPF(const QString &text) {
   if (text == "00000000000" or text == "11111111111" or text == "22222222222" or text == "33333333333" or
       text == "44444444444" or text == "55555555555" or text == "66666666666" or text == "77777777777" or
       text == "88888888888" or text == "99999999999") {
-    QMessageBox::warning(this, "Aviso!", "CPF inválido!");
+    QMessageBox::critical(this, "Erro!", "CPF inválido!");
     return false;
   }
 

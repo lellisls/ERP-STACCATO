@@ -12,7 +12,7 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
     : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
-  for (const auto *line : findChildren<QLineEdit *>()) {
+  for (auto const *line : findChildren<QLineEdit *>()) {
     connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   }
 

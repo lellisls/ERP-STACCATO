@@ -1102,7 +1102,7 @@ void Worksheet::saveToXmlFile(QIODevice *device) const {
   writer.writeEndElement(); // sheetData
 
   d->saveXmlMergeCells(writer);
-  for (const auto cf : d->conditionalFormattingList) cf.saveToXml(writer);
+  for (auto const &cf : d->conditionalFormattingList) cf.saveToXml(writer);
   d->saveXmlDataValidations(writer);
   d->saveXmlHyperlinks(writer);
   d->saveXmlDrawings(writer);
@@ -1236,7 +1236,7 @@ void WorksheetPrivate::saveXmlMergeCells(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("mergeCells"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(merges.size()));
 
-  for (const auto range : merges) {
+  for (auto const &range : merges) {
     writer.writeEmptyElement(QStringLiteral("mergeCell"));
     writer.writeAttribute(QStringLiteral("ref"), range.toString());
   }
@@ -1250,7 +1250,7 @@ void WorksheetPrivate::saveXmlDataValidations(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("dataValidations"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(dataValidationsList.size()));
 
-  for (const auto validation : dataValidationsList) validation.saveToXml(writer);
+  for (auto const &validation : dataValidationsList) validation.saveToXml(writer);
 
   writer.writeEndElement(); // dataValidations
 }
@@ -1406,9 +1406,7 @@ bool Worksheet::setColumnWidth(int colFirst, int colLast, double width) {
 
   auto columnInfoList = d->getColumnInfoList(colFirst, colLast);
 
-  for (const auto columnInfo : columnInfoList) {
-    columnInfo->width = width;
-  }
+  for (auto const &columnInfo : columnInfoList) columnInfo->width = width;
 
   return (columnInfoList.count() > 0);
 }
@@ -1423,9 +1421,7 @@ bool Worksheet::setColumnFormat(int colFirst, int colLast, const Format &format)
 
   auto columnInfoList = d->getColumnInfoList(colFirst, colLast);
 
-  for (const auto columnInfo : columnInfoList) {
-    columnInfo->format = format;
-  }
+  for (auto const &columnInfo : columnInfoList) columnInfo->format = format;
 
   if (columnInfoList.count() > 0) {
     d->workbook->styles()->addXfFormat(format);
@@ -1444,7 +1440,7 @@ bool Worksheet::setColumnHidden(int colFirst, int colLast, bool hidden) {
 
   auto columnInfoList = d->getColumnInfoList(colFirst, colLast);
 
-  for (const auto columnInfo : columnInfoList) columnInfo->hidden = hidden;
+  for (auto const &columnInfo : columnInfoList) columnInfo->hidden = hidden;
 
   return (columnInfoList.count() > 0);
 }
@@ -1500,7 +1496,7 @@ bool Worksheet::setRowHeight(int rowFirst, int rowLast, double height) {
 
   auto rowInfoList = d->getRowInfoList(rowFirst, rowLast);
 
-  for (const auto rowInfo : rowInfoList) {
+  for (auto const &rowInfo : rowInfoList) {
     rowInfo->height = height;
     rowInfo->customHeight = true;
   }
@@ -1519,7 +1515,7 @@ bool Worksheet::setRowFormat(int rowFirst, int rowLast, const Format &format) {
 
   auto rowInfoList = d->getRowInfoList(rowFirst, rowLast);
 
-  for (const auto rowInfo : rowInfoList) rowInfo->format = format;
+  for (auto const &rowInfo : rowInfoList) rowInfo->format = format;
 
   d->workbook->styles()->addXfFormat(format);
   return rowInfoList.count() > 0;
@@ -1536,9 +1532,7 @@ bool Worksheet::setRowHidden(int rowFirst, int rowLast, bool hidden) {
 
   auto rowInfoList = d->getRowInfoList(rowFirst, rowLast);
 
-  for (const auto rowInfo : rowInfoList) {
-    rowInfo->hidden = hidden;
-  }
+  for (auto const &rowInfo : rowInfoList) rowInfo->hidden = hidden;
 
   return rowInfoList.count() > 0;
 }
@@ -1959,7 +1953,7 @@ void WorksheetPrivate::loadXmlSheetFormatProps(QXmlStreamReader &reader) {
   XlsxSheetFormatProps formatProps;
 
   // Retain default values
-  for (const auto attrib : attributes) {
+  for (auto const &attrib : attributes) {
     if (attrib.name() == QLatin1String("baseColWidth")) {
       formatProps.baseColWidth = attrib.value().toString().toInt();
     } else if (attrib.name() == QLatin1String("customHeight")) {

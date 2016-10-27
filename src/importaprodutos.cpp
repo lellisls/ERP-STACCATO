@@ -122,13 +122,17 @@ bool ImportaProdutos::importar() {
 
   model.setFilter("idFornecedor IN (" + idsFornecedor.join(",") + ") AND estoque_promocao = " + tipo);
 
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto: " + model.lastError().text());
+    return false;
+  }
+
   modelErro.setFilter("idFornecedor IN (" + idsFornecedor.join(",") + ") AND estoque_promocao = " + tipo +
                       " AND (m2cxUpd = " + Red + " OR pccxUpd = " + Red + " OR codComercialUpd = " + Red +
                       " OR custoUpd = " + Red + " OR precoVendaUpd = " + Red + ")");
 
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto: " + model.lastError().text());
-    return false;
+  if (not modelErro.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela erro: " + modelErro.lastError().text());
   }
 
   itensExpired = model.rowCount();
@@ -406,17 +410,14 @@ bool ImportaProdutos::cadastraFornecedores() {
 }
 
 void ImportaProdutos::mostraApenasEstesFornecedores() {
-  for (auto fornecedor : fornecedores) idsFornecedor.append(QString::number(fornecedor));
+  for (auto const &fornecedor : fornecedores) idsFornecedor.append(QString::number(fornecedor));
 }
 
 bool ImportaProdutos::marcaTodosProdutosDescontinuados() {
   QSqlQuery query;
-  query.prepare("UPDATE produto SET descontinuado = TRUE WHERE idFornecedor IN (:idFornecedor) AND estoque_promocao = "
-                ":estoque_promocao");
-  query.bindValue(":idFornecedor", idsFornecedor.join(","));
-  query.bindValue(":estoque_promocao", tipo);
 
-  if (not query.exec()) {
+  if (not query.exec("UPDATE produto SET descontinuado = TRUE WHERE idFornecedor IN (" + idsFornecedor.join(",") +
+                     ") AND estoque_promocao = " + tipo + "")) {
     QMessageBox::critical(this, "Erro!", "Erro marcando produtos descontinuados: " + query.lastError().text());
     return false;
   }
@@ -431,7 +432,7 @@ void ImportaProdutos::contaProdutos() {
 }
 
 void ImportaProdutos::consistenciaDados() {
-  for (auto key : variantMap.keys()) {
+  for (auto const &key : variantMap.keys()) {
     if (variantMap.value(key).toString().contains("*")) {
       variantMap.insert(key, variantMap.value(key).toString().remove("*"));
     }
@@ -454,7 +455,7 @@ void ImportaProdutos::consistenciaDados() {
 }
 
 void ImportaProdutos::leituraProduto(const QSqlQuery &query, const QSqlRecord &record) {
-  for (auto key : variantMap.keys()) {
+  for (auto const &key : variantMap.keys()) {
     if (key == "ncmEx") continue;
     if (key == "estoque_promocao") continue;
     if (key == "idProdutoRelacionado") continue;
@@ -470,7 +471,7 @@ void ImportaProdutos::leituraProduto(const QSqlQuery &query, const QSqlRecord &r
 bool ImportaProdutos::atualizaCamposProduto() {
   bool changed = false;
 
-  for (auto key : variantMap.keys()) {
+  for (auto const &key : variantMap.keys()) {
     if (not variantMap.value(key).isNull() and model.data(row, key) != variantMap.value(key)) {
       if (not model.setData(row, key, variantMap.value(key))) return false;
       if (not model.setData(row, key + "Upd", Yellow)) return false;
@@ -608,7 +609,7 @@ bool ImportaProdutos::insereEmErro() {
   const int row = modelErro.rowCount();
   if (not modelErro.insertRow(row)) return false;
 
-  for (auto key : variantMap.keys()) {
+  for (auto const &key : variantMap.keys()) {
     if (not modelErro.setData(row, key, variantMap.value(key))) return false;
     if (not modelErro.setData(row, key + "Upd", Green)) return false;
   }
@@ -645,7 +646,7 @@ bool ImportaProdutos::insereEmOk() {
   const int row = model.rowCount();
   if (not model.insertRow(row)) return false;
 
-  for (auto key : variantMap.keys()) {
+  for (auto const &key : variantMap.keys()) {
     if (not model.setData(row, key, variantMap.value(key))) qDebug() << "error1: " << model.lastError().text();
     if (not model.setData(row, key + "Upd", Green)) qDebug() << "error2: " << model.lastError().text();
   }
@@ -711,6 +712,7 @@ bool ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor, int &
   }
 
   if (not queryFornecedor.next()) {
+    // TODO: avisar que fornecedor ainda nao possui cadastro
     queryFornecedor.prepare("INSERT INTO fornecedor (razaoSocial) VALUES (:razaoSocial)");
     queryFornecedor.bindValue(":razaoSocial", fornecedor);
 
@@ -769,7 +771,7 @@ void ImportaProdutos::on_pushButtonSalvar_clicked() {
 }
 
 bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
-  for (auto key : variantMap.keys()) {
+  for (auto const &key : variantMap.keys()) {
     if (key == "estoque_promocao") continue;
     if (key == "idProdutoRelacionado") continue;
 
@@ -784,7 +786,9 @@ bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
 
 void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool &checked) {
   for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
-    model.setData(row, "representacao", checked);
+    if (not model.setData(row, "representacao", checked)) {
+      QMessageBox::critical(this, "Erro!", "Erro guardando 'Representacao' em Produto: " + model.lastError().text());
+    }
   }
 
   QSqlQuery query;
@@ -792,7 +796,7 @@ void ImportaProdutos::on_checkBoxRepresentacao_clicked(const bool &checked) {
   query.bindValue(":razaoSocial", fornecedor);
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro guardando Representacao em Fornecedor: " + query.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro guardando 'Representacao' em Fornecedor: " + query.lastError().text());
     return;
   }
 }
@@ -815,3 +819,6 @@ void ImportaProdutos::closeEvent(QCloseEvent *event) {
 // NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo
 // TODO: verificar no mentha se o representacao esta salvando
 // TODO: colocar 3 casas decimais (porto design)
+// TODO: colocar tabela relacao para precos diferenciados por loja (associar produto_has_preco <->
+// produto_has_preco_has_loja ou guardar idLoja em produto_has_preco)
+// TODO: ao perguntar local deixar 'CD' como padrao

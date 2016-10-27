@@ -1,4 +1,5 @@
 #include <QDate>
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -19,19 +20,16 @@ void WidgetCompraConfirmar::setupTables() {
 
   ui->table->setModel(&model);
   ui->table->setItemDelegateForColumn("Total", new ReaisDelegate(this));
+  ui->table->hideColumn("Compra");
 }
 
 bool WidgetCompraConfirmar::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
-  QString filter = model.filter();
-
   if (not model.select()) {
     emit errorSignal("Erro lendo tabela compras: " + model.lastError().text());
     return false;
   }
-
-  model.setFilter(filter);
 
   ui->table->resizeColumnsToContents();
 
@@ -86,13 +84,22 @@ bool WidgetCompraConfirmar::confirmarCompra() {
   // salvar status na venda
   query.prepare("UPDATE venda_has_produto SET dataRealConf = :dataRealConf, dataPrevFat = :dataPrevFat, "
                 "status = 'EM FATURAMENTO' WHERE idProduto IN (SELECT idProduto FROM pedido_fornecedor_has_produto "
-                "WHERE idCompra = :idCompra AND selecionado = 1)");
+                "WHERE idCompra = :idCompra AND selecionado = 1) AND idCompra = :idCompra");
   query.bindValue(":dataRealConf", dataConf);
   query.bindValue(":dataPrevFat", dataPrevista);
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
+    return false;
+  }
+
+  query.prepare(
+      "UPDATE pedido_fornecedor_has_produto SET selecionado = 0 WHERE idCompra = :idCompra AND selecionado = 1");
+  query.bindValue(":idCompra", idCompra);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro setando selecionado 0: " + query.lastError().text());
     return false;
   }
 
@@ -109,7 +116,5 @@ void WidgetCompraConfirmar::on_table_entered(const QModelIndex &) { ui->table->r
 
 // NOTE: permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
 // diferentes: 50 -> 40+10
-// TODO: arrumar concatenacao (copiar do faturamento)
 // TODO: representacao morre na confirmacao
-// TODO: colocar frete
-// TODO: confirmar produtos individualmente
+// TODO: mostrar datas previstas

@@ -17,7 +17,7 @@ SendMail::SendMail(QWidget *parent, const QString &arquivo, const QString &forne
 
   ui->lineEditAnexo->setText(arquivo);
 
-  QFileInfo info(arquivo);
+  const QFileInfo info(arquivo);
 
   ui->lineEditTitulo->setText("PEDIDO " + info.baseName());
 
@@ -88,9 +88,7 @@ void SendMail::on_pushButtonBuscar_clicked() {
 
   QString fileListString;
 
-  for (const auto file : files) {
-    fileListString.append("\"" + QFileInfo(file).fileName() + "\" ");
-  }
+  for (auto const &file : files) fileListString.append("\"" + QFileInfo(file).fileName() + "\" ");
 
   ui->lineEditAnexo->setText(fileListString);
 }
@@ -125,6 +123,3 @@ void SendMail::successStatus() {
 void SendMail::failureStatus(const QString &status) {
   QMessageBox::critical(0, tr("Qt Simple SMTP client"), "Ocorreu erro: " + status);
 }
-
-// TODO: como tem fornecedor que tem mais de um email, fazer um combobox listando os emails para o usuario escolher
-// (criar tabela fornecedor_has_email?)

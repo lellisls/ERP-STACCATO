@@ -8,7 +8,8 @@ class Excel {
 
 public:
   Excel(QString id, QWidget *parent = 0);
-  void gerarExcel();
+  bool gerarExcel(const int oc = 0, const bool representacao = false);
+  QString getFileName() const;
 
 private:
   // attributes
@@ -22,6 +23,7 @@ private:
   QSqlQuery queryProduto;
   QSqlQuery queryProfissional;
   QSqlQuery queryVendedor;
+  QString fileName;
   QString id;
   QWidget *parent;
   // methods

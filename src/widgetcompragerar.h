@@ -35,7 +35,7 @@ private:
   int oc;
   // methods
   void setupTables();
-  bool gerarExcel(QList<int> &lista, QString &anexo);
+  bool gerarExcel(QList<int> &lista, QString &anexo, const bool representacao);
   bool gerarCompra();
 };
 

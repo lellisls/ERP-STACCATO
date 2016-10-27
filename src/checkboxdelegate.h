@@ -19,6 +19,7 @@ private:
   virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
   virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
                                     const QModelIndex &) const override;
+  void commitAndCloseEditor();
 };
 
 #endif // CHECKBOXDELEGATE_H

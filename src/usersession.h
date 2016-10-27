@@ -1,6 +1,7 @@
 #ifndef USERSESSION_H
 #define USERSESSION_H
 
+#include <QSettings>
 #include <QSqlQuery>
 
 class UserSession {

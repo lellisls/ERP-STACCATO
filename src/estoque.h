@@ -15,21 +15,23 @@ class Estoque : public QDialog {
 public:
   explicit Estoque(QWidget *parent = 0);
   ~Estoque();
-  void viewRegisterById(const QString &idEstoque);
   bool criarConsumo(const int &idVendaProduto);
+  void viewRegisterById(const QString &idEstoque);
 
 private slots:
   void on_pushButtonExibirNfe_clicked();
-  void on_table_activated(const QModelIndex &index);
-  void on_table_doubleClicked(const QModelIndex &);
+  void on_tableConsumo_entered(const QModelIndex &);
+  void on_tableEstoque_activated(const QModelIndex &);
+  void on_tableEstoque_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::Estoque *ui;
   SqlTableModel model;
   SqlTableModel modelConsumo;
+  Ui::Estoque *ui;
   // methods
   void calcularRestante();
+  void exibirNota();
   void setupTables();
 };
 

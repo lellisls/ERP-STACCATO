@@ -6,37 +6,23 @@ WidgetCompra::WidgetCompra(QWidget *parent) : QWidget(parent), ui(new Ui::Widget
 WidgetCompra::~WidgetCompra() { delete ui; }
 
 bool WidgetCompra::updateTables() {
+  connect(ui->widgetOC, &WidgetCompraOC::errorSignal, this, &WidgetCompra::errorSignal);
   connect(ui->widgetDevolucao, &WidgetCompraDevolucao::errorSignal, this, &WidgetCompra::errorSignal);
   connect(ui->widgetPendentes, &WidgetCompraPendentes::errorSignal, this, &WidgetCompra::errorSignal);
   connect(ui->widgetGerar, &WidgetCompraGerar::errorSignal, this, &WidgetCompra::errorSignal);
   connect(ui->widgetConfirmar, &WidgetCompraConfirmar::errorSignal, this, &WidgetCompra::errorSignal);
   connect(ui->widgetFaturar, &WidgetCompraFaturar::errorSignal, this, &WidgetCompra::errorSignal);
 
-  switch (ui->tabWidget->currentIndex()) {
-  case 0:
-    if (not ui->widgetDevolucao->updateTables()) return false;
-    break;
+  const QString currentText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
 
-  case 1:
-    if (not ui->widgetPendentes->updateTables()) return false;
-    break;
-
-  case 2:
-    if (not ui->widgetGerar->updateTables()) return false;
-    break;
-
-  case 3:
-    if (not ui->widgetConfirmar->updateTables()) return false;
-    break;
-
-  case 4:
-    if (not ui->widgetFaturar->updateTables()) return false;
-    break;
-  }
+  if (currentText == "Devoluções" and not ui->widgetDevolucao->updateTables()) return false;
+  if (currentText == "Pendentes" and not ui->widgetPendentes->updateTables()) return false;
+  if (currentText == "Gerar Compra" and not ui->widgetGerar->updateTables()) return false;
+  if (currentText == "Confirmar Compra" and not ui->widgetConfirmar->updateTables()) return false;
+  if (currentText == "Faturamento" and not ui->widgetFaturar->updateTables()) return false;
+  if (currentText == "OC" and not ui->widgetOC->updateTables()) return false;
 
   return true;
 }
 
 void WidgetCompra::on_tabWidget_currentChanged(const int &) { updateTables(); }
-
-// TODO: esta cortando, só arruma ao redimensionar tela

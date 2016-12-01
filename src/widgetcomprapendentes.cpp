@@ -4,7 +4,9 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "doubledelegate.h"
 #include "excel.h"
+#include "financeiroproxymodel.h"
 #include "impressao.h"
 #include "inputdialog.h"
 #include "produtospendentes.h"
@@ -97,10 +99,13 @@ void WidgetCompraPendentes::setupTables() {
   model.setHeaderData("codComercial", "Cód. Com.");
   model.setHeaderData("formComercial", "Form. Com.");
   model.setHeaderData("status", "Status");
+  model.setHeaderData("statusFinanceiro", "Financeiro");
+  model.setHeaderData("dataFinanceiro", "Data Fin.");
 
-  ui->table->setModel(&model);
+  ui->table->setModel(new FinanceiroProxyModel(&model, this));
 
   ui->table->sortByColumn("idVenda");
+  ui->table->setItemDelegateForColumn("quant", new DoubleDelegate(this));
   ui->table->resizeColumnsToContents();
 }
 
@@ -171,7 +176,7 @@ void WidgetCompraPendentes::on_pushButtonComprarAvulso_clicked() {
 
   if (inputDlg->exec() != InputDialog::Accepted) return;
 
-  const QDate dataPrevista = inputDlg->getNextDate();
+  const QDateTime dataPrevista = inputDlg->getNextDate();
 
   insere(dataPrevista) ? QMessageBox::information(this, "Aviso!", "Produto enviado para compras com sucesso!")
                        : QMessageBox::critical(this, "Erro!", "Erro ao enviar produto para compras!");
@@ -179,7 +184,7 @@ void WidgetCompraPendentes::on_pushButtonComprarAvulso_clicked() {
   ui->itemBoxProduto->clear();
 }
 
-bool WidgetCompraPendentes::insere(const QDate &dataPrevista) {
+bool WidgetCompraPendentes::insere(const QDateTime &dataPrevista) {
   QSqlQuery query;
   query.prepare("SELECT fornecedor, idProduto, descricao, colecao, un, un2, custo, kgcx, formComercial, codComercial, "
                 "codBarras FROM produto WHERE idProduto = :idProduto");
@@ -254,5 +259,3 @@ void WidgetCompraPendentes::on_pushButtonPDF_clicked() {
   Impressao *impressao = new Impressao(model.data(list.first().row(), "idVenda").toString(), this);
   impressao->print();
 }
-
-// TODO: ' faz busca parar de funcionar

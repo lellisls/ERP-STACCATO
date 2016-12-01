@@ -18,7 +18,7 @@ public:
   bool updateTables();
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void montaFiltro();
@@ -37,7 +37,7 @@ private:
   SqlTableModel model;
   Ui::WidgetCompraPendentes *ui;
   // methods
-  bool insere(const QDate &dataPrevista);
+  bool insere(const QDateTime &dataPrevista);
   void makeConnections();
   void setupTables();
 };

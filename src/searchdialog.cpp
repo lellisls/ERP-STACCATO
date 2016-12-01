@@ -165,7 +165,9 @@ QString SearchDialog::getText(const QVariant &value) {
   QString res;
 
   for (auto const &key : textKeys) {
-    if (query.value(key).isValid()) res += (res.isEmpty() ? "" : " - ") + query.value(key).toString();
+    if (query.value(key).isValid() and not query.value(key).toString().isEmpty()) {
+      res += (res.isEmpty() ? "" : " - ") + query.value(key).toString();
+    }
   }
 
   return res;
@@ -325,12 +327,12 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
   sdFornecedor->setHeaderData("contatoCPF", "CPF do Contato");
   sdFornecedor->setHeaderData("contatoApelido", "Apelido do Contato");
   sdFornecedor->setHeaderData("contatoRG", "RG do Contato");
+  sdFornecedor->setHeaderData("validadeProdutos", "Validade Produtos");
 
   return sdFornecedor;
 }
 
 SearchDialog *SearchDialog::transportadora(QWidget *parent) {
-  // TODO: pesquisar veiculos no lugar de transportadoras?
   SearchDialog *sdTransportadora = new SearchDialog("Buscar Transportadora", "transportadora",
                                                     {"razaoSocial", "nomeFantasia"}, "desativado = FALSE", parent);
 
@@ -345,6 +347,23 @@ SearchDialog *SearchDialog::transportadora(QWidget *parent) {
   sdTransportadora->setHeaderData("inscEstadual", "Insc. Est.");
   sdTransportadora->setHeaderData("antt", "ANTT");
   sdTransportadora->setHeaderData("tel", "Tel.");
+
+  return sdTransportadora;
+}
+
+SearchDialog *SearchDialog::veiculo(QWidget *parent) {
+  SearchDialog *sdTransportadora =
+      new SearchDialog("Buscar Veículo", "view_busca_veiculo", {"modelo", "placa"}, "desativado = FALSE", parent);
+
+  sdTransportadora->setPrimaryKey("idVeiculo");
+  sdTransportadora->setTextKeys({"razaoSocial", "modelo", "placa"});
+
+  sdTransportadora->hideColumns({"idVeiculo", "idTransportadora", "desativado"});
+
+  sdTransportadora->setHeaderData("razaoSocial", "Transportadora");
+  sdTransportadora->setHeaderData("modelo", "Modelo");
+  sdTransportadora->setHeaderData("capacidade", "Carga");
+  sdTransportadora->setHeaderData("placa", "Placa");
 
   return sdTransportadora;
 }

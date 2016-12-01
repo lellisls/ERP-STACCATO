@@ -13,7 +13,10 @@ public:
   QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
 private:
-  const int dias, status, followup, semaforo;
+  const int dias;
+  const int status;
+  const int followup;
+  const int semaforo;
 
   enum FieldColors { Quente = 1, Morno = 2, Frio = 3 };
 };

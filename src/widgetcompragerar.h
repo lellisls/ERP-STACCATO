@@ -18,25 +18,27 @@ public:
   bool updateTables();
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void calcularPreco();
   void on_checkBoxMarcarTodos_clicked(const bool &checked);
+  void on_pushButtonCancelarCompra_clicked();
   void on_pushButtonGerarCompra_clicked();
   void on_tableForn_activated(const QModelIndex &index);
   void on_tableProdutos_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::WidgetCompraGerar *ui;
-  SqlTableModel modelProdutos;
-  SqlTableModel modelForn;
   int oc;
+  SqlTableModel modelForn;
+  SqlTableModel modelProdutos;
+  Ui::WidgetCompraGerar *ui;
   // methods
-  void setupTables();
-  bool gerarExcel(QList<int> &lista, QString &anexo, const bool representacao);
+  bool cancelar();
   bool gerarCompra();
+  bool gerarExcel(QList<int> &lista, QString &anexo, const bool isRepresentacao);
+  void setupTables();
 };
 
 #endif // WIDGETCOMPRAGERAR_H

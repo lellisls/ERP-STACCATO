@@ -26,17 +26,15 @@ private slots:
   void on_pushButtonNovoCad_clicked();
   void on_pushButtonRemover_clicked();
   void on_pushButtonRemoverEnd_clicked();
+  void on_pushButtonValidade_clicked();
   void on_tableEndereco_clicked(const QModelIndex &index);
   void on_tableEndereco_entered(const QModelIndex &);
-
-public:
-  void clearEndereco();
-  void setupTables();
 
 private:
   // attributes
   Ui::CadastroFornecedor *ui;
   // methods
+  bool ajustarValidade();
   bool cadastrarEndereco(const bool &isUpdate);
   bool viewRegister() override;
   virtual bool savingProcedures() override;
@@ -46,7 +44,9 @@ private:
   virtual void setupMapper() override;
   virtual void successMessage() override;
   virtual void updateMode() override;
+  void clearEndereco();
   void novoEndereco();
+  void setupTables();
   void setupUi();
 };
 

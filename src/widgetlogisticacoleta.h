@@ -16,23 +16,27 @@ public:
   explicit WidgetLogisticaColeta(QWidget *parent = 0);
   ~WidgetLogisticaColeta();
   bool updateTables();
-  void TableFornLogistica_activated(const QString &fornecedor);
+  void tableFornLogistica_activated(const QString &fornecedor);
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void on_checkBoxMarcarTodos_clicked(const bool &);
   void on_lineEditBuscaColeta_textChanged(const QString &);
   void on_pushButtonMarcarColetado_clicked();
+  void on_pushButtonReagendar_clicked();
+  void on_table_doubleClicked(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
   SqlTableModel model;
+  QString fornecedor;
   Ui::WidgetLogisticaColeta *ui;
   // methods
   bool cadastrar();
+  bool reagendar();
   void setupTables();
 };
 

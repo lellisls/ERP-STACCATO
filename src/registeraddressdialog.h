@@ -24,7 +24,6 @@ protected:
 private:
   void setupTables(const QString &table);
   bool cadastrar() override;
-//  bool isUpdateEnd = false; // TODO: fix
 };
 
 #endif // REGISTERADDRESSDIALOG_H

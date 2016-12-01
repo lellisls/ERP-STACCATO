@@ -73,49 +73,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   //
 
   timer = new QTimer(this);
-
-  // DO THIS FOR estoque_has_consumo too (and other tables that might have 'caixas'
-
-  //  QSqlQuery query2;
-
-  //  query2.exec("SELECT * FROM estoque");
-
-  //  while (query2.next()) {
-  //    QSqlQuery query3;
-
-  //    query3.exec("SELECT * FROM produto WHERE idProduto = " + query2.value("idProduto").toString());
-  //    if (not query3.first()) continue;
-
-  //    QString un = query2.value("un").toString();
-
-  //    int caixas = 0;
-
-  //    if (un == "KG") {
-  //      if (query3.value("kgcx").toDouble() <= 0.) continue;
-
-  //      caixas = query2.value("quant").toDouble() / query3.value("kgcx").toDouble();
-
-  //    } else if (un == "M2" or un == "M²") {
-  //      if (query3.value("m2cx").toDouble() <= 0.) continue;
-
-  //      caixas = query2.value("quant").toDouble() / query3.value("m2cx").toDouble();
-
-  //    } else {
-  //      if (query3.value("pccx").toDouble() <= 0.) continue;
-
-  //      caixas = query2.value("quant").toDouble() / query3.value("pccx").toDouble();
-  //    }
-
-  //    qDebug() << "idEstoque: " << query2.value("idEstoque").toString()
-  //             << " before: " << query2.value("caixas").toDouble() << " - after: " << caixas;
-
-  //    if (caixas <= 0) continue;
-
-  //    QSqlQuery query4;
-
-  //    query4.exec("UPDATE estoque SET caixas = " + QString::number(caixas) + " WHERE idEstoque = " +
-  //                query2.value("idEstoque").toString());
-  //  }
 }
 
 MainWindow::~MainWindow() {
@@ -177,39 +134,16 @@ void MainWindow::updateTables() {
   connect(ui->widgetFinanceiro, &WidgetFinanceiro::errorSignal, this, &MainWindow::timerStatusBar);
   connect(ui->widgetRelatorio, &WidgetRelatorio::errorSignal, this, &MainWindow::timerStatusBar);
 
-  switch (ui->tabWidget->currentIndex()) {
-  case 0: // Orcamentos
-    ui->widgetOrcamento->updateTables();
-    break;
+  const QString currentText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
 
-  case 1: // Vendas
-    ui->widgetVenda->updateTables();
-    break;
-
-  case 2: // Compras
-    ui->widgetCompra->updateTables();
-    break;
-
-  case 3: // Logistica
-    ui->widgetLogistica->updateTables();
-    break;
-
-  case 4: // NFe
-    ui->widgetNfe->updateTables();
-    break;
-
-  case 5: // Estoque
-    ui->widgetEstoque->updateTables();
-    break;
-
-  case 6: // Financeiro
-    ui->widgetFinanceiro->updateTables();
-    break;
-
-  case 7: // Relatório
-    ui->widgetRelatorio->updateTables();
-    break;
-  }
+  if (currentText == "Orçamentos") ui->widgetOrcamento->updateTables();
+  if (currentText == "Vendas") ui->widgetVenda->updateTables();
+  if (currentText == "Compras") ui->widgetCompra->updateTables();
+  if (currentText == "Logística") ui->widgetLogistica->updateTables();
+  if (currentText == "NFe") ui->widgetNfe->updateTables();
+  if (currentText == "Estoque") ui->widgetEstoque->updateTables();
+  if (currentText == "Financeiro") ui->widgetFinanceiro->updateTables();
+  if (currentText == "Relatórios") ui->widgetRelatorio->updateTables();
 }
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {

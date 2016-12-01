@@ -29,9 +29,8 @@ bool WidgetNfeEntrada::updateTables() {
 void WidgetNfeEntrada::setupTables() {
   DoubleDelegate *doubledelegate = new DoubleDelegate(this);
 
-  model.setTable("view_nfe");
+  model.setTable("view_nfe_entrada");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  model.setFilter("tipo = 'ENTRADA'");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 
@@ -45,8 +44,6 @@ void WidgetNfeEntrada::setupTables() {
 }
 
 void WidgetNfeEntrada::on_table_activated(const QModelIndex &index) {
-  XML_Viewer *viewer = new XML_Viewer(this);
-
   QSqlQuery query;
   query.prepare("SELECT xml FROM nfe WHERE numeroNFe = :numeroNFe");
   query.bindValue(":numeroNFe", model.data(index.row(), "NFe"));
@@ -56,13 +53,14 @@ void WidgetNfeEntrada::on_table_activated(const QModelIndex &index) {
     return;
   }
 
+  XML_Viewer *viewer = new XML_Viewer(this);
   viewer->exibirXML(query.value("xml").toByteArray());
 }
 
 void WidgetNfeEntrada::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetNfeEntrada::on_lineEditBusca_textChanged(const QString &text) {
-  model.setFilter("tipo = 'ENTRADA' AND (NFe LIKE '%" + text + "%' OR OC LIKE '%" + text + "%')");
+  model.setFilter("NFe LIKE '%" + text + "%' OR OC LIKE '%" + text + "%'");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }

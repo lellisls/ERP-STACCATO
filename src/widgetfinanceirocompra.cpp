@@ -1,7 +1,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "inputdialog.h"
+#include "inputdialogfinanceiro.h"
 #include "reaisdelegate.h"
 #include "ui_widgetfinanceirocompra.h"
 #include "widgetfinanceirocompra.h"
@@ -36,14 +36,20 @@ void WidgetFinanceiroCompra::setupTables() {
 }
 
 void WidgetFinanceiroCompra::on_table_activated(const QModelIndex &index) {
-  InputDialog *input = new InputDialog(InputDialog::Financeiro, this);
+  InputDialogFinanceiro *input = new InputDialogFinanceiro(InputDialogFinanceiro::Financeiro, this);
   input->setFilter(model.data(index.row(), "Compra").toString());
 
-  if (input->exec() != InputDialog::Accepted) return;
+  if (input->exec() != InputDialogFinanceiro::Accepted) return;
 }
 
 void WidgetFinanceiroCompra::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetFinanceiroCompra::on_lineEditBusca_textChanged(const QString &text) {
-  // TODO: implement searching
+  const QString filtroBusca = text.isEmpty() ? "" : "OC LIKE '%" + text + "%' OR Código LIKE '%" + text + "%'";
+
+  model.setFilter(filtroBusca);
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+  }
 }

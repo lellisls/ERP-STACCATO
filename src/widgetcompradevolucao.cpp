@@ -29,6 +29,8 @@ bool WidgetCompraDevolucao::updateTables() {
 }
 
 void WidgetCompraDevolucao::setupTables() {
+  // TODO: formatar cabecalhos
+
   model.setTable("venda_has_produto");
 
   if (not model.select()) {
@@ -38,6 +40,7 @@ void WidgetCompraDevolucao::setupTables() {
   ui->table->setModel(&model);
 
   ui->table->sortByColumn("idVenda");
+  ui->table->hideColumn("entregou");
   ui->table->hideColumn("selecionado");
   ui->table->resizeColumnsToContents();
 }
@@ -79,20 +82,20 @@ void WidgetCompraDevolucao::on_pushButtonDevolucaoFornecedor_clicked() {
   }
 }
 
-void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() { // TODO: wrap in transaction
+bool WidgetCompraDevolucao::retornarEstoque() {
   const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Não selecionou nenhuma linha!");
-    return;
+    return false;
   }
 
   const QString status = model.data(list.first().row(), "status").toString();
 
   if (status != "PENDENTE" and status != "INICIADO" and status != "EM COMPRA" and status != "EM FATURAMENTO" and
       status != "ME COLETA" and status != "EM RECEBIMENTO" and status != "ESTOQUE") {
-    QMessageBox::critical(this, "Erro!", "Ainda não implementado!");
-    return;
+    QMessageBox::critical(this, "Erro!", "Ainda não implementado para esse status!");
+    return false;
   }
 
   if (status == "PENDENTE" or status == "INICIADO" or status == "EM COMPRA" or status == "EM FATURAMENTO") {
@@ -116,7 +119,7 @@ void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() { // TODO: wr
 
     if (not query.exec() or not query.first()) {
       QMessageBox::critical(this, "Erro!", "Erro buscando idVendaProduto: " + query.lastError().text());
-      return;
+      return false;
     }
 
     const QString idVendaProduto = query.value("idVendaProduto").toString();
@@ -127,7 +130,7 @@ void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() { // TODO: wr
 
     if (not modelEstoque.select()) {
       QMessageBox::critical(this, "Erro!", "Erro buscando consumo estoque: " + modelEstoque.lastError().text());
-      return;
+      return false;
     }
 
     if (modelEstoque.rowCount() > 0) {
@@ -137,7 +140,7 @@ void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() { // TODO: wr
       for (int column = 0; column < modelEstoque.columnCount(); ++column) {
         if (not modelEstoque.setData(newRow, column, modelEstoque.data(0, column))) {
           QMessageBox::critical(this, "Erro!", "Erro copiando dados do consumo: " + modelEstoque.lastError().text());
-          return;
+          return false;
         }
       }
 
@@ -148,25 +151,40 @@ void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() { // TODO: wr
 
       if (not modelEstoque.submitAll()) {
         QMessageBox::critical(this, "Erro!", "Erro salvando devolução de estoque: " + modelEstoque.lastError().text());
-        return;
+        return false;
       }
     }
   }
 
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status processado: " + model.lastError().text());
-    return;
+    return false;
   }
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+
+  return true;
+}
+
+void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not retornarEstoque()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
 }
 
 void WidgetCompraDevolucao::on_radioButtonFiltroPendente_toggled(bool checked) {
+  ui->pushButtonDevolucaoFornecedor->setEnabled(checked);
+  ui->pushButtonRetornarEstoque->setEnabled(checked);
+
   model.setFilter("quant < 0 AND status" + QString(checked ? "!=" : "=") + " 'PROCESSADO'");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }
 
 void WidgetCompraDevolucao::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
-
-// TODO: if filtering for 'PROCESSADO' dont let the user redo the actions

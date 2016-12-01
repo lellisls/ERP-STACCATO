@@ -86,6 +86,7 @@ private:
   void resetarPagamentos();
   void setupTables();
   void makeConnections();
+  bool financeiroSalvar();
 };
 
 #endif // VENDA_H

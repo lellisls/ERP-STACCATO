@@ -18,7 +18,7 @@ public:
   bool updateTables();
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void montaFiltro();

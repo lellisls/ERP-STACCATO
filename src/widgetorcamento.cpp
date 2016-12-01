@@ -137,8 +137,9 @@ void WidgetOrcamento::montaFiltro() {
   const QString textoBusca = ui->lineEditBusca->text();
 
   const QString filtroBusca = textoBusca.isEmpty() ? ""
-                                                   : " AND ((Código LIKE '%" + textoBusca + "%') OR (Vendedor LIKE '%" +
-                                                         textoBusca + "%') OR (Cliente LIKE '%" + textoBusca + "%'))";
+                                                   : " AND (Código LIKE '%" + textoBusca + "%' OR Vendedor LIKE '%" +
+                                                         textoBusca + "%' OR Cliente LIKE '%" + textoBusca +
+                                                         "%' OR Profissional LIKE '%" + textoBusca + "%')";
 
   model.setFilter(filtroLoja + filtroData + filtroVendedor + filtroRadio + filtroCheck + filtroBusca);
 

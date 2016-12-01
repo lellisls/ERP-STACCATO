@@ -115,12 +115,45 @@ bool Estoque::criarConsumo(const int &idVendaProduto) {
         const int index = modelConsumo.fieldIndex(field);
         const QVariant value = model.data(row, column);
 
-        if (index != -1) modelConsumo.setData(newRow, index, value);
+        if (index != -1) {
+          if (not modelConsumo.setData(newRow, index, value)) return false;
+        }
       }
 
-      const double quant = query.value("quant").toDouble() * -1;
+      const double quant = query.value("quant").toDouble();
 
-      if (not modelConsumo.setData(newRow, "quant", quant)) return false;
+      // -------------------------------------
+
+      QSqlQuery queryTemp;
+      queryTemp.prepare("SELECT un, kgcx, m2cx, pccx FROM produto WHERE idProduto = :idProduto");
+      queryTemp.bindValue(":idProduto", model.data(row, "idProduto"));
+
+      if (not queryTemp.exec()) {
+        QMessageBox::critical(this, "Erro!", "Erro buscando dados do produto: " + queryTemp.lastError().text());
+        return false;
+      }
+
+      int caixas = 0;
+
+      if (queryTemp.first()) {
+        const QString un = queryTemp.value("un").toString();
+        const double kgcx = queryTemp.value("kgcx").toDouble();
+        const double m2cx = queryTemp.value("m2cx").toDouble();
+        const double pccx = queryTemp.value("pccx").toDouble();
+
+        if (un == "KG") {
+          if (kgcx > 0.) caixas = quant / kgcx;
+        } else if (un == "M2" or un == "M²") {
+          if (m2cx > 0.) caixas = quant / m2cx;
+        } else {
+          if (pccx > 0.) caixas = quant / pccx;
+        }
+      }
+
+      // -------------------------------------
+
+      if (not modelConsumo.setData(newRow, "quant", quant * -1)) return false;
+      if (not modelConsumo.setData(newRow, "caixas", caixas)) return false;
       if (not modelConsumo.setData(newRow, "quantUpd", 4)) return false; // DarkGreen
       if (not modelConsumo.setData(newRow, "idVendaProduto", idVendaProduto)) return false;
       if (not modelConsumo.setData(newRow, "idEstoque", model.data(row, "idEstoque"))) return false;

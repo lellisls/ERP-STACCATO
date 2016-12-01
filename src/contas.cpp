@@ -194,8 +194,7 @@ void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
       return;
     }
 
-    // TODO: redo this below
-    const QString idVenda = query.value("idVenda").toString(); // TODO: not null in bd, remove checks == 0 below
+    const QString idVenda = query.value("idVenda").toString();
 
     setWindowTitle("Contas A Receber - " + contraparte + " " + idVenda);
 

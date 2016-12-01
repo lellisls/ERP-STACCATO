@@ -117,6 +117,7 @@ void Venda::setupTables() {
   }
 
   ui->tableVenda->setModel(&modelItem);
+  ui->tableVenda->hideColumn("entregou");
   ui->tableVenda->hideColumn("descUnitario");
   ui->tableVenda->hideColumn("estoque_promocao");
   ui->tableVenda->hideColumn("idCompra");
@@ -335,7 +336,7 @@ void Venda::prepararVenda(const QString &idOrcamento) {
   ui->itemBoxVendedor->setValue(queryOrc.value("idUsuario"));
 
   QSqlQuery queryProdutos;
-  queryProdutos.prepare("SELECT * FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento"); // TODO: replace *
+  queryProdutos.prepare("SELECT * FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento");
   queryProdutos.bindValue(":idOrcamento", idOrcamento);
 
   if (not queryProdutos.exec()) {
@@ -988,6 +989,8 @@ bool Venda::viewRegister() {
                             "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
       return false;
     }
+
+    ui->comboBoxFinanceiro->setCurrentText(model.data(0, "statusFinanceiro").toString());
   }
 
   ui->tableVenda->resizeColumnsToContents();
@@ -1554,26 +1557,45 @@ void Venda::setFinanceiro() {
   financeiro = true;
 }
 
-void Venda::on_pushButtonFinanceiroSalvar_clicked() { // TODO: wrap in a transaction
+bool Venda::financeiroSalvar() {
   if (not model.setData(mapper.currentIndex(), "statusFinanceiro", ui->comboBoxFinanceiro->currentText())) {
     QMessageBox::critical(this, "Erro!", "Erro salvando status financeiro: " + model.lastError().text());
-    return;
+    return false;
+  }
+
+  if (not model.setData(mapper.currentIndex(), "dataFinanceiro", QDateTime::currentDateTime())) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando status financeiro: " + model.lastError().text());
+    return false;
   }
 
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + model.lastError().text());
-    return;
+    return false;
   }
 
   if (not modelFluxoCaixa.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando pagamentos: " + modelFluxoCaixa.lastError().text());
-    return;
+    return false;
   }
 
   if (not modelFluxoCaixa2.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando taxa/comissão: " + modelFluxoCaixa2.lastError().text());
+    return false;
+  }
+
+  return true;
+}
+
+void Venda::on_pushButtonFinanceiroSalvar_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not financeiroSalvar()) {
+    QSqlQuery("ROLLBACK").exec();
     return;
   }
+
+  QSqlQuery("COMMIT").exec();
 
   QMessageBox::information(this, "Aviso!", "Dados salvos com sucesso!");
   close();
@@ -1607,12 +1629,8 @@ void Venda::on_pushButtonCorrigirFluxo_clicked() {
   resetarPagamentos();
 }
 
-// NOTE: ao cancelar verificar se produto nao aparece mais nas telas de compra
-// NOTE: para fazer prazoEntrega por produto primeiro escolher o prazo 'global', setar ele em todos os produtos e depois
-// alterar os produtos que tenham prazo diferenciado
+// NOTE: prazoEntrega por produto
 // NOTE: alguma coisa disparando isDirty no pedido fechado
 // NOTE: bloquear desconto maximo por classe de funcionario
-// TODO: alterar coluna estoque_promocao quando for estoque/promocao
 // TODO: bloquear utilizacao de conta cliente se nao houver saldo suficiente
-// TODO: bloquear edicao da observacao fluxo caixa se for readOnly
-// TODO: devolucao total/parcial
+// TODO: mostrar statusFinanceiro

@@ -2,7 +2,7 @@
 #include <QSqlError>
 
 #include "followup.h"
-#include "followupproxy.h"
+#include "followupproxymodel.h"
 #include "ui_followup.h"
 #include "usersession.h"
 
@@ -16,6 +16,8 @@ FollowUp::FollowUp(const QString &id, const Tipo tipo, QWidget *parent)
 
   ui->dateFollowup->setDateTime(QDateTime::currentDateTime());
   ui->dateProxFollowup->setDateTime(QDateTime::currentDateTime().addDays(1));
+
+  if (tipo == Venda) ui->frameOrcamento->hide();
 }
 
 FollowUp::~FollowUp() { delete ui; }
@@ -25,17 +27,35 @@ void FollowUp::on_pushButtonCancelar_clicked() { close(); }
 void FollowUp::on_pushButtonSalvar_clicked() {
   if (not verifyFields()) return;
 
-  row = model.rowCount();
-  model.insertRow(row);
-  // saving procedures
-  if (not savingProcedures()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro salvando dados na tabela orcamento_has_followup: " + model.lastError().text());
-    return;
+  QSqlQuery query;
+  if (tipo == Orcamento) {
+    query.prepare("INSERT INTO orcamento_has_followup (idOrcamento, idLoja, idUsuario, semaforo, observacao, "
+                  "dataFollowup, dataProxFollowup) VALUES (:idOrcamento, :idLoja, :idUsuario, :semaforo, :observacao, "
+                  ":dataFollowup, :dataProxFollowup)");
+    query.bindValue(":idOrcamento", id);
+    query.bindValue(":idLoja", UserSession::idLoja());
+    query.bindValue(":idUsuario", UserSession::idUsuario());
+    query.bindValue(":semaforo",
+                    ui->radioButtonQuente->isChecked()
+                        ? 1
+                        : ui->radioButtonMorno->isChecked() ? 2 : ui->radioButtonFrio->isChecked() ? 3 : 0);
+    query.bindValue(":observacao", ui->plainTextEdit->toPlainText());
+    query.bindValue(":dataFollowup", ui->dateFollowup->dateTime());
+    query.bindValue(":dataProxFollowup", ui->dateProxFollowup->dateTime());
   }
 
-  if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando tabela orcamento_has_followup: " + model.lastError().text());
+  if (tipo == Venda) {
+    query.prepare("INSERT INTO venda_has_followup (idVenda, idLoja, idUsuario, observacao, dataFollowup) VALUES "
+                  "(:idVenda, :idLoja, :idUsuario, :observacao, :dataFollowup)");
+    query.bindValue(":idVenda", id);
+    query.bindValue(":idLoja", UserSession::idLoja());
+    query.bindValue(":idUsuario", UserSession::idUsuario());
+    query.bindValue(":observacao", ui->plainTextEdit->toPlainText());
+    query.bindValue(":dataFollowup", ui->dateFollowup->dateTime());
+  }
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando followup: " + query.lastError().text());
     return;
   }
 
@@ -44,7 +64,7 @@ void FollowUp::on_pushButtonSalvar_clicked() {
 }
 
 bool FollowUp::verifyFields() {
-  if (not ui->radioButtonQuente->isChecked() and not ui->radioButtonMorno->isChecked() and
+  if (tipo == Orcamento and not ui->radioButtonQuente->isChecked() and not ui->radioButtonMorno->isChecked() and
       not ui->radioButtonFrio->isChecked()) {
     QMessageBox::critical(this, "Erro!", "Deve selecionar uma temperatura!");
     return false;
@@ -59,46 +79,30 @@ bool FollowUp::verifyFields() {
 }
 
 void FollowUp::setupTables() {
-  model.setTable(QString(tipo == Orcamento ? "orcamento" : "venda") + "_has_followup");
+  model.setTable("view_followup_" + QString(tipo == Orcamento ? "orcamento" : "venda"));
   model.setEditStrategy(SqlTableModel::OnManualSubmit);
 
   model.setHeaderData("idOrcamento", "Orçamento");
+  model.setHeaderData("idVenda", "Venda");
+  model.setHeaderData("nome", "Usuário");
   model.setHeaderData("observacao", "Observação");
   model.setHeaderData("dataFollowup", "Data");
   model.setHeaderData("dataProxFollowup", "Próx. Data");
 
-  model.setFilter(tipo == Orcamento ? "idOrcamento LIKE '" + id.left(12) + "%'" : "idVenda = '" + id + "'");
+  model.setFilter(tipo == Orcamento ? "idOrcamento LIKE '" + id.left(12) + "%'"
+                                    : "idVenda LIKE '" + id.left(11) + "%'");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela followup: " + model.lastError().text());
     return;
   }
 
-  ui->table->setModel(new FollowUpProxy(&model, this));
-  ui->table->hideColumn("idVenda");
-  ui->table->hideColumn("idFollowup");
-  ui->table->hideColumn("idLoja");
-  ui->table->hideColumn("idUsuario");
+  ui->table->setModel(new FollowUpProxyModel(&model, this));
   ui->table->hideColumn("semaforo");
-  ui->table->hideColumn("created");
-  ui->table->hideColumn("lastUpdated");
 
   ui->table->resizeColumnsToContents();
 }
 
-bool FollowUp::savingProcedures() {
-  if (not model.setData(row, tipo == Orcamento ? "idOrcamento" : "idVenda", id)) return false;
-  if (not model.setData(row, "idLoja", UserSession::idLoja())) return false;
-  if (not model.setData(row, "idUsuario", UserSession::idUsuario())) return false;
-  int semaforo = ui->radioButtonQuente->isChecked()
-                     ? 1
-                     : ui->radioButtonMorno->isChecked() ? 2 : ui->radioButtonFrio->isChecked() ? 3 : 0;
-  if (not model.setData(row, "semaforo", semaforo)) return false;
-  if (not model.setData(row, "observacao", ui->plainTextEdit->toPlainText())) return false;
-  if (not model.setData(row, "dataFollowup", ui->dateFollowup->dateTime())) return false;
-  if (not model.setData(row, "dataProxFollowup", ui->dateProxFollowup->dateTime())) return false;
-
-  return true;
+void FollowUp::on_dateFollowup_dateChanged(const QDate &date) {
+  if (ui->dateProxFollowup->date() < date) ui->dateProxFollowup->setDate(date);
 }
-
-// TODO: ao incrementar data de followup subir data proximo junto

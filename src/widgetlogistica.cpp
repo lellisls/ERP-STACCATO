@@ -10,16 +10,12 @@ WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   ui->splitter_6->setStretchFactor(0, 0);
   ui->splitter_6->setStretchFactor(1, 1);
-
-  ui->tabWidgetLogistica->setTabEnabled(5, false);
-  ui->tabWidgetLogistica->setTabEnabled(6, false);
-  ui->tabWidgetLogistica->setTabEnabled(7, false);
 }
 
 WidgetLogistica::~WidgetLogistica() { delete ui; }
 
 void WidgetLogistica::setupTables() {
-  model.setTable("view_fornecedor_logistica");
+  model.setTable("view_fornecedor_logistica_agendar_coleta");
 
   ui->tableForn->setModel(&model);
 }
@@ -39,37 +35,54 @@ bool WidgetLogistica::updateTables() {
   connect(ui->widgetRecebimento, &WidgetLogisticaRecebimento::errorSignal, this, &WidgetLogistica::errorSignal);
   connect(ui->widgetAgendaEntrega, &WidgetLogisticaEntrega::errorSignal, this, &WidgetLogistica::errorSignal);
 
-  switch (ui->tabWidgetLogistica->currentIndex()) {
-  case 0: {
+  const QString currentText = ui->tabWidgetLogistica->tabText(ui->tabWidgetLogistica->currentIndex());
+
+  if (currentText == "Agendar Coleta") {
     ui->frameForn->show();
     model.setTable("view_fornecedor_logistica_agendar_coleta");
     model.select();
     return ui->widgetAgendarColeta->updateTables();
   }
 
-  case 1: {
+  if (currentText == "Coleta") {
     ui->frameForn->show();
     model.setTable("view_fornecedor_logistica_coleta");
     model.select();
     return ui->widgetColeta->updateTables();
   }
 
-  case 2: {
+  if (currentText == "Recebimento") {
     ui->frameForn->show();
     model.setTable("view_fornecedor_logistica_recebimento");
     model.select();
     return ui->widgetRecebimento->updateTables();
   }
 
-  case 3: {
+  if (currentText == "Agendar Entrega") {
     ui->frameForn->hide();
     return ui->widgetAgendaEntrega->updateTables();
   }
 
-  case 4: {
+  if (currentText == "Entregas") {
     ui->frameForn->hide();
     return ui->widgetCalendarioEntrega->updateTables();
   }
+
+  if (currentText == "Caminhões") {
+    ui->frameForn->hide();
+    return ui->widgetCaminhao->updateTables();
+  }
+
+  if (currentText == "Representação") {
+    ui->frameForn->show();
+    model.setTable("view_fornecedor_logistica_representacao");
+    model.select();
+    return ui->widgetRepresentacao->updateTables();
+  }
+
+  if (currentText == "Entregues") {
+    ui->frameForn->hide();
+    return ui->widgetEntregues->updateTables();
   }
 
   return true;
@@ -78,45 +91,18 @@ bool WidgetLogistica::updateTables() {
 void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
   const QString fornecedor = model.data(index.row(), "fornecedor").toString();
 
-  int currentIndex = ui->tabWidgetLogistica->currentIndex();
+  const QString currentText = ui->tabWidgetLogistica->tabText(ui->tabWidgetLogistica->currentIndex());
 
-  // TODO: usar o texto no lugar do indice
-  switch (currentIndex) {
-  case 0:
-    ui->widgetAgendarColeta->TableFornLogistica_activated(fornecedor);
-    break;
-
-  case 1:
-    ui->widgetColeta->TableFornLogistica_activated(fornecedor);
-    break;
-
-  case 2:
-    ui->widgetRecebimento->TableFornLogistica_activated(fornecedor);
-    break;
-
-  case 3:
-    // agendar entrega
-    break;
-
-  case 6:
-    ui->widgetRepresentacao->TableFornLogistica_activated(fornecedor);
-    break;
-  }
+  if (currentText == "Agendar Coleta") ui->widgetAgendarColeta->tableFornLogistica_activated(fornecedor);
+  if (currentText == "Coleta") ui->widgetColeta->tableFornLogistica_activated(fornecedor);
+  if (currentText == "Recebimento") ui->widgetRecebimento->tableFornLogistica_activated(fornecedor);
+  if (currentText == "Representação") ui->widgetRepresentacao->tableFornLogistica_activated(fornecedor);
 }
 
-void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) {
-  int index = ui->tabWidgetLogistica->currentIndex();
+void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) { updateTables(); }
 
-  if (index == 0 or index == 1) model.setTable("view_fornecedor_logistica");
-  if (index == 6) model.setTable("view_fornecedor_logistica_representacao");
-
-  updateTables();
-}
-
-// NOTE: arrumar filtros da tela de entrega
-// NOTE: criar tela para organizar caminhão da coleta
-// NOTE: criar tela para gerenciar entregas por caminhao (mostrar por dia/caminhao) somar todos os pesos
-// TODO: janela para visualizar coletas/recebimentos de representacao
-// TODO: ao mudar de aba reaplicar o filtro fornecedor para o widget atual: coleta -> receb. aplicar filtro 'portinari'
-// sem precisar clicar em fornecedor novamente
-// TODO: tela para agendar coletas, tela para agendar entregas, tela para mostrar as entregas do dia (para emitir nota)
+// TODO: colorir prazoEntrega
+// TODO: colocar nas configuracoes do usuario pasta para 'pdf entregas/danfe'
+// TODO: tela para guardar imagens (fotos/documentos scaneados)
+// TODO: followup das entregas
+// TODO: criar opcao 'cliente retira'

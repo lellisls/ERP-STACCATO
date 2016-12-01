@@ -17,27 +17,35 @@ public:
   explicit WidgetLogisticaAgendarColeta(QWidget *parent = 0);
   ~WidgetLogisticaAgendarColeta();
   bool updateTables();
-  void TableFornLogistica_activated(const QString &fornecedor);
+  void tableFornLogistica_activated(const QString &fornecedor);
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void calcularPeso();
+  void on_itemBoxVeiculo_textChanged(const QString &);
+  void on_lineEditBusca_textChanged(const QString &);
+  void on_pushButtonAdicionarProduto_clicked();
   void on_pushButtonAgendarColeta_clicked();
+  void on_pushButtonCancelarCarga_clicked();
+  void on_pushButtonDanfe_clicked();
   void on_pushButtonMontarCarga_clicked();
-  void on_pushButtonSendLeft_clicked();
-  void on_pushButtonSendRight_clicked();
+  void on_pushButtonRemoverProduto_clicked();
+  void on_tableEstoque_doubleClicked(const QModelIndex &index);
   void on_tableEstoque_entered(const QModelIndex &);
 
 private:
   // attributes
-  QStandardItemModel *treeModel;
   SqlTableModel modelEstoque;
   SqlTableModel modelTransp;
+  SqlTableModel modelTransp2;
+  QString fornecedor;
   Ui::WidgetLogisticaAgendarColeta *ui;
   // methods
-  bool processRows(const QModelIndexList &list);
+  bool adicionarProduto(const QModelIndexList &list);
+  bool imprimirDanfe();
+  bool processRows(const QModelIndexList &list, const bool montarCarga = false);
   void setupTables();
 };
 

@@ -10,10 +10,7 @@
 #include "usersession.h"
 #include "widgetrelatorio.h"
 
-WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) {
-  ui->setupUi(this);
-  if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->pushButtonExcel->hide();
-}
+WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) { ui->setupUi(this); }
 
 WidgetRelatorio::~WidgetRelatorio() { delete ui; }
 
@@ -56,9 +53,6 @@ void WidgetRelatorio::setFilterTotaisLoja() {
 }
 
 bool WidgetRelatorio::setupTables() {
-  ReaisDelegate *reaisDelegate = new ReaisDelegate(this);
-  PorcentagemDelegate *porcentagemDelegate = new PorcentagemDelegate(this);
-
   modelRelatorio.setTable("view_relatorio");
   modelRelatorio.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -70,9 +64,9 @@ bool WidgetRelatorio::setupTables() {
   }
 
   ui->tableRelatorio->setModel(&modelRelatorio);
-  ui->tableRelatorio->setItemDelegateForColumn("Faturamento", reaisDelegate);
-  ui->tableRelatorio->setItemDelegateForColumn("Valor Comissão", reaisDelegate);
-  ui->tableRelatorio->setItemDelegateForColumn("% Comissão", porcentagemDelegate);
+  ui->tableRelatorio->setItemDelegateForColumn("Faturamento", new ReaisDelegate(this));
+  ui->tableRelatorio->setItemDelegateForColumn("Valor Comissão", new ReaisDelegate(this));
+  ui->tableRelatorio->setItemDelegateForColumn("% Comissão", new PorcentagemDelegate(this));
   ui->tableRelatorio->hideColumn("Mês");
   ui->tableRelatorio->hideColumn("idUsuario");
   ui->tableRelatorio->resizeColumnsToContents();
@@ -90,9 +84,9 @@ bool WidgetRelatorio::setupTables() {
   }
 
   ui->tableTotalVendedor->setModel(&modelTotalVendedor);
-  ui->tableTotalVendedor->setItemDelegateForColumn("Faturamento", reaisDelegate);
-  ui->tableTotalVendedor->setItemDelegateForColumn("Valor Comissão", reaisDelegate);
-  ui->tableTotalVendedor->setItemDelegateForColumn("% Comissão", porcentagemDelegate);
+  ui->tableTotalVendedor->setItemDelegateForColumn("Faturamento", new ReaisDelegate(this));
+  ui->tableTotalVendedor->setItemDelegateForColumn("Valor Comissão", new ReaisDelegate(this));
+  ui->tableTotalVendedor->setItemDelegateForColumn("% Comissão", new PorcentagemDelegate(this));
   ui->tableTotalVendedor->hideColumn("idUsuario");
   ui->tableTotalVendedor->hideColumn("Mês");
   ui->tableTotalVendedor->resizeColumnsToContents();
@@ -110,9 +104,9 @@ bool WidgetRelatorio::setupTables() {
   }
 
   ui->tableTotalLoja->setModel(&modelTotalLoja);
-  ui->tableTotalLoja->setItemDelegateForColumn("Faturamento", reaisDelegate);
-  ui->tableTotalLoja->setItemDelegateForColumn("Valor Comissão", reaisDelegate);
-  ui->tableTotalLoja->setItemDelegateForColumn("% Comissão", porcentagemDelegate);
+  ui->tableTotalLoja->setItemDelegateForColumn("Faturamento", new ReaisDelegate(this));
+  ui->tableTotalLoja->setItemDelegateForColumn("Valor Comissão", new ReaisDelegate(this));
+  ui->tableTotalLoja->setItemDelegateForColumn("% Comissão", new PorcentagemDelegate(this));
   ui->tableTotalLoja->hideColumn("Mês");
   ui->tableTotalLoja->resizeColumnsToContents();
 
@@ -136,29 +130,47 @@ void WidgetRelatorio::calcularTotalGeral() {
 }
 
 void WidgetRelatorio::setFilterRelatorio() {
-  QDate date = ui->dateEditMes->date();
+  const QString date = ui->dateEditMes->date().toString("yyyy-MM");
   QString filter;
 
   if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-    filter = "Mês = '" + date.toString("yyyy-MM") + "' AND idUsuario = " + QString::number(UserSession::idUsuario()) +
+    filter = "Mês = '" + date + "' AND idUsuario = " + QString::number(UserSession::idUsuario()) +
              " ORDER BY Loja, Vendedor, idVenda";
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    filter = "Mês = '" + date.toString("yyyy-MM") + "' AND Loja = '" + UserSession::fromLoja("descricao") +
-             "' ORDER BY Loja, Vendedor, idVenda";
+    filter =
+        "Mês = '" + date + "' AND Loja = '" + UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor, idVenda";
   } else {
-    filter = "Mês = '" + date.toString("yyyy-MM") + "' ORDER BY Loja, Vendedor, idVenda";
+    filter = "Mês = '" + date + "' ORDER BY Loja, Vendedor, idVenda";
   }
 
   modelRelatorio.setFilter(filter);
 
   if (not modelRelatorio.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela relatorio: " + modelRelatorio.lastError().text());
+    emit errorSignal("Erro lendo tabela relatorio: " + modelRelatorio.lastError().text());
   }
 }
 
 void WidgetRelatorio::on_dateEditMes_dateChanged(const QDate &) { updateTables(); }
 
-void WidgetRelatorio::updateTables2() {
+void WidgetRelatorio::on_tableRelatorio_entered(const QModelIndex &) { ui->tableRelatorio->resizeColumnsToContents(); }
+
+bool WidgetRelatorio::updateTables() {
+  if (modelRelatorio.tableName().isEmpty()) {
+    if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
+      ui->labelTotalLoja->hide();
+      ui->tableTotalLoja->hide();
+      ui->labelGeral->hide();
+      ui->doubleSpinBoxGeral->hide();
+      ui->groupBoxResumoOrcamento->hide();
+    }
+
+    ui->dateEditMes->setDate(QDate::currentDate());
+
+    if (not setupTables()) return false;
+
+    calcularTotalGeral();
+  }
+
   setFilterRelatorio();
   setFilterTotaisVendedor();
   setFilterTotaisLoja();
@@ -201,29 +213,6 @@ void WidgetRelatorio::updateTables2() {
   ui->tableResumoOrcamento->setItemDelegateForColumn("% Fechados / Gerados", new PorcentagemDelegate(this));
   ui->tableResumoOrcamento->setItemDelegateForColumn("% Fechados / Carteira", new PorcentagemDelegate(this));
   ui->tableResumoOrcamento->resizeColumnsToContents();
-}
-
-void WidgetRelatorio::on_tableRelatorio_entered(const QModelIndex &) { ui->tableRelatorio->resizeColumnsToContents(); }
-
-bool WidgetRelatorio::updateTables() {
-  if (modelRelatorio.tableName().isEmpty()) {
-    if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-      ui->labelTotalLoja->hide();
-      ui->tableTotalLoja->hide();
-      ui->labelGeral->hide();
-      ui->doubleSpinBoxGeral->hide();
-      ui->groupBoxResumoOrcamento->hide();
-    }
-
-    ui->dateEditMes->setDate(QDate::currentDate());
-
-    if (not setupTables()) return false;
-
-    calcularTotalGeral();
-  }
-
-  // TODO: refactor
-  updateTables2();
 
   ui->tableRelatorio->resizeColumnsToContents();
   ui->tableTotalVendedor->resizeColumnsToContents();
@@ -239,9 +228,11 @@ void WidgetRelatorio::on_tableTotalVendedor_entered(const QModelIndex &) {
 }
 
 void WidgetRelatorio::on_pushButtonExcel_clicked() {
-  QString dir = QFileDialog::getExistingDirectory(this, "Pasta para salvar relatório");
+  const QString dir = QFileDialog::getExistingDirectory(this, "Pasta para salvar relatório");
 
-  QString arquivoModelo = "relatorio.xlsx";
+  if (dir.isEmpty()) return;
+
+  const QString arquivoModelo = "relatorio.xlsx";
 
   QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
 
@@ -250,7 +241,7 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
     return;
   }
 
-  QString fileName = dir + "/relatorio-" + ui->dateEditMes->date().toString("MM-yyyy") + ".xlsx";
+  const QString fileName = dir + "/relatorio-" + ui->dateEditMes->date().toString("MM-yyyy") + ".xlsx";
 
   QFile file(fileName);
 
@@ -269,7 +260,7 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
 
   for (int col = 0; col < modelRelatorio.columnCount(); ++col, ++column) {
     xlsx.write(column + QString::number(1), modelRelatorio.headerData(col, Qt::Horizontal).toString());
-  };
+  }
 
   column = 'A';
 
@@ -277,6 +268,7 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
     for (int col = 0; col < modelRelatorio.columnCount(); ++col, ++column) {
       xlsx.write(column + QString::number(row + 2), modelRelatorio.data(row, col));
     }
+
     column = 'A';
   }
 
@@ -284,7 +276,7 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
 
   for (int col = 0; col < modelTotalVendedor.columnCount(); ++col, ++column) {
     xlsx.write(column + QString::number(1), modelTotalVendedor.headerData(col, Qt::Horizontal).toString());
-  };
+  }
 
   column = 'A';
 
@@ -292,6 +284,7 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
     for (int col = 0; col < modelTotalVendedor.columnCount(); ++col, ++column) {
       xlsx.write(column + QString::number(row + 2), modelTotalVendedor.data(row, col));
     }
+
     column = 'A';
   }
 
@@ -303,5 +296,3 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
   QMessageBox::information(this, "Ok!", "Arquivo salvo como " + fileName);
   QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
 }
-
-// TODO: mostrar tela de resumo de orcamentos para vendedores

@@ -18,14 +18,11 @@ public:
   bool updateTables();
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
-  void on_table_activated(const QModelIndex &index);
-  void on_radioButtonAutorizado_clicked();
-  void on_radioButtonEnviado_clicked();
-  void on_radioButtonTodos_clicked();
   void on_lineEditBusca_textChanged(const QString &text);
+  void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 
 private:

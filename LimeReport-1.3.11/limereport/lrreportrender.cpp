@@ -519,7 +519,6 @@ void ReportRender::popPageFooterGroupValues(BandDesignIntf *dataBand) {
   if (pageFooter) {
     foreach (GroupFunction *gf, datasources()->groupFunctionsByBand(pageFooter->objectName())) {
       if ((gf->dataBandName() == dataBand->objectName())) {
-        // FIXME Probably coincidence Field and Variables
         if ((!m_popupedExpression.contains(dataBand)) or (!m_popupedExpression.values(dataBand).contains(gf->data()))) {
           m_popupedExpression.insert(dataBand, gf->data());
           m_popupedValues.insert(QString("%1").arg((quintptr)dataBand) + '|' + gf->data(),
@@ -536,7 +535,6 @@ void ReportRender::pushPageFooterGroupValues(BandDesignIntf *dataBand) {
   if (pageFooter) {
     foreach (GroupFunction *gf, datasources()->groupFunctionsByBand(pageFooter->objectName())) {
       if ((gf->dataBandName() == dataBand->objectName())) {
-        // FIXME Probably coincidence Field and Variables
         if ((m_popupedExpression.contains(dataBand)) and (m_popupedExpression.values(dataBand).contains(gf->data()))) {
           gf->values().push_back(m_popupedValues.value(QString("%1").arg((quintptr)dataBand) + '|' + gf->data()));
         }
@@ -592,7 +590,7 @@ qreal maxVectorValue(QVector<qreal> vector) {
 
 qreal minVectorValue(QVector<qreal> vector) {
   qreal curValue = vector[0];
-  foreach (qreal value, vector) {
+  for (qreal value : vector) {
     if (curValue > value) curValue = value;
   }
   return curValue;

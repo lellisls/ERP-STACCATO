@@ -69,6 +69,16 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>OC</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="WidgetCompraOC" name="widgetOC" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -102,6 +112,12 @@
    <class>WidgetCompraPendentes</class>
    <extends>QWidget</extends>
    <header>src/widgetcomprapendentes.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetCompraOC</class>
+   <extends>QWidget</extends>
+   <header>src/widgetcompraoc.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

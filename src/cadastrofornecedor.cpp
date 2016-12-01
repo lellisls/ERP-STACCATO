@@ -1,4 +1,6 @@
+#include <QDate>
 #include <QDebug>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 
@@ -90,7 +92,6 @@ bool CadastroFornecedor::savingProcedures() {
   if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
   if (not setData("nextel", ui->lineEditNextel->text())) return false;
   if (not setData("email", ui->lineEditEmail->text())) return false;
-  if (not setData("coleta", ui->checkBoxColeta->isChecked())) return false;
 
   return true;
 }
@@ -119,7 +120,6 @@ void CadastroFornecedor::setupMapper() {
   addMapping(ui->lineEditTel_Cel, "telCel");
   addMapping(ui->lineEditTel_Com, "telCom");
   addMapping(ui->lineEditTel_Res, "tel");
-  addMapping(ui->checkBoxColeta, "coleta");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
@@ -135,6 +135,7 @@ void CadastroFornecedor::registerMode() {
   ui->pushButtonCadastrar->show();
   ui->pushButtonAtualizar->hide();
   ui->pushButtonRemover->hide();
+  ui->pushButtonValidade->hide();
 }
 
 void CadastroFornecedor::updateMode() {
@@ -248,6 +249,8 @@ bool CadastroFornecedor::viewRegister() {
 
   ui->tableEndereco->resizeColumnsToContents();
 
+  ui->pushButtonValidade->show();
+
   return true;
 }
 
@@ -277,3 +280,49 @@ void CadastroFornecedor::successMessage() {
 }
 
 void CadastroFornecedor::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
+
+bool CadastroFornecedor::ajustarValidade() {
+  const QString fornecedor = model.data(mapper.currentIndex(), "razaoSocial").toString();
+
+  bool ok = true;
+
+  const int newValidade =
+      QInputDialog::getInt(this, "Validade", "Quantos dias de validade para os produtos: ", 0, 0, 1000, 1, &ok);
+
+  if (not ok) return false;
+
+  QSqlQuery query;
+  query.prepare("UPDATE produto SET validade = :newValidade WHERE fornecedor = :fornecedor AND descontinuado = 0");
+  query.bindValue(":newValidade", QDate::currentDate().addDays(newValidade));
+  query.bindValue(":fornecedor", fornecedor);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando validade nos produtos: " + query.lastError().text());
+    return false;
+  }
+
+  query.prepare("UPDATE fornecedor SET validadeProdutos = :newValidade WHERE razaoSocial = :fornecedor");
+  query.bindValue(":newValidade", QDate::currentDate().addDays(newValidade));
+  query.bindValue(":fornecedor", fornecedor);
+
+  if (not query.exec()) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando validade no fornecedor: " + query.lastError().text());
+    return false;
+  }
+
+  return true;
+}
+
+void CadastroFornecedor::on_pushButtonValidade_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not ajustarValidade()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  QMessageBox::information(this, "Aviso!", "Validade alterada com sucesso!");
+}

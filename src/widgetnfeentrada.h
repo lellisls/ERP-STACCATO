@@ -18,7 +18,7 @@ public:
   bool updateTables();
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void on_table_activated(const QModelIndex &index);

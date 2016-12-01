@@ -25,8 +25,7 @@ void Excel::verificaTipo() {
   type = query.first() ? Orcamento : Venda;
 }
 
-bool Excel::gerarExcel(const int oc, const bool representacao) {
-  // TODO: instead of returning fileName, return a bool and return fileName by parameter
+bool Excel::gerarExcel(const int oc, const bool isRepresentacao, const QString representacao) {
   QString folder = type == Orcamento ? "User/OrcamentosFolder" : "User/VendasFolder";
 
   if (UserSession::settings(folder).toString().isEmpty()) {
@@ -36,7 +35,7 @@ bool Excel::gerarExcel(const int oc, const bool representacao) {
     if (UserSession::settings(folder).toString().isEmpty()) return false;
   }
 
-  QString path = UserSession::settings(folder).toString();
+  const QString path = UserSession::settings(folder).toString();
 
   QDir dir(path);
 
@@ -45,7 +44,7 @@ bool Excel::gerarExcel(const int oc, const bool representacao) {
     return false;
   }
 
-  QString arquivoModelo = "modelo pedido.xlsx";
+  const QString arquivoModelo = "modelo pedido.xlsx";
 
   QFile modelo(QDir::currentPath() + "/" + arquivoModelo);
 
@@ -59,8 +58,9 @@ bool Excel::gerarExcel(const int oc, const bool representacao) {
     return false;
   }
 
-  fileName = path + "/" + id + "-" + queryVendedor.value("nome").toString().split(" ").first() + "-" +
-             queryCliente.value("nome_razao").toString().replace("/", "-") + ".xlsx";
+  fileName = isRepresentacao ? path + "/" + representacao + ".xlsx"
+                             : path + "/" + id + "-" + queryVendedor.value("nome").toString().split(" ").first() + "-" +
+                                   queryCliente.value("nome_razao").toString().replace("/", "-") + ".xlsx";
 
   QFile file(fileName);
 
@@ -96,7 +96,7 @@ bool Excel::gerarExcel(const int oc, const bool representacao) {
   xlsx.write("A5", endLoja);
 
   if (type == Venda) {
-    if (representacao) {
+    if (isRepresentacao) {
       xlsx.write("C2", "Pedido:");
       xlsx.write("D2", "OC " + QString::number(oc) + " " + id);
       QXlsx::Format format;
@@ -265,14 +265,11 @@ bool Excel::gerarExcel(const int oc, const bool representacao) {
   return true;
 }
 
-QString Excel::getFileName() const
-{
-    return fileName;
-}
+QString Excel::getFileName() const { return fileName; }
 
 bool Excel::setQuerys() {
-    if (type == Orcamento) {
-        query.prepare("SELECT idLoja, idUsuario, idProfissional, idEnderecoEntrega, idCliente, data, subTotalLiq, "
+  if (type == Orcamento) {
+    query.prepare("SELECT idLoja, idUsuario, idProfissional, idEnderecoEntrega, idCliente, data, subTotalLiq, "
                   "subTotalBru, descontoPorc, frete, total, prazoEntrega, observacao FROM orcamento WHERE idOrcamento "
                   "= :idOrcamento");
     query.bindValue(":idOrcamento", id);

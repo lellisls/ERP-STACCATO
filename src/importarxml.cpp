@@ -12,7 +12,7 @@
 #include "ui_importarxml.h"
 #include "xml.h"
 
-ImportarXML::ImportarXML(const QStringList &idsCompra, const QDate &dataReal, QWidget *parent)
+ImportarXML::ImportarXML(const QStringList &idsCompra, const QDateTime &dataReal, QWidget *parent)
     : QDialog(parent), ui(new Ui::ImportarXML), dataReal(dataReal), idsCompra(idsCompra) {
   ui->setupUi(this);
 
@@ -55,6 +55,7 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   ui->tableEstoque->setItemDelegateForColumn("descricao", new SingleEditDelegate(this));
   ui->tableEstoque->setItemDelegateForColumn("valorUnid", new ReaisDelegate(this));
   ui->tableEstoque->setItemDelegateForColumn("valor", new ReaisDelegate(this));
+  ui->tableEstoque->hideColumn("recebidoPor");
   ui->tableEstoque->hideColumn("quantUpd");
   ui->tableEstoque->hideColumn("idNFe");
   ui->tableEstoque->hideColumn("idEstoque");
@@ -198,6 +199,7 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   ui->tableCompra->setItemDelegateForColumn("descricao", new SingleEditDelegate(this));
   ui->tableCompra->setItemDelegateForColumn("prcUnitario", new ReaisDelegate(this));
   ui->tableCompra->setItemDelegateForColumn("preco", new ReaisDelegate(this));
+  ui->tableCompra->hideColumn("idVendaProduto");
   ui->tableCompra->hideColumn("selecionado");
   ui->tableCompra->hideColumn("statusFinanceiro");
   ui->tableCompra->hideColumn("quantUpd");
@@ -218,6 +220,8 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   ui->tableCompra->hideColumn("dataRealReceb");
   ui->tableCompra->hideColumn("dataPrevEnt");
   ui->tableCompra->hideColumn("dataRealEnt");
+  ui->tableCompra->hideColumn("aliquotaSt");
+  ui->tableCompra->hideColumn("st");
 
   ui->tableCompra->resizeColumnsToContents();
 }
@@ -286,7 +290,7 @@ bool ImportarXML::importar() {
   //------------------------------
   QSqlQuery query;
   for (auto const &idCompra : idsCompra) {
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET dataRealFat = :dataRealFat, status = 'EM COLETA' WHERE "
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'EM COLETA', dataRealFat = :dataRealFat WHERE "
                   "idCompra = :idCompra AND quantUpd = 1");
     query.bindValue(":dataRealFat", dataReal);
     query.bindValue(":idCompra", idCompra);
@@ -476,7 +480,6 @@ bool ImportarXML::lerXML(QFile &file) {
 
 bool ImportarXML::criarConsumo() {
   for (int row = 0; row < modelEstoque.rowCount(); ++row) {
-
     const QString codComercial = modelEstoque.data(row, "codComercial").toString();
     const int idEstoque = modelEstoque.data(row, "idEstoque").toInt();
 
@@ -547,19 +550,11 @@ bool ImportarXML::criarConsumo() {
           const double pccx = queryTemp.value("pccx").toDouble();
 
           if (un == "KG") {
-            if (kgcx <= 0.) continue;
-
-            caixas = quant / kgcx;
-
+            if (kgcx > 0.) caixas = quant / kgcx;
           } else if (un == "M2" or un == "M²") {
-            if (m2cx <= 0.) continue;
-
-            caixas = quant / m2cx;
-
+            if (m2cx > 0.) caixas = quant / m2cx;
           } else {
-            if (pccx <= 0.) continue;
-
-            caixas = quant / pccx;
+            if (pccx > 0.) caixas = quant / pccx;
           }
         }
 
@@ -572,7 +567,7 @@ bool ImportarXML::criarConsumo() {
         if (not modelConsumo.setData(newRow, "idEstoque", modelEstoque.data(row, "idEstoque"))) return false;
 
         QSqlQuery query;
-        query.prepare("UPDATE venda_has_produto SET dataRealFat = :dataRealFat, status = 'EM COLETA' WHERE "
+        query.prepare("UPDATE venda_has_produto SET status = 'EM COLETA', dataRealFat = :dataRealFat WHERE "
                       "idVendaProduto = :idVendaProduto");
         query.bindValue(":dataRealFat", dataReal);
         query.bindValue(":idVendaProduto", queryProduto.value("idVendaProduto"));

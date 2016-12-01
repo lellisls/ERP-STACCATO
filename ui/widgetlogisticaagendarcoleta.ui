@@ -14,17 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="4" column="0">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox">
-     <property name="suffix">
-      <string> Kg</string>
-     </property>
-     <property name="maximum">
-      <double>999999.989999999990687</double>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
+   <item row="6" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="pushButtonAgendarColeta">
@@ -34,9 +24,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonCancelarCarga">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Cancelar carga</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonMontarCarga">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Montar carga</string>
@@ -45,7 +45,17 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Buscar:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="lineEditBusca"/>
+   </item>
+   <item row="1" column="0" colspan="2">
     <widget class="TableView" name="tableEstoque">
      <property name="palette">
       <palette>
@@ -113,70 +123,186 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="0" column="0" colspan="2">
+    <widget class="QPushButton" name="pushButtonDanfe">
+     <property name="text">
+      <string>DANFE</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
     <widget class="QFrame" name="frameCaminhao">
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="0" rowspan="4" colspan="2">
-       <widget class="QTreeView" name="tableTransp">
-        <property name="palette">
-         <palette>
-          <active>
-           <colorrole role="Highlight">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>51</red>
-              <green>153</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </active>
-          <inactive>
-           <colorrole role="Highlight">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>51</red>
-              <green>153</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </inactive>
-          <disabled>
-           <colorrole role="Highlight">
-            <brush brushstyle="SolidPattern">
-             <color alpha="255">
-              <red>51</red>
-              <green>153</green>
-              <blue>255</blue>
-             </color>
-            </brush>
-           </colorrole>
-          </disabled>
-         </palette>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Transportadora/Veículo:</string>
         </property>
-        <property name="styleSheet">
-         <string notr="true">QTreeView::item { border: 0.5px ; border-style: solid ; border-color: lightgray ;}</string>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="ItemBox" name="itemBoxVeiculo"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Capacidade:</string>
         </property>
-        <property name="alternatingRowColors">
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxCapacidade">
+        <property name="readOnly">
          <bool>true</bool>
         </property>
-        <property name="headerHidden">
-         <bool>false</bool>
+        <property name="suffix">
+         <string> Kg</string>
+        </property>
+        <property name="maximum">
+         <double>99999.990000000005239</double>
         </property>
        </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="1" rowspan="3">
+         <widget class="TableView" name="tableTransp">
+          <property name="palette">
+           <palette>
+            <active>
+             <colorrole role="Highlight">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>51</red>
+                <green>153</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </active>
+            <inactive>
+             <colorrole role="Highlight">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>51</red>
+                <green>153</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </inactive>
+            <disabled>
+             <colorrole role="Highlight">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>51</red>
+                <green>153</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </disabled>
+           </palette>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QTreeView::item { border: 0.5px ; border-style: solid ; border-color: lightgray ;}</string>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="pushButtonAdicionarProduto">
+          <property name="text">
+           <string>Adicionar</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="pushButtonRemoverProduto">
+          <property name="text">
+           <string>Remover</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" rowspan="3">
+         <widget class="TableView" name="tableTransp2">
+          <property name="palette">
+           <palette>
+            <active>
+             <colorrole role="Highlight">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>51</red>
+                <green>153</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </active>
+            <inactive>
+             <colorrole role="Highlight">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>51</red>
+                <green>153</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </inactive>
+            <disabled>
+             <colorrole role="Highlight">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>51</red>
+                <green>153</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </disabled>
+           </palette>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QTreeView::item { border: 0.5px ; border-style: solid ; border-color: lightgray ;}</string>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="0" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButtonSendRight">
-        <property name="text">
-         <string>Adicionar</string>
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxPeso">
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButtonSendLeft">
-        <property name="text">
-         <string>Remover</string>
+        <property name="suffix">
+         <string> Kg</string>
+        </property>
+        <property name="maximum">
+         <double>999999.989999999990687</double>
         </property>
        </widget>
       </item>
@@ -190,6 +316,11 @@
    <class>TableView</class>
    <extends>QTableView</extends>
    <header>src/tableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ItemBox</class>
+   <extends>QLineEdit</extends>
+   <header>src/itembox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -91,8 +91,10 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, c
   message.replace(QString::fromLatin1("\r\n.\r\n"), QString::fromLatin1("\r\n..\r\n"));
 
   this->from = from;
-  if (not cc.isEmpty()) rcpt = cc.split(";");
-  rcpt.append(to);
+
+  rcpt.append(to.split(";"));
+  rcpt.append(cc.split(";"));
+
   state = Init;
   socket->connectToHostEncrypted(host, port); //"smtp.gmail.com" and 465 for gmail TLS
 

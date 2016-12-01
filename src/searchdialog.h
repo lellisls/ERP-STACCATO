@@ -35,6 +35,7 @@ public:
   static SearchDialog *profissional(QWidget *parent);
   static SearchDialog *transportadora(QWidget *parent);
   static SearchDialog *usuario(QWidget *parent);
+  static SearchDialog *veiculo(QWidget *parent);
   static SearchDialog *vendedor(QWidget *parent);
 
 signals:

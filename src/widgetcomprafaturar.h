@@ -18,20 +18,22 @@ public:
   bool updateTables();
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void on_checkBoxRepresentacao_toggled(bool checked);
+  void on_pushButtonCancelarCompra_clicked();
   void on_pushButtonMarcarFaturado_clicked();
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::WidgetCompraFaturar *ui;
   SqlTableModel model;
+  Ui::WidgetCompraFaturar *ui;
   // methods
-  void setupTables();
+  bool cancelar();
   bool faturarCompra();
+  void setupTables();
 };
 
 #endif // WIDGETCOMPRAFATURAR_H

@@ -30,7 +30,6 @@ private slots:
   void on_pushButtonAtualizarTaxas_clicked();
   void on_pushButtonBuscar_clicked();
   void on_pushButtonCadastrar_clicked();
-  void on_pushButtonCadastrarTipo_clicked();
   void on_pushButtonContaLimpar_clicked();
   void on_pushButtonEndLimpar_clicked();
   void on_pushButtonNovoCad_clicked();
@@ -46,19 +45,18 @@ private slots:
 
 private:
   // attributes
-  Ui::CadastroLoja *ui;
-  SqlTableModel modelAssocia1;
-  SqlTableModel modelAssocia2;
-  SqlTableModel modelAlcadas;
-  SqlTableModel modelPermissoes;
-  SqlTableModel modelConta;
-  //
-  SqlTableModel modelPagamentos;
-  SqlTableModel modelTaxas;
-  //
   QDataWidgetMapper mapperConta;
   QDataWidgetMapper mapperPagamento;
+  SqlTableModel modelAssocia1;
+  SqlTableModel modelAssocia2;
+  SqlTableModel modelConta;
+  SqlTableModel modelPagamentos;
+  SqlTableModel modelPermissoes;
+  SqlTableModel modelTaxas;
+  Ui::CadastroLoja *ui;
   // methods
+  bool adicionarPagamento();
+  bool atualizarPagamento();
   bool cadastrar() override;
   bool cadastrarConta(const bool &isUpdate);
   bool cadastrarEndereco(const bool &isUpdate);

@@ -303,8 +303,8 @@ bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
   return true;
 }
 
-void CadastroCliente::on_pushButtonAdicionarEnd_clicked() { // TODO: rename to CadastrarEndereco
-  if (not cadastrarEndereco(false)) {                       // TODO: replace false with use of this.isUpdateEnd
+void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
+  if (not cadastrarEndereco(false)) {
     QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!");
     return;
   }
@@ -425,3 +425,5 @@ void CadastroCliente::successMessage() {
 }
 
 void CadastroCliente::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
+
+// TODO: validar inscricaoEstadual para ser numeros ou 'ISENTO' (colocar checkbox 'ISENTO', quando a pessoa marca colocar o texto ISENTO na lineEdit e bloquear edicao, sem a checkbox só aceita numero)

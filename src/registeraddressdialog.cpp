@@ -63,7 +63,8 @@ bool RegisterAddressDialog::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId =
+      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     if (not modelEnd.setData(row, primaryKey, primaryId)) return false;

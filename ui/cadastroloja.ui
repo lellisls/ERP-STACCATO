@@ -762,66 +762,6 @@ color: rgb(0, 0, 0);</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
-      <attribute name="title">
-       <string>Alçadas</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_11">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBoxAlcadas">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="title">
-          <string>Alçadas</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_17">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <widget class="QLineEdit" name="lineEditTipo"/>
-            </item>
-            <item row="0" column="1">
-             <widget class="QPushButton" name="pushButtonCadastrarTipo">
-              <property name="text">
-               <string>Cadastrar</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="2" column="0">
-           <widget class="TableView" name="tablePermissoes"/>
-          </item>
-          <item row="2" column="2">
-           <widget class="QTableView" name="tableView"/>
-          </item>
-          <item row="2" column="1">
-           <layout class="QGridLayout" name="gridLayout_16">
-            <item row="0" column="0">
-             <widget class="QPushButton" name="pushButton">
-              <property name="text">
-               <string>&lt;&lt;</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QPushButton" name="pushButton_2">
-              <property name="text">
-               <string>&gt;&gt;</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="TableView" name="tableAlcadas"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
        <string>Pagamentos</string>
@@ -936,9 +876,6 @@ color: rgb(0, 0, 0);</string>
             </widget>
            </item>
           </layout>
-          <zorder>groupBox_3</zorder>
-          <zorder>groupBox_3</zorder>
-          <zorder>groupBox_3</zorder>
          </widget>
          <widget class="QWidget" name="tab_6">
           <attribute name="title">

@@ -16,10 +16,10 @@ public:
   explicit WidgetLogisticaRepresentacao(QWidget *parent = 0);
   ~WidgetLogisticaRepresentacao();
   bool updateTables();
-  void TableFornLogistica_activated(const QString &fornecedor);
+  void tableFornLogistica_activated(const QString &fornecedor);
 
 signals:
-  void errorSignal(QString error);
+  void errorSignal(const QString &error);
 
 private slots:
   void on_lineEditBusca_textChanged(const QString &text);
@@ -28,9 +28,11 @@ private slots:
 
 private:
   // attributes
-  Ui::WidgetLogisticaRepresentacao *ui;
   SqlTableModel model;
+  QString fornecedor;
+  Ui::WidgetLogisticaRepresentacao *ui;
   // methods
+  bool processRows(const QModelIndexList &list);
   void setupTables();
 };
 

@@ -4,9 +4,11 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "estoqueprazoproxymodel.h"
 #include "inputdialog.h"
-#include "orcamentoproxymodel.h"
+#include "inputdialogconfirmacao.h"
 #include "ui_widgetlogisticarecebimento.h"
+#include "venda.h"
 #include "widgetlogisticarecebimento.h"
 
 WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent)
@@ -31,18 +33,16 @@ bool WidgetLogisticaRecebimento::updateTables() {
   return true;
 }
 
-void WidgetLogisticaRecebimento::TableFornLogistica_activated(const QString &fornecedor) {
+void WidgetLogisticaRecebimento::tableFornLogistica_activated(const QString &fornecedor) {
   this->fornecedor = fornecedor;
 
-  model.setFilter("fornecedor = '" + fornecedor + "'");
+  model.setFilter("fornecedor = '" + fornecedor + "' ORDER BY prazoEntrega");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
-
-  for (int row = 0; row < model.rowCount(); ++row) ui->table->openPersistentEditor(row, "selecionado");
 
   ui->checkBoxMarcarTodos->setChecked(false);
 
@@ -53,6 +53,7 @@ void WidgetLogisticaRecebimento::setupTables() {
   model.setTable("view_recebimento");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+  model.setHeaderData("idEstoque", "Estoque");
   model.setHeaderData("numeroNFe", "NFe");
   model.setHeaderData("produto", "Produto");
   model.setHeaderData("quant", "Quant.");
@@ -63,22 +64,28 @@ void WidgetLogisticaRecebimento::setupTables() {
   model.setHeaderData("ordemCompra", "OC");
   model.setHeaderData("local", "Local");
   model.setHeaderData("dataPrevReceb", "Data Prev. Rec.");
+  model.setHeaderData("prazoEntrega", "Prazo Limite");
 
   model.setFilter("0");
 
-  ui->table->setModel(new OrcamentoProxyModel(&model, this)); // TODO: make another proxyModel or refactor this one
+  ui->table->setModel(new EstoquePrazoProxyModel(&model, this));
   // ui->table->hideColumn("idEstoque");
   ui->table->hideColumn("fornecedor");
 }
 
-bool WidgetLogisticaRecebimento::processRows(QModelIndexList list) {
+bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list) {
   const QString filtro = model.filter();
 
-  InputDialog *inputDlg = new InputDialog(InputDialog::Recebimento, this);
+  QStringList ids;
 
-  if (inputDlg->exec() != InputDialog::Accepted) return false;
+  for (auto const &item : list) ids.append(model.data(item.row(), "idEstoque").toString());
 
-  const QDate dataReceb = inputDlg->getDate();
+  InputDialogConfirmacao *inputDlg = new InputDialogConfirmacao(InputDialogConfirmacao::Recebimento, this);
+  inputDlg->setFilter(ids);
+
+  if (inputDlg->exec() != InputDialogConfirmacao::Accepted) return false;
+
+  const QDateTime dataReceb = inputDlg->getDate();
 
   model.setFilter(filtro);
   model.select();
@@ -103,7 +110,7 @@ bool WidgetLogisticaRecebimento::processRows(QModelIndexList list) {
       return false;
     }
 
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'EM RECEBIMENTO', dataRealReceb = :dataRealReceb "
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ESTOQUE', dataRealReceb = :dataRealReceb "
                   "WHERE idCompra IN (SELECT idCompra FROM estoque_has_compra WHERE idEstoque = :idEstoque) AND "
                   "codComercial = :codComercial");
     query.bindValue(":dataRealReceb", dataReceb);
@@ -155,8 +162,8 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
 
   QSqlQuery("COMMIT").exec();
 
-  QMessageBox::information(this, "Aviso!", "Confirmado recebimento!");
   updateTables();
+  QMessageBox::information(this, "Aviso!", "Confirmado recebimento!");
 }
 
 void WidgetLogisticaRecebimento::on_checkBoxMarcarTodos_clicked(const bool &) { ui->table->selectAll(); }
@@ -170,4 +177,71 @@ void WidgetLogisticaRecebimento::on_lineEditBuscaRecebimento_textChanged(const Q
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }
 
-// TODO: verificar linhas com nfe vazio
+void WidgetLogisticaRecebimento::on_pushButtonReagendar_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not reagendar()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  updateTables();
+  QMessageBox::information(this, "Aviso!", "Reagendado com sucesso!");
+}
+
+bool WidgetLogisticaRecebimento::reagendar() {
+  const auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return false;
+  }
+
+  InputDialog *input = new InputDialog(InputDialog::AgendarRecebimento, this);
+
+  if (input->exec() != InputDialog::Accepted) return false;
+
+  const QDateTime dataPrevReceb = input->getNextDate();
+
+  for (const auto &item : list) {
+    const int idEstoque = model.data(item.row(), "idEstoque").toInt();
+    const QString codComercial = model.data(item.row(), "codComercial").toString();
+
+    QSqlQuery query;
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET dataPrevReceb = :dataPrevReceb WHERE idCompra IN (SELECT "
+                  "idCompra FROM estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.bindValue(":dataPrevReceb", dataPrevReceb);
+    query.bindValue(":idEstoque", idEstoque);
+    query.bindValue(":codComercial", codComercial);
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando status no pedido_fornecedor: " + query.lastError().text());
+      return false;
+    }
+
+    query.prepare("UPDATE venda_has_produto SET dataPrevReceb = :dataPrevReceb WHERE idCompra IN (SELECT idCompra FROM "
+                  "estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.bindValue(":dataPrevReceb", dataPrevReceb);
+    query.bindValue(":idEstoque", idEstoque);
+    query.bindValue(":codComercial", codComercial);
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando status na venda_produto: " + query.lastError().text());
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void WidgetLogisticaRecebimento::on_table_doubleClicked(const QModelIndex &index) {
+  const QString idVenda = model.data(index.row(), "idVenda").toString();
+
+  if (idVenda.isEmpty()) return;
+
+  Venda *venda = new Venda(this);
+  venda->viewRegisterById(idVenda);
+}

@@ -48,6 +48,8 @@ void CadastroUsuario::setupTables() {
 
   ui->table->setModel(&modelPermissoes);
   ui->table->hideColumn("idUsuario");
+  ui->table->hideColumn("created");
+  ui->table->hideColumn("lastUpdated");
   ui->table->setItemDelegate(new CheckBoxDelegate(this));
 }
 
@@ -123,9 +125,7 @@ bool CadastroUsuario::viewRegister() {
 
   modelPermissoes.setFilter("idUsuario = " + data("idUsuario").toString());
 
-  for (int row = 0; row < modelPermissoes.rowCount(); ++row) {
-    for (int col = 0; col < modelPermissoes.columnCount(); ++col) ui->table->openPersistentEditor(row, col);
-  }
+  for (int col = 0; col < ui->table->model()->columnCount(); ++col) ui->table->openPersistentEditor(0, col);
 
   return true;
 }
@@ -265,6 +265,3 @@ void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
     return;
   }
 }
-
-// TODO: colocar uma segunda aba (para admins) para setar quais os tipos de funcionarios e quais permissoes base eles
-// possuem

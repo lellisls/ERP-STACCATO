@@ -13,8 +13,9 @@ public:
   QVariant data(const QModelIndex &proxyIndex, int role) const override;
 
 private:
-  const int column;
-  const int column2;
+  const int estoque_promocao;
+  const int descontinuado;
+  const int validade;
 };
 
 #endif // SEARCHDIALOGPROXY_H

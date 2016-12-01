@@ -26,21 +26,16 @@ bool WidgetNfeSaida::updateTables() {
 }
 
 void WidgetNfeSaida::setupTables() {
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
-
-  model.setTable("view_nfe");
+  model.setTable("view_nfe_saida");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-  model.setFilter("tipo = 'SAIDA'");
 
   ui->table->setModel(&model);
   ui->table->hideColumn("OC");
   ui->table->hideColumn("tipo");
-  ui->table->setItemDelegate(doubledelegate);
+  ui->table->setItemDelegate(new DoubleDelegate(this));
 }
 
 void WidgetNfeSaida::on_table_activated(const QModelIndex &index) {
-  XML_Viewer *viewer = new XML_Viewer(this);
-
   QSqlQuery query;
   query.prepare("SELECT xml FROM nfe WHERE numeroNFe = :numeroNFe");
   query.bindValue(":numeroNFe", model.data(index.row(), "NFe"));
@@ -50,36 +45,13 @@ void WidgetNfeSaida::on_table_activated(const QModelIndex &index) {
     return;
   }
 
+  XML_Viewer *viewer = new XML_Viewer(this);
   viewer->exibirXML(query.value("xml").toByteArray());
 }
 
-void WidgetNfeSaida::on_radioButtonAutorizado_clicked() {
-  model.setFilter("status = 'AUTORIZADO'");
-
-  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-
-  ui->table->resizeColumnsToContents();
-}
-
-void WidgetNfeSaida::on_radioButtonEnviado_clicked() {
-  model.setFilter("status = 'ENVIADO'");
-
-  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-
-  ui->table->resizeColumnsToContents();
-}
-
-void WidgetNfeSaida::on_radioButtonTodos_clicked() {
-  model.setFilter("");
-
-  if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
-
-  ui->table->resizeColumnsToContents();
-}
-
 void WidgetNfeSaida::on_lineEditBusca_textChanged(const QString &text) {
-  model.setFilter("tipo = 'SAÍDA' AND (NFe LIKE '%" + text + "%' OR Venda LIKE '%" + text + "%' OR CPF LIKE '%" + text +
-                  "%' OR CNPJ LIKE '%" + text + "%' OR Cliente LIKE '%" + text + "%')");
+  model.setFilter("NFe LIKE '%" + text + "%' OR Venda LIKE '%" + text + "%' OR CPF LIKE '%" + text +
+                  "%' OR CNPJ LIKE '%" + text + "%' OR Cliente LIKE '%" + text + "%'");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 

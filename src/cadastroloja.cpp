@@ -71,27 +71,6 @@ void CadastroLoja::setupTables() {
   ui->tableAssocia2->hideColumn("idPagamento");
   //
 
-  //  modelAlcadas.setTable("alcadas");
-  modelAlcadas.setTable("usuario_has_tipo");
-  modelAlcadas.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  modelAlcadas.setHeaderData("tipo", "Tipo");
-
-  //  modelAlcadas.setFilter("idLoja = " + QString::number(UserSession::idLoja()));
-
-  if (not modelAlcadas.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela de alçadas: " + modelAlcadas.lastError().text());
-    return;
-  }
-
-  ui->tableAlcadas->setModel(&modelAlcadas);
-  ui->tableAlcadas->hideColumn("idTipo");
-  //  ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idAlcada"));
-  //  ui->tableAlcadas->hideColumn(modelAlcadas.fieldIndex("idLoja"));
-  ui->tableAlcadas->resizeColumnsToContents();
-
-  //
-
   modelPermissoes.setTable("usuario_has_permissao");
   modelPermissoes.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -625,34 +604,54 @@ void CadastroLoja::on_checkBoxMostrarInativosConta_clicked(bool checked) {
   ui->tableEndereco->resizeColumnsToContents();
 }
 
-void CadastroLoja::on_pushButtonAdicionarPagamento_clicked() { // TODO: wrap in a transaction and test setdatas?
+bool CadastroLoja::adicionarPagamento() {
   const int row = modelPagamentos.rowCount();
-  modelPagamentos.insertRow(row);
+  if (not modelPagamentos.insertRow(row)) return false;
 
-  //  modelPagamentos.setData(row, "idLoja", data("idLoja"));
-  modelPagamentos.setData(row, "pagamento", ui->lineEditPagamento->text());
-  modelPagamentos.setData(row, "parcelas", ui->spinBoxParcelas->value());
+  if (not modelPagamentos.setData(row, "pagamento", ui->lineEditPagamento->text())) return false;
+  if (not modelPagamentos.setData(row, "parcelas", ui->spinBoxParcelas->value())) return false;
 
-  modelPagamentos.submitAll();
+  if (not modelPagamentos.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados pagamentos: " + modelPagamentos.lastError().text());
+    return false;
+  }
 
   const int id = modelPagamentos.query().lastInsertId().toInt();
 
   for (int i = 0; i < ui->spinBoxParcelas->value(); ++i) {
     const int row = modelTaxas.rowCount();
-    modelTaxas.insertRow(row);
+    if (not modelTaxas.insertRow(row)) return false;
 
-    modelTaxas.setData(row, "idPagamento", id);
-    modelTaxas.setData(row, "parcela", i + 1);
-    modelTaxas.setData(row, "taxa", 0);
+    if (not modelTaxas.setData(row, "idPagamento", id)) return false;
+    if (not modelTaxas.setData(row, "parcela", i + 1)) return false;
+    if (not modelTaxas.setData(row, "taxa", 0)) return false;
   }
 
-  modelTaxas.submitAll();
+  if (not modelTaxas.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados taxas: " + modelTaxas.lastError().text());
+    return false;
+  }
 
   modelTaxas.setFilter("idPagamento = " + QString::number(id));
 
   if (not modelTaxas.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela taxas: " + modelTaxas.lastError().text());
+    return false;
   }
+
+  return true;
+}
+
+void CadastroLoja::on_pushButtonAdicionarPagamento_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not adicionarPagamento()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
 }
 
 void CadastroLoja::on_tablePagamentos_clicked(const QModelIndex &index) {
@@ -702,27 +701,31 @@ void CadastroLoja::on_pushButtonRemoverPagamento_clicked() {
   ui->pushButtonAdicionarPagamento->show();
 }
 
-void CadastroLoja::on_pushButtonAtualizarPagamento_clicked() {
-  modelPagamentos.setData(mapperPagamento.currentIndex(), "pagamento", ui->lineEditPagamento->text());
-  modelPagamentos.setData(mapperPagamento.currentIndex(), "parcelas", ui->spinBoxParcelas->value());
+bool CadastroLoja::atualizarPagamento() {
+  const int row = mapperPagamento.currentIndex();
 
-  modelTaxas.removeRows(0, modelTaxas.rowCount());
+  if (not modelPagamentos.setData(row, "pagamento", ui->lineEditPagamento->text())) return false;
+  if (not modelPagamentos.setData(row, "parcelas", ui->spinBoxParcelas->value())) return false;
+
+  if (not modelTaxas.removeRows(0, modelTaxas.rowCount())) return false;
 
   for (int i = 0; i < ui->spinBoxParcelas->value(); ++i) {
     const int row = modelTaxas.rowCount();
-    modelTaxas.insertRow(row);
+    if (not modelTaxas.insertRow(row)) return false;
 
-    modelTaxas.setData(row, "idPagamento", modelPagamentos.data(mapperPagamento.currentIndex(), "idPagamento"));
-    modelTaxas.setData(row, "parcela", i + 1);
-    modelTaxas.setData(row, "taxa", 0);
+    if (not modelTaxas.setData(row, "idPagamento", modelPagamentos.data(row, "idPagamento"))) return false;
+    if (not modelTaxas.setData(row, "parcela", i + 1)) return false;
+    if (not modelTaxas.setData(row, "taxa", 0)) return false;
   }
 
   if (not modelPagamentos.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando dados: " + modelPagamentos.lastError().text());
+    return false;
   }
 
   if (not modelTaxas.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando taxas: " + modelTaxas.lastError().text());
+    return false;
   }
 
   modelTaxas.setFilter("0");
@@ -732,6 +735,20 @@ void CadastroLoja::on_pushButtonAtualizarPagamento_clicked() {
 
   ui->pushButtonAtualizarPagamento->hide();
   ui->pushButtonAdicionarPagamento->show();
+
+  return true;
+}
+
+void CadastroLoja::on_pushButtonAtualizarPagamento_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not atualizarPagamento()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
 }
 
 void CadastroLoja::on_pushButtonAtualizarTaxas_clicked() {
@@ -740,23 +757,6 @@ void CadastroLoja::on_pushButtonAtualizarTaxas_clicked() {
   }
 
   QMessageBox::information(this, "Aviso!", "Taxas atualizadas!");
-}
-
-void CadastroLoja::on_pushButtonCadastrarTipo_clicked() {
-  const int row = modelAlcadas.rowCount();
-  modelAlcadas.insertRow(row);
-
-  modelAlcadas.setData(row, "tipo", ui->lineEditTipo->text());
-
-  if (not modelAlcadas.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro cadastrando tipo: " + modelAlcadas.lastError().text());
-  }
-
-  if (not modelAlcadas.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela alçadas: " + modelAlcadas.lastError().text());
-  }
-
-  ui->tableAlcadas->resizeColumnsToContents();
 }
 
 void CadastroLoja::on_pushButtonAdicionaAssociacao_clicked() {
@@ -805,7 +805,4 @@ void CadastroLoja::on_pushButtonRemoveAssociacao_clicked() {
   modelAssocia2.select();
 }
 
-// TODO: remover aba 'alcadas' e passar funcionalidade para cadastroUsuario
-// TODO: montar aba alcadas
-// TODO: montar aba pagamentos
-// TODO: add 'created' and 'lastUpdated' to tables in bd
+// TODO: aba pagamentos: fazer logica para poder desmarcar pagamento e voltar botao 'adicionar pagamento'

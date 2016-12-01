@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>516</width>
-    <height>607</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -187,6 +187,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>lineEditPorta</tabstop>
   <tabstop>lineEditEmail</tabstop>
   <tabstop>lineEditPasswd</tabstop>
+  <tabstop>comboBoxDest</tabstop>
   <tabstop>lineEditCopia</tabstop>
   <tabstop>lineEditTitulo</tabstop>
   <tabstop>lineEditAnexo</tabstop>

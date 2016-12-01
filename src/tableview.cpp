@@ -63,16 +63,16 @@ void TableView::setItemDelegateForColumn(const int &column, QAbstractItemDelegat
   QTableView::setItemDelegateForColumn(column, delegate);
 }
 
-void TableView::sortByColumn(const QString &column) {
+void TableView::sortByColumn(const QString &column, Qt::SortOrder order) {
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
-      QTableView::sortByColumn(sourceModel->fieldIndex(column));
+      QTableView::sortByColumn(sourceModel->fieldIndex(column), order);
       return;
     }
   }
 
   if (auto *model = qobject_cast<QSqlTableModel *>(QTableView::model())) {
-    QTableView::sortByColumn(model->fieldIndex(column));
+    QTableView::sortByColumn(model->fieldIndex(column), order);
   }
 }
 

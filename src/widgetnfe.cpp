@@ -13,15 +13,10 @@ bool WidgetNfe::updateTables() {
   connect(ui->widgetEntrada, &WidgetNfeEntrada::errorSignal, this, &WidgetNfe::errorSignal);
   connect(ui->widgetSaida, &WidgetNfeSaida::errorSignal, this, &WidgetNfe::errorSignal);
 
-  switch (ui->tabWidgetNfe->currentIndex()) {
-  case 0:
-    if (not ui->widgetEntrada->updateTables()) return false;
-    break;
+  const QString currentText = ui->tabWidgetNfe->tabText(ui->tabWidgetNfe->currentIndex());
 
-  case 1:
-    if (not ui->widgetSaida->updateTables()) return false;
-    break;
-  }
+  if (currentText == "Entrada" and not ui->widgetEntrada->updateTables()) return false;
+  if (currentText == "Saída" and not ui->widgetSaida->updateTables()) return false;
 
   return true;
 }

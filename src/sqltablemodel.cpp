@@ -55,11 +55,6 @@ bool SqlTableModel::setHeaderData(const QString &column, const QVariant &value) 
   return QSqlTableModel::setHeaderData(QSqlTableModel::fieldIndex(column), Qt::Horizontal, value);
 }
 
-Qt::ItemFlags SqlTableModel::flags(const QModelIndex &index) const {
-  //  Qt::ItemFlags defaultFlags = QSqlRelationalTableModel::flags(index);
-  //  return defaultFlags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-
-  return QSqlRelationalTableModel::flags(index);
-}
+Qt::ItemFlags SqlTableModel::flags(const QModelIndex &index) const { return QSqlRelationalTableModel::flags(index); }
 
 Qt::DropActions SqlTableModel::supportedDropActions() const { return Qt::MoveAction; }

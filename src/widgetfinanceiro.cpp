@@ -19,20 +19,14 @@ WidgetFinanceiro::WidgetFinanceiro(QWidget *parent) : QWidget(parent), ui(new Ui
 WidgetFinanceiro::~WidgetFinanceiro() { delete ui; }
 
 bool WidgetFinanceiro::updateTables() {
-  switch (ui->tabWidget->currentIndex()) {
-  case 0:
-    return ui->widgetFluxoCaixa->updateTables();
-  case 1:
-    return ui->widgetPagar->updateTables();
-  case 2:
-    return ui->widgetReceber->updateTables();
-  case 3:
-    return ui->widgetReceberResumo->updateTables();
-  case 4:
-    return ui->widgetVenda->updateTables();
-  case 5:
-    return ui->widgetCompra->updateTables();
-  default:
-    return true;
-  }
+  const QString currentText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
+
+  if (currentText == "Fluxo de Caixa") return ui->widgetFluxoCaixa->updateTables();
+  if (currentText == "Contas a Pagar") return ui->widgetPagar->updateTables();
+  if (currentText == "Contas a Receber") return ui->widgetReceber->updateTables();
+  if (currentText == "Receber Resumo") return ui->widgetReceberResumo->updateTables();
+  if (currentText == "Vendas") return ui->widgetVenda->updateTables();
+  if (currentText == "Compras") return ui->widgetCompra->updateTables();
+
+  return true;
 }

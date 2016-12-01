@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -59,6 +60,7 @@ void WidgetPagamento::makeConnections() {
   connect(ui->doubleSpinBoxAte, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &WidgetPagamento::montaFiltro);
   connect(ui->itemBoxLojas, &ItemBox::textChanged, this, &WidgetPagamento::montaFiltro);
   connect(ui->groupBoxLojas, &QGroupBox::toggled, this, &WidgetPagamento::montaFiltro);
+  connect(ui->groupBoxData, &QGroupBox::toggled, this, &WidgetPagamento::montaFiltro);
 }
 
 bool WidgetPagamento::updateTables() {
@@ -99,12 +101,12 @@ void WidgetPagamento::montaFiltro() {
 
   QString busca = ui->lineEditBusca->text();
 
-  busca = QString(tipo == Pagar ? "ordemCompra" : "idVenda") + " LIKE '%" + busca + "%' OR contraparte LIKE '%" +
+  busca = "(" + QString(tipo == Pagar ? "ordemCompra" : "idVenda") + " LIKE '%" + busca + "%' OR contraparte LIKE '%" +
           busca + "%')";
 
-  if (not status.isEmpty()) busca.prepend(" AND (");
+  if (not status.isEmpty()) busca.prepend(" AND ");
 
-  QString valor = ui->doubleSpinBoxDe->value() != 0.
+  QString valor = ui->doubleSpinBoxDe->value() != 0. or ui->doubleSpinBoxAte->value() != 0.
                       ? "valor BETWEEN " + QString::number(ui->doubleSpinBoxDe->value() - 1) + " AND " +
                             QString::number(ui->doubleSpinBoxAte->value() + 1)
                       : "";
@@ -128,6 +130,10 @@ void WidgetPagamento::montaFiltro() {
   QString representacao = tipo == Receber ? " AND representacao = 0" : "";
 
   model.setFilter(status + busca + valor + dataPag + loja + representacao);
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+  }
 
   ui->table->resizeColumnsToContents();
 }

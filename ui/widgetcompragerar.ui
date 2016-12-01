@@ -86,14 +86,33 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="checkBoxMarcarTodos">
+       <item row="3" column="1">
+        <widget class="QPushButton" name="pushButtonCancelarCompra">
          <property name="text">
-          <string>Marcar todos</string>
+          <string>Cancelar</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0" colspan="2">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::NoButtons</enum>
+         </property>
+         <property name="showGroupSeparator" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="prefix">
+          <string>R$ </string>
+         </property>
+         <property name="maximum">
+          <double>999999.989999999990687</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
         <widget class="TableView" name="tableProdutos">
          <property name="mouseTracking">
           <bool>true</bool>
@@ -121,22 +140,10 @@
          </attribute>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::NoButtons</enum>
-         </property>
-         <property name="showGroupSeparator" stdset="0">
-          <bool>true</bool>
-         </property>
-         <property name="prefix">
-          <string>R$ </string>
-         </property>
-         <property name="maximum">
-          <double>999999.989999999990687</double>
+       <item row="0" column="0" colspan="2">
+        <widget class="QCheckBox" name="checkBoxMarcarTodos">
+         <property name="text">
+          <string>Marcar todos</string>
          </property>
         </widget>
        </item>

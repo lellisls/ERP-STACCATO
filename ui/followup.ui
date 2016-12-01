@@ -13,25 +13,20 @@
   <property name="windowTitle">
    <string>Follow Up</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Data followup:</string>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0" colspan="2">
+    <widget class="TableView" name="table">
+     <property name="styleSheet">
+      <string notr="true">color: rgb(0, 0, 0);</string>
      </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QDateTimeEdit" name="dateFollowup">
-     <property name="calendarPopup">
-      <bool>true</bool>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
      </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Próximo followup:</string>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::NoSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
     </widget>
    </item>
@@ -42,27 +37,10 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
-    <widget class="QDateTimeEdit" name="dateProxFollowup">
-     <property name="calendarPopup">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="5">
+   <item row="2" column="0" colspan="2">
     <widget class="QPlainTextEdit" name="plainTextEdit"/>
    </item>
-   <item row="0" column="0" colspan="5">
-    <widget class="TableView" name="table">
-     <property name="styleSheet">
-      <string notr="true">color: rgb(0, 0, 0);</string>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="4">
+   <item row="4" column="0">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -75,7 +53,7 @@
      </property>
     </spacer>
    </item>
-   <item row="8" column="4">
+   <item row="4" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="pushButtonSalvar">
@@ -93,40 +71,86 @@
      </item>
     </layout>
    </item>
-   <item row="5" column="2" rowspan="2" colspan="3">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string/>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButtonQuente">
-        <property name="styleSheet">
-         <string notr="true">color: rgb(255, 0, 0);</string>
+   <item row="3" column="0" colspan="2">
+    <widget class="QFrame" name="frameOrcamento">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="1">
+       <widget class="QDateTimeEdit" name="dateFollowup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="text">
-         <string>Quente</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButtonMorno">
-        <property name="styleSheet">
-         <string notr="true">color: rgb(255, 85, 0);</string>
-        </property>
-        <property name="text">
-         <string>Morno</string>
+        <property name="calendarPopup">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QRadioButton" name="radioButtonFrio">
-        <property name="styleSheet">
-         <string notr="true">color: rgb(0, 0, 255);</string>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Próximo followup:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDateTimeEdit" name="dateProxFollowup">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="text">
-         <string>Frio</string>
+         <string>Data followup:</string>
         </property>
+       </widget>
+      </item>
+      <item row="1" column="2" rowspan="2">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="radioButtonQuente">
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 0, 0);</string>
+           </property>
+           <property name="text">
+            <string>Quente</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="radioButtonMorno">
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 85, 0);</string>
+           </property>
+           <property name="text">
+            <string>Morno</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="radioButtonFrio">
+           <property name="styleSheet">
+            <string notr="true">color: rgb(0, 0, 255);</string>
+           </property>
+           <property name="text">
+            <string>Frio</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

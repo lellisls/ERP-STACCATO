@@ -4,8 +4,10 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include "estoqueprazoproxymodel.h"
 #include "inputdialog.h"
 #include "ui_widgetlogisticacoleta.h"
+#include "venda.h"
 #include "widgetlogisticacoleta.h"
 
 WidgetLogisticaColeta::WidgetLogisticaColeta(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaColeta) {
@@ -29,16 +31,16 @@ bool WidgetLogisticaColeta::updateTables() {
   return true;
 }
 
-void WidgetLogisticaColeta::TableFornLogistica_activated(const QString &fornecedor) {
-  model.setFilter("fornecedor = '" + fornecedor + "'");
+void WidgetLogisticaColeta::tableFornLogistica_activated(const QString &fornecedor) {
+  this->fornecedor = fornecedor;
+
+  model.setFilter("fornecedor = '" + fornecedor + "' ORDER BY prazoEntrega");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
-
-  for (int row = 0; row < model.rowCount(); ++row) ui->table->openPersistentEditor(row, "selecionado");
 
   ui->checkBoxMarcarTodos->setChecked(false);
 
@@ -49,6 +51,7 @@ void WidgetLogisticaColeta::setupTables() {
   model.setTable("view_coleta");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+  model.setHeaderData("idEstoque", "Estoque");
   model.setHeaderData("numeroNFe", "NFe");
   model.setHeaderData("produto", "Produto");
   model.setHeaderData("codComercial", "Cód. Com.");
@@ -60,11 +63,11 @@ void WidgetLogisticaColeta::setupTables() {
   model.setHeaderData("ordemCompra", "OC");
   model.setHeaderData("local", "Local");
   model.setHeaderData("dataPrevColeta", "Data Prev. Col.");
+  model.setHeaderData("prazoEntrega", "Prazo Limite");
 
   model.setFilter("0");
 
-  ui->table->setModel(&model);
-  //  ui->table->hideColumn("idEstoque");
+  ui->table->setModel(new EstoquePrazoProxyModel(&model, this));
   ui->table->hideColumn("fornecedor");
 }
 
@@ -79,8 +82,7 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
 
   QSqlQuery("COMMIT").exec();
 
-  if (not updateTables()) return;
-
+  updateTables();
   QMessageBox::information(this, "Aviso!", "Confirmado coleta.");
 }
 
@@ -98,8 +100,8 @@ bool WidgetLogisticaColeta::cadastrar() {
 
   if (inputDlg->exec() != InputDialog::Accepted) return false;
 
-  const QDate dataColeta = inputDlg->getDate();
-  const QDate dataPrevReceb = inputDlg->getNextDate();
+  const QDateTime dataColeta = inputDlg->getDate();
+  const QDateTime dataPrevReceb = inputDlg->getNextDate();
 
   model.setFilter(filtro);
   model.select();
@@ -137,7 +139,7 @@ bool WidgetLogisticaColeta::cadastrar() {
     query.bindValue(":dataRealColeta", dataColeta);
     query.bindValue(":dataPrevReceb", dataPrevReceb);
     query.bindValue(":idEstoque", model.data(item.row(), "idEstoque"));
-    query.bindValue(":idVendaProduto", model.data(item.row(), "codComercial"));
+    query.bindValue(":codComercial", model.data(item.row(), "codComercial"));
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
@@ -161,15 +163,81 @@ void WidgetLogisticaColeta::on_table_entered(const QModelIndex &) { ui->table->r
 void WidgetLogisticaColeta::on_lineEditBuscaColeta_textChanged(const QString &) {
   const QString textoBusca = ui->lineEditBuscaColeta->text();
 
-  model.setFilter("(numeroNFe LIKE '%" + textoBusca + "%') or (produto LIKE '%" + textoBusca +
-                  "%') or (idVenda LIKE '%" + textoBusca + "%') or (ordemCompra LIKE '%" + textoBusca +
-                  "%')"); // nfe, produto, venda, oc
+  model.setFilter("fornecedor = '" + fornecedor + "' AND (numeroNFe LIKE '%" + textoBusca + "%' OR produto LIKE '%" +
+                  textoBusca + "%' OR idVenda LIKE '%" + textoBusca + "%' OR ordemCompra LIKE '%" + textoBusca + "%')");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }
 
+void WidgetLogisticaColeta::on_pushButtonReagendar_clicked() {
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not reagendar()) {
+    QSqlQuery("ROLLBACK").exec();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  updateTables();
+  QMessageBox::information(this, "Aviso!", "Reagendado com sucesso!");
+}
+
+bool WidgetLogisticaColeta::reagendar() {
+  const auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.size() == 0) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return false;
+  }
+
+  InputDialog *input = new InputDialog(InputDialog::AgendarColeta, this);
+
+  if (input->exec() != InputDialog::Accepted) return false;
+
+  const QDateTime dataPrevColeta = input->getNextDate();
+
+  for (const auto &item : list) {
+    const int idEstoque = model.data(item.row(), "idEstoque").toInt();
+    const QString codComercial = model.data(item.row(), "codComercial").toString();
+
+    QSqlQuery query;
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET dataPrevColeta = :dataPrevColeta WHERE idCompra IN (SELECT "
+                  "idCompra FROM estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.bindValue(":dataPrevColeta", dataPrevColeta);
+    query.bindValue(":idEstoque", idEstoque);
+    query.bindValue(":codComercial", codComercial);
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando status no pedido_fornecedor: " + query.lastError().text());
+      return false;
+    }
+
+    query.prepare(
+        "UPDATE venda_has_produto SET dataPrevColeta = :dataPrevColeta WHERE idCompra IN (SELECT idCompra FROM "
+        "estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.bindValue(":dataPrevColeta", dataPrevColeta);
+    query.bindValue(":idEstoque", idEstoque);
+    query.bindValue(":codComercial", codComercial);
+
+    if (not query.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando status na venda_produto: " + query.lastError().text());
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void WidgetLogisticaColeta::on_table_doubleClicked(const QModelIndex &index) {
+  const QString idVenda = model.data(index.row(), "idVenda").toString();
+
+  if (idVenda.isEmpty()) return;
+
+  Venda *venda = new Venda(this);
+  venda->viewRegisterById(idVenda);
+}
+
 // TODO: verificar como lidar com os estoques que nao possuem venda atrelada, como marcar datas previstas?
 // TODO: algumas caixas com valor negativo (verificar como elas estão entrando no estoque)
-// TODO: busca: ao limpar o campo ele apaga a selecao de fornecedor
-// TODO: adicionar OC, numero da nota e idVenda
-// TODO: colocar selecao de multiplas linhas

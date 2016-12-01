@@ -15,7 +15,7 @@ class ImportarXML : public QDialog {
   Q_OBJECT
 
 public:
-  explicit ImportarXML(const QStringList &idsCompra, const QDate &dataReal, QWidget *parent = 0);
+  explicit ImportarXML(const QStringList &idsCompra, const QDateTime &dataReal, QWidget *parent = 0);
   ~ImportarXML();
 
 private slots:
@@ -35,7 +35,7 @@ private:
   SqlTableModel modelCompra;
   SqlTableModel modelEstoque;
   SqlTableModel modelConsumo;
-  QDate dataReal;
+  QDateTime dataReal;
   QStringList idsCompra;
 
   enum FieldColors {

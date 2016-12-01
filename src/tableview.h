@@ -15,7 +15,7 @@ public:
   void setItemDelegateForColumn(const QString &column, QAbstractItemDelegate *delegate);
 
 public slots:
-  void sortByColumn(const QString &column);
+  void sortByColumn(const QString &column, Qt::SortOrder order = Qt::AscendingOrder);
 };
 
 #endif // TABLEVIEW_H

@@ -21,13 +21,23 @@ public:
   void importarPromocao();
 
 private slots:
-  void on_checkBoxRepresentacao_clicked(const bool &checked);
+  void on_checkBoxRepresentacao_toggled(const bool &checked);
   void on_pushButtonSalvar_clicked();
   void on_tableErro_entered(const QModelIndex &);
   void on_tableProdutos_entered(const QModelIndex &);
   void on_tabWidget_currentChanged(const int &index);
 
 private:
+  enum Tipo { Produto = 0, Estoque = 1, Promocao = 2 };
+
+  enum FieldColors {
+    White = 0,  // no change
+    Green = 1,  // new value
+    Yellow = 2, // value changed
+    Gray = 3,   // wrong value but accepted
+    Red = 4     // wrong value, must be fixed
+  };
+
   // attributes
   Ui::ImportaProdutos *ui;
   bool hasError = false;
@@ -41,7 +51,7 @@ private:
   QHash<int, bool> hashAtualizado;
   QHash<QString, int> hash;
   int i = 0;
-  QString tipo; // TODO: transform to enum
+  Tipo tipo;
   QMap<QString, int> fornecedores;
   QProgressDialog *progressDialog;
   QSqlDatabase db;
@@ -81,14 +91,6 @@ private:
   void setupTables();
   void setVariantMap();
   bool verificaSeRepresentacao();
-
-  enum FieldColors {
-    White = 0,  // no change
-    Green = 1,  // new value
-    Yellow = 2, // value changed
-    Gray = 3,   // wrong value but accepted
-    Red = 4     // wrong value, must be fixed
-  };
 };
 
 #endif // IMPORTAPRODUTOS_H

@@ -18,6 +18,7 @@ public:
   ~FollowUp();
 
 private slots:
+  void on_dateFollowup_dateChanged(const QDate &date);
   void on_pushButtonCancelar_clicked();
   void on_pushButtonSalvar_clicked();
 
@@ -29,7 +30,6 @@ private:
   Tipo tipo;
   Ui::FollowUp *ui;
   // methods
-  bool savingProcedures();
   bool verifyFields();
   void setupTables();
 };

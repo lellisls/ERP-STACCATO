@@ -11,6 +11,7 @@
 #include "impressao.h"
 #include "orcamento.h"
 #include "orcamentoproxymodel.h"
+#include "porcentagemdelegate.h"
 #include "reaisdelegate.h"
 #include "searchdialogproxy.h"
 #include "ui_orcamento.h"
@@ -97,13 +98,17 @@ bool Orcamento::viewRegister() {
 
   novoItem();
 
-  if (data("status") == "PERDIDO" or data("status") == "CANCELADO") {
+  const QString status = data("status").toString();
+
+  if (status == "PERDIDO" or status == "CANCELADO") {
     ui->labelBaixa->show();
     ui->plainTextEditBaixa->show();
   }
 
+  if (status == "ATIVO") ui->pushButtonReplicar->hide();
+
   if (ui->dateTimeEdit->dateTime().addDays(data("validade").toInt()).date() < QDateTime::currentDateTime().date() or
-      data("status") != "ATIVO") {
+      status != "ATIVO") {
     ui->pushButtonGerarVenda->hide();
     ui->pushButtonAtualizarOrcamento->hide();
     ui->pushButtonReplicar->show();
@@ -165,7 +170,6 @@ bool Orcamento::viewRegister() {
     ui->checkBoxFreteManual->setDisabled(true);
   } else {
     ui->pushButtonGerarVenda->show();
-    ui->pushButtonReplicar->hide();
   }
 
   ui->lineEditReplicaDe->setReadOnly(true);
@@ -176,10 +180,6 @@ bool Orcamento::viewRegister() {
   ui->checkBoxRepresentacao->setDisabled(true);
 
   ui->plainTextEditObs->setPlainText(data("observacao").toString());
-
-  if (not ui->lineEditReplicadoEm->text().isEmpty()) ui->pushButtonReplicar->hide();
-
-  if (data("status") != "EXPIRADO") ui->pushButtonReplicar->hide();
 
   ui->doubleSpinBoxFrete->setValue(data("frete").toDouble());
 
@@ -514,22 +514,17 @@ void Orcamento::setupTables() {
   ui->tableProdutos->hideColumn("total");
   ui->tableProdutos->hideColumn("estoque_promocao");
 
-  // TODO: set delegate for all columns then set the correct delegate for the specific columns?
-
-  DoubleDelegate *delegate = new DoubleDelegate(this);
-
-  for (int col = 0; col < modelItem.columnCount(); ++col) {
-    if (col == modelItem.fieldIndex("desconto")) continue;
-
-    ui->tableProdutos->setItemDelegateForColumn(col, delegate);
-  }
-
+  ui->tableProdutos->setItemDelegate(new DoubleDelegate(this));
   ui->tableProdutos->setItemDelegateForColumn(modelItem.fieldIndex("quant"), new DoubleDelegate(this, 4));
+  ui->tableProdutos->setItemDelegateForColumn("prcUnitario", new ReaisDelegate(this));
+  ui->tableProdutos->setItemDelegateForColumn("parcial", new ReaisDelegate(this));
+  ui->tableProdutos->setItemDelegateForColumn("parcialDesc", new ReaisDelegate(this));
+  ui->tableProdutos->setItemDelegateForColumn("desconto", new PorcentagemDelegate(this));
 }
 
 void Orcamento::atualizarItem() { adicionarItem(true); }
 
-void Orcamento::adicionarItem(bool isUpdate) {
+void Orcamento::adicionarItem(const bool isUpdate) {
   ui->checkBoxRepresentacao->setDisabled(true);
 
   calcPrecoItemTotal();

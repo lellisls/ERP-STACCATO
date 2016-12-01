@@ -60,17 +60,21 @@ SOURCES += \
     src/dateformatdelegate.cpp \
     src/devolucao.cpp \
     src/doubledelegate.cpp \
-    src/entregascliente.cpp \
     src/estoque.cpp \
+    src/estoqueprazoproxymodel.cpp \
     src/estoqueproxymodel.cpp \
     src/excel.cpp \
+    src/financeiroproxymodel.cpp \
     src/followup.cpp \
-    src/followupproxy.cpp \
+    src/followupproxymodel.cpp \
     src/importaprodutos.cpp \
     src/importaprodutosproxy.cpp \
     src/importarxml.cpp \
     src/impressao.cpp \
     src/inputdialog.cpp \
+    src/inputdialogconfirmacao.cpp \
+    src/inputdialogfinanceiro.cpp \
+    src/inputdialogproduto.cpp \
     src/inserirlancamento.cpp \
     src/itembox.cpp \
     src/itemboxdelegate.cpp \
@@ -101,11 +105,13 @@ SOURCES += \
     src/usersession.cpp \
     src/validadedialog.cpp \
     src/venda.cpp \
+    src/vendaproxymodel.cpp \
     src/widgetcompra.cpp \
     src/widgetcompraconfirmar.cpp \
     src/widgetcompradevolucao.cpp \
     src/widgetcomprafaturar.cpp \
     src/widgetcompragerar.cpp \
+    src/widgetcompraoc.cpp \
     src/widgetcomprapendentes.cpp \
     src/widgetestoque.cpp \
     src/widgetfinanceiro.cpp \
@@ -113,8 +119,10 @@ SOURCES += \
     src/widgetfluxocaixa.cpp \
     src/widgetlogistica.cpp \
     src/widgetlogisticaagendarcoleta.cpp \
+    src/widgetlogisticacaminhao.cpp \
     src/widgetlogisticacoleta.cpp \
     src/widgetlogisticaentrega.cpp \
+    src/widgetlogisticaentregues.cpp \
     src/widgetlogisticarecebimento.cpp \
     src/widgetlogisticarepresentacao.cpp \
     src/widgetnfe.cpp \
@@ -148,17 +156,21 @@ HEADERS  += \
     src/dateformatdelegate.h \
     src/devolucao.h \
     src/doubledelegate.h \
-    src/entregascliente.h \
     src/estoque.h \
+    src/estoqueprazoproxymodel.h \
     src/estoqueproxymodel.h \
     src/excel.h \
+    src/financeiroproxymodel.h \
     src/followup.h \
-    src/followupproxy.h \
+    src/followupproxymodel.h \
     src/importaprodutos.h \
     src/importaprodutosproxy.h \
     src/importarxml.h \
     src/impressao.h \
     src/inputdialog.h \
+    src/inputdialogconfirmacao.h \
+    src/inputdialogfinanceiro.h \
+    src/inputdialogproduto.h \
     src/inserirlancamento.h \
     src/itembox.h \
     src/itemboxdelegate.h \
@@ -188,11 +200,13 @@ HEADERS  += \
     src/usersession.h \
     src/validadedialog.h \
     src/venda.h \
+    src/vendaproxymodel.h \
     src/widgetcompra.h \
     src/widgetcompraconfirmar.h \
     src/widgetcompradevolucao.h \
     src/widgetcomprafaturar.h \
     src/widgetcompragerar.h \
+    src/widgetcompraoc.h \
     src/widgetcomprapendentes.h \
     src/widgetestoque.h \
     src/widgetfinanceiro.h \
@@ -200,8 +214,10 @@ HEADERS  += \
     src/widgetfluxocaixa.h \
     src/widgetlogistica.h \
     src/widgetlogisticaagendarcoleta.h \
+    src/widgetlogisticacaminhao.h \
     src/widgetlogisticacoleta.h \
     src/widgetlogisticaentrega.h \
+    src/widgetlogisticaentregues.h \
     src/widgetlogisticarecebimento.h \
     src/widgetlogisticarepresentacao.h \
     src/widgetnfe.h \
@@ -229,12 +245,14 @@ FORMS += \
     ui/calendarioentregas.ui \
     ui/contas.ui \
     ui/devolucao.ui \
-    ui/entregascliente.ui \
     ui/estoque.ui \
     ui/followup.ui \
     ui/importaprodutos.ui \
     ui/importarxml.ui \
     ui/inputdialog.ui \
+    ui/inputdialogconfirmacao.ui \
+    ui/inputdialogfinanceiro.ui \
+    ui/inputdialogproduto.ui \
     ui/inserirlancamento.ui \
     ui/logindialog.ui \
     ui/mainwindow.ui \
@@ -250,6 +268,7 @@ FORMS += \
     ui/widgetcompradevolucao.ui \
     ui/widgetcomprafaturar.ui \
     ui/widgetcompragerar.ui \
+    ui/widgetcompraoc.ui \
     ui/widgetcomprapendentes.ui \
     ui/widgetestoque.ui \
     ui/widgetfinanceiro.ui \
@@ -257,8 +276,10 @@ FORMS += \
     ui/widgetfluxocaixa.ui \
     ui/widgetlogistica.ui \
     ui/widgetlogisticaagendarcoleta.ui \
+    ui/widgetlogisticacaminhao.ui \
     ui/widgetlogisticacoleta.ui \
     ui/widgetlogisticaentrega.ui \
+    ui/widgetlogisticaentregues.ui \
     ui/widgetlogisticarecebimento.ui \
     ui/widgetlogisticarepresentacao.ui \
     ui/widgetnfe.ui \
@@ -270,4 +291,3 @@ FORMS += \
     ui/widgetrelatorio.ui \
     ui/widgetvenda.ui \
     ui/xml_viewer.ui
-

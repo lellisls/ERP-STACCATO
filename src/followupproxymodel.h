@@ -1,15 +1,15 @@
-#ifndef FOLLOWUPPROXY_H
-#define FOLLOWUPPROXY_H
+#ifndef FOLLOWUPPROXYMODEL_H
+#define FOLLOWUPPROXYMODEL_H
 
 #include <QIdentityProxyModel>
 
 #include "sqltablemodel.h"
 
-class FollowUpProxy : public QIdentityProxyModel {
+class FollowUpProxyModel : public QIdentityProxyModel {
 
 public:
-  FollowUpProxy(SqlTableModel *model, QObject *parent = 0);
-  ~FollowUpProxy();
+  FollowUpProxyModel(SqlTableModel *model, QObject *parent = 0);
+  ~FollowUpProxyModel();
   QVariant data(const QModelIndex &proxyIndex, int role) const override;
 
 private:
@@ -18,4 +18,4 @@ private:
   enum FieldColors { Quente = 1, Morno = 2, Frio = 3 };
 };
 
-#endif // FOLLOWUPPROXY_H
+#endif // FOLLOWUPPROXYMODEL_H

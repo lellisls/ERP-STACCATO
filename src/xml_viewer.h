@@ -17,12 +17,17 @@ public:
   ~XML_Viewer();
   void exibirXML(const QByteArray &fileContent);
 
+private slots:
+  void on_pushButtonDanfe_clicked();
+
 private:
   // attributes
-  Ui::XML_Viewer *ui;
-  QString fileName;
+  QByteArray fileContent;
   QStandardItemModel model;
+  QString fileName;
+  Ui::XML_Viewer *ui;
   // methods
+  bool imprimirDanfe();
 };
 
 #endif // XML_VIEWER_H

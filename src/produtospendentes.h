@@ -19,6 +19,7 @@ public:
 
 private slots:
   void on_pushButtonComprar_clicked();
+  void on_pushButtonConsumirCompra_clicked();
   void on_pushButtonConsumirEstoque_clicked();
   void on_tableEstoque_entered(const QModelIndex &);
   void on_tableProdutos_entered(const QModelIndex &);
@@ -28,12 +29,14 @@ private:
   QString codComercial;
   SqlTableModel modelEstoque;
   SqlTableModel modelProdutos;
+  SqlTableModel modelCompra;
   Ui::ProdutosPendentes *ui;
   // methods
-  bool atualizaVenda(const QDate &dataPrevista);
-  bool cadastrar();
-  bool insere(const QDate &dataPrevista);
+  bool consumirEstoque();
+  bool insere(const QDateTime &dataPrevista);
   void setupTables();
+  bool comprar();
+  bool consumirCompra();
 };
 
 #endif // PRODUTOSPENDENTES_H

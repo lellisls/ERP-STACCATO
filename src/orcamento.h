@@ -79,7 +79,7 @@ private:
   virtual void setupMapper() override;
   virtual void successMessage() override;
   virtual void updateMode() override;
-  void adicionarItem(bool isUpdate = false);
+  void adicionarItem(const bool isUpdate = false);
   void atualizarItem();
   void calcPrecoGlobalTotal();
   void calcPrecoItemTotal();

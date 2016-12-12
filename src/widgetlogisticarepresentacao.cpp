@@ -32,6 +32,8 @@ bool WidgetLogisticaRepresentacao::updateTables() {
 void WidgetLogisticaRepresentacao::tableFornLogistica_activated(const QString &fornecedor) {
   this->fornecedor = fornecedor;
 
+  ui->lineEditBusca->clear();
+
   model.setFilter("fornecedor = '" + fornecedor + "'");
 
   if (not model.select()) {
@@ -50,6 +52,7 @@ void WidgetLogisticaRepresentacao::setupTables() {
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   model.setHeaderData("idVenda", "Venda");
+  model.setHeaderData("cliente", "Cliente");
   model.setHeaderData("descricao", "Produto");
   model.setHeaderData("codComercial", "Cód. Com.");
   model.setHeaderData("quant", "Quant.");
@@ -67,6 +70,7 @@ void WidgetLogisticaRepresentacao::setupTables() {
   ui->table->hideColumn("idPedido");
   ui->table->hideColumn("fornecedor");
   ui->table->hideColumn("status");
+  ui->table->hideColumn("idVendaProduto");
 }
 
 void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {
@@ -92,11 +96,14 @@ void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {
 }
 
 bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list) {
-  InputDialogConfirmacao *input = new InputDialogConfirmacao(InputDialogConfirmacao::Entrega, this);
+  // NOTE: verificar quem cuida de produtos quebrados (loja/fornecedor):
+  // no caso do fornecedor só pedir data para o usuario
+  // no caso da loja marcar quantos produtos quebrados e fazer reposicao/credito?
+  InputDialogConfirmacao input(InputDialogConfirmacao::Representacao);
 
-  if (input->exec() != InputDialogConfirmacao::Accepted) return false;
+  if (input.exec() != InputDialogConfirmacao::Accepted) return false;
 
-  const QDateTime dataEntrega = input->getDate();
+  const QDateTime dataEntrega = input.getDate();
 
   for (auto const &item : list) {
     QSqlQuery query;
@@ -110,11 +117,10 @@ bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list) {
       return false;
     }
 
-    query.prepare("UPDATE venda_has_produto SET status = 'ENTREGUE', dataRealEnt = :dataRealEnt WHERE idVenda = "
-                  ":idVenda AND codComercial = :codComercial");
+    query.prepare("UPDATE venda_has_produto SET status = 'ENTREGUE', dataRealEnt = :dataRealEnt WHERE idVendaProduto = "
+                  ":idVendaProduto");
     query.bindValue(":dataRealEnt", dataEntrega);
-    query.bindValue(":idVenda", model.data(item.row(), "idVenda"));
-    query.bindValue(":codComercial", model.data(item.row(), "codComercial"));
+    query.bindValue(":idVendaProduto", model.data(item.row(), "idVendaProduto"));
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro salvando status na venda_produto: " + query.lastError().text());
@@ -128,8 +134,8 @@ bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list) {
 void WidgetLogisticaRepresentacao::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetLogisticaRepresentacao::on_lineEditBusca_textChanged(const QString &text) {
-  // TODO: add cliente
-  model.setFilter("fornecedor = '" + fornecedor + "' AND (idVenda LIKE '%" + text + "%')");
+  model.setFilter("fornecedor = '" + fornecedor + "' AND (idVenda LIKE '%" + text + "%' OR cliente LIKE '%" + text +
+                  "%')");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }

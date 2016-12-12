@@ -4,7 +4,7 @@
 
 #include "lineeditdelegate.h"
 
-LineEditDelegate::LineEditDelegate(Tipo tipo, QObject *parent) : QStyledItemDelegate(parent), tipo(tipo) {}
+LineEditDelegate::LineEditDelegate(const Tipo tipo, QObject *parent) : QStyledItemDelegate(parent), tipo(tipo) {}
 
 LineEditDelegate::~LineEditDelegate() {}
 
@@ -13,8 +13,8 @@ QWidget *LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 
   QSqlQueryModel *model = new QSqlQueryModel(parent);
 
-  if (tipo == ContraPartePagar) model->setQuery("SELECT contraParte FROM conta_a_pagar_has_pagamento");
-  if (tipo == ContraParteReceber) model->setQuery("SELECT contraParte FROM conta_a_receber_has_pagamento");
+  if (tipo == ContraPartePagar) model->setQuery("SELECT DISTINCT(contraParte) FROM conta_a_pagar_has_pagamento");
+  if (tipo == ContraParteReceber) model->setQuery("SELECT DISTINCT(contraParte) FROM conta_a_receber_has_pagamento");
   if (tipo == Grupo) model->setQuery("SELECT tipo FROM despesa");
 
   QCompleter *completer = new QCompleter(model, parent);

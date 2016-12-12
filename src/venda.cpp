@@ -22,6 +22,8 @@
 Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   //  for (auto const *line : findChildren<QLineEdit *>()) {
   //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   //  }
@@ -217,7 +219,7 @@ void Venda::setupTables() {
   ui->tableFluxoCaixa2->setItemDelegateForColumn("valor", new ReaisDelegate(this));
 }
 
-void Venda::resetarPagamentos() { // TODO: desabilitar parcelas no pag. 1 e clear nas parcelas
+void Venda::resetarPagamentos() {
   ui->doubleSpinBoxTotalPag->setValue(ui->doubleSpinBoxTotal->value());
   ui->doubleSpinBoxPgt1->setMaximum(ui->doubleSpinBoxTotal->value());
   ui->doubleSpinBoxPgt1->setValue(ui->doubleSpinBoxTotal->value());
@@ -235,6 +237,12 @@ void Venda::resetarPagamentos() { // TODO: desabilitar parcelas no pag. 1 e clea
   ui->comboBoxPgt4->setCurrentIndex(0);
   ui->comboBoxPgt5->setCurrentIndex(0);
 
+  ui->comboBoxPgt1Parc->clear();
+  ui->comboBoxPgt2Parc->clear();
+  ui->comboBoxPgt3Parc->clear();
+  ui->comboBoxPgt4Parc->clear();
+  ui->comboBoxPgt5Parc->clear();
+
   ui->comboBoxPgt1Parc->setCurrentIndex(0);
   ui->comboBoxPgt2Parc->setCurrentIndex(0);
   ui->comboBoxPgt3Parc->setCurrentIndex(0);
@@ -245,6 +253,7 @@ void Venda::resetarPagamentos() { // TODO: desabilitar parcelas no pag. 1 e clea
   ui->comboBoxPgt3->setDisabled(true);
   ui->comboBoxPgt4->setDisabled(true);
   ui->comboBoxPgt5->setDisabled(true);
+  ui->comboBoxPgt1Parc->setDisabled(true);
   ui->comboBoxPgt2Parc->setDisabled(true);
   ui->comboBoxPgt3Parc->setDisabled(true);
   ui->comboBoxPgt4Parc->setDisabled(true);
@@ -323,13 +332,13 @@ void Venda::prepararVenda(const QString &idOrcamento) {
 
   while (queryPag.next()) list << queryPag.value("pagamento").toString();
 
-  list << "Conta Cliente";
-
   ui->comboBoxPgt1->insertItems(0, list);
   ui->comboBoxPgt2->insertItems(0, list);
   ui->comboBoxPgt3->insertItems(0, list);
   ui->comboBoxPgt4->insertItems(0, list);
   ui->comboBoxPgt5->insertItems(0, list);
+
+  ui->comboBoxPgt1->addItem("Conta Cliente");
 
   //
 
@@ -449,8 +458,6 @@ void Venda::prepararVenda(const QString &idOrcamento) {
 }
 
 bool Venda::verifyFields() {
-  // TODO: verificar pagamentos vazios
-
   if (ui->comboBoxPgt1->currentText() != "Escolha uma opção!" and ui->lineEditPgt1->text().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Faltou preencher observação do pagamento 1!");
     ui->lineEditPgt1->setFocus();
@@ -527,6 +534,36 @@ bool Venda::verifyFields() {
 
   if (ui->doubleSpinBoxPgt5->value() > 0 and ui->comboBoxPgt5->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 5.");
+    ui->doubleSpinBoxPgt5->setFocus();
+    return false;
+  }
+
+  if (ui->doubleSpinBoxPgt1->value() == 0 and ui->comboBoxPgt1->currentText() != "Escolha uma opção!") {
+    QMessageBox::critical(this, "Erro!", "Pagamento 1 está com valor 0!");
+    ui->doubleSpinBoxPgt1->setFocus();
+    return false;
+  }
+
+  if (ui->doubleSpinBoxPgt2->value() == 0 and ui->comboBoxPgt2->currentText() != "Escolha uma opção!") {
+    QMessageBox::critical(this, "Erro!", "Pagamento 2 está com valor 0!");
+    ui->doubleSpinBoxPgt2->setFocus();
+    return false;
+  }
+
+  if (ui->doubleSpinBoxPgt3->value() == 0 and ui->comboBoxPgt3->currentText() != "Escolha uma opção!") {
+    QMessageBox::critical(this, "Erro!", "Pagamento 3 está com valor 0!");
+    ui->doubleSpinBoxPgt3->setFocus();
+    return false;
+  }
+
+  if (ui->doubleSpinBoxPgt4->value() == 0 and ui->comboBoxPgt4->currentText() != "Escolha uma opção!") {
+    QMessageBox::critical(this, "Erro!", "Pagamento 4 está com valor 0!");
+    ui->doubleSpinBoxPgt4->setFocus();
+    return false;
+  }
+
+  if (ui->doubleSpinBoxPgt5->value() == 0 and ui->comboBoxPgt5->currentText() != "Escolha uma opção!") {
+    QMessageBox::critical(this, "Erro!", "Pagamento 5 está com valor 0!");
     ui->doubleSpinBoxPgt5->setFocus();
     return false;
   }
@@ -742,7 +779,7 @@ void Venda::on_comboBoxPgt1_currentTextChanged(const QString &text) {
   }
 
   QSqlQuery query;
-  query.prepare("SELECT parcelas FROM forma_pagamento WHERE pagamento = :pagamento"); // TODO: use id?
+  query.prepare("SELECT parcelas FROM forma_pagamento WHERE pagamento = :pagamento");
   query.bindValue(":pagamento", ui->comboBoxPgt1->currentText());
 
   if (not query.exec() or not query.first()) {
@@ -1047,7 +1084,7 @@ void Venda::on_pushButtonVoltar_clicked() {
   close();
 }
 
-void Venda::montarFluxoCaixa() { // TODO: put if (not setData...) return
+void Venda::montarFluxoCaixa() {
   if (ui->framePagamentos_2->isHidden()) return;
 
   modelFluxoCaixa.select();
@@ -1055,15 +1092,15 @@ void Venda::montarFluxoCaixa() { // TODO: put if (not setData...) return
 
   if (financeiro) {
     for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
-      if (not modelFluxoCaixa.setData(row, "status", "CANCELADO")) {
-        QMessageBox::critical(this, "Erro!", "Erro mudando status para 'CANCELADO'!");
+      if (not modelFluxoCaixa.setData(row, "status", "SUBSTITUIDO")) {
+        QMessageBox::critical(this, "Erro!", "Erro mudando status para 'SUBSTITUIDO'!");
         return;
       }
     }
 
     for (int row = 0; row < modelFluxoCaixa2.rowCount(); ++row) {
-      if (not modelFluxoCaixa2.setData(row, "status", "CANCELADO")) {
-        QMessageBox::critical(this, "Erro!", "Erro mudando status para 'CANCELADO'!");
+      if (not modelFluxoCaixa2.setData(row, "status", "SUBSTITUIDO")) {
+        QMessageBox::critical(this, "Erro!", "Erro mudando status para 'SUBSTITUIDO'!");
         return;
       }
     }
@@ -1110,7 +1147,7 @@ void Venda::montarFluxoCaixa() { // TODO: put if (not setData...) return
       for (int z = 0, total = modelFluxoCaixa.rowCount(); z < total; ++z) {
         if (modelFluxoCaixa.data(z, "representacao").toBool() == false) continue;
         if (not modelFluxoCaixa.data(z, "tipo").toString().contains(QString::number(i + 1))) continue;
-        if (modelFluxoCaixa.data(z, "status").toString() == "CANCELADO") continue;
+        if (modelFluxoCaixa.data(z, "status").toString() == "SUBSTITUIDO") continue;
 
         const QString fornecedor = modelItem.data(0, "fornecedor").toString();
 
@@ -1133,6 +1170,7 @@ void Venda::montarFluxoCaixa() { // TODO: put if (not setData...) return
 
         const int row = modelFluxoCaixa2.rowCount();
         modelFluxoCaixa2.insertRow(row);
+
         modelFluxoCaixa2.setData(row, "contraParte", modelItem.data(0, "fornecedor"));
         modelFluxoCaixa2.setData(row, "dataEmissao", QDate::currentDate());
         modelFluxoCaixa2.setData(row, "idVenda", ui->lineEditVenda->text());
@@ -1148,12 +1186,12 @@ void Venda::montarFluxoCaixa() { // TODO: put if (not setData...) return
       // calculo taxas cartao
       for (int z = 0, total = modelFluxoCaixa.rowCount(); z < total; ++z) {
         if (not modelFluxoCaixa.data(z, "tipo").toString().contains(QString::number(i + 1))) continue;
-        if (modelFluxoCaixa.data(z, "status").toString() == "CANCELADO") continue;
+        if (modelFluxoCaixa.data(z, "status").toString() == "SUBSTITUIDO") continue;
         if (modelFluxoCaixa.data(z, "representacao").toBool()) continue;
         if (modelFluxoCaixa.data(z, "tipo").toString().contains("Conta Cliente")) continue;
 
         QSqlQuery query;
-        query.prepare("SELECT * FROM forma_pagamento fp LEFT JOIN forma_pagamento_has_taxa fpt ON fp.idPagamento = "
+        query.prepare("SELECT taxa FROM forma_pagamento fp LEFT JOIN forma_pagamento_has_taxa fpt ON fp.idPagamento = "
                       "fpt.idPagamento WHERE pagamento = :pagamento AND parcela = :parcela");
         query.bindValue(":pagamento", comboPgt.at(i)->currentText());
         query.bindValue(":parcela", comboParc.at(i)->currentText().remove("x").toInt());
@@ -1192,7 +1230,7 @@ void Venda::montarFluxoCaixa() { // TODO: put if (not setData...) return
 
 void Venda::on_pushButtonLimparPag_clicked() { resetarPagamentos(); }
 
-void Venda::on_doubleSpinBoxTotal_valueChanged(const double &) {
+void Venda::on_doubleSpinBoxTotal_valueChanged(const double) {
   if (isBlockedGlobal) return;
 
   const double liq = ui->doubleSpinBoxSubTotalLiq->value();
@@ -1207,7 +1245,7 @@ void Venda::on_doubleSpinBoxTotal_valueChanged(const double &) {
   isBlockedTotal = false;
 }
 
-void Venda::on_checkBoxFreteManual_clicked(const bool &checked) {
+void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
   ui->doubleSpinBoxFrete->setFrame(checked);
   ui->doubleSpinBoxFrete->setReadOnly(not checked);
   ui->doubleSpinBoxFrete->setButtonSymbols(checked ? QDoubleSpinBox::UpDownArrows : QDoubleSpinBox::NoButtons);
@@ -1217,13 +1255,13 @@ void Venda::on_checkBoxFreteManual_clicked(const bool &checked) {
                                        : qMax(ui->doubleSpinBoxSubTotalBruto->value() * porcFrete / 100., minimoFrete));
 }
 
-void Venda::on_doubleSpinBoxFrete_valueChanged(const double &) {
+void Venda::on_doubleSpinBoxFrete_valueChanged(const double) {
   if (isBlockedGlobal) return;
 
   calcPrecoGlobalTotal();
 }
 
-void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double &) {
+void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) {
   if (isBlockedGlobal) return;
 
   isBlockedGlobal = true;
@@ -1231,7 +1269,7 @@ void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double &) {
   isBlockedGlobal = false;
 }
 
-void Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &) {
+void Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double) {
   if (isBlockedGlobal) return;
 
   const double liq = ui->doubleSpinBoxSubTotalLiq->value();
@@ -1245,14 +1283,16 @@ void Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &) {
 }
 
 void Venda::on_pushButtonImprimir_clicked() {
-  Impressao impressao(data("idVenda").toString(), this);
+  Impressao impressao(data("idVenda").toString());
   impressao.print();
 }
 
-void Venda::successMessage() { QMessageBox::information(this, "Atenção!", "Venda cadastrada com sucesso!"); }
+void Venda::successMessage() {
+  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Venda cadastrada com sucesso!");
+}
 
 void Venda::on_pushButtonGerarExcel_clicked() {
-  Excel excel(ui->lineEditVenda->text(), this);
+  Excel excel(ui->lineEditVenda->text());
   excel.gerarExcel();
 }
 
@@ -1394,8 +1434,8 @@ bool Venda::cancelamento() {
 
   const QString idOrcamento = data("idOrcamento").toString();
 
-  QMessageBox::information(this, "Aviso!", idOrcamento.isEmpty() ? "Não havia idOrçamento associado para ativar!"
-                                                                 : "IdOrçamento: " + idOrcamento);
+  QMessageBox::information(this, "Aviso!", idOrcamento.isEmpty() ? "Não havia Orçamento associado para ativar!"
+                                                                 : "Orçamento " + idOrcamento + " reativado!");
 
   QSqlQuery query;
 
@@ -1405,11 +1445,6 @@ bool Venda::cancelamento() {
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro reativando orçamento: " + query.lastError().text());
-      return false;
-    }
-
-    if (not query.exec("CALL update_orcamento_status")) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando status do orçamento: " + query.lastError().text());
       return false;
     }
   }
@@ -1436,18 +1471,22 @@ bool Venda::cancelamento() {
   }
 
   //---------------------------
-  // TODO: if no product entered buying why do this?
-  query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'CANCELADO' WHERE idVenda = :idVenda");
-  query.bindValue(":idVenda", ui->lineEditVenda->text());
+  for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
+    if (modelFluxoCaixa.data(row, "tipo").toString().contains("Conta Cliente")) {
+      if (modelFluxoCaixa.data(row, "status").toString() == "CANCELADO") continue;
+      const double credito = modelFluxoCaixa.data(row, "valor").toDouble();
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro marcando produtos da compra como cancelados: " + query.lastError().text());
-    return false;
+      query.prepare("UPDATE cliente SET credito = credito + :valor WHERE idCliente = :idCliente");
+      query.bindValue(":valor", credito);
+      query.bindValue(":idCliente", model.data(0, "idCliente"));
+
+      if (not query.exec()) {
+        QMessageBox::critical(this, "Erro!", "Erro voltando credito do cliente: " + query.lastError().text());
+        return false;
+      }
+    }
   }
 
-  //---------------------------
-  // TODO: readicionar creditos utilizados que forem cancelados
   query.prepare("UPDATE conta_a_receber_has_pagamento SET status = 'CANCELADO' WHERE idVenda = :idVenda");
   query.bindValue(":idVenda", ui->lineEditVenda->text());
 
@@ -1501,6 +1540,11 @@ bool Venda::generateId() {
     return false;
   }
 
+  if (id.size() != 11) {
+    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao gerar id: " + id);
+    return false;
+  }
+
   id += query.value("representacao").toBool() ? "R" : "";
 
   ui->lineEditVenda->setText(id);
@@ -1509,7 +1553,7 @@ bool Venda::generateId() {
 }
 
 void Venda::on_pushButtonDevolucao_clicked() {
-  // TODO: criar separado devolucoes totais ou parciais
+  // NOTE: criar separado devolucoes totais ou parciais
   Devolucao *devolucao = new Devolucao(data("idVenda").toString(), this);
   devolucao->show();
 }
@@ -1524,7 +1568,7 @@ void Venda::on_pushButtonFreteLoja_clicked() {
   resetarPagamentos();
 
   ui->checkBoxRep1->setChecked(false);
-  ui->lineEditPgt1->setText("FRETE");
+  ui->lineEditPgt1->setText("Frete");
   ui->lineEditPgt1->setReadOnly(true);
 
   ui->doubleSpinBoxPgt1->setValue(ui->doubleSpinBoxFrete->value());
@@ -1615,13 +1659,13 @@ void Venda::on_pushButtonCorrigirFluxo_clicked() {
 
   while (queryPag.next()) list << queryPag.value("pagamento").toString();
 
-  list << "Conta Cliente";
-
   ui->comboBoxPgt1->insertItems(0, list);
   ui->comboBoxPgt2->insertItems(0, list);
   ui->comboBoxPgt3->insertItems(0, list);
   ui->comboBoxPgt4->insertItems(0, list);
   ui->comboBoxPgt5->insertItems(0, list);
+
+  ui->comboBoxPgt1->addItem("Conta Cliente");
 
   //
 
@@ -1630,7 +1674,4 @@ void Venda::on_pushButtonCorrigirFluxo_clicked() {
 }
 
 // NOTE: prazoEntrega por produto
-// NOTE: alguma coisa disparando isDirty no pedido fechado
 // NOTE: bloquear desconto maximo por classe de funcionario
-// TODO: bloquear utilizacao de conta cliente se nao houver saldo suficiente
-// TODO: mostrar statusFinanceiro

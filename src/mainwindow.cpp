@@ -72,6 +72,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
   ui->tabWidget->setTabEnabled(7, query.value("view_tab_relatorio").toBool());
   //
 
+  connect(ui->widgetOrcamento, &WidgetOrcamento::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetVenda, &WidgetVenda::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetCompra, &WidgetCompra::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetLogistica, &WidgetLogistica::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetNfe, &WidgetNfe::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetEstoque, &WidgetEstoque::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetFinanceiro, &WidgetFinanceiro::errorSignal, this, &MainWindow::timerStatusBar);
+  connect(ui->widgetRelatorio, &WidgetRelatorio::errorSignal, this, &MainWindow::timerStatusBar);
+
   timer = new QTimer(this);
 }
 
@@ -117,7 +126,7 @@ void MainWindow::on_actionGerenciar_Lojas_triggered() {
 
 void MainWindow::showStatusBarMessage() { ui->statusBar->showMessage(error, 125); }
 
-void MainWindow::timerStatusBar(QString error) {
+void MainWindow::timerStatusBar(const QString &error) {
   this->error = error;
   disconnect(timer, &QTimer::timeout, this, &MainWindow::showStatusBarMessage);
   connect(timer, &QTimer::timeout, this, &MainWindow::showStatusBarMessage);
@@ -125,15 +134,6 @@ void MainWindow::timerStatusBar(QString error) {
 }
 
 void MainWindow::updateTables() {
-  connect(ui->widgetOrcamento, &WidgetOrcamento::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetVenda, &WidgetVenda::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetCompra, &WidgetCompra::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetLogistica, &WidgetLogistica::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetNfe, &WidgetNfe::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetEstoque, &WidgetEstoque::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetFinanceiro, &WidgetFinanceiro::errorSignal, this, &MainWindow::timerStatusBar);
-  connect(ui->widgetRelatorio, &WidgetRelatorio::errorSignal, this, &MainWindow::timerStatusBar);
-
   const QString currentText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
 
   if (currentText == "Orçamentos") ui->widgetOrcamento->updateTables();
@@ -191,7 +191,7 @@ void MainWindow::darkTheme() {
   qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
 }
 
-void MainWindow::on_tabWidget_currentChanged(const int &) { updateTables(); }
+void MainWindow::on_tabWidget_currentChanged(const int) { updateTables(); }
 
 void MainWindow::on_actionSobre_triggered() {
   QMessageBox::about(
@@ -237,7 +237,3 @@ void MainWindow::on_actionPromocao_triggered() {
 }
 
 // NOTE: colocar logo da staccato na mainwindow
-// TODO: implementar tela financeiro->compras
-// TODO: transformar o tabWidget do financeiro em seu proprio widget
-// TODO: verificar se as conexoes de errorSignal dos subwidgets nao deveriam ir para o construtor para evitar de serem
-// conectadas a cada updateTables()

@@ -5,6 +5,8 @@
 #include <QSqlRecord>
 
 #include "doubledelegate.h"
+#include "porcentagemdelegate.h"
+#include "reaisdelegate.h"
 #include "searchdialog.h"
 #include "searchdialogproxy.h"
 #include "ui_searchdialog.h"
@@ -12,7 +14,7 @@
 
 SearchDialog::SearchDialog(const QString &title, const QString &table, const QStringList &indexes,
                            const QString &filter, QWidget *parent)
-    : QDialog(parent), ui(new Ui::SearchDialog), indexes(indexes) {
+    : QDialog(parent), indexes(indexes), ui(new Ui::SearchDialog) {
   ui->setupUi(this);
 
   setWindowTitle(title);
@@ -44,11 +46,6 @@ void SearchDialog::setupTables(const QString &table, const QString &filter) {
   model.setTable(table);
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
   setFilter(filter);
-
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela " + table + ": " + model.lastError().text());
-    return;
-  }
 
   ui->table->setModel(new SearchDialogProxy(&model, this));
   ui->table->setItemDelegate(new DoubleDelegate(this));
@@ -207,9 +204,11 @@ SearchDialog *SearchDialog::cliente(QWidget *parent) {
 }
 
 SearchDialog *SearchDialog::loja(QWidget *parent) {
-  // TODO: colocar doubledelegate no frete
   SearchDialog *sdLoja =
       new SearchDialog("Buscar Loja", "loja", {"descricao, nomeFantasia, razaoSocial"}, "desativado = FALSE", parent);
+
+  sdLoja->ui->table->setItemDelegateForColumn("porcentagemFrete", new PorcentagemDelegate(parent));
+  sdLoja->ui->table->setItemDelegateForColumn("valorMinimoFrete", new ReaisDelegate(parent));
 
   sdLoja->setPrimaryKey("idLoja");
   sdLoja->setTextKeys({"nomeFantasia"});
@@ -223,8 +222,8 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
   sdLoja->setHeaderData("inscEstadual", "Insc. Est.");
   sdLoja->setHeaderData("sigla", "Sigla");
   sdLoja->setHeaderData("cnpj", "CNPJ");
-  sdLoja->setHeaderData("porcentagemFrete", "% Frete");
-  sdLoja->setHeaderData("valorMinimoFrete", "R$ Mínimo Frete");
+  sdLoja->setHeaderData("porcentagemFrete", "Frete");
+  sdLoja->setHeaderData("valorMinimoFrete", "Mínimo Frete");
 
   return sdLoja;
 }
@@ -318,7 +317,9 @@ SearchDialog *SearchDialog::fornecedor(QWidget *parent) {
                              "comissao1",
                              "comissao2",
                              "comissaoLoja",
-                             "coleta"});
+                             "coleta",
+                             "aliquotaSt",
+                             "st"});
 
   sdFornecedor->setHeaderData("razaoSocial", "Razão Social");
   sdFornecedor->setHeaderData("nomeFantasia", "Nome Fantasia");
@@ -487,8 +488,6 @@ QString SearchDialog::getFilter() const { return filter; }
 
 void SearchDialog::setRepresentacao(const QString &value) { representacao = value; }
 
-void SearchDialog::on_radioButtonProdAtivos_toggled(const bool &) { on_lineEditBusca_textChanged(QString()); }
+void SearchDialog::on_radioButtonProdAtivos_toggled(const bool) { on_lineEditBusca_textChanged(QString()); }
 
-void SearchDialog::on_radioButtonProdDesc_toggled(const bool &) { on_lineEditBusca_textChanged(QString()); }
-
-// TODO: optimize model to not load everything
+void SearchDialog::on_radioButtonProdDesc_toggled(const bool) { on_lineEditBusca_textChanged(QString()); }

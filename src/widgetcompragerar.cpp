@@ -164,13 +164,13 @@ bool WidgetCompraGerar::gerarCompra() {
 
   const QString filtro = modelProdutos.filter();
 
-  InputDialogProduto *inputDlg = new InputDialogProduto(InputDialogProduto::GerarCompra, this);
-  if (not inputDlg->setFilter(ids)) return false;
+  InputDialogProduto inputDlg(InputDialogProduto::GerarCompra);
+  if (not inputDlg.setFilter(ids)) return false;
 
-  if (inputDlg->exec() != InputDialogProduto::Accepted) return false;
+  if (inputDlg.exec() != InputDialogProduto::Accepted) return false;
 
-  const QDateTime dataCompra = inputDlg->getDate();
-  const QDateTime dataPrevista = inputDlg->getNextDate();
+  const QDateTime dataCompra = inputDlg.getDate();
+  const QDateTime dataPrevista = inputDlg.getNextDate();
 
   modelProdutos.setFilter(filtro);
   modelProdutos.select();
@@ -198,7 +198,7 @@ bool WidgetCompraGerar::gerarCompra() {
 
   QSqlQuery queryOC;
 
-  if (not queryOC.exec("SELECT COALESCE(MAX(ordemCompra) + 1, 1) AS ordemCompra FROM pedido_fornecedor_has_produto") or
+  if (not queryOC.exec("SELECT COALESCE(MAX(ordemCompra), 0) + 1 AS ordemCompra FROM pedido_fornecedor_has_produto") or
       not queryOC.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando próximo O.C.!");
     return false;
@@ -218,8 +218,33 @@ bool WidgetCompraGerar::gerarCompra() {
 
   oc = input.intValue();
 
-  // TODO: verificar se oc escolhida ja existe?
+  bool ok = false;
 
+  while (not ok) {
+    queryOC.prepare("SELECT ordemCompra FROM pedido_fornecedor_has_produto WHERE ordemCompra = :ordemCompra LIMIT 1");
+    queryOC.bindValue(":ordemCompra", oc);
+
+    if (not queryOC.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando O.C.!");
+      return false;
+    }
+
+    if (not queryOC.first()) {
+      ok = true;
+    } else {
+      QMessageBox msgBox(QMessageBox::Question, "Atenção!", "OC já existe! Continuar?",
+                         QMessageBox::Yes | QMessageBox::No, this);
+      msgBox.setButtonText(QMessageBox::Yes, "Continuar");
+      msgBox.setButtonText(QMessageBox::No, "Voltar");
+
+      if (msgBox.exec() == QMessageBox::Yes) {
+        ok = true;
+      } else {
+        if (input.exec() != QInputDialog::Accepted) return false;
+        oc = input.intValue();
+      }
+    }
+  }
   //
 
   QString anexo;
@@ -250,7 +275,7 @@ bool WidgetCompraGerar::gerarCompra() {
 
     QSqlQuery queryId;
 
-    if (not queryId.exec("SELECT COALESCE(MAX(idCompra) + 1, 1) AS idCompra FROM pedido_fornecedor_has_produto") or
+    if (not queryId.exec("SELECT COALESCE(MAX(idCompra), 0) + 1 AS idCompra FROM pedido_fornecedor_has_produto") or
         not queryId.first()) {
       QMessageBox::critical(this, "Erro!", "Erro buscando idCompra: " + queryId.lastError().text());
       return false;
@@ -264,26 +289,26 @@ bool WidgetCompraGerar::gerarCompra() {
     if (not modelProdutos.setData(row, "dataPrevConf", dataPrevista)) return false;
 
     // salvar status na venda
-    QSqlQuery query;
-    // TODO: in the future use idVendaProduto in place of idProduto/idVenda
-    query.prepare("UPDATE venda_has_produto SET status = 'EM COMPRA', idCompra = :idCompra, dataRealCompra = "
-                  ":dataRealCompra, dataPrevConf = :dataPrevConf WHERE idProduto = :idProduto AND idVenda = :idVenda");
-    query.bindValue(":idCompra", id);
-    query.bindValue(":dataRealCompra", dataCompra);
-    query.bindValue(":dataPrevConf", dataPrevista);
-    query.bindValue(":idProduto", modelProdutos.data(row, "idProduto"));
-    query.bindValue(":idVenda", modelProdutos.data(row, "idVenda"));
 
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + query.lastError().text());
-      return false;
-    }
+    if (modelProdutos.data(row, "idVendaProduto").toInt() != 0) {
+      QSqlQuery queryVenda;
+      queryVenda.prepare("UPDATE venda_has_produto SET status = 'EM COMPRA', idCompra = :idCompra, dataRealCompra = "
+                         ":dataRealCompra, dataPrevConf = :dataPrevConf WHERE idVendaProduto = :idVendaProduto");
+      queryVenda.bindValue(":idCompra", id);
+      queryVenda.bindValue(":dataRealCompra", dataCompra);
+      queryVenda.bindValue(":dataPrevConf", dataPrevista);
+      queryVenda.bindValue(":idVendaProduto", modelProdutos.data(row, "idVendaProduto"));
 
-    if (not query.exec("CALL update_venda_status()")) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
-      return false;
+      if (not queryVenda.exec()) {
+        QMessageBox::critical(this, "Erro!", "Erro atualizando status da venda: " + queryVenda.lastError().text());
+        return false;
+      }
     }
-    //
+  }
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return false;
   }
 
   if (not modelProdutos.submitAll()) {
@@ -312,12 +337,17 @@ void WidgetCompraGerar::on_pushButtonGerarCompra_clicked() {
 
 bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo, const bool isRepresentacao) {
   if (isRepresentacao) {
-    Excel *excel = new Excel(modelProdutos.data(lista.at(0), "idVenda").toString());
-    QString representacao = "OC " + QString::number(oc) + " " +
-                            modelProdutos.data(lista.first(), "idVenda").toString() + " " +
-                            modelProdutos.data(lista.first(), "fornecedor").toString();
-    excel->gerarExcel(oc, true, representacao);
-    anexo = excel->getFileName();
+    if (modelProdutos.data(lista.first(), "idVenda").toString().isEmpty()) {
+      QMessageBox::critical(this, "Erro!", "'Venda' vazio!");
+      return false;
+    }
+
+    Excel excel(modelProdutos.data(lista.at(0), "idVenda").toString());
+    const QString representacao = "OC " + QString::number(oc) + " " +
+                                  modelProdutos.data(lista.first(), "idVenda").toString() + " " +
+                                  modelProdutos.data(lista.first(), "fornecedor").toString();
+    if (not excel.gerarExcel(oc, true, representacao)) return false;
+    anexo = excel.getFileName();
     return true;
   }
 
@@ -406,7 +436,7 @@ bool WidgetCompraGerar::gerarExcel(QList<int> &lista, QString &anexo, const bool
   return true;
 }
 
-void WidgetCompraGerar::on_checkBoxMarcarTodos_clicked(const bool &checked) {
+void WidgetCompraGerar::on_checkBoxMarcarTodos_clicked(const bool checked) {
   checked ? ui->tableProdutos->selectAll() : ui->tableProdutos->clearSelection();
 }
 

@@ -10,7 +10,7 @@
 #include "usersession.h"
 #include "xlsxdocument.h"
 
-Excel::Excel(QString id, QWidget *parent) : id(id), parent(parent) { verificaTipo(); }
+Excel::Excel(const QString &id, QWidget *parent) : id(id), parent(parent) { verificaTipo(); }
 
 void Excel::verificaTipo() {
   QSqlQuery query;
@@ -25,8 +25,8 @@ void Excel::verificaTipo() {
   type = query.first() ? Orcamento : Venda;
 }
 
-bool Excel::gerarExcel(const int oc, const bool isRepresentacao, const QString representacao) {
-  QString folder = type == Orcamento ? "User/OrcamentosFolder" : "User/VendasFolder";
+bool Excel::gerarExcel(const int oc, const bool isRepresentacao, const QString &representacao) {
+  const QString folder = type == Orcamento ? "User/OrcamentosFolder" : "User/VendasFolder";
 
   if (UserSession::settings(folder).toString().isEmpty()) {
     QMessageBox::critical(parent, "Erro!", "Não há uma pasta definida para salvar PDF/Excel. Por favor escolha uma.");
@@ -75,23 +75,26 @@ bool Excel::gerarExcel(const int oc, const bool isRepresentacao, const QString r
 
   QXlsx::Document xlsx(arquivoModelo);
 
-  QString endLoja = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() + " " +
-                    queryLojaEnd.value("complemento").toString() + " - " + queryLojaEnd.value("bairro").toString() +
-                    "\n" + queryLojaEnd.value("cidade").toString() + " - " + queryLojaEnd.value("uf").toString() +
-                    " - CEP: " + queryLojaEnd.value("cep").toString() + "\n" + queryLoja.value("tel").toString() +
-                    " - " + queryLoja.value("tel2").toString();
+  const QString endLoja = queryLojaEnd.value("logradouro").toString() + ", " + queryLojaEnd.value("numero").toString() +
+                          " " + queryLojaEnd.value("complemento").toString() + " - " +
+                          queryLojaEnd.value("bairro").toString() + "\n" + queryLojaEnd.value("cidade").toString() +
+                          " - " + queryLojaEnd.value("uf").toString() + " - CEP: " +
+                          queryLojaEnd.value("cep").toString() + "\n" + queryLoja.value("tel").toString() + " - " +
+                          queryLoja.value("tel2").toString();
 
-  QString endEntrega = queryEndEnt.value("logradouro").toString().isEmpty()
-                           ? "Não há/Retira"
-                           : queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() +
-                                 " " + queryEndEnt.value("complemento").toString() + " - " +
-                                 queryEndEnt.value("bairro").toString() + ", " + queryEndEnt.value("cidade").toString();
+  const QString endEntrega =
+      queryEndEnt.value("logradouro").toString().isEmpty()
+          ? "Não há/Retira"
+          : queryEndEnt.value("logradouro").toString() + " " + queryEndEnt.value("numero").toString() + " " +
+                queryEndEnt.value("complemento").toString() + " - " + queryEndEnt.value("bairro").toString() + ", " +
+                queryEndEnt.value("cidade").toString();
 
-  QString endFat = queryEndFat.value("logradouro").toString().isEmpty()
-                       ? "Não há/Retira"
-                       : queryEndFat.value("logradouro").toString() + " " + queryEndFat.value("numero").toString() +
-                             " " + queryEndFat.value("complemento").toString() + " - " +
-                             queryEndFat.value("bairro").toString() + ", " + queryEndFat.value("cidade").toString();
+  const QString endFat =
+      queryEndFat.value("logradouro").toString().isEmpty()
+          ? "Não há/Retira"
+          : queryEndFat.value("logradouro").toString() + " " + queryEndFat.value("numero").toString() + " " +
+                queryEndFat.value("complemento").toString() + " - " + queryEndFat.value("bairro").toString() + ", " +
+                queryEndFat.value("cidade").toString();
 
   xlsx.write("A5", endLoja);
 
@@ -197,11 +200,53 @@ bool Excel::gerarExcel(const int oc, const bool isRepresentacao, const QString r
                                  queryPgt3.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
                                  queryPgt3.value("observacao").toString();
 
+  // 4
+
+  QSqlQuery queryPgt4(
+      "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento "
+      "WHERE idVenda = '" +
+      id + "' AND tipo LIKE '4%' AND tipo != '4. Comissão' AND tipo != '4. Taxa Cartão' AND status != 'CANCELADO'");
+
+  if (not queryPgt4.exec() or not queryPgt4.first()) {
+    QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 4: " + queryPgt4.lastError().text());
+    return false;
+  }
+
+  const QString pgt4 = queryPgt4.value("valor") == 0
+                           ? ""
+                           : queryPgt4.value("tipo").toString() + " - " + queryPgt4.value("COUNT(valor)").toString() +
+                                 "x de R$ " + locale.toString(queryPgt4.value("valor").toDouble(), 'f', 2) +
+                                 (queryPgt4.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                 queryPgt4.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                 queryPgt4.value("observacao").toString();
+
+  // 5
+
+  QSqlQuery queryPgt5(
+      "SELECT tipo, COUNT(valor), valor, dataPagamento, observacao FROM conta_a_receber_has_pagamento "
+      "WHERE idVenda = '" +
+      id + "' AND tipo LIKE '5%' AND tipo != '5. Comissão' AND tipo != '5. Taxa Cartão' AND status != 'CANCELADO'");
+
+  if (not queryPgt5.exec() or not queryPgt5.first()) {
+    QMessageBox::critical(parent, "Erro!", "Erro buscando pagamentos 5: " + queryPgt5.lastError().text());
+    return false;
+  }
+
+  const QString pgt5 = queryPgt5.value("valor") == 0
+                           ? ""
+                           : queryPgt5.value("tipo").toString() + " - " + queryPgt5.value("COUNT(valor)").toString() +
+                                 "x de R$ " + locale.toString(queryPgt5.value("valor").toDouble(), 'f', 2) +
+                                 (queryPgt5.value("COUNT(valor)") == 1 ? " - pag. em: " : " - 1° pag. em: ") +
+                                 queryPgt5.value("dataPagamento").toDate().toString("dd-MM-yyyy") + " - " +
+                                 queryPgt5.value("observacao").toString();
+
   xlsx.write("B114", pgt1);
   xlsx.write("B115", pgt2);
   xlsx.write("B116", pgt3);
+  xlsx.write("B117", pgt4);
+  xlsx.write("B118", pgt5);
 
-  xlsx.write("B117", query.value("observacao").toString().replace("\n", " "));
+  xlsx.write("B119", query.value("observacao").toString().replace("\n", " "));
 
   int row = 0;
   queryProduto.first();
@@ -211,40 +256,37 @@ bool Excel::gerarExcel(const int oc, const bool isRepresentacao, const QString r
     query.prepare("SELECT ui FROM produto WHERE idProduto = :idProduto");
     query.bindValue(":idProduto", queryProduto.value("idProduto"));
 
-    if (not query.exec()) {
+    if (not query.exec() or not query.first()) {
       QMessageBox::critical(parent, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
       return false;
     }
 
-    QString loes;
-
-    if (query.first()) loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
+    const QString loes = query.value("ui").toString().contains("- L") ? " LOES" : "";
 
     xlsx.write("A" + QString::number(12 + row), queryProduto.value("fornecedor").toString() + loes);
     xlsx.write("B" + QString::number(12 + row), queryProduto.value("codComercial").toString());
-    QString formComercial = queryProduto.value("formComercial").toString();
+    const QString formComercial = queryProduto.value("formComercial").toString();
     xlsx.write("C" + QString::number(12 + row), queryProduto.value("produto").toString() +
                                                     (formComercial.isEmpty() ? "" : " (" + formComercial + ")") +
                                                     (loes.isEmpty() ? "" : " -" + loes));
     xlsx.write("H" + QString::number(12 + row), queryProduto.value("obs").toString());
 
-    double prcUn = queryProduto.value("prcUnitario").toDouble();
-    double desc = prcUn * queryProduto.value("desconto").toDouble() / 100.;
-    // TODO: considerar descontoGlobal
-    double porc = queryProduto.value("desconto").toDouble();
+    const double prcUn = queryProduto.value("prcUnitario").toDouble();
+    const double desc = prcUn * queryProduto.value("desconto").toDouble() / 100.;
+    const double porc = queryProduto.value("desconto").toDouble();
 
-    QString preco = "R$ " + locale.toString(prcUn, 'f', 2);
-    QString precoDesc =
+    const QString preco = "R$ " + locale.toString(prcUn, 'f', 2);
+    const QString precoDesc =
         desc > 0.01 ? " (-" + locale.toString(porc, 'f', 2) + "% R$ " + locale.toString(prcUn - desc, 'f', 2) + ")"
                     : "";
-    QString precoDescNeg = "R$ " + locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
+    const QString precoDescNeg = "R$ " + locale.toString((porc / -100. + 1) * prcUn, 'f', 2);
     xlsx.write("K" + QString::number(12 + row), porc < 0 ? precoDescNeg : preco + precoDesc);
     xlsx.write("L" + QString::number(12 + row), queryProduto.value("quant").toDouble());
     xlsx.write("M" + QString::number(12 + row), queryProduto.value("un").toString());
-    QString total = "R$ " + locale.toString(queryProduto.value("parcial").toDouble(), 'f', 2);
-    QString totalDesc =
+    const QString total = "R$ " + locale.toString(queryProduto.value("parcial").toDouble(), 'f', 2);
+    const QString totalDesc =
         desc > 0.01 ? " (R$ " + locale.toString(queryProduto.value("parcialDesc").toDouble(), 'f', 2) + ")" : "";
-    QString totalDescNeg = "R$ " + locale.toString(queryProduto.value("parcialDesc").toDouble(), 'f', 2);
+    const QString totalDescNeg = "R$ " + locale.toString(queryProduto.value("parcialDesc").toDouble(), 'f', 2);
     xlsx.write("N" + QString::number(12 + row), porc < 0 ? totalDescNeg : total + totalDesc);
 
     if (desc > 0.01) xlsx.setColumnWidth(11, 28);
@@ -274,7 +316,9 @@ bool Excel::setQuerys() {
                   "= :idOrcamento");
     query.bindValue(":idOrcamento", id);
 
-    queryProduto.prepare("SELECT * FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento"); // TODO: replace *
+    queryProduto.prepare(
+        "SELECT idProduto, fornecedor, codComercial, formComercial, produto, obs, prcUnitario, "
+        "desconto, quant, un, parcial, parcialDesc FROM orcamento_has_produto WHERE idOrcamento = :idOrcamento");
     queryProduto.bindValue(":idOrcamento", id);
   }
 
@@ -285,7 +329,8 @@ bool Excel::setQuerys() {
         "= :idVenda");
     query.bindValue(":idVenda", id);
 
-    queryProduto.prepare("SELECT * FROM venda_has_produto WHERE idVenda = :idVenda"); // TODO: replace *
+    queryProduto.prepare("SELECT idProduto, fornecedor, codComercial, formComercial, produto, obs, prcUnitario, "
+                         "desconto, quant, un, parcial, parcialDesc FROM venda_has_produto WHERE idVenda = :idVenda");
     queryProduto.bindValue(":idVenda", id);
   }
 
@@ -362,5 +407,3 @@ bool Excel::setQuerys() {
 
   return true;
 }
-
-// TODO: colocar formas de pagamento 4 e 5

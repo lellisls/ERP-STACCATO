@@ -15,9 +15,9 @@ public:
   void montarArvore(QStandardItemModel &model);
 
 private:
-  QByteArray fileContent;
+  const QByteArray fileContent;
+  const QString fileName;
   QStandardItemModel model;
-  QString fileName;
   QString local;
 
   QString chaveAcesso;

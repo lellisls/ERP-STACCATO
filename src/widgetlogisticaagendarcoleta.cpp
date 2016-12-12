@@ -29,7 +29,6 @@ WidgetLogisticaAgendarColeta::WidgetLogisticaAgendarColeta(QWidget *parent)
 WidgetLogisticaAgendarColeta::~WidgetLogisticaAgendarColeta() { delete ui; }
 
 void WidgetLogisticaAgendarColeta::setupTables() {
-  // TODO: produtos que nao foram comprados (consumo estoque) nao possuem idCompra para associar na view
   modelEstoque.setTable("view_agendar_coleta");
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -54,7 +53,6 @@ void WidgetLogisticaAgendarColeta::setupTables() {
   modelEstoque.setHeaderData("local", "Local");
   modelEstoque.setHeaderData("prazoEntrega", "Prazo Limite");
 
-  // TODO: properly use proxy (not painting anything now)
   ui->tableEstoque->setModel(new EstoquePrazoProxyModel(&modelEstoque, this));
   ui->tableEstoque->setItemDelegate(new DoubleDelegate(this));
   ui->tableEstoque->hideColumn("fornecedor");
@@ -134,16 +132,19 @@ void WidgetLogisticaAgendarColeta::setupTables() {
 
 void WidgetLogisticaAgendarColeta::calcularPeso() {
   double peso = 0;
+  double caixas = 0;
 
   const auto list = ui->tableEstoque->selectionModel()->selectedRows();
 
   for (auto const &item : list) {
     const double kg = modelEstoque.data(item.row(), "kgcx").toDouble();
-    const double caixas = modelEstoque.data(item.row(), "caixas").toDouble();
-    peso += kg * caixas;
+    const double caixa = modelEstoque.data(item.row(), "caixas").toDouble();
+    peso += kg * caixa;
+    caixas += caixa;
   }
 
   ui->doubleSpinBoxPeso->setValue(peso);
+  ui->doubleSpinBoxPeso->setSuffix(" Kg (" + QString::number(caixas) + " Cx.)");
 }
 
 bool WidgetLogisticaAgendarColeta::updateTables() {
@@ -175,6 +176,8 @@ bool WidgetLogisticaAgendarColeta::updateTables() {
 
 void WidgetLogisticaAgendarColeta::tableFornLogistica_activated(const QString &fornecedor) {
   this->fornecedor = fornecedor;
+
+  ui->lineEditBusca->clear();
 
   modelEstoque.setFilter("fornecedor = '" + fornecedor + "'");
 
@@ -244,11 +247,11 @@ void WidgetLogisticaAgendarColeta::on_pushButtonAgendarColeta_clicked() {
 }
 
 bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, const bool montarCarga) {
-  InputDialog *input = new InputDialog(InputDialog::AgendarColeta, this);
+  InputDialog input(InputDialog::AgendarColeta);
 
-  if (input->exec() != InputDialog::Accepted) return false;
+  if (input.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataPrevColeta = input->getNextDate();
+  const QDateTime dataPrevColeta = input.getNextDate();
 
   for (auto const &item : list) {
     int idEstoque;
@@ -328,7 +331,7 @@ void WidgetLogisticaAgendarColeta::on_tableEstoque_entered(const QModelIndex &) 
 
 void WidgetLogisticaAgendarColeta::on_itemBoxVeiculo_textChanged(const QString &) {
   QSqlQuery query;
-  query.prepare("SELECT * FROM transportadora_has_veiculo WHERE idVeiculo = :idVeiculo");
+  query.prepare("SELECT capacidade FROM transportadora_has_veiculo WHERE idVeiculo = :idVeiculo");
   query.bindValue(":idVeiculo", ui->itemBoxVeiculo->value());
 
   if (not query.exec() or not query.first()) {
@@ -549,22 +552,20 @@ bool WidgetLogisticaAgendarColeta::imprimirDanfe() {
 
 void WidgetLogisticaAgendarColeta::on_tableEstoque_doubleClicked(const QModelIndex &index) {
   const QString idVenda = modelEstoque.data(index.row(), "idVenda").toString();
+  const QStringList ids = idVenda.split(",");
 
-  if (idVenda.isEmpty()) return;
+  if (ids.isEmpty()) return;
 
-  Venda *venda = new Venda(this);
-  venda->viewRegisterById(idVenda);
+  for (auto const &id : ids) {
+    Venda *venda = new Venda(this);
+    venda->viewRegisterById(id);
+  }
 }
 
-void WidgetLogisticaAgendarColeta::on_lineEditBusca_textChanged(const QString &) {
-  const QString textoBusca = ui->lineEditBusca->text();
-
-  modelEstoque.setFilter("fornecedor = '" + fornecedor + "' AND (numeroNFe LIKE '%" + textoBusca +
-                         "%' OR produto LIKE '%" + textoBusca + "%' OR idVenda LIKE '%" + textoBusca +
-                         "%' OR ordemCompra LIKE '%" + textoBusca + "%')");
+void WidgetLogisticaAgendarColeta::on_lineEditBusca_textChanged(const QString &text) {
+  modelEstoque.setFilter("(numeroNFe LIKE '%" + text + "%' OR produto LIKE '%" + text + "%' OR idVenda LIKE '%" + text +
+                         "%' OR ordemCompra LIKE '%" + text + "%')");
 
   if (not modelEstoque.select())
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelEstoque.lastError().text());
 }
-
-// TODO: colocar junto do kgs total a quant de caixa

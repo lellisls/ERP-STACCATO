@@ -30,13 +30,12 @@ private slots:
 
 private:
   // attributes
-  Ui::ImportarXML *ui;
-  int idNFe;
+  const QDateTime dataReal;
+  const QStringList idsCompra;
   SqlTableModel modelCompra;
-  SqlTableModel modelEstoque;
   SqlTableModel modelConsumo;
-  QDateTime dataReal;
-  QStringList idsCompra;
+  SqlTableModel modelEstoque;
+  Ui::ImportarXML *ui;
 
   enum FieldColors {
     White = 0,     // Não processado
@@ -47,7 +46,7 @@ private:
   };
 
   // methods
-  bool associarItens(int rowCompra, int rowEstoque, double &estoqueConsumido);
+  bool associarItens(const int rowCompra, const int rowEstoque, double &estoqueConsumido);
   bool criarConsumo();
   bool importar();
   bool lerXML(QFile &file);

@@ -17,6 +17,9 @@ public:
   ~WidgetFinanceiroCompra();
   bool updateTables();
 
+signals:
+  void errorSignal(const QString &error);
+
 private slots:
   void on_lineEditBusca_textChanged(const QString &text);
   void on_table_activated(const QModelIndex &index);

@@ -15,7 +15,7 @@ AdiantarRecebimento::AdiantarRecebimento(QWidget *parent) : QDialog(parent), ui(
 AdiantarRecebimento::~AdiantarRecebimento() { delete ui; }
 
 void AdiantarRecebimento::calcularTotais() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   double total = 0;
 
@@ -54,7 +54,7 @@ void AdiantarRecebimento::setupTables() {
 
 void AdiantarRecebimento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
-// TODO: usar essa tela para recebimentos normais de cartão além dos antecipamentos
+// NOTE: usar essa tela para recebimentos normais de cartão além dos antecipamentos
 
 // prazo medio = somatorio de cada linha usando -> ((data do pag - data do evento) * valor[valor lanc. - mdr]) / valor
 // liquido

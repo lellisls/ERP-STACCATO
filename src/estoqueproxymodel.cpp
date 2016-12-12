@@ -3,7 +3,7 @@
 #include "estoqueproxymodel.h"
 
 EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), column(model->fieldIndex("quantUpd")) {
+    : QIdentityProxyModel(parent), quantUpd(model->fieldIndex("quantUpd")) {
   setSourceModel(model);
 }
 
@@ -11,13 +11,13 @@ EstoqueProxyModel::~EstoqueProxyModel() {}
 
 QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
-    const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
+    const int quantUpd = QIdentityProxyModel::data(index(proxyIndex.row(), this->quantUpd), Qt::DisplayRole).toInt();
 
-    if (value == 1) return QBrush(Qt::green);     // Ok
-    if (value == 2) return QBrush(Qt::yellow);    // Quant difere
-    if (value == 3) return QBrush(Qt::red);       // Não encontrado
-    if (value == 4) return QBrush(Qt::darkGreen); // Consumo
-    if (value == 5) return QBrush(Qt::cyan);      // Devolução
+    if (quantUpd == 1) return QBrush(Qt::green);         // Ok
+    if (quantUpd == 2) return QBrush(Qt::yellow);        // Quant difere
+    if (quantUpd == 3) return QBrush(Qt::red);           // Não encontrado
+    if (quantUpd == 4) return QBrush(QColor(0, 190, 0)); // Consumo
+    if (quantUpd == 5) return QBrush(Qt::cyan);          // Devolução
   }
 
   if (role == Qt::ForegroundRole) return QBrush(Qt::black);

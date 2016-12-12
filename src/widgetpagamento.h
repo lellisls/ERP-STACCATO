@@ -24,8 +24,8 @@ signals:
 
 private slots:
   void on_dateEditDe_dateChanged(const QDate &date);
-  void on_doubleSpinBoxDe_valueChanged(double value);
-  void on_groupBoxData_toggled(const bool &enabled);
+  void on_doubleSpinBoxDe_valueChanged(const double value);
+  void on_groupBoxData_toggled(const bool enabled);
   void on_pushButtonAdiantarRecebimento_clicked();
   void on_pushButtonInserirLancamento_clicked();
   void on_table_activated(const QModelIndex &index);

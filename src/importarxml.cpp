@@ -13,9 +13,10 @@
 #include "xml.h"
 
 ImportarXML::ImportarXML(const QStringList &idsCompra, const QDateTime &dataReal, QWidget *parent)
-    : QDialog(parent), ui(new Ui::ImportarXML), dataReal(dataReal), idsCompra(idsCompra) {
+    : QDialog(parent), dataReal(dataReal), idsCompra(idsCompra), ui(new Ui::ImportarXML) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowFlags(Qt::Window);
 
   setupTables(idsCompra);
@@ -28,7 +29,6 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   modelEstoque.setHeaderData("status", "Status");
-  modelEstoque.setHeaderData("ordemCompra", "OC");
   modelEstoque.setHeaderData("numeroNFe", "NFe");
   modelEstoque.setHeaderData("local", "Local");
   modelEstoque.setHeaderData("fornecedor", "Fornecedor");
@@ -55,6 +55,7 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   ui->tableEstoque->setItemDelegateForColumn("descricao", new SingleEditDelegate(this));
   ui->tableEstoque->setItemDelegateForColumn("valorUnid", new ReaisDelegate(this));
   ui->tableEstoque->setItemDelegateForColumn("valor", new ReaisDelegate(this));
+  ui->tableEstoque->hideColumn("ordemCompra_");
   ui->tableEstoque->hideColumn("recebidoPor");
   ui->tableEstoque->hideColumn("quantUpd");
   ui->tableEstoque->hideColumn("idNFe");
@@ -100,7 +101,7 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   modelConsumo.setHeaderData("status", "Status");
-  modelConsumo.setHeaderData("ordemCompra", "OC");
+  //  modelConsumo.setHeaderData("ordemCompra", "OC");
   modelConsumo.setHeaderData("numeroNFe", "NFe");
   modelConsumo.setHeaderData("local", "Local");
   modelConsumo.setHeaderData("fornecedor", "Fornecedor");
@@ -122,6 +123,8 @@ void ImportarXML::setupTables(const QStringList &idsCompra) {
   ui->tableConsumo->setModel(new EstoqueProxyModel(&modelConsumo, this));
   ui->tableConsumo->setItemDelegateForColumn("valorUnid", new ReaisDelegate(this));
   ui->tableConsumo->setItemDelegateForColumn("valor", new ReaisDelegate(this));
+  ui->tableConsumo->hideColumn("ordemCompra_");
+  ui->tableConsumo->hideColumn("idCompra_");
   ui->tableConsumo->hideColumn("idConsumo");
   ui->tableConsumo->hideColumn("quantUpd");
   ui->tableConsumo->hideColumn("idNFe");
@@ -320,6 +323,9 @@ void ImportarXML::on_pushButtonImportar_clicked() {
 
 bool ImportarXML::limparAssociacoes() {
   for (int row = 0; row < modelCompra.rowCount(); ++row) {
+    if (modelCompra.data(row, "quantUpd").toInt() == 1) continue;
+    if (modelCompra.data(row, "status").toString() != "EM FATURAMENTO") continue;
+
     if (not modelCompra.setData(row, "quantUpd", 0)) return false;
     if (not modelCompra.setData(row, "quantConsumida", 0)) return false;
   }
@@ -338,7 +344,6 @@ bool ImportarXML::limparAssociacoes() {
       return false;
     }
 
-    // TODO: this need submitAll?
     if (not modelConsumo.removeRow(row)) return false;
   }
 
@@ -409,10 +414,9 @@ void ImportarXML::on_pushButtonProcurar_clicked() {
   }
 }
 
-bool ImportarXML::associarItens(int rowCompra, int rowEstoque, double &estoqueConsumido) {
+bool ImportarXML::associarItens(const int rowCompra, const int rowEstoque, double &estoqueConsumido) {
   if (modelEstoque.data(rowEstoque, "quantUpd") == Green) return true;
   if (modelCompra.data(rowCompra, "quantUpd") == Green) return true;
-  if (modelEstoque.data(rowEstoque, "quant").toDouble() < 0) return true;
 
   //-------------------------------
 
@@ -436,10 +440,6 @@ bool ImportarXML::associarItens(int rowCompra, int rowEstoque, double &estoqueCo
 
   if (not modelCompra.setData(rowCompra, "quantUpd",
                               qFuzzyCompare((quantConsumida + quantAdicionar), quantCompra) ? Green : Yellow)) {
-    return false;
-  }
-
-  if (not modelEstoque.setData(rowEstoque, "ordemCompra", modelCompra.data(rowCompra, "ordemCompra"))) {
     return false;
   }
 
@@ -513,6 +513,7 @@ bool ImportarXML::criarConsumo() {
 
         for (auto const &item : list) quantTemp += modelEstoque.data(item.row(), "quant").toDouble();
 
+        // TODO: 2em vez de pular criar um consumo parcial? (e na proxima passada consumir a sobra no lugar do total)
         if (queryProduto.value("quant") > quantTemp) continue;
 
         const int newRow = modelConsumo.rowCount();
@@ -523,9 +524,7 @@ bool ImportarXML::criarConsumo() {
           const int index = modelConsumo.fieldIndex(field);
           const QVariant value = modelEstoque.data(row, column);
 
-          if (index != -1) {
-            if (not modelConsumo.setData(newRow, index, value)) return false;
-          }
+          if (index != -1 and not modelConsumo.setData(newRow, index, value)) return false;
         }
 
         const double quant = queryProduto.value("quant").toDouble();
@@ -558,6 +557,18 @@ bool ImportarXML::criarConsumo() {
           }
         }
 
+        const double proporcao = quant / modelEstoque.data(row, "idEstoque").toDouble();
+
+        const double valor = modelEstoque.data(row, "valor").toDouble() * proporcao;
+        const double vBC = modelEstoque.data(row, "vBC").toDouble() * proporcao;
+        const double vICMS = modelEstoque.data(row, "vICMS").toDouble() * proporcao;
+        const double vBCST = modelEstoque.data(row, "vBCST").toDouble() * proporcao;
+        const double vICMSST = modelEstoque.data(row, "vICMSST").toDouble() * proporcao;
+        const double vBCPIS = modelEstoque.data(row, "vBCPIS").toDouble() * proporcao;
+        const double vPIS = modelEstoque.data(row, "vPIS").toDouble() * proporcao;
+        const double vBCCOFINS = modelEstoque.data(row, "vBCCOFINS").toDouble() * proporcao;
+        const double vCOFINS = modelEstoque.data(row, "vCOFINS").toDouble() * proporcao;
+
         // -------------------------------------
 
         if (not modelConsumo.setData(newRow, "quant", quant * -1)) return false;
@@ -565,6 +576,16 @@ bool ImportarXML::criarConsumo() {
         if (not modelConsumo.setData(newRow, "quantUpd", DarkGreen)) return false;
         if (not modelConsumo.setData(newRow, "idVendaProduto", queryProduto.value("idVendaProduto"))) return false;
         if (not modelConsumo.setData(newRow, "idEstoque", modelEstoque.data(row, "idEstoque"))) return false;
+
+        if (not modelConsumo.setData(newRow, "valor", valor)) return false;
+        if (not modelConsumo.setData(newRow, "vBC", vBC)) return false;
+        if (not modelConsumo.setData(newRow, "vICMS", vICMS)) return false;
+        if (not modelConsumo.setData(newRow, "vBCST", vBCST)) return false;
+        if (not modelConsumo.setData(newRow, "vICMSST", vICMSST)) return false;
+        if (not modelConsumo.setData(newRow, "vBCPIS", vBCPIS)) return false;
+        if (not modelConsumo.setData(newRow, "vPIS", vPIS)) return false;
+        if (not modelConsumo.setData(newRow, "vBCCOFINS", vBCCOFINS)) return false;
+        if (not modelConsumo.setData(newRow, "vCOFINS", vCOFINS)) return false;
 
         QSqlQuery query;
         query.prepare("UPDATE venda_has_produto SET status = 'EM COLETA', dataRealFat = :dataRealFat WHERE "
@@ -603,14 +624,22 @@ bool ImportarXML::parear() {
   if (not limparAssociacoes()) return false;
 
   for (int rowEstoque = 0; rowEstoque < modelEstoque.rowCount(); ++rowEstoque) {
-    const auto list = modelCompra.match(modelCompra.index(0, modelCompra.fieldIndex("codComercial")), Qt::DisplayRole,
+    const auto temp = modelCompra.match(modelCompra.index(0, modelCompra.fieldIndex("codComercial")), Qt::DisplayRole,
                                         modelEstoque.data(rowEstoque, "codComercial"), -1,
                                         Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
-    if (list.size() == 0) {
+    if (temp.size() == 0) {
       if (not modelEstoque.setData(rowEstoque, "quantUpd", Red)) return false;
 
       continue;
+    }
+
+    // remover da lista linhas que nao estao 'em faturamento'
+
+    QModelIndexList list;
+
+    for (auto const &item : temp) {
+      if (modelCompra.data(item.row(), "status").toString() == "EM FATURAMENTO") list << item;
     }
 
     QSqlQuery query;
@@ -672,7 +701,7 @@ void ImportarXML::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoqu
 void ImportarXML::on_tableCompra_entered(const QModelIndex &) { ui->tableCompra->resizeColumnsToContents(); }
 
 void ImportarXML::on_pushButtonRemover_clicked() {
-  auto list = ui->tableEstoque->selectionModel()->selectedRows();
+  const auto list = ui->tableEstoque->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
@@ -705,27 +734,11 @@ void ImportarXML::on_pushButtonRemover_clicked() {
     QMessageBox::critical(this, "Erro!", "Erro removendo linhas: " + modelEstoque.lastError().text());
     return;
   }
-
-  // TODO: descadastrar nota? (pegar id da nota antes de remover estoque e apos a remocao verificar se nfe ainda possui
-  // algum relacao em estoque_has_nfe, senao houver remover nfe
 }
 
 void ImportarXML::on_tableConsumo_entered(const QModelIndex &) { ui->tableConsumo->resizeColumnsToContents(); }
 
-// TODO: corrigir consumo de estoque para consumir parcialmente de forma correta (criar varias linhas:
-// idEstoque 1 - quant -10 // idEstoque 2 - quant - 20
-// NOTE: se filtro por compra, é necessário a coluna 'selecionado' para escolher qual linha parear?
-// NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir
-// items na arvore?)
-// TODO: setar selecionado 0 antes de salvar a tabela de baixo
 // NOTE: revisar codigo para verificar se ao pesquisar um produto pelo codComercial+status nao estou alterando outros
 // produtos junto
-// TODO: nao mudar status para em coleta dos produtos que nao foram importados (para o caso de vir apenas parte da
-// compra)
-// TODO: se a quantidade nao bater por m2 calcular por pc e vice versa?
-// TODO: os que estiverem verdes em baixo nao modificar em importacoes sequentes
-// TODO: verificar se estou usando nao apenas o codComercial mas tambem o fornecedor para evitar conflitos de codigos
-// repetidos
-// TODO: calcular valores proporcionais para o consumo
-// TODO: deixar no consumo idNFe vazio para posteriormente guardar a nota de saida?
-// TODO: use mysql::savepoints to restore to a point before importing a wrong xml
+// NOTE: utilizar tabela em arvore (qtreeview) para agrupar consumos com seu estoque (para cada linha do model inserir
+// items na arvore?)

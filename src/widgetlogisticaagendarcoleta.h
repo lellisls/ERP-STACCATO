@@ -25,7 +25,7 @@ signals:
 private slots:
   void calcularPeso();
   void on_itemBoxVeiculo_textChanged(const QString &);
-  void on_lineEditBusca_textChanged(const QString &);
+  void on_lineEditBusca_textChanged(const QString &text);
   void on_pushButtonAdicionarProduto_clicked();
   void on_pushButtonAgendarColeta_clicked();
   void on_pushButtonCancelarCarga_clicked();

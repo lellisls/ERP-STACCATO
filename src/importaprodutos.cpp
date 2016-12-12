@@ -562,7 +562,7 @@ bool ImportaProdutos::verificaSeProdutoJaCadastrado() {
                        variantMap.value("ui").toString() + QString::number(tipo));
 }
 
-bool ImportaProdutos::pintarCamposForaDoPadrao(const int &row) {
+bool ImportaProdutos::pintarCamposForaDoPadrao(const int row) {
   // Fora do padrão
   if (variantMap.value("ncm").toString() == "0" or variantMap.value("ncm").toString().isEmpty() or
       (variantMap.value("ncm").toString().length() != 8 and variantMap.value("ncm").toString().length() != 10)) {
@@ -578,7 +578,7 @@ bool ImportaProdutos::pintarCamposForaDoPadrao(const int &row) {
 
   if ((variantMap.value("un").toString() == "M2" or variantMap.value("un").toString() == "M²" or
        variantMap.value("un").toString() == "ML") and
-      variantMap.value("m2cx") <= 0.) { // TODO: copiar qlocale da outra funcao
+      variantMap.value("m2cx") <= 0.) {
     if (not modelErro.setData(row, "m2cxUpd", Red)) return false;
   }
 
@@ -731,7 +731,8 @@ bool ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor, int &
   }
 
   if (not queryFornecedor.next()) {
-    // TODO: avisar que fornecedor ainda nao possui cadastro
+    QMessageBox::information(this, "Aviso!", "Fornecedor ainda não cadastrado! Cadastrando...");
+
     queryFornecedor.prepare("INSERT INTO fornecedor (razaoSocial) VALUES (:razaoSocial)");
     queryFornecedor.bindValue(":razaoSocial", fornecedor);
 
@@ -809,7 +810,7 @@ void ImportaProdutos::on_tableProdutos_entered(const QModelIndex &) { ui->tableP
 
 void ImportaProdutos::on_tableErro_entered(const QModelIndex &) { ui->tableErro->resizeColumnsToContents(); }
 
-void ImportaProdutos::on_tabWidget_currentChanged(const int &index) {
+void ImportaProdutos::on_tabWidget_currentChanged(const int index) {
   if (index == 0) ui->tableProdutos->resizeColumnsToContents();
   if (index == 1) ui->tableErro->resizeColumnsToContents();
 }
@@ -820,7 +821,7 @@ void ImportaProdutos::closeEvent(QCloseEvent *event) {
   QDialog::closeEvent(event);
 }
 
-void ImportaProdutos::on_checkBoxRepresentacao_toggled(const bool &checked) {
+void ImportaProdutos::on_checkBoxRepresentacao_toggled(const bool checked) {
   for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
     if (not model.setData(row, "representacao", checked)) {
       QMessageBox::critical(this, "Erro!", "Erro guardando 'Representacao' em Produto: " + model.lastError().text());
@@ -836,6 +837,5 @@ void ImportaProdutos::on_checkBoxRepresentacao_toggled(const bool &checked) {
 }
 
 // NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo
-// TODO: colocar tabela relacao para precos diferenciados por loja (associar produto_has_preco <->
+// NOTE: 3colocar tabela relacao para precos diferenciados por loja (associar produto_has_preco <->
 // produto_has_preco_has_loja ou guardar idLoja em produto_has_preco)
-// TODO: colocar um remove(\n) na descricao do produto

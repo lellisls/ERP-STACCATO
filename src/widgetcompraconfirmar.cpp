@@ -50,7 +50,7 @@ void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
   QSqlQuery("COMMIT").exec();
 
   updateTables();
-  QMessageBox::information(this, "Aviso!", "Confirmado compra.");
+  QMessageBox::information(this, "Aviso!", "Compra confirmada!");
 }
 
 bool WidgetCompraConfirmar::confirmarCompra() {
@@ -62,55 +62,57 @@ bool WidgetCompraConfirmar::confirmarCompra() {
   const int row = ui->table->selectionModel()->selectedRows().first().row();
   const QString idCompra = model.data(row, "Compra").toString();
 
-  InputDialogFinanceiro *inputDlg = new InputDialogFinanceiro(InputDialogFinanceiro::ConfirmarCompra, this);
-  if (not inputDlg->setFilter(idCompra)) return false;
+  InputDialogFinanceiro inputDlg(InputDialogFinanceiro::ConfirmarCompra);
+  if (not inputDlg.setFilter(idCompra)) return false;
 
-  if (inputDlg->exec() != InputDialogFinanceiro::Accepted) return false;
+  if (inputDlg.exec() != InputDialogFinanceiro::Accepted) return false;
 
-  const QDateTime dataConf = inputDlg->getDate();
-  const QDateTime dataPrevista = inputDlg->getNextDate();
+  const QDateTime dataConf = inputDlg.getDate();
+  const QDateTime dataPrevista = inputDlg.getNextDate();
 
   QSqlQuery query;
-  // TODO: instead of using selecionado use a list of idPedido?
-  query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'EM FATURAMENTO', dataRealConf = :dataRealConf, "
-                "dataPrevFat = :dataPrevFat WHERE idCompra = :idCompra AND selecionado = 1");
-  query.bindValue(":dataRealConf", dataConf);
-  query.bindValue(":dataPrevFat", dataPrevista);
+  query.prepare("SELECT idPedido, idVendaProduto FROM pedido_fornecedor_has_produto WHERE idCompra = :idCompra AND "
+                "selecionado = 1");
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro buscando produtos: " + query.lastError().text());
     return false;
   }
 
-  // salvar status na venda
-  // TODO: in the future use idVendaProduto in place of idProduto/idCompra
-  query.prepare("UPDATE venda_has_produto SET status = 'EM FATURAMENTO', dataRealConf = :dataRealConf, dataPrevFat = "
-                ":dataPrevFat WHERE idProduto IN (SELECT idProduto FROM pedido_fornecedor_has_produto "
-                "WHERE idCompra = :idCompra AND selecionado = 1) AND idCompra = :idCompra");
-  query.bindValue(":dataRealConf", dataConf);
-  query.bindValue(":dataPrevFat", dataPrevista);
-  query.bindValue(":idCompra", idCompra);
+  while (query.next()) {
+    QSqlQuery queryUpdate;
+    queryUpdate.prepare(
+        "UPDATE pedido_fornecedor_has_produto SET status = 'EM FATURAMENTO', dataRealConf = :dataRealConf, "
+        "dataPrevFat = :dataPrevFat, selecionado = 0 WHERE idPedido = :idPedido");
+    queryUpdate.bindValue(":dataRealConf", dataConf);
+    queryUpdate.bindValue(":dataPrevFat", dataPrevista);
+    queryUpdate.bindValue(":idPedido", query.value("idPedido"));
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
-    return false;
-  }
+    if (not queryUpdate.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + queryUpdate.lastError().text());
+      return false;
+    }
 
-  query.prepare(
-      "UPDATE pedido_fornecedor_has_produto SET selecionado = 0 WHERE idCompra = :idCompra AND selecionado = 1");
-  query.bindValue(":idCompra", idCompra);
+    if (query.value("idVendaProduto").toInt() != 0) {
+      queryUpdate.prepare(
+          "UPDATE venda_has_produto SET status = 'EM FATURAMENTO', dataRealConf = :dataRealConf, dataPrevFat "
+          "= :dataPrevFat WHERE idVendaProduto = :idVendaProduto");
+      queryUpdate.bindValue(":dataRealConf", dataConf);
+      queryUpdate.bindValue(":dataPrevFat", dataPrevista);
+      queryUpdate.bindValue(":idVendaProduto", query.value("idVendaProduto"));
 
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro setando selecionado 0: " + query.lastError().text());
-    return false;
+      if (not queryUpdate.exec()) {
+        QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + queryUpdate.lastError().text());
+        return false;
+      }
+    }
   }
 
   if (not query.exec("CALL update_venda_status()")) {
     QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
     return false;
   }
-  //
 
   return true;
 }
@@ -181,6 +183,6 @@ void WidgetCompraConfirmar::on_pushButtonCancelarCompra_clicked() {
   QMessageBox::information(this, "Aviso!", "Itens cancelados!");
 }
 
-// TODO: poder confirmar dois pedidos juntos (quando vem um espelho só)
+// NOTE: 3poder confirmar dois pedidos juntos (quando vem um espelho só) (cancelar os pedidos e fazer um pedido só?)
 // NOTE: permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
 // diferentes: 50 -> 40+10

@@ -22,7 +22,7 @@ signals:
 
 private slots:
   void calcularPreco();
-  void on_checkBoxMarcarTodos_clicked(const bool &checked);
+  void on_checkBoxMarcarTodos_clicked(const bool checked);
   void on_pushButtonCancelarCompra_clicked();
   void on_pushButtonGerarCompra_clicked();
   void on_tableForn_activated(const QModelIndex &index);

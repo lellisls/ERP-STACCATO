@@ -27,8 +27,8 @@ private slots:
 
 private:
   // attributes
-  Ui::WidgetCompraConfirmar *ui;
   SqlTableModel model;
+  Ui::WidgetCompraConfirmar *ui;
   // methods
   void setupTables();
   bool confirmarCompra();

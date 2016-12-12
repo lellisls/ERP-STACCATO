@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QSqlError>
 
 #include "doubledelegate.h"
@@ -7,14 +8,6 @@
 
 WidgetFluxoCaixa::WidgetFluxoCaixa(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetFluxoCaixa) {
   ui->setupUi(this);
-
-  setupTables();
-
-  ui->dateEdit->setDate(QDate::currentDate());
-  montaFiltro();
-
-  connect(ui->groupBoxMes, &QGroupBox::toggled, this, &WidgetFluxoCaixa::montaFiltro);
-  connect(ui->dateEdit, &QDateEdit::dateChanged, this, &WidgetFluxoCaixa::montaFiltro);
 }
 
 WidgetFluxoCaixa::~WidgetFluxoCaixa() { delete ui; }
@@ -32,12 +25,20 @@ void WidgetFluxoCaixa::setupTables() {
 }
 
 bool WidgetFluxoCaixa::updateTables() {
-  montaFiltro();
+  if (model.tableName().isEmpty()) {
+    setupTables();
 
-  return true;
+    ui->dateEdit->setDate(QDate::currentDate());
+    montaFiltro();
+
+    connect(ui->groupBoxMes, &QGroupBox::toggled, this, &WidgetFluxoCaixa::montaFiltro);
+    connect(ui->dateEdit, &QDateEdit::dateChanged, this, &WidgetFluxoCaixa::montaFiltro);
+  }
+
+  return montaFiltro();
 }
 
-void WidgetFluxoCaixa::montaFiltro() {
+bool WidgetFluxoCaixa::montaFiltro() {
   const QString filtroData =
       ui->groupBoxMes->isChecked()
           ? "DATE_FORMAT(`Data Pag`, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'"
@@ -45,11 +46,19 @@ void WidgetFluxoCaixa::montaFiltro() {
 
   model.setFilter(filtroData);
 
-  if (not model.select()) emit errorSignal(model.lastError().text());
+  if (not model.select()) {
+    emit errorSignal(model.lastError().text());
+    return false;
+  }
 
   model2.setFilter(filtroData);
 
-  if (not model2.select()) emit errorSignal(model2.lastError().text());
+  if (not model2.select()) {
+    emit errorSignal(model2.lastError().text());
+    return false;
+  }
+
+  return true;
 }
 
 void WidgetFluxoCaixa::on_tableCaixa_entered(const QModelIndex &) { ui->tableCaixa->resizeColumnsToContents(); }

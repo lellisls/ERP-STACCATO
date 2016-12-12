@@ -1,6 +1,6 @@
 #include "reaisdelegate.h"
 
-ReaisDelegate::ReaisDelegate(QObject *parent, const double &decimais)
+ReaisDelegate::ReaisDelegate(QObject *parent, const double decimais)
     : QStyledItemDelegate(parent), decimais(decimais) {}
 
 ReaisDelegate::~ReaisDelegate() {}

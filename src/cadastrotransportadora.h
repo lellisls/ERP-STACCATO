@@ -15,7 +15,7 @@ public:
   ~CadastroTransportadora();
 
 private slots:
-  void on_checkBoxMostrarInativos_clicked(const bool &checked);
+  void on_checkBoxMostrarInativos_clicked(const bool checked);
   void on_checkBoxMostrarInativosVeiculo_toggled(bool checked);
   void on_lineEditCEP_textChanged(const QString &cep);
   void on_lineEditCNPJ_textEdited(const QString &text);
@@ -44,8 +44,8 @@ private:
   SqlTableModel modelVeiculo;
   // methods
   bool cadastrar() override;
-  bool cadastrarEndereco(const bool &isUpdate);
-  bool cadastrarVeiculo(const bool &isUpdate);
+  bool cadastrarEndereco(const bool isUpdate);
+  bool cadastrarVeiculo(const bool isUpdate);
   virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;

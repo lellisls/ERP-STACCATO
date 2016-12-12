@@ -14,7 +14,9 @@
 ProdutosPendentes::ProdutosPendentes(QWidget *parent) : QDialog(parent), ui(new Ui::ProdutosPendentes) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowFlags(Qt::Window);
+
   setupTables();
 
   show();
@@ -24,6 +26,7 @@ ProdutosPendentes::ProdutosPendentes(QWidget *parent) : QDialog(parent), ui(new 
 ProdutosPendentes::~ProdutosPendentes() { delete ui; }
 
 void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &idVenda) {
+  // NOTE: put this in the constructor because this object always use this function?
   this->codComercial = codComercial;
 
   modelProdutos.setFilter("codComercial = '" + codComercial + "' AND idVenda = '" + idVenda +
@@ -62,16 +65,7 @@ void ProdutosPendentes::viewProduto(const QString &codComercial, const QString &
 
   ui->tableProdutos->resizeColumnsToContents();
 
-  modelEstoque.setFilter("`Cód Com` = '" + codComercial + "' AND `Quant Rest` > 0");
-
-  if (not modelEstoque.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
-    return;
-  }
-
-  ui->tableEstoque->resizeColumnsToContents();
-
-  modelCompra.setFilter("codComercial = '" + codComercial + "'");
+  modelCompra.setFilter("codComercial = '" + codComercial + "' AND status != 'CANCELADO'");
 
   if (not modelCompra.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela compra: " + modelCompra.lastError().text());
@@ -107,17 +101,6 @@ void ProdutosPendentes::setupTables() {
   ui->tableProdutos->hideColumn("idCompra");
   ui->tableProdutos->resizeColumnsToContents();
 
-  modelEstoque.setTable("view_estoque");
-  modelEstoque.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-  ui->tableEstoque->setModel(&modelEstoque);
-  ui->tableEstoque->hideColumn("idCompra");
-  ui->tableEstoque->hideColumn("idVendaProduto");
-  ui->tableEstoque->hideColumn("idProduto");
-  ui->tableEstoque->hideColumn("idNFe");
-  ui->tableEstoque->hideColumn("quantUpd");
-  ui->tableEstoque->resizeColumnsToContents();
-
   modelCompra.setTable("view_pedido_fornecedor_livre");
   modelCompra.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -140,10 +123,10 @@ void ProdutosPendentes::setupTables() {
 }
 
 bool ProdutosPendentes::comprar() {
-  InputDialog *inputDlg = new InputDialog(InputDialog::Carrinho, this);
-  if (inputDlg->exec() != InputDialog::Accepted) return false;
+  InputDialog inputDlg(InputDialog::Carrinho);
+  if (inputDlg.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataPrevista = inputDlg->getNextDate();
+  const QDateTime dataPrevista = inputDlg.getNextDate();
 
   //
 
@@ -256,78 +239,6 @@ void ProdutosPendentes::on_pushButtonComprar_clicked() {
   close();
 }
 
-void ProdutosPendentes::on_pushButtonConsumirEstoque_clicked() {
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
-
-  if (not consumirEstoque()) {
-    QSqlQuery("ROLLBACK").exec();
-    return;
-  }
-
-  QSqlQuery("COMMIT").exec();
-
-  QMessageBox::information(this, "Aviso!", "Consumo criado com sucesso!");
-
-  close();
-}
-
-bool ProdutosPendentes::consumirEstoque() {
-  const auto listProduto = ui->tableProdutos->selectionModel()->selectedRows();
-
-  if (listProduto.size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhum produto selecionado!");
-    return false;
-  }
-
-  const auto listEstoque = ui->tableEstoque->selectionModel()->selectedRows();
-
-  if (listEstoque.size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhum estoque selecionado!");
-    return false;
-  }
-
-  const double quantProduto = modelProdutos.data(listProduto.first().row(), "quant").toDouble();
-  const double quantEstoque = modelEstoque.data(listEstoque.first().row(), "Quant Rest").toDouble();
-
-  if (quantProduto > quantEstoque) {
-    QMessageBox::critical(this, "Erro!", "Estoque insuficiente!");
-    return false;
-  }
-
-  Estoque *estoque = new Estoque(this);
-  estoque->viewRegisterById(modelEstoque.data(listEstoque.first().row(), "idEstoque").toString());
-
-  if (not estoque->criarConsumo(modelProdutos.data(listProduto.first().row(), "idVendaProduto").toInt())) {
-    QMessageBox::critical(this, "Erro!", "Erro ao criar consumo!");
-    return false;
-  }
-
-  QSqlQuery query;
-
-  query.prepare("UPDATE venda_has_produto SET status = 'ESTOQUE' WHERE idVendaProduto = :idVendaProduto");
-  query.bindValue(":idVendaProduto", modelProdutos.data(listProduto.first().row(), "idVendaProduto").toString());
-
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
-    close();
-    return false;
-  }
-
-  if (not query.exec("CALL update_venda_status()")) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
-    close();
-    return false;
-  }
-
-  modelEstoque.select();
-  modelProdutos.select();
-
-  estoque->close();
-
-  return true;
-}
-
 bool ProdutosPendentes::insere(const QDateTime &dataPrevista) {
   QSqlQuery query;
   query.prepare(
@@ -364,10 +275,16 @@ bool ProdutosPendentes::insere(const QDateTime &dataPrevista) {
 
 void ProdutosPendentes::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
 
-void ProdutosPendentes::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }
-
 bool ProdutosPendentes::consumirCompra() {
-  // TODO: se o pedido_fornecedor possuir estoque ('em coleta' para frente) criar consumo estoque
+  // se compra nao gerada (iniciado): criar linha pedido_fornecedor
+  // se compra gerada (em compra): criar linha pedido_fornecedor
+  // se compra confirmada (em faturamento): criar linha pedido_fornecedor
+  // se compra faturada (em coleta):
+  // se compra coletada (em recebimento):
+  // se compra recebida (estoque):
+  // se compra entrega agend. (entrega agend.):
+  // se compra em entrega (em entrega):
+  // se compra entregue (entregue):
 
   const auto listProduto = ui->tableProdutos->selectionModel()->selectedRows();
 
@@ -428,14 +345,17 @@ bool ProdutosPendentes::consumirCompra() {
       modelCompra.data(rowCompra, "quant").toDouble() - modelProdutos.data(rowProduto, "quant").toDouble();
   const double caixas =
       modelCompra.data(rowCompra, "caixas").toInt() - modelProdutos.data(rowProduto, "caixas").toInt();
+  const double prcUnitario = modelCompra.data(rowCompra, "prcUnitario").toDouble();
+  const int idPedido = modelCompra.data(rowCompra, "idPedido").toInt();
+  const QString status = modelCompra.data(rowCompra, "status").toString();
 
   if (quant > 0) {
     query.prepare("UPDATE pedido_fornecedor_has_produto SET quant = :quant, caixas = :caixas, preco = :preco WHERE "
                   "idPedido = :idPedido");
     query.bindValue(":quant", quant);
     query.bindValue(":caixas", caixas);
-    query.bindValue(":preco", quant * modelCompra.data(rowCompra, "prcUnitario").toDouble());
-    query.bindValue(":idPedido", modelCompra.data(rowCompra, "idPedido"));
+    query.bindValue(":preco", quant * prcUnitario);
+    query.bindValue(":idPedido", idPedido);
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando quantidade em pedido_fornecedor_has_produto: " +
@@ -446,7 +366,7 @@ bool ProdutosPendentes::consumirCompra() {
 
   if (quant == 0) {
     query.prepare("DELETE FROM pedido_fornecedor_has_produto WHERE idPedido = :idPedido");
-    query.bindValue(":idPedido", modelCompra.data(rowCompra, "idPedido"));
+    query.bindValue(":idPedido", idPedido);
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!",
@@ -456,18 +376,31 @@ bool ProdutosPendentes::consumirCompra() {
   }
 
   // atualiza venda
-
-  query.prepare(
-      "UPDATE venda_has_produto SET status = :status, dataPrevCompra = :dataPrevCompra WHERE idVendaProduto = "
-      ":idVendaProduto");
-  query.bindValue(":status", modelCompra.data(rowCompra, "status"));
-  query.bindValue(":dataPrevCompra", modelCompra.data(rowCompra, "dataPrevCompra"));
+  // NOTE: copy relevant dates?
+  query.prepare("UPDATE venda_has_produto SET status = :status, idCompra = :idCompra WHERE idVendaProduto = "
+                ":idVendaProduto");
+  query.bindValue(":status", status);
+  query.bindValue(":idCompra", modelCompra.data(rowCompra, "idCompra"));
   query.bindValue(":idVendaProduto", modelProdutos.data(rowProduto, "idVendaProduto"));
 
   if (not query.exec()) {
     QMessageBox::critical(this, "Erro!",
                           "Erro associando pedido_fornecedor a venda_has_produto: " + query.lastError().text());
     return false;
+  }
+
+  if (status == "EM COLETA" or status == "EM RECEBIMENTO" or status == "ESTOQUE") {
+    query.prepare("SELECT idEstoque FROM estoque_has_compra WHERE idCompra = :idCompra");
+    query.bindValue(":idCompra", modelCompra.data(rowCompra, "idCompra"));
+
+    if (not query.exec() or not query.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando estoque: " + query.lastError().text());
+      return false;
+    }
+
+    Estoque *estoque = new Estoque(this);
+    estoque->viewRegisterById(query.value("idEstoque").toString());
+    if (not estoque->criarConsumo(modelProdutos.data(rowProduto, "idVendaProduto").toInt())) return false;
   }
 
   return true;
@@ -489,7 +422,4 @@ void ProdutosPendentes::on_pushButtonConsumirCompra_clicked() {
   close();
 }
 
-// TODO: deixar apenas o botao de consumir compra pois ele faz todas as associacoes de tabelas (remover o botao de
-// consumir estoque e verificar quais os casos que precisa tratar)
-// TODO: se o estoque estiver em coleta/recebimento alterar status do consumo para 'pré-consumo'
 // NOTE: se o estoque for consumido gerar comissao 2% senao gerar comissao padrao

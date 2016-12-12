@@ -6,12 +6,12 @@
 class CheckBoxDelegate : public QStyledItemDelegate {
 
 public:
-  explicit CheckBoxDelegate(QObject *parent, const bool &readOnly = false);
+  explicit CheckBoxDelegate(QObject *parent, const bool readOnly = false);
   ~CheckBoxDelegate();
 
 private:
   // attributes
-  bool readOnly;
+  const bool readOnly;
   // methods
   virtual QString displayText(const QVariant &, const QLocale &) const override;
   virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override;

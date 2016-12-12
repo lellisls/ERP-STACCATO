@@ -35,7 +35,7 @@ void TableView::setItemDelegateForColumn(const QString &column, QAbstractItemDel
   }
 }
 
-void TableView::openPersistentEditor(const int &row, const QString &column) {
+void TableView::openPersistentEditor(const int row, const QString &column) {
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
       QTableView::openPersistentEditor(model->index(row, sourceModel->fieldIndex(column)));
@@ -48,7 +48,7 @@ void TableView::openPersistentEditor(const int &row, const QString &column) {
   }
 }
 
-void TableView::openPersistentEditor(const int &row, const int &column) {
+void TableView::openPersistentEditor(const int row, const int column) {
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     QTableView::openPersistentEditor(model->index(row, column));
     return;
@@ -59,7 +59,7 @@ void TableView::openPersistentEditor(const int &row, const int &column) {
   }
 }
 
-void TableView::setItemDelegateForColumn(const int &column, QAbstractItemDelegate *delegate) {
+void TableView::setItemDelegateForColumn(const int column, QAbstractItemDelegate *delegate) {
   QTableView::setItemDelegateForColumn(column, delegate);
 }
 

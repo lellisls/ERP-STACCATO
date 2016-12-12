@@ -14,7 +14,7 @@ class Devolucao : public QDialog {
   Q_OBJECT
 
 public:
-  explicit Devolucao(QString idVenda, QWidget *parent = 0);
+  explicit Devolucao(const QString &idVenda, QWidget *parent = 0);
   ~Devolucao();
 
 private slots:
@@ -23,13 +23,15 @@ private slots:
   void on_doubleSpinBoxTotalItem_valueChanged(double value);
   void on_groupBoxCredito_toggled(bool);
   void on_pushButtonDevolverItem_clicked();
-  void on_spinBoxCaixas_valueChanged(const int &caixas);
+  void on_spinBoxCaixas_valueChanged(const int caixas);
   void on_tableProdutos_clicked(const QModelIndex &index);
 
 private:
   // attributes
+  bool createNewId = false;
+  const QString idVenda;
   QDataWidgetMapper mapperItem;
-  QString idVenda;
+  QString idDevolucao;
   SqlTableModel modelCliente;
   SqlTableModel modelDevolvidos;
   SqlTableModel modelPagamentos;
@@ -40,10 +42,12 @@ private:
   bool atualizarDevolucao();
   bool criarContas();
   bool criarDevolucao();
+  bool desassociarCompra();
   bool devolverItem();
   bool inserirItens(const QModelIndexList &list);
   bool salvarCredito();
   void calcPrecoItemTotal();
+  void determinarIdDevolucao();
   void setupTables();
 };
 

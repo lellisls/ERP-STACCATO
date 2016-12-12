@@ -14,12 +14,14 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
     : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  setAttribute(Qt::WA_DeleteOnClose);
 
-  setupTables();
+  //  for (auto const *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
+
   setupUi();
+  setupTables();
   setupMapper();
   newRegister();
 
@@ -92,6 +94,8 @@ bool CadastroFornecedor::savingProcedures() {
   if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
   if (not setData("nextel", ui->lineEditNextel->text())) return false;
   if (not setData("email", ui->lineEditEmail->text())) return false;
+  if (not setData("aliquotaSt", ui->doubleSpinBoxAliquotaSt->value())) return false;
+  if (not setData("st", ui->comboBoxSt->currentText())) return false;
 
   return true;
 }
@@ -120,6 +124,9 @@ void CadastroFornecedor::setupMapper() {
   addMapping(ui->lineEditTel_Cel, "telCel");
   addMapping(ui->lineEditTel_Com, "telCom");
   addMapping(ui->lineEditTel_Res, "tel");
+  addMapping(ui->checkBoxRepresentacao, "representacao", "checked");
+  addMapping(ui->comboBoxSt, "st");
+  addMapping(ui->doubleSpinBoxAliquotaSt, "aliquotaSt");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
@@ -175,7 +182,7 @@ void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
       : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço."));
 }
 
-bool CadastroFornecedor::cadastrarEndereco(const bool &isUpdate) {
+bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -276,7 +283,7 @@ void CadastroFornecedor::on_pushButtonRemoverEnd_clicked() {
 }
 
 void CadastroFornecedor::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Fornecedor cadastrado com sucesso!");
+  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Fornecedor cadastrado com sucesso!");
 }
 
 void CadastroFornecedor::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }

@@ -6,17 +6,18 @@
 #include "lrreportengine.h"
 #include "sqltablemodel.h"
 
-class Impressao {
+class Impressao : public QObject {
+  Q_OBJECT
 
 public:
-  Impressao(QString id, QWidget *parent = 0);
+  explicit Impressao(const QString &id);
   Impressao(const Impressao &) = delete;
   void print();
 
 private:
   // attributes
   enum Type { Orcamento, Venda } type;
-  QString id;
+  const QString id;
   QSqlQuery queryCliente;
   QSqlQuery queryEndEnt;
   QSqlQuery queryEndFat;
@@ -25,7 +26,6 @@ private:
   QSqlQuery query;
   QSqlQuery queryProfissional;
   QSqlQuery queryVendedor;
-  QWidget *parent;
   SqlTableModel modelItem;
   LimeReport::ReportEngine *report;
   // methods

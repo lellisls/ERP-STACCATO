@@ -9,7 +9,7 @@
 #include "ui_logindialog.h"
 #include "usersession.h"
 
-LoginDialog::LoginDialog(Tipo tipo, QWidget *parent) : QDialog(parent), ui(new Ui::LoginDialog), tipo(tipo) {
+LoginDialog::LoginDialog(const Tipo tipo, QWidget *parent) : QDialog(parent), tipo(tipo), ui(new Ui::LoginDialog) {
   ui->setupUi(this);
 
   setWindowTitle("ERP Login");

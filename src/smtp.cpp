@@ -16,12 +16,12 @@ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEM
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 
-#include "smtp.h"
-
 #include <QResource>
 
-Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const quint16 &port, const int &timeout)
-    : port(port), timeout(timeout), host(host), pass(pass), user(user) {
+#include "smtp.h"
+
+Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const quint16 port, const int timeout)
+    : timeout(timeout), host(host), pass(pass), user(user), port(port) {
   socket = new QSslSocket(this);
 
   connect(socket, &QIODevice::readyRead, this, &Smtp::readyRead);
@@ -93,7 +93,7 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, c
   this->from = from;
 
   rcpt.append(to.split(";"));
-  rcpt.append(cc.split(";"));
+  if (not cc.isEmpty()) rcpt.append(cc.split(";"));
 
   state = Init;
   socket->connectToHostEncrypted(host, port); //"smtp.gmail.com" and 465 for gmail TLS
@@ -229,7 +229,7 @@ void Smtp::readyRead() {
   } else if (state == Rcpt and responseLine == "250") {
     // Apperantly for Google it is mandatory to have MAIL FROM and RCPT email formated the following way ->
     // <email@gmail.com>
-    //    qDebug() << "list: " << rcpt;
+    //    qDebug() << "RCPT TO:<" << rcpt.first() << ">\r\n";
     *t << "RCPT TO:<" << rcpt.first() << ">\r\n"; // r
     rcpt.removeFirst();
     t->flush();

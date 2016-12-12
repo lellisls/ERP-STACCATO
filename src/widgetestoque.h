@@ -21,14 +21,15 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
-  void on_radioButtonMaior_toggled(bool checked);
+  void on_lineEditBusca_textChanged(const QString &text);
+  void on_radioButtonMaior_toggled(const bool checked);
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::WidgetEstoque *ui;
   SqlTableModel model;
+  Ui::WidgetEstoque *ui;
   // methods
   void setupTables();
 };

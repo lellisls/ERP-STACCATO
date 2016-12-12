@@ -23,11 +23,11 @@ signals:
 
 private slots:
   void montaFiltro();
-  void on_comboBoxLojas_currentIndexChanged(int);
-  void on_groupBoxStatus_toggled(const bool &enabled);
-  void on_groupBoxStatusFinanceiro_toggled(const bool &enabled);
+  void on_comboBoxLojas_currentIndexChanged(const int);
+  void on_groupBoxStatus_toggled(const bool enabled);
+  void on_groupBoxStatusFinanceiro_toggled(const bool enabled);
   void on_pushButtonFollowup_clicked();
-  void on_radioButtonProprios_toggled(bool checked);
+  void on_radioButtonProprios_toggled(const bool checked);
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 

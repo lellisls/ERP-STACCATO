@@ -14,6 +14,8 @@ CadastroLoja::CadastroLoja(QWidget *parent)
     : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   //  for (auto const *line : findChildren<QLineEdit *>()) {
   //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   //  }
@@ -24,6 +26,7 @@ CadastroLoja::CadastroLoja(QWidget *parent)
   newRegister();
 
   ui->pushButtonAtualizarPagamento->hide();
+  ui->pushButtonLimparSelecao->hide();
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
@@ -97,11 +100,6 @@ void CadastroLoja::setupTables() {
   modelConta.setHeaderData("agencia", "Agência");
   modelConta.setHeaderData("conta", "Conta");
 
-  //  if (not modelConta.select()) {
-  //    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta: " + modelConta.lastError().text());
-  //    return;
-  //  }
-
   ui->tableConta->setModel(&modelConta);
   ui->tableConta->hideColumn("idConta");
   ui->tableConta->hideColumn("idLoja");
@@ -114,8 +112,6 @@ void CadastroLoja::setupTables() {
   modelPagamentos.setHeaderData("pagamento", "Pagamento");
   modelPagamentos.setHeaderData("parcelas", "Parcelas");
 
-  //  modelPagamentos.select();
-
   ui->tablePagamentos->setModel(&modelPagamentos);
   ui->tablePagamentos->hideColumn("idPagamento");
 
@@ -125,9 +121,6 @@ void CadastroLoja::setupTables() {
   modelTaxas.setHeaderData("parcela", "Quant. Parcelas");
   modelTaxas.setHeaderData("taxa", "Taxa");
 
-  //  modelTaxas.setFilter("0");
-  //  modelTaxas.select();
-
   ui->tableTaxas->setModel(&modelTaxas);
   ui->tableTaxas->hideColumn("idTaxa");
   ui->tableTaxas->hideColumn("idPagamento");
@@ -136,7 +129,10 @@ void CadastroLoja::setupTables() {
 }
 
 void CadastroLoja::clearFields() {
-  for (auto const &line : findChildren<QLineEdit *>()) line->clear();
+  RegisterDialog::clearFields();
+  novoEndereco();
+  novaConta();
+  setupUi();
 }
 
 bool CadastroLoja::verifyFields() {
@@ -272,7 +268,7 @@ void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool &checked) {
+void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool checked) {
   modelEnd.setFilter("idLoja = " + data("idLoja").toString() + (checked ? "" : " AND desativado = FALSE"));
 
   if (not modelEnd.select()) {
@@ -282,7 +278,7 @@ void CadastroLoja::on_checkBoxMostrarInativos_clicked(const bool &checked) {
   ui->tableEndereco->resizeColumnsToContents();
 }
 
-bool CadastroLoja::cadastrarEndereco(const bool &isUpdate) {
+bool CadastroLoja::cadastrarEndereco(const bool isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -387,6 +383,11 @@ bool CadastroLoja::viewRegister() {
 
   modelTaxas.setFilter("0");
 
+  if (not modelTaxas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela taxas: " + modelTaxas.lastError().text());
+    return false;
+  }
+
   ui->tabWidget->setTabEnabled(1, true);
   ui->tabWidget->setTabEnabled(2, true);
   ui->tabWidget->setTabEnabled(3, true);
@@ -404,7 +405,9 @@ bool CadastroLoja::viewRegister() {
   return true;
 }
 
-void CadastroLoja::successMessage() { QMessageBox::information(this, "Atenção!", "Loja cadastrada com sucesso!"); }
+void CadastroLoja::successMessage() {
+  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Loja cadastrada com sucesso!");
+}
 
 void CadastroLoja::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
 
@@ -522,7 +525,7 @@ bool CadastroLoja::newRegister() {
   return true;
 }
 
-bool CadastroLoja::cadastrarConta(const bool &isUpdate) {
+bool CadastroLoja::cadastrarConta(const bool isUpdate) {
   for (auto const &line : ui->groupBoxConta->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -667,6 +670,7 @@ void CadastroLoja::on_tablePagamentos_clicked(const QModelIndex &index) {
 
   ui->pushButtonAdicionarPagamento->hide();
   ui->pushButtonAtualizarPagamento->show();
+  ui->pushButtonLimparSelecao->show();
 }
 
 void CadastroLoja::on_pushButtonRemoverPagamento_clicked() {
@@ -729,6 +733,11 @@ bool CadastroLoja::atualizarPagamento() {
   }
 
   modelTaxas.setFilter("0");
+
+  if (not modelTaxas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela taxas: " + modelTaxas.lastError().text());
+    return false;
+  }
 
   ui->lineEditPagamento->clear();
   ui->spinBoxParcelas->clear();
@@ -802,7 +811,25 @@ void CadastroLoja::on_pushButtonRemoveAssociacao_clicked() {
     }
   }
 
-  modelAssocia2.select();
+  if (not modelAssocia2.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela view_pagamento_loja: " + modelAssocia2.lastError().text());
+  }
 }
 
-// TODO: aba pagamentos: fazer logica para poder desmarcar pagamento e voltar botao 'adicionar pagamento'
+void CadastroLoja::on_pushButtonLimparSelecao_clicked() {
+  modelTaxas.setFilter("0");
+
+  if (not modelTaxas.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela taxas: " + modelTaxas.lastError().text());
+    return;
+  }
+
+  ui->lineEditPagamento->clear();
+  ui->spinBoxParcelas->clear();
+
+  ui->pushButtonAtualizarPagamento->hide();
+  ui->pushButtonAdicionarPagamento->show();
+  ui->pushButtonLimparSelecao->hide();
+
+  ui->tablePagamentos->clearSelection();
+}

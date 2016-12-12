@@ -13,7 +13,7 @@ class InputDialogConfirmacao : public QDialog {
   Q_OBJECT
 
 public:
-  enum Type { Recebimento, Entrega } type;
+  enum Type { Recebimento, Entrega, Representacao };
 
   explicit InputDialogConfirmacao(const Type &type, QWidget *parent = 0);
   ~InputDialogConfirmacao();
@@ -31,6 +31,7 @@ private slots:
 
 private:
   // attributes
+  const Type type;
   SqlTableModel model;
   Ui::InputDialogConfirmacao *ui;
   // methods

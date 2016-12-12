@@ -15,7 +15,7 @@ public:
   ~CadastroLoja();
 
 private slots:
-  void on_checkBoxMostrarInativos_clicked(const bool &checked);
+  void on_checkBoxMostrarInativos_clicked(const bool checked);
   void on_checkBoxMostrarInativosConta_clicked(bool checked);
   void on_lineEditCEP_textChanged(const QString &cep);
   void on_lineEditCNPJ_textEdited(const QString &text);
@@ -32,6 +32,7 @@ private slots:
   void on_pushButtonCadastrar_clicked();
   void on_pushButtonContaLimpar_clicked();
   void on_pushButtonEndLimpar_clicked();
+  void on_pushButtonLimparSelecao_clicked();
   void on_pushButtonNovoCad_clicked();
   void on_pushButtonRemoveAssociacao_clicked();
   void on_pushButtonRemover_clicked();
@@ -58,8 +59,8 @@ private:
   bool adicionarPagamento();
   bool atualizarPagamento();
   bool cadastrar() override;
-  bool cadastrarConta(const bool &isUpdate);
-  bool cadastrarEndereco(const bool &isUpdate);
+  bool cadastrarConta(const bool isUpdate);
+  bool cadastrarEndereco(const bool isUpdate);
   bool viewRegister() override;
   virtual bool newRegister() override;
   virtual bool save() override;

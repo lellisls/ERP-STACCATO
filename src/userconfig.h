@@ -19,10 +19,11 @@ private slots:
   void on_pushButtonACBrSaida_clicked();
   void on_pushButtonACBrXML_clicked();
   void on_pushButtonAlterarDados_clicked();
-  void on_pushButtonSalvar_clicked();
-  void on_pushButtonOrcamentosFolder_clicked();
-  void on_pushButtonVendasFolder_clicked();
   void on_pushButtonComprasFolder_clicked();
+  void on_pushButtonEntregasFolder_clicked();
+  void on_pushButtonOrcamentosFolder_clicked();
+  void on_pushButtonSalvar_clicked();
+  void on_pushButtonVendasFolder_clicked();
 
 private:
   Ui::UserConfig *ui;

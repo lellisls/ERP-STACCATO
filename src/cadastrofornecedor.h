@@ -35,7 +35,7 @@ private:
   Ui::CadastroFornecedor *ui;
   // methods
   bool ajustarValidade();
-  bool cadastrarEndereco(const bool &isUpdate);
+  bool cadastrarEndereco(const bool isUpdate);
   bool viewRegister() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;

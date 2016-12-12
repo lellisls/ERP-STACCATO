@@ -13,7 +13,7 @@ public:
   QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
 private:
-  const int column;
+  const int quantUpd;
 };
 
 #endif // ESTOQUEPROXYMODEL_H

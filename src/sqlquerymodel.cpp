@@ -4,7 +4,7 @@
 
 SqlQueryModel::SqlQueryModel(QObject *parent) : QSqlQueryModel(parent) {}
 
-QVariant SqlQueryModel::data(const int &row, const QString &column) const {
+QVariant SqlQueryModel::data(const int row, const QString &column) const {
   return QSqlQueryModel::data(QSqlQueryModel::index(row, QSqlQueryModel::record().indexOf(column)));
 }
 

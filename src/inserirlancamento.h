@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-#include <src/sqltablemodel.h>
+#include "sqltablemodel.h"
 
 namespace Ui {
 class InserirLancamento;
@@ -14,7 +14,7 @@ class InserirLancamento : public QDialog {
 
 public:
   enum Tipo { Pagar, Receber };
-  explicit InserirLancamento(Tipo tipo, QWidget *parent = 0);
+  explicit InserirLancamento(const Tipo tipo, QWidget *parent = 0);
   ~InserirLancamento();
 
 private slots:
@@ -22,10 +22,11 @@ private slots:
   void on_pushButtonSalvar_clicked();
 
 private:
-  Ui::InserirLancamento *ui;
-  Tipo tipo;
+  // attributes
+  const Tipo tipo;
   SqlTableModel model;
-  //
+  Ui::InserirLancamento *ui;
+  // methods
   void setupTables();
   bool verifyFields();
 };

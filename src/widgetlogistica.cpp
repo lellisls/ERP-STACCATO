@@ -10,6 +10,11 @@ WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::
 
   ui->splitter_6->setStretchFactor(0, 0);
   ui->splitter_6->setStretchFactor(1, 1);
+
+  connect(ui->widgetCalendarioEntrega, &CalendarioEntregas::errorSignal, this, &WidgetLogistica::errorSignal);
+  connect(ui->widgetAgendarColeta, &WidgetLogisticaAgendarColeta::errorSignal, this, &WidgetLogistica::errorSignal);
+  connect(ui->widgetRecebimento, &WidgetLogisticaRecebimento::errorSignal, this, &WidgetLogistica::errorSignal);
+  connect(ui->widgetAgendaEntrega, &WidgetLogisticaEntrega::errorSignal, this, &WidgetLogistica::errorSignal);
 }
 
 WidgetLogistica::~WidgetLogistica() { delete ui; }
@@ -29,11 +34,6 @@ bool WidgetLogistica::updateTables() {
   }
 
   ui->tableForn->resizeColumnsToContents();
-
-  connect(ui->widgetCalendarioEntrega, &CalendarioEntregas::errorSignal, this, &WidgetLogistica::errorSignal);
-  connect(ui->widgetAgendarColeta, &WidgetLogisticaAgendarColeta::errorSignal, this, &WidgetLogistica::errorSignal);
-  connect(ui->widgetRecebimento, &WidgetLogisticaRecebimento::errorSignal, this, &WidgetLogistica::errorSignal);
-  connect(ui->widgetAgendaEntrega, &WidgetLogisticaEntrega::errorSignal, this, &WidgetLogistica::errorSignal);
 
   const QString currentText = ui->tabWidgetLogistica->tabText(ui->tabWidgetLogistica->currentIndex());
 
@@ -99,10 +99,7 @@ void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
   if (currentText == "Representação") ui->widgetRepresentacao->tableFornLogistica_activated(fornecedor);
 }
 
-void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int &) { updateTables(); }
+void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int) { updateTables(); }
 
-// TODO: colorir prazoEntrega
-// TODO: colocar nas configuracoes do usuario pasta para 'pdf entregas/danfe'
-// TODO: tela para guardar imagens (fotos/documentos scaneados)
-// TODO: followup das entregas
-// TODO: criar opcao 'cliente retira'
+// NOTE: tela para guardar imagens (fotos/documentos scaneados)
+// NOTE: 4followup das entregas (no lugar de followup colocar campo observacao no inputDialog?)

@@ -78,15 +78,15 @@ bool XML_Viewer::imprimirDanfe() {
 
   QFile fileResposta(dirSaida + "/gerarDanfe-resp.txt");
 
-  QProgressDialog *progressDialog = new QProgressDialog(this);
-  progressDialog->reset();
-  progressDialog->setCancelButton(0);
-  progressDialog->setLabelText("Esperando ACBr...");
-  progressDialog->setWindowTitle("ERP Staccato");
-  progressDialog->setWindowModality(Qt::WindowModal);
-  progressDialog->setMaximum(0);
-  progressDialog->setMinimum(0);
-  progressDialog->show();
+  QProgressDialog progressDialog;
+  progressDialog.reset();
+  progressDialog.setCancelButton(0);
+  progressDialog.setLabelText("Esperando ACBr...");
+  progressDialog.setWindowTitle("ERP Staccato");
+  progressDialog.setWindowModality(Qt::WindowModal);
+  progressDialog.setMaximum(0);
+  progressDialog.setMinimum(0);
+  progressDialog.show();
 
   const QTime wait = QTime::currentTime().addSecs(10);
 
@@ -96,7 +96,7 @@ bool XML_Viewer::imprimirDanfe() {
     if (fileResposta.exists()) break;
   }
 
-  progressDialog->cancel();
+  progressDialog.cancel();
 
   if (not fileResposta.exists()) {
     QMessageBox::critical(this, "Erro!", "ACBr não respondeu, verificar se ele está aberto e funcionando!");

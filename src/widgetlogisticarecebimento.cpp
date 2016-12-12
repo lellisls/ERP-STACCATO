@@ -36,6 +36,8 @@ bool WidgetLogisticaRecebimento::updateTables() {
 void WidgetLogisticaRecebimento::tableFornLogistica_activated(const QString &fornecedor) {
   this->fornecedor = fornecedor;
 
+  ui->lineEditBusca->clear();
+
   model.setFilter("fornecedor = '" + fornecedor + "' ORDER BY prazoEntrega");
 
   if (not model.select()) {
@@ -69,7 +71,6 @@ void WidgetLogisticaRecebimento::setupTables() {
   model.setFilter("0");
 
   ui->table->setModel(new EstoquePrazoProxyModel(&model, this));
-  // ui->table->hideColumn("idEstoque");
   ui->table->hideColumn("fornecedor");
 }
 
@@ -80,12 +81,12 @@ bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list) {
 
   for (auto const &item : list) ids.append(model.data(item.row(), "idEstoque").toString());
 
-  InputDialogConfirmacao *inputDlg = new InputDialogConfirmacao(InputDialogConfirmacao::Recebimento, this);
-  inputDlg->setFilter(ids);
+  InputDialogConfirmacao inputDlg(InputDialogConfirmacao::Recebimento);
+  inputDlg.setFilter(ids);
 
-  if (inputDlg->exec() != InputDialogConfirmacao::Accepted) return false;
+  if (inputDlg.exec() != InputDialogConfirmacao::Accepted) return false;
 
-  const QDateTime dataReceb = inputDlg->getDate();
+  const QDateTime dataReceb = inputDlg.getDate();
 
   model.setFilter(filtro);
   model.select();
@@ -145,7 +146,7 @@ bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list) {
 }
 
 void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
@@ -166,11 +167,11 @@ void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
   QMessageBox::information(this, "Aviso!", "Confirmado recebimento!");
 }
 
-void WidgetLogisticaRecebimento::on_checkBoxMarcarTodos_clicked(const bool &) { ui->table->selectAll(); }
+void WidgetLogisticaRecebimento::on_checkBoxMarcarTodos_clicked(const bool) { ui->table->selectAll(); }
 
 void WidgetLogisticaRecebimento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
-void WidgetLogisticaRecebimento::on_lineEditBuscaRecebimento_textChanged(const QString &text) {
+void WidgetLogisticaRecebimento::on_lineEditBusca_textChanged(const QString &text) {
   model.setFilter("fornecedor = '" + fornecedor + "' AND (numeroNFe LIKE '%" + text + "%' OR produto LIKE '%" + text +
                   "%' OR idVenda LIKE '%" + text + "%' OR ordemCompra LIKE '%" + text + "%')");
 
@@ -200,11 +201,11 @@ bool WidgetLogisticaRecebimento::reagendar() {
     return false;
   }
 
-  InputDialog *input = new InputDialog(InputDialog::AgendarRecebimento, this);
+  InputDialog input(InputDialog::AgendarRecebimento);
 
-  if (input->exec() != InputDialog::Accepted) return false;
+  if (input.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataPrevReceb = input->getNextDate();
+  const QDateTime dataPrevReceb = input.getNextDate();
 
   for (const auto &item : list) {
     const int idEstoque = model.data(item.row(), "idEstoque").toInt();

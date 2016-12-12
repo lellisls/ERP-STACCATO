@@ -13,6 +13,8 @@ CadastroCliente::CadastroCliente(QWidget *parent)
     : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   //  for (auto const *line : findChildren<QLineEdit *>()) {
   //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   //  }
@@ -40,6 +42,7 @@ void CadastroCliente::setupUi() {
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
+  ui->lineEditInscEstadual->setValidator(new QRegExpValidator(QRegExp("[0-9]\\d{0,15}"), this));
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
 }
@@ -121,11 +124,10 @@ void CadastroCliente::clearFields() {
   RegisterDialog::clearFields();
 
   ui->radioButtonPF->setChecked(true);
+  ui->checkBoxInscEstIsento->setChecked(false);
   novoEndereco();
 
-  for (auto const &box : findChildren<ItemBox *>()) {
-    box->clear();
-  }
+  for (auto const &box : findChildren<ItemBox *>()) box->clear();
 
   setupUi();
 }
@@ -212,6 +214,8 @@ bool CadastroCliente::viewRegister() {
 
   tipoPFPJ == "PF" ? ui->radioButtonPF->setChecked(true) : ui->radioButtonPJ->setChecked(true);
 
+  ui->checkBoxInscEstIsento->setChecked(data("inscEstadual").toString() == "ISENTO");
+
   ui->tableEndereco->resizeColumnsToContents();
 
   return true;
@@ -272,7 +276,7 @@ void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
   }
 }
 
-bool CadastroCliente::cadastrarEndereco(const bool &isUpdate) {
+bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -365,16 +369,33 @@ void CadastroCliente::on_tableEndereco_clicked(const QModelIndex &index) {
   mapperEnd.setCurrentModelIndex(index);
 }
 
-void CadastroCliente::on_radioButtonPF_toggled(const bool &checked) {
+void CadastroCliente::on_radioButtonPF_toggled(const bool checked) {
   tipoPFPJ = checked ? "PF" : "PJ";
-  ui->lineEditCNPJ->setHidden(checked);
-  ui->labelCNPJ->setHidden(checked);
-  ui->lineEditCPF->setVisible(checked);
-  ui->labelCPF->setVisible(checked);
-  ui->lineEditInscEstadual->setHidden(checked);
-  ui->labelInscricaoEstadual->setHidden(checked);
-  ui->dateEdit->setVisible(checked);
-  ui->labelDataNasc->setVisible(checked);
+
+  if (checked) {
+    ui->lineEditCNPJ->setHidden(checked);
+    ui->labelCNPJ->setHidden(checked);
+    ui->lineEditInscEstadual->setHidden(checked);
+    ui->labelInscricaoEstadual->setHidden(checked);
+    ui->checkBoxInscEstIsento->setHidden(checked);
+
+    ui->lineEditCPF->setVisible(checked);
+    ui->labelCPF->setVisible(checked);
+    ui->dateEdit->setVisible(checked);
+    ui->labelDataNasc->setVisible(checked);
+  } else {
+    ui->lineEditCPF->setVisible(checked);
+    ui->labelCPF->setVisible(checked);
+    ui->dateEdit->setVisible(checked);
+    ui->labelDataNasc->setVisible(checked);
+
+    ui->lineEditCNPJ->setHidden(checked);
+    ui->labelCNPJ->setHidden(checked);
+    ui->lineEditInscEstadual->setHidden(checked);
+    ui->labelInscricaoEstadual->setHidden(checked);
+    ui->checkBoxInscEstIsento->setHidden(checked);
+  }
+
   checked ? ui->lineEditCNPJ->clear() : ui->lineEditCPF->clear();
 
   adjustSize();
@@ -385,7 +406,7 @@ void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
                                                                                          : "color: rgb(255, 0, 0)");
 }
 
-void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool &checked) {
+void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool checked) {
   modelEnd.setFilter("idCliente = " + data("idCliente").toString() + (checked ? "" : " AND desativado = FALSE"));
 
   if (not modelEnd.select()) {
@@ -421,9 +442,21 @@ bool CadastroCliente::save() {
 }
 
 void CadastroCliente::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Cliente cadastrado com sucesso!");
+  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Cliente cadastrado com sucesso!");
 }
 
 void CadastroCliente::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
 
-// TODO: validar inscricaoEstadual para ser numeros ou 'ISENTO' (colocar checkbox 'ISENTO', quando a pessoa marca colocar o texto ISENTO na lineEdit e bloquear edicao, sem a checkbox só aceita numero)
+void CadastroCliente::on_checkBoxInscEstIsento_toggled(bool checked) {
+  if (checked) {
+    ui->lineEditInscEstadual->setValidator(0);
+    ui->lineEditInscEstadual->setText("ISENTO");
+    ui->lineEditInscEstadual->setReadOnly(true);
+  } else {
+    ui->lineEditInscEstadual->setValidator(new QRegExpValidator(QRegExp("[0-9]\\d{0,15}"), this));
+    ui->lineEditInscEstadual->clear();
+    ui->lineEditInscEstadual->setReadOnly(false);
+  }
+}
+
+// NOTE: validar inscricaoEstadual (http://www.sintegra.gov.br/insc_est.html)

@@ -30,7 +30,7 @@ private:
   SqlTableModel model2;
   Ui::WidgetFluxoCaixa *ui;
   // methods
-  void montaFiltro();
+  bool montaFiltro();
   void setupTables();
 };
 

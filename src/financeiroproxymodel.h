@@ -14,6 +14,7 @@ public:
 
 private:
   const int statusFinanceiro;
+  const int prazoEntrega;
 };
 
 #endif // FINANCEIROPROXYMODEL_H

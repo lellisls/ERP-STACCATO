@@ -13,7 +13,7 @@ class InputDialog : public QDialog {
   Q_OBJECT
 
 public:
-  enum Type { Carrinho, AgendarColeta, Coleta, AgendarRecebimento, AgendarEntrega } type;
+  enum Type { Carrinho, AgendarColeta, Coleta, AgendarRecebimento, AgendarEntrega };
 
   explicit InputDialog(const Type &type, QWidget *parent = 0);
   ~InputDialog();
@@ -26,6 +26,7 @@ private slots:
 
 private:
   // attributes
+  const Type type;
   Ui::InputDialog *ui;
   // methods
 };

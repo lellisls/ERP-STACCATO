@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QSqlQuery>
 
 #include "inputdialogproduto.h"
 #include "noeditdelegate.h"
@@ -71,12 +72,6 @@ void InputDialogProduto::setupTables() {
   model.setHeaderData("aliquotaSt", "Alíquota ST");
   model.setHeaderData("st", "ST");
 
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
-    return;
-  }
-
   ui->table->setModel(&model);
   ui->table->hideColumn("idVendaProduto");
   ui->table->hideColumn("statusFinanceiro");
@@ -116,14 +111,14 @@ void InputDialogProduto::setupTables() {
 bool InputDialogProduto::setFilter(const QStringList &ids) {
   if (ids.isEmpty()) {
     model.setFilter("0");
-    QMessageBox::critical(this, "Erro!", "IdsCompra vazio!");
+    QMessageBox::critical(this, "Erro!", "Ids vazio!");
     return false;
   }
 
   QString filter;
 
-  if (type == GerarCompra) filter = "idPedido = " + ids.join(" OR idPedido = ");
-  if (type == Faturamento) filter = "idCompra = " + ids.join(" OR idCompra = ");
+  if (type == GerarCompra) filter = "(idPedido = " + ids.join(" OR idPedido = ") + ") AND status = 'PENDENTE'";
+  if (type == Faturamento) filter = "(idCompra = " + ids.join(" OR idCompra = ") + ") AND status = 'EM FATURAMENTO'";
 
   if (filter.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Filtro vazio!");
@@ -141,6 +136,19 @@ bool InputDialogProduto::setFilter(const QStringList &ids) {
   ui->table->resizeColumnsToContents();
 
   calcularTotal();
+
+  QSqlQuery query;
+  query.prepare("SELECT aliquotaSt, st FROM fornecedor WHERE razaoSocial = :razaoSocial");
+  query.bindValue(":razaoSocial", model.data(0, "fornecedor"));
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro buscando substituicao tributaria do fornecedor: " + query.lastError().text());
+    return false;
+  }
+
+  ui->comboBoxST->setCurrentText(query.value("st").toString());
+  ui->doubleSpinBoxAliquota->setValue(query.value("aliquotaSt").toDouble());
 
   if (type == GerarCompra) QMessageBox::information(this, "Aviso!", "Ajustar preço e quantidade se necessário.");
 
@@ -236,7 +244,6 @@ void InputDialogProduto::processST() {
   }
 
   if (text == "ST Loja") {
-    // TODO: gerar linha em contas_pagar (salvar inline no produto para gerar a soma das linhas no confirmarCompra)
     ui->labelAliquota->show();
     ui->doubleSpinBoxAliquota->show();
     ui->labelST->show();
@@ -245,6 +252,14 @@ void InputDialogProduto::processST() {
     const double st = total * aliquota / 100;
 
     ui->doubleSpinBoxST->setValue(st);
+
+    for (int row = 0; row < model.rowCount(); ++row) {
+      model.setData(row, "aliquotaSt", aliquota);
+      model.setData(row, "st", text);
+    }
+
+    total += total * aliquota / 100;
+    ui->doubleSpinBoxTotal->setValue(total);
   }
 
   ui->table->resizeColumnsToContents();

@@ -15,19 +15,12 @@ public:
   ~ItemBox();
   QVariant value() const;
   SearchDialog *searchDialog();
+  void changeItem(const QVariant &m_value);
   void clear();
   void setReadOnlyItemBox(const bool isReadOnly);
   void setRegisterDialog(RegisterDialog *m_value);
   void setSearchDialog(SearchDialog *m_value);
   void setValue(const QVariant &m_value);
-
-public slots:
-  void changeItem(const QVariant &m_value);
-
-private slots:
-  virtual void edit();
-  virtual void search();
-  void resetCursor();
 
 private:
   Q_PROPERTY(QVariant value READ value WRITE setValue STORED false)
@@ -39,8 +32,11 @@ private:
   SearchDialog *m_searchDialog = nullptr;
   // methods
   RegisterDialog *registerDialog();
+  virtual void edit();
   virtual void resizeEvent(QResizeEvent *event) override;
+  virtual void search();
   void mouseDoubleClickEvent(QMouseEvent *event) override;
+  void resetCursor();
 };
 
 #endif // ITEMBOX_H

@@ -16,7 +16,7 @@ bool WidgetFinanceiroCompra::updateTables() {
   if (model.tableName().isEmpty()) setupTables();
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela de compras: " + model.lastError().text());
+    emit errorSignal("Erro lendo tabela de compras: " + model.lastError().text());
     return false;
   }
 
@@ -36,10 +36,10 @@ void WidgetFinanceiroCompra::setupTables() {
 }
 
 void WidgetFinanceiroCompra::on_table_activated(const QModelIndex &index) {
-  InputDialogFinanceiro *input = new InputDialogFinanceiro(InputDialogFinanceiro::Financeiro, this);
-  input->setFilter(model.data(index.row(), "Compra").toString());
+  InputDialogFinanceiro input(InputDialogFinanceiro::Financeiro);
+  input.setFilter(model.data(index.row(), "Compra").toString());
 
-  if (input->exec() != InputDialogFinanceiro::Accepted) return;
+  if (input.exec() != InputDialogFinanceiro::Accepted) return;
 }
 
 void WidgetFinanceiroCompra::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }

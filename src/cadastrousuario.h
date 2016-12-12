@@ -26,8 +26,8 @@ private slots:
 
 private:
   // attributes
-  Ui::CadastroUsuario *ui;
   SqlTableModel modelPermissoes;
+  Ui::CadastroUsuario *ui;
   // methods
   bool viewRegister() override;
   virtual bool save() override;

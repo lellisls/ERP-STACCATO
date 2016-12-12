@@ -22,7 +22,6 @@ void WidgetVenda::setupTables() {
   model.setHeaderData("dataFinanceiro", "Data Fin.");
 
   ui->table->setModel(new VendaProxyModel(&model, this));
-  ui->table->hideColumn("statusEntrega");
   ui->table->hideColumn("idLoja");
   ui->table->hideColumn("idUsuario");
   ui->table->setItemDelegateForColumn("Total R$", new ReaisDelegate(this));
@@ -91,7 +90,7 @@ void WidgetVenda::montaFiltro() {
   ui->table->resizeColumnsToContents();
 }
 
-void WidgetVenda::on_groupBoxStatus_toggled(const bool &enabled) {
+void WidgetVenda::on_groupBoxStatus_toggled(const bool enabled) {
   for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
     child->setChecked(enabled);
@@ -183,11 +182,11 @@ void WidgetVenda::on_table_activated(const QModelIndex &index) {
 
 void WidgetVenda::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
-void WidgetVenda::on_radioButtonProprios_toggled(bool checked) {
+void WidgetVenda::on_radioButtonProprios_toggled(const bool checked) {
   if (UserSession::tipoUsuario() == "VENDEDOR") checked ? ui->groupBoxLojas->show() : ui->groupBoxLojas->hide();
 }
 
-void WidgetVenda::on_comboBoxLojas_currentIndexChanged(int) {
+void WidgetVenda::on_comboBoxLojas_currentIndexChanged(const int) {
   ui->comboBoxVendedores->clear();
 
   QSqlQuery query2("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND tipo = 'VENDEDOR'" +
@@ -213,7 +212,7 @@ void WidgetVenda::setFinanceiro() {
 }
 
 void WidgetVenda::on_pushButtonFollowup_clicked() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
@@ -224,11 +223,9 @@ void WidgetVenda::on_pushButtonFollowup_clicked() {
   followup->show();
 }
 
-void WidgetVenda::on_groupBoxStatusFinanceiro_toggled(const bool &enabled) {
+void WidgetVenda::on_groupBoxStatusFinanceiro_toggled(const bool enabled) {
   for (auto const &child : ui->groupBoxStatusFinanceiro->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
     child->setChecked(enabled);
   }
 }
-
-// NOTE: verificar como lidar com brinde/reposicao

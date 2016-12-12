@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
+#include "doubledelegate.h"
 #include "estoque.h"
 #include "estoqueproxymodel.h"
 #include "ui_estoque.h"
@@ -24,13 +25,115 @@ void Estoque::setupTables() {
   model.setTable("estoque");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+  model.setHeaderData("idEstoque", "Estoque");
+  model.setHeaderData("recebidoPor", "Recebido Por");
+  model.setHeaderData("status", "Status");
+  model.setHeaderData("local", "Local");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("descricao", "Produto");
+  model.setHeaderData("quant", "Quant.");
+  model.setHeaderData("un", "Un.");
+  model.setHeaderData("caixas", "Caixas");
+  model.setHeaderData("codComercial", "Cód. Com.");
+
   ui->tableEstoque->setModel(new EstoqueProxyModel(&model, this));
+  ui->tableEstoque->setItemDelegateForColumn("quant", new DoubleDelegate(this, 4));
   ui->tableEstoque->hideColumn("quantUpd");
+  ui->tableEstoque->hideColumn("idProduto");
+  ui->tableEstoque->hideColumn("codBarras");
+  ui->tableEstoque->hideColumn("ncm");
+  ui->tableEstoque->hideColumn("cfop");
+  ui->tableEstoque->hideColumn("valorUnid");
+  ui->tableEstoque->hideColumn("valor");
+  ui->tableEstoque->hideColumn("codBarrasTrib");
+  ui->tableEstoque->hideColumn("unTrib");
+  ui->tableEstoque->hideColumn("quantTrib");
+  ui->tableEstoque->hideColumn("valorTrib");
+  ui->tableEstoque->hideColumn("desconto");
+  ui->tableEstoque->hideColumn("compoeTotal");
+  ui->tableEstoque->hideColumn("numeroPedido");
+  ui->tableEstoque->hideColumn("itemPedido");
+  ui->tableEstoque->hideColumn("tipoICMS");
+  ui->tableEstoque->hideColumn("orig");
+  ui->tableEstoque->hideColumn("cstICMS");
+  ui->tableEstoque->hideColumn("modBC");
+  ui->tableEstoque->hideColumn("vBC");
+  ui->tableEstoque->hideColumn("pICMS");
+  ui->tableEstoque->hideColumn("vICMS");
+  ui->tableEstoque->hideColumn("modBCST");
+  ui->tableEstoque->hideColumn("pMVAST");
+  ui->tableEstoque->hideColumn("vBCST");
+  ui->tableEstoque->hideColumn("pICMSST");
+  ui->tableEstoque->hideColumn("vICMSST");
+  ui->tableEstoque->hideColumn("cEnq");
+  ui->tableEstoque->hideColumn("cstIPI");
+  ui->tableEstoque->hideColumn("cstPIS");
+  ui->tableEstoque->hideColumn("vBCPIS");
+  ui->tableEstoque->hideColumn("pPIS");
+  ui->tableEstoque->hideColumn("vPIS");
+  ui->tableEstoque->hideColumn("cstCOFINS");
+  ui->tableEstoque->hideColumn("vBCCOFINS");
+  ui->tableEstoque->hideColumn("pCOFINS");
+  ui->tableEstoque->hideColumn("vCOFINS");
 
   modelConsumo.setTable("estoque_has_consumo");
   modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  ui->tableConsumo->setModel(&modelConsumo);
+  modelConsumo.setHeaderData("status", "Status");
+  modelConsumo.setHeaderData("ordemCompra", "OC");
+  modelConsumo.setHeaderData("local", "Local");
+  modelConsumo.setHeaderData("fornecedor", "Fornecedor");
+  modelConsumo.setHeaderData("descricao", "Produto");
+  modelConsumo.setHeaderData("quant", "Quant.");
+  modelConsumo.setHeaderData("un", "Un.");
+  modelConsumo.setHeaderData("caixas", "Caixas");
+  modelConsumo.setHeaderData("codComercial", "Cód. Com.");
+  modelConsumo.setHeaderData("created", "Criado");
+
+  ui->tableConsumo->setModel(new EstoqueProxyModel(&modelConsumo, this));
+  ui->tableConsumo->setItemDelegateForColumn("quant", new DoubleDelegate(this, 4));
+  ui->tableConsumo->showColumn(modelConsumo.fieldIndex("created"));
+  ui->tableConsumo->hideColumn("idConsumo");
+  ui->tableConsumo->hideColumn("idEstoque");
+  ui->tableConsumo->hideColumn("idVendaProduto");
+  ui->tableConsumo->hideColumn("idCompra");
+  ui->tableConsumo->hideColumn("idProduto");
+  ui->tableConsumo->hideColumn("quantUpd");
+  ui->tableConsumo->hideColumn("codBarras");
+  ui->tableConsumo->hideColumn("ncm");
+  ui->tableConsumo->hideColumn("cfop");
+  ui->tableConsumo->hideColumn("valorUnid");
+  ui->tableConsumo->hideColumn("valor");
+  ui->tableConsumo->hideColumn("codBarrasTrib");
+  ui->tableConsumo->hideColumn("unTrib");
+  ui->tableConsumo->hideColumn("quantTrib");
+  ui->tableConsumo->hideColumn("valorTrib");
+  ui->tableConsumo->hideColumn("desconto");
+  ui->tableConsumo->hideColumn("compoeTotal");
+  ui->tableConsumo->hideColumn("numeroPedido");
+  ui->tableConsumo->hideColumn("itemPedido");
+  ui->tableConsumo->hideColumn("tipoICMS");
+  ui->tableConsumo->hideColumn("orig");
+  ui->tableConsumo->hideColumn("cstICMS");
+  ui->tableConsumo->hideColumn("modBC");
+  ui->tableConsumo->hideColumn("vBC");
+  ui->tableConsumo->hideColumn("pICMS");
+  ui->tableConsumo->hideColumn("vICMS");
+  ui->tableConsumo->hideColumn("modBCST");
+  ui->tableConsumo->hideColumn("pMVAST");
+  ui->tableConsumo->hideColumn("vBCST");
+  ui->tableConsumo->hideColumn("pICMSST");
+  ui->tableConsumo->hideColumn("vICMSST");
+  ui->tableConsumo->hideColumn("cEnq");
+  ui->tableConsumo->hideColumn("cstIPI");
+  ui->tableConsumo->hideColumn("cstPIS");
+  ui->tableConsumo->hideColumn("vBCPIS");
+  ui->tableConsumo->hideColumn("pPIS");
+  ui->tableConsumo->hideColumn("vPIS");
+  ui->tableConsumo->hideColumn("cstCOFINS");
+  ui->tableConsumo->hideColumn("vBCCOFINS");
+  ui->tableConsumo->hideColumn("pCOFINS");
+  ui->tableConsumo->hideColumn("vCOFINS");
 }
 
 void Estoque::on_tableEstoque_activated(const QModelIndex &) { exibirNota(); }
@@ -45,6 +148,8 @@ void Estoque::calcularRestante() {
 }
 
 void Estoque::viewRegisterById(const QString &idEstoque) {
+  // NOTE: put this in the constructor else I may forget to call this function before criarConsumo()
+
   if (idEstoque.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Estoque não encontrado!");
     return;
@@ -81,16 +186,18 @@ void Estoque::exibirNota() {
                 "nfe n ON ehn.idNFe = n.idNFe WHERE e.idEstoque = :idEstoque");
   query.bindValue(":idEstoque", model.data(0, "idEstoque"));
 
-  if (not query.exec() or not query.first()) {
+  if (not query.exec()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando nfe: " + query.lastError().text());
     return;
   }
 
-  XML_Viewer *viewer = new XML_Viewer(this);
-  viewer->exibirXML(query.value("xml").toByteArray());
+  while (query.next()) {
+    XML_Viewer *viewer = new XML_Viewer(this);
+    viewer->exibirXML(query.value("xml").toByteArray());
+  }
 }
 
-bool Estoque::criarConsumo(const int &idVendaProduto) {
+bool Estoque::criarConsumo(const int idVendaProduto) {
   showMaximized();
 
   for (int row = 0; row < model.rowCount(); ++row) {
@@ -115,9 +222,7 @@ bool Estoque::criarConsumo(const int &idVendaProduto) {
         const int index = modelConsumo.fieldIndex(field);
         const QVariant value = model.data(row, column);
 
-        if (index != -1) {
-          if (not modelConsumo.setData(newRow, index, value)) return false;
-        }
+        if (index != -1 and not modelConsumo.setData(newRow, index, value)) return false;
       }
 
       const double quant = query.value("quant").toDouble();
@@ -150,14 +255,36 @@ bool Estoque::criarConsumo(const int &idVendaProduto) {
         }
       }
 
+      const double proporcao = quant / model.data(row, "idEstoque").toDouble();
+
+      const double valor = model.data(row, "valor").toDouble() * proporcao;
+      const double vBC = model.data(row, "vBC").toDouble() * proporcao;
+      const double vICMS = model.data(row, "vICMS").toDouble() * proporcao;
+      const double vBCST = model.data(row, "vBCST").toDouble() * proporcao;
+      const double vICMSST = model.data(row, "vICMSST").toDouble() * proporcao;
+      const double vBCPIS = model.data(row, "vBCPIS").toDouble() * proporcao;
+      const double vPIS = model.data(row, "vPIS").toDouble() * proporcao;
+      const double vBCCOFINS = model.data(row, "vBCCOFINS").toDouble() * proporcao;
+      const double vCOFINS = model.data(row, "vCOFINS").toDouble() * proporcao;
+
       // -------------------------------------
 
       if (not modelConsumo.setData(newRow, "quant", quant * -1)) return false;
       if (not modelConsumo.setData(newRow, "caixas", caixas)) return false;
-      if (not modelConsumo.setData(newRow, "quantUpd", 4)) return false; // DarkGreen
+      if (not modelConsumo.setData(newRow, "quantUpd", DarkGreen)) return false; // DarkGreen
       if (not modelConsumo.setData(newRow, "idVendaProduto", idVendaProduto)) return false;
       if (not modelConsumo.setData(newRow, "idEstoque", model.data(row, "idEstoque"))) return false;
       if (not modelConsumo.setData(newRow, "status", "CONSUMO")) return false;
+
+      if (not modelConsumo.setData(newRow, "valor", valor)) return false;
+      if (not modelConsumo.setData(newRow, "vBC", vBC)) return false;
+      if (not modelConsumo.setData(newRow, "vICMS", vICMS)) return false;
+      if (not modelConsumo.setData(newRow, "vBCST", vBCST)) return false;
+      if (not modelConsumo.setData(newRow, "vICMSST", vICMSST)) return false;
+      if (not modelConsumo.setData(newRow, "vBCPIS", vBCPIS)) return false;
+      if (not modelConsumo.setData(newRow, "vPIS", vPIS)) return false;
+      if (not modelConsumo.setData(newRow, "vBCCOFINS", vBCCOFINS)) return false;
+      if (not modelConsumo.setData(newRow, "vCOFINS", vCOFINS)) return false;
     }
   }
 
@@ -175,10 +302,4 @@ void Estoque::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->r
 
 void Estoque::on_tableConsumo_entered(const QModelIndex &) { ui->tableConsumo->resizeColumnsToContents(); }
 
-// TODO: colocar data na tabela de estoque para consumo e estoque propriamente dito
-// TODO: ordenar como: forn., cod, produto, quant, un, caixas
-// TODO: busca descricao, cod
-// TODO: atualizar quantidade de caixas pelo sql (usar joins para calcular a quant de caixas)
-// TODO: colocar chaves estrangeiras na tabela estoque
-// TODO: tabela estoque possui coluna 'ordemCompra' guardando um valor mas pode possuir varios valores pelas relacoes
-// com pedido_fornecedor_has_produto. remover coluna?
+// NOTE: coluna ordemCompra renomeada, remover futuramente se nao der problema

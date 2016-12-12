@@ -144,11 +144,11 @@ bool CalendarioEntregas::reagendar() {
     return false;
   }
 
-  InputDialog *input = new InputDialog(InputDialog::AgendarEntrega, this);
+  InputDialog input(InputDialog::AgendarEntrega);
 
-  if (input->exec() != InputDialog::Accepted) return false;
+  if (input.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataPrevEnt = input->getNextDate();
+  const QDateTime dataPrevEnt = input.getNextDate();
 
   for (auto const &item : list) {
     QSqlQuery query;
@@ -258,13 +258,13 @@ bool CalendarioEntregas::confirmarEntrega() {
     return false;
   }
 
-  InputDialogConfirmacao *inputDlg = new InputDialogConfirmacao(InputDialogConfirmacao::Entrega, this);
-  inputDlg->setFilter(modelCarga.data(list.first().row(), "idVenda").toString());
+  InputDialogConfirmacao inputDlg(InputDialogConfirmacao::Entrega);
+  inputDlg.setFilter(modelCarga.data(list.first().row(), "idVenda").toString());
 
-  if (inputDlg->exec() != InputDialogConfirmacao::Accepted) return false;
+  if (inputDlg.exec() != InputDialogConfirmacao::Accepted) return false;
 
-  const QDateTime dataRealEnt = inputDlg->getDate();
-  const QString entregou = inputDlg->getEntregou();
+  const QDateTime dataRealEnt = inputDlg.getDate();
+  const QString entregou = inputDlg.getEntregou();
 
   QSqlQuery query;
 
@@ -467,4 +467,4 @@ bool CalendarioEntregas::imprimirDanfe() {
   return true;
 }
 
-// TODO: tela entregas (calendario) colocar filtros mostrando por dia/semana
+// NOTE: tela entregas (calendario) colocar filtros mostrando por dia/semana

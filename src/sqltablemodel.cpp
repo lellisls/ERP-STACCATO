@@ -8,11 +8,11 @@
 
 SqlTableModel::SqlTableModel(QObject *parent) : QSqlRelationalTableModel(parent) {}
 
-QVariant SqlTableModel::data(const int &row, const int &column) const {
+QVariant SqlTableModel::data(const int row, const int column) const {
   return QSqlTableModel::data(QSqlTableModel::index(row, column));
 }
 
-QVariant SqlTableModel::data(const int &row, const QString &column) const {
+QVariant SqlTableModel::data(const int row, const QString &column) const {
   if (QSqlTableModel::fieldIndex(column) == -1) {
     QMessageBox::critical(0, "Erro!", "Chave " + column + " não encontrada na tabela " + QSqlTableModel::tableName());
     return QVariant();
@@ -21,7 +21,7 @@ QVariant SqlTableModel::data(const int &row, const QString &column) const {
   return QSqlTableModel::data(QSqlTableModel::index(row, QSqlTableModel::fieldIndex(column)));
 }
 
-bool SqlTableModel::setData(const int &row, const int &column, const QVariant &value) {
+bool SqlTableModel::setData(const int row, const int column, const QVariant &value) {
   if (not QSqlTableModel::setData(QSqlTableModel::index(row, column), value)) {
     QMessageBox::critical(0, "Erro!", "Erro inserindo " + QSqlTableModel::record().fieldName(column) + " na tabela: " +
                                           QSqlTableModel::lastError().text());
@@ -31,7 +31,7 @@ bool SqlTableModel::setData(const int &row, const int &column, const QVariant &v
   return true;
 }
 
-bool SqlTableModel::setData(const int &row, const QString &column, const QVariant &value) {
+bool SqlTableModel::setData(const int row, const QString &column, const QVariant &value) {
   if (row == -1) {
     QMessageBox::critical(0, "Erro!", "Erro: linha -1 SqlTableModel");
     return false;
@@ -44,7 +44,8 @@ bool SqlTableModel::setData(const int &row, const QString &column, const QVarian
 
   if (not QSqlTableModel::setData(QSqlTableModel::index(row, QSqlTableModel::fieldIndex(column)), value)) {
     QMessageBox::critical(0, "Erro!", "Erro inserindo " + column + " na tabela " + tableName() + ": " +
-                                          QSqlTableModel::lastError().text());
+                                          QSqlTableModel::lastError().text() + " - linha: " + QString::number(row) +
+                                          " - valor: " + value.toString());
     return false;
   }
 

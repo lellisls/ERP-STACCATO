@@ -7,7 +7,7 @@
 #include "usersession.h"
 
 SendMail::SendMail(QWidget *parent, const QString &arquivo, const QString &fornecedor)
-    : QDialog(parent), ui(new Ui::SendMail), fornecedor(fornecedor) {
+    : QDialog(parent), fornecedor(fornecedor), ui(new Ui::SendMail) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);

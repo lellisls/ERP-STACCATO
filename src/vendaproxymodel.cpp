@@ -13,45 +13,50 @@ VendaProxyModel::~VendaProxyModel() {}
 
 QVariant VendaProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
-    if (proxyIndex.column() == dias) {
-      const int value = QIdentityProxyModel::data(index(proxyIndex.row(), dias), Qt::DisplayRole).toInt();
-      const QString valueStatus =
-          QIdentityProxyModel::data(index(proxyIndex.row(), status), Qt::DisplayRole).toString();
+    if (proxyIndex.column() == this->dias) {
+      const int dias = QIdentityProxyModel::data(index(proxyIndex.row(), this->dias), Qt::DisplayRole).toInt();
+      const QString status =
+          QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
 
-      if (value >= 5 or valueStatus == "ENTREGUE") return QBrush(Qt::green);
+      if (dias >= 5 or status == "ENTREGUE") return QBrush(Qt::green);
 
-      if (value >= 3 or valueStatus == "CANCELADO" or valueStatus == "DEVOLVIDO" or valueStatus == "PROCESSADO") {
+      if (dias >= 3 or status == "CANCELADO" or status == "DEVOLVIDO" or status == "PROCESSADO") {
         return QBrush(Qt::yellow);
       }
 
-      if (value < 3) return QBrush(Qt::red);
+      if (dias < 3) return QBrush(Qt::red);
     }
 
-    if (proxyIndex.column() == followup) {
-      const int value = QIdentityProxyModel::data(index(proxyIndex.row(), semaforo), Qt::DisplayRole).toInt();
+    if (proxyIndex.column() == this->followup) {
+      const int semaforo = QIdentityProxyModel::data(index(proxyIndex.row(), this->semaforo), Qt::DisplayRole).toInt();
 
-      if (value == Quente) return QBrush(QColor(255, 66, 66));
-      if (value == Morno) return QBrush(QColor(255, 170, 0));
-      if (value == Frio) return QBrush(QColor(70, 113, 255));
+      if (semaforo == Quente) return QBrush(QColor(255, 66, 66));
+      if (semaforo == Morno) return QBrush(QColor(255, 170, 0));
+      if (semaforo == Frio) return QBrush(QColor(70, 113, 255));
     }
 
-    if (proxyIndex.column() == financeiro) {
-      const QString value = QIdentityProxyModel::data(index(proxyIndex.row(), financeiro), Qt::DisplayRole).toString();
+    if (proxyIndex.column() == this->financeiro) {
+      const QString financeiro =
+          QIdentityProxyModel::data(index(proxyIndex.row(), this->financeiro), Qt::DisplayRole).toString();
 
-      if (value == "PENDENTE") return QBrush(Qt::red);
-      if (value == "CONFERIDO") return QBrush(Qt::yellow);
-      if (value == "LIBERADO") return QBrush(Qt::green);
+      if (financeiro == "PENDENTE") return QBrush(Qt::red);
+      if (financeiro == "CONFERIDO") return QBrush(Qt::yellow);
+      if (financeiro == "LIBERADO") return QBrush(Qt::green);
     }
 
-    const QString value = QIdentityProxyModel::data(index(proxyIndex.row(), status), Qt::DisplayRole).toString();
-    if (value == "ENTREGUE") return QBrush(Qt::green);
-    if (value == "CANCELADO" or value == "DEVOLVIDO" or value == "PROCESSADO") return QBrush(Qt::yellow);
-    if (value == "PERDIDO") return QBrush(Qt::yellow);
+    const QString status = QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
+    if (status == "ENTREGUE") return QBrush(Qt::green);
+    if (status == "CANCELADO" or status == "DEVOLVIDO" or status == "PROCESSADO") return QBrush(Qt::yellow);
+    if (status == "PERDIDO") return QBrush(Qt::yellow);
   }
 
   if (role == Qt::ForegroundRole) {
-    const QString value = QIdentityProxyModel::data(index(proxyIndex.row(), status), Qt::DisplayRole).toString();
-    if (value == "ENTREGUE" or proxyIndex.column() == dias) return QBrush(Qt::black);
+    const QString status = QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
+
+    if (status == "ENTREGUE" or status == "DEVOLVIDO" or status == "PROCESSADO" or status == "CANCELADO" or
+        proxyIndex.column() == this->dias) {
+      return QBrush(Qt::black);
+    }
   }
 
   return QIdentityProxyModel::data(proxyIndex, role);

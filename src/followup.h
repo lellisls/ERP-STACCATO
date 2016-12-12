@@ -24,10 +24,10 @@ private slots:
 
 private:
   // attributes
+  const QString id;
+  const Tipo tipo;
   int row;
-  QString id;
   SqlTableModel model;
-  Tipo tipo;
   Ui::FollowUp *ui;
   // methods
   bool verifyFields();

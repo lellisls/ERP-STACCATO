@@ -26,8 +26,10 @@ private slots:
   void on_lineEditBusca_textChanged(const QString &text);
 
 private:
-  Ui::WidgetNfeEntrada *ui;
+  // attributes
   SqlTableModel model;
+  Ui::WidgetNfeEntrada *ui;
+  // methods
   void setupTables();
 };
 

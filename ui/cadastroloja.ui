@@ -26,7 +26,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -824,7 +824,11 @@ color: rgb(0, 0, 0);</string>
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QSpinBox" name="spinBoxParcelas"/>
+                  <widget class="QSpinBox" name="spinBoxParcelas">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="0" column="2" rowspan="2">
                   <widget class="QPushButton" name="pushButtonAdicionarPagamento">
@@ -839,15 +843,15 @@ color: rgb(0, 0, 0);</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
-                  <widget class="QLineEdit" name="lineEditPagamento"/>
-                 </item>
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_3">
                    <property name="text">
                     <string>Tipo</string>
                    </property>
                   </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLineEdit" name="lineEditPagamento"/>
                  </item>
                  <item row="0" column="3" rowspan="2">
                   <widget class="QPushButton" name="pushButtonAtualizarPagamento">
@@ -859,6 +863,19 @@ color: rgb(0, 0, 0);</string>
                    </property>
                    <property name="text">
                     <string>Atualizar pagamento</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4" rowspan="2">
+                  <widget class="QPushButton" name="pushButtonLimparSelecao">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Limpar seleção</string>
                    </property>
                   </widget>
                  </item>

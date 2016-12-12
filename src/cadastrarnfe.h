@@ -42,8 +42,10 @@ private slots:
   void on_doubleSpinBoxPISppis_valueChanged(double);
   void on_doubleSpinBoxPISvbc_valueChanged(double);
   void on_doubleSpinBoxPISvpis_valueChanged(double value);
+  void on_itemBoxCliente_textChanged(const QString &);
   void on_itemBoxEnderecoEntrega_textChanged(const QString &);
   void on_itemBoxEnderecoFaturamento_textChanged(const QString &);
+  void on_itemBoxVeiculo_textChanged(const QString &);
   void on_pushButtonEnviarNFE_clicked();
   void on_pushButtonGerarNFE_clicked();
   void on_tableItens_clicked(const QModelIndex &index);
@@ -53,6 +55,7 @@ private slots:
 
 private:
   // attributes
+  bool ok = false;
   const QString idVenda;
   QDataWidgetMapper mapper;
   QString arquivo;
@@ -66,6 +69,8 @@ private:
   bool calculaDigitoVerificador(QString &chave);
   bool criarChaveAcesso(QString &chave);
   bool guardarNotaBD();
+  bool preencherNumeroNFe();
+  bool validar();
   bool writeDestinatario(QTextStream &stream);
   bool writeEmitente(QTextStream &stream);
   bool writeProduto(QTextStream &stream);

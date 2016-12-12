@@ -16,7 +16,7 @@ public:
 
 public slots:
   void updateTables();
-  void timerStatusBar(QString error);
+  void timerStatusBar(const QString &error);
 
 private slots:
   void on_actionCadastrarCliente_triggered();
@@ -35,16 +35,16 @@ private slots:
   void on_actionProdutos_triggered();
   void on_actionPromocao_triggered();
   void on_actionSobre_triggered();
-  void on_tabWidget_currentChanged(const int &);
+  void on_tabWidget_currentChanged(const int);
   void showStatusBarMessage();
 
 private:
   // attributes
-  Ui::MainWindow *ui;
   QPalette defautPalette;
   QString defaultStyle;
   QString error;
   QTimer *timer;
+  Ui::MainWindow *ui;
   // methods
   bool event(QEvent *event);
   void darkTheme();

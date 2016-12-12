@@ -78,7 +78,3 @@ void InputDialog::on_pushButtonSalvar_clicked() {
   QDialog::accept();
   close();
 }
-
-// TODO: na parte de compra quando for representacao puxar o preco de venda e nao o custo
-// TODO: na representacao colocar contas a receber e calculcar comissao 30 dias da data de vencimento do
-// boleto/pagamento

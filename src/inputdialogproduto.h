@@ -13,7 +13,7 @@ class InputDialogProduto : public QDialog {
   Q_OBJECT
 
 public:
-  enum Type { GerarCompra, Faturamento } type;
+  enum Type { GerarCompra, Faturamento };
 
   explicit InputDialogProduto(const Type &type, QWidget *parent = 0);
   ~InputDialogProduto();
@@ -30,6 +30,7 @@ private slots:
 
 private:
   // attributes
+  const Type type;
   SqlTableModel model;
   Ui::InputDialogProduto *ui;
   // methods

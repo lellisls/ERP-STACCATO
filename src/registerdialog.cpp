@@ -80,7 +80,7 @@ bool RegisterDialog::verifyFields(const QList<QLineEdit *> &list) {
   return true;
 }
 
-bool RegisterDialog::setData(const QString &key, const QVariant value) {
+bool RegisterDialog::setData(const QString &key, const QVariant &value) {
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) return true;
   if (value.type() == QVariant::String and value.toString().remove(".").remove("/").remove("-").isEmpty()) return true;
   if (value.type() == QVariant::Date and value.toString() == "1900-01-01") return true;
@@ -92,7 +92,7 @@ bool RegisterDialog::setData(const QString &key, const QVariant value) {
 
 QVariant RegisterDialog::data(const QString &key) { return model.data(mapper.currentIndex(), key); }
 
-QVariant RegisterDialog::data(const int &row, const QString &key) { return model.data(row, key); }
+QVariant RegisterDialog::data(const int row, const QString &key) { return model.data(row, key); }
 
 void RegisterDialog::addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName) {
   if (model.fieldIndex(key) == -1) {
@@ -129,7 +129,7 @@ void RegisterDialog::show() {
   adjustSize();
 }
 
-bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
+bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool silent) {
   if (not line->styleSheet().contains(requiredStyle())) return true;
   if (not line->isVisible()) return true;
 
@@ -148,7 +148,14 @@ bool RegisterDialog::verifyRequiredField(QLineEdit *line, const bool &silent) {
 }
 
 bool RegisterDialog::confirmationMessage() {
-  // NOTE: find a better way
+  // when the user press a 'add' or 'update' button to insert a address or item set a bool isDirty to true, when the
+  // user register or update the base model set the bool to false (verify only if there are unsaved rows but not if they
+  // are edited)
+  // and connect widgets edited signals too, just dont use model.isDirty
+
+  // NOTE: implement the better way
+  // if isDirty
+
   //  if (not model.isDirty() and not isDirty) return true;
 
   //  QMessageBox msgBox;
@@ -172,7 +179,7 @@ bool RegisterDialog::confirmationMessage() {
 void RegisterDialog::errorMessage() { QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este item."); }
 
 void RegisterDialog::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Cadastro atualizado com sucesso!");
+  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Cadastro realizado com sucesso!");
 }
 
 bool RegisterDialog::newRegister() {

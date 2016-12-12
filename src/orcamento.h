@@ -17,20 +17,20 @@ public:
   void show();
 
 private slots:
-  void on_checkBoxFreteManual_clicked(const bool &checked);
-  void on_checkBoxRepresentacao_toggled(const bool &checked);
+  void on_checkBoxFreteManual_clicked(const bool checked);
+  void on_checkBoxRepresentacao_toggled(const bool checked);
   void on_comboBoxLoja_currentTextChanged(const QString &);
-  void on_doubleSpinBoxCaixas_valueChanged(const double &caixas);
-  void on_doubleSpinBoxDesconto_valueChanged(const double &);
-  void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
-  void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
-  void on_doubleSpinBoxFrete_valueChanged(const double &);
+  void on_doubleSpinBoxCaixas_valueChanged(const double caixas);
+  void on_doubleSpinBoxDesconto_valueChanged(const double);
+  void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
+  void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double);
+  void on_doubleSpinBoxFrete_valueChanged(const double);
   void on_doubleSpinBoxQuant_editingFinished();
-  void on_doubleSpinBoxQuant_valueChanged(const double &);
-  void on_doubleSpinBoxSubTotalBruto_valueChanged(const double &);
-  void on_doubleSpinBoxSubTotalLiq_valueChanged(const double &);
-  void on_doubleSpinBoxTotal_valueChanged(const double &);
-  void on_doubleSpinBoxTotalItem_valueChanged(const double &);
+  void on_doubleSpinBoxQuant_valueChanged(const double);
+  void on_doubleSpinBoxSubTotalBruto_valueChanged(const double);
+  void on_doubleSpinBoxSubTotalLiq_valueChanged(const double);
+  void on_doubleSpinBoxTotal_valueChanged(const double);
+  void on_doubleSpinBoxTotalItem_valueChanged(const double);
   void on_itemBoxCliente_textChanged(const QString &);
   void on_itemBoxProduto_textChanged(const QString &);
   void on_itemBoxVendedor_textChanged(const QString &);
@@ -57,7 +57,7 @@ private:
   bool isBlockedReais = false;
   bool isBlockedTotal = false;
   bool isBlockedTotalItem = false;
-  bool isReadOnly = false; // TODO: use this to set if is readOnly instead of verifying validity and status everytime
+  bool isReadOnly = false;
   double minimoFrete = 0;
   double porcFrete = 0;
   QDataWidgetMapper mapperItem;
@@ -67,6 +67,7 @@ private:
   // methods
   bool atualizaReplica();
   bool cadastrar() override;
+  bool calcPrecoGlobalTotal();
   bool generateId();
   bool verificaCadastroCliente();
   virtual bool newRegister() override;
@@ -81,7 +82,6 @@ private:
   virtual void updateMode() override;
   void adicionarItem(const bool isUpdate = false);
   void atualizarItem();
-  void calcPrecoGlobalTotal();
   void calcPrecoItemTotal();
   void novoItem();
   void removeItem();

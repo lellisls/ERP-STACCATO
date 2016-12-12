@@ -437,13 +437,40 @@
        <string>Destinatário/Remetente</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="4" column="0">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="0" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
           <string>Cliente</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_9">
+         <layout class="QGridLayout" name="gridLayout_75">
           <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_24">
+              <property name="text">
+               <string>Mudar Cliente:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="ItemBox" name="itemBoxCliente"/>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_12">
             <item>
              <widget class="QLabel" name="label_40">
@@ -461,7 +488,7 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_13">
             <item>
              <widget class="QLabel" name="label_41">
@@ -479,7 +506,7 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="2">
+          <item row="1" column="2">
            <layout class="QHBoxLayout" name="horizontalLayout_14">
             <item>
              <widget class="QLabel" name="label_42">
@@ -497,7 +524,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="2">
+          <item row="2" column="2">
            <layout class="QHBoxLayout" name="horizontalLayout_24">
             <item>
              <widget class="QLabel" name="label_54">
@@ -523,7 +550,7 @@
          <property name="title">
           <string>Endereço Faturamento</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_26">
+         <layout class="QGridLayout" name="gridLayout_51">
           <item row="1" column="0">
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
@@ -549,25 +576,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="3">
-           <layout class="QGridLayout" name="gridLayout_22">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_46">
-              <property name="text">
-               <string>Número:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_49">
-              <property name="text">
-               <string>Cidade:</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="2">
+          <item row="1" column="1">
            <layout class="QGridLayout" name="gridLayout_21">
             <item row="0" column="0">
              <widget class="QLineEdit" name="lineEditDestinatarioLogradouro">
@@ -592,7 +601,25 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="4">
+          <item row="1" column="2">
+           <layout class="QGridLayout" name="gridLayout_22">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_46">
+              <property name="text">
+               <string>Número:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_49">
+              <property name="text">
+               <string>Cidade:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="3">
            <layout class="QGridLayout" name="gridLayout_23">
             <item row="0" column="0">
              <widget class="QLineEdit" name="lineEditDestinatarioNumero">
@@ -610,7 +637,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="5">
+          <item row="1" column="4">
            <layout class="QGridLayout" name="gridLayout_24">
             <item row="0" column="0">
              <widget class="QLabel" name="label_47">
@@ -628,7 +655,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="6">
+          <item row="1" column="5">
            <layout class="QGridLayout" name="gridLayout_25">
             <item row="0" column="0">
              <widget class="QLineEdit" name="lineEditDestinatarioComplemento">
@@ -646,15 +673,19 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_22">
-            <property name="text">
-             <string>Mudar Endereço:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="6">
-           <widget class="ItemBox" name="itemBoxEnderecoFaturamento"/>
+          <item row="0" column="0" colspan="2">
+           <layout class="QGridLayout" name="gridLayout_26">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_22">
+              <property name="text">
+               <string>Mudar Endereço:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="ItemBox" name="itemBoxEnderecoFaturamento"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -690,25 +721,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="3">
-           <layout class="QGridLayout" name="gridLayout_69">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_97">
-              <property name="text">
-               <string>Número:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_98">
-              <property name="text">
-               <string>Cidade:</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="2">
+          <item row="1" column="1">
            <layout class="QGridLayout" name="gridLayout_70">
             <item row="0" column="0">
              <widget class="QLineEdit" name="lineEditDestinatarioLogradouro_2">
@@ -733,7 +746,25 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="4">
+          <item row="1" column="2">
+           <layout class="QGridLayout" name="gridLayout_69">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_97">
+              <property name="text">
+               <string>Número:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_98">
+              <property name="text">
+               <string>Cidade:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="3">
            <layout class="QGridLayout" name="gridLayout_71">
             <item row="0" column="0">
              <widget class="QLineEdit" name="lineEditDestinatarioNumero_2">
@@ -751,7 +782,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="5">
+          <item row="1" column="4">
            <layout class="QGridLayout" name="gridLayout_72">
             <item row="0" column="0">
              <widget class="QLabel" name="label_99">
@@ -769,7 +800,7 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="6">
+          <item row="1" column="5">
            <layout class="QGridLayout" name="gridLayout_73">
             <item row="0" column="0">
              <widget class="QLineEdit" name="lineEditDestinatarioComplemento_2">
@@ -787,31 +818,22 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_101">
-            <property name="text">
-             <string>Mudar Endereço:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="6">
-           <widget class="ItemBox" name="itemBoxEnderecoEntrega"/>
+          <item row="0" column="0" colspan="2">
+           <layout class="QGridLayout" name="gridLayout_61">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_101">
+              <property name="text">
+               <string>Mudar Endereço:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="ItemBox" name="itemBoxEnderecoEntrega"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
-       </item>
-       <item row="4" column="0">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -3932,36 +3954,63 @@ Operação com Direito a Crédito - Vinculada a Receitas Tributadas e Não-Tribu
              <property name="title">
               <string>Veículo</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_39">
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEditTransportadorRntc"/>
-              </item>
+             <layout class="QGridLayout" name="gridLayout_50">
               <item row="0" column="0">
-               <widget class="QLabel" name="label_72">
-                <property name="text">
-                 <string>Placa:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="lineEditTransportadorPlaca"/>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEditTransportadorUfPlaca"/>
+               <layout class="QGridLayout" name="gridLayout_39">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_25">
+                  <property name="text">
+                   <string>Mudar Veículo:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="ItemBox" name="itemBoxVeiculo"/>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_72">
+                  <property name="text">
+                   <string>Placa:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="lineEditTransportadorPlaca"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_85">
+                  <property name="text">
+                   <string>RNTC:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="lineEditTransportadorRntc"/>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_86">
+                  <property name="text">
+                   <string>UF:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="lineEditTransportadorUfPlaca"/>
+                </item>
+               </layout>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_85">
-                <property name="text">
-                 <string>RNTC:</string>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_86">
-                <property name="text">
-                 <string>UF:</string>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
                 </property>
-               </widget>
+               </spacer>
               </item>
              </layout>
             </widget>

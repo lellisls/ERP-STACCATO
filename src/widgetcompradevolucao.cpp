@@ -29,9 +29,20 @@ bool WidgetCompraDevolucao::updateTables() {
 }
 
 void WidgetCompraDevolucao::setupTables() {
-  // TODO: formatar cabecalhos
-
   model.setTable("venda_has_produto");
+  model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  model.setHeaderData("status", "Status");
+  model.setHeaderData("fornecedor", "Fornecedor");
+  model.setHeaderData("idVenda", "Venda");
+  model.setHeaderData("produto", "Produto");
+  model.setHeaderData("obs", "Obs.");
+  model.setHeaderData("caixas", "Cx.");
+  model.setHeaderData("quant", "Quant.");
+  model.setHeaderData("un", "Un.");
+  model.setHeaderData("unCaixa", "Un./Cx.");
+  model.setHeaderData("codComercial", "Cód. Com.");
+  model.setHeaderData("formComercial", "Form. Com.");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela produtos pendentes: " + model.lastError().text());
@@ -42,6 +53,31 @@ void WidgetCompraDevolucao::setupTables() {
   ui->table->sortByColumn("idVenda");
   ui->table->hideColumn("entregou");
   ui->table->hideColumn("selecionado");
+  ui->table->hideColumn("idVendaProduto");
+  ui->table->hideColumn("idCompra");
+  ui->table->hideColumn("idNfeSaida");
+  ui->table->hideColumn("idLoja");
+  ui->table->hideColumn("idProduto");
+  ui->table->hideColumn("prcUnitario");
+  ui->table->hideColumn("descUnitario");
+  ui->table->hideColumn("parcial");
+  ui->table->hideColumn("desconto");
+  ui->table->hideColumn("parcialDesc");
+  ui->table->hideColumn("descGlobal");
+  ui->table->hideColumn("total");
+  ui->table->hideColumn("estoque_promocao");
+  ui->table->hideColumn("dataPrevCompra");
+  ui->table->hideColumn("dataRealCompra");
+  ui->table->hideColumn("dataPrevConf");
+  ui->table->hideColumn("dataRealConf");
+  ui->table->hideColumn("dataPrevFat");
+  ui->table->hideColumn("dataRealFat");
+  ui->table->hideColumn("dataPrevColeta");
+  ui->table->hideColumn("dataRealColeta");
+  ui->table->hideColumn("dataPrevReceb");
+  ui->table->hideColumn("dataRealReceb");
+  ui->table->hideColumn("dataPrevEnt");
+  ui->table->hideColumn("dataRealEnt");
   ui->table->resizeColumnsToContents();
 }
 

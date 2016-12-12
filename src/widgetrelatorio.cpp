@@ -30,8 +30,7 @@ void WidgetRelatorio::setFilterTotaisVendedor() {
   modelTotalVendedor.setFilter(filter);
 
   if (not modelTotalVendedor.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela relatorio_vendedor: " + modelTotalVendedor.lastError().text());
+    emit errorSignal("Erro lendo tabela relatorio_vendedor: " + modelTotalVendedor.lastError().text());
   }
 }
 
@@ -48,7 +47,7 @@ void WidgetRelatorio::setFilterTotaisLoja() {
   modelTotalLoja.setFilter(filter);
 
   if (not modelTotalLoja.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela relatorio_loja: " + modelTotalLoja.lastError().text());
+    emit errorSignal("Erro lendo tabela relatorio_loja: " + modelTotalLoja.lastError().text());
   }
 }
 
@@ -186,7 +185,8 @@ bool WidgetRelatorio::updateTables() {
   query.bindValue(":mydate", ui->dateEditMes->date().toString("yyyy-MM"));
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro setando mydate: " + query.lastError().text());
+    emit errorSignal("Erro setando mydate: " + query.lastError().text());
+    return false;
   }
 
   query.exec("SELECT @mydate");
@@ -200,7 +200,8 @@ bool WidgetRelatorio::updateTables() {
   }
 
   if (not modelOrcamento.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo view_resumo_relatorio: " + modelOrcamento.lastError().text());
+    emit errorSignal("Erro lendo view_resumo_relatorio: " + modelOrcamento.lastError().text());
+    return false;
   }
 
   ui->tableResumoOrcamento->setModel(&modelOrcamento);

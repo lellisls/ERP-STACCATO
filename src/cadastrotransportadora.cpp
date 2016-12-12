@@ -12,12 +12,14 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
     : RegisterAddressDialog("transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  setAttribute(Qt::WA_DeleteOnClose);
 
-  setupTables();
+  //  for (auto const *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
+
   setupUi();
+  setupTables();
   setupMapper();
   newRegister();
 
@@ -186,12 +188,12 @@ void CadastroTransportadora::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool &checked) {
+void CadastroTransportadora::on_checkBoxMostrarInativos_clicked(const bool checked) {
   modelEnd.setFilter("idTransportadora = " + data("idTransportadora").toString() +
                      (checked ? "" : " AND desativado = FALSE"));
 }
 
-bool CadastroTransportadora::cadastrarEndereco(const bool &isUpdate) {
+bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -270,6 +272,7 @@ void CadastroTransportadora::setupUi() {
   ui->lineEditPlaca->setInputMask("AAA-9999;_");
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
+  ui->lineEditUfPlaca->setInputMask(">AA;_");
 
   ui->lineEditCarga->setValidator(new QIntValidator(this));
 }
@@ -299,19 +302,20 @@ bool CadastroTransportadora::viewRegister() {
 }
 
 void CadastroTransportadora::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Transportadora cadastrada com sucesso!");
+  QMessageBox::information(this, "Atenção!",
+                           isUpdate ? "Cadastro atualizado!" : "Transportadora cadastrada com sucesso!");
 }
 
 void CadastroTransportadora::on_tableEndereco_entered(const QModelIndex &) {
   ui->tableEndereco->resizeColumnsToContents();
 }
 
-bool CadastroTransportadora::cadastrarVeiculo(const bool &isUpdate) {
+bool CadastroTransportadora::cadastrarVeiculo(const bool isUpdate) {
   for (auto const &line : ui->groupBoxVeiculo->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
 
-  int row = isUpdate ? mapperVeiculo.currentIndex() : modelVeiculo.rowCount();
+  const int row = isUpdate ? mapperVeiculo.currentIndex() : modelVeiculo.rowCount();
 
   if (not isUpdate) modelVeiculo.insertRow(row);
 
@@ -322,7 +326,6 @@ bool CadastroTransportadora::cadastrarVeiculo(const bool &isUpdate) {
     if (not modelVeiculo.setData(row, "placa", ui->lineEditPlaca->text())) return false;
   }
 
-  // TODO: validator
   if (not modelVeiculo.setData(row, "ufPlaca", ui->lineEditUfPlaca->text())) return false;
 
   ui->tableVeiculo->resizeColumnsToContents();

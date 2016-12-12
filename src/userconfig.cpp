@@ -25,6 +25,7 @@ UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig
   ui->lineEditOrcamentosFolder->setText(UserSession::settings("User/OrcamentosFolder").toString());
   ui->lineEditVendasFolder->setText(UserSession::settings("User/VendasFolder").toString());
   ui->lineEditComprasFolder->setText(UserSession::settings("User/ComprasFolder").toString());
+  ui->lineEditEntregasFolder->setText(UserSession::settings("User/EntregasFolder").toString());
 
   if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
     ui->groupBoxAcbr->hide();
@@ -40,7 +41,7 @@ UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig
 UserConfig::~UserConfig() { delete ui; }
 
 void UserConfig::on_pushButtonOrcamentosFolder_clicked() {
-  QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
 
   if (path.isEmpty()) return;
 
@@ -48,7 +49,7 @@ void UserConfig::on_pushButtonOrcamentosFolder_clicked() {
 }
 
 void UserConfig::on_pushButtonACBrEntrada_clicked() {
-  QString path = QFileDialog::getExistingDirectory(this, "Pasta Entrada ACBr", QDir::currentPath());
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta Entrada ACBr", QDir::currentPath());
 
   if (path.isEmpty()) return;
 
@@ -56,7 +57,7 @@ void UserConfig::on_pushButtonACBrEntrada_clicked() {
 }
 
 void UserConfig::on_pushButtonACBrSaida_clicked() {
-  QString path = QFileDialog::getExistingDirectory(this, "Pasta Saída ACBr", QDir::currentPath());
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta Saída ACBr", QDir::currentPath());
 
   if (path.isEmpty()) return;
 
@@ -64,7 +65,7 @@ void UserConfig::on_pushButtonACBrSaida_clicked() {
 }
 
 void UserConfig::on_pushButtonACBrXML_clicked() {
-  QString path = QFileDialog::getExistingDirectory(this, "Pasta XML ACBr", QDir::currentPath());
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta XML ACBr", QDir::currentPath());
 
   if (path.isEmpty()) return;
 
@@ -86,6 +87,7 @@ void UserConfig::on_pushButtonSalvar_clicked() {
   UserSession::setSettings("User/OrcamentosFolder", ui->lineEditOrcamentosFolder->text());
   UserSession::setSettings("User/VendasFolder", ui->lineEditVendasFolder->text());
   UserSession::setSettings("User/ComprasFolder", ui->lineEditComprasFolder->text());
+  UserSession::setSettings("User/EntregasFolder", ui->lineEditEntregasFolder->text());
 
   QDialog::accept();
 
@@ -100,7 +102,7 @@ void UserConfig::on_pushButtonAlterarDados_clicked() {
 }
 
 void UserConfig::on_pushButtonVendasFolder_clicked() {
-  QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
 
   if (path.isEmpty()) return;
 
@@ -108,9 +110,17 @@ void UserConfig::on_pushButtonVendasFolder_clicked() {
 }
 
 void UserConfig::on_pushButtonComprasFolder_clicked() {
-  QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
 
   if (path.isEmpty()) return;
 
   ui->lineEditComprasFolder->setText(path);
+}
+
+void UserConfig::on_pushButtonEntregasFolder_clicked() {
+  const QString path = QFileDialog::getExistingDirectory(this, "Pasta PDF/Excel", QDir::currentPath());
+
+  if (path.isEmpty()) return;
+
+  ui->lineEditEntregasFolder->setText(path);
 }

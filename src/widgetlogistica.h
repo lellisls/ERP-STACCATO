@@ -22,12 +22,12 @@ signals:
 
 private slots:
   void on_tableForn_activated(const QModelIndex &index);
-  void on_tabWidgetLogistica_currentChanged(const int &);
+  void on_tabWidgetLogistica_currentChanged(const int);
 
 private:
   // attributes
-  Ui::WidgetLogistica *ui;
   SqlTableModel model;
+  Ui::WidgetLogistica *ui;
   // methods
   void setupTables();
 };

@@ -22,13 +22,13 @@ private slots:
 
 private:
   // attributes
-  Ui::SendMail *ui;
+  const QString fornecedor;
   QProgressDialog *progress;
   QStringList files;
-  QString fornecedor;
+  Ui::SendMail *ui;
   // methods
-  void successStatus();
   void failureStatus(const QString &status);
+  void successStatus();
 };
 
 #endif // SENDMAIL_H

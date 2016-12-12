@@ -12,7 +12,7 @@ class LoginDialog : public QDialog {
 
 public:
   enum Tipo { Login, Autorizacao };
-  explicit LoginDialog(Tipo tipo = Login, QWidget *parent = 0);
+  explicit LoginDialog(const Tipo tipo = Login, QWidget *parent = 0);
   ~LoginDialog();
 
 private slots:
@@ -23,8 +23,8 @@ private slots:
 
 private:
   // attributes
+  const Tipo tipo;
   Ui::LoginDialog *ui;
-  Tipo tipo;
   // methods
   bool dbConnect();
   void storeSelection();

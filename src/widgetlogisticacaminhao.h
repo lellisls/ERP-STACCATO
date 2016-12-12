@@ -21,11 +21,13 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
+  void on_table_clicked(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
-  SqlTableModel model;
+  SqlTableModel modelCaminhao;
+  SqlTableModel modelCarga;
   Ui::WidgetLogisticaCaminhao *ui;
   // methods
   void setupTables();

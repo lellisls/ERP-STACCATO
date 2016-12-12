@@ -6,7 +6,7 @@
 #include "comboboxdelegate.h"
 #include "usersession.h"
 
-ComboBoxDelegate::ComboBoxDelegate(Tipo tipo, QObject *parent) : QStyledItemDelegate(parent), tipo(tipo) {}
+ComboBoxDelegate::ComboBoxDelegate(const Tipo tipo, QObject *parent) : QStyledItemDelegate(parent), tipo(tipo) {}
 
 ComboBoxDelegate::~ComboBoxDelegate() {}
 

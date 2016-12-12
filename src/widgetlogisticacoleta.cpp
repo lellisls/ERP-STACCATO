@@ -24,8 +24,6 @@ bool WidgetLogisticaColeta::updateTables() {
     return false;
   }
 
-  for (int row = 0; row < model.rowCount(); ++row) ui->table->openPersistentEditor(row, "selecionado");
-
   ui->table->resizeColumnsToContents();
 
   return true;
@@ -34,7 +32,9 @@ bool WidgetLogisticaColeta::updateTables() {
 void WidgetLogisticaColeta::tableFornLogistica_activated(const QString &fornecedor) {
   this->fornecedor = fornecedor;
 
-  model.setFilter("fornecedor = '" + fornecedor + "' ORDER BY prazoEntrega");
+  ui->lineEditBusca->clear();
+
+  model.setFilter("fornecedor = '" + fornecedor + "'");
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!",
@@ -87,7 +87,7 @@ void WidgetLogisticaColeta::on_pushButtonMarcarColetado_clicked() {
 }
 
 bool WidgetLogisticaColeta::cadastrar() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
@@ -96,12 +96,12 @@ bool WidgetLogisticaColeta::cadastrar() {
 
   const QString filtro = model.filter();
 
-  InputDialog *inputDlg = new InputDialog(InputDialog::Coleta, this);
+  InputDialog inputDlg(InputDialog::Coleta);
 
-  if (inputDlg->exec() != InputDialog::Accepted) return false;
+  if (inputDlg.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataColeta = inputDlg->getDate();
-  const QDateTime dataPrevReceb = inputDlg->getNextDate();
+  const QDateTime dataColeta = inputDlg.getDate();
+  const QDateTime dataPrevReceb = inputDlg.getNextDate();
 
   model.setFilter(filtro);
   model.select();
@@ -109,7 +109,6 @@ bool WidgetLogisticaColeta::cadastrar() {
   QSqlQuery query;
 
   for (auto const &item : list) {
-
     query.prepare("UPDATE estoque SET status = 'EM RECEBIMENTO' WHERE idEstoque = :idEstoque");
     query.bindValue(":idEstoque", model.data(item.row(), "idEstoque"));
 
@@ -132,7 +131,6 @@ bool WidgetLogisticaColeta::cadastrar() {
     }
 
     // salvar status na venda
-
     query.prepare("UPDATE venda_has_produto SET status = 'EM RECEBIMENTO', dataRealColeta = :dataRealColeta, "
                   "dataPrevReceb = :dataPrevReceb WHERE idCompra IN (SELECT idCompra FROM estoque_has_compra WHERE "
                   "idEstoque = :idEstoque) AND codComercial = :codComercial");
@@ -146,22 +144,23 @@ bool WidgetLogisticaColeta::cadastrar() {
       return false;
     }
 
-    if (not query.exec("CALL update_venda_status()")) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
-      return false;
-    }
     //
+  }
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return false;
   }
 
   return true;
 }
 
-void WidgetLogisticaColeta::on_checkBoxMarcarTodos_clicked(const bool &) { ui->table->selectAll(); }
+void WidgetLogisticaColeta::on_checkBoxMarcarTodos_clicked(const bool) { ui->table->selectAll(); }
 
 void WidgetLogisticaColeta::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
-void WidgetLogisticaColeta::on_lineEditBuscaColeta_textChanged(const QString &) {
-  const QString textoBusca = ui->lineEditBuscaColeta->text();
+void WidgetLogisticaColeta::on_lineEditBusca_textChanged(const QString &) {
+  const QString textoBusca = ui->lineEditBusca->text();
 
   model.setFilter("fornecedor = '" + fornecedor + "' AND (numeroNFe LIKE '%" + textoBusca + "%' OR produto LIKE '%" +
                   textoBusca + "%' OR idVenda LIKE '%" + textoBusca + "%' OR ordemCompra LIKE '%" + textoBusca + "%')");
@@ -192,11 +191,11 @@ bool WidgetLogisticaColeta::reagendar() {
     return false;
   }
 
-  InputDialog *input = new InputDialog(InputDialog::AgendarColeta, this);
+  InputDialog input(InputDialog::AgendarColeta);
 
-  if (input->exec() != InputDialog::Accepted) return false;
+  if (input.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataPrevColeta = input->getNextDate();
+  const QDateTime dataPrevColeta = input.getNextDate();
 
   for (const auto &item : list) {
     const int idEstoque = model.data(item.row(), "idEstoque").toInt();
@@ -238,6 +237,3 @@ void WidgetLogisticaColeta::on_table_doubleClicked(const QModelIndex &index) {
   Venda *venda = new Venda(this);
   venda->viewRegisterById(idVenda);
 }
-
-// TODO: verificar como lidar com os estoques que nao possuem venda atrelada, como marcar datas previstas?
-// TODO: algumas caixas com valor negativo (verificar como elas estão entrando no estoque)

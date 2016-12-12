@@ -181,7 +181,7 @@ void DownloadDialog::updateProgress(qint64 received, qint64 total) {
       } else if (_time_remaining > 60) {
         _time_remaining /= 60;
         _time_string = tr("Por volta de %1 minutos").arg(int(_time_remaining + 0.5));
-      } else if (_time_remaining <= 60)
+      } else
         _time_string = tr("%1 segundos").arg(int(_time_remaining + 0.5));
 
       ui->timeLabel->setText(tr("Tempo restante") + ": " + _time_string);

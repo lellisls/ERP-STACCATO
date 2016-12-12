@@ -29,11 +29,11 @@ private slots:
 
 private:
   // attributes
-  Ui::WidgetRelatorio *ui;
-  SqlTableModel modelRelatorio;
-  SqlTableModel modelTotalVendedor;
-  SqlTableModel modelTotalLoja;
   SqlTableModel modelOrcamento;
+  SqlTableModel modelRelatorio;
+  SqlTableModel modelTotalLoja;
+  SqlTableModel modelTotalVendedor;
+  Ui::WidgetRelatorio *ui;
   // methods
   bool setupTables();
   void setFilterTotaisVendedor();

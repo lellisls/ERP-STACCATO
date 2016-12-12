@@ -83,7 +83,7 @@ color: rgb(0, 0, 0);</string>
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 128, 0);
+        <string notr="true">background-color: rgb(0, 190, 0);
 color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">

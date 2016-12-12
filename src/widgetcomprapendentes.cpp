@@ -17,6 +17,7 @@ WidgetCompraPendentes::WidgetCompraPendentes(QWidget *parent) : QWidget(parent),
   ui->setupUi(this);
 
   ui->itemBoxProduto->setSearchDialog(SearchDialog::produto(this));
+  ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = FALSE");
 
   connect(ui->itemBoxProduto, &QLineEdit::textChanged, this, &WidgetCompraPendentes::setarDadosAvulso);
 
@@ -29,7 +30,7 @@ void WidgetCompraPendentes::setarDadosAvulso() {
   if (ui->itemBoxProduto->value().isNull()) {
     ui->doubleSpinBoxQuantAvulso->setValue(0);
     ui->doubleSpinBoxQuantAvulsoCaixas->setValue(0);
-    ui->lineEditUn->clear();
+    ui->doubleSpinBoxQuantAvulso->setSuffix("");
 
     return;
   }
@@ -51,17 +52,18 @@ void WidgetCompraPendentes::setarDadosAvulso() {
   ui->doubleSpinBoxQuantAvulso->setValue(0);
   ui->doubleSpinBoxQuantAvulsoCaixas->setValue(0);
 
-  ui->lineEditUn->setText(un);
+  ui->doubleSpinBoxQuantAvulso->setSuffix(" " + un);
 }
 
 void WidgetCompraPendentes::makeConnections() {
-  connect(ui->checkBoxFiltroPendentes, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroIniciados, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroCompra, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroFaturamento, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroColeta, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroRecebimento, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
-  connect(ui->checkBoxFiltroEstoque, &QAbstractButton::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroPendentes, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroIniciados, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroCompra, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroFaturamento, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroColeta, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroRecebimento, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroEstoque, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
+  connect(ui->checkBoxFiltroQuebra, &QCheckBox::toggled, this, &WidgetCompraPendentes::montaFiltro);
   connect(ui->lineEditBusca, &QLineEdit::textChanged, this, &WidgetCompraPendentes::montaFiltro);
 }
 
@@ -124,7 +126,7 @@ void WidgetCompraPendentes::on_table_activated(const QModelIndex &index) {
   produtos->viewProduto(codComercial, idVenda);
 }
 
-void WidgetCompraPendentes::on_groupBoxStatus_toggled(const bool &enabled) {
+void WidgetCompraPendentes::on_groupBoxStatus_toggled(bool enabled) {
   for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
     child->setChecked(enabled);
@@ -172,11 +174,11 @@ void WidgetCompraPendentes::on_pushButtonComprarAvulso_clicked() {
     return;
   }
 
-  InputDialog *inputDlg = new InputDialog(InputDialog::Carrinho, this);
+  InputDialog inputDlg(InputDialog::Carrinho);
 
-  if (inputDlg->exec() != InputDialog::Accepted) return;
+  if (inputDlg.exec() != InputDialog::Accepted) return;
 
-  const QDateTime dataPrevista = inputDlg->getNextDate();
+  const QDateTime dataPrevista = inputDlg.getNextDate();
 
   insere(dataPrevista) ? QMessageBox::information(this, "Aviso!", "Produto enviado para compras com sucesso!")
                        : QMessageBox::critical(this, "Erro!", "Erro ao enviar produto para compras!");
@@ -226,11 +228,11 @@ bool WidgetCompraPendentes::insere(const QDateTime &dataPrevista) {
   return true;
 }
 
-void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulsoCaixas_valueChanged(const double &value) {
+void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulsoCaixas_valueChanged(const double value) {
   ui->doubleSpinBoxQuantAvulso->setValue(value * ui->doubleSpinBoxQuantAvulso->singleStep());
 }
 
-void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const double &value) {
+void WidgetCompraPendentes::on_doubleSpinBoxQuantAvulso_valueChanged(const double value) {
   ui->doubleSpinBoxQuantAvulsoCaixas->setValue(value / ui->doubleSpinBoxQuantAvulso->singleStep());
 }
 
@@ -244,8 +246,8 @@ void WidgetCompraPendentes::on_pushButtonExcel_clicked() {
     return;
   }
 
-  Excel *excel = new Excel(model.data(list.first().row(), "idVenda").toString(), this);
-  excel->gerarExcel();
+  Excel excel(model.data(list.first().row(), "idVenda").toString());
+  excel.gerarExcel();
 }
 
 void WidgetCompraPendentes::on_pushButtonPDF_clicked() {
@@ -256,6 +258,6 @@ void WidgetCompraPendentes::on_pushButtonPDF_clicked() {
     return;
   }
 
-  Impressao *impressao = new Impressao(model.data(list.first().row(), "idVenda").toString(), this);
-  impressao->print();
+  Impressao impressao(model.data(list.first().row(), "idVenda").toString());
+  impressao.print();
 }

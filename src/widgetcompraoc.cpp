@@ -1,4 +1,5 @@
 #include <QDateTime>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
 #include <QMessageBox>
@@ -7,6 +8,8 @@
 #include <QTextStream>
 #include <QUrl>
 
+#include "doubledelegate.h"
+#include "reaisdelegate.h"
 #include "ui_widgetcompraoc.h"
 #include "usersession.h"
 #include "widgetcompraoc.h"
@@ -44,6 +47,23 @@ void WidgetCompraOC::setupTables() {
   modelProduto.setTable("pedido_fornecedor_has_produto");
   modelProduto.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+  modelProduto.setHeaderData("status", "Status");
+  modelProduto.setHeaderData("idVenda", "Venda");
+  modelProduto.setHeaderData("fornecedor", "Fornecedor");
+  modelProduto.setHeaderData("descricao", "Produto");
+  modelProduto.setHeaderData("colecao", "Coleção");
+  modelProduto.setHeaderData("codComercial", "Cód. Com.");
+  modelProduto.setHeaderData("quant", "Quant.");
+  modelProduto.setHeaderData("un", "Un.");
+  modelProduto.setHeaderData("un2", "Un2.");
+  modelProduto.setHeaderData("caixas", "Cx.");
+  modelProduto.setHeaderData("prcUnitario", "R$ Unit.");
+  modelProduto.setHeaderData("preco", "R$");
+  modelProduto.setHeaderData("kgcx", "Kg./Cx.");
+  modelProduto.setHeaderData("formComercial", "Form. Com.");
+  modelProduto.setHeaderData("codBarras", "Cód. Barras");
+  modelProduto.setHeaderData("obs", "Obs.");
+
   modelProduto.setFilter("0");
 
   if (not modelProduto.select()) {
@@ -51,6 +71,10 @@ void WidgetCompraOC::setupTables() {
   }
 
   ui->tableProduto->setModel(&modelProduto);
+  ui->tableProduto->setItemDelegateForColumn("quant", new DoubleDelegate(this));
+  ui->tableProduto->setItemDelegateForColumn("prcUnitario", new ReaisDelegate(this));
+  ui->tableProduto->setItemDelegateForColumn("preco", new ReaisDelegate(this));
+  ui->tableProduto->setItemDelegateForColumn("kgcx", new DoubleDelegate(this));
   ui->tableProduto->hideColumn("idPedido");
   ui->tableProduto->hideColumn("selecionado");
   ui->tableProduto->hideColumn("statusFinanceiro");

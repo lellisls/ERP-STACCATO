@@ -7,13 +7,14 @@
 class Excel {
 
 public:
-  Excel(QString id, QWidget *parent = 0);
-  bool gerarExcel(const int oc = 0, const bool isRepresentacao = false, const QString representacao = QString());
+  Excel(const QString &id, QWidget *parent = 0);
+  bool gerarExcel(const int oc = 0, const bool isRepresentacao = false, const QString &representacao = QString());
   QString getFileName() const;
 
 private:
   // attributes
   enum Type { Orcamento, Venda } type;
+  const QString id;
   QSqlQuery query;
   QSqlQuery queryCliente;
   QSqlQuery queryEndEnt;
@@ -24,7 +25,6 @@ private:
   QSqlQuery queryProfissional;
   QSqlQuery queryVendedor;
   QString fileName;
-  QString id;
   QWidget *parent;
   // methods
   bool setQuerys();

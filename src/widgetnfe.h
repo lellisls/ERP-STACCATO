@@ -19,7 +19,7 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
-  void on_tabWidgetNfe_currentChanged(const int &);
+  void on_tabWidgetNfe_currentChanged(const int);
   void on_pushButtonExibirXML_clicked();
 
 private:

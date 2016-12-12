@@ -1,11 +1,14 @@
 #include <QMessageBox>
 #include <QSqlError>
 
-#include "src/baixaorcamento.h"
+#include "baixaorcamento.h"
 #include "ui_baixaorcamento.h"
 
-BaixaOrcamento::BaixaOrcamento(QString idOrcamento, QWidget *parent) : QDialog(parent), ui(new Ui::BaixaOrcamento) {
+BaixaOrcamento::BaixaOrcamento(const QString &idOrcamento, QWidget *parent)
+    : QDialog(parent), ui(new Ui::BaixaOrcamento) {
   ui->setupUi(this);
+
+  setAttribute(Qt::WA_DeleteOnClose);
 
   model.setTable("orcamento");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);

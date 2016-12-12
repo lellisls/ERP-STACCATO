@@ -14,7 +14,7 @@ void ValidadeDialog::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void ValidadeDialog::on_spinBox_valueChanged(const int &dias) {
+void ValidadeDialog::on_spinBox_valueChanged(const int dias) {
   ui->dateEdit->setDate(QDate::currentDate().addDays(dias));
 }
 

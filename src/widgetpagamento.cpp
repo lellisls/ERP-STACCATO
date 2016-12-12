@@ -149,7 +149,7 @@ void WidgetPagamento::on_pushButtonAdiantarRecebimento_clicked() {
   adiantar->show();
 }
 
-void WidgetPagamento::on_doubleSpinBoxDe_valueChanged(double value) { ui->doubleSpinBoxAte->setValue(value); }
+void WidgetPagamento::on_doubleSpinBoxDe_valueChanged(const double value) { ui->doubleSpinBoxAte->setValue(value); }
 
 void WidgetPagamento::on_dateEditDe_dateChanged(const QDate &date) { ui->dateEditAte->setDate(date); }
 
@@ -164,6 +164,6 @@ void WidgetPagamento::setTipo(const Tipo &value) {
   if (tipo == Receber) ui->radioButtonPago->hide();
 }
 
-void WidgetPagamento::on_groupBoxData_toggled(const bool &enabled) {
+void WidgetPagamento::on_groupBoxData_toggled(const bool enabled) {
   for (auto const &child : ui->groupBoxData->findChildren<QDateEdit *>()) child->setEnabled(enabled);
 }

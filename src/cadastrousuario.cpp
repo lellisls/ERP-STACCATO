@@ -13,6 +13,8 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
     : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   //  for (auto const *line : findChildren<QLineEdit *>()) {
   //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
   //  }
@@ -248,7 +250,9 @@ bool CadastroUsuario::save() {
   return true;
 }
 
-void CadastroUsuario::successMessage() { QMessageBox::information(this, "Aviso!", "Usuário atualizado com sucesso!"); }
+void CadastroUsuario::successMessage() {
+  QMessageBox::information(this, "Aviso!", isUpdate ? "Cadastro atualizado!" : "Usuário cadastrado com sucesso!");
+}
 
 void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
   QSqlQuery query;

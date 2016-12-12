@@ -40,15 +40,14 @@ bool WidgetReceberResumo::updateTables() {
   if (modelVencer.tableName().isEmpty()) setupTables();
 
   if (not modelVencer.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela view_a_receber_vencer: " + modelVencer.lastError().text());
+    emit errorSignal("Erro lendo tabela view_a_receber_vencer: " + modelVencer.lastError().text());
     return false;
   }
 
   ui->tableVencer->resizeColumnsToContents();
 
   if (not modelVencidos.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela view_a_receber_vencidos: " + modelVencidos.lastError().text());
+    emit errorSignal("Erro lendo tabela view_a_receber_vencidos: " + modelVencidos.lastError().text());
     return false;
   }
 

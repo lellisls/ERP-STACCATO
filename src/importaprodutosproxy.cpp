@@ -3,19 +3,20 @@
 #include "importaprodutosproxy.h"
 
 ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), column(model->fieldIndex("descontinuado")) {
+    : QIdentityProxyModel(parent), descontinuado(model->fieldIndex("descontinuado")) {
   setSourceModel(model);
 }
 
 ImportaProdutosProxy::~ImportaProdutosProxy() {}
 
-QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, int role) const {
+QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
 
     // verifica se está descontinuado
-    const int value = QIdentityProxyModel::data(index(proxyIndex.row(), column), Qt::DisplayRole).toInt();
+    const int descontinuado =
+        QIdentityProxyModel::data(index(proxyIndex.row(), this->descontinuado), Qt::DisplayRole).toInt();
 
-    if (value == 1) return QBrush(Qt::cyan);
+    if (descontinuado == 1) return QBrush(Qt::cyan);
 
     // verifica cada campo
     for (int column = 0, columns = columnCount(); column < columns; ++column) {

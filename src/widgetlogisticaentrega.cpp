@@ -273,11 +273,11 @@ bool WidgetLogisticaEntrega::processRows() {
     return false;
   }
 
-  InputDialog *inputDlg = new InputDialog(InputDialog::AgendarEntrega, this);
+  InputDialog inputDlg(InputDialog::AgendarEntrega);
 
-  if (inputDlg->exec() != InputDialog::Accepted) return false;
+  if (inputDlg.exec() != InputDialog::Accepted) return false;
 
-  const QDateTime dataPrevEnt = inputDlg->getNextDate();
+  const QDateTime dataPrevEnt = inputDlg.getNextDate();
 
   QSqlQuery query;
 
@@ -300,15 +300,10 @@ bool WidgetLogisticaEntrega::processRows() {
       return false;
     }
 
-    const QString idVenda = query.value("idVenda").toString();
-    const QString codComercial = query.value("codComercial").toString();
-
-    // TODO: use idVendaProduto instead of idVenda/codComercial (that may select more than 1 row)
     query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGA AGEND.', dataPrevEnt = :dataPrevEnt "
-                  "WHERE idVenda = :idVenda AND codComercial = :codComercial");
+                  "WHERE idVendaProduto = :idVendaProduto");
     query.bindValue(":dataPrevEnt", dataPrevEnt);
-    query.bindValue(":idVenda", idVenda);
-    query.bindValue(":codComercial", codComercial);
+    query.bindValue(":idVenda", idVendaProduto);
 
     if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
@@ -411,11 +406,16 @@ void WidgetLogisticaEntrega::on_pushButtonRemoverProduto_clicked() {
 
 void WidgetLogisticaEntrega::on_itemBoxVeiculo_textChanged(const QString &) {
   QSqlQuery query;
-  query.prepare("SELECT * FROM transportadora_has_veiculo WHERE idVeiculo = :idVeiculo");
+  query.prepare("SELECT capacidade FROM transportadora_has_veiculo WHERE idVeiculo = :idVeiculo");
   query.bindValue(":idVeiculo", ui->itemBoxVeiculo->value());
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando dados veiculo: " + query.lastError().text());
+    return;
+  }
+
+  if (not modelTransp.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
     return;
   }
 

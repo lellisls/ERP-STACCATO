@@ -18,22 +18,22 @@ public:
 
 private slots:
   void montarFluxoCaixa();
-  void on_checkBoxFreteManual_clicked(const bool &checked);
+  void on_checkBoxFreteManual_clicked(const bool checked);
   void on_comboBoxPgt1_currentTextChanged(const QString &text);
   void on_comboBoxPgt2_currentTextChanged(const QString &text);
   void on_comboBoxPgt3_currentTextChanged(const QString &text);
   void on_comboBoxPgt4_currentTextChanged(const QString &text);
   void on_comboBoxPgt5_currentTextChanged(const QString &text);
   void on_dateTimeEdit_dateTimeChanged(const QDateTime &);
-  void on_doubleSpinBoxDescontoGlobal_valueChanged(const double &);
-  void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double &);
-  void on_doubleSpinBoxFrete_valueChanged(const double &);
+  void on_doubleSpinBoxDescontoGlobal_valueChanged(const double);
+  void on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double);
+  void on_doubleSpinBoxFrete_valueChanged(const double);
   void on_doubleSpinBoxPgt1_valueChanged(double);
   void on_doubleSpinBoxPgt2_valueChanged(double);
   void on_doubleSpinBoxPgt3_valueChanged(double);
   void on_doubleSpinBoxPgt4_valueChanged(double);
   void on_doubleSpinBoxPgt5_valueChanged(double);
-  void on_doubleSpinBoxTotal_valueChanged(const double &);
+  void on_doubleSpinBoxTotal_valueChanged(const double);
   void on_pushButtonCadastrarPedido_clicked();
   void on_pushButtonCancelamento_clicked();
   void on_pushButtonCorrigirFluxo_clicked();
@@ -53,21 +53,22 @@ signals:
 
 private:
   // attributes
-  Ui::Venda *ui;
+  bool financeiro = false;
   bool isBlockedGlobal = false;
   bool isBlockedReais = false;
   bool isBlockedTotal = false;
-  bool financeiro = false;
   double minimoFrete;
   double porcFrete;
   QString m_idOrcamento;
   SqlTableModel modelFluxoCaixa;
   SqlTableModel modelFluxoCaixa2;
   SqlTableModel modelItem;
+  Ui::Venda *ui;
   // methods
   bool atualizarCredito();
   bool cadastrar() override;
   bool cancelamento();
+  bool financeiroSalvar();
   bool generateId();
   virtual bool save() override;
   virtual bool savingProcedures() override;
@@ -83,10 +84,9 @@ private:
   void calculoSpinBox2();
   void calculoSpinBox3();
   void calculoSpinBox4();
+  void makeConnections();
   void resetarPagamentos();
   void setupTables();
-  void makeConnections();
-  bool financeiroSalvar();
 };
 
 #endif // VENDA_H

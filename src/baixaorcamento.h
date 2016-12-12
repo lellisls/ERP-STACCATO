@@ -13,7 +13,7 @@ class BaixaOrcamento : public QDialog {
   Q_OBJECT
 
 public:
-  explicit BaixaOrcamento(QString idOrcamento, QWidget *parent = 0);
+  explicit BaixaOrcamento(const QString &idOrcamento, QWidget *parent = 0);
   ~BaixaOrcamento();
 
 private slots:
@@ -21,8 +21,8 @@ private slots:
   void on_pushButtonSalvar_clicked();
 
 private:
-  Ui::BaixaOrcamento *ui;
   SqlTableModel model;
+  Ui::BaixaOrcamento *ui;
 };
 
 #endif // BAIXAORCAMENTO_H

@@ -269,8 +269,9 @@ bool XML::mostrarNoSqlModel(SqlTableModel &externalModel) {
 }
 
 bool XML::inserirItemSql(SqlTableModel &externalModel) {
-  auto list = externalModel.match(externalModel.index(0, externalModel.fieldIndex("codComercial")), Qt::DisplayRole,
-                                  codProd, -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
+  const auto list =
+      externalModel.match(externalModel.index(0, externalModel.fieldIndex("codComercial")), Qt::DisplayRole, codProd,
+                          -1, Qt::MatchFlags(Qt::MatchFixedString | Qt::MatchWrap));
 
   for (auto const &item : list) {
     if (externalModel.data(item.row(), "quant").toDouble() < 0) continue;
@@ -282,9 +283,9 @@ bool XML::inserirItemSql(SqlTableModel &externalModel) {
     msgBox.setButtonText(QMessageBox::No, "Não");
 
     if (msgBox.exec() == QMessageBox::Yes) {
-      int row = item.row();
+      const int row = item.row();
 
-      double newQuant = quant + externalModel.data(row, "quant").toDouble();
+      const double newQuant = quant + externalModel.data(row, "quant").toDouble();
 
       if (not externalModel.setData(row, "quant", newQuant)) return false;
 
@@ -307,7 +308,7 @@ bool XML::inserirItemSql(SqlTableModel &externalModel) {
     }
   }
 
-  int row = externalModel.rowCount();
+  const int row = externalModel.rowCount();
 
   if (not externalModel.insertRow(row)) {
     QMessageBox::critical(0, "Erro!", "Erro inserindo linha na tabela: " + externalModel.lastError().text());

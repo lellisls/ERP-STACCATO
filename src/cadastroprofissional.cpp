@@ -12,9 +12,11 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
     : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  setAttribute(Qt::WA_DeleteOnClose);
+
+  //  for (auto const *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
 
   setWindowModality(Qt::NonModal);
 
@@ -24,6 +26,7 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   newRegister();
 
   ui->itemBoxVendedor->setSearchDialog(SearchDialog::vendedor(this));
+  ui->itemBoxLoja->setSearchDialog(SearchDialog::loja(this));
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->tabWidget->setTabEnabled(1, false);
@@ -58,6 +61,7 @@ void CadastroProfissional::setupUi() {
 
 void CadastroProfissional::setupMapper() {
   addMapping(ui->itemBoxVendedor, "idUsuarioRel", "value");
+  addMapping(ui->itemBoxLoja, "idLoja", "value");
   addMapping(ui->comboBoxTipo, "tipoProf");
   addMapping(ui->lineEditAgencia, "agencia");
   addMapping(ui->lineEditBanco, "banco");
@@ -84,7 +88,6 @@ void CadastroProfissional::setupMapper() {
   addMapping(ui->lineEditTel_Com, "telCom");
   addMapping(ui->lineEditTel_Res, "tel");
   addMapping(ui->doubleSpinBoxComissao, "comissao");
-  //  addMapping(ui->checkBoxPoupanca, "poupanca");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
@@ -165,6 +168,7 @@ bool CadastroProfissional::savingProcedures() {
   if (not setData("pfpj", tipoPFPJ)) return false;
   if (not setData("tipoProf", ui->comboBoxTipo->currentText())) return false;
   if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
+  if (not setData("idLoja", ui->itemBoxLoja->value())) return false;
   if (not setData("comissao", ui->doubleSpinBoxComissao->value())) return false;
   // Dados bancários
   if (not setData("banco", ui->lineEditBanco->text())) return false;
@@ -234,7 +238,7 @@ void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
       validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
-bool CadastroProfissional::cadastrarEndereco(const bool &isUpdate) {
+bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
   for (auto const &line : ui->groupBoxEndereco->findChildren<QLineEdit *>()) {
     if (not verifyRequiredField(line)) return false;
   }
@@ -309,7 +313,7 @@ void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text)
                                                                                          : "color: rgb(255, 0, 0)");
 }
 
-void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool &checked) {
+void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool checked) {
   modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() +
                      (checked ? "" : " AND desativado = FALSE"));
 
@@ -339,7 +343,7 @@ void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
   }
 }
 
-void CadastroProfissional::on_radioButtonPF_toggled(const bool &checked) {
+void CadastroProfissional::on_radioButtonPF_toggled(const bool checked) {
   tipoPFPJ = checked ? "PF" : "PJ";
   ui->lineEditCNPJ->setHidden(checked);
   ui->labelCNPJ->setHidden(checked);
@@ -363,14 +367,13 @@ void CadastroProfissional::on_lineEditCNPJBancario_textEdited(const QString &tex
 }
 
 void CadastroProfissional::successMessage() {
-  QMessageBox::information(this, "Atenção!", "Profissional cadastrado com sucesso!");
+  QMessageBox::information(this, "Atenção!",
+                           isUpdate ? "Cadastro atualizado!" : "Profissional cadastrado com sucesso!");
 }
 
 void CadastroProfissional::on_tableEndereco_entered(const QModelIndex &) {
   ui->tableEndereco->resizeColumnsToContents();
 }
-
-// TODO: colocar comissao e qual loja esta associado
 
 void CadastroProfissional::on_lineEditProfissional_editingFinished() {
   ui->lineEditNomeBancario->setText(ui->lineEditProfissional->text());

@@ -48,28 +48,30 @@ bool WidgetCompraFaturar::faturarCompra() {
     return false;
   }
 
-  QSqlQuery query;
-  query.prepare("SELECT representacao FROM fornecedor WHERE razaoSocial = :razaoSocial");
-  query.bindValue(":razaoSocial", model.data(list.first().row(), "Fornecedor"));
+  QStringList fornecedores;
+  QStringList idsCompra;
 
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro verificando se fornecedor é representação: " + query.lastError().text());
+  for (auto const &item : list) {
+    idsCompra << model.data(item.row(), "idCompra").toString();
+    fornecedores << model.data(item.row(), "fornecedor").toString();
+  }
+
+  const int size = fornecedores.size();
+
+  if (fornecedores.removeDuplicates() != size - 1) {
+    QMessageBox::critical(this, "Erro!", "Fornecedores diferentes!");
     return false;
   }
 
-  const bool representacao = query.value("representacao").toBool();
+  InputDialogProduto inputDlg(InputDialogProduto::Faturamento);
+  if (not inputDlg.setFilter(idsCompra)) return false;
+  if (inputDlg.exec() != InputDialogProduto::Accepted) return false;
 
-  QStringList idsCompra;
+  QSqlQuery query;
 
-  for (auto const &item : list) idsCompra << model.data(item.row(), "idCompra").toString();
+  const QDateTime dataReal = inputDlg.getDate();
 
-  InputDialogProduto *inputDlg = new InputDialogProduto(InputDialogProduto::Faturamento, this);
-  if (not inputDlg->setFilter(idsCompra)) return false;
-  if (inputDlg->exec() != InputDialogProduto::Accepted) return false;
-
-  const QDateTime dataReal = inputDlg->getDate();
-
-  if (representacao) {
+  if (ui->checkBoxRepresentacao->isChecked()) {
     for (auto const &idCompra : idsCompra) {
       query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'EM ENTREGA', dataRealFat = :dataRealFat WHERE "
                     "idCompra = :idCompra");
@@ -95,21 +97,6 @@ bool WidgetCompraFaturar::faturarCompra() {
     import->showMaximized();
 
     if (import->exec() != QDialog::Accepted) return false;
-  }
-
-  // salvar status na venda
-  for (auto const &idCompra : idsCompra) {
-    // TODO: importar nota nao sai atualizando indiscriminadamente, apenas os que forem quantUpd = 1. Atualizar na venda
-    // os pedidos que estiverem ok?
-    // como pedido_fornecedor agora tem idVendaProduto, usar ele para determinar quais linhas atualizar na venda_produto
-    query.prepare("UPDATE venda_has_produto SET dataRealFat = :dataRealFat WHERE idCompra = :idCompra");
-    query.bindValue(":dataRealFat", dataReal);
-    query.bindValue(":idCompra", idCompra);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + query.lastError().text());
-      return false;
-    }
   }
 
   if (not query.exec("CALL update_venda_status()")) {
@@ -144,7 +131,7 @@ void WidgetCompraFaturar::on_checkBoxRepresentacao_toggled(bool checked) {
 }
 
 bool WidgetCompraFaturar::cancelar() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");

@@ -11,6 +11,8 @@ CadastroProduto::CadastroProduto(QWidget *parent)
     : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
 
@@ -36,11 +38,15 @@ CadastroProduto::CadastroProduto(QWidget *parent)
     ui->pushButtonNovoCad->setVisible(false);
   }
 
+  ui->groupBox->hide();
+  ui->groupBox_4->hide();
+  ui->groupBox_5->hide();
+
   //  model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table
 
-  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  //  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
+  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  //  }
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }
@@ -172,7 +178,6 @@ bool CadastroProduto::savingProcedures() {
   if (not setData("comissao", ui->doubleSpinBoxComissao->value())) return false;
   if (not setData("cst", ui->comboBoxCST->currentText())) return false;
   if (not setData("custo", ui->doubleSpinBoxCusto->value())) return false;
-  if (not setData("descontinuado", ui->radioButtonDesc->isChecked())) return false;
   if (not setData("descricao", ui->lineEditDescricao->text())) return false;
   if (not setData("estoque", ui->doubleSpinBoxEstoque->value())) return false;
   if (not setData("formComercial", ui->lineEditFormComer->text())) return false;
@@ -195,6 +200,20 @@ bool CadastroProduto::savingProcedures() {
   if (not setData("un", ui->comboBoxUn->currentText())) return false;
   if (not setData("validade", ui->dateEditValidade->date())) return false;
 
+  QSqlQuery query;
+  query.prepare("SELECT representacao FROM fornecedor WHERE idFornecedor = :idFornecedor");
+  query.bindValue(":idFornecedor", ui->itemBoxFornecedor->value());
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro verificando se fornecedor é representacao: " + query.lastError().text());
+    return false;
+  }
+
+  const bool representacao = query.value("representacao").toBool();
+
+  if (not setData("representacao", representacao)) return false;
+  if (not setData("descontinuado", ui->dateEditValidade->date() < QDate::currentDate())) return false;
+
   return true;
 }
 
@@ -211,7 +230,7 @@ void CadastroProduto::on_doubleSpinBoxVenda_valueChanged(const double &) { calcu
 void CadastroProduto::on_doubleSpinBoxCusto_valueChanged(const double &) { calcularMarkup(); }
 
 void CadastroProduto::calcularMarkup() {
-  double markup = ((ui->doubleSpinBoxVenda->value() / ui->doubleSpinBoxCusto->value()) - 1.) * 100.;
+  const double markup = ((ui->doubleSpinBoxVenda->value() / ui->doubleSpinBoxCusto->value()) - 1.) * 100.;
   ui->doubleSpinBoxMarkup->setValue(markup);
 }
 
@@ -230,7 +249,7 @@ bool CadastroProduto::cadastrar() {
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(row, column);
     if (dado.type() == QVariant::String) {
       if (not model.setData(row, column, dado.toString().toUpper())) return false;
     }
@@ -242,7 +261,8 @@ bool CadastroProduto::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId =
+      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
 
   return true;
 }
@@ -266,8 +286,3 @@ bool CadastroProduto::save() {
 
   return true;
 }
-
-// TODO: ao cadastrar produtos de representacao marcar coluna representacao como 1
-// TODO: conectar estoque com produtos de estoque/promocao para fazer consumo automatico
-// TODO: marcar se esta descontinuado ou nao
-// TODO: madebene com 2 casas decimais na quant

@@ -39,7 +39,19 @@ InputDialogConfirmacao::InputDialogConfirmacao(const Type &type, QWidget *parent
     ui->lineEditRecebeu->hide();
   }
 
-  //  adjustSize();
+  if (type == Representacao) {
+    ui->labelProximoEvento->hide();
+    ui->dateEditProximo->hide();
+
+    ui->tableLogistica->hide();
+
+    ui->labelRecebeu->hide();
+    ui->lineEditRecebeu->hide();
+
+    ui->frameQuebrado->hide();
+  }
+
+  adjustSize();
 
   show();
 }
@@ -64,7 +76,17 @@ bool InputDialogConfirmacao::cadastrar() {
 }
 
 void InputDialogConfirmacao::on_pushButtonSalvar_clicked() {
-  if (not cadastrar()) return;
+  if (type == Recebimento and ui->lineEditRecebeu->text().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Faltou preencher quem recebeu!");
+    return;
+  }
+
+  if (type == Entrega and ui->lineEditEntregou->text().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Faltou preencher quem entregou!");
+    return;
+  }
+
+  if (type != Representacao and not cadastrar()) return;
 
   QDialog::accept();
   close();
@@ -80,7 +102,6 @@ void InputDialogConfirmacao::setupTables() {
   if (type == Recebimento) {
     model.setTable("estoque");
     model.setHeaderData("status", "Status");
-    model.setHeaderData("ordemCompra", "OC");
     model.setHeaderData("local", "Local");
     model.setHeaderData("fornecedor", "Fornecedor");
     model.setHeaderData("descricao", "Produto");
@@ -105,13 +126,15 @@ void InputDialogConfirmacao::setupTables() {
     model.setHeaderData("formComercial", "Form. Com.");
   }
 
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
-    return;
-  }
+  if (type != Representacao) {
+    if (not model.select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+      return;
+    }
 
-  ui->tableLogistica->setModel(&model);
+    ui->tableLogistica->setModel(&model);
+  }
 
   if (type == Recebimento) {
     ui->tableLogistica->hideColumn("idEstoque");
@@ -169,18 +192,14 @@ void InputDialogConfirmacao::setupTables() {
   }
 }
 
-bool InputDialogConfirmacao::setFilter(const QString &id) {
+bool InputDialogConfirmacao::setFilter(const QString &id) { // entrega
   if (id.isEmpty()) {
     model.setFilter("0");
     QMessageBox::critical(this, "Erro!", "IdsCompra vazio!");
     return false;
   }
 
-  QString filter;
-
-  //  if (type == Recebimento) filter = "idEstoque = " + ids.join(" OR idEstoque = ");
-  //  if (type == Entrega) filter = "idVenda = " + ids.join(" OR idVenda = ");
-  if (type == Entrega) filter = "idVenda = '" + id + "'";
+  const QString filter = "idVenda = '" + id + "'";
 
   if (filter.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Filtro vazio!");
@@ -202,18 +221,14 @@ bool InputDialogConfirmacao::setFilter(const QString &id) {
   return true;
 }
 
-bool InputDialogConfirmacao::setFilter(const QStringList &ids) {
+bool InputDialogConfirmacao::setFilter(const QStringList &ids) { // recebimento
   if (ids.isEmpty()) {
     model.setFilter("0");
     QMessageBox::critical(this, "Erro!", "IdsCompra vazio!");
     return false;
   }
 
-  QString filter;
-
-  // TODO: se esta funcao for usada apenas por Recebimento remover o Entrega
-  if (type == Recebimento) filter = "idEstoque = " + ids.join(" OR idEstoque = ");
-  if (type == Entrega) filter = "idVenda = " + ids.join(" OR idVenda = ");
+  const QString filter = "idEstoque = " + ids.join(" OR idEstoque = ");
 
   if (filter.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Filtro vazio!");
@@ -235,8 +250,8 @@ bool InputDialogConfirmacao::setFilter(const QStringList &ids) {
   return true;
 }
 
-void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // TODO: refactor this function
-  auto list = ui->tableLogistica->selectionModel()->selectedRows();
+void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // TODO: 2refactor this function
+  const auto list = ui->tableLogistica->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
@@ -323,6 +338,8 @@ void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // TODO: 
       // skip cols
       if (modelConsumo.fieldIndex("idConsumo") == col) continue;
       if (modelConsumo.fieldIndex("idVendaProduto") == col) continue;
+      if (modelConsumo.fieldIndex("created") == col) continue;
+      if (modelConsumo.fieldIndex("lastUpdated") == col) continue;
 
       if (not modelConsumo.setData(rowConsumo, col, modelConsumo.data(0, col))) {
         QMessageBox::critical(this, "Erro!", "Erro copiando no consumo: " + modelConsumo.lastError().text());
@@ -432,7 +449,7 @@ void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // TODO: 
         if (not modelVenda.setData(newRow, "parcial", parcialCopia)) return;
         if (not modelVenda.setData(newRow, "parcialDesc", parcialDescCopia)) return;
         if (not modelVenda.setData(newRow, "total", totalCopia)) return;
-        if (not modelVenda.setData(newRow, "status", "PENDENTE")) return;
+        if (not modelVenda.setData(newRow, "status", "QUEBRA")) return;
         if (not modelVenda.setData(newRow, "obs", "REPOSIÇÂO")) return;
 
         // ajustar a linha original e recalcular valores
@@ -572,7 +589,7 @@ void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // TODO: 
     if (not modelVenda.setData(newRow, "parcial", parcialCopia)) return;
     if (not modelVenda.setData(newRow, "parcialDesc", parcialDescCopia)) return;
     if (not modelVenda.setData(newRow, "total", totalCopia)) return;
-    if (not modelVenda.setData(newRow, "status", "PENDENTE")) return;
+    if (not modelVenda.setData(newRow, "status", "QUEBRA")) return;
     if (not modelVenda.setData(newRow, "obs", "REPOSIÇÂO")) return;
 
     // ajustar a linha original e recalcular valores
@@ -602,6 +619,4 @@ void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // TODO: 
   QMessageBox::information(this, "Aviso!", "Operação realizada com sucesso!");
 }
 
-// TODO: nao deixar salvar se nao preencher 'quem recebeu'
-// TODO: em vez de criar reposicao automatico perguntar para usuario se deseja criar reposicao, ou gerar credito etc
-// TODO: criar reposicao com status 'QUEBRA'
+// TODO: 2em vez de criar reposicao automatico perguntar para usuario se deseja criar reposicao, ou gerar credito etc

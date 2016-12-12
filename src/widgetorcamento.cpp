@@ -149,7 +149,7 @@ void WidgetOrcamento::montaFiltro() {
 void WidgetOrcamento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetOrcamento::on_pushButtonFollowup_clicked() {
-  auto list = ui->table->selectionModel()->selectedRows();
+  const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.size() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
@@ -160,14 +160,14 @@ void WidgetOrcamento::on_pushButtonFollowup_clicked() {
   followup->show();
 }
 
-void WidgetOrcamento::on_groupBoxStatus_toggled(const bool &enabled) {
+void WidgetOrcamento::on_groupBoxStatus_toggled(const bool enabled) {
   for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
     child->setEnabled(true);
     child->setChecked(enabled);
   }
 }
 
-void WidgetOrcamento::on_comboBoxLojas_currentIndexChanged(int) {
+void WidgetOrcamento::on_comboBoxLojas_currentIndexChanged(const int) {
   ui->comboBoxVendedores->clear();
 
   QSqlQuery query2("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND tipo = 'VENDEDOR'" +

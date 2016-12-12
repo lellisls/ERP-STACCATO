@@ -14,7 +14,8 @@ QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int role
   if (role == Qt::BackgroundRole) {
     if (proxyIndex.column() == this->dias) {
       const int dias = QIdentityProxyModel::data(index(proxyIndex.row(), this->dias), Qt::DisplayRole).toInt();
-      const QString status = QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
+      const QString status =
+          QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
 
       if (dias >= 5 or status == "FECHADO") return QBrush(Qt::green);
       if (dias >= 3 or status == "CANCELADO") return QBrush(Qt::yellow);
@@ -37,7 +38,7 @@ QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int role
 
   if (role == Qt::ForegroundRole) {
     const QString status = QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
-    if (status == "FECHADO" or proxyIndex.column() == this->dias) return QBrush(Qt::black);
+    if (status == "FECHADO" or status == "PERDIDO" or proxyIndex.column() == this->dias) return QBrush(Qt::black);
   }
 
   return QIdentityProxyModel::data(proxyIndex, role);

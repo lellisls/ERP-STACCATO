@@ -1,10 +1,10 @@
-#include "itemboxdelegate.h"
-#include "itembox.h"
-
 #include <QDebug>
 
-ItemBoxDelegate::ItemBoxDelegate(Tipo tipo, bool isReadOnly, QObject *parent)
-    : QStyledItemDelegate(parent), tipo(tipo), isReadOnly(isReadOnly) {}
+#include "itembox.h"
+#include "itemboxdelegate.h"
+
+ItemBoxDelegate::ItemBoxDelegate(const Tipo tipo, const bool isReadOnly, QObject *parent)
+    : QStyledItemDelegate(parent), isReadOnly(isReadOnly), tipo(tipo) {}
 
 ItemBoxDelegate::~ItemBoxDelegate() {}
 
@@ -21,26 +21,12 @@ QWidget *ItemBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewIt
   return editor;
 }
 
-void ItemBoxDelegate::commitAndCloseEditor() {
-  QWidget *editor = qobject_cast<QWidget *>(sender());
-  emit commitData(editor);
-  emit closeEditor(editor);
-}
-
 void ItemBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-  if (auto *box = qobject_cast<ItemBox *>(editor)) {
-    box->setValue(index.data(Qt::EditRole).toInt());
-    return;
-  }
+  if (auto *box = qobject_cast<ItemBox *>(editor)) box->setValue(index.data(Qt::EditRole).toInt());
 }
 
 void ItemBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-  if (auto *box = qobject_cast<ItemBox *>(editor)) {
-    model->setData(index, box->value(), Qt::EditRole);
-    return;
-  }
-
-  QStyledItemDelegate::setModelData(editor, model, index);
+  if (auto *box = qobject_cast<ItemBox *>(editor)) model->setData(index, box->value(), Qt::EditRole);
 }
 
 void ItemBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
@@ -48,4 +34,8 @@ void ItemBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionVi
   editor->setGeometry(option.rect);
 }
 
-// TODO: refactor based on checkboxdelegate
+void ItemBoxDelegate::commitAndCloseEditor() {
+  QWidget *editor = qobject_cast<QWidget *>(sender());
+  emit commitData(editor);
+  emit closeEditor(editor);
+}

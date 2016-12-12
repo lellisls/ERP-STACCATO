@@ -11,7 +11,7 @@
 #include "lineeditdelegate.h"
 #include "ui_contas.h"
 
-Contas::Contas(Tipo tipo, QWidget *parent) : QDialog(parent), tipo(tipo), ui(new Ui::Contas) {
+Contas::Contas(const Tipo tipo, QWidget *parent) : QDialog(parent), tipo(tipo), ui(new Ui::Contas) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -26,7 +26,7 @@ Contas::Contas(Tipo tipo, QWidget *parent) : QDialog(parent), tipo(tipo), ui(new
 
 Contas::~Contas() { delete ui; }
 
-void Contas::preencher(const QModelIndex index) {
+void Contas::preencher(const QModelIndex &index) {
   if (index.column() == modelPendentes.fieldIndex("dataRealizado")) {
     modelPendentes.setData(index.row(), "status", tipo == Receber ? "RECEBIDO" : "PAGO");
     modelPendentes.setData(index.row(), "valorReal", modelPendentes.data(index.row(), "valor"));
@@ -60,7 +60,6 @@ void Contas::setupTables() {
   modelPendentes.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   modelPendentes.setHeaderData("dataEmissao", "Data Emissão");
-  modelPendentes.setHeaderData("idCompra", "Compra");
   modelPendentes.setHeaderData("contraParte", "ContraParte");
   modelPendentes.setHeaderData("valor", "R$");
   modelPendentes.setHeaderData("tipo", "Tipo");
@@ -68,7 +67,6 @@ void Contas::setupTables() {
   modelPendentes.setHeaderData("dataPagamento", "Vencimento");
   modelPendentes.setHeaderData("observacao", "Obs.");
   modelPendentes.setHeaderData("status", "Status");
-  //  model.setHeaderData("representacao", "Rep.");
   modelPendentes.setHeaderData("dataRealizado", "Data Realizado");
   modelPendentes.setHeaderData("valorReal", "R$ Real");
   modelPendentes.setHeaderData("tipoReal", "Tipo Real");
@@ -78,12 +76,6 @@ void Contas::setupTables() {
   modelPendentes.setHeaderData("centroCusto", "Centro Custo");
   modelPendentes.setHeaderData("grupo", "Grupo");
   modelPendentes.setHeaderData("subGrupo", "SubGrupo");
-  //  model.setHeaderData("comissao", "Comissão");
-
-  if (not modelPendentes.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelPendentes.lastError().text());
-  }
 
   ui->tablePendentes->setModel(&modelPendentes);
   ui->tablePendentes->setItemDelegate(new DoubleDelegate(this));
@@ -112,6 +104,7 @@ void Contas::setupTables() {
     ui->tablePendentes->setItemDelegateForColumn("grupo", new LineEditDelegate(LineEditDelegate::Grupo, this));
   }
 
+  ui->tablePendentes->hideColumn("idCompra");
   ui->tablePendentes->hideColumn("representacao");
   ui->tablePendentes->hideColumn("idPagamento");
   ui->tablePendentes->hideColumn("idVenda");
@@ -136,7 +129,6 @@ void Contas::setupTables() {
   modelProcessados.setHeaderData("dataPagamento", "Vencimento");
   modelProcessados.setHeaderData("observacao", "Obs.");
   modelProcessados.setHeaderData("status", "Status");
-  //  model2.setHeaderData("representacao", "Rep.");
   modelProcessados.setHeaderData("dataRealizado", "Data Realizado");
   modelProcessados.setHeaderData("valorReal", "R$ Real");
   modelProcessados.setHeaderData("tipoReal", "Tipo Real");
@@ -146,12 +138,6 @@ void Contas::setupTables() {
   modelProcessados.setHeaderData("centroCusto", "Centro Custo");
   modelProcessados.setHeaderData("grupo", "Grupo");
   modelProcessados.setHeaderData("subGrupo", "SubGrupo");
-  //  model2.setHeaderData("comissao", "Comissão");
-
-  if (not modelProcessados.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelProcessados.lastError().text());
-  }
 
   ui->tableProcessados->setModel(&modelProcessados);
   ui->tableProcessados->setItemDelegate(new DoubleDelegate(this));
@@ -172,8 +158,47 @@ void Contas::setupTables() {
   ui->tableProcessados->resizeColumnsToContents();
 }
 
+bool Contas::verifyFields() {
+  for (int row = 0; row < modelPendentes.rowCount(); ++row) {
+    if ((tipo == Pagar and modelPendentes.data(row, "status").toString() == "PAGO") or
+        (tipo == Receber and modelPendentes.data(row, "status").toString() == "RECEBIDO")) {
+      if (modelPendentes.data(row, "dataRealizado").toString().isEmpty()) {
+        QMessageBox::critical(this, "Erro!", "'Data Realizado' vazio!");
+        return false;
+      }
+
+      if (modelPendentes.data(row, "valorReal").toString().isEmpty()) {
+        QMessageBox::critical(this, "Erro!", "'R$ Real' vazio!");
+        return false;
+      }
+
+      if (modelPendentes.data(row, "tipoReal").toString().isEmpty()) {
+        QMessageBox::critical(this, "Erro!", "'Tipo Real' vazio!");
+        return false;
+      }
+
+      if (modelPendentes.data(row, "parcelaReal").toString().isEmpty()) {
+        QMessageBox::critical(this, "Erro!", "'Parcela Real' vazio!");
+        return false;
+      }
+
+      if (modelPendentes.data(row, "contaDestino").toString().isEmpty()) {
+        QMessageBox::critical(this, "Erro!", "'Conta Dest.' vazio!");
+        return false;
+      }
+
+      if (modelPendentes.data(row, "centroCusto").toString().isEmpty()) {
+        QMessageBox::critical(this, "Erro!", "'Centro Custo' vazio!");
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 void Contas::on_pushButtonSalvar_clicked() {
-  // TODO: verificar consistencia dos dados antes de salvar
+  if (not verifyFields()) return;
 
   if (not modelPendentes.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + modelPendentes.lastError().text());
@@ -183,7 +208,7 @@ void Contas::on_pushButtonSalvar_clicked() {
   close();
 }
 
-void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
+void Contas::viewConta(const QString &idPagamento, const QString &contraparte) {
   if (tipo == Receber) {
     QSqlQuery query;
     query.prepare("SELECT idVenda FROM conta_a_receber_has_pagamento WHERE idPagamento = :idPagamento");
@@ -199,6 +224,11 @@ void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
     setWindowTitle("Contas A Receber - " + contraparte + " " + idVenda);
 
     modelPendentes.setFilter("idVenda LIKE '" + idVenda + "%' AND status = 'PENDENTE' AND representacao = 0");
+
+    if (not modelPendentes.select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela conta_a_receber_has_pagamento: " + modelPendentes.lastError().text());
+    }
 
     ui->tablePendentes->resizeColumnsToContents();
 
@@ -216,6 +246,11 @@ void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
                                    : "idVenda = '" + idVenda +
                                          "' AND status != 'PENDENTE' AND status != 'CANCELADO'AND representacao = 0");
 
+    if (not modelProcessados.select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela conta_a_receber_has_pagamento: " + modelProcessados.lastError().text());
+    }
+
     for (int row = 0, rowCount = modelProcessados.rowCount(); row < rowCount; ++row) {
       ui->tableProcessados->openPersistentEditor(row, "contaDestino");
       ui->tableProcessados->openPersistentEditor(row, "centroCusto");
@@ -226,7 +261,8 @@ void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
 
   if (tipo == Pagar) {
     QSqlQuery query;
-    query.prepare("SELECT idCompra FROM conta_a_pagar_has_pagamento WHERE idPagamento = :idPagamento");
+    query.prepare("SELECT cp.idCompra, pf.ordemCompra FROM conta_a_pagar_has_pagamento cp LEFT JOIN "
+                  "pedido_fornecedor_has_produto pf ON cp.idCompra = pf.idCompra WHERE idPagamento = :idPagamento");
     query.bindValue(":idPagamento", idPagamento);
 
     if (not query.exec() or not query.first()) {
@@ -235,11 +271,17 @@ void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
     }
 
     const QString idCompra = query.value("idCompra").toString();
+    const QString ordemCompra = query.value("ordemCompra").toString();
 
-    setWindowTitle("Contas A Pagar - " + contraparte + (idCompra == "0" ? "" : " " + idCompra));
+    setWindowTitle("Contas A Pagar - " + contraparte + (ordemCompra == "0" ? "" : " OC " + ordemCompra));
 
     modelPendentes.setFilter(idCompra == "0" ? "idPagamento = " + idPagamento + " AND status = 'PENDENTE'"
                                              : "idCompra = '" + idCompra + "' AND status = 'PENDENTE'");
+
+    if (not modelPendentes.select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela conta_a_receber_has_pagamento: " + modelPendentes.lastError().text());
+    }
 
     ui->tablePendentes->resizeColumnsToContents();
 
@@ -253,18 +295,21 @@ void Contas::viewConta(const QString &idPagamento, const QString contraparte) {
 
     modelProcessados.setFilter(idCompra == "0" ? "idPagamento = " + idPagamento + " AND status != 'PENDENTE'"
                                                : "idCompra = '" + idCompra + "' AND status != 'PENDENTE'");
+
+    if (not modelProcessados.select()) {
+      QMessageBox::critical(this, "Erro!",
+                            "Erro lendo tabela conta_a_receber_has_pagamento: " + modelProcessados.lastError().text());
+    }
+
+    for (int row = 0, rowCount = modelProcessados.rowCount(); row < rowCount; ++row) {
+      ui->tableProcessados->openPersistentEditor(row, "contaDestino");
+      ui->tableProcessados->openPersistentEditor(row, "centroCusto");
+    }
+
+    ui->tableProcessados->resizeColumnsToContents();
   }
 }
 
 void Contas::on_tablePendentes_entered(const QModelIndex &) { ui->tablePendentes->resizeColumnsToContents(); }
 
 void Contas::on_tableProcessados_entered(const QModelIndex &) { ui->tableProcessados->resizeColumnsToContents(); }
-
-// TODO: colocar coluna para indicar quem paga (seja cliente ou fornecedor rep.)
-// TODO: criar tela para dar baixa
-// TODO: filtrar por data na esquerda
-// TODO: filtrar por valor
-// TODO: substituir texto contaDestino por idConta
-// TODO: colocar itembox centrocusto igual a tela de inserir lancamento
-// TODO: automatizar centroCusto e contraParte, e conta Santander
-// TODO: nao mostrar cancelados na tabela de baixo

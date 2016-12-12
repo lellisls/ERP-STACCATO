@@ -9,9 +9,9 @@ public:
   explicit TableView(QWidget *parent = 0);
   virtual void setModel(QAbstractItemModel *model) override;
   void hideColumn(const QString &column);
-  void openPersistentEditor(const int &row, const int &column);
-  void openPersistentEditor(const int &row, const QString &column);
-  void setItemDelegateForColumn(const int &column, QAbstractItemDelegate *delegate);
+  void openPersistentEditor(const int row, const int column);
+  void openPersistentEditor(const int row, const QString &column);
+  void setItemDelegateForColumn(const int column, QAbstractItemDelegate *delegate);
   void setItemDelegateForColumn(const QString &column, QAbstractItemDelegate *delegate);
 
 public slots:

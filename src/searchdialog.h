@@ -39,28 +39,28 @@ public:
   static SearchDialog *vendedor(QWidget *parent);
 
 signals:
-  void itemSelected(QVariant value);
+  void itemSelected(const QVariant &value);
 
 private slots:
   void on_lineEditBusca_textChanged(const QString &);
   void on_pushButtonSelecionar_clicked();
-  void on_radioButtonProdAtivos_toggled(const bool &);
-  void on_radioButtonProdDesc_toggled(const bool &);
+  void on_radioButtonProdAtivos_toggled(const bool);
+  void on_radioButtonProdDesc_toggled(const bool);
   void on_table_doubleClicked(const QModelIndex &);
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::SearchDialog *ui;
-  QDataWidgetMapper mapper;
+  const QDataWidgetMapper mapper;
+  const QStringList indexes;
+  const QVector<QPair<QString, QString>> headerData;
   QString filter;
+  QString fornecedorRep;
   QString primaryKey;
   QString representacao;
-  QString fornecedorRep;
-  QStringList indexes;
   QStringList textKeys;
-  QVector<QPair<QString, QString>> headerData;
   SqlTableModel model;
+  Ui::SearchDialog *ui;
   // methods
   void hideColumns(const QStringList &columns);
   void sendUpdateMessage();

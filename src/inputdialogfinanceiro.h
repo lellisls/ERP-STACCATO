@@ -13,7 +13,7 @@ class InputDialogFinanceiro : public QDialog {
   Q_OBJECT
 
 public:
-  enum Type { ConfirmarCompra, Financeiro } type;
+  enum Type { ConfirmarCompra, Financeiro };
 
   explicit InputDialogFinanceiro(const Type &type, QWidget *parent = 0);
   ~InputDialogFinanceiro();
@@ -38,6 +38,8 @@ private slots:
 
 private:
   // attributes
+  const Type type;
+  bool representacao;
   SqlTableModel model;
   SqlTableModel modelFluxoCaixa;
   Ui::InputDialogFinanceiro *ui;

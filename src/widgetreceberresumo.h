@@ -17,15 +17,18 @@ public:
   ~WidgetReceberResumo();
   bool updateTables();
 
+signals:
+  void errorSignal(const QString &error);
+
 private slots:
   void on_tableVencidos_entered(const QModelIndex &);
   void on_tableVencer_entered(const QModelIndex &);
 
 private:
   // attributes
-  Ui::WidgetReceberResumo *ui;
-  SqlTableModel modelVencidos;
   SqlTableModel modelVencer;
+  SqlTableModel modelVencidos;
+  Ui::WidgetReceberResumo *ui;
   // methods
   void setupTables();
 };

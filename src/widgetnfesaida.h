@@ -27,8 +27,8 @@ private slots:
 
 private:
   // attributes
-  Ui::WidgetNfeSaida *ui;
   SqlTableModel model;
+  Ui::WidgetNfeSaida *ui;
   // methods
   void setupTables();
 };

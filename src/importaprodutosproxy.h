@@ -10,10 +10,10 @@ class ImportaProdutosProxy : public QIdentityProxyModel {
 public:
   ImportaProdutosProxy(SqlTableModel *model, QObject *parent = 0);
   ~ImportaProdutosProxy();
-  QVariant data(const QModelIndex &proxyIndex, int role) const override;
+  QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
 private:
-  const int column;
+  const int descontinuado;
 };
 
 #endif // IMPORTAPRODUTOSPROXY_H

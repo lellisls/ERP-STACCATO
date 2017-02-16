@@ -1,6 +1,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPieSeries>
 #include <QSqlError>
 #include <xlsxdocument.h>
 
@@ -161,6 +162,7 @@ bool WidgetRelatorio::updateTables() {
       ui->labelGeral->hide();
       ui->doubleSpinBoxGeral->hide();
       ui->groupBoxResumoOrcamento->hide();
+      ui->chartView->hide();
     }
 
     ui->dateEditMes->setDate(QDate::currentDate());
@@ -218,6 +220,37 @@ bool WidgetRelatorio::updateTables() {
   ui->tableRelatorio->resizeColumnsToContents();
   ui->tableTotalVendedor->resizeColumnsToContents();
   ui->tableTotalLoja->resizeColumnsToContents();
+
+  //
+
+  QtCharts::QChart *chart = new QtCharts::QChart();
+  chart->setTheme(QtCharts::QChart::ChartThemeLight);
+  chart->setAnimationOptions(QtCharts::QChart::AllAnimations);
+  chart->legend()->setVisible(true);
+  chart->legend()->setAlignment(Qt::AlignRight);
+
+  QtCharts::QPieSeries *series = new QtCharts::QPieSeries(this);
+  series->setName("Funcionarios");
+
+  for (int row = 0; row < modelTotalVendedor.rowCount(); ++row) {
+    const double value = modelTotalVendedor.data(row, "Faturamento").toDouble();
+    const QString name =
+        modelTotalVendedor.data(row, "Vendedor").toString() + " - R$ " + QString::number(value, 'f', 2);
+
+    QtCharts::QPieSlice *slice = new QtCharts::QPieSlice(name, value, this);
+    connect(slice, &QtCharts::QPieSlice::hovered, slice, &QtCharts::QPieSlice::setExploded);
+    connect(slice, &QtCharts::QPieSlice::hovered, slice, &QtCharts::QPieSlice::setLabelVisible);
+
+    series->append(slice);
+  }
+
+  chart->addSeries(series);
+  chart->setTitle(series->name());
+
+  ui->chartView->setChart(chart);
+  ui->chartView->setRenderHint(QPainter::Antialiasing);
+
+  //
 
   return true;
 }

@@ -2,7 +2,6 @@
 #define XML_VIEWER_H
 
 #include <QDialog>
-#include <QDomElement>
 #include <QStandardItemModel>
 
 namespace Ui {
@@ -26,8 +25,6 @@ private:
   QStandardItemModel model;
   QString fileName;
   Ui::XML_Viewer *ui;
-  // methods
-  bool imprimirDanfe();
 };
 
 #endif // XML_VIEWER_H

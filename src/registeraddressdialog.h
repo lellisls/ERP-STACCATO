@@ -19,11 +19,10 @@ protected:
   bool setDataEnd(const QString &key, const QVariant &value);
   int getCodigoUF(QString uf) const;
   virtual bool newRegister() override;
-  virtual bool save() override;
 
 private:
-  void setupTables(const QString &table);
   bool cadastrar() override;
+  void setupTables(const QString &table);
 };
 
 #endif // REGISTERADDRESSDIALOG_H

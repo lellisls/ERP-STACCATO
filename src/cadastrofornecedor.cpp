@@ -14,11 +14,9 @@ CadastroFornecedor::CadastroFornecedor(QWidget *parent)
     : RegisterAddressDialog("fornecedor", "idFornecedor", parent), ui(new Ui::CadastroFornecedor) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  //  for (auto const *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (auto const *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   setupUi();
   setupTables();
@@ -151,6 +149,64 @@ void CadastroFornecedor::updateMode() {
   ui->pushButtonRemover->show();
 }
 
+bool CadastroFornecedor::save() {
+  if (not verifyFields()) return false;
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  isDirty = false;
+
+  viewRegisterById(primaryId);
+
+  if (not silent) successMessage();
+
+  return true;
+}
+
+bool CadastroFornecedor::cadastrar() {
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+
+  if (row == -1) {
+    QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
+    return false;
+  }
+
+  if (not isUpdate and not model.insertRow(row)) return false;
+
+  if (not savingProcedures()) return false;
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    const QVariant dado = model.data(row, column);
+
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
+  }
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    return false;
+  }
+
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
+
+  return true;
+}
+
 void CadastroFornecedor::on_pushButtonCadastrar_clicked() { save(); }
 
 void CadastroFornecedor::on_pushButtonAtualizar_clicked() { update(); }
@@ -177,7 +233,7 @@ void CadastroFornecedor::on_lineEditContatoCPF_textEdited(const QString &text) {
 }
 
 void CadastroFornecedor::on_pushButtonAdicionarEnd_clicked() {
-  cadastrarEndereco(false)
+  cadastrarEndereco()
       ? novoEndereco()
       : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço."));
 }
@@ -209,6 +265,8 @@ bool CadastroFornecedor::cadastrarEndereco(const bool isUpdate) {
   if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
+
+  isDirty = true;
 
   return true;
 }
@@ -288,23 +346,18 @@ void CadastroFornecedor::successMessage() {
 
 void CadastroFornecedor::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
 
-bool CadastroFornecedor::ajustarValidade() {
+bool CadastroFornecedor::ajustarValidade(const int newValidade) {
   const QString fornecedor = model.data(mapper.currentIndex(), "razaoSocial").toString();
 
-  bool ok = true;
-
-  const int newValidade =
-      QInputDialog::getInt(this, "Validade", "Quantos dias de validade para os produtos: ", 0, 0, 1000, 1, &ok);
-
-  if (not ok) return false;
-
   QSqlQuery query;
-  query.prepare("UPDATE produto SET validade = :newValidade WHERE fornecedor = :fornecedor AND descontinuado = 0");
+  query.prepare("UPDATE produto SET validade = :newValidade, descontinuado = 0 WHERE fornecedor = :fornecedor AND "
+                "validade = :oldValidade");
   query.bindValue(":newValidade", QDate::currentDate().addDays(newValidade));
   query.bindValue(":fornecedor", fornecedor);
+  query.bindValue(":oldValidade", model.data(mapper.currentIndex(), "validadeProdutos"));
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando validade nos produtos: " + query.lastError().text());
+    error = "Erro atualizando validade nos produtos: " + query.lastError().text();
     return false;
   }
 
@@ -313,7 +366,7 @@ bool CadastroFornecedor::ajustarValidade() {
   query.bindValue(":fornecedor", fornecedor);
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando validade no fornecedor: " + query.lastError().text());
+    error = "Erro atualizando validade no fornecedor: " + query.lastError().text();
     return false;
   }
 
@@ -321,11 +374,19 @@ bool CadastroFornecedor::ajustarValidade() {
 }
 
 void CadastroFornecedor::on_pushButtonValidade_clicked() {
+  bool ok = true;
+
+  const int newValidade =
+      QInputDialog::getInt(this, "Validade", "Quantos dias de validade para os produtos: ", 0, 0, 1000, 1, &ok);
+
+  if (not ok) return;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not ajustarValidade()) {
+  if (not ajustarValidade(newValidade)) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
   }
 

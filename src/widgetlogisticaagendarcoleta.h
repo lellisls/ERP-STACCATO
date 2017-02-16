@@ -24,6 +24,7 @@ signals:
 
 private slots:
   void calcularPeso();
+  void on_dateTimeEdit_dateChanged(const QDate &date);
   void on_itemBoxVeiculo_textChanged(const QString &);
   void on_lineEditBusca_textChanged(const QString &text);
   void on_pushButtonAdicionarProduto_clicked();
@@ -32,20 +33,21 @@ private slots:
   void on_pushButtonDanfe_clicked();
   void on_pushButtonMontarCarga_clicked();
   void on_pushButtonRemoverProduto_clicked();
-  void on_tableEstoque_doubleClicked(const QModelIndex &index);
   void on_tableEstoque_entered(const QModelIndex &);
+  void on_checkBoxEstoque_toggled(bool checked);
+  void on_pushButtonVenda_clicked();
 
 private:
   // attributes
+  QString error;
+  QString fornecedor;
   SqlTableModel modelEstoque;
   SqlTableModel modelTransp;
   SqlTableModel modelTransp2;
-  QString fornecedor;
   Ui::WidgetLogisticaAgendarColeta *ui;
   // methods
   bool adicionarProduto(const QModelIndexList &list);
-  bool imprimirDanfe();
-  bool processRows(const QModelIndexList &list, const bool montarCarga = false);
+  bool processRows(const QModelIndexList &list, const QDateTime &dataPrevColeta, const bool montarCarga = false);
   void setupTables();
 };
 

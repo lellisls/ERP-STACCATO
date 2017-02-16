@@ -4,17 +4,13 @@
 #include <QDomElement>
 #include <QStandardItemModel>
 
-#include "sqltablemodel.h"
-
 class XML {
 
 public:
   XML(const QByteArray &fileContent, const QString &fileName = QString());
-  bool cadastrarNFe(const QString &tipo);
-  bool mostrarNoSqlModel(SqlTableModel &externalModel);
   void montarArvore(QStandardItemModel &model);
+  void lerValores(const QStandardItem *item);
 
-private:
   const QByteArray fileContent;
   const QString fileName;
   QStandardItemModel model;
@@ -95,11 +91,7 @@ private:
   int idNFe = 0;
 
   // methods
-  bool inserirItemSql(SqlTableModel &externalModel);
-  void lerValores(const QStandardItem *item);
-  bool verificaCNPJ();
-  bool verificaExiste();
-  bool inserirNoSqlModel(const QStandardItem *item, SqlTableModel &externalModel);
+private:
   void lerCOFINSProduto(const QStandardItem *child);
   void lerDadosProduto(const QStandardItem *child);
   void lerICMSProduto(const QStandardItem *child);

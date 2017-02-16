@@ -8,6 +8,7 @@ class TableView : public QTableView {
 public:
   explicit TableView(QWidget *parent = 0);
   virtual void setModel(QAbstractItemModel *model) override;
+  void showColumn(const QString &column);
   void hideColumn(const QString &column);
   void openPersistentEditor(const int row, const int column);
   void openPersistentEditor(const int row, const QString &column);

@@ -12,11 +12,9 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
     : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  //  for (auto const *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (auto const *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   setWindowModality(Qt::NonModal);
 
@@ -105,6 +103,29 @@ void CadastroProfissional::registerMode() {
   ui->pushButtonRemover->hide();
 }
 
+bool CadastroProfissional::save() {
+  if (not verifyFields()) return false;
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    return false;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  isDirty = false;
+
+  viewRegisterById(primaryId);
+
+  if (not silent) successMessage();
+
+  return true;
+}
+
 void CadastroProfissional::updateMode() {
   ui->pushButtonCadastrar->hide();
   ui->pushButtonAtualizar->show();
@@ -128,6 +149,42 @@ bool CadastroProfissional::viewRegister() {
   tipoPFPJ = data("pfpj").toString();
 
   tipoPFPJ == "PF" ? ui->radioButtonPF->setChecked(true) : ui->radioButtonPJ->setChecked(true);
+
+  return true;
+}
+
+bool CadastroProfissional::cadastrar() {
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+
+  if (row == -1) {
+    QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
+    return false;
+  }
+
+  if (not isUpdate and not model.insertRow(row)) return false;
+
+  if (not savingProcedures()) return false;
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    const QVariant dado = model.data(row, column);
+
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
+  }
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!",
+                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    return false;
+  }
+
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
 
   return true;
 }
@@ -167,8 +224,8 @@ bool CadastroProfissional::savingProcedures() {
   if (not setData("email", ui->lineEditEmail->text())) return false;
   if (not setData("pfpj", tipoPFPJ)) return false;
   if (not setData("tipoProf", ui->comboBoxTipo->currentText())) return false;
-  if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
-  if (not setData("idLoja", ui->itemBoxLoja->value())) return false;
+  if (not setData("idUsuarioRel", ui->itemBoxVendedor->getValue())) return false;
+  if (not setData("idLoja", ui->itemBoxLoja->getValue())) return false;
   if (not setData("comissao", ui->doubleSpinBoxComissao->value())) return false;
   // Dados bancários
   if (not setData("banco", ui->lineEditBanco->text())) return false;
@@ -266,11 +323,13 @@ bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
 
   ui->tableEndereco->resizeColumnsToContents();
 
+  isDirty = true;
+
   return true;
 }
 
 void CadastroProfissional::on_pushButtonAdicionarEnd_clicked() {
-  cadastrarEndereco(false)
+  cadastrarEndereco()
       ? novoEndereco()
       : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!"));
 }
@@ -386,3 +445,5 @@ void CadastroProfissional::on_lineEditCPF_editingFinished() {
 void CadastroProfissional::on_lineEditCNPJ_editingFinished() {
   ui->lineEditCNPJBancario->setText(ui->lineEditCNPJ->text());
 }
+
+// TODO: 3bloquear edicao do cadastro 'NAO HA'

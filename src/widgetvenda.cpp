@@ -146,7 +146,6 @@ void WidgetVenda::makeConnections() {
   connect(ui->checkBoxFinalizado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxIniciado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->checkBoxPendente, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
-  connect(ui->checkBoxProcessado, &QCheckBox::toggled, this, &WidgetVenda::montaFiltro);
   connect(ui->comboBoxLojas, &ComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
   connect(ui->comboBoxVendedores, &ComboBox::currentTextChanged, this, &WidgetVenda::montaFiltro);
   connect(ui->dateEdit, &QDateEdit::dateChanged, this, &WidgetVenda::montaFiltro);
@@ -176,6 +175,7 @@ bool WidgetVenda::updateTables() {
 
 void WidgetVenda::on_table_activated(const QModelIndex &index) {
   Venda *vendas = new Venda(this);
+  vendas->setAttribute(Qt::WA_DeleteOnClose);
   if (financeiro) vendas->setFinanceiro();
   vendas->viewRegisterById(model.data(index.row(), "Código"));
 }
@@ -196,9 +196,7 @@ void WidgetVenda::on_comboBoxLojas_currentIndexChanged(const int) {
 
   ui->comboBoxVendedores->addItem("");
 
-  while (query2.next()) {
-    ui->comboBoxVendedores->addItem(query2.value("user").toString(), query2.value("idUsuario"));
-  }
+  while (query2.next()) ui->comboBoxVendedores->addItem(query2.value("user").toString(), query2.value("idUsuario"));
 }
 
 void WidgetVenda::setFinanceiro() {
@@ -214,12 +212,13 @@ void WidgetVenda::setFinanceiro() {
 void WidgetVenda::on_pushButtonFollowup_clicked() {
   const auto list = ui->table->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
     return;
   }
 
   FollowUp *followup = new FollowUp(model.data(list.first().row(), "Código").toString(), FollowUp::Venda, this);
+  followup->setAttribute(Qt::WA_DeleteOnClose);
   followup->show();
 }
 

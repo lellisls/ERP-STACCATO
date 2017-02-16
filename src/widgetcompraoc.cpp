@@ -1,17 +1,11 @@
-#include <QDateTime>
-#include <QDebug>
-#include <QDesktopServices>
-#include <QFile>
 #include <QMessageBox>
-#include <QProgressDialog>
 #include <QSqlError>
-#include <QTextStream>
-#include <QUrl>
+#include <QSqlQuery>
 
+#include "acbr.h"
 #include "doubledelegate.h"
 #include "reaisdelegate.h"
 #include "ui_widgetcompraoc.h"
-#include "usersession.h"
 #include "widgetcompraoc.h"
 
 WidgetCompraOC::WidgetCompraOC(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraOC) { ui->setupUi(this); }
@@ -111,6 +105,7 @@ void WidgetCompraOC::setupTables() {
 
   ui->tableNFe->setModel(&modelNFe);
   ui->tableNFe->hideColumn("ordemCompra");
+  ui->tableNFe->hideColumn("idNFe");
 }
 
 void WidgetCompraOC::on_tablePedido_clicked(const QModelIndex &index) {
@@ -122,131 +117,14 @@ void WidgetCompraOC::on_tablePedido_clicked(const QModelIndex &index) {
 }
 
 void WidgetCompraOC::on_pushButtonDanfe_clicked() {
-  if (not imprimirDanfe()) {
-    const QString dirEntrada = UserSession::settings("User/pastaEntACBr").toString();
-    const QString dirSaida = UserSession::settings("User/pastaSaiACBr").toString();
-
-    QFile fileGerar(dirEntrada + "/gerarDanfe.txt");
-
-    if (fileGerar.exists()) fileGerar.remove();
-
-    QFile fileResposta(dirSaida + "/gerarDanfe-resp.txt");
-
-    if (fileResposta.exists()) fileResposta.remove();
-  }
-}
-
-bool WidgetCompraOC::imprimirDanfe() {
-  // 1. buscar xml pelo idNfeSaida
-  // 2. salvar xml em um arquivo na pasta de saida do ACBr
-  // 3. enviar comando para ACBr gerar a danfe - NFe.ImprimirDanfePDF("C:\ACBrNFeMonitor\XML\chaveAcesso-nfe.xml")
-  // 4. abrir arquivo pdf gerado - "C:\ACBrNFeMonitor\XML\chaveAcesso-nfe.pdf"
-
   const auto list = ui->tableNFe->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
-    return false;
+    return;
   }
 
-  const QString dirEntrada = UserSession::settings("User/pastaEntACBr").toString();
-  const QString dirSaida = UserSession::settings("User/pastaSaiACBr").toString();
-  const QString dirXml = UserSession::settings("User/pastaXmlACBr").toString();
-
-  QSqlQuery query;
-  query.prepare("SELECT chaveAcesso, xml FROM nfe WHERE numeroNFe = :numeroNFe");
-  query.bindValue(":numeroNFe", modelNFe.data(list.first().row(), "numeroNFe"));
-
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando chaveAcesso: " + query.lastError().text());
-  }
-
-  const QString chaveAcesso = query.value("chaveAcesso").toString();
-
-  QFile fileXml(dirXml + "/" + chaveAcesso + "-nfe.xml");
-
-  if (not fileXml.open(QFile::WriteOnly)) {
-    QMessageBox::critical(this, "Erro!", "Não foi possível salvar o XML, favor verificar se as pastas "
-                                         "estão corretamente configuradas.");
-    return false;
-  }
-
-  QTextStream streamXml(&fileXml);
-
-  streamXml << query.value("xml").toString();
-
-  streamXml.flush();
-  fileXml.close();
-
-  QFile fileGerar(dirEntrada + "/gerarDanfe.txt");
-
-  if (not fileGerar.open(QFile::WriteOnly)) {
-    QMessageBox::critical(this, "Erro!", "Não foi possível enviar o pedido para o ACBr, favor verificar se as pastas "
-                                         "estão corretamente configuradas.");
-    return false;
-  }
-
-  QTextStream streamGerar(&fileGerar);
-
-  streamGerar << "NFe.ImprimirDanfePDF(\"" + dirXml + "/" + chaveAcesso + "-nfe.xml\")" << endl;
-
-  streamGerar.flush();
-  fileGerar.close();
-
-  //
-
-  QFile fileResposta(dirSaida + "/gerarDanfe-resp.txt");
-
-  QProgressDialog *progressDialog = new QProgressDialog(this);
-  progressDialog->reset();
-  progressDialog->setCancelButton(0);
-  progressDialog->setLabelText("Esperando ACBr...");
-  progressDialog->setWindowTitle("ERP Staccato");
-  progressDialog->setWindowModality(Qt::WindowModal);
-  progressDialog->setMaximum(0);
-  progressDialog->setMinimum(0);
-  progressDialog->show();
-
-  QTime wait = QTime::currentTime().addSecs(10);
-
-  while (QTime::currentTime() < wait) {
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-
-    if (fileResposta.exists()) break;
-  }
-
-  progressDialog->cancel();
-
-  if (not fileResposta.exists()) {
-    QMessageBox::critical(this, "Erro!", "ACBr não respondeu, verificar se ele está aberto e funcionando!");
-
-    if (fileGerar.exists()) fileGerar.remove();
-
-    return false;
-  }
-
-  if (not fileResposta.open(QFile::ReadOnly)) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + fileResposta.errorString());
-    return false;
-  }
-
-  QTextStream ts(&fileResposta);
-
-  const QString resposta = ts.readAll();
-  fileResposta.remove();
-
-  if (not resposta.contains("OK")) {
-    QMessageBox::critical(this, "Erro!", "Resposta do ACBr: " + resposta);
-    return false;
-  }
-
-  //
-
-  if (not QDesktopServices::openUrl(QUrl::fromLocalFile(dirXml + "/" + chaveAcesso + "-nfe.pdf"))) {
-    QMessageBox::critical(this, "Erro!", "Erro abrindo PDF!");
-  }
-
-  return true;
+  ACBr::gerarDanfe(modelNFe.data(list.first().row(), "idNFe").toInt());
 }
 
 void WidgetCompraOC::on_tablePedido_entered(const QModelIndex &) { ui->tablePedido->resizeColumnsToContents(); }
@@ -254,3 +132,86 @@ void WidgetCompraOC::on_tablePedido_entered(const QModelIndex &) { ui->tablePedi
 void WidgetCompraOC::on_tableProduto_entered(const QModelIndex &) { ui->tableProduto->resizeColumnsToContents(); }
 
 void WidgetCompraOC::on_tableNFe_entered(const QModelIndex &) { ui->tableNFe->resizeColumnsToContents(); }
+
+void WidgetCompraOC::on_pushButtonDesfazerConsumo_clicked() {
+  const auto list = ui->tableProduto->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not desfazerConsumo(list)) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  updateTables();
+
+  QMessageBox::information(this, "Aviso!", "Operação realizada com sucesso!");
+}
+
+bool WidgetCompraOC::desfazerConsumo(const QModelIndexList &list) {
+  for (auto item : list) {
+    const int idVendaProduto = modelProduto.data(item.row(), "idVendaProduto").toInt();
+
+    QSqlQuery query;
+
+    query.prepare("SELECT status FROM estoque_has_consumo WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":idVendaProduto", idVendaProduto);
+
+    if (not query.exec() or not query.first()) {
+      error = "Erro buscando status do consumo estoque: " + query.lastError().text();
+      return false;
+    }
+
+    const QString status = query.value("status").toString();
+
+    if (status == "ENTREGA AGEND." or status == "EM ENTREGA" or status == "ENTREGUE") {
+      error = "Consumo do estoque está em entrega/entregue!";
+      return false;
+    }
+
+    query.prepare(
+        "UPDATE pedido_fornecedor_has_produto SET idVenda = NULL, idVendaProduto = NULL WHERE idVendaProduto = "
+        ":idVendaProduto");
+    query.bindValue(":idVendaProduto", idVendaProduto);
+
+    if (not query.exec()) {
+      error = "Erro atualizando pedido compra: " + query.lastError().text();
+      return false;
+    }
+
+    query.prepare("UPDATE venda_has_produto SET status = 'PENDENTE' WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":idVendaProduto", idVendaProduto);
+
+    if (not query.exec()) {
+      error = "Erro atualizando pedido venda: " + query.lastError().text();
+      return false;
+    }
+
+    query.prepare("DELETE FROM estoque_has_consumo WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":idVendaProduto", idVendaProduto);
+
+    if (not query.exec()) {
+      error = "Erro removendo consumo estoque: " + query.lastError().text();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void WidgetCompraOC::on_lineEditBusca_textChanged(const QString &text) {
+  modelPedido.setFilter("Venda LIKE '%" + text + "%' OR OC LIKE '%" + text + "%'");
+
+  if (not modelPedido.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedidos: " + modelPedido.lastError().text());
+  }
+}

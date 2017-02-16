@@ -895,7 +895,7 @@
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Desconto percentual sobree todo o orçamento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="suffix">
-                <string> %</string>
+                <string>%</string>
                </property>
                <property name="decimals">
                 <number>4</number>

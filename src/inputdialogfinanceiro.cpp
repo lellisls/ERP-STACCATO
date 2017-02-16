@@ -212,9 +212,9 @@ void InputDialogFinanceiro::montarFluxoCaixa() {
         const int row = modelFluxoCaixa.rowCount();
         modelFluxoCaixa.insertRow(row);
         modelFluxoCaixa.setData(row, "contraParte", model.data(0, "fornecedor"));
-        modelFluxoCaixa.setData(row, "dataEmissao", model.data(0, "dataRealConf"));
+        modelFluxoCaixa.setData(row, "dataEmissao", ui->dateEditEvento->dateTime());
         modelFluxoCaixa.setData(row, "idCompra", model.data(0, "idCompra"));
-        modelFluxoCaixa.setData(row, "idLoja", UserSession::idLoja());
+        modelFluxoCaixa.setData(row, "idLoja", UserSession::settings("User/lojaACBr").toString());
         const QDate dataPgt =
             (datePgt2.at(i)->currentText() == "Data + 1 Mês"
                  ? datePgt.at(i)->date().addMonths(x + 1)
@@ -235,7 +235,7 @@ void InputDialogFinanceiro::montarFluxoCaixa() {
     const int row = modelFluxoCaixa.rowCount();
     modelFluxoCaixa.insertRow(row);
     modelFluxoCaixa.setData(row, "contraParte", model.data(0, "fornecedor"));
-    modelFluxoCaixa.setData(row, "dataEmissao", model.data(0, "dataRealConf"));
+    modelFluxoCaixa.setData(row, "dataEmissao", ui->dateEditEvento->dateTime());
     modelFluxoCaixa.setData(row, "idCompra", model.data(0, "idCompra"));
     modelFluxoCaixa.setData(row, "idLoja", UserSession::idLoja());
     modelFluxoCaixa.setData(row, "dataPagamento", QDate::currentDate());
@@ -249,7 +249,7 @@ void InputDialogFinanceiro::montarFluxoCaixa() {
     const int row = modelFluxoCaixa.rowCount();
     modelFluxoCaixa.insertRow(row);
     modelFluxoCaixa.setData(row, "contraParte", model.data(0, "fornecedor"));
-    modelFluxoCaixa.setData(row, "dataEmissao", model.data(0, "dataRealConf"));
+    modelFluxoCaixa.setData(row, "dataEmissao", ui->dateEditEvento->dateTime());
     modelFluxoCaixa.setData(row, "idCompra", model.data(0, "idCompra"));
     modelFluxoCaixa.setData(row, "idLoja", UserSession::idLoja());
     modelFluxoCaixa.setData(row, "dataPagamento", QDate::currentDate());
@@ -392,6 +392,8 @@ bool InputDialogFinanceiro::setFilter(const QString &idCompra) {
     if (type == ConfirmarCompra) montarFluxoCaixa();
   }
 
+  if (type == Financeiro) ui->comboBoxFinanceiro->setCurrentText(model.data(0, "statusFinanceiro").toString());
+
   QSqlQuery query;
   query.prepare("SELECT v.representacao FROM pedido_fornecedor_has_produto pf LEFT JOIN venda v ON pf.idVenda = "
                 "v.idVenda WHERE idCompra = :idCompra");
@@ -423,7 +425,7 @@ void InputDialogFinanceiro::on_pushButtonSalvar_clicked() {
 }
 
 bool InputDialogFinanceiro::verifyFields() {
-  if (ui->table->selectionModel()->selectedRows().size() == 0) {
+  if (ui->table->selectionModel()->selectedRows().isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return false;
   }
@@ -664,3 +666,6 @@ void InputDialogFinanceiro::on_comboBoxPgt3_currentTextChanged(const QString &te
 
   montarFluxoCaixa();
 }
+
+// TODO: 1quando for confirmacao de representacao perguntar qual o id para colocar na observacao das comissoes (codigo
+// que vem do fornecedor)

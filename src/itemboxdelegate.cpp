@@ -26,7 +26,7 @@ void ItemBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) c
 }
 
 void ItemBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-  if (auto *box = qobject_cast<ItemBox *>(editor)) model->setData(index, box->value(), Qt::EditRole);
+  if (auto *box = qobject_cast<ItemBox *>(editor)) model->setData(index, box->getValue(), Qt::EditRole);
 }
 
 void ItemBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,

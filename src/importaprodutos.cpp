@@ -17,7 +17,6 @@ ImportaProdutos::ImportaProdutos(QWidget *parent) : QDialog(parent), ui(new Ui::
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
-  setAttribute(Qt::WA_DeleteOnClose);
 
   setVariantMap();
   setProgressDialog();
@@ -54,6 +53,13 @@ void ImportaProdutos::importarEstoque() {
   // NOTE: ao inves de cadastrar uma tabela de estoque, quando o estoque for gerado (importacao de xml) criar uma linha
   // correspondente na tabela produto com flag estoque, esse produto vai ser listado junto dos outros porem com cor
   // diferente
+
+  // estoques gerados por tabela nao terao dados de impostos enquanto os de xml sim
+
+  // obs1: o orcamento nao gera pré-consumo mas ao fechar pedido o estoque pode não estar mais disponivel
+  // obs2: quando fechar pedido gerar pré-consumo
+  // obs3: quando fechar pedido mudar status de 'pendente' para 'estoque' para nao aparecer na tela de compras
+  // obs4: colocar na tabela produto um campo para indicar qual o estoque relacionado
 
   if (not readFile()) return;
 
@@ -247,6 +253,7 @@ void ImportaProdutos::setupTables() {
   model.setHeaderData("colecao", "Coleção");
   model.setHeaderData("tipo", "Tipo");
   model.setHeaderData("minimo", "Mínimo");
+  model.setHeaderData("multiplo", "Múltiplo");
   model.setHeaderData("m2cx", "M./Cx.");
   model.setHeaderData("pccx", "Pç./Cx.");
   model.setHeaderData("kgcx", "Kg./Cx.");
@@ -292,6 +299,8 @@ void ImportaProdutos::setupTables() {
   ui->tableProdutos->hideColumn("cst");
   ui->tableProdutos->hideColumn("ipi");
   ui->tableProdutos->hideColumn("st");
+  ui->tableProdutos->hideColumn("estoque_promocao");
+  ui->tableProdutos->hideColumn("idProdutoRelacionado");
 
   ui->tableProdutos->setItemDelegateForColumn("validade", new DateFormatDelegate(this));
 
@@ -404,24 +413,24 @@ bool ImportaProdutos::cadastraFornecedores() {
 
     fornecedor = query.value("fornecedor").toString();
 
+    QSqlQuery queryFornecedor;
+    queryFornecedor.prepare("UPDATE fornecedor SET validadeProdutos = :validade WHERE razaoSocial = :razaoSocial");
+    queryFornecedor.bindValue(":validade", QDate::currentDate().addDays(validade));
+    queryFornecedor.bindValue(":razaoSocial", fornecedor);
+
+    if (not queryFornecedor.exec()) {
+      QMessageBox::critical(this, "Erro!", "Erro salvando validade: " + queryFornecedor.lastError().text());
+      return false;
+    }
+
     int idFornecedor;
     if (not buscarCadastrarFornecedor(fornecedor, idFornecedor)) return false;
 
     fornecedores.insert(fornecedor, idFornecedor);
   }
 
-  if (fornecedores.size() == 0) {
+  if (fornecedores.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Erro ao cadastrar fornecedores.");
-    return false;
-  }
-
-  QSqlQuery queryFornecedor;
-  queryFornecedor.prepare("UPDATE fornecedor SET validadeProdutos = :validade WHERE razaoSocial = :razaoSocial");
-  queryFornecedor.bindValue(":validade", QDate::currentDate().addDays(validade));
-  queryFornecedor.bindValue(":razaoSocial", fornecedor);
-
-  if (not queryFornecedor.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando validade: " + queryFornecedor.lastError().text());
     return false;
   }
 
@@ -666,11 +675,11 @@ bool ImportaProdutos::insereEmOk() {
   if (not model.insertRow(row)) return false;
 
   for (auto const &key : variantMap.keys()) {
-    if (not model.setData(row, key, variantMap.value(key))) qDebug() << "error1: " << model.lastError().text();
-    if (not model.setData(row, key + "Upd", Green)) qDebug() << "error2: " << model.lastError().text();
+    if (not model.setData(row, key, variantMap.value(key))) return false;
+    if (not model.setData(row, key + "Upd", Green)) return false;
   }
 
-  if (not model.setData(row, "estoque_promocao", tipo)) qDebug() << "error3: " << model.lastError().text();
+  if (not model.setData(row, "estoque_promocao", tipo)) return false;
 
   if (tipo == Estoque or tipo == Promocao) {
     QSqlQuery query;
@@ -679,14 +688,12 @@ bool ImportaProdutos::insereEmOk() {
     query.bindValue(":idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
     query.bindValue(":codComercial", model.data(row, "codComercial"));
 
-    if (not query.exec() or not query.first()) {
+    if (not query.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro buscando produto relacionado: " + query.lastError().text());
       return false;
     }
 
-    if (query.first()) {
-      if (not model.setData(row, "idProdutoRelacionado", query.value("idProduto"))) return false;
-    }
+    if (query.first() and not model.setData(row, "idProdutoRelacionado", query.value("idProduto"))) return false;
   }
 
   int idFornecedor = fornecedores.value(variantMap.value("fornecedor").toString());
@@ -738,6 +745,11 @@ bool ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor, int &
 
     if (not queryFornecedor.exec()) {
       QMessageBox::critical(this, "Erro!", "Erro cadastrando fornecedor: " + queryFornecedor.lastError().text());
+      return false;
+    }
+
+    if (queryFornecedor.lastInsertId().isNull()) {
+      QMessageBox::critical(this, "Erro!", "Erro lastInsertId");
       return false;
     }
 
@@ -839,3 +851,5 @@ void ImportaProdutos::on_checkBoxRepresentacao_toggled(const bool checked) {
 // NOTE: verificar o que esta deixando a importacao lenta ao longo do tempo
 // NOTE: 3colocar tabela relacao para precos diferenciados por loja (associar produto_has_preco <->
 // produto_has_preco_has_loja ou guardar idLoja em produto_has_preco)
+// NOTE: remover idProdutoRelacionado?
+// TODO: 2unificar m2cx/pccx em uncx, podendo ter uma segunda coluna pccx/kgcx

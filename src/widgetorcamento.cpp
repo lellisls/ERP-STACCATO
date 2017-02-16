@@ -21,6 +21,8 @@ void WidgetOrcamento::setPermissions() {
     while (query.next()) ui->comboBoxLojas->addItem(query.value("descricao").toString(), query.value("idLoja"));
 
     ui->comboBoxLojas->setCurrentValue(UserSession::idLoja());
+
+    ui->groupBoxMes->setChecked(true);
   }
 
   if (UserSession::tipoUsuario() == "GERENTE LOJA") {
@@ -98,12 +100,14 @@ bool WidgetOrcamento::updateTables() {
 
 void WidgetOrcamento::on_table_activated(const QModelIndex &index) {
   Orcamento *orcamento = new Orcamento(this);
+  orcamento->setAttribute(Qt::WA_DeleteOnClose);
   orcamento->viewRegisterById(model.data(index.row(), "Código"));
   orcamento->show();
 }
 
 void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
   Orcamento *orcamento = new Orcamento(this);
+  orcamento->setAttribute(Qt::WA_DeleteOnClose);
   orcamento->show();
 }
 
@@ -151,12 +155,13 @@ void WidgetOrcamento::on_table_entered(const QModelIndex &) { ui->table->resizeC
 void WidgetOrcamento::on_pushButtonFollowup_clicked() {
   const auto list = ui->table->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
     return;
   }
 
   FollowUp *followup = new FollowUp(model.data(list.first().row(), "Código").toString(), FollowUp::Orcamento, this);
+  followup->setAttribute(Qt::WA_DeleteOnClose);
   followup->show();
 }
 
@@ -179,3 +184,5 @@ void WidgetOrcamento::on_comboBoxLojas_currentIndexChanged(const int) {
 
   while (query2.next()) ui->comboBoxVendedores->addItem(query2.value("user").toString(), query2.value("idUsuario"));
 }
+
+// TODO: 1por padrao nao ativar filtro mes quando for vendedor (acho que já foi feito)

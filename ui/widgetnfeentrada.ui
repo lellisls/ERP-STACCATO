@@ -14,13 +14,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QPushButton" name="pushButtonExibirXML">
-     <property name="text">
-      <string>Exibir XML de arquivo</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QLabel" name="labelNfe">
      <property name="text">
@@ -28,6 +21,33 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labelBuscar">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Buscar:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="lineEditBusca">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pushButtonExibirXML">
+     <property name="text">
+      <string>Exibir XML de arquivo</string>
      </property>
     </widget>
    </item>
@@ -53,23 +73,13 @@
      </attribute>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="labelBuscar">
+   <item row="3" column="1">
+    <widget class="QPushButton" name="pushButtonCancelarNFe">
      <property name="enabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="text">
-      <string>Buscar:</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="lineEditBusca">
-     <property name="enabled">
-      <bool>true</bool>
+      <string>Cancelar NFe</string>
      </property>
     </widget>
    </item>

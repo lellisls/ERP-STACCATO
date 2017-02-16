@@ -61,6 +61,13 @@
       <enum>QFrame::Plain</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="pushButtonCancelarCompra">
+        <property name="text">
+         <string>Cancelar</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="pushButtonMarcarFaturado">
         <property name="text">
@@ -68,14 +75,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="pushButtonCancelarCompra">
-        <property name="text">
-         <string>Cancelar</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="2">
+      <item row="0" column="0" colspan="3">
        <widget class="TableView" name="table">
         <property name="mouseTracking">
          <bool>true</bool>
@@ -101,6 +101,13 @@
         <attribute name="horizontalHeaderStretchLastSection">
          <bool>false</bool>
         </attribute>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="pushButtonReagendar">
+        <property name="text">
+         <string>Reagendar</string>
+        </property>
        </widget>
       </item>
      </layout>

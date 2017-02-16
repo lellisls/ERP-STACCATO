@@ -60,6 +60,7 @@ private:
   double minimoFrete;
   double porcFrete;
   QString m_idOrcamento;
+  QString error;
   SqlTableModel modelFluxoCaixa;
   SqlTableModel modelFluxoCaixa2;
   SqlTableModel modelItem;

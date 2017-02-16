@@ -15,8 +15,8 @@ class Estoque : public QDialog {
 public:
   explicit Estoque(QWidget *parent = 0);
   ~Estoque();
-  bool criarConsumo(const int idVendaProduto);
-  void viewRegisterById(const QString &idEstoque);
+  bool criarConsumo(const int idVendaProduto, double quant = 0);
+  bool viewRegisterById(const QString &idEstoque, bool showWindow = true);
 
 private slots:
   void on_pushButtonExibirNfe_clicked();
@@ -28,6 +28,7 @@ private:
   // attributes
   SqlTableModel model;
   SqlTableModel modelConsumo;
+  SqlTableModel modelViewConsumo;
   Ui::Estoque *ui;
 
   enum FieldColors {
@@ -36,6 +37,7 @@ private:
     Yellow = 2,    // Quant difere
     Red = 3,       // Não encontrado
     DarkGreen = 4, // Consumo
+    Cyan = 5       // Devolução
   };
 
   // methods

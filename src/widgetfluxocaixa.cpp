@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMessageBox>
 #include <QSqlError>
 
 #include "doubledelegate.h"
@@ -13,19 +14,27 @@ WidgetFluxoCaixa::WidgetFluxoCaixa(QWidget *parent) : QWidget(parent), ui(new Ui
 WidgetFluxoCaixa::~WidgetFluxoCaixa() { delete ui; }
 
 void WidgetFluxoCaixa::setupTables() {
-  model.setTable("view_fluxo_caixa");
-  ui->tableCaixa->setModel(&model);
+  modelCaixa.setTable("view_fluxo_caixa");
+  ui->tableCaixa->setModel(&modelCaixa);
   ui->tableCaixa->setItemDelegateForColumn("R$", new ReaisDelegate(this));
 
-  model2.setTable("view_fluxo_resumo");
-  ui->tableResumo->setModel(&model2);
+  ui->tableCaixa->hideColumn("Código");
+  ui->tableCaixa->hideColumn("contaDestino");
+  ui->tableCaixa->hideColumn("idConta");
+  ui->tableCaixa->hideColumn("Tipo");
+
+  modelResumo.setTable("view_fluxo_resumo");
+  ui->tableResumo->setModel(&modelResumo);
   ui->tableResumo->setItemDelegateForColumn("SAIDA", new ReaisDelegate(this));
   ui->tableResumo->setItemDelegateForColumn("ENTRADA", new ReaisDelegate(this));
   ui->tableResumo->setItemDelegateForColumn("R$", new ReaisDelegate(this));
+
+  ui->tableResumo->hideColumn("Conta");
+  ui->tableResumo->hideColumn("idConta");
 }
 
 bool WidgetFluxoCaixa::updateTables() {
-  if (model.tableName().isEmpty()) {
+  if (modelCaixa.tableName().isEmpty()) {
     setupTables();
 
     ui->dateEdit->setDate(QDate::currentDate());
@@ -33,6 +42,13 @@ bool WidgetFluxoCaixa::updateTables() {
 
     connect(ui->groupBoxMes, &QGroupBox::toggled, this, &WidgetFluxoCaixa::montaFiltro);
     connect(ui->dateEdit, &QDateEdit::dateChanged, this, &WidgetFluxoCaixa::montaFiltro);
+    connect(ui->itemBox1, &ItemBox::textChanged, this, &WidgetFluxoCaixa::montaFiltro);
+    connect(ui->itemBox2, &ItemBox::textChanged, this, &WidgetFluxoCaixa::montaFiltro);
+    connect(ui->groupBoxContas1, &QGroupBox::toggled, this, &WidgetFluxoCaixa::montaFiltro);
+    connect(ui->groupBoxContas2, &QGroupBox::toggled, this, &WidgetFluxoCaixa::montaFiltro);
+
+    ui->itemBox1->setSearchDialog(SearchDialog::conta(this));
+    ui->itemBox2->setSearchDialog(SearchDialog::conta(this));
   }
 
   return montaFiltro();
@@ -44,17 +60,27 @@ bool WidgetFluxoCaixa::montaFiltro() {
           ? "DATE_FORMAT(`Data Pag`, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'"
           : "";
 
-  model.setFilter(filtroData);
+  const QString conta =
+      ui->groupBoxContas1->isChecked() and ui->itemBox1->getValue().isValid()
+          ? QString(filtroData.isEmpty() ? "" : " AND ") + "idConta = " + ui->itemBox1->getValue().toString()
+          : "";
 
-  if (not model.select()) {
-    emit errorSignal(model.lastError().text());
+  modelCaixa.setFilter(filtroData + conta);
+
+  if (not modelCaixa.select()) {
+    emit errorSignal("Erro lendo tabela Caixa: " + modelCaixa.lastError().text());
     return false;
   }
 
-  model2.setFilter(filtroData);
+  const QString conta2 =
+      ui->groupBoxContas2->isChecked() and ui->itemBox2->getValue().isValid()
+          ? QString(filtroData.isEmpty() ? "" : " AND ") + "idConta = " + ui->itemBox2->getValue().toString()
+          : "";
 
-  if (not model2.select()) {
-    emit errorSignal(model2.lastError().text());
+  modelResumo.setFilter(filtroData + conta2);
+
+  if (not modelResumo.select()) {
+    emit errorSignal("Erro lendo tabela Resumo: " + modelResumo.lastError().text());
     return false;
   }
 
@@ -64,3 +90,7 @@ bool WidgetFluxoCaixa::montaFiltro() {
 void WidgetFluxoCaixa::on_tableCaixa_entered(const QModelIndex &) { ui->tableCaixa->resizeColumnsToContents(); }
 
 void WidgetFluxoCaixa::on_tableResumo_entered(const QModelIndex &) { ui->tableResumo->resizeColumnsToContents(); }
+
+// TODO: 1nao mostrar pendentes
+// TODO: 1mostrar apenas entrada/saida/saldo
+// TODO: 1terceira tabela futuro

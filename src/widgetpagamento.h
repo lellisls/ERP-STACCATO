@@ -30,10 +30,16 @@ private slots:
   void on_pushButtonInserirLancamento_clicked();
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
+  void on_tableVencer_doubleClicked(const QModelIndex &index);
+  void on_tableVencer_entered(const QModelIndex &);
+  void on_tableVencidos_doubleClicked(const QModelIndex &index);
+  void on_tableVencidos_entered(const QModelIndex &);
 
 private:
   // attributes
   SqlTableModel model;
+  QSqlQueryModel modelVencidos;
+  QSqlQueryModel modelVencer;
   Tipo tipo;
   Ui::WidgetPagamento *ui;
   // methods

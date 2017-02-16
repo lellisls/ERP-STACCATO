@@ -21,7 +21,9 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
+  void on_dateTimeEdit_dateChanged(const QDate &date);
   void on_itemBoxVeiculo_textChanged(const QString &);
+  void on_pushButtonAdicionarParcial_clicked();
   void on_pushButtonAdicionarProduto_clicked();
   void on_pushButtonAgendarCarga_clicked();
   void on_pushButtonRemoverProduto_clicked();
@@ -32,10 +34,12 @@ private slots:
 
 private:
   // attributes
+  QString error;
   SqlTableModel modelProdutos;
-  SqlTableModel modelVendas;
+  SqlTableModel modelViewProdutos;
   SqlTableModel modelTransp;
   SqlTableModel modelTransp2;
+  SqlTableModel modelVendas;
   Ui::WidgetLogisticaEntrega *ui;
   // methods
   bool adicionarProduto(const QModelIndexList &list);
@@ -43,6 +47,9 @@ private:
   void calcularPeso();
   void montaFiltro();
   void setupTables();
+  void calcularDisponivel();
+  bool adicionarProdutoParcial(const int row);
+  bool quebrarProduto(const int row, const int quantAgendar, const int quantTotal);
 };
 
 #endif // WIDGETLOGISTICAENTREGA_H

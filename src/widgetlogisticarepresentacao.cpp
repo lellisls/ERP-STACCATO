@@ -76,16 +76,21 @@ void WidgetLogisticaRepresentacao::setupTables() {
 void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {
   const auto list = ui->table->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
+  InputDialogConfirmacao input(InputDialogConfirmacao::Representacao);
+
+  if (input.exec() != InputDialogConfirmacao::Accepted) return;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not processRows(list)) {
+  if (not processRows(list, input.getDate())) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
   }
 
@@ -95,35 +100,29 @@ void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {
   QMessageBox::information(this, "Aviso!", "Atualizado!");
 }
 
-bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list) {
-  // NOTE: verificar quem cuida de produtos quebrados (loja/fornecedor):
-  // no caso do fornecedor só pedir data para o usuario
-  // no caso da loja marcar quantos produtos quebrados e fazer reposicao/credito?
-  InputDialogConfirmacao input(InputDialogConfirmacao::Representacao);
+bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list, const QDateTime &dataEntrega) {
+  //  QSqlQuery query1;
+  //  query1.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGUE', "
+  //                 "dataRealEnt = :dataRealEnt WHERE idPedido = :idPedido");
 
-  if (input.exec() != InputDialogConfirmacao::Accepted) return false;
-
-  const QDateTime dataEntrega = input.getDate();
+  QSqlQuery query;
+  query.prepare("UPDATE venda_has_produto SET status = 'ENTREGUE', dataRealEnt = :dataRealEnt "
+                "WHERE idVendaProduto = :idVendaProduto");
 
   for (auto const &item : list) {
-    QSqlQuery query;
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGUE', dataRealEnt = :dataRealEnt WHERE "
-                  "idPedido = :idPedido");
-    query.bindValue(":dataRealEnt", dataEntrega);
-    query.bindValue(":idPedido", model.data(item.row(), "idPedido"));
+    //    query1.bindValue(":dataRealEnt", dataEntrega);
+    //    query1.bindValue(":idPedido", model.data(item.row(), "idPedido"));
 
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status no pedido_fornecedor: " + query.lastError().text());
-      return false;
-    }
+    //    if (not query1.exec()) {
+    //      error = "Erro salvando status no pedido_fornecedor: " + query1.lastError().text();
+    //      return false;
+    //    }
 
-    query.prepare("UPDATE venda_has_produto SET status = 'ENTREGUE', dataRealEnt = :dataRealEnt WHERE idVendaProduto = "
-                  ":idVendaProduto");
     query.bindValue(":dataRealEnt", dataEntrega);
     query.bindValue(":idVendaProduto", model.data(item.row(), "idVendaProduto"));
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status na venda_produto: " + query.lastError().text());
+      error = "Erro salvando status na venda_produto: " + query.lastError().text();
       return false;
     }
   }
@@ -134,8 +133,9 @@ bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list) {
 void WidgetLogisticaRepresentacao::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetLogisticaRepresentacao::on_lineEditBusca_textChanged(const QString &text) {
-  model.setFilter("fornecedor = '" + fornecedor + "' AND (idVenda LIKE '%" + text + "%' OR cliente LIKE '%" + text +
-                  "%')");
+  model.setFilter("(idVenda LIKE '%" + text + "%' OR cliente LIKE '%" + text + "%')");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }
+
+// TODO: 2palimanan precisa de coleta/recebimento (colocar flag no cadastro dizendo que entra no fluxo de logistica)

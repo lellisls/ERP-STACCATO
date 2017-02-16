@@ -13,25 +13,25 @@ class ItemBox : public QLineEdit {
 public:
   explicit ItemBox(QWidget *parent);
   ~ItemBox();
-  QVariant value() const;
-  SearchDialog *searchDialog();
-  void changeItem(const QVariant &m_value);
+  QVariant getValue() const;
+  SearchDialog *getSearchDialog();
+  void changeItem(const QVariant &value);
   void clear();
   void setReadOnlyItemBox(const bool isReadOnly);
-  void setRegisterDialog(RegisterDialog *m_value);
-  void setSearchDialog(SearchDialog *m_value);
-  void setValue(const QVariant &m_value);
+  void setRegisterDialog(RegisterDialog *value);
+  void setSearchDialog(SearchDialog *value);
+  void setValue(const QVariant &value);
 
 private:
-  Q_PROPERTY(QVariant value READ value WRITE setValue STORED false)
+  Q_PROPERTY(QVariant value READ getValue WRITE setValue STORED false)
   // attributes
-  bool isReadOnlyItemBox = false;
-  QPushButton *m_searchButton, *m_plusButton;
-  QVariant m_value;
-  RegisterDialog *m_registerDialog = nullptr;
-  SearchDialog *m_searchDialog = nullptr;
+  bool readOnlyItemBox = false;
+  QPushButton *searchButton;
+  QPushButton *plusButton;
+  QVariant value;
+  RegisterDialog *registerDialog = nullptr;
+  SearchDialog *searchDialog = nullptr;
   // methods
-  RegisterDialog *registerDialog();
   virtual void edit();
   virtual void resizeEvent(QResizeEvent *event) override;
   virtual void search();

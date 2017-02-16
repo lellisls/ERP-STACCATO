@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QMessageBox>
+#include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -13,11 +14,9 @@ CadastroCliente::CadastroCliente(QWidget *parent)
     : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  //  for (auto const *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (auto const *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   ui->itemBoxCliente->setSearchDialog(SearchDialog::cliente(this));
   ui->itemBoxProfissional->setSearchDialog(SearchDialog::profissional(this));
@@ -36,6 +35,8 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   ui->lineEditCliente->setFocus();
 }
 
+CadastroCliente::~CadastroCliente() { delete ui; }
+
 void CadastroCliente::setupUi() {
   ui->lineEditCPF->setInputMask("999.999.999-99;_");
   ui->lineEditContatoCPF->setInputMask("999.999.999-99;_");
@@ -46,8 +47,6 @@ void CadastroCliente::setupUi() {
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
 }
-
-CadastroCliente::~CadastroCliente() { delete ui; }
 
 void CadastroCliente::setupTables() {
   ui->tableEndereco->setModel(&modelEnd);
@@ -110,9 +109,9 @@ bool CadastroCliente::savingProcedures() {
   if (not setData("telCom", ui->lineEditTel_Com->text())) return false;
   if (not setData("nextel", ui->lineEditNextel->text())) return false;
   if (not setData("email", ui->lineEditEmail->text())) return false;
-  if (not setData("idCadastroRel", ui->itemBoxCliente->value())) return false;
-  if (not setData("idProfissionalRel", ui->itemBoxProfissional->value())) return false;
-  if (not setData("idUsuarioRel", ui->itemBoxVendedor->value())) return false;
+  if (not setData("idCadastroRel", ui->itemBoxCliente->getValue())) return false;
+  if (not setData("idProfissionalRel", ui->itemBoxProfissional->getValue())) return false;
+  if (not setData("idUsuarioRel", ui->itemBoxVendedor->getValue())) return false;
   if (not setData("pfpj", tipoPFPJ)) return false;
   if (not setData("incompleto", incompleto)) return false;
   if (not setData("credito", ui->doubleSpinBoxCredito->value())) return false;
@@ -193,7 +192,7 @@ bool CadastroCliente::viewRegister() {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço do cliente: " + modelEnd.lastError().text());
   }
 
-  ui->itemBoxCliente->searchDialog()->setFilter("idCliente NOT IN (" + data("idCliente").toString() + ")");
+  ui->itemBoxCliente->getSearchDialog()->setFilter("idCliente NOT IN (" + data("idCliente").toString() + ")");
 
   QSqlQuery query;
   query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM cliente WHERE idCadastroRel = :idCadastroRel");
@@ -304,11 +303,63 @@ bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
 
   ui->tableEndereco->resizeColumnsToContents();
 
+  isDirty = true;
+
+  return true;
+}
+
+bool CadastroCliente::cadastrar() {
+  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+
+  if (row == -1) {
+    QMessageBox::critical(this, "Erro!", "Erro linha -1");
+    return false;
+  }
+
+  if (not isUpdate and not model.insertRow(row)) return false;
+
+  if (not savingProcedures()) return false;
+
+  for (int column = 0; column < model.rowCount(); ++column) {
+    QVariant dado = model.data(row, column);
+    if (dado.type() == QVariant::String) {
+      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+    }
+  }
+
+  if (not model.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro: " + model.lastError().text());
+    return false;
+  }
+
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
+
+  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
+    if (not modelEnd.setData(row, primaryKey, primaryId)) return false;
+  }
+
+  for (int column = 0; column < modelEnd.rowCount(); ++column) {
+    QVariant dado = modelEnd.data(row, column);
+    if (dado.type() == QVariant::String) {
+      if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
+    }
+  }
+
+  if (not modelEnd.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
+    return false;
+  }
+
   return true;
 }
 
 void CadastroCliente::on_pushButtonAdicionarEnd_clicked() {
-  if (not cadastrarEndereco(false)) {
+  if (not cadastrarEndereco()) {
     QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!");
     return;
   }
@@ -438,7 +489,23 @@ void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
 bool CadastroCliente::save() {
   if (not verifyFields()) return false;
 
-  return RegisterAddressDialog::save();
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cadastrar()) {
+    QSqlQuery("ROLLBACK").exec();
+    return false;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  isDirty = false;
+
+  viewRegisterById(primaryId);
+
+  if (not silent) successMessage();
+
+  return true;
 }
 
 void CadastroCliente::successMessage() {
@@ -458,5 +525,3 @@ void CadastroCliente::on_checkBoxInscEstIsento_toggled(bool checked) {
     ui->lineEditInscEstadual->setReadOnly(false);
   }
 }
-
-// NOTE: validar inscricaoEstadual (http://www.sintegra.gov.br/insc_est.html)

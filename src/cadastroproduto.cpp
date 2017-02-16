@@ -11,8 +11,6 @@ CadastroProduto::CadastroProduto(QWidget *parent)
     : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
   ui->lineEditNCM->setInputMask("99999999;_");
 
@@ -44,9 +42,9 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 
   //  model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table
 
-  //  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }
@@ -103,7 +101,7 @@ bool CadastroProduto::verifyFields() {
     return false;
   }
 
-  if (ui->itemBoxFornecedor->value().isNull()) {
+  if (ui->itemBoxFornecedor->getValue().isNull()) {
     ui->itemBoxFornecedor->setFocus();
     QMessageBox::critical(this, "Erro!", "Faltou preencher fornecedor!");
     return false;
@@ -171,6 +169,10 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->textEditObserv, "observacoes", "plainText");
 }
 
+void CadastroProduto::successMessage() {
+  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Produto cadastrado com sucesso!");
+}
+
 bool CadastroProduto::savingProcedures() {
   if (not setData("codBarras", ui->lineEditCodBarras->text())) return false;
   if (not setData("codComercial", ui->lineEditCodComer->text())) return false;
@@ -183,7 +185,7 @@ bool CadastroProduto::savingProcedures() {
   if (not setData("formComercial", ui->lineEditFormComer->text())) return false;
   if (not setData("Fornecedor", ui->itemBoxFornecedor->text())) return false;
   if (not setData("icms", ui->lineEditICMS->text())) return false;
-  if (not setData("idFornecedor", ui->itemBoxFornecedor->value())) return false;
+  if (not setData("idFornecedor", ui->itemBoxFornecedor->getValue())) return false;
   if (not setData("ipi", ui->doubleSpinBoxIPI->value())) return false;
   if (not setData("kgcx", ui->doubleSpinBoxKgCx->value())) return false;
   if (not setData("m2cx", ui->doubleSpinBoxM2Cx->value())) return false;
@@ -202,10 +204,10 @@ bool CadastroProduto::savingProcedures() {
 
   QSqlQuery query;
   query.prepare("SELECT representacao FROM fornecedor WHERE idFornecedor = :idFornecedor");
-  query.bindValue(":idFornecedor", ui->itemBoxFornecedor->value());
+  query.bindValue(":idFornecedor", ui->itemBoxFornecedor->getValue());
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro verificando se fornecedor é representacao: " + query.lastError().text());
+    error = "Erro verificando se fornecedor é representacao: " + query.lastError().text();
     return false;
   }
 
@@ -235,12 +237,10 @@ void CadastroProduto::calcularMarkup() {
 }
 
 bool CadastroProduto::cadastrar() {
-  if (not verifyFields()) return false;
-
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
+    error = "Erro: linha -1 RegisterDialog!";
     return false;
   }
 
@@ -256,23 +256,29 @@ bool CadastroProduto::cadastrar() {
   }
 
   if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    error = "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text();
     return false;
   }
 
-  primaryId =
-      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
 
   return true;
 }
 
 bool CadastroProduto::save() {
+  if (not verifyFields()) return false;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   if (not cadastrar()) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return false;
   }
 

@@ -230,6 +230,7 @@ SearchDialog *SearchDialog::loja(QWidget *parent) {
 
 SearchDialog *SearchDialog::produto(QWidget *parent) {
   SearchDialog *sdProd = new SearchDialog(
+      // TODO: 3nao mostrar promocao vencida no descontinuado
       "Buscar Produto", "produto", {"fornecedor", "descricao", "colecao", "codcomercial"}, "idProduto = 0", parent);
 
   sdProd->setPrimaryKey("idProduto");

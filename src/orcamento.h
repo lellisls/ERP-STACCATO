@@ -61,7 +61,8 @@ private:
   double minimoFrete = 0;
   double porcFrete = 0;
   QDataWidgetMapper mapperItem;
-  SearchDialogProxy *proxy;
+  QString error;
+  SearchDialogProxy *proxy; // inline this?
   SqlTableModel modelItem;
   Ui::Orcamento *ui;
   // methods

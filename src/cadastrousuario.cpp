@@ -1,4 +1,5 @@
 #include <QCheckBox>
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -13,11 +14,9 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
     : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  //  for (auto const *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (auto const *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->table->hide();
 
@@ -155,14 +154,11 @@ void CadastroUsuario::on_pushButtonBuscar_clicked() {
 }
 
 bool CadastroUsuario::cadastrar() {
-  if (not verifyFields()) return false;
-
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " +
-                                             QString::number(mapper.currentIndex()) + "\nModel: " +
-                                             QString::number(model.rowCount()));
+    error = "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " + QString::number(mapper.currentIndex()) +
+            "\nModel: " + QString::number(model.rowCount());
     return false;
   }
 
@@ -178,13 +174,16 @@ bool CadastroUsuario::cadastrar() {
   }
 
   if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    error = "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text();
     return false;
   }
 
-  primaryId =
-      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
 
   if (not isUpdate) {
     QSqlQuery query;
@@ -192,7 +191,7 @@ bool CadastroUsuario::cadastrar() {
     query.bindValue(":user", ui->lineEditUser->text().toLower());
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro criando usuário do banco de dados: " + query.lastError().text());
+      error = "Erro criando usuário do banco de dados: " + query.lastError().text();
       return false;
     }
 
@@ -200,8 +199,7 @@ bool CadastroUsuario::cadastrar() {
     query.bindValue(":user", ui->lineEditUser->text().toLower());
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!",
-                            "Erro guardando privilégios do usuário do banco de dados: " + query.lastError().text());
+      error = "Erro guardando privilégios do usuário do banco de dados: " + query.lastError().text();
       return false;
     }
 
@@ -215,14 +213,14 @@ bool CadastroUsuario::cadastrar() {
     modelPermissoes.setData(row2, "idUsuario", primaryId);
 
     if (not modelPermissoes.submitAll()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando permissões: " + modelPermissoes.lastError().text());
+      error = "Erro salvando permissões: " + modelPermissoes.lastError().text();
       return false;
     }
   }
 
   if (isUpdate) {
     if (not modelPermissoes.submitAll()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando permissões: " + modelPermissoes.lastError().text());
+      error = "Erro salvando permissões: " + modelPermissoes.lastError().text();
       return false;
     }
   }
@@ -231,11 +229,14 @@ bool CadastroUsuario::cadastrar() {
 }
 
 bool CadastroUsuario::save() {
+  if (not verifyFields()) return false;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   if (not cadastrar()) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return false;
   }
 
@@ -269,3 +270,5 @@ void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
     return;
   }
 }
+
+// TODO: 1colocar permissoes padroes para cada tipo de usuario

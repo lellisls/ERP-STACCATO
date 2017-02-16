@@ -32,11 +32,14 @@ private slots:
 
 private:
   // attributes
+  QString error;
   Ui::CadastroFornecedor *ui;
   // methods
-  bool ajustarValidade();
-  bool cadastrarEndereco(const bool isUpdate);
+  bool ajustarValidade(const int newValidade);
+  bool cadastrarEndereco(const bool isUpdate = false);
   bool viewRegister() override;
+  virtual bool cadastrar() override;
+  virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
   virtual void clearFields() override;

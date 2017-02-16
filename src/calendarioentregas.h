@@ -21,6 +21,8 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
+  void on_lineEditBuscar_textChanged(const QString &text);
+  void on_pushButtonCancelarEntrega_clicked();
   void on_pushButtonConfirmarEntrega_clicked();
   void on_pushButtonGerarNFeEntregar_clicked();
   void on_pushButtonImprimirDanfe_clicked();
@@ -30,14 +32,15 @@ private slots:
 
 private:
   // attributes
+  QString error;
   SqlTableModel modelCalendario;
   SqlTableModel modelCarga;
   SqlTableModel modelProdutos;
   Ui::CalendarioEntregas *ui;
   // methods
-  bool confirmarEntrega();
-  bool imprimirDanfe();
-  bool reagendar();
+  bool cancelarEntrega(const QModelIndexList &list);
+  bool confirmarEntrega(const QDateTime &dataRealEnt, const QString &entregou, const QString &recebeu);
+  bool reagendar(const QModelIndexList &list, const QDateTime &dataPrevEnt);
   void setupTables();
 };
 

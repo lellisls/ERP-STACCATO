@@ -1,12 +1,8 @@
-#include <QCompleter>
-#include <QDate>
 #include <QDebug>
 #include <QDesktopServices>
-#include <QLabel>
 #include <QMessageBox>
 #include <QShortcut>
 #include <QSqlError>
-#include <QSqlRecord>
 #include <QStyleFactory>
 #include <QTimer>
 #include <QUrl>
@@ -91,36 +87,43 @@ MainWindow::~MainWindow() {
 
 void MainWindow::on_actionCriarOrcamento_triggered() {
   Orcamento *orcamento = new Orcamento(this);
+  orcamento->setAttribute(Qt::WA_DeleteOnClose);
   orcamento->show();
 }
 
 void MainWindow::on_actionCadastrarProdutos_triggered() {
   CadastroProduto *cad = new CadastroProduto(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
 void MainWindow::on_actionCadastrarCliente_triggered() {
   CadastroCliente *cad = new CadastroCliente(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
 void MainWindow::on_actionCadastrarUsuario_triggered() {
   CadastroUsuario *cad = new CadastroUsuario(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
 void MainWindow::on_actionCadastrarProfissional_triggered() {
   CadastroProfissional *cad = new CadastroProfissional(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
 void MainWindow::on_actionGerenciar_Transportadoras_triggered() {
   CadastroTransportadora *cad = new CadastroTransportadora(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
 void MainWindow::on_actionGerenciar_Lojas_triggered() {
   CadastroLoja *cad = new CadastroLoja(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
@@ -148,6 +151,7 @@ void MainWindow::updateTables() {
 
 void MainWindow::on_actionCadastrarFornecedor_triggered() {
   CadastroFornecedor *cad = new CadastroFornecedor(this);
+  cad->setAttribute(Qt::WA_DeleteOnClose);
   cad->show();
 }
 
@@ -182,6 +186,7 @@ void MainWindow::darkTheme() {
   darkPalette.setColor(QPalette::ButtonText, Qt::white);
   darkPalette.setColor(QPalette::BrightText, Qt::red);
   darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+  darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(120, 120, 120));
 
   darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
   darkPalette.setColor(QPalette::HighlightedText, Qt::black);
@@ -214,6 +219,7 @@ void MainWindow::on_actionEscuro_triggered() {
 
 void MainWindow::on_actionConfiguracoes_triggered() {
   UserConfig *config = new UserConfig(this);
+  config->setAttribute(Qt::WA_DeleteOnClose);
   config->show();
 }
 
@@ -223,17 +229,21 @@ void MainWindow::on_actionCalculadora_triggered() {
 
 void MainWindow::on_actionProdutos_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->setAttribute(Qt::WA_DeleteOnClose);
   importa->importarProduto();
 }
 
 void MainWindow::on_actionEstoque_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->setAttribute(Qt::WA_DeleteOnClose);
   importa->importarEstoque();
 }
 
 void MainWindow::on_actionPromocao_triggered() {
   ImportaProdutos *importa = new ImportaProdutos(this);
+  importa->setAttribute(Qt::WA_DeleteOnClose);
   importa->importarPromocao();
 }
 
 // NOTE: colocar logo da staccato na mainwindow
+// NOTE: pegar objetos criados com new dentro dos widgets da mainwindow e usar smart pointer

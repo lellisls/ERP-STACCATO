@@ -47,16 +47,16 @@ protected:
   QStringList getTextKeys() const;
   QVariant data(const int row, const QString &key);
   QVariant data(const QString &key);
-  virtual bool cadastrar();
+  virtual bool cadastrar() = 0;
   virtual bool newRegister();
-  virtual bool save();
+  virtual bool save() = 0;
   virtual bool savingProcedures() = 0;
   virtual bool verifyFields() = 0;
   virtual bool verifyRequiredField(QLineEdit *line, const bool silent = false);
   virtual void clearFields() = 0;
   virtual void registerMode() = 0;
   virtual void setupMapper() = 0;
-  virtual void successMessage();
+  virtual void successMessage() = 0;
   virtual void updateMode() = 0;
   void addMapping(QWidget *widget, const QString &key, const QByteArray &propertyName = QByteArray());
   void closeEvent(QCloseEvent *event) override;
@@ -64,6 +64,7 @@ protected:
   void keyPressEvent(QKeyEvent *event) override;
   void remove();
   void setTextKeys(const QStringList &value);
+  QVariant getLastInsertId();
 };
 
 #endif // REGISTERDIALOG_H

@@ -88,7 +88,7 @@ void WidgetLogisticaEntregues::setupTables() {
   modelProdutos.setHeaderData("unCaixa", "Un./Cx.");
   modelProdutos.setHeaderData("codComercial", "Cód. Com.");
   modelProdutos.setHeaderData("formComercial", "Form. Com.");
-  modelProdutos.setHeaderData("dataPrevEnt", "Prev. Ent.");
+  modelProdutos.setHeaderData("dataRealEnt", "Data Ent.");
 
   modelProdutos.setFilter("0");
 
@@ -99,6 +99,7 @@ void WidgetLogisticaEntregues::setupTables() {
   ui->tableProdutos->setModel(&modelProdutos);
   ui->tableProdutos->hideColumn("idVendaProduto");
   ui->tableProdutos->hideColumn("idProduto");
+  ui->tableProdutos->hideColumn("dataPrevEnt");
 }
 
 void WidgetLogisticaEntregues::on_tableVendas_clicked(const QModelIndex &index) {

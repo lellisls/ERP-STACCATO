@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql network xml
+QT       += core gui sql network xml charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -41,7 +41,8 @@ include(QSimpleUpdater/qsimpleupdater.pri)
 include(LimeReport-1.3.11/limereport/limereport.pri)
 
 SOURCES += \
-    src/adiantarrecebimento.cpp \
+    src/acbr.cpp \
+    src/anteciparrecebimento.cpp \
     src/baixaorcamento.cpp \
     src/cadastrarnfe.cpp \
     src/cadastrocliente.cpp \
@@ -106,6 +107,7 @@ SOURCES += \
     src/validadedialog.cpp \
     src/venda.cpp \
     src/vendaproxymodel.cpp \
+    src/widgetcalendario.cpp \
     src/widgetcompra.cpp \
     src/widgetcompraconfirmar.cpp \
     src/widgetcompradevolucao.cpp \
@@ -130,14 +132,14 @@ SOURCES += \
     src/widgetnfesaida.cpp \
     src/widgetorcamento.cpp \
     src/widgetpagamento.cpp \
-    src/widgetreceberresumo.cpp \
     src/widgetrelatorio.cpp \
     src/widgetvenda.cpp \
     src/xml.cpp \
     src/xml_viewer.cpp
 
 HEADERS  += \
-    src/adiantarrecebimento.h \
+    src/acbr.h \
+    src/anteciparrecebimento.h \
     src/baixaorcamento.h \
     src/cadastrarnfe.h \
     src/cadastrocliente.h \
@@ -201,6 +203,7 @@ HEADERS  += \
     src/validadedialog.h \
     src/venda.h \
     src/vendaproxymodel.h \
+    src/widgetcalendario.h \
     src/widgetcompra.h \
     src/widgetcompraconfirmar.h \
     src/widgetcompradevolucao.h \
@@ -225,14 +228,13 @@ HEADERS  += \
     src/widgetnfesaida.h \
     src/widgetorcamento.h \
     src/widgetpagamento.h \
-    src/widgetreceberresumo.h \
     src/widgetrelatorio.h \
     src/widgetvenda.h \
     src/xml.h \
     src/xml_viewer.h
 
 FORMS += \
-    ui/adiantarrecebimento.ui \
+    ui/anteciparrecebimento.ui \
     ui/baixaorcamento.ui \
     ui/cadastrarnfe.ui \
     ui/cadastrocliente.ui \
@@ -263,6 +265,7 @@ FORMS += \
     ui/userconfig.ui \
     ui/validadedialog.ui \
     ui/venda.ui \
+    ui/widgetcalendario.ui \
     ui/widgetcompra.ui \
     ui/widgetcompraconfirmar.ui \
     ui/widgetcompradevolucao.ui \
@@ -287,7 +290,6 @@ FORMS += \
     ui/widgetnfesaida.ui \
     ui/widgetorcamento.ui \
     ui/widgetpagamento.ui \
-    ui/widgetreceberresumo.ui \
     ui/widgetrelatorio.ui \
     ui/widgetvenda.ui \
     ui/xml_viewer.ui

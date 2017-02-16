@@ -63,7 +63,7 @@ bool LoginDialog::dbConnect() {
   db.setPassword("1234");
   db.setDatabaseName("mysql");
 
-  db.setConnectOptions("CLIENT_COMPRESS=1");
+  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
   //  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;MYSQL_OPT_CONNECT_TIMEOUT=5;MYSQL_OPT_READ_TIMEOUT=5;"
   //                       "MYSQL_OPT_WRITE_TIMEOUT=5");
 

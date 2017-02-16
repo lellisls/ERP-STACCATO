@@ -29,7 +29,6 @@ private:
   SqlTableModel model;
   Ui::WidgetLogistica *ui;
   // methods
-  void setupTables();
 };
 
 #endif // WIDGETLOGISTICA_H

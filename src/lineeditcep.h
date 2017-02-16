@@ -12,8 +12,6 @@ public:
   bool isValid() const;
 
 private:
-  Q_PROPERTY(QString value READ getValue WRITE setValue STORED false)
-
   QString getValue() const;
   void setValue(const QString &value);
 };

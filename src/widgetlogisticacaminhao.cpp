@@ -1,8 +1,8 @@
-#include "widgetlogisticacaminhao.h"
-#include "ui_widgetlogisticacaminhao.h"
-
 #include <QMessageBox>
 #include <QSqlError>
+
+#include "ui_widgetlogisticacaminhao.h"
+#include "widgetlogisticacaminhao.h"
 
 WidgetLogisticaCaminhao::WidgetLogisticaCaminhao(QWidget *parent)
     : QWidget(parent), ui(new Ui::WidgetLogisticaCaminhao) {

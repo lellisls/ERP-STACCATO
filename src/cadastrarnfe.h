@@ -3,6 +3,7 @@
 
 #include <QDataWidgetMapper>
 #include <QDialog>
+#include <QSqlQuery>
 #include <QTextStream>
 
 #include "sqltablemodel.h"
@@ -20,6 +21,7 @@ public:
   void prepararNFe(const QList<int> &items);
 
 private slots:
+  void on_comboBoxCfop_currentTextChanged(const QString &text);
   void on_comboBoxCOFINScst_currentTextChanged(const QString &text);
   void on_comboBoxICMSModBc_currentIndexChanged(int index);
   void on_comboBoxICMSModBcSt_currentIndexChanged(int index);
@@ -42,10 +44,12 @@ private slots:
   void on_doubleSpinBoxPISppis_valueChanged(double);
   void on_doubleSpinBoxPISvbc_valueChanged(double);
   void on_doubleSpinBoxPISvpis_valueChanged(double value);
+  void on_doubleSpinBoxValorFrete_valueChanged(double value);
   void on_itemBoxCliente_textChanged(const QString &);
   void on_itemBoxEnderecoEntrega_textChanged(const QString &);
   void on_itemBoxEnderecoFaturamento_textChanged(const QString &);
   void on_itemBoxVeiculo_textChanged(const QString &);
+  void on_pushButtonConsultarCadastro_clicked();
   void on_pushButtonEnviarNFE_clicked();
   void on_pushButtonGerarNFE_clicked();
   void on_tableItens_clicked(const QModelIndex &index);
@@ -55,11 +59,16 @@ private slots:
 
 private:
   // attributes
-  bool ok = false;
   const QString idVenda;
   QDataWidgetMapper mapper;
+  QSqlQuery queryCliente;
+  QSqlQuery queryEndereco;
+  QSqlQuery queryIBGE;
+  QSqlQuery queryLojaEnd;
   QString arquivo;
   QString chaveNum;
+  QString error;
+  QString xml;
   SqlTableModel modelLoja;
   SqlTableModel modelProd;
   SqlTableModel modelVenda;
@@ -67,21 +76,18 @@ private:
   // methods
   bool cadastrar(const bool test = false);
   bool calculaDigitoVerificador(QString &chave);
-  bool criarChaveAcesso(QString &chave);
-  bool guardarNotaBD();
+  bool criarChaveAcesso();
   bool preencherNumeroNFe();
   bool validar();
-  bool writeDestinatario(QTextStream &stream);
-  bool writeEmitente(QTextStream &stream);
-  bool writeProduto(QTextStream &stream);
-  bool writeTransportadora(QTextStream &stream) const;
-  bool writeTXT(const bool test = false);
-  bool writeVolume(QTextStream &stream) const;
   QString clearStr(const QString &str) const;
-  QString removeDiacritics(const QString &str) const;
   void setupTables();
+  void writeDestinatario(QTextStream &stream) const;
+  void writeEmitente(QTextStream &stream) const;
   void writeIdentificacao(QTextStream &stream) const;
+  void writeProduto(QTextStream &stream) const;
   void writeTotal(QTextStream &stream) const;
+  void writeTransportadora(QTextStream &stream) const;
+  void writeVolume(QTextStream &stream) const;
 };
 
 #endif // CADASTRARNFE_H

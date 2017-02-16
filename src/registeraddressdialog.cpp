@@ -38,8 +38,6 @@ void RegisterAddressDialog::setupTables(const QString &table) {
 }
 
 bool RegisterAddressDialog::cadastrar() {
-  if (not verifyFields()) return false;
-
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
@@ -63,8 +61,12 @@ bool RegisterAddressDialog::cadastrar() {
     return false;
   }
 
-  primaryId =
-      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     if (not modelEnd.setData(row, primaryKey, primaryId)) return false;
@@ -81,26 +83,6 @@ bool RegisterAddressDialog::cadastrar() {
     QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
     return false;
   }
-
-  return true;
-}
-
-bool RegisterAddressDialog::save() {
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
-
-  if (not cadastrar()) {
-    QSqlQuery("ROLLBACK").exec();
-    return false;
-  }
-
-  QSqlQuery("COMMIT").exec();
-
-  isDirty = false;
-
-  viewRegisterById(primaryId);
-
-  if (not silent) successMessage();
 
   return true;
 }

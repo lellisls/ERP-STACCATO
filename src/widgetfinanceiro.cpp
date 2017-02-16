@@ -14,6 +14,7 @@ WidgetFinanceiro::WidgetFinanceiro(QWidget *parent) : QWidget(parent), ui(new Ui
   connect(ui->widgetPagar, &WidgetPagamento::errorSignal, this, &WidgetFinanceiro::errorSignal);
   connect(ui->widgetReceber, &WidgetPagamento::errorSignal, this, &WidgetFinanceiro::errorSignal);
   connect(ui->widgetVenda, &WidgetVenda::errorSignal, this, &WidgetFinanceiro::errorSignal);
+  connect(ui->widgetCompra, &WidgetFinanceiroCompra::errorSignal, this, &WidgetFinanceiro::errorSignal);
 
   connect(ui->tabWidget, &QTabWidget::currentChanged, this, &WidgetFinanceiro::updateTables);
 }
@@ -26,7 +27,6 @@ bool WidgetFinanceiro::updateTables() {
   if (currentText == "Fluxo de Caixa") return ui->widgetFluxoCaixa->updateTables();
   if (currentText == "Contas a Pagar") return ui->widgetPagar->updateTables();
   if (currentText == "Contas a Receber") return ui->widgetReceber->updateTables();
-  if (currentText == "Receber Resumo") return ui->widgetReceberResumo->updateTables();
   if (currentText == "Vendas") return ui->widgetVenda->updateTables();
   if (currentText == "Compras") return ui->widgetCompra->updateTables();
 

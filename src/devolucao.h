@@ -31,6 +31,7 @@ private:
   bool createNewId = false;
   const QString idVenda;
   QDataWidgetMapper mapperItem;
+  QString error;
   QString idDevolucao;
   SqlTableModel modelCliente;
   SqlTableModel modelDevolvidos;
@@ -43,12 +44,13 @@ private:
   bool criarContas();
   bool criarDevolucao();
   bool desassociarCompra();
-  bool devolverItem();
+  bool devolverItem(const QModelIndexList &list);
   bool inserirItens(const QModelIndexList &list);
   bool salvarCredito();
   void calcPrecoItemTotal();
   void determinarIdDevolucao();
   void setupTables();
+  void limparCampos();
 };
 
 #endif // DEVOLUCAO_H

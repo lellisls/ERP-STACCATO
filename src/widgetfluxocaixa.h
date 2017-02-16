@@ -26,8 +26,8 @@ private slots:
 
 private:
   // attributes
-  SqlTableModel model;
-  SqlTableModel model2;
+  SqlTableModel modelCaixa;
+  SqlTableModel modelResumo;
   Ui::WidgetFluxoCaixa *ui;
   // methods
   bool montaFiltro();

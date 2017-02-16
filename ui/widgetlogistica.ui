@@ -159,6 +159,16 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_9">
+       <attribute name="title">
+        <string>Calendário</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="WidgetCalendario" name="widgetCalendario" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </item>
@@ -216,6 +226,12 @@
    <class>WidgetLogisticaEntregues</class>
    <extends>QWidget</extends>
    <header>src/widgetlogisticaentregues.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetCalendario</class>
+   <extends>QWidget</extends>
+   <header>src/widgetcalendario.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

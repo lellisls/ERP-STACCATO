@@ -26,17 +26,18 @@ private slots:
   void on_lineEditBusca_textChanged(const QString &);
   void on_pushButtonMarcarColetado_clicked();
   void on_pushButtonReagendar_clicked();
-  void on_table_doubleClicked(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
+  void on_pushButtonVenda_clicked();
 
 private:
   // attributes
-  SqlTableModel model;
   QString fornecedor;
+  QString error;
+  SqlTableModel model;
   Ui::WidgetLogisticaColeta *ui;
   // methods
-  bool cadastrar();
-  bool reagendar();
+  bool cadastrar(const QModelIndexList &list, const QDateTime &dataColeta, const QDateTime &dataPrevReceb);
+  bool reagendar(const QModelIndexList &list, const QDateTime &dataPrevColeta);
   void setupTables();
 };
 

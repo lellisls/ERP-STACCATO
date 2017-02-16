@@ -48,6 +48,7 @@ private:
   // attributes
   QDataWidgetMapper mapperConta;
   QDataWidgetMapper mapperPagamento;
+  QString error;
   SqlTableModel modelAssocia1;
   SqlTableModel modelAssocia2;
   SqlTableModel modelConta;
@@ -59,8 +60,8 @@ private:
   bool adicionarPagamento();
   bool atualizarPagamento();
   bool cadastrar() override;
-  bool cadastrarConta(const bool isUpdate);
-  bool cadastrarEndereco(const bool isUpdate);
+  bool cadastrarConta(const bool isUpdate = false);
+  bool cadastrarEndereco(const bool isUpdate = false);
   bool viewRegister() override;
   virtual bool newRegister() override;
   virtual bool save() override;

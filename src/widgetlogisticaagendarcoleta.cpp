@@ -10,6 +10,7 @@
 #include <QStandardItemModel>
 #include <QUrl>
 
+#include "acbr.h"
 #include "doubledelegate.h"
 #include "estoqueprazoproxymodel.h"
 #include "inputdialog.h"
@@ -24,6 +25,8 @@ WidgetLogisticaAgendarColeta::WidgetLogisticaAgendarColeta(QWidget *parent)
 
   ui->frameCaminhao->hide();
   ui->pushButtonCancelarCarga->hide();
+
+  ui->dateTimeEdit->setDate(QDate::currentDate());
 }
 
 WidgetLogisticaAgendarColeta::~WidgetLogisticaAgendarColeta() { delete ui; }
@@ -39,6 +42,7 @@ void WidgetLogisticaAgendarColeta::setupTables() {
     return;
   }
 
+  modelEstoque.setHeaderData("dataRealFat", "Data Faturado");
   modelEstoque.setHeaderData("idEstoque", "Estoque");
   modelEstoque.setHeaderData("codComercial", "Cód. Com.");
   modelEstoque.setHeaderData("fornecedor", "Fornecedor");
@@ -55,7 +59,14 @@ void WidgetLogisticaAgendarColeta::setupTables() {
 
   ui->tableEstoque->setModel(new EstoquePrazoProxyModel(&modelEstoque, this));
   ui->tableEstoque->setItemDelegate(new DoubleDelegate(this));
+  ui->tableEstoque->hideColumn("prazoEntrega");
   ui->tableEstoque->hideColumn("fornecedor");
+  ui->tableEstoque->hideColumn("unCaixa");
+  ui->tableEstoque->hideColumn("formComercial");
+  ui->tableEstoque->hideColumn("idProduto");
+  ui->tableEstoque->hideColumn("idNFe");
+  ui->tableEstoque->hideColumn("ordemCompra");
+  ui->tableEstoque->hideColumn("local");
 
   //
 
@@ -179,7 +190,8 @@ void WidgetLogisticaAgendarColeta::tableFornLogistica_activated(const QString &f
 
   ui->lineEditBusca->clear();
 
-  modelEstoque.setFilter("fornecedor = '" + fornecedor + "'");
+  modelEstoque.setFilter("fornecedor = '" + fornecedor + "' AND idVenda IS " +
+                         QString(ui->checkBoxEstoque->isChecked() ? "NULL" : "NOT NULL"));
 
   if (not modelEstoque.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
@@ -199,20 +211,21 @@ void WidgetLogisticaAgendarColeta::on_pushButtonMontarCarga_clicked() {
     return;
   }
 
-  QModelIndexList list;
-
   if (modelTransp.rowCount() == 0) {
     QMessageBox::critical(this, "Erro!", "Nenhum item no veículo!");
     return;
   }
+
+  QModelIndexList list;
 
   for (int row = 0; row < modelTransp.rowCount(); ++row) list << modelTransp.index(row, 0);
 
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not processRows(list, true)) {
+  if (not processRows(list, ui->dateTimeEdit->dateTime(), true)) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
   }
 
@@ -227,16 +240,21 @@ void WidgetLogisticaAgendarColeta::on_pushButtonMontarCarga_clicked() {
 void WidgetLogisticaAgendarColeta::on_pushButtonAgendarColeta_clicked() {
   const auto list = ui->tableEstoque->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
+  InputDialog input(InputDialog::AgendarColeta, this);
+
+  if (input.exec() != InputDialog::Accepted) return;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not processRows(list)) {
+  if (not processRows(list, input.getNextDate())) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
   }
 
@@ -246,13 +264,8 @@ void WidgetLogisticaAgendarColeta::on_pushButtonAgendarColeta_clicked() {
   QMessageBox::information(this, "Aviso!", "Agendado com sucesso!");
 }
 
-bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, const bool montarCarga) {
-  InputDialog input(InputDialog::AgendarColeta);
-
-  if (input.exec() != InputDialog::Accepted) return false;
-
-  const QDateTime dataPrevColeta = input.getNextDate();
-
+bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, const QDateTime &dataPrevColeta,
+                                               const bool montarCarga) {
   for (auto const &item : list) {
     int idEstoque;
     QString codComercial;
@@ -274,7 +287,7 @@ bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, cons
       queryTemp.bindValue(":idEstoque", idEstoque);
 
       if (not queryTemp.exec() or not queryTemp.first()) {
-        QMessageBox::critical(this, "Erro!", "Erro buscando codComercial: " + queryTemp.lastError().text());
+        error = "Erro buscando codComercial: " + queryTemp.lastError().text();
         return false;
       }
 
@@ -289,7 +302,7 @@ bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, cons
     query.bindValue(":idEstoque", idEstoque);
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status no estoque: " + query.lastError().text());
+      error = "Erro salvando status no estoque: " + query.lastError().text();
       return false;
     }
 
@@ -300,7 +313,7 @@ bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, cons
     query.bindValue(":codComercial", codComercial);
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status no pedido_fornecedor: " + query.lastError().text());
+      error = "Erro salvando status no pedido_fornecedor: " + query.lastError().text();
       return false;
     }
 
@@ -312,13 +325,13 @@ bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, cons
     query.bindValue(":codComercial", codComercial);
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando status na venda_produto: " + query.lastError().text());
+      error = "Erro salvando status na venda_produto: " + query.lastError().text();
       return false;
     }
   }
 
   if (not modelTransp.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando carga veiculo: " + modelTransp.lastError().text());
+    error = "Erro salvando carga veiculo: " + modelTransp.lastError().text();
     return false;
   }
 
@@ -332,14 +345,16 @@ void WidgetLogisticaAgendarColeta::on_tableEstoque_entered(const QModelIndex &) 
 void WidgetLogisticaAgendarColeta::on_itemBoxVeiculo_textChanged(const QString &) {
   QSqlQuery query;
   query.prepare("SELECT capacidade FROM transportadora_has_veiculo WHERE idVeiculo = :idVeiculo");
-  query.bindValue(":idVeiculo", ui->itemBoxVeiculo->value());
+  query.bindValue(":idVeiculo", ui->itemBoxVeiculo->getValue());
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando dados veiculo: " + query.lastError().text());
     return;
   }
 
-  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->value().toString() + " AND status != 'FINALIZADO'");
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
+                         " AND status != 'FINALIZADO' AND DATE(data) = '" +
+                         ui->dateTimeEdit->date().toString("yyyy-MM-dd") + "'");
 
   if (not modelTransp2.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
@@ -356,12 +371,25 @@ bool WidgetLogisticaAgendarColeta::adicionarProduto(const QModelIndexList &list)
     const int row = modelTransp.rowCount();
     modelTransp.insertRow(row);
 
-    if (not modelTransp.setData(row, "idVeiculo", ui->itemBoxVeiculo->value())) return false;
+    //
+
+    const double kg = modelEstoque.data(item.row(), "kgcx").toDouble();
+    const double caixa = modelEstoque.data(item.row(), "caixas").toDouble();
+    const double peso = kg * caixa;
+
+    //
+
+    if (not modelTransp.setData(row, "fornecedor", modelEstoque.data(item.row(), "fornecedor"))) return false;
+    if (not modelTransp.setData(row, "unCaixa", modelEstoque.data(item.row(), "unCaixa"))) return false;
+    if (not modelTransp.setData(row, "formComercial", modelEstoque.data(item.row(), "formComercial"))) return false;
+    if (not modelTransp.setData(row, "idVeiculo", ui->itemBoxVeiculo->getValue())) return false;
     if (not modelTransp.setData(row, "idEstoque", modelEstoque.data(item.row(), "idEstoque"))) return false;
+    if (not modelTransp.setData(row, "idProduto", modelEstoque.data(item.row(), "idProduto"))) return false;
     if (not modelTransp.setData(row, "produto", modelEstoque.data(item.row(), "produto"))) return false;
     if (not modelTransp.setData(row, "codComercial", modelEstoque.data(item.row(), "codComercial"))) return false;
     if (not modelTransp.setData(row, "un", modelEstoque.data(item.row(), "un"))) return false;
     if (not modelTransp.setData(row, "caixas", modelEstoque.data(item.row(), "caixas"))) return false;
+    if (not modelTransp.setData(row, "kg", peso)) return false;
     if (not modelTransp.setData(row, "quant", modelEstoque.data(item.row(), "quant"))) return false;
     if (not modelTransp.setData(row, "status", "EM COLETA")) return false;
   }
@@ -372,14 +400,14 @@ bool WidgetLogisticaAgendarColeta::adicionarProduto(const QModelIndexList &list)
 }
 
 void WidgetLogisticaAgendarColeta::on_pushButtonAdicionarProduto_clicked() {
-  if (ui->itemBoxVeiculo->value().isNull()) {
+  if (ui->itemBoxVeiculo->getValue().isNull()) {
     QMessageBox::critical(this, "Erro!", "Deve escolher uma transportadora antes!");
     return;
   }
 
   const auto list = ui->tableEstoque->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
@@ -395,7 +423,7 @@ void WidgetLogisticaAgendarColeta::on_pushButtonAdicionarProduto_clicked() {
 void WidgetLogisticaAgendarColeta::on_pushButtonRemoverProduto_clicked() {
   const auto list = ui->tableTransp->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
@@ -414,152 +442,14 @@ void WidgetLogisticaAgendarColeta::on_pushButtonCancelarCarga_clicked() {
 }
 
 void WidgetLogisticaAgendarColeta::on_pushButtonDanfe_clicked() {
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
+  const auto list = ui->tableEstoque->selectionModel()->selectedRows();
 
-  if (not imprimirDanfe()) {
-    QSqlQuery("ROLLBACK").exec();
-
-    const QString dirEntrada = UserSession::settings("User/pastaEntACBr").toString();
-    const QString dirSaida = UserSession::settings("User/pastaSaiACBr").toString();
-
-    QFile fileGerar(dirEntrada + "/gerarDanfe.txt");
-
-    if (fileGerar.exists()) fileGerar.remove();
-
-    QFile fileResposta(dirSaida + "/gerarDanfe-resp.txt");
-
-    if (fileResposta.exists()) fileResposta.remove();
-
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
-  QSqlQuery("COMMIT").exec();
-}
-
-bool WidgetLogisticaAgendarColeta::imprimirDanfe() {
-  // 1. buscar xml pelo idNfeSaida
-  // 2. salvar xml em um arquivo na pasta de saida do ACBr
-  // 3. enviar comando para ACBr gerar a danfe - NFe.ImprimirDanfePDF("C:\ACBrNFeMonitor\XML\chaveAcesso-nfe.xml")
-  // 4. abrir arquivo pdf gerado - "C:\ACBrNFeMonitor\XML\chaveAcesso-nfe.pdf"
-
-  const auto list = ui->tableEstoque->selectionModel()->selectedRows();
-
-  if (list.size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
-    return false;
-  }
-
-  const QString dirEntrada = UserSession::settings("User/pastaEntACBr").toString();
-  const QString dirSaida = UserSession::settings("User/pastaSaiACBr").toString();
-  const QString dirXml = UserSession::settings("User/pastaXmlACBr").toString();
-
-  QSqlQuery query;
-  query.prepare("SELECT chaveAcesso, xml FROM nfe WHERE numeroNFe = :numeroNFe");
-  query.bindValue(":numeroNFe", modelEstoque.data(list.first().row(), "numeroNFe"));
-
-  if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando chaveAcesso: " + query.lastError().text());
-  }
-
-  const QString chaveAcesso = query.value("chaveAcesso").toString();
-
-  QFile fileXml(dirXml + "/" + chaveAcesso + "-nfe.xml");
-
-  if (not fileXml.open(QFile::WriteOnly)) {
-    QMessageBox::critical(this, "Erro!", "Não foi possível salvar o XML, favor verificar se as pastas "
-                                         "estão corretamente configuradas.");
-    return false;
-  }
-
-  QTextStream streamXml(&fileXml);
-
-  streamXml << query.value("xml").toString();
-
-  streamXml.flush();
-  fileXml.close();
-
-  QFile fileGerar(dirEntrada + "/gerarDanfe.txt");
-
-  if (not fileGerar.open(QFile::WriteOnly)) {
-    QMessageBox::critical(this, "Erro!", "Não foi possível enviar o pedido para o ACBr, favor verificar se as pastas "
-                                         "estão corretamente configuradas.");
-    return false;
-  }
-
-  QTextStream streamGerar(&fileGerar);
-
-  streamGerar << "NFe.ImprimirDanfePDF(\"" + dirXml + "/" + chaveAcesso + "-nfe.xml\")" << endl;
-
-  streamGerar.flush();
-  fileGerar.close();
-
-  //
-
-  QFile fileResposta(dirSaida + "/gerarDanfe-resp.txt");
-
-  QProgressDialog *progressDialog = new QProgressDialog(this);
-  progressDialog->reset();
-  progressDialog->setCancelButton(0);
-  progressDialog->setLabelText("Esperando ACBr...");
-  progressDialog->setWindowTitle("ERP Staccato");
-  progressDialog->setWindowModality(Qt::WindowModal);
-  progressDialog->setMaximum(0);
-  progressDialog->setMinimum(0);
-  progressDialog->show();
-
-  QTime wait = QTime::currentTime().addSecs(10);
-
-  while (QTime::currentTime() < wait) {
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-
-    if (fileResposta.exists()) break;
-  }
-
-  progressDialog->cancel();
-
-  if (not fileResposta.exists()) {
-    QMessageBox::critical(this, "Erro!", "ACBr não respondeu, verificar se ele está aberto e funcionando!");
-
-    if (fileGerar.exists()) fileGerar.remove();
-
-    return false;
-  }
-
-  if (not fileResposta.open(QFile::ReadOnly)) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo arquivo: " + fileResposta.errorString());
-    return false;
-  }
-
-  QTextStream ts(&fileResposta);
-
-  const QString resposta = ts.readAll();
-  fileResposta.remove();
-
-  if (not resposta.contains("OK")) {
-    QMessageBox::critical(this, "Erro!", "Resposta do ACBr: " + resposta);
-    return false;
-  }
-
-  //
-
-  if (not QDesktopServices::openUrl(QUrl::fromLocalFile(dirXml + "/" + chaveAcesso + "-nfe.pdf"))) {
-    QMessageBox::critical(this, "Erro!", "Erro abrindo PDF!");
-  }
-
-  return true;
-}
-
-void WidgetLogisticaAgendarColeta::on_tableEstoque_doubleClicked(const QModelIndex &index) {
-  const QString idVenda = modelEstoque.data(index.row(), "idVenda").toString();
-  const QStringList ids = idVenda.split(",");
-
-  if (ids.isEmpty()) return;
-
-  for (auto const &id : ids) {
-    Venda *venda = new Venda(this);
-    venda->viewRegisterById(id);
-  }
+  ACBr::gerarDanfe(modelEstoque.data(list.first().row(), "idNFe").toInt());
 }
 
 void WidgetLogisticaAgendarColeta::on_lineEditBusca_textChanged(const QString &text) {
@@ -569,3 +459,50 @@ void WidgetLogisticaAgendarColeta::on_lineEditBusca_textChanged(const QString &t
   if (not modelEstoque.select())
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelEstoque.lastError().text());
 }
+
+void WidgetLogisticaAgendarColeta::on_dateTimeEdit_dateChanged(const QDate &date) {
+  if (ui->itemBoxVeiculo->text().isEmpty()) return;
+
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
+                         " AND status != 'FINALIZADO' AND DATE(data) = '" + date.toString("yyyy-MM-dd") + "'");
+
+  if (not modelTransp2.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
+    return;
+  }
+
+  ui->tableTransp2->resizeColumnsToContents();
+}
+
+void WidgetLogisticaAgendarColeta::on_checkBoxEstoque_toggled(bool checked) {
+  modelEstoque.setFilter("fornecedor = '" + fornecedor + "' AND idVenda IS " + QString(checked ? "NULL" : "NOT NULL"));
+
+  if (not modelEstoque.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro: " + modelEstoque.lastError().text());
+    return;
+  }
+}
+
+void WidgetLogisticaAgendarColeta::on_pushButtonVenda_clicked() {
+  const auto list = ui->tableEstoque->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  for (auto const &item : list) {
+    const QString idVenda = modelEstoque.data(item.row(), "idVenda").toString();
+    const QStringList ids = idVenda.split(", ");
+
+    if (ids.isEmpty()) return;
+
+    for (auto const &id : ids) {
+      Venda *venda = new Venda(this);
+      venda->setAttribute(Qt::WA_DeleteOnClose);
+      venda->viewRegisterById(id);
+    }
+  }
+}
+
+// TODO: 1poder marcar nota de entrada como cancelada (talvez direto na tela de nfe's e retirar dos fluxos os estoques?)

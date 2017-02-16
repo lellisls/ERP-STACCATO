@@ -33,6 +33,7 @@ private:
   bool verifyFields();
   void preencher(const QModelIndex &index);
   void setupTables();
+  void validarData(const QModelIndex &index);
 };
 
 #endif // CONTAS_H

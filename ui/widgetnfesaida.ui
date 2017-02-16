@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="1">
     <widget class="QLabel" name="labelNfe">
      <property name="text">
@@ -46,7 +46,35 @@
      </attribute>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="2" column="1">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pushButtonCancelarNFe">
+       <property name="text">
+        <string>Cancelar NFe</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pushButtonRelatorio">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Gerar Relatório</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="pushButtonExportar">
+       <property name="text">
+        <string>Exportar XML/PDF</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="labelBusca">
      <property name="enabled">
       <bool>true</bool>
@@ -59,7 +87,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="QLineEdit" name="lineEditBusca">
      <property name="enabled">
       <bool>true</bool>

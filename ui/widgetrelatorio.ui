@@ -247,6 +247,9 @@
      </widget>
     </widget>
    </item>
+   <item row="1" column="1">
+    <widget class="QtCharts::QChartView" name="chartView" native="true"/>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -254,6 +257,12 @@
    <class>TableView</class>
    <extends>QTableView</extends>
    <header>src/tableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtCharts/QChartView</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

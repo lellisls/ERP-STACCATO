@@ -22,6 +22,19 @@ void TableView::hideColumn(const QString &column) {
   }
 }
 
+void TableView::showColumn(const QString &column) {
+  if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
+    if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {
+      QTableView::showColumn(sourceModel->fieldIndex(column));
+      return;
+    }
+  }
+
+  if (auto *model = qobject_cast<QSqlTableModel *>(QTableView::model())) {
+    QTableView::showColumn(model->fieldIndex(column));
+  }
+}
+
 void TableView::setItemDelegateForColumn(const QString &column, QAbstractItemDelegate *delegate) {
   if (auto *model = qobject_cast<QIdentityProxyModel *>(QTableView::model())) {
     if (auto *sourceModel = qobject_cast<QSqlTableModel *>(model->sourceModel())) {

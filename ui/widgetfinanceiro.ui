@@ -49,16 +49,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_10">
-      <attribute name="title">
-       <string>Receber Resumo</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="WidgetReceberResumo" name="widgetReceberResumo" native="true"/>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
        <string>Vendas</string>
@@ -100,12 +90,6 @@
    <class>WidgetPagamento</class>
    <extends>QWidget</extends>
    <header>src/widgetpagamento.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>WidgetReceberResumo</class>
-   <extends>QWidget</extends>
-   <header>src/widgetreceberresumo.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

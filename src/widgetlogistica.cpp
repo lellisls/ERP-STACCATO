@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -15,46 +16,54 @@ WidgetLogistica::WidgetLogistica(QWidget *parent) : QWidget(parent), ui(new Ui::
   connect(ui->widgetAgendarColeta, &WidgetLogisticaAgendarColeta::errorSignal, this, &WidgetLogistica::errorSignal);
   connect(ui->widgetRecebimento, &WidgetLogisticaRecebimento::errorSignal, this, &WidgetLogistica::errorSignal);
   connect(ui->widgetAgendaEntrega, &WidgetLogisticaEntrega::errorSignal, this, &WidgetLogistica::errorSignal);
-}
-
-WidgetLogistica::~WidgetLogistica() { delete ui; }
-
-void WidgetLogistica::setupTables() {
-  model.setTable("view_fornecedor_logistica_agendar_coleta");
 
   ui->tableForn->setModel(&model);
 }
 
+WidgetLogistica::~WidgetLogistica() { delete ui; }
+
 bool WidgetLogistica::updateTables() {
-  if (model.tableName().isEmpty()) setupTables();
-
-  if (not model.select()) {
-    emit errorSignal("Erro lendo tabela: " + model.lastError().text());
-    return false;
-  }
-
-  ui->tableForn->resizeColumnsToContents();
-
   const QString currentText = ui->tabWidgetLogistica->tabText(ui->tabWidgetLogistica->currentIndex());
 
   if (currentText == "Agendar Coleta") {
     ui->frameForn->show();
+
     model.setTable("view_fornecedor_logistica_agendar_coleta");
-    model.select();
+
+    if (not model.select()) {
+      emit errorSignal("Erro lendo tabela: " + model.lastError().text());
+      return false;
+    }
+
+    ui->tableForn->resizeColumnsToContents();
     return ui->widgetAgendarColeta->updateTables();
   }
 
   if (currentText == "Coleta") {
     ui->frameForn->show();
+
     model.setTable("view_fornecedor_logistica_coleta");
-    model.select();
+
+    if (not model.select()) {
+      emit errorSignal("Erro lendo tabela: " + model.lastError().text());
+      return false;
+    }
+
+    ui->tableForn->resizeColumnsToContents();
     return ui->widgetColeta->updateTables();
   }
 
   if (currentText == "Recebimento") {
     ui->frameForn->show();
+
     model.setTable("view_fornecedor_logistica_recebimento");
-    model.select();
+
+    if (not model.select()) {
+      emit errorSignal("Erro lendo tabela: " + model.lastError().text());
+      return false;
+    }
+
+    ui->tableForn->resizeColumnsToContents();
     return ui->widgetRecebimento->updateTables();
   }
 
@@ -75,14 +84,26 @@ bool WidgetLogistica::updateTables() {
 
   if (currentText == "Representação") {
     ui->frameForn->show();
+
     model.setTable("view_fornecedor_logistica_representacao");
-    model.select();
+
+    if (not model.select()) {
+      emit errorSignal("Erro lendo tabela: " + model.lastError().text());
+      return false;
+    }
+
+    ui->tableForn->resizeColumnsToContents();
     return ui->widgetRepresentacao->updateTables();
   }
 
   if (currentText == "Entregues") {
     ui->frameForn->hide();
     return ui->widgetEntregues->updateTables();
+  }
+
+  if (currentText == "Calendário") {
+    ui->frameForn->hide();
+    return ui->widgetCalendario->updateTables();
   }
 
   return true;
@@ -102,4 +123,4 @@ void WidgetLogistica::on_tableForn_activated(const QModelIndex &index) {
 void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int) { updateTables(); }
 
 // NOTE: tela para guardar imagens (fotos/documentos scaneados)
-// NOTE: 4followup das entregas (no lugar de followup colocar campo observacao no inputDialog?)
+// NOTE: 1followup das entregas (no lugar de followup colocar campo observacao no inputDialog?)

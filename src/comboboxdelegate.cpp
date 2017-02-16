@@ -26,13 +26,15 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     list << "PENDENTE"
          << "RECEBIDO"
          << "CANCELADO"
-         << "DEVOLVIDO";
+         << "DEVOLVIDO"
+         << "CONFERIDO";
   }
 
   if (tipo == StatusPagar) {
     list << "PENDENTE"
          << "PAGO"
-         << "CANCELADO";
+         << "CANCELADO"
+         << "CONFERIDO";
   }
 
   if (tipo == Pagamento) {

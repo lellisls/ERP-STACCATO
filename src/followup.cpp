@@ -11,7 +11,6 @@ FollowUp::FollowUp(const QString &id, const Tipo tipo, QWidget *parent)
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
-  setAttribute(Qt::WA_DeleteOnClose);
 
   setupTables();
 

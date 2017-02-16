@@ -39,7 +39,8 @@ private:
   QString tipoPFPJ;
   Ui::CadastroCliente *ui;
   // methods
-  bool cadastrarEndereco(const bool isUpdate);
+  bool cadastrarEndereco(const bool isUpdate = false);
+  virtual bool cadastrar() override;
   virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;

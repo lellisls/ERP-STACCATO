@@ -6,6 +6,7 @@
 #include <QFileDialog>
 
 #include "sqltablemodel.h"
+#include "xml.h"
 
 namespace Ui {
 class ImportarXML;
@@ -22,8 +23,7 @@ private slots:
   void on_pushButtonCancelar_clicked();
   void on_pushButtonImportar_clicked();
   void on_pushButtonProcurar_clicked();
-  void on_pushButtonRemover_clicked();
-  void on_pushButtonReparear_clicked();
+  void on_pushButtonRemoverLinha_clicked();
   void on_tableCompra_entered(const QModelIndex &);
   void on_tableConsumo_entered(const QModelIndex &);
   void on_tableEstoque_entered(const QModelIndex &);
@@ -32,9 +32,13 @@ private:
   // attributes
   const QDateTime dataReal;
   const QStringList idsCompra;
+  QString error;
   SqlTableModel modelCompra;
   SqlTableModel modelConsumo;
   SqlTableModel modelEstoque;
+  SqlTableModel modelEstoque_nfe;
+  SqlTableModel modelEstoque_compra;
+  SqlTableModel modelNFe;
   Ui::ImportarXML *ui;
 
   enum FieldColors {
@@ -47,12 +51,17 @@ private:
 
   // methods
   bool associarItens(const int rowCompra, const int rowEstoque, double &estoqueConsumido);
+  bool cadastrarNFe(XML &xml);
   bool criarConsumo();
   bool importar();
+  bool inserirItemSql(XML &xml);
+  bool inserirNoSqlModel(XML &xml, const QStandardItem *item);
   bool lerXML(QFile &file);
   bool limparAssociacoes();
   bool parear();
-  bool procurar();
+  bool perguntarLocal(XML &xml);
+  bool verificaCNPJ(XML &xml);
+  bool verificaExiste(XML &xml);
   void setupTables(const QStringList &idsCompra);
 };
 

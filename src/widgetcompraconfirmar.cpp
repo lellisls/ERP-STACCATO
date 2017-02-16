@@ -39,26 +39,34 @@ bool WidgetCompraConfirmar::updateTables() {
 }
 
 void WidgetCompraConfirmar::on_pushButtonConfirmarCompra_clicked() {
+  if (ui->table->selectionModel()->selectedRows().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   if (not confirmarCompra()) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
   }
 
   QSqlQuery("COMMIT").exec();
+
+  QSqlQuery query;
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return;
+  }
 
   updateTables();
   QMessageBox::information(this, "Aviso!", "Compra confirmada!");
 }
 
 bool WidgetCompraConfirmar::confirmarCompra() {
-  if (ui->table->selectionModel()->selectedRows().size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
-    return false;
-  }
-
   const int row = ui->table->selectionModel()->selectedRows().first().row();
   const QString idCompra = model.data(row, "Compra").toString();
 
@@ -76,7 +84,7 @@ bool WidgetCompraConfirmar::confirmarCompra() {
   query.bindValue(":idCompra", idCompra);
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando produtos: " + query.lastError().text());
+    error = "Erro buscando produtos: " + query.lastError().text();
     return false;
   }
 
@@ -90,7 +98,7 @@ bool WidgetCompraConfirmar::confirmarCompra() {
     queryUpdate.bindValue(":idPedido", query.value("idPedido"));
 
     if (not queryUpdate.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + queryUpdate.lastError().text());
+      error = "Erro atualizando status da compra: " + queryUpdate.lastError().text();
       return false;
     }
 
@@ -103,15 +111,10 @@ bool WidgetCompraConfirmar::confirmarCompra() {
       queryUpdate.bindValue(":idVendaProduto", query.value("idVendaProduto"));
 
       if (not queryUpdate.exec()) {
-        QMessageBox::critical(this, "Erro!", "Erro salvando status da venda: " + queryUpdate.lastError().text());
+        error = "Erro salvando status da venda: " + queryUpdate.lastError().text();
         return false;
       }
     }
-  }
-
-  if (not query.exec("CALL update_venda_status()")) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
-    return false;
   }
 
   return true;
@@ -119,21 +122,7 @@ bool WidgetCompraConfirmar::confirmarCompra() {
 
 void WidgetCompraConfirmar::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
-bool WidgetCompraConfirmar::cancelar() {
-  const auto list = ui->table->selectionModel()->selectedRows();
-
-  if (list.size() == 0) {
-    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
-    return false;
-  }
-
-  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?",
-                     QMessageBox::Yes | QMessageBox::No, this);
-  msgBox.setButtonText(QMessageBox::Yes, "Cancelar");
-  msgBox.setButtonText(QMessageBox::No, "Voltar");
-
-  if (msgBox.exec() == QMessageBox::No) return false;
-
+bool WidgetCompraConfirmar::cancelar(const QModelIndexList &list) {
   const int row = list.first().row();
 
   QSqlQuery query;
@@ -141,7 +130,7 @@ bool WidgetCompraConfirmar::cancelar() {
   query.bindValue(":ordemCompra", model.data(row, "OC"));
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + query.lastError().text());
+    error = "Erro salvando dados: " + query.lastError().text();
     return false;
   }
 
@@ -149,7 +138,7 @@ bool WidgetCompraConfirmar::cancelar() {
   query.bindValue(":ordemCompra", model.data(row, "OC"));
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando dados: " + query.lastError().text());
+    error = "Erro buscando dados: " + query.lastError().text();
     return false;
   }
 
@@ -160,7 +149,7 @@ bool WidgetCompraConfirmar::cancelar() {
     query2.bindValue(":idVendaProduto", query.value("idVendaProduto"));
 
     if (not query2.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro voltando status do produto: " + query2.lastError().text());
+      error = "Erro voltando status do produto: " + query2.lastError().text();
       return false;
     }
   }
@@ -169,10 +158,24 @@ bool WidgetCompraConfirmar::cancelar() {
 }
 
 void WidgetCompraConfirmar::on_pushButtonCancelarCompra_clicked() {
+  const auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?",
+                     QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Cancelar");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
+
+  if (msgBox.exec() == QMessageBox::No) return;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not cancelar()) {
+  if (not cancelar(list)) {
     QSqlQuery("ROLLBACK").exec();
     return;
   }
@@ -183,6 +186,6 @@ void WidgetCompraConfirmar::on_pushButtonCancelarCompra_clicked() {
   QMessageBox::information(this, "Aviso!", "Itens cancelados!");
 }
 
-// NOTE: 3poder confirmar dois pedidos juntos (quando vem um espelho só) (cancelar os pedidos e fazer um pedido só?)
-// NOTE: permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
+// NOTE: 1poder confirmar dois pedidos juntos (quando vem um espelho só) (cancelar os pedidos e fazer um pedido só?)
+// NOTE: 1permitir na tela de compras alterar uma venda para quebrar um produto em dois para os casos de lotes
 // diferentes: 50 -> 40+10

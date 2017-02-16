@@ -31,12 +31,13 @@ private slots:
 private:
   // attributes
   int oc;
+  QString error;
   SqlTableModel modelForn;
   SqlTableModel modelProdutos;
   Ui::WidgetCompraGerar *ui;
   // methods
-  bool cancelar();
-  bool gerarCompra();
+  bool cancelar(const QModelIndexList &list);
+  bool gerarCompra(const QModelIndexList &list);
   bool gerarExcel(QList<int> &lista, QString &anexo, const bool isRepresentacao);
   void setupTables();
 };

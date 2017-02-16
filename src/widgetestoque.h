@@ -21,8 +21,6 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
-  void on_lineEditBusca_textChanged(const QString &text);
-  void on_radioButtonMaior_toggled(const bool checked);
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
 
@@ -32,6 +30,7 @@ private:
   Ui::WidgetEstoque *ui;
   // methods
   void setupTables();
+  void montaFiltro();
 };
 
 #endif // WIDGETESTOQUE_H

@@ -12,11 +12,9 @@ CadastroTransportadora::CadastroTransportadora(QWidget *parent)
     : RegisterAddressDialog("transportadora", "idTransportadora", parent), ui(new Ui::CadastroTransportadora) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  //  for (auto const *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (auto const *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   setupUi();
   setupTables();
@@ -37,6 +35,7 @@ void CadastroTransportadora::setupTables() {
   modelVeiculo.setHeaderData("modelo", "Modelo");
   modelVeiculo.setHeaderData("capacidade", "Carga Kg");
   modelVeiculo.setHeaderData("placa", "Placa");
+  modelVeiculo.setHeaderData("ufPlaca", "UF Placa");
 
   modelVeiculo.setFilter("idVeiculo = 0");
 
@@ -148,7 +147,7 @@ void CadastroTransportadora::on_lineEditCNPJ_textEdited(const QString &text) {
 }
 
 void CadastroTransportadora::on_pushButtonAdicionarEnd_clicked() {
-  if (not cadastrarEndereco(false)) {
+  if (not cadastrarEndereco()) {
     QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!");
     return;
   }
@@ -220,6 +219,8 @@ bool CadastroTransportadora::cadastrarEndereco(const bool isUpdate) {
   if (not setDataEnd("desativado", false)) return false;
 
   ui->tableEndereco->resizeColumnsToContents();
+
+  isDirty = true;
 
   return true;
 }
@@ -330,11 +331,13 @@ bool CadastroTransportadora::cadastrarVeiculo(const bool isUpdate) {
 
   ui->tableVeiculo->resizeColumnsToContents();
 
+  isDirty = true;
+
   return true;
 }
 
 void CadastroTransportadora::on_pushButtonAdicionarVeiculo_clicked() {
-  if (not cadastrarVeiculo(false)) {
+  if (not cadastrarVeiculo()) {
     QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este veículo!");
     return;
   }
@@ -389,12 +392,10 @@ void CadastroTransportadora::on_pushButtonRemoverVeiculo_clicked() {
 }
 
 bool CadastroTransportadora::cadastrar() {
-  if (not verifyFields()) return false;
-
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro linha -1");
+    error = "Erro linha -1";
     return false;
   }
 
@@ -410,26 +411,30 @@ bool CadastroTransportadora::cadastrar() {
   }
 
   if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro: " + model.lastError().text());
+    error = "Erro: " + model.lastError().text();
     return false;
   }
 
-  primaryId =
-      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
+  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
 
   for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
     if (not modelEnd.setData(row, primaryKey, primaryId)) return false;
   }
 
   for (int column = 0, columnCount = modelEnd.columnCount(); column < columnCount; ++column) {
-    QVariant dado = modelEnd.data(row, column);
+    const QVariant dado = modelEnd.data(row, column);
     if (dado.type() == QVariant::String) {
       if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
     }
   }
 
   if (not modelEnd.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
+    error = "Erro: " + modelEnd.lastError().text();
     return false;
   }
 
@@ -445,7 +450,7 @@ bool CadastroTransportadora::cadastrar() {
   }
 
   if (not modelVeiculo.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro: " + modelVeiculo.lastError().text());
+    error = "Erro: " + modelVeiculo.lastError().text();
     return false;
   }
 
@@ -453,11 +458,14 @@ bool CadastroTransportadora::cadastrar() {
 }
 
 bool CadastroTransportadora::save() {
+  if (not verifyFields()) return false;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   if (not cadastrar()) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return false;
   }
 

@@ -11,7 +11,6 @@ SendMail::SendMail(QWidget *parent, const QString &arquivo, const QString &forne
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
-  setAttribute(Qt::WA_DeleteOnClose);
 
   files.append(arquivo);
 

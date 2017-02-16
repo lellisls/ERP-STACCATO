@@ -28,11 +28,12 @@ private slots:
 
 private:
   // attributes
+  QString error;
   SqlTableModel model;
   Ui::WidgetCompraDevolucao *ui;
   // methods
   void setupTables();
-  bool retornarEstoque();
+  bool retornarEstoque(const QModelIndexList &list);
 };
 
 #endif // WIDGETCOMPRADEVOLUCAO_H

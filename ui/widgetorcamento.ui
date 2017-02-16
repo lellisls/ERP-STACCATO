@@ -108,7 +108,7 @@
         <x>0</x>
         <y>0</y>
         <width>141</width>
-        <height>515</height>
+        <height>521</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
@@ -295,7 +295,7 @@
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
              <item row="0" column="0">

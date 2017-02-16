@@ -39,13 +39,14 @@ private slots:
 
 private:
   // attributes
-  Ui::CadastroTransportadora *ui;
   QDataWidgetMapper mapperVeiculo;
+  QString error;
   SqlTableModel modelVeiculo;
+  Ui::CadastroTransportadora *ui;
   // methods
   bool cadastrar() override;
-  bool cadastrarEndereco(const bool isUpdate);
-  bool cadastrarVeiculo(const bool isUpdate);
+  bool cadastrarEndereco(const bool isUpdate = false);
+  bool cadastrarVeiculo(const bool isUpdate = false);
   virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;

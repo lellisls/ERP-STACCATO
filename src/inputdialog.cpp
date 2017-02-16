@@ -26,6 +26,13 @@ InputDialog::InputDialog(const Type &type, QWidget *parent) : QDialog(parent), t
     ui->labelProximoEvento->setText("Data prevista compra:");
   }
 
+  if (type == Faturamento) {
+    ui->labelEvento->hide();
+    ui->dateEditEvento->hide();
+
+    ui->labelProximoEvento->setText("Data prevista faturamento:");
+  }
+
   if (type == AgendarColeta) {
     ui->labelEvento->hide();
     ui->dateEditEvento->hide();

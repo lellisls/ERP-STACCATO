@@ -1,5 +1,6 @@
 #include <QDate>
 #include <QDebug>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 
@@ -20,11 +21,16 @@ WidgetLogisticaEntrega::WidgetLogisticaEntrega(QWidget *parent) : QWidget(parent
   }
 
   ui->itemBoxVeiculo->setSearchDialog(SearchDialog::veiculo(this));
+
+  ui->dateTimeEdit->setDate(QDate::currentDate());
 }
 
 WidgetLogisticaEntrega::~WidgetLogisticaEntrega() { delete ui; }
 
 void WidgetLogisticaEntrega::setupTables() {
+  modelProdutos.setTable("venda_has_produto");
+  modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
   modelVendas.setTable("view_entrega_pendente");
   modelVendas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
@@ -37,30 +43,31 @@ void WidgetLogisticaEntrega::setupTables() {
 
   if (UserSession::tipoUsuario() != "VENDEDOR ESPECIAL") ui->tableVendas->hideColumn("Indicou");
 
-  modelProdutos.setTable("view_entrega_produtos");
-  modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
+  modelViewProdutos.setTable("view_entrega_produtos");
+  modelViewProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelProdutos.setHeaderData("status", "Status");
-  modelProdutos.setHeaderData("fornecedor", "Fornecedor");
-  modelProdutos.setHeaderData("idVenda", "Venda");
-  modelProdutos.setHeaderData("produto", "Produto");
-  modelProdutos.setHeaderData("caixas", "Caixas");
-  modelProdutos.setHeaderData("quant", "Quant.");
-  modelProdutos.setHeaderData("un", "Un.");
-  modelProdutos.setHeaderData("unCaixa", "Un./Cx.");
-  modelProdutos.setHeaderData("codComercial", "Cód. Com.");
-  modelProdutos.setHeaderData("formComercial", "Form. Com.");
-  modelProdutos.setHeaderData("dataPrevEnt", "Prev. Ent.");
+  modelViewProdutos.setHeaderData("status", "Status");
+  modelViewProdutos.setHeaderData("fornecedor", "Fornecedor");
+  modelViewProdutos.setHeaderData("idVenda", "Venda");
+  modelViewProdutos.setHeaderData("produto", "Produto");
+  modelViewProdutos.setHeaderData("caixas", "Caixas");
+  modelViewProdutos.setHeaderData("quant", "Quant.");
+  modelViewProdutos.setHeaderData("un", "Un.");
+  modelViewProdutos.setHeaderData("unCaixa", "Un./Cx.");
+  modelViewProdutos.setHeaderData("codComercial", "Cód. Com.");
+  modelViewProdutos.setHeaderData("formComercial", "Form. Com.");
+  modelViewProdutos.setHeaderData("dataPrevEnt", "Prev. Ent.");
 
-  modelProdutos.setFilter("0");
+  modelViewProdutos.setFilter("0");
 
-  if (not modelProdutos.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produtos: " + modelProdutos.lastError().text());
+  if (not modelViewProdutos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela produtos: " + modelViewProdutos.lastError().text());
   }
 
-  ui->tableProdutos->setModel(&modelProdutos);
+  ui->tableProdutos->setModel(&modelViewProdutos);
   ui->tableProdutos->hideColumn("idVendaProduto");
   ui->tableProdutos->hideColumn("idProduto");
+  ui->tableProdutos->hideColumn("dataRealEnt");
 
   //
 
@@ -71,6 +78,7 @@ void WidgetLogisticaEntrega::setupTables() {
   modelTransp.setHeaderData("status", "Status");
   modelTransp.setHeaderData("produto", "Produto");
   modelTransp.setHeaderData("caixas", "Cx.");
+  modelTransp.setHeaderData("kg", "Kg.");
   modelTransp.setHeaderData("quant", "Quant.");
   modelTransp.setHeaderData("un", "Un.");
   modelTransp.setHeaderData("codComercial", "Cód. Com.");
@@ -109,6 +117,7 @@ void WidgetLogisticaEntrega::setupTables() {
   modelTransp2.setHeaderData("status", "Status");
   modelTransp2.setHeaderData("produto", "Produto");
   modelTransp2.setHeaderData("caixas", "Cx.");
+  modelTransp2.setHeaderData("kg", "Kg.");
   modelTransp2.setHeaderData("quant", "Quant.");
   modelTransp2.setHeaderData("un", "Un.");
   modelTransp2.setHeaderData("codComercial", "Cód. Com.");
@@ -143,7 +152,7 @@ void WidgetLogisticaEntrega::calcularPeso() {
   for (auto const &item : list) {
     QSqlQuery query;
     query.prepare("SELECT kgcx FROM produto WHERE idProduto = :idProduto");
-    query.bindValue(":idProduto", modelProdutos.data(item.row(), "idProduto"));
+    query.bindValue(":idProduto", modelViewProdutos.data(item.row(), "idProduto"));
 
     if (not query.exec() or not query.first()) {
       QMessageBox::critical(this, "Erro!", "Erro buscando peso do produto: " + query.lastError().text());
@@ -151,11 +160,14 @@ void WidgetLogisticaEntrega::calcularPeso() {
     }
 
     const double kg = query.value("kgcx").toDouble();
-    const double caixas = modelProdutos.data(item.row(), "caixas").toDouble();
+    const double caixas = modelViewProdutos.data(item.row(), "caixas").toDouble();
     peso += kg * caixas;
   }
 
   ui->doubleSpinBoxPeso->setValue(peso);
+
+  ui->doubleSpinBoxPeso->setStyleSheet(
+      ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value() ? "color: rgb(255, 0, 0);" : "");
 }
 
 bool WidgetLogisticaEntrega::updateTables() {
@@ -186,12 +198,13 @@ bool WidgetLogisticaEntrega::updateTables() {
 
   ui->tableVendas->resizeColumnsToContents();
 
-  if (not modelProdutos.select()) {
-    emit errorSignal("Erro lendo tabela produtos: " + modelProdutos.lastError().text());
+  if (not modelViewProdutos.select()) {
+    emit errorSignal("Erro lendo tabela produtos: " + modelViewProdutos.lastError().text());
     return false;
   }
 
-  for (int row = 0; row < modelProdutos.rowCount(); ++row) ui->tableProdutos->openPersistentEditor(row, "selecionado");
+  for (int row = 0; row < modelViewProdutos.rowCount(); ++row)
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
 
   ui->tableProdutos->resizeColumnsToContents();
 
@@ -208,15 +221,20 @@ bool WidgetLogisticaEntrega::updateTables() {
 void WidgetLogisticaEntrega::on_tableVendas_entered(const QModelIndex &) { ui->tableVendas->resizeColumnsToContents(); }
 
 void WidgetLogisticaEntrega::on_tableVendas_clicked(const QModelIndex &index) {
-  modelProdutos.setFilter("idVenda = '" + modelVendas.data(index.row(), "idVenda").toString() + "'");
+  modelViewProdutos.setFilter("idVenda = '" + modelVendas.data(index.row(), "idVenda").toString() + "'");
 
-  if (not modelProdutos.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelProdutos.lastError().text());
+  if (not modelViewProdutos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelViewProdutos.lastError().text());
   }
 
-  for (int row = 0; row < modelProdutos.rowCount(); ++row) ui->tableProdutos->openPersistentEditor(row, "selecionado");
+  for (int row = 0; row < modelViewProdutos.rowCount(); ++row)
+    ui->tableProdutos->openPersistentEditor(row, "selecionado");
 
   ui->tableProdutos->resizeColumnsToContents();
+
+  const QString financeiro = modelVendas.data(index.row(), "statusFinanceiro").toString();
+
+  if (financeiro != "LIBERADO") QMessageBox::warning(this, "Aviso!", "Financeiro não liberou!");
 }
 
 void WidgetLogisticaEntrega::montaFiltro() {
@@ -227,7 +245,7 @@ void WidgetLogisticaEntrega::montaFiltro() {
   if (ui->radioButtonParcialEstoque->isChecked()) filtroCheck = "Estoque > 0 AND (Entregue > 0 OR Outros > 0)";
   if (ui->radioButtonSemEstoque->isChecked()) filtroCheck = "Estoque = 0";
 
-  QString textoBusca = ui->lineEditBusca->text();
+  const QString textoBusca = ui->lineEditBusca->text();
 
   QString filtroBusca = textoBusca.isEmpty()
                             ? ""
@@ -244,8 +262,14 @@ void WidgetLogisticaEntrega::montaFiltro() {
   }
 
   ui->tableVendas->sortByColumn("prazoEntrega");
-
   ui->tableVendas->resizeColumnsToContents();
+
+  modelViewProdutos.setFilter("0");
+
+  if (not modelViewProdutos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelViewProdutos.lastError().text());
+    return;
+  }
 }
 
 void WidgetLogisticaEntrega::on_tableProdutos_entered(const QModelIndex &) {
@@ -253,31 +277,35 @@ void WidgetLogisticaEntrega::on_tableProdutos_entered(const QModelIndex &) {
 }
 
 void WidgetLogisticaEntrega::on_pushButtonAgendarCarga_clicked() {
+  if (modelTransp.rowCount() == 0) {
+    QMessageBox::critical(this, "Erro!", "Carga vazia!");
+    return;
+  }
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   if (not processRows()) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
   }
 
   QSqlQuery("COMMIT").exec();
+
+  QSqlQuery query;
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return;
+  }
 
   updateTables();
   QMessageBox::information(this, "Aviso!", "Confirmado agendamento!");
 }
 
 bool WidgetLogisticaEntrega::processRows() {
-  if (modelTransp.rowCount() == 0) {
-    QMessageBox::critical(this, "Erro!", "Carga vazia!");
-    return false;
-  }
-
-  InputDialog inputDlg(InputDialog::AgendarEntrega);
-
-  if (inputDlg.exec() != InputDialog::Accepted) return false;
-
-  const QDateTime dataPrevEnt = inputDlg.getNextDate();
+  const QDateTime dataPrevEnt = ui->dateTimeEdit->dateTime();
 
   QSqlQuery query;
 
@@ -296,19 +324,19 @@ bool WidgetLogisticaEntrega::processRows() {
     query.bindValue(":idVendaProduto", idVendaProduto);
 
     if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
+      error = "Erro buscando dados do produto: " + query.lastError().text();
       return false;
     }
 
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGA AGEND.', dataPrevEnt = :dataPrevEnt "
-                  "WHERE idVendaProduto = :idVendaProduto");
-    query.bindValue(":dataPrevEnt", dataPrevEnt);
-    query.bindValue(":idVenda", idVendaProduto);
+    //        query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGA AGEND.', "
+    //                      "dataPrevEnt = :dataPrevEnt WHERE idVendaProduto = :idVendaProduto");
+    //        query.bindValue(":dataPrevEnt", dataPrevEnt);
+    //        query.bindValue(":idVenda", idVendaProduto);
 
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando status da compra: " + query.lastError().text());
-      return false;
-    }
+    //    if (not query.exec()) {
+    //      error = "Erro atualizando status da compra: " + query.lastError().text();
+    //      return false;
+    //    }
 
     query.prepare("UPDATE venda_has_produto SET status = 'ENTREGA AGEND.', dataPrevEnt = :dataPrevEnt WHERE "
                   "idVendaProduto = :idVendaProduto");
@@ -316,18 +344,13 @@ bool WidgetLogisticaEntrega::processRows() {
     query.bindValue(":idVendaProduto", idVendaProduto);
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando produtos venda: " + query.lastError().text());
+      error = "Erro atualizando produtos venda: " + query.lastError().text();
       return false;
     }
   }
 
-  if (not query.exec("CALL update_venda_status()")) {
-    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
-    return false;
-  }
-
   if (not modelTransp.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando carga veiculo: " + modelTransp.lastError().text());
+    error = "Erro salvando carga veiculo: " + modelTransp.lastError().text();
     return false;
   }
 
@@ -339,17 +362,37 @@ bool WidgetLogisticaEntrega::adicionarProduto(const QModelIndexList &list) {
     const int row = modelTransp.rowCount();
     modelTransp.insertRow(row);
 
-    if (not modelTransp.setData(row, "fornecedor", modelProdutos.data(item.row(), "fornecedor"))) return false;
-    if (not modelTransp.setData(row, "unCaixa", modelProdutos.data(item.row(), "unCaixa"))) return false;
-    if (not modelTransp.setData(row, "formComercial", modelProdutos.data(item.row(), "formComercial"))) return false;
-    if (not modelTransp.setData(row, "idVeiculo", ui->itemBoxVeiculo->value())) return false;
-    if (not modelTransp.setData(row, "idVenda", modelProdutos.data(item.row(), "idVenda"))) return false;
-    if (not modelTransp.setData(row, "idVendaProduto", modelProdutos.data(item.row(), "idVendaProduto"))) return false;
-    if (not modelTransp.setData(row, "produto", modelProdutos.data(item.row(), "produto"))) return false;
-    if (not modelTransp.setData(row, "codComercial", modelProdutos.data(item.row(), "codComercial"))) return false;
-    if (not modelTransp.setData(row, "un", modelProdutos.data(item.row(), "un"))) return false;
-    if (not modelTransp.setData(row, "caixas", modelProdutos.data(item.row(), "caixas"))) return false;
-    if (not modelTransp.setData(row, "quant", modelProdutos.data(item.row(), "quant"))) return false;
+    //
+    QSqlQuery query;
+    query.prepare("SELECT kgcx FROM produto WHERE idProduto = :idProduto");
+    query.bindValue(":idProduto", modelViewProdutos.data(item.row(), "idProduto"));
+
+    if (not query.exec() or not query.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando peso do produto: " + query.lastError().text());
+      return false;
+    }
+
+    const double kg = query.value("kgcx").toDouble();
+    const double caixas = modelViewProdutos.data(item.row(), "caixas").toDouble();
+    const double peso = kg * caixas;
+
+    //
+
+    if (not modelTransp.setData(row, "fornecedor", modelViewProdutos.data(item.row(), "fornecedor"))) return false;
+    if (not modelTransp.setData(row, "unCaixa", modelViewProdutos.data(item.row(), "unCaixa"))) return false;
+    if (not modelTransp.setData(row, "formComercial", modelViewProdutos.data(item.row(), "formComercial")))
+      return false;
+    if (not modelTransp.setData(row, "idVeiculo", ui->itemBoxVeiculo->getValue())) return false;
+    if (not modelTransp.setData(row, "idVenda", modelViewProdutos.data(item.row(), "idVenda"))) return false;
+    if (not modelTransp.setData(row, "idVendaProduto", modelViewProdutos.data(item.row(), "idVendaProduto")))
+      return false;
+    if (not modelTransp.setData(row, "idProduto", modelViewProdutos.data(item.row(), "idProduto"))) return false;
+    if (not modelTransp.setData(row, "produto", modelViewProdutos.data(item.row(), "produto"))) return false;
+    if (not modelTransp.setData(row, "codComercial", modelViewProdutos.data(item.row(), "codComercial"))) return false;
+    if (not modelTransp.setData(row, "un", modelViewProdutos.data(item.row(), "un"))) return false;
+    if (not modelTransp.setData(row, "caixas", modelViewProdutos.data(item.row(), "caixas"))) return false;
+    if (not modelTransp.setData(row, "kg", peso)) return false;
+    if (not modelTransp.setData(row, "quant", modelViewProdutos.data(item.row(), "quant"))) return false;
     if (not modelTransp.setData(row, "status", "ENTREGA AGEND.")) return false;
   }
 
@@ -359,30 +402,30 @@ bool WidgetLogisticaEntrega::adicionarProduto(const QModelIndexList &list) {
 }
 
 void WidgetLogisticaEntrega::on_pushButtonAdicionarProduto_clicked() {
-  if (ui->itemBoxVeiculo->value().isNull()) {
+  if (ui->itemBoxVeiculo->getValue().isNull()) {
     QMessageBox::critical(this, "Erro!", "Deve escolher uma transportadora antes!");
     return;
   }
 
   const auto list = ui->tableProdutos->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
 
-  if (ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxCapacidade->value()) {
-    QMessageBox::critical(this, "Erro!", "Peso maior que capacidade do veículo!");
-    return;
+  // TODO: 1calcular disponivel por hora
+  if (ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value()) {
+    QMessageBox::warning(this, "Aviso!", "Peso maior que capacidade do veículo!");
   }
 
   for (auto const &item : list) {
-    if (modelProdutos.data(item.row(), "status").toString() != "ESTOQUE") {
+    if (modelViewProdutos.data(item.row(), "status").toString() != "ESTOQUE") {
       QMessageBox::critical(this, "Erro!", "Produto não está em ESTOQUE!");
       return;
     }
 
-    if (not modelProdutos.data(item.row(), "dataPrevEnt").isNull()) {
+    if (not modelViewProdutos.data(item.row(), "dataPrevEnt").isNull()) {
       QMessageBox::critical(this, "Erro!", "Produto já agendado!");
       return;
     }
@@ -394,7 +437,7 @@ void WidgetLogisticaEntrega::on_pushButtonAdicionarProduto_clicked() {
 void WidgetLogisticaEntrega::on_pushButtonRemoverProduto_clicked() {
   const auto list = ui->tableTransp->selectionModel()->selectedRows();
 
-  if (list.size() == 0) {
+  if (list.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
@@ -407,7 +450,7 @@ void WidgetLogisticaEntrega::on_pushButtonRemoverProduto_clicked() {
 void WidgetLogisticaEntrega::on_itemBoxVeiculo_textChanged(const QString &) {
   QSqlQuery query;
   query.prepare("SELECT capacidade FROM transportadora_has_veiculo WHERE idVeiculo = :idVeiculo");
-  query.bindValue(":idVeiculo", ui->itemBoxVeiculo->value());
+  query.bindValue(":idVeiculo", ui->itemBoxVeiculo->getValue());
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro buscando dados veiculo: " + query.lastError().text());
@@ -419,7 +462,9 @@ void WidgetLogisticaEntrega::on_itemBoxVeiculo_textChanged(const QString &) {
     return;
   }
 
-  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->value().toString() + " AND status != 'FINALIZADO'");
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
+                         " AND status != 'FINALIZADO' AND DATE(data) = '" +
+                         ui->dateTimeEdit->date().toString("yyyy-MM-dd") + "'");
 
   if (not modelTransp2.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
@@ -429,8 +474,186 @@ void WidgetLogisticaEntrega::on_itemBoxVeiculo_textChanged(const QString &) {
   ui->tableTransp2->resizeColumnsToContents();
 
   ui->doubleSpinBoxCapacidade->setValue(query.value("capacidade").toDouble());
+
+  calcularDisponivel();
 }
 
 void WidgetLogisticaEntrega::on_tableTransp2_entered(const QModelIndex &) {
   ui->tableTransp2->resizeColumnsToContents();
 }
+
+void WidgetLogisticaEntrega::calcularDisponivel() {
+  double peso = 0;
+
+  for (int row = 0; row < modelTransp2.rowCount(); ++row) peso += modelTransp2.data(row, "kg").toDouble();
+
+  const double capacidade = ui->doubleSpinBoxCapacidade->value();
+
+  ui->doubleSpinBoxDisponivel->setValue(capacidade - peso);
+}
+
+void WidgetLogisticaEntrega::on_dateTimeEdit_dateChanged(const QDate &date) {
+  if (ui->itemBoxVeiculo->text().isEmpty()) return;
+
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
+                         " AND status != 'FINALIZADO' AND DATE(data) = '" + date.toString("yyyy-MM-dd") + "'");
+
+  if (not modelTransp2.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
+    return;
+  }
+
+  ui->tableTransp2->resizeColumnsToContents();
+
+  calcularDisponivel();
+}
+
+void WidgetLogisticaEntrega::on_pushButtonAdicionarParcial_clicked() {
+  if (ui->itemBoxVeiculo->getValue().isNull()) {
+    QMessageBox::critical(this, "Erro!", "Deve escolher uma transportadora antes!");
+    return;
+  }
+
+  const auto list = ui->tableProdutos->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  if (list.size() > 1) {
+    QMessageBox::critical(this, "Erro!", "Deve selecionar apenas um item para agendamento parcial!");
+    return;
+  }
+
+  const int row = list.first().row();
+
+  // TODO: 1calcular disponivel por hora
+  if (ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value()) {
+    QMessageBox::warning(this, "Aviso!", "Peso maior que capacidade do veículo!");
+  }
+
+  if (modelViewProdutos.data(row, "status").toString() != "ESTOQUE") {
+    QMessageBox::critical(this, "Erro!", "Produto não está em ESTOQUE!");
+    return;
+  }
+
+  if (not modelViewProdutos.data(row, "dataPrevEnt").isNull()) {
+    QMessageBox::critical(this, "Erro!", "Produto já agendado!");
+    return;
+  }
+
+  adicionarProdutoParcial(row);
+}
+
+bool WidgetLogisticaEntrega::adicionarProdutoParcial(const int row) {
+  // perguntar quantidade
+  const int quantTotal = modelViewProdutos.data(row, "caixas").toInt();
+
+  bool ok;
+
+  const int quantAgendar =
+      QInputDialog::getInt(this, "Agendar", "Quantidade de caixas: ", quantTotal, 0, quantTotal, 1, &ok);
+
+  if (not ok) return false;
+
+  // quebrar se necessario
+
+  if (quantAgendar < quantTotal) {
+    if (not quebrarProduto(row, quantAgendar, quantTotal)) return false;
+  }
+
+  //
+  QSqlQuery query;
+  query.prepare("SELECT kgcx FROM produto WHERE idProduto = :idProduto");
+  query.bindValue(":idProduto", modelViewProdutos.data(row, "idProduto"));
+
+  if (not query.exec() or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando peso do produto: " + query.lastError().text());
+    return false;
+  }
+
+  const double unCaixa = modelViewProdutos.data(row, "unCaixa").toDouble();
+  const double kg = query.value("kgcx").toDouble();
+
+  const int newRow = modelTransp.rowCount();
+  modelTransp.insertRow(newRow);
+
+  if (not modelTransp.setData(newRow, "fornecedor", modelViewProdutos.data(row, "fornecedor"))) return false;
+  if (not modelTransp.setData(newRow, "unCaixa", modelViewProdutos.data(row, "unCaixa"))) return false;
+  if (not modelTransp.setData(newRow, "formComercial", modelViewProdutos.data(row, "formComercial"))) return false;
+  if (not modelTransp.setData(newRow, "idVeiculo", ui->itemBoxVeiculo->getValue())) return false;
+  if (not modelTransp.setData(newRow, "idVenda", modelViewProdutos.data(row, "idVenda"))) return false;
+  if (not modelTransp.setData(newRow, "idVendaProduto", modelViewProdutos.data(row, "idVendaProduto"))) return false;
+  if (not modelTransp.setData(newRow, "idProduto", modelViewProdutos.data(row, "idProduto"))) return false;
+  if (not modelTransp.setData(newRow, "produto", modelViewProdutos.data(row, "produto"))) return false;
+  if (not modelTransp.setData(newRow, "codComercial", modelViewProdutos.data(row, "codComercial"))) return false;
+  if (not modelTransp.setData(newRow, "un", modelViewProdutos.data(row, "un"))) return false;
+  if (not modelTransp.setData(newRow, "caixas", quantAgendar)) return false;
+  if (not modelTransp.setData(newRow, "kg", kg * quantAgendar)) return false;
+  if (not modelTransp.setData(newRow, "quant", quantAgendar * unCaixa)) return false;
+  if (not modelTransp.setData(newRow, "status", "ENTREGA AGEND.")) return false;
+
+  ui->tableTransp->resizeColumnsToContents();
+
+  return true;
+}
+
+bool WidgetLogisticaEntrega::quebrarProduto(const int row, const int quantAgendar, const int quantTotal) {
+  modelProdutos.setFilter("idVendaProduto = " + modelViewProdutos.data(row, "idVendaProduto").toString());
+
+  if (not modelProdutos.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_produto: " + modelProdutos.lastError().text());
+    return false;
+  }
+
+  const int newRow = modelProdutos.rowCount();
+  modelProdutos.insertRow(newRow);
+
+  // copiar colunas
+  for (int column = 0, columnCount = modelProdutos.columnCount(); column < columnCount; ++column) {
+    if (modelProdutos.fieldIndex("idVendaProduto") == column) continue;
+    if (modelProdutos.fieldIndex("created") == column) continue;
+    if (modelProdutos.fieldIndex("lastUpdated") == column) continue;
+
+    const QVariant value = modelProdutos.data(0, column);
+
+    if (not modelProdutos.setData(newRow, column, value)) return false;
+  }
+
+  const double unCaixa = modelProdutos.data(0, "unCaixa").toDouble();
+
+  const double proporcao = double(quantAgendar) / quantTotal;
+  const double parcial = modelProdutos.data(0, "parcial").toDouble() * proporcao;
+  const double parcialDesc = modelProdutos.data(0, "parcialDesc").toDouble() * proporcao;
+  const double total = modelProdutos.data(0, "total").toDouble() * proporcao;
+
+  if (not modelProdutos.setData(0, "quant", quantAgendar * unCaixa)) return false;
+  if (not modelProdutos.setData(0, "caixas", quantAgendar)) return false;
+  if (not modelProdutos.setData(0, "parcial", parcial)) return false;
+  if (not modelProdutos.setData(0, "parcialDesc", parcialDesc)) return false;
+  if (not modelProdutos.setData(0, "total", total)) return false;
+
+  // alterar quant, precos, etc da linha nova
+  const double proporcaoNovo = double((quantTotal - quantAgendar)) / quantTotal;
+  const double parcialNovo = modelProdutos.data(newRow, "parcial").toDouble() * proporcaoNovo;
+  const double parcialDescNovo = modelProdutos.data(newRow, "parcialDesc").toDouble() * proporcaoNovo;
+  const double totalNovo = modelProdutos.data(newRow, "total").toDouble() * proporcaoNovo;
+
+  if (not modelProdutos.setData(newRow, "quant", (quantTotal - quantAgendar) * unCaixa)) return false;
+  if (not modelProdutos.setData(newRow, "caixas", quantTotal - quantAgendar)) return false;
+  if (not modelProdutos.setData(newRow, "parcial", parcialNovo)) return false;
+  if (not modelProdutos.setData(newRow, "parcialDesc", parcialDescNovo)) return false;
+  if (not modelProdutos.setData(newRow, "total", totalNovo)) return false;
+
+  if (not modelProdutos.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados venda_produto: " + modelProdutos.lastError().text());
+    return false;
+  }
+
+  modelViewProdutos.select();
+
+  return true;
+}
+
+// TODO: 1'em entrega' deve entrar na categoria 100% estoque?

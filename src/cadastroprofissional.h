@@ -41,11 +41,14 @@ private slots:
 
 private:
   // attributes
+  QString error;
   QString tipoPFPJ;
   Ui::CadastroProfissional *ui;
   // methods
-  bool cadastrarEndereco(const bool isUpdate);
+  bool cadastrarEndereco(const bool isUpdate = false);
   bool viewRegister() override;
+  virtual bool cadastrar() override;
+  virtual bool save() override;
   virtual bool savingProcedures() override;
   virtual bool verifyFields() override;
   virtual void clearFields() override;

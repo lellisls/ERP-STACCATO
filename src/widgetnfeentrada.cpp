@@ -27,20 +27,14 @@ bool WidgetNfeEntrada::updateTables() {
 }
 
 void WidgetNfeEntrada::setupTables() {
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this);
-
   model.setTable("view_nfe_entrada");
   model.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 
   ui->table->setModel(&model);
-  ui->table->hideColumn("Venda");
-  ui->table->hideColumn("tipo");
-  ui->table->hideColumn("CPF");
-  ui->table->hideColumn("CNPJ");
-  ui->table->hideColumn("Cliente");
-  ui->table->setItemDelegate(doubledelegate);
+  ui->table->hideColumn("idNFe");
+  ui->table->setItemDelegate(new DoubleDelegate(this));
 }
 
 void WidgetNfeEntrada::on_table_activated(const QModelIndex &index) {
@@ -54,13 +48,18 @@ void WidgetNfeEntrada::on_table_activated(const QModelIndex &index) {
   }
 
   XML_Viewer *viewer = new XML_Viewer(this);
+  viewer->setAttribute(Qt::WA_DeleteOnClose);
   viewer->exibirXML(query.value("xml").toByteArray());
 }
 
 void WidgetNfeEntrada::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetNfeEntrada::on_lineEditBusca_textChanged(const QString &text) {
-  model.setFilter("NFe LIKE '%" + text + "%' OR OC LIKE '%" + text + "%'");
+  model.setFilter("NFe LIKE '%" + text + "%' OR OC LIKE '%" + text + "%' OR Venda LIKE '%" + text + "%'");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+}
+
+void WidgetNfeEntrada::on_pushButtonCancelarNFe_clicked() {
+  // TODO: 1quando cancelar nota pegar os estoques e cancelar/remover da logistica (exceto quando estiverem entregues?)
 }

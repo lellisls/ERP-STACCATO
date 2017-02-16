@@ -30,7 +30,7 @@ bool RegisterDialog::viewRegisterById(const QVariant &id) {
   primaryId = id.toString();
 
   if (primaryId.isEmpty()) {
-    QMessageBox::critical(this, "Erro", "Erro id -1!");
+    QMessageBox::critical(this, "Erro", "primaryId vazio!");
     return false;
   }
 
@@ -156,7 +156,7 @@ bool RegisterDialog::confirmationMessage() {
   // NOTE: implement the better way
   // if isDirty
 
-  //  if (not model.isDirty() and not isDirty) return true;
+  //  if (not isDirty) return true;
 
   //  QMessageBox msgBox;
   //  msgBox.setParent(this);
@@ -170,77 +170,22 @@ bool RegisterDialog::confirmationMessage() {
   //  msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
   //  msgBox.setDefaultButton(QMessageBox::Save);
 
-  //  const int ret = msgBox.exec();
+  //  const int escolha = msgBox.exec();
 
-  //  return ret == QMessageBox::Save ? save() : ret == QMessageBox::Discard ? true : false;
+  //  if (escolha == QMessageBox::Save) return save();
+  //  if (escolha == QMessageBox::Discard) return true;
+  //  if (escolha == QMessageBox::Cancel) return false;
+
   return true;
 }
 
 void RegisterDialog::errorMessage() { QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este item."); }
-
-void RegisterDialog::successMessage() {
-  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Cadastro realizado com sucesso!");
-}
 
 bool RegisterDialog::newRegister() {
   if (not confirmationMessage()) return false;
 
   clearFields();
   registerMode();
-
-  return true;
-}
-
-bool RegisterDialog::cadastrar() {
-  if (not verifyFields()) return false;
-
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
-
-  if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
-    return false;
-  }
-
-  if (not isUpdate and not model.insertRow(row)) return false;
-
-  if (not savingProcedures()) return false;
-
-  for (int column = 0; column < model.rowCount(); ++column) {
-    const QVariant dado = model.data(row, column);
-
-    if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
-    }
-  }
-
-  if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
-    return false;
-  }
-
-  primaryId =
-      data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : model.query().lastInsertId().toString();
-
-  return true;
-}
-
-bool RegisterDialog::save() {
-  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
-  QSqlQuery("START TRANSACTION").exec();
-
-  if (not cadastrar()) {
-    QSqlQuery("ROLLBACK").exec();
-    return false;
-  }
-
-  QSqlQuery("COMMIT").exec();
-
-  isDirty = false;
-
-  viewRegisterById(primaryId);
-
-  if (not silent) successMessage();
 
   return true;
 }
@@ -359,3 +304,14 @@ bool RegisterDialog::validaCPF(const QString &text) {
 }
 
 void RegisterDialog::marcarDirty() { isDirty = true; }
+
+QVariant RegisterDialog::getLastInsertId() {
+  QSqlQuery query;
+
+  if (not query.exec("SELECT LAST_INSERT_ID() AS id") or not query.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro buscando último id: " + query.lastError().text());
+    return QVariant();
+  }
+
+  return query.value("id");
+}

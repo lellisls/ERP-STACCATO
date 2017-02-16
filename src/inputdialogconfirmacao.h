@@ -22,7 +22,7 @@ public:
   QString getRecebeu() const;
   QString getEntregou() const;
   bool setFilter(const QStringList &ids);
-  bool setFilter(const QString &id);
+  bool setFilter(const QString &id, const QString &idEvento);
 
 private slots:
   void on_dateEditEvento_dateChanged(const QDate &date);
@@ -32,11 +32,21 @@ private slots:
 private:
   // attributes
   const Type type;
-  SqlTableModel model;
+  QString error;
+  SqlTableModel model; // separate this into 2 models? one for each table
+  SqlTableModel modelCliente;
+  SqlTableModel modelVenda;
   Ui::InputDialogConfirmacao *ui;
+  // temp
+  int caixasDefeito;
+  double unCaixa;
+  //
+
   // methods
   bool cadastrar();
   void setupTables();
+  bool gerarCreditoCliente();
+  bool criarReposicaoCliente();
 };
 
 #endif // INPUTDIALOGCONFIRMACAO_H

@@ -30,9 +30,10 @@ private:
   // attributes
   SqlTableModel model;
   QString fornecedor;
+  QString error;
   Ui::WidgetLogisticaRepresentacao *ui;
   // methods
-  bool processRows(const QModelIndexList &list);
+  bool processRows(const QModelIndexList &list, const QDateTime &dataEntrega);
   void setupTables();
 };
 

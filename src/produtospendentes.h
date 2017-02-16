@@ -19,20 +19,28 @@ public:
 
 private slots:
   void on_pushButtonComprar_clicked();
-  void on_pushButtonConsumirCompra_clicked();
+  void on_pushButtonConsumirEstoque_clicked();
   void on_tableProdutos_entered(const QModelIndex &);
 
 private:
   // attributes
   QString codComercial;
+  QString error;
   SqlTableModel modelProdutos;
-  SqlTableModel modelCompra;
+  SqlTableModel modelViewProdutos;
+  SqlTableModel modelEstoque;
   Ui::ProdutosPendentes *ui;
   // methods
   bool insere(const QDateTime &dataPrevista);
   void setupTables();
-  bool comprar();
-  bool consumirCompra();
+  bool comprar(const QModelIndexList &list, const QDateTime &dataPrevista);
+  bool consumirEstoque(const int rowProduto, const int rowEstoque);
+  bool enviarExcedenteParaCompra(const int row, const QDateTime &dataPrevista);
+  bool enviarProdutoParaCompra(const int row, const QDateTime &dataPrevista);
+  bool atualizarVendaCompra(const int row, const QDateTime &dataPrevista);
+  bool quebrarVendaConsumo(const double quantConsumir, const double quantTotalVenda, const int rowProduto);
+  bool quebrarVenda(const int row, const QDateTime &dataPrevista);
+  void recarregarTabelas();
 };
 
 #endif // PRODUTOSPENDENTES_H

@@ -26,17 +26,18 @@ private slots:
   void on_lineEditBusca_textChanged(const QString &text);
   void on_pushButtonMarcarRecebido_clicked();
   void on_pushButtonReagendar_clicked();
-  void on_table_doubleClicked(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
+  void on_pushButtonVenda_clicked();
 
 private:
   // attributes
   QString fornecedor;
+  QString error;
   SqlTableModel model;
   Ui::WidgetLogisticaRecebimento *ui;
   // methods
-  bool processRows(const QModelIndexList &list);
-  bool reagendar();
+  bool processRows(const QModelIndexList &list, const QDateTime &dataReceb, const QString &recebidoPor);
+  bool reagendar(const QModelIndexList &list, const QDateTime &dataPrevReceb);
   void setupTables();
 };
 

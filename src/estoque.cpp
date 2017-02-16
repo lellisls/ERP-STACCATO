@@ -14,7 +14,6 @@ Estoque::Estoque(QWidget *parent) : QDialog(parent), ui(new Ui::Estoque) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
-  setAttribute(Qt::WA_DeleteOnClose);
 
   setupTables();
 }
@@ -79,20 +78,25 @@ void Estoque::setupTables() {
   modelConsumo.setTable("estoque_has_consumo");
   modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-  modelConsumo.setHeaderData("status", "Status");
-  modelConsumo.setHeaderData("ordemCompra", "OC");
-  modelConsumo.setHeaderData("local", "Local");
-  modelConsumo.setHeaderData("fornecedor", "Fornecedor");
-  modelConsumo.setHeaderData("descricao", "Produto");
-  modelConsumo.setHeaderData("quant", "Quant.");
-  modelConsumo.setHeaderData("un", "Un.");
-  modelConsumo.setHeaderData("caixas", "Caixas");
-  modelConsumo.setHeaderData("codComercial", "Cód. Com.");
-  modelConsumo.setHeaderData("created", "Criado");
+  modelConsumo.setFilter("0");
 
-  ui->tableConsumo->setModel(new EstoqueProxyModel(&modelConsumo, this));
+  modelViewConsumo.setTable("view_estoque_consumo");
+  modelViewConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelViewConsumo.setHeaderData("status", "Status");
+  modelViewConsumo.setHeaderData("ordemCompra", "OC");
+  modelViewConsumo.setHeaderData("local", "Local");
+  modelViewConsumo.setHeaderData("fornecedor", "Fornecedor");
+  modelViewConsumo.setHeaderData("descricao", "Produto");
+  modelViewConsumo.setHeaderData("quant", "Quant.");
+  modelViewConsumo.setHeaderData("un", "Un.");
+  modelViewConsumo.setHeaderData("caixas", "Caixas");
+  modelViewConsumo.setHeaderData("codComercial", "Cód. Com.");
+  modelViewConsumo.setHeaderData("created", "Criado");
+
+  ui->tableConsumo->setModel(new EstoqueProxyModel(&modelViewConsumo, this));
   ui->tableConsumo->setItemDelegateForColumn("quant", new DoubleDelegate(this, 4));
-  ui->tableConsumo->showColumn(modelConsumo.fieldIndex("created"));
+  ui->tableConsumo->showColumn("created");
   ui->tableConsumo->hideColumn("idConsumo");
   ui->tableConsumo->hideColumn("idEstoque");
   ui->tableConsumo->hideColumn("idVendaProduto");
@@ -141,41 +145,46 @@ void Estoque::on_tableEstoque_activated(const QModelIndex &) { exibirNota(); }
 void Estoque::calcularRestante() {
   double quant = model.data(0, "quant").toDouble();
 
-  for (int row = 0; row < modelConsumo.rowCount(); ++row) quant += modelConsumo.data(row, "quant").toDouble();
+  for (int row = 0; row < modelViewConsumo.rowCount(); ++row) quant += modelViewConsumo.data(row, "quant").toDouble();
 
   ui->doubleSpinBoxRestante->setValue(quant);
   ui->doubleSpinBoxRestante->setSuffix(" " + model.data(0, "un").toString());
 }
 
-void Estoque::viewRegisterById(const QString &idEstoque) {
-  // NOTE: put this in the constructor else I may forget to call this function before criarConsumo()
-
+bool Estoque::viewRegisterById(const QString &idEstoque, bool showWindow) {
   if (idEstoque.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "Estoque não encontrado!");
-    return;
+    return false;
   }
 
   model.setFilter("idEstoque = " + idEstoque);
 
   if (not model.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + model.lastError().text());
-    return;
+    return false;
   }
 
   ui->tableEstoque->resizeColumnsToContents();
 
-  modelConsumo.setFilter("idEstoque = " + idEstoque);
-
   if (not modelConsumo.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque consumo: " + model.lastError().text());
-    return;
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque consumo: " + modelConsumo.lastError().text());
+    return false;
+  }
+
+  modelViewConsumo.setFilter("idEstoque = " + idEstoque);
+
+  if (not modelViewConsumo.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela view consumo: " + modelViewConsumo.lastError().text());
+    return false;
   }
 
   ui->tableConsumo->resizeColumnsToContents();
 
   calcularRestante();
 
-  show();
+  if (showWindow) show();
+
+  return true;
 }
 
 void Estoque::on_pushButtonExibirNfe_clicked() { exibirNota(); }
@@ -197,103 +206,102 @@ void Estoque::exibirNota() {
   }
 }
 
-bool Estoque::criarConsumo(const int idVendaProduto) {
-  showMaximized();
-
-  for (int row = 0; row < model.rowCount(); ++row) {
-    QSqlQuery query;
-    query.prepare("SELECT quant FROM venda_has_produto WHERE idVendaProduto = :idVendaProduto");
-    query.bindValue(":idVendaProduto", idVendaProduto);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + model.lastError().text());
-      return false;
-    }
-
-    while (query.next()) {
-      if (query.value("quant") > model.data(row, "quant")) continue;
-
-      const int newRow = modelConsumo.rowCount();
-
-      modelConsumo.insertRow(newRow);
-
-      for (int column = 0, columnCount = model.columnCount(); column < columnCount; ++column) {
-        const QString field = model.record().fieldName(column);
-        const int index = modelConsumo.fieldIndex(field);
-        const QVariant value = model.data(row, column);
-
-        if (index != -1 and not modelConsumo.setData(newRow, index, value)) return false;
-      }
-
-      const double quant = query.value("quant").toDouble();
-
-      // -------------------------------------
-
-      QSqlQuery queryTemp;
-      queryTemp.prepare("SELECT un, kgcx, m2cx, pccx FROM produto WHERE idProduto = :idProduto");
-      queryTemp.bindValue(":idProduto", model.data(row, "idProduto"));
-
-      if (not queryTemp.exec()) {
-        QMessageBox::critical(this, "Erro!", "Erro buscando dados do produto: " + queryTemp.lastError().text());
-        return false;
-      }
-
-      int caixas = 0;
-
-      if (queryTemp.first()) {
-        const QString un = queryTemp.value("un").toString();
-        const double kgcx = queryTemp.value("kgcx").toDouble();
-        const double m2cx = queryTemp.value("m2cx").toDouble();
-        const double pccx = queryTemp.value("pccx").toDouble();
-
-        if (un == "KG") {
-          if (kgcx > 0.) caixas = quant / kgcx;
-        } else if (un == "M2" or un == "M²") {
-          if (m2cx > 0.) caixas = quant / m2cx;
-        } else {
-          if (pccx > 0.) caixas = quant / pccx;
-        }
-      }
-
-      const double proporcao = quant / model.data(row, "idEstoque").toDouble();
-
-      const double valor = model.data(row, "valor").toDouble() * proporcao;
-      const double vBC = model.data(row, "vBC").toDouble() * proporcao;
-      const double vICMS = model.data(row, "vICMS").toDouble() * proporcao;
-      const double vBCST = model.data(row, "vBCST").toDouble() * proporcao;
-      const double vICMSST = model.data(row, "vICMSST").toDouble() * proporcao;
-      const double vBCPIS = model.data(row, "vBCPIS").toDouble() * proporcao;
-      const double vPIS = model.data(row, "vPIS").toDouble() * proporcao;
-      const double vBCCOFINS = model.data(row, "vBCCOFINS").toDouble() * proporcao;
-      const double vCOFINS = model.data(row, "vCOFINS").toDouble() * proporcao;
-
-      // -------------------------------------
-
-      if (not modelConsumo.setData(newRow, "quant", quant * -1)) return false;
-      if (not modelConsumo.setData(newRow, "caixas", caixas)) return false;
-      if (not modelConsumo.setData(newRow, "quantUpd", DarkGreen)) return false; // DarkGreen
-      if (not modelConsumo.setData(newRow, "idVendaProduto", idVendaProduto)) return false;
-      if (not modelConsumo.setData(newRow, "idEstoque", model.data(row, "idEstoque"))) return false;
-      if (not modelConsumo.setData(newRow, "status", "CONSUMO")) return false;
-
-      if (not modelConsumo.setData(newRow, "valor", valor)) return false;
-      if (not modelConsumo.setData(newRow, "vBC", vBC)) return false;
-      if (not modelConsumo.setData(newRow, "vICMS", vICMS)) return false;
-      if (not modelConsumo.setData(newRow, "vBCST", vBCST)) return false;
-      if (not modelConsumo.setData(newRow, "vICMSST", vICMSST)) return false;
-      if (not modelConsumo.setData(newRow, "vBCPIS", vBCPIS)) return false;
-      if (not modelConsumo.setData(newRow, "vPIS", vPIS)) return false;
-      if (not modelConsumo.setData(newRow, "vBCCOFINS", vBCCOFINS)) return false;
-      if (not modelConsumo.setData(newRow, "vCOFINS", vCOFINS)) return false;
-    }
-  }
-
-  if (not modelConsumo.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + model.lastError().text());
+bool Estoque::criarConsumo(const int idVendaProduto, double quant) {
+  if (model.filter().isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Não setou idEstoque!");
     return false;
   }
 
-  calcularRestante();
+  bool consumed = false;
+
+  for (int row = 0; row < model.rowCount(); ++row) {
+    if (quant == 0) {
+      QSqlQuery queryQuant;
+      queryQuant.prepare("SELECT quant FROM venda_has_produto WHERE idVendaProduto = :idVendaProduto");
+      queryQuant.bindValue(":idVendaProduto", idVendaProduto);
+
+      if (not queryQuant.exec() or not queryQuant.first()) {
+        QMessageBox::critical(this, "Erro!", "Erro buscando em venda_has_produto: " + model.lastError().text());
+        return false;
+      }
+
+      quant = queryQuant.value("quant").toDouble();
+    }
+
+    if (quant > model.data(row, "quant").toDouble()) continue;
+
+    const int newRow = modelConsumo.rowCount();
+
+    modelConsumo.insertRow(newRow);
+
+    for (int column = 0, columnCount = model.columnCount(); column < columnCount; ++column) {
+      const QString field = model.record().fieldName(column);
+      const int index = modelConsumo.fieldIndex(field);
+      const QVariant value = model.data(row, column);
+
+      if (index != -1 and not modelConsumo.setData(newRow, index, value)) return false;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT UPPER(un) AS un, m2cx, pccx FROM produto WHERE idProduto = :idProduto");
+    query.bindValue(":idProduto", model.data(row, "idProduto"));
+
+    if (not query.exec() or not query.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando dados do produto: " + query.lastError().text());
+      return false;
+    }
+
+    const QString un = query.value("un").toString();
+    const double m2cx = query.value("m2cx").toDouble();
+    const double pccx = query.value("pccx").toDouble();
+
+    const double unCaixa = un == "M2" or un == "M²" or un == "ML" ? m2cx : pccx;
+
+    const int caixas = quant / unCaixa;
+
+    const double proporcao = quant / model.data(row, "quant").toDouble();
+
+    const double valor = model.data(row, "valor").toDouble() * proporcao;
+    const double vBC = model.data(row, "vBC").toDouble() * proporcao;
+    const double vICMS = model.data(row, "vICMS").toDouble() * proporcao;
+    const double vBCST = model.data(row, "vBCST").toDouble() * proporcao;
+    const double vICMSST = model.data(row, "vICMSST").toDouble() * proporcao;
+    const double vBCPIS = model.data(row, "vBCPIS").toDouble() * proporcao;
+    const double vPIS = model.data(row, "vPIS").toDouble() * proporcao;
+    const double vBCCOFINS = model.data(row, "vBCCOFINS").toDouble() * proporcao;
+    const double vCOFINS = model.data(row, "vCOFINS").toDouble() * proporcao;
+
+    // -------------------------------------
+
+    if (not modelConsumo.setData(newRow, "quant", quant * -1)) return false;
+    if (not modelConsumo.setData(newRow, "caixas", caixas)) return false;
+    if (not modelConsumo.setData(newRow, "quantUpd", DarkGreen)) return false; // DarkGreen
+    if (not modelConsumo.setData(newRow, "idVendaProduto", idVendaProduto)) return false;
+    if (not modelConsumo.setData(newRow, "idEstoque", model.data(row, "idEstoque"))) return false;
+    if (not modelConsumo.setData(newRow, "status", "CONSUMO")) return false;
+
+    if (not modelConsumo.setData(newRow, "valor", valor)) return false;
+    if (not modelConsumo.setData(newRow, "vBC", vBC)) return false;
+    if (not modelConsumo.setData(newRow, "vICMS", vICMS)) return false;
+    if (not modelConsumo.setData(newRow, "vBCST", vBCST)) return false;
+    if (not modelConsumo.setData(newRow, "vICMSST", vICMSST)) return false;
+    if (not modelConsumo.setData(newRow, "vBCPIS", vBCPIS)) return false;
+    if (not modelConsumo.setData(newRow, "vPIS", vPIS)) return false;
+    if (not modelConsumo.setData(newRow, "vBCCOFINS", vBCCOFINS)) return false;
+    if (not modelConsumo.setData(newRow, "vCOFINS", vCOFINS)) return false;
+
+    consumed = true;
+  }
+
+  if (not modelConsumo.submitAll()) {
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados: " + modelConsumo.lastError().text());
+    return false;
+  }
+
+  if (not consumed) {
+    QMessageBox::critical(this, "Erro!", "Erro criando consumo!");
+    return false;
+  }
 
   return true;
 }
@@ -302,4 +310,4 @@ void Estoque::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->r
 
 void Estoque::on_tableConsumo_entered(const QModelIndex &) { ui->tableConsumo->resizeColumnsToContents(); }
 
-// NOTE: coluna ordemCompra renomeada, remover futuramente se nao der problema
+// TODO: 1colocar o botao de desvincular consumo nesta tela

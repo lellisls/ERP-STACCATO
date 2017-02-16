@@ -27,12 +27,13 @@ private slots:
 
 private:
   // attributes
+  QString error;
   SqlTableModel model;
   Ui::WidgetCompraConfirmar *ui;
   // methods
   void setupTables();
   bool confirmarCompra();
-  bool cancelar();
+  bool cancelar(const QModelIndexList &list);
 };
 
 #endif // WIDGETCOMPRACONFIRMAR_H

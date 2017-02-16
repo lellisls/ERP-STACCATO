@@ -26,9 +26,11 @@ private slots:
 
 private:
   // attributes
+  QString error;
   SqlTableModel modelPermissoes;
   Ui::CadastroUsuario *ui;
   // methods
+  bool cadastrar() override;
   bool viewRegister() override;
   virtual bool save() override;
   virtual bool savingProcedures() override;
@@ -38,7 +40,6 @@ private:
   virtual void setupMapper() override;
   virtual void successMessage() override;
   virtual void updateMode() override;
-  bool cadastrar() override;
   void setupTables();
 };
 

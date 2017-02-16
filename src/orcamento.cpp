@@ -2,7 +2,6 @@
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlRecord>
-#include <cmath>
 
 #include "baixaorcamento.h"
 #include "cadastrocliente.h"
@@ -21,15 +20,13 @@
 Orcamento::Orcamento(QWidget *parent) : RegisterDialog("orcamento", "idOrcamento", parent), ui(new Ui::Orcamento) {
   ui->setupUi(this);
 
-  setAttribute(Qt::WA_DeleteOnClose);
-
   proxy = new SearchDialogProxy(&modelItem, this);
 
   setupTables();
 
-  //  for (auto const *line : findChildren<QLineEdit *>()) {
-  //    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  //  }
+  for (auto const *line : findChildren<QLineEdit *>()) {
+    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
+  }
 
   ui->itemBoxCliente->setSearchDialog(SearchDialog::cliente(this));
   ui->itemBoxCliente->setRegisterDialog(new CadastroCliente(this));
@@ -110,7 +107,7 @@ bool Orcamento::viewRegister() {
       status != "ATIVO") {
     isReadOnly = true;
 
-    ui->pushButtonGerarVenda->hide();
+    //    ui->pushButtonGerarVenda->hide();
     ui->pushButtonAtualizarOrcamento->hide();
     ui->pushButtonReplicar->show();
 
@@ -285,7 +282,7 @@ void Orcamento::removeItem() {
 
   if (modelItem.rowCount() == 0) {
     if (ui->lineEditOrcamento->text() == "Auto gerado") ui->checkBoxRepresentacao->setEnabled(true);
-    ui->itemBoxProduto->searchDialog()->setFornecedorRep("");
+    ui->itemBoxProduto->getSearchDialog()->setFornecedorRep("");
   }
 
   novoItem();
@@ -303,7 +300,7 @@ bool Orcamento::generateId() {
   query.bindValue(":id", id + "%");
 
   if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando próximo id disponível: " + query.lastError().text());
+    error = "Erro buscando próximo id disponível: " + query.lastError().text();
     return false;
   }
 
@@ -313,8 +310,8 @@ bool Orcamento::generateId() {
   id += ui->checkBoxRepresentacao->isChecked() ? "R" : "";
   id += "O";
 
-  if (id.size() != 12) {
-    QMessageBox::critical(this, "Erro!", "Ocorreu algum erro ao gerar id: " + id);
+  if (id.size() != 12 and id.size() != 13) {
+    error = "Ocorreu algum erro ao gerar id: " + id;
     return false;
   }
 
@@ -322,12 +319,12 @@ bool Orcamento::generateId() {
 
   if (not replica.isEmpty()) {
     query.prepare(
-        "SELECT COALESCE(MAX(RIGHT(idOrcamento, 1)) + 1, 1) AS revisao FROM orcamento WHERE LENGTH(idOrcamento) = 17 "
+        "SELECT COALESCE(MAX(RIGHT(idOrcamento, 1)) + 1, 1) AS revisao FROM orcamento WHERE LENGTH(idOrcamento) > 16 "
         "AND idOrcamento LIKE :idOrcamento");
     query.bindValue(":idOrcamento", replica.left(16) + "%");
 
     if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando próxima revisão disponível: " + query.lastError().text());
+      error = "Erro buscando próxima revisão disponível: " + query.lastError().text();
       return false;
     }
 
@@ -379,13 +376,13 @@ bool Orcamento::savingProcedures() {
   const double desconto = ui->doubleSpinBoxSubTotalLiq->value() * ui->doubleSpinBoxDescontoGlobal->value() / 100.;
   if (not setData("descontoReais", desconto)) return false;
   if (not setData("frete", ui->doubleSpinBoxFrete->value())) return false;
-  if (not setData("idCliente", ui->itemBoxCliente->value())) return false;
-  if (not setData("idEnderecoEntrega", ui->itemBoxEndereco->value())) return false;
+  if (not setData("idCliente", ui->itemBoxCliente->getValue())) return false;
+  if (not setData("idEnderecoEntrega", ui->itemBoxEndereco->getValue())) return false;
   if (not setData("idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()))) return false;
   if (not setData("idOrcamento", ui->lineEditOrcamento->text())) return false;
-  if (not setData("idProfissional", ui->itemBoxProfissional->value())) return false;
-  if (not setData("idUsuario", ui->itemBoxVendedor->value())) return false;
-  if (not setData("idUsuarioIndicou", ui->itemBoxVendedorIndicou->value())) return false;
+  if (not setData("idProfissional", ui->itemBoxProfissional->getValue())) return false;
+  if (not setData("idUsuario", ui->itemBoxVendedor->getValue())) return false;
+  if (not setData("idUsuarioIndicou", ui->itemBoxVendedorIndicou->getValue())) return false;
   if (not setData("observacao", ui->plainTextEditObs->toPlainText())) return false;
   if (not setData("prazoEntrega", ui->spinBoxPrazoEntrega->value())) return false;
   if (not setData("replicadoDe", ui->lineEditReplicaDe->text())) return false;
@@ -418,7 +415,7 @@ bool Orcamento::atualizaReplica() {
     query.bindValue(":idOrcamento", ui->lineEditReplicaDe->text());
 
     if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro salvando replicadoEm: " + query.lastError().text());
+      error = "Erro salvando replicadoEm: " + query.lastError().text();
       return false;
     }
   }
@@ -572,7 +569,7 @@ void Orcamento::adicionarItem(const bool isUpdate) {
 
   if (not isUpdate) modelItem.insertRow(row);
 
-  if (not modelItem.setData(row, "idProduto", ui->itemBoxProduto->value().toInt())) return;
+  if (not modelItem.setData(row, "idProduto", ui->itemBoxProduto->getValue().toInt())) return;
   if (not modelItem.setData(row, "fornecedor", ui->lineEditFornecedor->text())) return;
   if (not modelItem.setData(row, "produto", ui->itemBoxProduto->text())) return;
   if (not modelItem.setData(row, "obs", ui->lineEditObs->text())) return;
@@ -601,8 +598,10 @@ void Orcamento::adicionarItem(const bool isUpdate) {
   //
 
   if (modelItem.rowCount() == 1 and ui->checkBoxRepresentacao->isChecked()) {
-    ui->itemBoxProduto->searchDialog()->setFornecedorRep(modelItem.data(row, "fornecedor").toString());
+    ui->itemBoxProduto->getSearchDialog()->setFornecedorRep(modelItem.data(row, "fornecedor").toString());
   }
+
+  isDirty = true;
 
   //
 
@@ -694,14 +693,15 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
   query.prepare("SELECT un, precoVenda, estoque, fornecedor, codComercial, "
                 "formComercial, m2cx, pccx, minimo, multiplo, estoque_promocao "
                 "FROM produto WHERE idProduto = :index");
-  query.bindValue(":index", ui->itemBoxProduto->value());
+  query.bindValue(":index", ui->itemBoxProduto->getValue());
 
   if (not query.exec() or not query.first()) {
     QMessageBox::critical(this, "Erro!", "Erro na busca do produto: " + query.lastError().text());
     return;
   }
 
-  const QString un = query.value("un").toString();
+  const QString un = query.value("un").toString().toUpper();
+
   ui->lineEditUn->setText(un);
   ui->lineEditPrecoUn->setValue(query.value("precoVenda").toDouble());
   ui->lineEditEstoque->setValue(query.value("estoque").toInt());
@@ -749,12 +749,13 @@ void Orcamento::on_itemBoxProduto_textChanged(const QString &) {
 }
 
 void Orcamento::on_itemBoxCliente_textChanged(const QString &) {
-  ui->itemBoxEndereco->searchDialog()->setFilter("idCliente = " + QString::number(ui->itemBoxCliente->value().toInt()) +
-                                                 " AND desativado = FALSE OR idEndereco = 1");
+  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCliente = " +
+                                                    QString::number(ui->itemBoxCliente->getValue().toInt()) +
+                                                    " AND desativado = FALSE OR idEndereco = 1");
 
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT idProfissionalRel FROM cliente WHERE idCliente = :idCliente");
-  queryCliente.bindValue(":idCliente", ui->itemBoxCliente->value());
+  queryCliente.bindValue(":idCliente", ui->itemBoxCliente->getValue());
 
   if (not queryCliente.exec() or not queryCliente.first()) {
     QMessageBox::critical(this, "Erro!", "Erro ao buscar cliente: " + queryCliente.lastError().text());
@@ -804,20 +805,17 @@ void Orcamento::on_pushButtonReplicar_clicked() {
 }
 
 bool Orcamento::cadastrar() {
-  if (not verifyFields()) return false;
-
   row = isUpdate ? mapper.currentIndex() : model.rowCount();
 
   if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro linha -1 Orçamento: " + QString::number(isUpdate) + "\nMapper: " +
-                                             QString::number(mapper.currentIndex()) + "\nModel: " +
-                                             QString::number(model.rowCount()));
+    error = "Erro linha -1 Orçamento: " + QString::number(isUpdate) + "\nMapper: " +
+            QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
     return false;
   }
 
   if (not isUpdate) {
     if (not generateId() or not model.insertRow(row)) {
-      QMessageBox::critical(this, "Erro!", "Erro inserindo linha na tabela");
+      error = "Erro inserindo linha na tabela";
       return false;
     }
   }
@@ -825,14 +823,19 @@ bool Orcamento::cadastrar() {
   if (not savingProcedures()) return false;
 
   if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro ao cadastrar: " + model.lastError().text());
+    error = "Erro ao cadastrar: " + model.lastError().text();
     return false;
   }
 
   primaryId = ui->lineEditOrcamento->text();
 
+  if (primaryId.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    return false;
+  }
+
   if (not modelItem.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro ao adicionar um item ao orçamento: " + modelItem.lastError().text());
+    error = "Erro ao adicionar um item ao orçamento: " + modelItem.lastError().text();
     return false;
   }
 
@@ -840,11 +843,14 @@ bool Orcamento::cadastrar() {
 }
 
 bool Orcamento::save() {
+  if (not verifyFields()) return false;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
   if (not cadastrar()) {
     QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return false;
   }
 
@@ -860,7 +866,7 @@ bool Orcamento::save() {
 }
 
 bool Orcamento::verificaCadastroCliente() {
-  const int idCliente = ui->itemBoxCliente->value().toInt();
+  const int idCliente = ui->itemBoxCliente->getValue().toInt();
 
   QSqlQuery queryCliente;
   queryCliente.prepare("SELECT cpf, cnpj FROM cliente WHERE idCliente = :idCliente");
@@ -927,7 +933,8 @@ void Orcamento::on_pushButtonGerarExcel_clicked() {
 }
 
 void Orcamento::on_checkBoxRepresentacao_toggled(const bool checked) {
-  ui->itemBoxProduto->searchDialog()->setRepresentacao(" AND representacao = " + QString(checked ? "TRUE" : "FALSE"));
+  ui->itemBoxProduto->getSearchDialog()->setRepresentacao(" AND representacao = " +
+                                                          QString(checked ? "TRUE" : "FALSE"));
 }
 
 void Orcamento::on_doubleSpinBoxDesconto_valueChanged(const double) {
@@ -1026,10 +1033,12 @@ void Orcamento::successMessage() {
 
 void Orcamento::on_comboBoxLoja_currentTextChanged(const QString &) {
   ui->itemBoxVendedorIndicou->clear();
-  ui->itemBoxVendedorIndicou->searchDialog()->setFilter("idLoja = " + ui->comboBoxLoja->getCurrentValue().toString() +
-                                                        " AND tipo = 'VENDEDOR'");
+  ui->itemBoxVendedorIndicou->getSearchDialog()->setFilter(
+      "idLoja = " + ui->comboBoxLoja->getCurrentValue().toString() + " AND tipo = 'VENDEDOR'");
 }
 
 // NOTE: model.submitAll faz mapper voltar para -1, select tambem (talvez porque
 // submitAll chama select)
 // NOTE: se produto for estoque permitir vender por peça
+// TODO: 1alterar o frete manualmente pode fazer com que o total saia errado (com o valor do frete)
+// TODO: 2orcamento de reposicao nao pode ter profissional associado (bloquear)

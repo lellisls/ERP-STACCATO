@@ -13,7 +13,6 @@ public:
   void setDecimais(const int value);
 
 private:
-  Q_PROPERTY(double value READ getValue WRITE setValue STORED false)
   // attributes
   int decimais = 2;
   // methods

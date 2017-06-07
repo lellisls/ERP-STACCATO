@@ -186,7 +186,6 @@ void ReportRender::initDatasources(){
     try{
         datasources()->setAllDatasourcesToFirst();
     } catch(ReportError &exception){
-        //TODO possible should thow exeption
         QMessageBox::critical(0,tr("Error"),exception.what());
         return;
     }
@@ -239,7 +238,6 @@ void ReportRender::renderPage(PageDesignIntf* patternPage)
             datasources()->setAllDatasourcesToFirst();
             datasources()->clearGroupFuntionsExpressions();
         } catch(ReportError &exception){
-            //TODO possible should thow exeption
             QMessageBox::critical(0,tr("Error"),exception.what());
             return;
         }
@@ -757,7 +755,6 @@ void ReportRender::popPageFooterGroupValues(BandDesignIntf *dataBand)
     if (pageFooter){
         foreach(GroupFunction* gf, datasources()->groupFunctionsByBand(pageFooter->objectName())){
             if ((gf->dataBandName()==dataBand->objectName())){
-                // FIXME Probably coincidence Field and Variables
                 if ((!m_popupedExpression.contains(dataBand))||(!m_popupedExpression.values(dataBand).contains(gf->data()))){
                     m_popupedExpression.insert(dataBand,gf->data());
                     m_popupedValues.insert(QString("%1").arg((quintptr)dataBand)+'|'+gf->data(), gf->values()[gf->values().count()-1]);
@@ -774,7 +771,6 @@ void ReportRender::pushPageFooterGroupValues(BandDesignIntf *dataBand)
     if (pageFooter){
         foreach(GroupFunction* gf, datasources()->groupFunctionsByBand(pageFooter->objectName())){
             if ((gf->dataBandName()==dataBand->objectName())){
-                // FIXME Probably coincidence Field and Variables
                 if ((m_popupedExpression.contains(dataBand))&&(m_popupedExpression.values(dataBand).contains(gf->data()))){
                     gf->values().push_back(m_popupedValues.value(QString("%1").arg((quintptr)dataBand)+'|'+gf->data()));
                 }

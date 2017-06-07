@@ -485,7 +485,6 @@ QDockWidget *DataBrowser::createDataWindow(QString datasourceName)
 {
     QDockWidget *window = new QDockWidget("Table: "+datasourceName);
     QTableView *tableView = new QTableView(window);
-    //TODO: exception or message ?
 
     try {
         IDataSourceHolder* holder = m_report->dataManager()->dataSourceHolder(datasourceName);

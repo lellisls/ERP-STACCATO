@@ -176,7 +176,6 @@ QVariant AvgGroupFunction::calculate()
 
 QVariant MinGroupFunction::calculate()
 {
-    //TODO: check variant type
     QVariant res = QVariant();
     if (!values().empty()) res = values().at(0);
     foreach(QVariant value, values()){
@@ -188,7 +187,6 @@ QVariant MinGroupFunction::calculate()
 
 QVariant MaxGroupFunction::calculate()
 {
-    //TODO: check variant type
     QVariant res = QVariant();
     if (!values().empty()) res = values().at(0);
     foreach(QVariant value, values()){

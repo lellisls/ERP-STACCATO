@@ -50,8 +50,6 @@ class PageDesignIntf;
 class PrintRange;
 class ReportDesignWindow;
 
-//TODO: Add on render callback
-
 class ReportEnginePrivate : public QObject, public ICollectionContainer
 {
     Q_OBJECT

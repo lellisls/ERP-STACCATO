@@ -1260,7 +1260,6 @@ void DataSourceManager::clear(ClearMethod method)
         cit = m_connections.erase(cit);
     }
 
-    //TODO: add smart pointes to collections
     foreach(QueryDesc *desc, m_queries) delete desc;
     foreach(SubQueryDesc* desc, m_subqueries) delete desc;
     foreach(ProxyDesc* desc, m_proxies) delete desc;

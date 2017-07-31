@@ -38,7 +38,7 @@ ImageEditor::ImageEditor(QWidget* parent)
 {
     m_button.setIcon(QIcon(":items/ImageItem"));
     m_clearButton.setIcon(QIcon(":items/clear.png"));
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    auto* layout = new QHBoxLayout(this);
     layout->addWidget(&m_button);
     layout->addWidget(&m_clearButton);
     layout->setSpacing(1);

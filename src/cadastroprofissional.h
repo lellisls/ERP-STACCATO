@@ -2,6 +2,7 @@
 #define CADASTROPROFISSIONAL_H
 
 #include "registeraddressdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class CadastroProfissional;
@@ -43,6 +44,7 @@ private:
   // attributes
   QString error;
   QString tipoPFPJ;
+  SearchDialog *sdProfissional;
   Ui::CadastroProfissional *ui;
   // methods
   bool cadastrarEndereco(const bool isUpdate = false);

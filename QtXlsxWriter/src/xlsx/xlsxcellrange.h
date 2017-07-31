@@ -37,7 +37,7 @@ public:
   CellRange(const QString &range);
   explicit CellRange(const char *range);
   CellRange(const CellRange &other);
-  ~CellRange();
+  ~CellRange() = default;
 
   QString toString(bool row_abs = false, bool col_abs = false) const;
   bool isValid() const;
@@ -56,12 +56,8 @@ public:
   inline CellReference bottomLeft() const { return CellReference(bottom, left); }
   inline CellReference bottomRight() const { return CellReference(bottom, right); }
 
-  inline bool operator==(const CellRange &other) const {
-    return top == other.top and bottom == other.bottom and left == other.left and right == other.right;
-  }
-  inline bool operator!=(const CellRange &other) const {
-    return top != other.top or bottom != other.bottom or left != other.left or right != other.right;
-  }
+  inline bool operator==(const CellRange &other) const { return top == other.top and bottom == other.bottom and left == other.left and right == other.right; }
+  inline bool operator!=(const CellRange &other) const { return top != other.top or bottom != other.bottom or left != other.left or right != other.right; }
 
 private:
   void init(const QString &range);

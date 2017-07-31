@@ -32,7 +32,7 @@ private:
   Ui::WidgetCompraConfirmar *ui;
   // methods
   void setupTables();
-  bool confirmarCompra();
+  bool confirmarCompra(const QString &idCompra, const QDateTime &dataPrevista, const QDateTime &dataConf);
   bool cancelar(const QModelIndexList &list);
 };
 

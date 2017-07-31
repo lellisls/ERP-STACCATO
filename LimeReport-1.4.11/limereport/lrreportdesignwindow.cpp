@@ -60,10 +60,10 @@
 
 namespace LimeReport{
 
-ReportDesignWindow* ReportDesignWindow::m_instance=0;
+ReportDesignWindow* ReportDesignWindow::m_instance=nullptr;
 
 ReportDesignWindow::ReportDesignWindow(ReportEnginePrivate *report, QWidget *parent, QSettings* settings) :
-    QMainWindow(parent), m_textAttibutesIsChanging(false), m_settings(settings), m_ownedSettings(false), m_progressDialog(0), m_showProgressDialog(true)
+    QMainWindow(parent), m_textAttibutesIsChanging(false), m_settings(settings), m_ownedSettings(false), m_progressDialog(nullptr), m_showProgressDialog(true)
 {
     initReportEditor(report);
     createActions();
@@ -86,7 +86,7 @@ ReportDesignWindow::ReportDesignWindow(ReportEnginePrivate *report, QWidget *par
 
 ReportDesignWindow::~ReportDesignWindow()
 {
-    m_instance=0;
+    m_instance=nullptr;
     delete m_validator;
     if (m_ownedSettings&&m_settings) delete m_settings;
 }
@@ -478,7 +478,7 @@ void ReportDesignWindow::createObjectInspector()
 
     QDockWidget *objectDoc = new QDockWidget(this);
     QWidget* w = new QWidget(objectDoc);
-    QVBoxLayout* l = new QVBoxLayout(w);
+    auto* l = new QVBoxLayout(w);
     l->addWidget(m_objectInspector);
     l->setContentsMargins(2,2,2,2);
     w->setLayout(l);
@@ -929,7 +929,7 @@ void ReportDesignWindow::slotLoadReport()
                 m_reportDesignWidget->clear();
                 if (m_reportDesignWidget->loadFromFile(fileName)){
                 	m_lblReportName->setText(fileName);
-                	m_propertyModel->setObject(0);
+                	m_propertyModel->setObject(nullptr);
                 	updateRedoUndo();
                 	setWindowTitle(m_reportDesignWidget->report()->reportName() + " - Lime Report Designer");
                 	if (!m_recentFiles.contains(fileName)){
@@ -1122,7 +1122,7 @@ void ReportDesignWindow::updateAvaibleBands(){
 
 void ReportDesignWindow::slotActivePageChanged()
 {
-    m_propertyModel->setObject(0);
+    m_propertyModel->setObject(nullptr);
     updateRedoUndo();
     updateAvaibleBands();
 }
@@ -1148,12 +1148,12 @@ void ReportDesignWindow::renderFinished()
         m_progressDialog->close();
         delete m_progressDialog;
     }
-    m_progressDialog = 0;
+    m_progressDialog = nullptr;
 }
 
 void ReportDesignWindow::slotShowAbout()
 {
-    AboutDialog* about = new AboutDialog(this);
+    auto* about = new AboutDialog(this);
     about->exec();
 }
 
@@ -1208,7 +1208,7 @@ void ReportDesignWindow::slotLoadRecentFile(const QString fileName)
             m_reportDesignWidget->clear();
             m_reportDesignWidget->loadFromFile(fileName);
             m_lblReportName->setText(fileName);
-            m_propertyModel->setObject(0);
+            m_propertyModel->setObject(nullptr);
             updateRedoUndo();
             unsetCursor();
             setWindowTitle(m_reportDesignWidget->report()->reportName() + " - Lime Report Designer");
@@ -1216,7 +1216,7 @@ void ReportDesignWindow::slotLoadRecentFile(const QString fileName)
         } else {
             m_recentFiles.remove(fileName);
             removeNotExistedRecentFilesFromMenu(fileName);
-            QMessageBox::information(this,tr("Warning"),tr("File \"%1\" not found!").arg(fileName));
+            QMessageBox::information(this,tr("Warning"),tr(R"(File "%1" not found!)").arg(fileName));
         }
     }
 }

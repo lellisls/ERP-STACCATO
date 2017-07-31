@@ -2,6 +2,7 @@
 #define CADASTROTRANSPORTADORA_H
 
 #include "registeraddressdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class CadastroTransportadora;
@@ -41,6 +42,7 @@ private:
   // attributes
   QDataWidgetMapper mapperVeiculo;
   QString error;
+  SearchDialog *sdTransportadora;
   SqlTableModel modelVeiculo;
   Ui::CadastroTransportadora *ui;
   // methods

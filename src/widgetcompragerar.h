@@ -37,8 +37,8 @@ private:
   Ui::WidgetCompraGerar *ui;
   // methods
   bool cancelar(const QModelIndexList &list);
-  bool gerarCompra(const QModelIndexList &list);
-  bool gerarExcel(QList<int> &lista, QString &anexo, const bool isRepresentacao);
+  bool gerarCompra(const QList<int> &lista, const QDateTime &dataCompra, const QDateTime &dataPrevista);
+  bool gerarExcel(const QList<int> &lista, QString &anexo, const bool isRepresentacao);
   void setupTables();
 };
 

@@ -2,19 +2,13 @@
 
 #include "importaprodutosproxy.h"
 
-ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), descontinuado(model->fieldIndex("descontinuado")) {
-  setSourceModel(model);
-}
-
-ImportaProdutosProxy::~ImportaProdutosProxy() {}
+ImportaProdutosProxy::ImportaProdutosProxy(SqlTableModel *model, QObject *parent) : QIdentityProxyModel(parent), descontinuado(model->fieldIndex("descontinuado")) { setSourceModel(model); }
 
 QVariant ImportaProdutosProxy::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
 
     // verifica se está descontinuado
-    const int descontinuado =
-        QIdentityProxyModel::data(index(proxyIndex.row(), this->descontinuado), Qt::DisplayRole).toInt();
+    const int descontinuado = QIdentityProxyModel::data(index(proxyIndex.row(), this->descontinuado), Qt::DisplayRole).toInt();
 
     if (descontinuado == 1) return QBrush(Qt::cyan);
 

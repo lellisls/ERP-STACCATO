@@ -64,7 +64,7 @@ public:
     CT_Bubble
   };
 
-  ~Chart();
+  ~Chart() = default;
 
   void addSeries(const CellRange &range, AbstractSheet *sheet = 0);
   void setChartType(ChartType type);

@@ -35,15 +35,15 @@ class DownloadDialog : public QWidget {
 
 public:
   explicit DownloadDialog(QWidget *parent = 0);
-  ~DownloadDialog(void);
+  ~DownloadDialog();
 
   void beginDownload(const QUrl &url);
 
 private slots:
-  void openDownload(void);
-  void installUpdate(void);
-  void cancelDownload(void);
-  void downloadFinished(void);
+  void openDownload();
+  void installUpdate();
+  void cancelDownload();
+  void downloadFinished();
   void updateProgress(qint64 received, qint64 total);
   void ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &error);
 

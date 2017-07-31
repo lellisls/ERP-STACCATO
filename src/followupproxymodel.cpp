@@ -1,13 +1,9 @@
 #include <QBrush>
+#include <QDebug>
 
 #include "followupproxymodel.h"
 
-FollowUpProxyModel::FollowUpProxyModel(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), semaforo(model->fieldIndex("semaforo")) {
-  setSourceModel(model);
-}
-
-FollowUpProxyModel::~FollowUpProxyModel() {}
+FollowUpProxyModel::FollowUpProxyModel(SqlTableModel *model, QObject *parent) : QIdentityProxyModel(parent), semaforo(model->fieldIndex("semaforo")) { setSourceModel(model); }
 
 QVariant FollowUpProxyModel::data(const QModelIndex &proxyIndex, int role) const {
   if (role == Qt::BackgroundRole) {

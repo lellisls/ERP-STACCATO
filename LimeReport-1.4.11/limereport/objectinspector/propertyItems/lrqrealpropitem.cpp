@@ -46,7 +46,7 @@ namespace LimeReport{
 
 QWidget *QRealPropItem::createProperyEditor(QWidget *parent) const
 {
-    QDoubleSpinBox *editor= new QDoubleSpinBox(parent);
+    auto *editor= new QDoubleSpinBox(parent);
     editor->setMaximum(std::numeric_limits<qreal>::max());
     editor->setMinimum(std::numeric_limits<qreal>::max()*-1);
     return editor;

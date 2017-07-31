@@ -14,12 +14,19 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Filtros</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButtonIgual">
+        <property name="text">
+         <string>Quant. = 0</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QRadioButton" name="radioButtonMaior">
         <property name="text">
@@ -27,13 +34,6 @@
         </property>
         <property name="checked">
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButtonIgual">
-        <property name="text">
-         <string>Quant. = 0</string>
         </property>
        </widget>
       </item>
@@ -53,14 +53,70 @@
       <item row="2" column="0">
        <widget class="QRadioButton" name="radioButtonEstoque">
         <property name="text">
-         <string>Estoque</string>
+         <string>Estoque Contábil</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
+   <item row="2" column="2">
+    <widget class="QLineEdit" name="lineEditBusca">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Buscar:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Relatório Contábil</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="1">
+       <widget class="QDateEdit" name="dateEditMes">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>MM/yyyy</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Até o mês:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QPushButton" name="pushButtonRelatorio">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Gerar Relatório</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="2" colspan="2">
     <widget class="TableView" name="table">
      <property name="mouseTracking">
       <bool>true</bool>
@@ -76,26 +132,6 @@
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLineEdit" name="lineEditBusca">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="text">
-      <string>Buscar:</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>

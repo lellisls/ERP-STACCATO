@@ -34,19 +34,17 @@
 QT_BEGIN_NAMESPACE_XLSX
 
 DataValidationPrivate::DataValidationPrivate()
-    : validationType(DataValidation::None), validationOperator(DataValidation::Between),
-      errorStyle(DataValidation::Stop), allowBlank(false), isPromptMessageVisible(true), isErrorMessageVisible(true) {}
+    : validationType(DataValidation::None), validationOperator(DataValidation::Between), errorStyle(DataValidation::Stop), allowBlank(false),
+      isPromptMessageVisible(true), isErrorMessageVisible(true) {}
 
-DataValidationPrivate::DataValidationPrivate(DataValidation::ValidationType type, DataValidation::ValidationOperator op,
-                                             const QString &formula1, const QString &formula2, bool allowBlank)
-    : validationType(type), validationOperator(op), errorStyle(DataValidation::Stop), allowBlank(allowBlank),
-      isPromptMessageVisible(true), isErrorMessageVisible(true), formula1(formula1), formula2(formula2) {}
+DataValidationPrivate::DataValidationPrivate(DataValidation::ValidationType type, DataValidation::ValidationOperator op, const QString &formula1, const QString &formula2,
+                                             bool allowBlank)
+    : validationType(type), validationOperator(op), errorStyle(DataValidation::Stop), allowBlank(allowBlank), isPromptMessageVisible(true), isErrorMessageVisible(true),
+      formula1(formula1), formula2(formula2) {}
 
 DataValidationPrivate::DataValidationPrivate(const DataValidationPrivate &other)
-    : QSharedData(other), validationType(DataValidation::None), validationOperator(DataValidation::Between),
-      errorStyle(DataValidation::Stop), allowBlank(false), isPromptMessageVisible(true), isErrorMessageVisible(true) {}
-
-DataValidationPrivate::~DataValidationPrivate() {}
+    : QSharedData(other), validationType(DataValidation::None), validationOperator(DataValidation::Between), errorStyle(DataValidation::Stop), allowBlank(false),
+      isPromptMessageVisible(true), isErrorMessageVisible(true) {}
 
 /*!
  * \class DataValidation
@@ -102,8 +100,7 @@ DataValidationPrivate::~DataValidationPrivate() {}
  * Construct a data validation object with the given \a type, \a op, \a formula1
  * \a formula2, and \a allowBlank.
  */
-DataValidation::DataValidation(ValidationType type, ValidationOperator op, const QString &formula1,
-                               const QString &formula2, bool allowBlank)
+DataValidation::DataValidation(ValidationType type, ValidationOperator op, const QString &formula1, const QString &formula2, bool allowBlank)
     : d(new DataValidationPrivate(type, op, formula1, formula2, allowBlank)) {}
 
 /*!
@@ -276,9 +273,7 @@ void DataValidation::addCell(int row, int col) { d->ranges.append(CellRange(row,
     Add the range(\a firstRow, \a firstCol, \a lastRow, \a lastCol) on
     which the DataValidation will apply to.
  */
-void DataValidation::addRange(int firstRow, int firstCol, int lastRow, int lastCol) {
-  d->ranges.append(CellRange(firstRow, firstCol, lastRow, lastCol));
-}
+void DataValidation::addRange(int firstRow, int firstCol, int lastRow, int lastCol) { d->ranges.append(CellRange(firstRow, firstCol, lastRow, lastCol)); }
 
 /*!
     Add the \a range on which the DataValidation will apply to.
@@ -317,11 +312,9 @@ bool DataValidation::saveToXml(QXmlStreamWriter &writer) const {
   }
 
   writer.writeStartElement(QStringLiteral("dataValidation"));
-  if (validationType() != DataValidation::None)
-    writer.writeAttribute(QStringLiteral("type"), typeMap[validationType()]);
+  if (validationType() != DataValidation::None) writer.writeAttribute(QStringLiteral("type"), typeMap[validationType()]);
   if (errorStyle() != DataValidation::Stop) writer.writeAttribute(QStringLiteral("errorStyle"), esMap[errorStyle()]);
-  if (validationOperator() != DataValidation::Between)
-    writer.writeAttribute(QStringLiteral("operator"), opMap[validationOperator()]);
+  if (validationOperator() != DataValidation::Between) writer.writeAttribute(QStringLiteral("operator"), opMap[validationOperator()]);
   if (allowBlank()) writer.writeAttribute(QStringLiteral("allowBlank"), QStringLiteral("1"));
   //        if (dropDownVisible())
   //            writer.writeAttribute(QStringLiteral("showDropDown"), QStringLiteral("1"));

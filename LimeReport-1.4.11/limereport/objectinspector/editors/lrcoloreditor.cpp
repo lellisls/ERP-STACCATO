@@ -45,7 +45,7 @@ ColorEditor::ColorEditor(QWidget *parent) :
     m_button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     m_button->setText("...");
     m_button->installEventFilter(this);
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    auto* layout = new QHBoxLayout(this);
     layout->addWidget(m_colorIndicator);
     layout->addWidget(m_button);
     layout->setSpacing(0);
@@ -86,7 +86,7 @@ void ColorEditor::setFocusToParent(){
 void ColorEditor::slotClicked()
 {
     m_buttonPressed = true;
-    QColorDialog* dialog = new QColorDialog(this);
+    auto* dialog = new QColorDialog(this);
     dialog->setCurrentColor(m_color);
     if (dialog->exec()) m_color=dialog->currentColor();
     delete dialog;

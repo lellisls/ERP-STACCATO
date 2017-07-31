@@ -8,8 +8,7 @@
 #include "orcamento.h"
 #include "ui_inputdialogconfirmacao.h"
 
-InputDialogConfirmacao::InputDialogConfirmacao(const Type &type, QWidget *parent)
-    : QDialog(parent), type(type), ui(new Ui::InputDialogConfirmacao) {
+InputDialogConfirmacao::InputDialogConfirmacao(const Type &type, QWidget *parent) : QDialog(parent), type(type), ui(new Ui::InputDialogConfirmacao) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -27,8 +26,6 @@ InputDialogConfirmacao::InputDialogConfirmacao(const Type &type, QWidget *parent
 
     ui->labelEntregou->hide();
     ui->lineEditEntregou->hide();
-
-    ui->pushButtonQuebradoFaltando->setDisabled(true);
   }
 
   if (type == Entrega) {
@@ -59,6 +56,7 @@ InputDialogConfirmacao::InputDialogConfirmacao(const Type &type, QWidget *parent
 
 InputDialogConfirmacao::~InputDialogConfirmacao() { delete ui; }
 
+// TODO: should be QDate?
 QDateTime InputDialogConfirmacao::getDate() const { return ui->dateEditEvento->dateTime(); }
 
 QDateTime InputDialogConfirmacao::getNextDate() const { return ui->dateEditProximo->dateTime(); }
@@ -131,6 +129,8 @@ void InputDialogConfirmacao::setupTables() {
     model.setHeaderData("un", "Un.");
     model.setHeaderData("caixas", "Cx.");
     model.setHeaderData("codComercial", "Cód. Com.");
+    model.setHeaderData("lote", "Lote");
+    model.setHeaderData("bloco", "Bloco");
   }
 
   if (type == Entrega) {
@@ -153,8 +153,7 @@ void InputDialogConfirmacao::setupTables() {
     model.setFilter("0");
 
     if (not model.select()) {
-      QMessageBox::critical(this, "Erro!",
-                            "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
       return;
     }
 
@@ -229,8 +228,7 @@ bool InputDialogConfirmacao::setFilter(const QString &id, const QString &idEvent
   model.setFilter(filter);
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return false;
   }
 
@@ -253,19 +251,18 @@ bool InputDialogConfirmacao::setFilter(const QStringList &ids) { // recebimento
   model.setFilter(filter);
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return false;
   }
 
   ui->tableLogistica->resizeColumnsToContents();
 
+  setWindowTitle("Estoque: " + ids.join(", "));
+
   return true;
 }
 
-void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // wrap in transaction?
-  // TODO: 2refactor this function
-
+void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() {
   const auto list = ui->tableLogistica->selectionModel()->selectedRows();
 
   if (list.isEmpty()) {
@@ -275,331 +272,156 @@ void InputDialogConfirmacao::on_pushButtonQuebradoFaltando_clicked() { // wrap i
 
   const int row = list.first().row();
 
-  if (type == Recebimento) { // finish this part
-    // model is estoque
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
 
-    const QString produto = model.data(row, "descricao").toString();
-    const int idEstoque = model.data(row, "idEstoque").toInt();
-    const double caixasEstoque = model.data(row, "caixas").toDouble(); // 4
-
-    QInputDialog input;
-    const int caixasDefeito = input.getInt(this, produto, "Caixas: ", 0, 0, caixasEstoque); // 1
-
-    if (caixasDefeito == 0) return;
-
-    QSqlQuery query; // use modelVenda
-    query.prepare("SELECT unCaixa FROM venda_has_produto WHERE idProduto = :idProduto");
-    query.bindValue(":idProduto", model.data(row, "idProduto"));
-
-    if (not query.exec() or not query.first()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando consumo estoque: " + query.lastError().text());
-      return;
-    }
-
-    const double unCaixa = query.value("unCaixa").toDouble();
-
-    query.prepare("SELECT e.caixas - SUM(ehc.caixas) AS sobra FROM estoque_has_consumo ehc LEFT JOIN estoque e ON "
-                  "ehc.idEstoque = e.idEstoque WHERE ehc.idEstoque = :idEstoque");
-    query.bindValue(":idEstoque", idEstoque);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando sobra estoque: " + query.lastError().text());
-      return;
-    }
-
-    const double sobra = query.first() ? query.value("sobra").toInt() : 0;
-    qDebug() << "sobra: " << sobra;
-    qDebug() << "caixasDefeito: " << caixasDefeito;
-
-    query.prepare(
-        "SELECT CAST((`v`.`data` + INTERVAL `v`.`prazoEntrega` DAY) AS DATE) AS `prazoEntrega`, ehc.* FROM "
-        "estoque_has_consumo ehc LEFT JOIN venda_has_produto vp ON ehc.idVendaProduto = vp.idVendaProduto "
-        "LEFT JOIN venda v ON vp.idVenda = v.idVenda WHERE ehc.idEstoque = :idEstoque ORDER BY prazoEntrega DESC");
-    query.bindValue(":idEstoque", idEstoque);
-    //    query.bindValue(":caixas", caixasDefeito);
-
-    if (not query.exec()) {
-      QMessageBox::critical(this, "Erro!", "Erro buscando consumo estoque: " + query.lastError().text());
-      return;
-    }
-
-    // estoque 10
-    // consumo 1
-    // consumo 4
-    // consumo 3
-    // sobra   2
-
-    // defeito 3
-
-    // ****
-
-    // criar consumo 'quebra' (consumindo sobra) na tabela estoque_has_consumo e tambem em pedido_fornecedor
-    // assim nao terei divergencia em relacao a quant. disponivel de estoque
-    // como agora eu faço consumo compra e nao estoque, devo diminuir a quantidade em pedido_fornecedor ou a quant. do
-    // estoque?
-
-    // se sobra nao era suficiente para acomodar quebra: pegar consumo com maior prazo e dessacioar produto<>consumo
-    // tem uma funcao pronta em 'devolucao' mas basicamente é apagar em estoque_has_consumo e dessacioar em
-    // pedido_fornecedor
-
-    // ****
-
-    SqlTableModel modelConsumo;
-    modelConsumo.setTable("estoque_has_consumo");
-    modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-    modelConsumo.setFilter("idEstoque = " + model.data(row, "idEstoque").toString());
-
-    if (not modelConsumo.select()) {
-      QMessageBox::critical(this, "Erro!", "Erro lendo tabela consumo: " + modelConsumo.lastError().text());
-      return;
-    }
-
-    // criar consumo 'quebrado'
-
-    int rowConsumo = modelConsumo.rowCount();
-    modelConsumo.insertRow(rowConsumo);
-
-    for (int col = 0; col < modelConsumo.columnCount(); ++col) {
-      // skip cols
-      if (modelConsumo.fieldIndex("idConsumo") == col) continue;
-      if (modelConsumo.fieldIndex("idVendaProduto") == col) continue;
-      if (modelConsumo.fieldIndex("created") == col) continue;
-      if (modelConsumo.fieldIndex("lastUpdated") == col) continue;
-
-      if (not modelConsumo.setData(rowConsumo, col, modelConsumo.data(0, col))) {
-        QMessageBox::critical(this, "Erro!", "Erro copiando no consumo: " + modelConsumo.lastError().text());
-        return;
-      }
-    }
-
-    if (not modelConsumo.setData(rowConsumo, "status", "QUEBRADO")) return;
-    qDebug() << "quant quebrado: " << caixasDefeito * unCaixa * -1;
-    qDebug() << "caixas quebrado: " << caixasDefeito;
-    if (not modelConsumo.setData(rowConsumo, "quant", caixasDefeito * unCaixa * -1)) return;
-    if (not modelConsumo.setData(rowConsumo, "caixas", caixasDefeito)) return;
-
-    if (not modelConsumo.submitAll()) {
-      QMessageBox::critical(this, "Erro!", "Erro atualizando consumo: " + modelConsumo.lastError().text());
-      return;
-    }
-
-    //
-
-    if (caixasDefeito > sobra) {
-      double caixasDefeitoRestante = caixasDefeito;
-
-      while (query.next()) {
-        // se algum consumo for maior que a quantidade quebrada, dividir em duas linhas
-
-        const double caixasConsumo = query.value("caixas").toDouble(); // 2
-        qDebug() << "caixasConsumo: " << caixasConsumo;
-        qDebug() << "defeitoRestante: " << caixasDefeitoRestante;
-
-        //        if (caixasDefeitoRestante > caixasConsumo) {
-        // tratar
-        // ajustar quantidade (quantOriginal - quantQuebrada)
-        // ajustar quando (quantOriginal - quantQuebrada) < 0
-
-        const double newQuant = caixasConsumo > caixasDefeitoRestante ? caixasConsumo - caixasDefeitoRestante : 0;
-
-        QSqlQuery query2;
-        query2.prepare("UPDATE estoque_has_consumo SET quant = :quant, caixas = :caixas WHERE idConsumo = :idConsumo");
-        query2.bindValue(":quant", newQuant * unCaixa * -1);
-        qDebug() << "quant: " << newQuant * unCaixa * -1;
-        query2.bindValue(":caixas", newQuant);
-        qDebug() << "caixas: " << newQuant;
-        query2.bindValue(":idConsumo", query.value("idConsumo"));
-
-        if (not query2.exec()) {
-          QMessageBox::critical(this, "Erro!", "Erro atualizando consumo estoque: " + query2.lastError().text());
-          return;
-        }
-
-        // quebrar linha venda_produto em 2
-
-        SqlTableModel modelVenda;
-        modelVenda.setTable("venda_has_produto");
-        modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-        modelVenda.setFilter("idVendaProduto = " + query.value("idVendaProduto").toString());
-
-        if (not modelVenda.select()) {
-          QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda produto: " + modelVenda.lastError().text());
-          return;
-        }
-
-        const int newRow = modelVenda.rowCount();
-        modelVenda.insertRow(newRow);
-
-        // copiar linha com quantidade quebrada
-        for (int col = 0; col < modelVenda.columnCount(); ++col) {
-          if (modelVenda.fieldIndex("idVendaProduto") == col) continue;
-          if (modelVenda.fieldIndex("idCompra") == col) continue;
-          if (modelVenda.fieldIndex("idNfeSaida") == col) continue;
-          if (modelVenda.fieldIndex("idVendaProduto") == col) continue;
-          if (modelVenda.fieldIndex("idVendaProduto") == col) continue;
-          if (modelVenda.fieldIndex("idVendaProduto") == col) continue;
-          if (modelVenda.fieldIndex("dataPrevCompra") == col) continue;
-          if (modelVenda.fieldIndex("dataRealCompra") == col) continue;
-          if (modelVenda.fieldIndex("dataPrevConf") == col) continue;
-          if (modelVenda.fieldIndex("dataRealConf") == col) continue;
-          if (modelVenda.fieldIndex("dataPrevFat") == col) continue;
-          if (modelVenda.fieldIndex("dataRealFat") == col) continue;
-          if (modelVenda.fieldIndex("dataPrevColeta") == col) continue;
-          if (modelVenda.fieldIndex("dataRealColeta") == col) continue;
-          if (modelVenda.fieldIndex("dataPrevReceb") == col) continue;
-          if (modelVenda.fieldIndex("dataRealReceb") == col) continue;
-          if (modelVenda.fieldIndex("dataPrevEnt") == col) continue;
-          if (modelVenda.fieldIndex("dataRealEnt") == col) continue;
-          if (modelVenda.fieldIndex("created") == col) continue;
-          if (modelVenda.fieldIndex("lastUpdated") == col) continue;
-
-          if (not modelVenda.setData(newRow, col, modelVenda.data(0, col))) return;
-        }
-
-        const double prcUnitario = modelVenda.data(0, "prcUnitario").toDouble();
-        const double desconto = modelVenda.data(0, "desconto").toDouble() / 100.;
-        const double descGlobal = modelVenda.data(0, "descGlobal").toDouble() / 100.;
-
-        const double quantCopia = (caixasConsumo - newQuant) * unCaixa;
-        const double parcialCopia = prcUnitario * quantCopia;
-        const double parcialDescCopia = parcialCopia + (parcialCopia * desconto);
-        const double totalCopia = parcialDescCopia + (parcialDescCopia * descGlobal);
-
-        qDebug() << "quantRepo: " << quantCopia;
-        qDebug() << "caixasRepo: " << caixasConsumo - newQuant;
-        qDebug() << "parcialRepo: " << parcialCopia;
-        qDebug() << "parcialDescRepo: " << parcialDescCopia;
-        qDebug() << "totalRepo: " << totalCopia;
-        if (not modelVenda.setData(newRow, "quant", quantCopia)) return;
-        if (not modelVenda.setData(newRow, "caixas", caixasConsumo - newQuant)) return;
-        if (not modelVenda.setData(newRow, "parcial", parcialCopia)) return;
-        if (not modelVenda.setData(newRow, "parcialDesc", parcialDescCopia)) return;
-        if (not modelVenda.setData(newRow, "total", totalCopia)) return;
-        if (not modelVenda.setData(newRow, "status", "QUEBRA")) return;
-        if (not modelVenda.setData(newRow, "obs", "REPOSIÇÂO")) return;
-
-        // ajustar a linha original e recalcular valores
-
-        const double quantOriginal = newQuant;
-        const double parcial = prcUnitario * quantOriginal * unCaixa;
-        const double parcialDesc = parcial + (parcial * desconto);
-        const double total = parcialDesc + (parcialDesc * descGlobal);
-
-        qDebug() << "quantOri: " << quantOriginal * unCaixa;
-        qDebug() << "caixasOri: " << quantOriginal;
-        qDebug() << "parcialOri: " << parcial;
-        qDebug() << "parcialDescOri: " << parcialDesc;
-        qDebug() << "totalOri: " << total;
-        if (not modelVenda.setData(0, "quant", quantOriginal * unCaixa)) return;
-        if (not modelVenda.setData(0, "caixas", quantOriginal)) return;
-        if (not modelVenda.setData(0, "parcial", parcial)) return;
-        if (not modelVenda.setData(0, "parcialDesc", parcialDesc)) return;
-        if (not modelVenda.setData(0, "total", total)) return;
-
-        if (not modelVenda.submitAll()) {
-          QMessageBox::critical(this, "Erro!", "Erro atualizando venda_produto: " + modelVenda.lastError().text());
-          return;
-        }
-        //        qDebug() << "submit: " << modelVenda.submitAll();
-        //        qDebug() << "error: " << modelVenda.lastError();
-
-        caixasDefeitoRestante -= caixasConsumo;
-        qDebug() << "defeito - consumo: " << caixasDefeitoRestante;
-        //        }
-      }
-
-      if (caixasDefeitoRestante > 0) {
-        // criar orcamento reposicao
-        // colocar qual o estoque na observacao do produto
-
-        QMessageBox msgBox(QMessageBox::Question, "Atenção!",
-                           "Restaram " + QString::number(caixasDefeitoRestante) +
-                               " caixas quebradas que não foram vendidas. Deseja fazer um pedido de reposição?",
-                           QMessageBox::Yes | QMessageBox::No, this);
-        msgBox.setButtonText(QMessageBox::Yes, "Sim");
-        msgBox.setButtonText(QMessageBox::No, "Não");
-
-        if (msgBox.exec() == QMessageBox::Yes) {
-          Orcamento *orcamento = new Orcamento(this);
-          orcamento->exec();
-        }
-      }
-    }
-
-    // 10 peças, 5 consumo, 3 quebradas
-    // verificar se quant quebrada < quant consumo manter consumo senao ajustar
-
-    // 1. criar linha consumo 'QUEBRADO'
-    // 2. na venda subtrair do produto a quant quebrada, recalcular valores
-    // 3. copiar linha com quant quebrada e status 'pendente', obs 'reposicao' (para ir para tela de pendentes_compra)
-    // -
-    // recalcular valores
+  if (not processarQuebra(row)) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    return;
   }
 
-  if (type == Entrega) {
-    // model is veiculo_has_produto
-
-    const QString produto = model.data(row, "produto").toString();
-    const double caixas = model.data(row, "caixas").toDouble();
-    unCaixa = model.data(row, "unCaixa").toDouble(); // *
-
-    QInputDialog input;
-    caixasDefeito = input.getInt(this, produto, "Caixas: ", 0, 0, caixas); // *
-
-    if (caixasDefeito == 0) return;
-
-    // diminuir quantidade da linha selecionada
-
-    // recalcular kg? (posso usar proporcao para nao precisar puxar kgcx)
-    if (not model.setData(row, "caixas", caixas - caixasDefeito)) return;
-    if (not model.setData(row, "quant", (caixas - caixasDefeito) * unCaixa)) return;
-
-    // copiar linha com quantDefeito
-
-    const int rowQuebrado = model.rowCount();
-    model.insertRow(rowQuebrado);
-
-    for (int col = 0; col < model.columnCount(); ++col) {
-      if (model.fieldIndex("id") == col) continue;
-      if (model.fieldIndex("created") == col) continue;
-      if (model.fieldIndex("lastUpdated") == col) continue;
-
-      model.setData(rowQuebrado, col, model.data(row, col));
-    }
-
-    // recalcular kg? (posso usar proporcao para nao precisar puxar kgcx)
-    model.setData(rowQuebrado, "caixas", caixasDefeito);
-    model.setData(rowQuebrado, "quant", caixasDefeito * unCaixa);
-    model.setData(rowQuebrado, "status", "QUEBRADO");
-
-    modelVenda.setTable("venda_has_produto");
-    modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-    modelVenda.setFilter("idVendaProduto = " + model.data(row, "idVendaProduto").toString());
-
-    if (not modelVenda.select()) {
-      QMessageBox::critical(this, "Erro!", "Erro lendo tabela produto venda: " + modelVenda.lastError().text());
-      return;
-    }
-
-    // perguntar se gerar credito ou reposicao
-
-    QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Criar reposição ou gerar crédito?",
-                       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, this);
-    msgBox.setButtonText(QMessageBox::Yes, "Criar reposição");
-    msgBox.setButtonText(QMessageBox::No, "Gerar crédito");
-    msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
-
-    const int choice = msgBox.exec();
-
-    if (choice == QMessageBox::Cancel) return;
-    if (choice == QMessageBox::Yes) criarReposicaoCliente();
-    if (choice == QMessageBox::No) gerarCreditoCliente();
-  }
+  QSqlQuery("COMMIT").exec();
 
   QMessageBox::information(this, "Aviso!", "Operação realizada com sucesso!");
+}
+
+bool InputDialogConfirmacao::processarQuebra(const int row) {
+  if (type == Recebimento and not quebraRecebimento(row)) return false;
+  if (type == Entrega and not quebraEntrega(row)) return false;
+
+  return true;
+}
+
+bool InputDialogConfirmacao::quebraRecebimento(const int row) {
+  // TODO: finish this part
+
+  // model is estoque
+  // perguntar quant. quebrada - QInputDialog
+
+  const QString produto = model.data(row, "descricao").toString();
+  const int idEstoque = model.data(row, "idEstoque").toInt();
+  const int caixas = model.data(row, "caixas").toInt();
+
+  QSqlQuery query;
+  query.prepare("SELECT UPPER(un) AS un, m2cx, pccx FROM produto WHERE idProduto = :idProduto");
+  query.bindValue(":idProduto", model.data(row, "idProduto"));
+
+  if (not query.exec() or not query.first()) {
+    error = "Erro buscando dados do produto: " + query.lastError().text();
+    return false;
+  }
+
+  const QString un = query.value("un").toString();
+  const double m2cx = query.value("m2cx").toDouble();
+  const double pccx = query.value("pccx").toDouble();
+
+  unCaixa = un == "M2" or un == "M²" or un == "ML" ? m2cx : pccx;
+
+  qDebug() << "unCaixa: " << unCaixa;
+
+  QInputDialog input;
+  bool ok = false;
+  // TODO: put this outside transaction
+  caixasDefeito = input.getInt(this, produto, "Caixas quebradas: ", caixas, 0, caixas, 1, &ok);
+
+  if (not ok or caixasDefeito == 0) return false;
+
+  if (not quebrarLinha(row, caixas)) return false;
+  //  if (not criarConsumo(row)) return false;
+  if (not desfazerConsumo(idEstoque)) return false;
+
+  // ****
+
+  // criar consumo 'quebra' (consumindo sobra) na tabela estoque_has_consumo e tambem em pedido_fornecedor
+  // assim nao terei divergencia em relacao a quant. disponivel de estoque
+  // como agora eu faço consumo compra e nao estoque, devo diminuir a quantidade em pedido_fornecedor
+  // ou a quant. do estoque?
+
+  // se sobra nao era suficiente para acomodar quebra: pegar consumo com maior prazo e desvincular
+  // produto<>consumo
+  // tem uma funcao pronta em 'devolucao' mas basicamente é apagar em estoque_has_consumo e dessacioar em
+  // pedido_fornecedor
+
+  // ****
+  // 10 peças, 5 consumo, 3 quebradas
+  // verificar se quant quebrada < quant consumo manter consumo senao ajustar
+
+  // 1. criar linha consumo 'QUEBRADO'
+  // 2. na venda subtrair do produto a quant quebrada, recalcular valores
+  // 3. copiar linha com quant quebrada e status 'pendente', obs 'reposicao' (para ir para tela de
+  //  pendentes_compra)
+  // -
+  // recalcular valores
+
+  return true;
+}
+
+bool InputDialogConfirmacao::quebraEntrega(const int row) {
+  // model is veiculo_has_produto
+
+  const QString produto = model.data(row, "produto").toString();
+  const double caixas = model.data(row, "caixas").toDouble();
+  unCaixa = model.data(row, "unCaixa").toDouble(); // *
+
+  QInputDialog input;
+  bool ok = false;
+  // TODO: put this outside transaction
+  caixasDefeito = input.getInt(this, produto, "Caixas quebradas: ", 0, 0, caixas, 1, &ok); // *
+
+  if (not ok or caixasDefeito == 0) return false;
+
+  // diminuir quantidade da linha selecionada
+
+  // recalcular kg? (posso usar proporcao para nao precisar puxar kgcx)
+  if (not model.setData(row, "caixas", caixas - caixasDefeito)) return false;
+  if (not model.setData(row, "quant", (caixas - caixasDefeito) * unCaixa)) return false;
+
+  // copiar linha com quantDefeito
+
+  const int rowQuebrado = model.rowCount();
+  model.insertRow(rowQuebrado);
+
+  for (int col = 0; col < model.columnCount(); ++col) {
+    if (model.fieldIndex("id") == col) continue;
+    if (model.fieldIndex("created") == col) continue;
+    if (model.fieldIndex("lastUpdated") == col) continue;
+
+    model.setData(rowQuebrado, col, model.data(row, col));
+  }
+
+  // recalcular kg? (posso usar proporcao para nao precisar puxar kgcx)
+  model.setData(rowQuebrado, "caixas", caixasDefeito);
+  model.setData(rowQuebrado, "quant", caixasDefeito * unCaixa);
+  model.setData(rowQuebrado, "status", "QUEBRADO");
+
+  // perguntar se gerar credito ou reposicao
+
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Criar reposição ou gerar crédito?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Criar reposição");
+  msgBox.setButtonText(QMessageBox::No, "Gerar crédito");
+  msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+
+  const int choice = msgBox.exec();
+
+  if (choice == QMessageBox::Cancel) return false;
+
+  //
+  modelVenda.setTable("venda_has_produto");
+  modelVenda.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelVenda.setFilter("idVendaProduto = " + model.data(row, "idVendaProduto").toString());
+
+  if (not modelVenda.select()) {
+    error = "Erro lendo tabela produto venda: " + modelVenda.lastError().text();
+    return false;
+  }
+  //
+
+  if (choice == QMessageBox::Yes) criarReposicaoCliente();
+  if (choice == QMessageBox::No) gerarCreditoCliente();
+
+  return true;
 }
 
 bool InputDialogConfirmacao::gerarCreditoCliente() {
@@ -608,8 +430,7 @@ bool InputDialogConfirmacao::gerarCreditoCliente() {
 
   const double credito = caixasDefeito * unCaixa * descUnitario;
 
-  QMessageBox::information(this, "Crédito",
-                           "Gerado crédito no valor de R$ " + QLocale(QLocale::Portuguese).toString(credito));
+  QMessageBox::information(this, "Crédito", "Gerado crédito no valor de R$ " + QLocale(QLocale::Portuguese).toString(credito));
 
   modelCliente.setTable("cliente");
   modelCliente.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -619,14 +440,14 @@ bool InputDialogConfirmacao::gerarCreditoCliente() {
   query.bindValue(":idVenda", idVenda);
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando cliente: " + query.lastError().text());
+    error = "Erro buscando cliente: " + query.lastError().text();
     return false;
   }
 
   modelCliente.setFilter("idCliente = " + query.value("idCliente").toString());
 
   if (not modelCliente.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela cliente: " + modelCliente.lastError().text());
+    error = "Erro lendo tabela cliente: " + modelCliente.lastError().text();
     return false;
   }
 
@@ -672,7 +493,155 @@ bool InputDialogConfirmacao::criarReposicaoCliente() {
   if (not modelVenda.setData(newRow, "descGlobal", 0)) return false;
   if (not modelVenda.setData(newRow, "total", 0)) return false;
   if (not modelVenda.setData(newRow, "status", "QUEBRA")) return false;
-  if (not modelVenda.setData(newRow, "obs", "REPOSIÇÂO - " + modelVenda.data(newRow, "obs").toString())) return false;
+
+  const QString obs = QInputDialog::getText(this, "Observacao", "Observacao: ");
+  if (not modelVenda.setData(newRow, "obs", obs)) return false;
+
+  return true;
+}
+
+bool InputDialogConfirmacao::quebrarLinha(const int row, const int caixas) {
+  // diminuir quant. da linha selecionada
+
+  if (not model.setData(row, "caixas", caixas - caixasDefeito)) return false;
+  if (not model.setData(row, "quant", (caixas - caixasDefeito) * unCaixa)) return false;
+
+  // copiar linha com defeito
+
+  const int rowQuebrado = model.rowCount();
+  model.insertRow(rowQuebrado);
+
+  for (int col = 0; col < model.columnCount(); ++col) {
+    if (model.fieldIndex("idEstoque") == col) continue;
+    if (model.fieldIndex("created") == col) continue;
+    if (model.fieldIndex("lastUpdated") == col) continue;
+
+    model.setData(rowQuebrado, col, model.data(row, col));
+  }
+
+  model.setData(rowQuebrado, "caixas", caixasDefeito);
+  model.setData(rowQuebrado, "quant", caixasDefeito * unCaixa);
+  model.setData(rowQuebrado, "status", "QUEBRADO");
+  model.setData(rowQuebrado, "lote", "Estoque: " + model.data(row, "idEstoque").toString());
+  // recalcular proporcional dos valores
+
+  if (not model.submitAll()) {
+    error = "Erro dividindo linhas: " + model.lastError().text();
+    return false;
+  }
+
+  return true;
+}
+
+bool InputDialogConfirmacao::criarConsumo(const int row) {
+  SqlTableModel modelConsumo;
+  modelConsumo.setTable("estoque_has_consumo");
+  modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelConsumo.setFilter("idEstoque = " + model.data(row, "idEstoque").toString());
+
+  if (not modelConsumo.select()) {
+    error = "Erro lendo tabela consumo: " + modelConsumo.lastError().text();
+    return false;
+  }
+
+  // criar consumo 'quebrado'
+
+  const int rowConsumo = modelConsumo.rowCount();
+  modelConsumo.insertRow(rowConsumo);
+
+  if (not modelConsumo.setData(rowConsumo, "idEstoque", model.data(row, "idEstoque"))) return false;
+  if (not modelConsumo.setData(rowConsumo, "idVendaProduto", 0)) return false;
+  if (not modelConsumo.setData(rowConsumo, "status", "QUEBRADO")) return false;
+  if (not modelConsumo.setData(rowConsumo, "local", "TEMP")) return false;
+  if (not modelConsumo.setData(rowConsumo, "idProduto", model.data(row, "idProduto"))) return false;
+  if (not modelConsumo.setData(rowConsumo, "fornecedor", model.data(row, "fornecedor"))) return false;
+  if (not modelConsumo.setData(rowConsumo, "descricao", model.data(row, "descricao"))) return false;
+  if (not modelConsumo.setData(rowConsumo, "quant", caixasDefeito * unCaixa * -1)) return false;
+  if (not modelConsumo.setData(rowConsumo, "quantUpd", 5)) return false;
+  if (not modelConsumo.setData(rowConsumo, "caixas", caixasDefeito)) return false;
+
+  qDebug() << "quant quebrado: " << caixasDefeito * unCaixa * -1;
+  qDebug() << "caixas quebrado: " << caixasDefeito;
+
+  if (not modelConsumo.submitAll()) {
+    error = "Erro atualizando consumo: " + modelConsumo.lastError().text();
+    return false;
+  }
+
+  return true;
+}
+
+bool InputDialogConfirmacao::desfazerConsumo(const int idEstoque) {
+  QSqlQuery query;
+  query.prepare("SELECT COALESCE(e.caixas - SUM(ehc.caixas), 0) AS sobra FROM estoque_has_consumo ehc LEFT JOIN "
+                "estoque e ON ehc.idEstoque = e.idEstoque WHERE ehc.idEstoque = :idEstoque");
+  query.bindValue(":idEstoque", idEstoque);
+
+  if (not query.exec() or not query.first()) {
+    error = "Erro buscando sobra estoque: " + query.lastError().text();
+    return false;
+  }
+
+  double sobra = query.value("sobra").toInt();
+  qDebug() << "sobra: " << sobra;
+  qDebug() << "caixasDefeito: " << caixasDefeito;
+
+  if (sobra < 0) {
+    // faltando pecas para consumo, desfazer os consumos com prazo maior
+
+    query.prepare("SELECT CAST((`v`.`data` + INTERVAL `v`.`prazoEntrega` DAY) AS DATE) AS `prazoEntrega`, ehc.* FROM "
+                  "estoque_has_consumo ehc LEFT JOIN venda_has_produto vp ON ehc.idVendaProduto = vp.idVendaProduto "
+                  "LEFT JOIN venda v ON vp.idVenda = v.idVenda WHERE ehc.idEstoque = :idEstoque ORDER BY prazoEntrega DESC");
+    query.bindValue(":idEstoque", idEstoque);
+
+    if (not query.exec()) {
+      error = "Erro buscando consumo estoque: " + query.lastError().text();
+      return false;
+    }
+
+    while (query.next()) {
+      const int caixas = query.value("caixas").toInt();
+
+      QSqlQuery query2;
+      query2.prepare("DELETE FROM estoque_has_consumo WHERE idConsumo = :idConsumo");
+      query2.bindValue(":idConsumo", query.value("idConsumo"));
+
+      if (not query2.exec()) {
+        error = "Erro removendo consumo: " + query2.lastError().text();
+        return false;
+      }
+
+      query2.prepare("UPDATE venda_has_produto SET status = 'PENDENTE' WHERE idVendaProduto = :idVendaProduto");
+      query2.bindValue(":idVendaProduto", query.value("idVendaProduto"));
+
+      if (not query2.exec()) {
+        error = "Erro voltando produto para pendente: " + query2.lastError().text();
+        return false;
+      }
+
+      sobra += caixas;
+      if (sobra >= 0) break;
+    }
+  }
+
+  // TODO: verificar como lidar com reposicao nesse caso
+  //  if (sobra > 0) {
+  //    // criar orcamento reposicao
+  //    // colocar qual o estoque na observacao do produto
+
+  //    QMessageBox msgBox(QMessageBox::Question, "Atenção!",
+  //                       "Restaram " + QString::number(sobra) +
+  //                           " caixas quebradas que não foram vendidas. Deseja fazer um pedido de reposição?",
+  //                       QMessageBox::Yes | QMessageBox::No, this);
+  //    msgBox.setButtonText(QMessageBox::Yes, "Sim");
+  //    msgBox.setButtonText(QMessageBox::No, "Não");
+
+  //    if (msgBox.exec() == QMessageBox::Yes) {
+  //      Orcamento *orcamento = new Orcamento(this);
+  //      orcamento->exec();
+  //    }
+  //  }
 
   return true;
 }

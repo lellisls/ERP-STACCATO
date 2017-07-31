@@ -42,7 +42,7 @@ bool lesThen(ObjectPropItem* v1, ObjectPropItem* v2){
 
 ObjectPropItem::ObjectPropItem(QObject *object, ObjectsList* objects, const QString &name, const QString &displayName, ObjectPropItem *parent, bool isClass)
     :m_object(object), m_name(name), m_displayName(displayName), m_haveValue(false), m_parent(parent), m_colorIndex(-1),
-      m_readonly(true), m_model(0), m_isClass(isClass), m_changingValue(false)
+      m_readonly(true), m_model(nullptr), m_isClass(isClass), m_changingValue(false)
 {
     if (parent) setModel(parent->model());
     m_index=QModelIndex();
@@ -60,7 +60,7 @@ ObjectPropItem::ObjectPropItem(QObject *object, ObjectsList* objects, const QStr
 ObjectPropItem::ObjectPropItem(QObject *object, ObjectsList* objects, const QString &name, const QString &displayName, const QVariant &value, ObjectPropItem *parent, bool readonly)
     :m_object(object), m_name(name), m_displayName(displayName), m_value(value),
      m_haveValue(true), m_parent(parent), m_colorIndex(-1),
-     m_readonly(readonly), m_model(0), m_isClass(false), m_changingValue(false)
+     m_readonly(readonly), m_model(nullptr), m_isClass(false), m_changingValue(false)
 {
     if (parent) setModel(parent->model());
     m_index=QModelIndex();
@@ -160,7 +160,7 @@ ObjectPropItem * ObjectPropItem::findChild(const QString &name)
     foreach(ObjectPropItem* item,m_childItems){
         if (item->propertyName()==name) return item;
     }
-    return 0;
+    return nullptr;
 }
 
 ObjectPropItem *ObjectPropItem::findPropertyItem(const QString &propertyName)
@@ -168,7 +168,7 @@ ObjectPropItem *ObjectPropItem::findPropertyItem(const QString &propertyName)
     foreach(ObjectPropItem* item,m_globalPropList){
         if (item->propertyName()==propertyName) return item;
     }
-    return 0;
+    return nullptr;
 }
 
 void ObjectPropItem::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const

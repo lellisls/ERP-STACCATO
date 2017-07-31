@@ -49,7 +49,7 @@ class XLSX_AUTOTEST_EXPORT AbstractOOXmlFilePrivate {
 
 public:
   AbstractOOXmlFilePrivate(AbstractOOXmlFile *q, AbstractOOXmlFile::CreateFlag flag);
-  virtual ~AbstractOOXmlFilePrivate();
+  virtual ~AbstractOOXmlFilePrivate() = default;
 
   QString filePathInPackage; // such as "xl/worksheets/sheet1.xml"
   // used when load the .xlsx file

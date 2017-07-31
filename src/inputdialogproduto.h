@@ -25,11 +25,13 @@ private slots:
   void on_comboBoxST_currentTextChanged(const QString &);
   void on_dateEditEvento_dateChanged(const QDate &date);
   void on_doubleSpinBoxAliquota_valueChanged(double);
+  void on_doubleSpinBoxST_valueChanged(double value);
   void on_pushButtonSalvar_clicked();
   void on_table_entered(const QModelIndex &);
 
 private:
   // attributes
+  bool isBlockedAliquota = false;
   const Type type;
   SqlTableModel model;
   Ui::InputDialogProduto *ui;

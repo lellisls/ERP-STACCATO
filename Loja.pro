@@ -4,14 +4,22 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql network xml charts
+QT       += core gui sql network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Loja
 TEMPLATE = app
 
+VERSION = 0.5
+QMAKE_TARGET_COMPANY = Staccato Revestimentos
+QMAKE_TARGET_PRODUCT = ERP
+QMAKE_TARGET_DESCRIPTION = ERP da Staccato Revestimentos
+QMAKE_TARGET_COPYRIGHT = Rodrigo Torres
+
 CONFIG += c++14
+
+#QMAKE_CXXFLAGS += -std=c++14
 
 QMAKE_CXXFLAGS += -Wall -Wextra
 QMAKE_CXXFLAGS_DEBUG += -O0
@@ -25,7 +33,7 @@ QMAKE_LFLAGS_RELEASE += -O0
 #QMAKE_LFLAGS += -flto -fuse-linker-plugin
 
 macx{
-QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++11
+QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++14
 QMAKE_LFLAGS += -stdlib=libc++
 }
 
@@ -77,6 +85,7 @@ SOURCES += \
     src/inputdialogfinanceiro.cpp \
     src/inputdialogproduto.cpp \
     src/inserirlancamento.cpp \
+    src/inserirtransferencia.cpp \
     src/itembox.cpp \
     src/itemboxdelegate.cpp \
     src/lineeditcep.cpp \
@@ -89,6 +98,7 @@ SOURCES += \
     src/noeditdelegate.cpp \
     src/orcamento.cpp \
     src/orcamentoproxymodel.cpp \
+    src/pagamentosdia.cpp \
     src/porcentagemdelegate.cpp \
     src/produtospendentes.cpp \
     src/reaisdelegate.cpp \
@@ -174,6 +184,7 @@ HEADERS  += \
     src/inputdialogfinanceiro.h \
     src/inputdialogproduto.h \
     src/inserirlancamento.h \
+    src/inserirtransferencia.h \
     src/itembox.h \
     src/itemboxdelegate.h \
     src/lineeditcep.h \
@@ -185,6 +196,7 @@ HEADERS  += \
     src/noeditdelegate.h \
     src/orcamento.h \
     src/orcamentoproxymodel.h \
+    src/pagamentosdia.h \
     src/porcentagemdelegate.h \
     src/produtospendentes.h \
     src/reaisdelegate.h \
@@ -256,9 +268,11 @@ FORMS += \
     ui/inputdialogfinanceiro.ui \
     ui/inputdialogproduto.ui \
     ui/inserirlancamento.ui \
+    ui/inserirtransferencia.ui \
     ui/logindialog.ui \
     ui/mainwindow.ui \
     ui/orcamento.ui \
+    ui/pagamentosdia.ui \
     ui/produtospendentes.ui \
     ui/searchdialog.ui \
     ui/sendmail.ui \

@@ -5,8 +5,7 @@
 
 #include "registeraddressdialog.h"
 
-RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString &primaryKey, QWidget *parent)
-    : RegisterDialog(table, primaryKey, parent) {
+RegisterAddressDialog::RegisterAddressDialog(const QString &table, const QString &primaryKey, QWidget *parent) : RegisterDialog(table, primaryKey, parent) {
   setWindowModality(Qt::NonModal);
   setWindowFlags(Qt::Window);
 
@@ -29,79 +28,30 @@ void RegisterAddressDialog::setupTables(const QString &table) {
   modelEnd.setFilter("0");
 
   if (not modelEnd.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Ocorreu um erro ao acessar a tabela de endereço: " + modelEnd.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao acessar a tabela de endereço: " + modelEnd.lastError().text());
   }
 
   mapperEnd.setModel(&modelEnd);
   mapperEnd.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 }
 
-bool RegisterAddressDialog::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
-
-  if (row == -1) {
-    QMessageBox::critical(this, "Erro!", "Erro linha -1");
-    return false;
-  }
-
-  if (not isUpdate and not model.insertRow(row)) return false;
-
-  if (not savingProcedures()) return false;
-
-  for (int column = 0; column < model.rowCount(); ++column) {
-    QVariant dado = model.data(row, column);
-    if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
-    }
-  }
-
-  if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro: " + model.lastError().text());
-    return false;
-  }
-
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
-
-  if (primaryId.isEmpty()) {
-    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
-    return false;
-  }
-
-  for (int row = 0, rowCount = modelEnd.rowCount(); row < rowCount; ++row) {
-    if (not modelEnd.setData(row, primaryKey, primaryId)) return false;
-  }
-
-  for (int column = 0; column < modelEnd.rowCount(); ++column) {
-    QVariant dado = modelEnd.data(row, column);
-    if (dado.type() == QVariant::String) {
-      if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
-    }
-  }
-
-  if (not modelEnd.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro: " + modelEnd.lastError().text());
-    return false;
-  }
-
-  return true;
-}
-
 bool RegisterAddressDialog::setDataEnd(const QString &key, const QVariant &value) {
   if (value.isNull() or (value.type() == QVariant::String and value.toString().isEmpty())) return true;
 
-  int currentRow = rowEnd != -1 ? rowEnd : mapperEnd.currentIndex();
+  const int rowEnd = currentRowEnd != -1 ? currentRowEnd : mapperEnd.currentIndex();
 
-  return modelEnd.setData(currentRow, key, value);
+  return modelEnd.setData(rowEnd, key, value);
 }
 
 bool RegisterAddressDialog::newRegister() {
   if (not confirmationMessage()) return false;
 
-  isUpdate = false;
+  model.setFilter("0");
 
-  clearFields();
-  registerMode();
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    return false;
+  }
 
   modelEnd.setFilter("0");
 
@@ -109,6 +59,11 @@ bool RegisterAddressDialog::newRegister() {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
     return false;
   }
+
+  isUpdate = false;
+
+  clearFields();
+  registerMode();
 
   return true;
 }

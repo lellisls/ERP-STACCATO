@@ -48,7 +48,7 @@ namespace LimeReport {
 
 QWidget *EnumPropItem::createProperyEditor(QWidget *parent) const
 {
-    ComboBoxEditor *editor = new ComboBoxEditor(parent,false);
+    auto *editor = new ComboBoxEditor(parent,false);
     connect(editor,SIGNAL(currentIndexChanged(QString)),this,SLOT(slotEnumChanged(QString)));
 
     QStringList enumValues;

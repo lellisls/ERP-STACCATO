@@ -7,7 +7,7 @@ class PorcentagemDelegate : public QStyledItemDelegate {
 
 public:
   explicit PorcentagemDelegate(QObject *parent = 0);
-  ~PorcentagemDelegate();
+  ~PorcentagemDelegate() = default;
   QString displayText(const QVariant &value, const QLocale &locale) const override;
 };
 

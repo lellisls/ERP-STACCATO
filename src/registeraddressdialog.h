@@ -21,7 +21,6 @@ protected:
   virtual bool newRegister() override;
 
 private:
-  bool cadastrar() override;
   void setupTables(const QString &table);
 };
 

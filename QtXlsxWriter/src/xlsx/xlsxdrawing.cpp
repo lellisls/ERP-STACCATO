@@ -63,13 +63,13 @@ bool Drawing::loadFromXmlFile(QIODevice *device) {
     reader.readNextStartElement();
     if (reader.tokenType() == QXmlStreamReader::StartElement) {
       if (reader.name() == QLatin1String("absoluteAnchor")) {
-        DrawingAbsoluteAnchor *anchor = new DrawingAbsoluteAnchor(this);
+        auto *anchor = new DrawingAbsoluteAnchor(this);
         anchor->loadFromXml(reader);
       } else if (reader.name() == QLatin1String("oneCellAnchor")) {
-        DrawingOneCellAnchor *anchor = new DrawingOneCellAnchor(this);
+        auto *anchor = new DrawingOneCellAnchor(this);
         anchor->loadFromXml(reader);
       } else if (reader.name() == QLatin1String("twoCellAnchor")) {
-        DrawingTwoCellAnchor *anchor = new DrawingTwoCellAnchor(this);
+        auto *anchor = new DrawingTwoCellAnchor(this);
         anchor->loadFromXml(reader);
       }
     }

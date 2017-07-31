@@ -48,24 +48,9 @@ class Q_XLSX_EXPORT Format {
 public:
   enum FontScript { FontScriptNormal, FontScriptSuper, FontScriptSub };
 
-  enum FontUnderline {
-    FontUnderlineNone,
-    FontUnderlineSingle,
-    FontUnderlineDouble,
-    FontUnderlineSingleAccounting,
-    FontUnderlineDoubleAccounting
-  };
+  enum FontUnderline { FontUnderlineNone, FontUnderlineSingle, FontUnderlineDouble, FontUnderlineSingleAccounting, FontUnderlineDoubleAccounting };
 
-  enum HorizontalAlignment {
-    AlignHGeneral,
-    AlignLeft,
-    AlignHCenter,
-    AlignRight,
-    AlignHFill,
-    AlignHJustify,
-    AlignHMerge,
-    AlignHDistributed
-  };
+  enum HorizontalAlignment { AlignHGeneral, AlignLeft, AlignHCenter, AlignRight, AlignHFill, AlignHJustify, AlignHMerge, AlignHDistributed };
 
   enum VerticalAlignment { AlignTop, AlignVCenter, AlignBottom, AlignVJustify, AlignVDistributed };
 

@@ -127,12 +127,12 @@ QString HtmlContext::extractWord(QString text, int index)
     text.remove('/');
     int counter=1;
     QString retWord("");
-    for (int i=0;i<text.length();i++){
-        if (text.at(i)==' '){
+    for (auto i : text){
+        if (i==' '){
             if (counter==index) {return retWord;}
             else {retWord="";counter++;}
         }
-        retWord+=text.at(i);
+        retWord+=i;
     }
     if (counter==index) return retWord;
     else return "";

@@ -51,7 +51,7 @@ void GroupFunction::slotBandRendered(BandDesignIntf *band)
             if (m_dataManager->containsField(field)){
                 m_values.push_back(m_dataManager->fieldData(field));
             } else {
-                setInvalid(tr("Field \"%1\" not found").arg(m_data));
+                setInvalid(tr(R"(Field "%1" not found)").arg(m_data));
             }
         }
         break;
@@ -61,7 +61,7 @@ void GroupFunction::slotBandRendered(BandDesignIntf *band)
             if (m_dataManager->containsVariable(var)){
                 m_values.push_back(m_dataManager->variable(var));
             } else {
-                setInvalid(tr("Variable \"%1\" not found").arg(m_data));
+                setInvalid(tr(R"(Variable "%1" not found)").arg(m_data));
             }
         }
         break;
@@ -71,7 +71,7 @@ void GroupFunction::slotBandRendered(BandDesignIntf *band)
         if (value.isValid()){
             m_values.push_back(value);
         } else {
-            setInvalid(tr("Wrong script syntax \"%1\" ").arg(m_data));
+            setInvalid(tr(R"(Wrong script syntax "%1" )").arg(m_data));
         }
         break;
     }
@@ -82,7 +82,7 @@ void GroupFunction::slotBandRendered(BandDesignIntf *band)
             m_values.push_back(item->content());
         else if (m_name.compare("COUNT",Qt::CaseInsensitive) == 0) {
             m_values.push_back(1);
-        } else setInvalid(tr("Item \"%1\" not found").arg(m_data));
+        } else setInvalid(tr(R"(Item "%1" not found)").arg(m_data));
 
         break;
     }
@@ -142,7 +142,7 @@ GroupFunction *GroupFunctionFactory::createGroupFunction(const QString &function
     if (m_creators.contains(functionName)){
         return m_creators.value(functionName)->createFunction(expression, dataBandName, dataManager);
     }
-    return 0;
+    return nullptr;
 }
 
 GroupFunctionFactory::~GroupFunctionFactory()

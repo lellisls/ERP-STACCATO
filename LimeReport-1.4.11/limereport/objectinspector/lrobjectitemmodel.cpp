@@ -91,7 +91,7 @@ void QObjectPropertyModel::clearObjectsList()
 }
 
 QObjectPropertyModel::QObjectPropertyModel(QObject *parent/*=0*/)
-    :QAbstractItemModel(parent),m_rootNode(0),m_object(0),m_dataChanging(false), m_subclassesAsLevel(true), m_validator(0)
+    :QAbstractItemModel(parent),m_rootNode(nullptr),m_object(nullptr),m_dataChanging(false), m_subclassesAsLevel(true), m_validator(nullptr)
 {}
 
 QObjectPropertyModel::~QObjectPropertyModel()
@@ -103,10 +103,10 @@ void QObjectPropertyModel::initModel()
 {
     beginResetModel();
     delete m_rootNode;
-    m_rootNode=0;
+    m_rootNode=nullptr;
     if (m_object) {
         connect(m_object,SIGNAL(destroyed(QObject*)),this,SLOT(slotObjectDestroyed(QObject*)));
-        m_rootNode=new ObjectPropItem(0,0,"root","root",QVariant(),0);
+        m_rootNode=new ObjectPropItem(nullptr,nullptr,"root","root",QVariant(),nullptr);
         m_rootNode->setModel(this);
         foreach(QObject* item, m_objects)
             connect(item,SIGNAL(destroyed(QObject*)),this,SLOT(slotObjectDestroyed(QObject*)));
@@ -146,7 +146,7 @@ void QObjectPropertyModel::slotObjectDestroyed(QObject *obj)
 {
     m_objects.removeOne(obj);
     if (m_object == obj){
-       m_object=0;
+       m_object=nullptr;
        initModel();
     }
 }
@@ -284,7 +284,7 @@ Qt::ItemFlags QObjectPropertyModel::flags(const QModelIndex &index) const
 
 CreatePropItem QObjectPropertyModel::propertyItemCreator(QMetaProperty prop)
 {
-    CreatePropItem creator=0;
+    CreatePropItem creator=nullptr;
     creator=ObjectPropFactory::instance().objectCreator(APropIdent(prop.name(),prop.enclosingMetaObject()->className()));
     if (!creator){
         if (prop.isFlagType()){
@@ -293,7 +293,7 @@ CreatePropItem QObjectPropertyModel::propertyItemCreator(QMetaProperty prop)
               return creator;
             } else {
                 qDebug()<<"flags prop editor not found";
-                return 0;
+                return nullptr;
             }
         }
         if (prop.isEnumType()){       
@@ -302,18 +302,18 @@ CreatePropItem QObjectPropertyModel::propertyItemCreator(QMetaProperty prop)
                 return creator;
             } else {
                 qDebug()<<"enum prop editor not found";
-                return 0;
+                return nullptr;
             }
         }
         creator=ObjectPropFactory::instance().objectCreator(APropIdent(prop.typeName(),""));
-        if (!creator) {qDebug()<<"Editor for propperty name = \""<<prop.name()<<"\" & property type =\""<<prop.typeName()<<"\" not found!";}
+        if (!creator) {qDebug()<<R"(Editor for propperty name = ")"<<prop.name()<<R"(" & property type =")"<<prop.typeName()<<R"(" not found!)";}
     }
     return creator;
 }
 
 ObjectPropItem * QObjectPropertyModel::createPropertyItem(QMetaProperty prop, QObject *object, ObjectPropItem::ObjectsList *objects, ObjectPropItem *parent)
 {
-    ObjectPropItem* propertyItem=0;
+    ObjectPropItem* propertyItem=nullptr;
     CreatePropItem creator=propertyItemCreator(prop);
 
     if (creator) {
@@ -328,8 +328,8 @@ ObjectPropItem * QObjectPropertyModel::createPropertyItem(QMetaProperty prop, QO
              );
     } else {
         propertyItem=new ObjectPropItem(
-                    0,
-                    0,
+                    nullptr,
+                    nullptr,
                     QString(prop.name()),
                     QString(prop.name()),
                     object->property(prop.name()),
@@ -353,7 +353,7 @@ void QObjectPropertyModel::addObjectProperties(const QMetaObject *metaObject, QO
     if (metaObject->propertyCount()>metaObject->propertyOffset()){
         ObjectPropItem* objectNode;
         if (m_subclassesAsLevel){
-            objectNode=new ObjectPropItem(0,0,metaObject->className(),metaObject->className(),m_rootNode,true);
+            objectNode=new ObjectPropItem(nullptr,nullptr,metaObject->className(),metaObject->className(),m_rootNode,true);
             m_rootNode->appendItem(objectNode);
         } else {
             objectNode = m_rootNode;
@@ -384,7 +384,7 @@ bool QObjectPropertyModel::setData(const QModelIndex &index, const QVariant &val
         if (propItem->propertyValue()!=value){
             QString msg;
             if (validator() && !validator()->validate(propItem->propertyName(),value.toString(),m_object,msg)){
-                QMessageBox::information(0,tr("Warning"),msg);
+                QMessageBox::information(nullptr,tr("Warning"),msg);
                 return true;
             }
             QVariant oldValue=propItem->propertyValue();

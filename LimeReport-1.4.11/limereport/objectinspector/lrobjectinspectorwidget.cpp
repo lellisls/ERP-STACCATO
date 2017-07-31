@@ -38,7 +38,7 @@
 namespace LimeReport{
 
 ObjectInspectorWidget::ObjectInspectorWidget(QWidget *parent)
-    :QTreeView(parent), m_propertyDelegate(0)
+    :QTreeView(parent), m_propertyDelegate(nullptr)
 {
     setRootIsDecorated(false);
     initColorMap();

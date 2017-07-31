@@ -25,8 +25,6 @@ ItemBox::ItemBox(QWidget *parent) : QLineEdit(parent) {
   connect(this, &QLineEdit::cursorPositionChanged, this, &ItemBox::resetCursor);
 }
 
-ItemBox::~ItemBox() {}
-
 void ItemBox::resizeEvent(QResizeEvent *event) {
   QLineEdit::resizeEvent(event);
 
@@ -49,7 +47,7 @@ void ItemBox::resizeEvent(QResizeEvent *event) {
   }
 
   int left, top, bottom;
-  getTextMargins(&left, &top, 0, &bottom);
+  getTextMargins(&left, &top, nullptr, &bottom);
   setTextMargins(left, top, 2 + rect().right() - x + 2, bottom);
 }
 

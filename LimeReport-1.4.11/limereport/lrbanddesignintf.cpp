@@ -106,9 +106,9 @@ BandDesignIntf::BandDesignIntf(BandsType bandType, const QString &xmlTypeName, Q
     m_dataSourceName(""),
     m_autoHeight(true),
     m_keepBottomSpace(false),
-    m_parentBand(0),
+    m_parentBand(nullptr),
     m_parentBandName(""),
-    m_bandMarker(0),
+    m_bandMarker(nullptr),
     m_tryToKeepTogether(false),
     m_splitable(false),
     m_keepFooterTogether(false),
@@ -277,7 +277,7 @@ void BandDesignIntf::setParentBandName(const QString &parentBandName)
 {
     m_parentBandName=parentBandName;
     if (itemMode()&DesignMode && !m_parentBandName.isEmpty()){
-        if ((parentBand() == 0 )||(parentBand()->objectName()!= parentBandName))
+        if ((parentBand() == nullptr )||(parentBand()->objectName()!= parentBandName))
             setParentBand(findParentBand());
     }
 }
@@ -596,7 +596,7 @@ BandDesignIntf* BandDesignIntf::findParentBand()
                 return band;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void BandDesignIntf::geometryChangedEvent(QRectF, QRectF )
@@ -766,7 +766,7 @@ BandDesignIntf *BandDesignIntf::bandHeader()
         if (band->isHeader() && !band->isGroupHeader())
             return band;
     }
-    return 0;
+    return nullptr;
 }
 
 BandDesignIntf *BandDesignIntf::bandFooter()
@@ -774,7 +774,7 @@ BandDesignIntf *BandDesignIntf::bandFooter()
     foreach (BandDesignIntf* band, childBands()) {
         if (band->isFooter()) return band;
     }
-    return 0;
+    return nullptr;
 }
 
 bool BandDesignIntf::sliceLastRow() const

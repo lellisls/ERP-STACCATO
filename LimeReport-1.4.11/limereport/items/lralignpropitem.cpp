@@ -140,7 +140,7 @@ int AlignmentItemEditor::clearAcceptableValues(int flags)
 
 QWidget *AlignmentItemEditor::createProperyEditor(QWidget *parent) const
 {
-    ComboBoxEditor *editor = new ComboBoxEditor(parent);
+    auto *editor = new ComboBoxEditor(parent);
     QStringList enumValues;
     enumValues<<m_acceptableValues.keys();
     editor->addItems(enumValues);

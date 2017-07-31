@@ -36,7 +36,7 @@
 #include "lrglobal.h"
 
 LimeReport::PropertyDelegate::PropertyDelegate(QObject *parent)
-    :QItemDelegate(parent), m_objectInspector(NULL), m_editingItem(0), m_isEditing(false)
+    :QItemDelegate(parent), m_objectInspector(nullptr), m_editingItem(nullptr), m_isEditing(false)
 {}
 
 void LimeReport::PropertyDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -166,7 +166,7 @@ void LimeReport::PropertyDelegate::slotEditorDeleted()
 
 void LimeReport::PropertyDelegate::slotItemDeleted(QObject *item)
 {
-    if (item == m_editingItem) m_editingItem = 0;
+    if (item == m_editingItem) m_editingItem = nullptr;
 }
 
 LimeReport::ObjectPropItem* LimeReport::PropertyDelegate::editingItem()

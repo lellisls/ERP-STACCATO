@@ -49,7 +49,7 @@ namespace LimeReport {
 
 QWidget *BoolPropItem::createProperyEditor(QWidget *parent) const
 {
-    CheckBoxEditor *editor= new CheckBoxEditor(parent);
+    auto *editor= new CheckBoxEditor(parent);
     return editor;
 }
 

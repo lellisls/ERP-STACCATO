@@ -24,19 +24,3 @@ bool WidgetNfe::updateTables() {
 }
 
 void WidgetNfe::on_tabWidgetNfe_currentChanged(const int) { updateTables(); }
-
-void WidgetNfe::on_pushButtonExibirXML_clicked() {
-  const QString xml = QFileDialog::getOpenFileName(this, "Arquivo XML", QDir::currentPath(), "*.xml");
-
-  if (xml.isEmpty()) return;
-
-  QFile file(xml);
-
-  if (not file.open(QFile::ReadOnly)) {
-    QMessageBox::critical(this, "Erro!", "Erro abrindo arquivo: " + file.errorString());
-    return;
-  }
-
-  XML_Viewer *viewer = new XML_Viewer(this);
-  viewer->exibirXML(file.readAll());
-}

@@ -8,13 +8,10 @@
 #include "ui_cadastroprofissional.h"
 #include "usersession.h"
 
-CadastroProfissional::CadastroProfissional(QWidget *parent)
-    : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
+CadastroProfissional::CadastroProfissional(QWidget *parent) : RegisterAddressDialog("profissional", "idProfissional", parent), ui(new Ui::CadastroProfissional) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  for (auto const *line : findChildren<QLineEdit *>()) connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
 
   setWindowModality(Qt::NonModal);
 
@@ -22,6 +19,10 @@ CadastroProfissional::CadastroProfissional(QWidget *parent)
   setupUi();
   setupMapper();
   newRegister();
+
+  sdProfissional = SearchDialog::profissional(this);
+  sdProfissional->setFilter("idProfissional NOT IN (1) AND desativado = FALSE");
+  connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::viewRegisterById);
 
   ui->itemBoxVendedor->setSearchDialog(SearchDialog::vendedor(this));
   ui->itemBoxLoja->setSearchDialog(SearchDialog::loja(this));
@@ -36,12 +37,12 @@ CadastroProfissional::~CadastroProfissional() { delete ui; }
 
 void CadastroProfissional::setupTables() {
   ui->tableEndereco->setModel(&modelEnd);
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idEndereco"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("desativado"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("idProfissional"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("codUF"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("created"));
-  ui->tableEndereco->hideColumn(modelEnd.fieldIndex("lastUpdated"));
+  ui->tableEndereco->hideColumn("idEndereco");
+  ui->tableEndereco->hideColumn("desativado");
+  ui->tableEndereco->hideColumn("idProfissional");
+  ui->tableEndereco->hideColumn("codUF");
+  ui->tableEndereco->hideColumn("created");
+  ui->tableEndereco->hideColumn("lastUpdated");
 }
 
 void CadastroProfissional::setupUi() {
@@ -121,7 +122,7 @@ bool CadastroProfissional::save() {
 
   viewRegisterById(primaryId);
 
-  if (not silent) successMessage();
+  successMessage();
 
   return true;
 }
@@ -154,32 +155,31 @@ bool CadastroProfissional::viewRegister() {
 }
 
 bool CadastroProfissional::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+  currentRow = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  if (row == -1) {
+  if (currentRow == -1) {
     QMessageBox::critical(this, "Erro!", "Erro: linha -1 RegisterDialog!");
     return false;
   }
 
-  if (not isUpdate and not model.insertRow(row)) return false;
+  if (not isUpdate and not model.insertRow(currentRow)) return false;
 
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    const QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(currentRow, column);
 
     if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+      if (not model.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
   if (not model.submitAll()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro salvando dados na tabela " + model.tableName() + ": " + model.lastError().text());
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+  primaryId = data(currentRow, primaryKey).isValid() ? data(currentRow, primaryKey).toString() : getLastInsertId().toString();
 
   if (primaryId.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
@@ -241,7 +241,7 @@ bool CadastroProfissional::savingProcedures() {
 
 void CadastroProfissional::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroProfissional::on_pushButtonAtualizar_clicked() { update(); }
+void CadastroProfissional::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroProfissional::on_pushButtonNovoCad_clicked() { newRegister(); }
 
@@ -279,20 +279,12 @@ void CadastroProfissional::clearEndereco() {
 
 void CadastroProfissional::on_pushButtonCancelar_clicked() { close(); }
 
-void CadastroProfissional::on_pushButtonBuscar_clicked() {
-  SearchDialog *sdProfissional = SearchDialog::profissional(this);
-  sdProfissional->setFilter("idProfissional NOT IN (1) AND desativado = FALSE");
-  connect(sdProfissional, &SearchDialog::itemSelected, this, &CadastroProfissional::viewRegisterById);
-  sdProfissional->show();
-}
+void CadastroProfissional::on_pushButtonBuscar_clicked() { sdProfissional->show(); }
 
-void CadastroProfissional::on_lineEditCPF_textEdited(const QString &text) {
-  ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
-}
+void CadastroProfissional::on_lineEditCPF_textEdited(const QString &text) { ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)"); }
 
 void CadastroProfissional::on_lineEditCNPJ_textEdited(const QString &text) {
-  ui->lineEditCNPJ->setStyleSheet(
-      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+  ui->lineEditCNPJ->setStyleSheet(validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
@@ -306,9 +298,9 @@ bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
     return false;
   }
 
-  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  currentRowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) modelEnd.insertRow(rowEnd);
+  if (not isUpdate) modelEnd.insertRow(currentRowEnd);
 
   if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
   if (not setDataEnd("CEP", ui->lineEditCEP->text())) return false;
@@ -329,15 +321,11 @@ bool CadastroProfissional::cadastrarEndereco(const bool isUpdate) {
 }
 
 void CadastroProfissional::on_pushButtonAdicionarEnd_clicked() {
-  cadastrarEndereco()
-      ? novoEndereco()
-      : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!"));
+  cadastrarEndereco() ? novoEndereco() : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível cadastrar este endereço!"));
 }
 
 void CadastroProfissional::on_pushButtonAtualizarEnd_clicked() {
-  cadastrarEndereco(true)
-      ? novoEndereco()
-      : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível atualizar este endereço!"));
+  cadastrarEndereco(true) ? novoEndereco() : static_cast<void>(QMessageBox::critical(this, "Erro!", "Não foi possível atualizar este endereço!"));
 }
 
 void CadastroProfissional::on_lineEditCEP_textChanged(const QString &cep) {
@@ -368,13 +356,11 @@ void CadastroProfissional::on_tableEndereco_clicked(const QModelIndex &index) {
 }
 
 void CadastroProfissional::on_lineEditContatoCPF_textEdited(const QString &text) {
-  ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                         : "color: rgb(255, 0, 0)");
+  ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool checked) {
-  modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() +
-                     (checked ? "" : " AND desativado = FALSE"));
+  modelEnd.setFilter("idProfissional = " + data("idProfissional").toString() + (checked ? "" : " AND desativado = FALSE"));
 
   if (not modelEnd.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço: " + modelEnd.lastError().text());
@@ -382,8 +368,7 @@ void CadastroProfissional::on_checkBoxMostrarInativos_clicked(const bool checked
 }
 
 void CadastroProfissional::on_pushButtonRemoverEnd_clicked() {
-  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
-                     QMessageBox::Yes | QMessageBox::No, this);
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?", QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Remover");
   msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -416,34 +401,19 @@ void CadastroProfissional::on_radioButtonPF_toggled(const bool checked) {
 }
 
 void CadastroProfissional::on_lineEditCPFBancario_textEdited(const QString &text) {
-  ui->lineEditCPFBancario->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                          : "color: rgb(255, 0, 0)");
+  ui->lineEditCPFBancario->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 }
 
 void CadastroProfissional::on_lineEditCNPJBancario_textEdited(const QString &text) {
-  ui->lineEditCNPJBancario->setStyleSheet(
-      validaCNPJ(QString(text).remove(".").remove("-").remove("/")) ? "" : "color: rgb(255, 0, 0)");
+  ui->lineEditCNPJBancario->setStyleSheet(validaCNPJ(QString(text).remove(".").remove("-").remove("/")) ? "" : "color: rgb(255, 0, 0)");
 }
 
-void CadastroProfissional::successMessage() {
-  QMessageBox::information(this, "Atenção!",
-                           isUpdate ? "Cadastro atualizado!" : "Profissional cadastrado com sucesso!");
-}
+void CadastroProfissional::successMessage() { QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Profissional cadastrado com sucesso!"); }
 
-void CadastroProfissional::on_tableEndereco_entered(const QModelIndex &) {
-  ui->tableEndereco->resizeColumnsToContents();
-}
+void CadastroProfissional::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
 
-void CadastroProfissional::on_lineEditProfissional_editingFinished() {
-  ui->lineEditNomeBancario->setText(ui->lineEditProfissional->text());
-}
+void CadastroProfissional::on_lineEditProfissional_editingFinished() { ui->lineEditNomeBancario->setText(ui->lineEditProfissional->text()); }
 
-void CadastroProfissional::on_lineEditCPF_editingFinished() {
-  ui->lineEditCPFBancario->setText(ui->lineEditCPF->text());
-}
+void CadastroProfissional::on_lineEditCPF_editingFinished() { ui->lineEditCPFBancario->setText(ui->lineEditCPF->text()); }
 
-void CadastroProfissional::on_lineEditCNPJ_editingFinished() {
-  ui->lineEditCNPJBancario->setText(ui->lineEditCNPJ->text());
-}
-
-// TODO: 3bloquear edicao do cadastro 'NAO HA'
+void CadastroProfissional::on_lineEditCNPJ_editingFinished() { ui->lineEditCNPJBancario->setText(ui->lineEditCNPJ->text()); }

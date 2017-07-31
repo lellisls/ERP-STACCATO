@@ -40,7 +40,7 @@ FontEditor::FontEditor(QWidget *parent) :
     //m_button = new QPushButton(this);
     m_button = new QToolButton(this);
     m_button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    auto* layout = new QHBoxLayout(this);
     layout->addWidget(m_button);
     layout->setSpacing(0);
     layout->setContentsMargins(1,1,1,1);
@@ -66,7 +66,7 @@ QFont FontEditor::fontValue()
 
 void FontEditor::slotButtonCliked()
 {
-    QFontDialog* dialog = new QFontDialog(this);
+    auto* dialog = new QFontDialog(this);
     dialog->setCurrentFont(m_font);
     if (dialog->exec()) m_font=dialog->currentFont();
     delete dialog;

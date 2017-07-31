@@ -3,7 +3,7 @@
  <class>WidgetFluxoCaixa</class>
  <widget class="QWidget" name="WidgetFluxoCaixa">
   <property name="enabled">
-   <bool>false</bool>
+   <bool>true</bool>
   </property>
   <property name="geometry">
    <rect>
@@ -17,52 +17,22 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="3" rowspan="2">
-    <widget class="TableView" name="tableFuturo">
-     <property name="mouseTracking">
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBoxCaixa1">
+     <property name="title">
+      <string>Contas</string>
+     </property>
+     <property name="checkable">
       <bool>true</bool>
      </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
+     <property name="checked">
+      <bool>false</bool>
      </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" rowspan="2">
-    <widget class="TableView" name="tableCaixa">
-     <property name="mouseTracking">
-      <bool>true</bool>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2" rowspan="2">
-    <widget class="TableView" name="tableResumo">
-     <property name="mouseTracking">
-      <bool>true</bool>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0">
+       <widget class="ItemBox" name="itemBoxCaixa1"/>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="2" column="0">
@@ -87,7 +57,7 @@
       <item row="0" column="0">
        <widget class="QGroupBox" name="groupBoxMes">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="title">
          <string>Mês</string>
@@ -118,49 +88,8 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QGroupBox" name="groupBoxContas1">
-     <property name="title">
-      <string>Contas</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="prefix">
-         <string>R$ </string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Saldo:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="ItemBox" name="itemBox1"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="0" column="2">
-    <widget class="QGroupBox" name="groupBoxContas2">
+    <widget class="QGroupBox" name="groupBoxCaixa2">
      <property name="title">
       <string>Contas</string>
      </property>
@@ -170,53 +99,49 @@
      <property name="checked">
       <bool>false</bool>
      </property>
-     <layout class="QGridLayout" name="gridLayout_6">
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="prefix">
-         <string>R$ </string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Saldo:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="ItemBox" name="itemBox2"/>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="ItemBox" name="itemBoxCaixa2"/>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Pagamentos</string>
+   <item row="2" column="3" rowspan="2">
+    <widget class="TableView" name="tableFuturo">
+     <property name="mouseTracking">
+      <bool>true</bool>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Resumo Dia</string>
+   <item row="2" column="1" rowspan="2">
+    <widget class="TableView" name="tableCaixa">
+     <property name="mouseTracking">
+      <bool>true</bool>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2" rowspan="2">
+    <widget class="TableView" name="tableCaixa2">
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
     </widget>
    </item>
@@ -229,6 +154,78 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+   </item>
+   <item row="1" column="2">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Saldo:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxSaldo2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="prefix">
+        <string>R$ </string>
+       </property>
+       <property name="minimum">
+        <double>-9999999.990000000223517</double>
+       </property>
+       <property name="maximum">
+        <double>9999999.990000000223517</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Saldo:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBoxSaldo1">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="showGroupSeparator" stdset="0">
+        <bool>true</bool>
+       </property>
+       <property name="prefix">
+        <string>R$ </string>
+       </property>
+       <property name="minimum">
+        <double>-9999999.990000000223517</double>
+       </property>
+       <property name="maximum">
+        <double>9999999.990000000223517</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

@@ -34,6 +34,8 @@ void Estoque::setupTables() {
   model.setHeaderData("un", "Un.");
   model.setHeaderData("caixas", "Caixas");
   model.setHeaderData("codComercial", "Cód. Com.");
+  model.setHeaderData("lote", "Lote");
+  model.setHeaderData("bloco", "Bloco");
 
   ui->tableEstoque->setModel(new EstoqueProxyModel(&model, this));
   ui->tableEstoque->setItemDelegateForColumn("quant", new DoubleDelegate(this, 4));
@@ -191,8 +193,7 @@ void Estoque::on_pushButtonExibirNfe_clicked() { exibirNota(); }
 
 void Estoque::exibirNota() {
   QSqlQuery query;
-  query.prepare("SELECT xml FROM estoque e LEFT JOIN estoque_has_nfe ehn ON e.idEstoque = ehn.idEstoque LEFT JOIN "
-                "nfe n ON ehn.idNFe = n.idNFe WHERE e.idEstoque = :idEstoque");
+  query.prepare("SELECT xml FROM estoque e LEFT JOIN estoque_has_nfe ehn ON e.idEstoque = ehn.idEstoque LEFT JOIN nfe n ON ehn.idNFe = n.idNFe WHERE e.idEstoque = :idEstoque");
   query.bindValue(":idEstoque", model.data(0, "idEstoque"));
 
   if (not query.exec()) {
@@ -201,7 +202,7 @@ void Estoque::exibirNota() {
   }
 
   while (query.next()) {
-    XML_Viewer *viewer = new XML_Viewer(this);
+    auto *viewer = new XML_Viewer(this);
     viewer->exibirXML(query.value("xml").toByteArray());
   }
 }
@@ -257,7 +258,7 @@ bool Estoque::criarConsumo(const int idVendaProduto, double quant) {
 
     const double unCaixa = un == "M2" or un == "M²" or un == "ML" ? m2cx : pccx;
 
-    const int caixas = quant / unCaixa;
+    const double caixas = qRound(quant / unCaixa * 100) / 100;
 
     const double proporcao = quant / model.data(row, "quant").toDouble();
 

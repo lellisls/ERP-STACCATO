@@ -49,7 +49,7 @@ class CellFormulaPrivate : public QSharedData {
 public:
   CellFormulaPrivate(const QString &formula, const CellRange &reference, CellFormula::FormulaType type);
   CellFormulaPrivate(const CellFormulaPrivate &other);
-  ~CellFormulaPrivate();
+  ~CellFormulaPrivate() = default;
 
   QString formula; // formula contents
   CellFormula::FormulaType type;

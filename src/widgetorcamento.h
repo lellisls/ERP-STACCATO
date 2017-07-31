@@ -36,7 +36,7 @@ private:
   // methods
   void setupTables();
   void setPermissions();
-  void makeConnections();
+  void setupConnections();
 };
 
 #endif // WIDGETORCAMENTO_H

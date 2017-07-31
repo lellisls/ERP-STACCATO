@@ -28,8 +28,7 @@ void WidgetOrcamento::setPermissions() {
   if (UserSession::tipoUsuario() == "GERENTE LOJA") {
     ui->groupBoxLojas->hide();
 
-    QSqlQuery query("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND idLoja = " +
-                    QString::number(UserSession::idLoja()));
+    QSqlQuery query("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND idLoja = " + QString::number(UserSession::idLoja()));
 
     ui->comboBoxVendedores->addItem("");
 
@@ -54,7 +53,7 @@ void WidgetOrcamento::setPermissions() {
 }
 
 void WidgetOrcamento::setupTables() {
-  model.setTable("view_orcamento");
+  model.setTable("view_orcamento2"); // TODO: refactor other querys that use 'find last of'
 
   ui->table->setModel(new OrcamentoProxyModel(&model, this));
   ui->table->setItemDelegateForColumn("Total", new ReaisDelegate(this));
@@ -64,7 +63,7 @@ void WidgetOrcamento::setupTables() {
   if (UserSession::tipoUsuario() != "VENDEDOR ESPECIAL") ui->table->hideColumn("Indicou");
 }
 
-void WidgetOrcamento::makeConnections() {
+void WidgetOrcamento::setupConnections() {
   connect(ui->checkBoxCancelado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->checkBoxExpirado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
   connect(ui->checkBoxFechado, &QAbstractButton::toggled, this, &WidgetOrcamento::montaFiltro);
@@ -85,7 +84,7 @@ bool WidgetOrcamento::updateTables() {
     setPermissions();
     setupTables();
     montaFiltro();
-    makeConnections();
+    setupConnections();
   }
 
   if (not model.select()) {
@@ -99,22 +98,20 @@ bool WidgetOrcamento::updateTables() {
 }
 
 void WidgetOrcamento::on_table_activated(const QModelIndex &index) {
-  Orcamento *orcamento = new Orcamento(this);
+  auto *orcamento = new Orcamento(this);
   orcamento->setAttribute(Qt::WA_DeleteOnClose);
   orcamento->viewRegisterById(model.data(index.row(), "Código"));
   orcamento->show();
 }
 
 void WidgetOrcamento::on_pushButtonCriarOrc_clicked() {
-  Orcamento *orcamento = new Orcamento(this);
+  auto *orcamento = new Orcamento(this);
   orcamento->setAttribute(Qt::WA_DeleteOnClose);
   orcamento->show();
 }
 
 void WidgetOrcamento::montaFiltro() {
-  QString filtroLoja = ui->comboBoxLojas->currentText().isEmpty()
-                           ? "(Código LIKE '%" + UserSession::fromLoja("sigla") + "%')"
-                           : "idLoja = " + ui->comboBoxLojas->getCurrentValue().toString();
+  QString filtroLoja = ui->comboBoxLojas->currentText().isEmpty() ? "(Código LIKE '%" + UserSession::fromLoja("sigla") + "%')" : "idLoja = " + ui->comboBoxLojas->getCurrentValue().toString();
 
   const QString filtroRadio = ui->radioButtonTodos->isChecked() ? "" : " AND Vendedor = '" + UserSession::nome() + "'";
 
@@ -122,28 +119,21 @@ void WidgetOrcamento::montaFiltro() {
 
   for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
     if (child->isChecked()) {
-      filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'"
-                                           : " OR status = '" + child->text().toUpper() + "'";
+      filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'" : " OR status = '" + child->text().toUpper() + "'";
     }
   }
 
   filtroCheck = filtroCheck.isEmpty() ? "" : " AND (" + filtroCheck + ")";
 
-  const QString filtroData =
-      ui->groupBoxMes->isChecked()
-          ? " AND DATE_FORMAT(Data, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'"
-          : "";
+  const QString filtroData = ui->groupBoxMes->isChecked() ? " AND DATE_FORMAT(Data, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'" : "";
 
-  const QString filtroVendedor = ui->comboBoxVendedores->currentText().isEmpty()
-                                     ? ""
-                                     : " AND idUsuario = " + ui->comboBoxVendedores->getCurrentValue().toString();
+  const QString filtroVendedor = ui->comboBoxVendedores->currentText().isEmpty() ? "" : " AND idUsuario = " + ui->comboBoxVendedores->getCurrentValue().toString();
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  const QString filtroBusca = textoBusca.isEmpty() ? ""
-                                                   : " AND (Código LIKE '%" + textoBusca + "%' OR Vendedor LIKE '%" +
-                                                         textoBusca + "%' OR Cliente LIKE '%" + textoBusca +
-                                                         "%' OR Profissional LIKE '%" + textoBusca + "%')";
+  const QString filtroBusca =
+      textoBusca.isEmpty() ? ""
+                           : " AND (Código LIKE '%" + textoBusca + "%' OR Vendedor LIKE '%" + textoBusca + "%' OR Cliente LIKE '%" + textoBusca + "%' OR Profissional LIKE '%" + textoBusca + "%')";
 
   model.setFilter(filtroLoja + filtroData + filtroVendedor + filtroRadio + filtroCheck + filtroBusca);
 
@@ -176,9 +166,7 @@ void WidgetOrcamento::on_comboBoxLojas_currentIndexChanged(const int) {
   ui->comboBoxVendedores->clear();
 
   QSqlQuery query2("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND tipo = 'VENDEDOR'" +
-                   (ui->comboBoxLojas->currentText().isEmpty()
-                        ? ""
-                        : " AND idLoja = " + ui->comboBoxLojas->getCurrentValue().toString()));
+                   (ui->comboBoxLojas->currentText().isEmpty() ? "" : " AND idLoja = " + ui->comboBoxLojas->getCurrentValue().toString()));
 
   ui->comboBoxVendedores->addItem("");
 
@@ -186,3 +174,4 @@ void WidgetOrcamento::on_comboBoxLojas_currentIndexChanged(const int) {
 }
 
 // TODO: 1por padrao nao ativar filtro mes quando for vendedor (acho que já foi feito)
+// TODO: alterar followup para guardar apenas os 12 primeiros caracteres (remover -RevXXX)

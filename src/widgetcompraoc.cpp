@@ -141,6 +141,12 @@ void WidgetCompraOC::on_pushButtonDesfazerConsumo_clicked() {
     return;
   }
 
+  QMessageBox msgBox(QMessageBox::Question, "Desfazer consumo?", "Tem certeza?", QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Continuar");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
+
+  if (msgBox.exec() == QMessageBox::No) return;
+
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
@@ -166,8 +172,13 @@ bool WidgetCompraOC::desfazerConsumo(const QModelIndexList &list) {
     query.prepare("SELECT status FROM estoque_has_consumo WHERE idVendaProduto = :idVendaProduto");
     query.bindValue(":idVendaProduto", idVendaProduto);
 
-    if (not query.exec() or not query.first()) {
+    if (not query.exec()) {
       error = "Erro buscando status do consumo estoque: " + query.lastError().text();
+      return false;
+    }
+
+    if (not query.first()) {
+      error = "Não encontrou consumo!";
       return false;
     }
 
@@ -178,9 +189,7 @@ bool WidgetCompraOC::desfazerConsumo(const QModelIndexList &list) {
       return false;
     }
 
-    query.prepare(
-        "UPDATE pedido_fornecedor_has_produto SET idVenda = NULL, idVendaProduto = NULL WHERE idVendaProduto = "
-        ":idVendaProduto");
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET idVenda = NULL, idVendaProduto = NULL WHERE idVendaProduto = :idVendaProduto");
     query.bindValue(":idVendaProduto", idVendaProduto);
 
     if (not query.exec()) {
@@ -211,7 +220,5 @@ bool WidgetCompraOC::desfazerConsumo(const QModelIndexList &list) {
 void WidgetCompraOC::on_lineEditBusca_textChanged(const QString &text) {
   modelPedido.setFilter("Venda LIKE '%" + text + "%' OR OC LIKE '%" + text + "%'");
 
-  if (not modelPedido.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedidos: " + modelPedido.lastError().text());
-  }
+  if (not modelPedido.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedidos: " + modelPedido.lastError().text());
 }

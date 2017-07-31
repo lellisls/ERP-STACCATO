@@ -7,9 +7,7 @@
 #include "ui_widgetcalendario.h"
 #include "widgetcalendario.h"
 
-WidgetCalendario::WidgetCalendario(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCalendario) {
-  ui->setupUi(this);
-}
+WidgetCalendario::WidgetCalendario(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCalendario) { ui->setupUi(this); }
 
 WidgetCalendario::~WidgetCalendario() { delete ui; }
 
@@ -17,15 +15,14 @@ bool WidgetCalendario::updateTables() {
   if (not setup) {
     QSqlQuery query;
 
-    if (not query.exec(
-            "SELECT t.razaoSocial, tv.modelo FROM transportadora t LEFT JOIN transportadora_has_veiculo tv ON "
-            "t.idTransportadora = tv.idTransportadora ORDER BY razaoSocial, modelo")) {
+    if (not query.exec("SELECT t.razaoSocial, tv.modelo FROM transportadora t LEFT JOIN transportadora_has_veiculo tv ON "
+                       "t.idTransportadora = tv.idTransportadora ORDER BY razaoSocial, modelo")) {
       QMessageBox::critical(this, "Erro!", "Erro buscando veiculos: " + query.lastError().text());
       return false;
     }
 
     while (query.next()) {
-      QCheckBox *cb = new QCheckBox(this);
+      auto *cb = new QCheckBox(this);
       cb->setText(query.value("razaoSocial").toString() + " / " + query.value("modelo").toString());
       cb->setChecked(true);
       connect(cb, &QAbstractButton::toggled, this, &WidgetCalendario::updateFilter);
@@ -114,8 +111,7 @@ bool WidgetCalendario::updateCalendar(const QDate &startDate) {
 
     QString text = oldText.isEmpty() ? "" : oldText + "\n\n------------------------------------\n\n";
 
-    text += query.value("data").toTime().toString("hh:mm") + "  Kg: " + query.value("kg").toString() + ", Cx.: " +
-            query.value("caixas").toString();
+    text += query.value("data").toTime().toString("hh:mm") + "  Kg: " + query.value("kg").toString() + ", Cx.: " + query.value("caixas").toString();
 
     if (not query.value("idVenda").toString().isEmpty()) text += "\n           " + query.value("idVenda").toString();
 
@@ -123,6 +119,7 @@ bool WidgetCalendario::updateCalendar(const QDate &startDate) {
       text += " - " + query.value("bairro").toString() + " - " + query.value("cidade").toString();
     }
 
+    // TODO: dont show this to compact screen? or show this only on doubleclick
     text += query.value("text").toString();
 
     text += "\n           Status: " + query.value("status").toString();
@@ -147,13 +144,9 @@ void WidgetCalendario::on_checkBoxMostrarFiltros_toggled(bool checked) {
   ui->groupBoxVeiculos->setVisible(checked);
 }
 
-void WidgetCalendario::on_pushButtonProximo_clicked() {
-  ui->calendarWidget->setSelectedDate(ui->calendarWidget->selectedDate().addDays(7));
-}
+void WidgetCalendario::on_pushButtonProximo_clicked() { ui->calendarWidget->setSelectedDate(ui->calendarWidget->selectedDate().addDays(7)); }
 
-void WidgetCalendario::on_pushButtonAnterior_clicked() {
-  ui->calendarWidget->setSelectedDate(ui->calendarWidget->selectedDate().addDays(-7));
-}
+void WidgetCalendario::on_pushButtonAnterior_clicked() { ui->calendarWidget->setSelectedDate(ui->calendarWidget->selectedDate().addDays(-7)); }
 
 void WidgetCalendario::on_calendarWidget_selectionChanged() {
   const QDate date = ui->calendarWidget->selectedDate();

@@ -51,14 +51,15 @@ private slots:
   void on_itemBoxVeiculo_textChanged(const QString &);
   void on_pushButtonConsultarCadastro_clicked();
   void on_pushButtonEnviarNFE_clicked();
-  void on_pushButtonGerarNFE_clicked();
   void on_tableItens_clicked(const QModelIndex &index);
   void on_tableItens_entered(const QModelIndex &);
   void on_tabWidget_currentChanged(int index);
   void updateImpostos();
+  void alterarCertificado(const QString &text);
 
 private:
   // attributes
+  //int cnpjCertificado;
   const QString idVenda;
   QDataWidgetMapper mapper;
   QSqlQuery queryCliente;
@@ -74,7 +75,7 @@ private:
   SqlTableModel modelVenda;
   Ui::CadastrarNFe *ui;
   // methods
-  bool cadastrar(const bool test = false);
+  bool cadastrar(const QVariant &id);
   bool calculaDigitoVerificador(QString &chave);
   bool criarChaveAcesso();
   bool preencherNumeroNFe();

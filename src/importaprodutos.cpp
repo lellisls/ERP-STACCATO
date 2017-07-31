@@ -95,8 +95,7 @@ bool ImportaProdutos::verificaSeRepresentacao() {
 bool ImportaProdutos::atualizaProduto() {
   if (camposForaDoPadrao()) return insereEmErro();
 
-  row = hash.value(variantMap.value("fornecedor").toString() + variantMap.value("codComercial").toString() +
-                   variantMap.value("ui").toString() + QString::number(tipo));
+  row = hash.value(variantMap.value("fornecedor").toString() + variantMap.value("codComercial").toString() + variantMap.value("ui").toString() + QString::number(tipo));
 
   if (hashAtualizado.value(row) == true) {
     variantMap.insert("colecao", "REPETIDO");
@@ -113,15 +112,12 @@ bool ImportaProdutos::atualizaProduto() {
 }
 
 bool ImportaProdutos::importar() {
-  db = QSqlDatabase::contains("Excel Connection") ? QSqlDatabase::database("Excel Connection")
-                                                  : QSqlDatabase::addDatabase("QODBC", "Excel Connection");
+  db = QSqlDatabase::contains("Excel Connection") ? QSqlDatabase::database("Excel Connection") : QSqlDatabase::addDatabase("QODBC", "Excel Connection");
 
-  db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};HDR=Yes;MaxScanRows=0;DBQ=" +
-                     file);
+  db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};HDR=Yes;MaxScanRows=0;DBQ=" + file);
 
   if (not db.open()) {
-    QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao abrir o arquivo, verifique se o mesmo não está aberto: " +
-                                             db.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao abrir o arquivo, verifique se o mesmo não está aberto: " + db.lastError().text());
     return false;
   }
 
@@ -140,10 +136,9 @@ bool ImportaProdutos::importar() {
     return false;
   }
 
-  QString red = QString::number(Red);
+  const QString red = QString::number(Red);
 
-  modelErro.setFilter("idFornecedor IN (" + idsFornecedor.join(",") + ") AND estoque_promocao = " +
-                      QString::number(tipo) + " AND (m2cxUpd = " + red + " OR pccxUpd = " + red +
+  modelErro.setFilter("idFornecedor IN (" + idsFornecedor.join(",") + ") AND estoque_promocao = " + QString::number(tipo) + " AND (m2cxUpd = " + red + " OR pccxUpd = " + red +
                       " OR codComercialUpd = " + red + " OR custoUpd = " + red + " OR precoVendaUpd = " + red + ")");
 
   if (not modelErro.select()) {
@@ -153,8 +148,7 @@ bool ImportaProdutos::importar() {
   itensExpired = model.rowCount();
 
   for (int row = 0, rowCount = model.rowCount(); row < rowCount; ++row) {
-    hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() +
-         model.data(row, "ui").toString() + model.data(row, "estoque_promocao").toString()] = row;
+    hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() + model.data(row, "ui").toString() + model.data(row, "estoque_promocao").toString()] = row;
   }
 
   contaProdutos();
@@ -191,10 +185,8 @@ bool ImportaProdutos::importar() {
 
   db.close();
 
-  const QString resultado = "Produtos importados: " + QString::number(itensImported) + "\nProdutos atualizados: " +
-                            QString::number(itensUpdated) + "\nNão modificados: " + QString::number(itensNotChanged) +
-                            "\nDescontinuados: " + QString::number(itensExpired) + "\nCom erro: " +
-                            QString::number(itensError);
+  const QString resultado = "Produtos importados: " + QString::number(itensImported) + "\nProdutos atualizados: " + QString::number(itensUpdated) + "\nNão modificados: " +
+                            QString::number(itensNotChanged) + "\nDescontinuados: " + QString::number(itensExpired) + "\nCom erro: " + QString::number(itensError);
   QMessageBox::information(this, "Resultado", resultado);
 
   return true;
@@ -213,7 +205,7 @@ void ImportaProdutos::importarTabela() {
 void ImportaProdutos::setProgressDialog() {
   progressDialog = new QProgressDialog(this);
   progressDialog->reset();
-  progressDialog->setCancelButton(0);
+  progressDialog->setCancelButton(nullptr);
   progressDialog->setLabelText("Importando...");
   progressDialog->setWindowTitle("ERP Staccato");
   progressDialog->setWindowModality(Qt::WindowModal);
@@ -233,7 +225,7 @@ bool ImportaProdutos::readFile() {
 }
 
 bool ImportaProdutos::readValidade() {
-  ValidadeDialog *validadeDlg = new ValidadeDialog();
+  auto *validadeDlg = new ValidadeDialog();
 
   if (not validadeDlg->exec()) return false;
 
@@ -253,7 +245,6 @@ void ImportaProdutos::setupTables() {
   model.setHeaderData("colecao", "Coleção");
   model.setHeaderData("tipo", "Tipo");
   model.setHeaderData("minimo", "Mínimo");
-  model.setHeaderData("multiplo", "Múltiplo");
   model.setHeaderData("m2cx", "M./Cx.");
   model.setHeaderData("pccx", "Pç./Cx.");
   model.setHeaderData("kgcx", "Kg./Cx.");
@@ -304,14 +295,14 @@ void ImportaProdutos::setupTables() {
 
   ui->tableProdutos->setItemDelegateForColumn("validade", new DateFormatDelegate(this));
 
-  DoubleDelegate *doubledelegate = new DoubleDelegate(this, 4);
+  auto *doubledelegate = new DoubleDelegate(this, 4);
   ui->tableProdutos->setItemDelegateForColumn("m2cx", doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn("kgcx", doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn("qtdPallet", doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn("custo", doubledelegate);
   ui->tableProdutos->setItemDelegateForColumn("precoVenda", doubledelegate);
 
-  PorcentagemDelegate *porcDelegate = new PorcentagemDelegate(this);
+  auto *porcDelegate = new PorcentagemDelegate(this);
   ui->tableProdutos->setItemDelegateForColumn("icms", porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn("ipi", porcDelegate);
   ui->tableProdutos->setItemDelegateForColumn("markup", porcDelegate);
@@ -368,6 +359,12 @@ void ImportaProdutos::setupTables() {
   ui->tableErro->hideColumn("observacoes");
   ui->tableErro->hideColumn("origem");
   ui->tableErro->hideColumn("representacao");
+  ui->tableErro->hideColumn("icms");
+  ui->tableErro->hideColumn("cst");
+  ui->tableErro->hideColumn("ipi");
+  ui->tableErro->hideColumn("st");
+  ui->tableErro->hideColumn("estoque_promocao");
+  ui->tableErro->hideColumn("idProdutoRelacionado");
 
   ui->tableErro->setItemDelegateForColumn("validade", new DateFormatDelegate(this));
 
@@ -444,8 +441,7 @@ void ImportaProdutos::mostraApenasEstesFornecedores() {
 bool ImportaProdutos::marcaTodosProdutosDescontinuados() {
   QSqlQuery query;
 
-  if (not query.exec("UPDATE produto SET descontinuado = TRUE WHERE idFornecedor IN (" + idsFornecedor.join(",") +
-                     ") AND estoque_promocao = " + QString::number(tipo) + "")) {
+  if (not query.exec("UPDATE produto SET descontinuado = TRUE WHERE idFornecedor IN (" + idsFornecedor.join(",") + ") AND estoque_promocao = " + QString::number(tipo) + "")) {
     QMessageBox::critical(this, "Erro!", "Erro marcando produtos descontinuados: " + query.lastError().text());
     return false;
   }
@@ -480,6 +476,10 @@ void ImportaProdutos::consistenciaDados() {
   variantMap.insert("ncm", variantMap.value("ncm").toString().remove(".").remove(",").remove("-").remove(" "));
   variantMap.insert("codBarras", variantMap.value("codBarras").toString().remove(".").remove(","));
   variantMap.insert("codComercial", variantMap.value("codComercial").toString().remove(".").remove(","));
+
+  variantMap.insert("minimo", variantMap.value("minimo").toDouble());
+
+  // NOTE: cast other fields to the correct type?
 }
 
 void ImportaProdutos::leituraProduto(const QSqlQuery &query, const QSqlRecord &record) {
@@ -522,7 +522,7 @@ bool ImportaProdutos::atualizaCamposProduto() {
     if (not model.setData(row, "validadeUpd", White)) return false;
   }
 
-  double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.;
+  double markup = 100 * ((variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.);
   QString markupRound = QString::number(markup, 'f', 4);
   markup = markupRound.toDouble();
 
@@ -551,8 +551,7 @@ bool ImportaProdutos::guardaNovoPrecoValidade() {
   if (not expiraPrecosAntigos()) return false;
 
   QSqlQuery query;
-  query.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) VALUES (:idProduto, "
-                ":preco, :validadeInicio, :validadeFim)");
+  query.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) VALUES (:idProduto, :preco, :validadeInicio, :validadeFim)");
   query.bindValue(":idProduto", model.data(row, "idProduto"));
   query.bindValue(":preco", variantMap.value("precoVenda"));
   query.bindValue(":validadeInicio", QDate::currentDate());
@@ -567,8 +566,7 @@ bool ImportaProdutos::guardaNovoPrecoValidade() {
 }
 
 bool ImportaProdutos::verificaSeProdutoJaCadastrado() {
-  return hash.contains(variantMap.value("fornecedor").toString() + variantMap.value("codComercial").toString() +
-                       variantMap.value("ui").toString() + QString::number(tipo));
+  return hash.contains(variantMap.value("fornecedor").toString() + variantMap.value("codComercial").toString() + variantMap.value("ui").toString() + QString::number(tipo));
 }
 
 bool ImportaProdutos::pintarCamposForaDoPadrao(const int row) {
@@ -585,14 +583,11 @@ bool ImportaProdutos::pintarCamposForaDoPadrao(const int row) {
   // Errados
   if (variantMap.value("colecao").toString() == "REPETIDO") modelErro.setData(row, "colecaoUpd", Red);
 
-  if ((variantMap.value("un").toString() == "M2" or variantMap.value("un").toString() == "M²" or
-       variantMap.value("un").toString() == "ML") and
-      variantMap.value("m2cx") <= 0.) {
+  if ((variantMap.value("un").toString() == "M2" or variantMap.value("un").toString() == "M²" or variantMap.value("un").toString() == "ML") and variantMap.value("m2cx") <= 0.) {
     if (not modelErro.setData(row, "m2cxUpd", Red)) return false;
   }
 
-  if (variantMap.value("un").toString() != "M2" and variantMap.value("un").toString() != "M²" and
-      variantMap.value("un").toString() != "ML" and variantMap.value("pccx") < 1) {
+  if (variantMap.value("un").toString() != "M2" and variantMap.value("un").toString() != "M²" and variantMap.value("un").toString() != "ML" and variantMap.value("pccx") < 1) {
     if (not modelErro.setData(row, "pccxUpd", Red)) return false;
   }
 
@@ -619,11 +614,11 @@ bool ImportaProdutos::camposForaDoPadrao() {
   // Errados
   if (variantMap.value("colecao").toString() == "REPETIDO") return true;
 
-  QString un = variantMap.value("un").toString();
+  const QString un = variantMap.value("un").toString();
   if ((un == "M2" or un == "M²" or un == "ML") and variantMap.value("m2cx") <= 0.) return true;
   if (un != "M2" and un != "M²" and un != "ML" and variantMap.value("pccx") < 1) return true;
 
-  QString codComercial = variantMap.value("codComercial").toString();
+  const QString codComercial = variantMap.value("codComercial").toString();
   if (codComercial == "0" or codComercial.isEmpty()) return true;
 
   if (variantMap.value("custo") <= 0.) return true;
@@ -642,15 +637,14 @@ bool ImportaProdutos::insereEmErro() {
     if (not modelErro.setData(row, key + "Upd", Green)) return false;
   }
 
-  if (not modelErro.setData(row, "idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString())))
-    return false;
+  if (not modelErro.setData(row, "idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()))) return false;
 
   if (not modelErro.setData(row, "atualizarTabelaPreco", true)) return false;
-  QString data = QDate::currentDate().addDays(validade).toString("yyyy-MM-dd");
+  const QString data = QDate::currentDate().addDays(validade).toString("yyyy-MM-dd");
   if (not modelErro.setData(row, "validade", data)) return false;
   if (not modelErro.setData(row, "validadeUpd", Green)) return false;
 
-  const double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.;
+  const double markup = 100 * ((variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.);
   if (not modelErro.setData(row, "markup", markup)) return false;
   if (not modelErro.setData(row, "markupUpd", Green)) return false;
 
@@ -672,6 +666,7 @@ bool ImportaProdutos::insereEmErro() {
 
 bool ImportaProdutos::insereEmOk() {
   const int row = model.rowCount();
+
   if (not model.insertRow(row)) return false;
 
   for (auto const &key : variantMap.keys()) {
@@ -683,8 +678,7 @@ bool ImportaProdutos::insereEmOk() {
 
   if (tipo == Estoque or tipo == Promocao) {
     QSqlQuery query;
-    query.prepare("SELECT idProduto FROM produto WHERE idFornecedor = :idFornecedor AND codComercial = :codComercial "
-                  "AND estoque_promocao = 0");
+    query.prepare("SELECT idProduto FROM produto WHERE idFornecedor = :idFornecedor AND codComercial = :codComercial AND estoque_promocao = 0");
     query.bindValue(":idFornecedor", fornecedores.value(variantMap.value("fornecedor").toString()));
     query.bindValue(":codComercial", model.data(row, "codComercial"));
 
@@ -696,14 +690,14 @@ bool ImportaProdutos::insereEmOk() {
     if (query.first() and not model.setData(row, "idProdutoRelacionado", query.value("idProduto"))) return false;
   }
 
-  int idFornecedor = fornecedores.value(variantMap.value("fornecedor").toString());
+  const int idFornecedor = fornecedores.value(variantMap.value("fornecedor").toString());
   if (not model.setData(row, "idFornecedor", idFornecedor)) return false;
 
   if (not model.setData(row, "atualizarTabelaPreco", true)) return false;
   if (not model.setData(row, "validade", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"))) return false;
   if (not model.setData(row, "validadeUpd", Green)) return false;
 
-  const double markup = (variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.;
+  const double markup = 100 * ((variantMap.value("precoVenda").toDouble() / variantMap.value("custo").toDouble()) - 1.);
   if (not model.setData(row, "markup", markup)) return false;
   if (not model.setData(row, "markupUpd", Green)) return false;
 
@@ -715,8 +709,7 @@ bool ImportaProdutos::insereEmOk() {
     if (not model.setData(row, "ncmExUpd", Green)) return false;
   }
 
-  hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() +
-       model.data(row, "ui").toString() + model.data(row, "estoque_promocao").toString()] = row;
+  hash[model.data(row, "fornecedor").toString() + model.data(row, "codComercial").toString() + model.data(row, "ui").toString() + model.data(row, "estoque_promocao").toString()] = row;
 
   hashAtualizado[row] = true;
 
@@ -764,20 +757,19 @@ bool ImportaProdutos::buscarCadastrarFornecedor(const QString &fornecedor, int &
 void ImportaProdutos::salvar() {
   if (not model.submitAll()) {
     QMessageBox::critical(this, "Erro!", "Ocorreu um erro ao salvar os dados: " + model.lastError().text());
+    // TODO: refactor this because after this runs the transaction is no more
     QSqlQuery("ROLLBACK").exec();
     return;
   }
 
   QSqlQuery queryPrecos;
-  queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT idProduto, "
-                      "precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM produto WHERE "
-                      "atualizarTabelaPreco = TRUE");
+  queryPrecos.prepare("INSERT INTO produto_has_preco (idProduto, preco, validadeInicio, validadeFim) SELECT idProduto, precoVenda, :validadeInicio AS validadeInicio, :validadeFim AS validadeFim FROM "
+                      "produto WHERE atualizarTabelaPreco = TRUE");
   queryPrecos.bindValue(":validadeInicio", QDate::currentDate().toString("yyyy-MM-dd"));
   queryPrecos.bindValue(":validadeFim", QDate::currentDate().addDays(validade).toString("yyyy-MM-dd"));
 
   if (not queryPrecos.exec()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro inserindo dados em produto_has_preco: " + queryPrecos.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro inserindo dados em produto_has_preco: " + queryPrecos.lastError().text());
     QSqlQuery("ROLLBACK").exec();
     return;
   }
@@ -793,8 +785,7 @@ void ImportaProdutos::salvar() {
 
 void ImportaProdutos::on_pushButtonSalvar_clicked() {
   if (hasError) {
-    QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Produtos com erro não serão salvos. Deseja continuar?",
-                       QMessageBox::Yes | QMessageBox::No, this);
+    QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Produtos com erro não serão salvos. Deseja continuar?", QMessageBox::Yes | QMessageBox::No, this);
     msgBox.setButtonText(QMessageBox::Yes, "Continuar");
     msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -810,7 +801,7 @@ bool ImportaProdutos::verificaTabela(const QSqlRecord &record) {
     if (key == "idProdutoRelacionado") continue;
 
     if (not record.contains(key)) {
-      QMessageBox::critical(this, "Erro!", "Tabela não possui coluna \"" + key + "\"");
+      QMessageBox::critical(this, "Erro!", R"(Tabela não possui coluna ")" + key + R"(")");
       return false;
     }
   }
@@ -841,8 +832,7 @@ void ImportaProdutos::on_checkBoxRepresentacao_toggled(const bool checked) {
   }
 
   QSqlQuery query;
-  if (not query.exec("UPDATE fornecedor SET representacao = " + QString(checked ? "TRUE" : "FALSE") +
-                     " WHERE idFornecedor IN (" + idsFornecedor.join(",") + ")")) {
+  if (not query.exec("UPDATE fornecedor SET representacao = " + QString(checked ? "TRUE" : "FALSE") + " WHERE idFornecedor IN (" + idsFornecedor.join(",") + ")")) {
     QMessageBox::critical(this, "Erro!", "Erro guardando 'Representacao' em Fornecedor: " + query.lastError().text());
     return;
   }
@@ -853,3 +843,10 @@ void ImportaProdutos::on_checkBoxRepresentacao_toggled(const bool checked) {
 // produto_has_preco_has_loja ou guardar idLoja em produto_has_preco)
 // NOTE: remover idProdutoRelacionado?
 // TODO: 2unificar m2cx/pccx em uncx, podendo ter uma segunda coluna pccx/kgcx
+
+// TODO: *SUL*colocar flag na importacao para dizer qual tipo, se é sul ou nao (para diferenciar precos por regiao)
+// TODO: como esta tabela é colorida usar o delegate para pintar texto de branco quando for fundo escuro
+// TODO: markup esta exibindo errado ou salvando errado
+// TODO: nao mostrar promocao descontinuado
+// TODO: se der erro durante a leitura o arquivo nao é fechado
+// TODO: nao marcou produtos representacao com flag 1

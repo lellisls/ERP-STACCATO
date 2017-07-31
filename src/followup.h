@@ -26,7 +26,6 @@ private:
   // attributes
   const QString id;
   const Tipo tipo;
-  int row;
   SqlTableModel model;
   Ui::FollowUp *ui;
   // methods

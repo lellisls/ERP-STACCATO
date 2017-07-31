@@ -48,7 +48,7 @@ DataNode::~DataNode()
 
 DataNode*DataNode::addChild(const QString& name, DataNode::NodeType type, const QIcon& icon)
 {
-    DataNode* res = new DataNode(name,type,this,icon);
+    auto* res = new DataNode(name,type,this,icon);
     m_childs.push_back(res);
     return res;
 }
@@ -71,7 +71,7 @@ void DataNode::clear()
 
 
 DataSourceModel::DataSourceModel(DataSourceManager* dataManager)
-    :m_dataManager(0), m_rootNode(new DataNode())
+    :m_dataManager(nullptr), m_rootNode(new DataNode())
 {
     setDataSourceManager(dataManager);
 }
@@ -217,7 +217,7 @@ void DataSourceModel::updateModel()
 }
 
 DataSourceManager::DataSourceManager(QObject *parent) :
-    QObject(parent), m_lastError(""), m_designTime(true), m_needUpdate(false), m_dbCredentialsProvider(0)
+    QObject(parent), m_lastError(""), m_designTime(true), m_needUpdate(false), m_dbCredentialsProvider(nullptr)
 {
     m_groupFunctionFactory.registerFunctionCreator(QLatin1String("COUNT"),new ConstructorGroupFunctionCreator<CountGroupFunction>);
     m_groupFunctionFactory.registerFunctionCreator(QLatin1String("SUM"),new ConstructorGroupFunctionCreator<SumGroupFunction>);
@@ -295,7 +295,7 @@ bool DataSourceManager::addModel(const QString &name, QAbstractItemModel *model,
 {
     if (m_datasources.contains(name.toLower()))
         removeDatasource(name.toLower());
-    ModelHolder* mh = new ModelHolder(model,owned);
+    auto* mh = new ModelHolder(model,owned);
     try{
         putHolder(name, mh);
         connect(mh, SIGNAL(modelStateChanged()), this, SIGNAL(datasourcesChanged()));
@@ -345,7 +345,7 @@ QSharedPointer<QAbstractItemModel>DataSourceManager::previewSQL(const QString &c
 
     if (db.isValid() && db.isOpen()){
 
-        QSqlQueryModel* model = new QSqlQueryModel();
+        auto* model = new QSqlQueryModel();
         QMap<QString,QString> aliasesToParam;
         QString queryText = replaceVariables(sqlText,aliasesToParam);
         queryText = replaceFields(queryText,aliasesToParam,masterDatasource);
@@ -371,13 +371,13 @@ QSharedPointer<QAbstractItemModel>DataSourceManager::previewSQL(const QString &c
         if (model->query().isActive())
             return QSharedPointer<QAbstractItemModel>(model);
         else
-            return QSharedPointer<QAbstractItemModel>(0);
+            return QSharedPointer<QAbstractItemModel>(nullptr);
     }
     if (!db.isOpen()){
-        m_lastError = tr("Connection \"%1\" is not open").arg(connectionName);
+        m_lastError = tr(R"(Connection "%1" is not open)").arg(connectionName);
         putError(m_lastError);
     }
-    return QSharedPointer<QAbstractItemModel>(0);
+    return QSharedPointer<QAbstractItemModel>(nullptr);
 }
 
 void DataSourceManager::updateDatasourceModel()
@@ -407,7 +407,7 @@ QString DataSourceManager::replaceVariables(QString value){
             if (variable(var).isValid()){
                 value.replace(pos,rx.cap(0).length(),variable(var).toString());
             } else {
-                value.replace(pos,rx.cap(0).length(),QString(tr("Variable \"%1\" not found!").arg(var)));
+                value.replace(pos,rx.cap(0).length(),QString(tr(R"(Variable "%1" not found!)").arg(var)));
             }
         }
     }
@@ -496,7 +496,7 @@ void DataSourceManager::addSubQuery(const QString &name, const QString &sqlText,
 
 void DataSourceManager::addProxy(const QString &name, QString master, QString detail, QList<FieldsCorrelation> fields)
 {
-    ProxyDesc *proxyDesc = new ProxyDesc();
+    auto *proxyDesc = new ProxyDesc();
     proxyDesc->setName(name);
     proxyDesc->setMaster(master);
     proxyDesc->setDetail(detail);
@@ -519,21 +519,21 @@ QueryDesc *DataSourceManager::queryByName(const QString &dataSourceName)
 {
     int queryIndex = queryIndexByName(dataSourceName);
     if (queryIndex!=-1) return m_queries.at(queryIndex);
-    return 0;
+    return nullptr;
 }
 
 SubQueryDesc* DataSourceManager::subQueryByName(const QString &dataSourceName)
 {
     int queryIndex = subQueryIndexByName(dataSourceName);
     if (queryIndex!=-1) return m_subqueries.at(queryIndex);
-    return 0;
+    return nullptr;
 }
 
 ConnectionDesc* DataSourceManager::connectionByName(const QString &connectionName)
 {
     int queryIndex = connectionIndexByName(connectionName);
     if (queryIndex!=-1) return m_connections.at(queryIndex);
-    return 0;
+    return nullptr;
 }
 
 int DataSourceManager::queryIndexByName(const QString &dataSourceName)
@@ -580,7 +580,7 @@ QList<ConnectionDesc *>& DataSourceManager::conections()
 bool DataSourceManager::dataSourceIsValid(const QString &name)
 {
     if (m_datasources.value(name.toLower())) return !m_datasources.value(name.toLower())->isInvalid();
-    else throw ReportError(tr("Datasource \"%1\" not found !").arg(name));
+    else throw ReportError(tr(R"(Datasource "%1" not found !)").arg(name));
 }
 
 bool DataSourceManager::isQuery(const QString &dataSourceName)
@@ -599,7 +599,7 @@ ProxyDesc *DataSourceManager::proxyByName(QString datasourceName)
 {
     int proxyIndex = proxyIndexByName(datasourceName);
     if (proxyIndex>-1) return m_proxies.at(proxyIndex);
-    else return 0;
+    else return nullptr;
 }
 
 void DataSourceManager::removeDatasource(const QString &name)
@@ -660,7 +660,7 @@ void DataSourceManager::addConnectionDesc(ConnectionDesc * connection)
             }
         }
     } else {
-       throw ReportError(tr("connection with name \"%1\" already exists !").arg(connection->name()));
+       throw ReportError(tr(R"(connection with name "%1" already exists !)").arg(connection->name()));
     }
 }
 
@@ -685,7 +685,7 @@ void DataSourceManager::putHolder(const QString& name, IDataSourceHolder *dataSo
             name.toLower(),
             dataSource
         );
-    } else throw ReportError(tr("datasource with name \"%1\" already exists !").arg(name));
+    } else throw ReportError(tr(R"(datasource with name "%1" already exists !)").arg(name));
 }
 
 void DataSourceManager::putQueryDesc(QueryDesc* queryDesc)
@@ -694,7 +694,7 @@ void DataSourceManager::putQueryDesc(QueryDesc* queryDesc)
         m_queries.append(queryDesc);
         connect(queryDesc, SIGNAL(queryTextChanged(QString,QString)),
                 this, SLOT(slotQueryTextChanged(QString,QString)));
-    } else throw ReportError(tr("datasource with name \"%1\" already exists !").arg(queryDesc->queryName()));
+    } else throw ReportError(tr(R"(datasource with name "%1" already exists !)").arg(queryDesc->queryName()));
 }
 
 void DataSourceManager::putSubQueryDesc(SubQueryDesc *subQueryDesc)
@@ -703,14 +703,14 @@ void DataSourceManager::putSubQueryDesc(SubQueryDesc *subQueryDesc)
         m_subqueries.append(subQueryDesc);
         connect(subQueryDesc, SIGNAL(queryTextChanged(QString,QString)),
                 this, SLOT(slotQueryTextChanged(QString,QString)));
-    } else throw ReportError(tr("datasource with name \"%1\" already exists !").arg(subQueryDesc->queryName()));
+    } else throw ReportError(tr(R"(datasource with name "%1" already exists !)").arg(subQueryDesc->queryName()));
 }
 
 void DataSourceManager::putProxyDesc(ProxyDesc *proxyDesc)
 {
     if (!containsDatasource(proxyDesc->name())){
         m_proxies.append(proxyDesc);
-    } else throw ReportError(tr("datasource with name \"%1\" already exists !").arg(proxyDesc->name()));
+    } else throw ReportError(tr(R"(datasource with name "%1" already exists !)").arg(proxyDesc->name()));
 }
 
 bool DataSourceManager::initAndOpenDB(QSqlDatabase& db, ConnectionDesc& connectionDesc){
@@ -739,7 +739,7 @@ bool DataSourceManager::initAndOpenDB(QSqlDatabase& db, ConnectionDesc& connecti
         if (QFileInfo(dbName).exists()){
             db.setDatabaseName(dbName);
         } else {
-            setLastError(tr("Database \"%1\" not found").arg(dbName));
+            setLastError(tr(R"(Database "%1" not found)").arg(dbName));
             return false;
         }
     } else {
@@ -937,20 +937,20 @@ IDataSource *DataSourceManager::dataSource(const QString &name)
     if (holder) {
         if (holder->isInvalid()) {
             setLastError(name+" : "+holder->lastError());
-            return 0;
+            return nullptr;
         } else {
             return holder->dataSource(designTime()?IDataSource::DESIGN_MODE:IDataSource::RENDER_MODE);
         }
     } else {
-        setLastError(tr("Datasource \"%1\" not found !").arg(name));
-        return 0;
+        setLastError(tr(R"(Datasource "%1" not found !)").arg(name));
+        return nullptr;
     }
 }
 
 IDataSourceHolder *DataSourceManager::dataSourceHolder(const QString &name)
 {
     if (m_datasources.value(name.toLower())) return m_datasources.value(name.toLower());
-    else return 0;
+    else return nullptr;
 }
 
 QStringList DataSourceManager::dataSourceNames()
@@ -1010,33 +1010,33 @@ void DataSourceManager::addConnection(const QString &connectionName)
 QObject *DataSourceManager::createElement(const QString& collectionName, const QString&)
 {
     if (collectionName=="connections"){
-        ConnectionDesc* connection = new ConnectionDesc;
+        auto* connection = new ConnectionDesc;
         m_connections.append(connection);
         return connection;
     }
     if (collectionName=="queries"){
-        QueryDesc* queryDesc = new QueryDesc;
+        auto* queryDesc = new QueryDesc;
         m_queries.append(queryDesc);
         return queryDesc;
     }
     if (collectionName=="subqueries"){
-        SubQueryDesc* subQueryDesc = new SubQueryDesc;
+        auto* subQueryDesc = new SubQueryDesc;
         m_subqueries.append(subQueryDesc);
         return subQueryDesc;
     }
     if (collectionName=="subproxies"){
-        ProxyDesc* proxyDesc = new ProxyDesc;
+        auto* proxyDesc = new ProxyDesc;
         m_proxies.append(proxyDesc);
         return proxyDesc;
     }
 
     if (collectionName=="variables"){
-        VarDesc* var = new VarDesc;
+        auto* var = new VarDesc;
         m_tempVars.append(var);
         return var;
     }
 
-    return 0;
+    return nullptr;
 }
 
 int DataSourceManager::elementsCount(const QString &collectionName)
@@ -1076,7 +1076,7 @@ QObject* DataSourceManager::elementAt(const QString &collectionName, int index)
     if (collectionName=="variables"){
         return m_reportVariables.userVariableAt(index);
     }
-    return 0;
+    return nullptr;
 }
 
 void DataSourceManager::collectionLoadFinished(const QString &collectionName)
@@ -1305,7 +1305,7 @@ GroupFunction *DataSourceManager::groupFunction(const QString &name, const QStri
             (gf->data().compare(expression,Qt::CaseInsensitive)==0)
            ) return gf;
     }
-    return 0;
+    return nullptr;
 }
 
 QList<GroupFunction *> DataSourceManager::groupFunctionsByBand(const QString &band)

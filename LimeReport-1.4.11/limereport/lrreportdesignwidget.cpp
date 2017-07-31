@@ -53,7 +53,7 @@ ReportDesignWidget::ReportDesignWidget(ReportEnginePrivate *report, QMainWindow 
 {
     m_tabWidget = new QTabWidget(this);
     m_tabWidget->setTabPosition(QTabWidget::South);
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    auto* mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_tabWidget);
     setLayout(mainLayout);
 
@@ -140,7 +140,7 @@ void ReportDesignWidget::loadState(QSettings* settings)
 
 void ReportDesignWidget::createTabs(){
     for (int i = 0; i<m_report->pageCount();++i){
-        QGraphicsView* view = new QGraphicsView(qobject_cast<QWidget*>(this));
+        auto* view = new QGraphicsView(qobject_cast<QWidget*>(this));
         view->setBackgroundBrush(QBrush(Qt::gray));
         view->setFrameShape(QFrame::NoFrame);
         view->setScene(m_report->pageAt(i));
@@ -233,7 +233,7 @@ PageDesignIntf * ReportDesignWidget::activePage()
 {
     if (activeView())
         return qobject_cast<PageDesignIntf*>(activeView()->scene());
-    return 0;
+    return nullptr;
 }
 
 QList<QGraphicsItem *> ReportDesignWidget::selectedItems(){
@@ -470,7 +470,7 @@ void ReportDesignWidget::printReport()
 
 void ReportDesignWidget::addPage()
 {
-    QGraphicsView* view = new QGraphicsView(qobject_cast<QWidget*>(this));
+    auto* view = new QGraphicsView(qobject_cast<QWidget*>(this));
     view->setBackgroundBrush(QBrush(Qt::gray));
     view->setFrameShape(QFrame::NoFrame);
     PageDesignIntf* page = m_report->appendPage("page"+QString::number(m_report->pageCount()+1));

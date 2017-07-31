@@ -183,7 +183,7 @@ Worksheet::Worksheet(const QString &name, int id, Workbook *workbook, CreateFlag
 
 Worksheet *Worksheet::copy(const QString &distName, int distId) const {
   Q_D(const Worksheet);
-  Worksheet *sheet = new Worksheet(distName, distId, d->workbook, F_NewFromScratch);
+  auto *sheet = new Worksheet(distName, distId, d->workbook, F_NewFromScratch);
   WorksheetPrivate *sheet_d = sheet->d_func();
 
   sheet_d->dimension = d->dimension;
@@ -508,7 +508,7 @@ QVariant Worksheet::read(int row, int column) const {
  * is no cell at the specified position, the function returns 0.
  */
 Cell *Worksheet::cellAt(const CellReference &row_column) const {
-  if (not row_column.isValid()) return 0;
+  if (not row_column.isValid()) return nullptr;
 
   return cellAt(row_column.row(), row_column.column());
 }
@@ -519,8 +519,8 @@ Cell *Worksheet::cellAt(const CellReference &row_column) const {
  */
 Cell *Worksheet::cellAt(int row, int column) const {
   Q_D(const Worksheet);
-  if (not d->cellTable.contains(row)) return 0;
-  if (not d->cellTable[row].contains(column)) return 0;
+  if (not d->cellTable.contains(row)) return nullptr;
+  if (not d->cellTable[row].contains(column)) return nullptr;
 
   return d->cellTable[row][column].data();
 }
@@ -908,8 +908,7 @@ bool Worksheet::addConditionalFormatting(const ConditionalFormatting &cf) {
   Q_D(Worksheet);
   if (cf.ranges().isEmpty()) return false;
 
-  for (int i = 0; i < cf.d->cfRules.size(); ++i) {
-    const QSharedPointer<XlsxCfRuleData> &rule = cf.d->cfRules[i];
+  for (const auto & rule : cf.d->cfRules) {
     if (not rule->dxfFormat.isEmpty()) d->workbook->styles()->addDxfFormat(rule->dxfFormat);
     rule->priority = 1;
   }
@@ -928,7 +927,7 @@ bool Worksheet::insertImage(int row, int column, const QImage &image) {
 
   if (not d->drawing) d->drawing = QSharedPointer<Drawing>(new Drawing(this, F_NewFromScratch));
 
-  DrawingOneCellAnchor *anchor = new DrawingOneCellAnchor(d->drawing.data(), DrawingAnchor::Picture);
+  auto *anchor = new DrawingOneCellAnchor(d->drawing.data(), DrawingAnchor::Picture);
 
   /*
       The size are expressed as English Metric Units (EMUs). There are
@@ -952,7 +951,7 @@ Chart *Worksheet::insertChart(int row, int column, const QSize &size) {
 
   if (not d->drawing) d->drawing = QSharedPointer<Drawing>(new Drawing(this, F_NewFromScratch));
 
-  DrawingOneCellAnchor *anchor = new DrawingOneCellAnchor(d->drawing.data(), DrawingAnchor::Picture);
+  auto *anchor = new DrawingOneCellAnchor(d->drawing.data(), DrawingAnchor::Picture);
 
   /*
       The size are expressed as English Metric Units (EMUs). There are

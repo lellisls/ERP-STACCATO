@@ -2,6 +2,7 @@
 #define CADASTROCLIENTE_H
 
 #include "registeraddressdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class CadastroCliente;
@@ -36,7 +37,9 @@ private slots:
 
 private:
   // attributes
+  bool incompleto = false;
   QString tipoPFPJ;
+  SearchDialog *sdCliente;
   Ui::CadastroCliente *ui;
   // methods
   bool cadastrarEndereco(const bool isUpdate = false);

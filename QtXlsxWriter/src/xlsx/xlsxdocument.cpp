@@ -88,8 +88,7 @@ QT_BEGIN_NAMESPACE_XLSX
 DocumentPrivate::DocumentPrivate(Document *p) : q_ptr(p), defaultPackageName(QStringLiteral("Book1.xlsx")) {}
 
 void DocumentPrivate::init() {
-  if (contentTypes.isNull())
-    contentTypes = QSharedPointer<ContentTypes>(new ContentTypes(ContentTypes::F_NewFromScratch));
+  if (contentTypes.isNull()) contentTypes = QSharedPointer<ContentTypes>(new ContentTypes(ContentTypes::F_NewFromScratch));
 
   if (workbook.isNull()) workbook = QSharedPointer<Workbook>(new Workbook(Workbook::F_NewFromScratch));
 }
@@ -156,8 +155,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device) {
   }
 
   // load sharedStrings
-  QList<XlsxRelationship> rels_sharedStrings =
-      workbook->relationships()->documentRelationships(QStringLiteral("/sharedStrings"));
+  QList<XlsxRelationship> rels_sharedStrings = workbook->relationships()->documentRelationships(QStringLiteral("/sharedStrings"));
   if (not rels_sharedStrings.isEmpty()) {
     // In normal case this should be sharedStrings.xml which in xl
     QString name = rels_sharedStrings[0].target;
@@ -196,22 +194,19 @@ bool DocumentPrivate::loadPackage(QIODevice *device) {
   for (int i = 0; i < workbook->drawings().size(); ++i) {
     Drawing *drawing = workbook->drawings()[i];
     QString rel_path = getRelFilePath(drawing->filePath());
-    if (zipReader.filePaths().contains(rel_path))
-      drawing->relationships()->loadFromXmlData(zipReader.fileData(rel_path));
+    if (zipReader.filePaths().contains(rel_path)) drawing->relationships()->loadFromXmlData(zipReader.fileData(rel_path));
     drawing->loadFromXmlData(zipReader.fileData(drawing->filePath()));
   }
 
   // load charts
   QList<QSharedPointer<Chart>> chartFileToLoad = workbook->chartFiles();
-  for (int i = 0; i < chartFileToLoad.size(); ++i) {
-    QSharedPointer<Chart> cf = chartFileToLoad[i];
+  for (auto cf : chartFileToLoad) {
     cf->loadFromXmlData(zipReader.fileData(cf->filePath()));
   }
 
   // load media files
   QList<QSharedPointer<MediaFile>> mediaFileToLoad = workbook->mediaFiles();
-  for (int i = 0; i < mediaFileToLoad.size(); ++i) {
-    QSharedPointer<MediaFile> mf = mediaFileToLoad[i];
+  for (auto mf : mediaFileToLoad) {
     const QString path = mf->fileName();
     const QString suffix = path.mid(path.lastIndexOf(QLatin1Char('.')) + 1);
     mf->set(zipReader.fileData(path), suffix);
@@ -280,9 +275,7 @@ bool DocumentPrivate::savePackage(QIODevice *device) const {
 
     zipWriter.addFile(QStringLiteral("xl/externalLinks/externalLink%1.xml").arg(i + 1), link->saveToXmlData());
     Relationships *rel = link->relationships();
-    if (not rel->isEmpty())
-      zipWriter.addFile(QStringLiteral("xl/externalLinks/_rels/externalLink%1.xml.rels").arg(i + 1),
-                        rel->saveToXmlData());
+    if (not rel->isEmpty()) zipWriter.addFile(QStringLiteral("xl/externalLinks/_rels/externalLink%1.xml.rels").arg(i + 1), rel->saveToXmlData());
   }
 
   // save workbook xml file
@@ -297,8 +290,7 @@ bool DocumentPrivate::savePackage(QIODevice *device) const {
     Drawing *drawing = workbook->drawings()[i];
     zipWriter.addFile(QStringLiteral("xl/drawings/drawing%1.xml").arg(i + 1), drawing->saveToXmlData());
     if (not drawing->relationships()->isEmpty())
-      zipWriter.addFile(QStringLiteral("xl/drawings/_rels/drawing%1.xml.rels").arg(i + 1),
-                        drawing->relationships()->saveToXmlData());
+      zipWriter.addFile(QStringLiteral("xl/drawings/_rels/drawing%1.xml.rels").arg(i + 1), drawing->relationships()->saveToXmlData());
   }
 
   // save docProps app/core xml file
@@ -447,7 +439,7 @@ bool Document::insertImage(int row, int column, const QImage &image) {
  */
 Chart *Document::insertChart(int row, int col, const QSize &size) {
   if (Worksheet *sheet = currentWorksheet()) return sheet->insertChart(row, col, size);
-  return 0;
+  return nullptr;
 }
 
 /*!
@@ -698,7 +690,7 @@ bool Document::addConditionalFormatting(const ConditionalFormatting &cf) {
  */
 Cell *Document::cellAt(const CellReference &pos) const {
   if (Worksheet *sheet = currentWorksheet()) return sheet->cellAt(pos);
-  return 0;
+  return nullptr;
 }
 
 /*!
@@ -709,7 +701,7 @@ Cell *Document::cellAt(const CellReference &pos) const {
  */
 Cell *Document::cellAt(int row, int col) const {
   if (Worksheet *sheet = currentWorksheet()) return sheet->cellAt(row, col);
-  return 0;
+  return nullptr;
 }
 
 /*!
@@ -871,7 +863,7 @@ Worksheet *Document::currentWorksheet() const {
   if (st and st->sheetType() == AbstractSheet::ST_WorkSheet)
     return static_cast<Worksheet *>(st);
   else
-    return 0;
+    return nullptr;
 }
 
 /*!
@@ -911,7 +903,7 @@ bool Document::saveAs(const QString &name) const {
   QFile file(name);
 
   if (not file.open(QIODevice::WriteOnly)) {
-    QMessageBox::critical(0, "Erro!", "Erro abrindo arquivo: " + file.errorString());
+    QMessageBox::critical(nullptr, "Erro!", "Erro abrindo arquivo: " + file.errorString());
     return false;
   }
 

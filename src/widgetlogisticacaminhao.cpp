@@ -1,13 +1,11 @@
 #include <QMessageBox>
 #include <QSqlError>
 
+#include "doubledelegate.h"
 #include "ui_widgetlogisticacaminhao.h"
 #include "widgetlogisticacaminhao.h"
 
-WidgetLogisticaCaminhao::WidgetLogisticaCaminhao(QWidget *parent)
-    : QWidget(parent), ui(new Ui::WidgetLogisticaCaminhao) {
-  ui->setupUi(this);
-}
+WidgetLogisticaCaminhao::WidgetLogisticaCaminhao(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaCaminhao) { ui->setupUi(this); }
 
 WidgetLogisticaCaminhao::~WidgetLogisticaCaminhao() { delete ui; }
 
@@ -22,22 +20,10 @@ void WidgetLogisticaCaminhao::setupTables() {
   ui->table->setModel(&modelCaminhao);
   ui->table->hideColumn("idVeiculo");
 
-  modelCarga.setTable("veiculo_has_produto");
+  modelCarga.setTable("view_caminhao_resumo");
   modelCarga.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   modelCarga.setHeaderData("data", "Data");
-  modelCarga.setHeaderData("idVenda", "Venda");
-  modelCarga.setHeaderData("status", "Status");
-  modelCarga.setHeaderData("idNfeSaida", "NFe");
-  modelCarga.setHeaderData("fornecedor", "Fornecedor");
-  modelCarga.setHeaderData("produto", "Produto");
-  modelCarga.setHeaderData("obs", "Obs.");
-  modelCarga.setHeaderData("caixas", "Caixas");
-  modelCarga.setHeaderData("quant", "Quant.");
-  modelCarga.setHeaderData("un", "Un.");
-  modelCarga.setHeaderData("unCaixa", "Un./Cx.");
-  modelCarga.setHeaderData("codComercial", "Cód. Com.");
-  modelCarga.setHeaderData("formComercial", "Form. Com.");
 
   modelCarga.setFilter("0");
 
@@ -46,14 +32,8 @@ void WidgetLogisticaCaminhao::setupTables() {
   }
 
   ui->tableCarga->setModel(&modelCarga);
-  ui->tableCarga->hideColumn("id");
-  ui->tableCarga->hideColumn("idEvento");
   ui->tableCarga->hideColumn("idVeiculo");
-  ui->tableCarga->hideColumn("idEstoque");
-  ui->tableCarga->hideColumn("idVendaProduto");
-  ui->tableCarga->hideColumn("idCompra");
-  ui->tableCarga->hideColumn("idLoja");
-  ui->tableCarga->hideColumn("idProduto");
+  ui->tableCarga->setItemDelegateForColumn("Kg", new DoubleDelegate(this));
 }
 
 bool WidgetLogisticaCaminhao::updateTables() {

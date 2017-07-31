@@ -13,7 +13,7 @@ class WidgetPagamento : public QWidget {
   Q_OBJECT
 
 public:
-  enum Tipo { Receber, Pagar };
+  enum class Tipo { Nulo, Receber, Pagar };
   explicit WidgetPagamento(QWidget *parent = 0);
   ~WidgetPagamento();
   bool updateTables();
@@ -27,7 +27,9 @@ private slots:
   void on_doubleSpinBoxDe_valueChanged(const double value);
   void on_groupBoxData_toggled(const bool enabled);
   void on_pushButtonAdiantarRecebimento_clicked();
+  void on_pushButtonExcluirLancamento_clicked();
   void on_pushButtonInserirLancamento_clicked();
+  void on_pushButtonInserirTransferencia_clicked();
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
   void on_tableVencer_doubleClicked(const QModelIndex &index);
@@ -40,7 +42,7 @@ private:
   SqlTableModel model;
   QSqlQueryModel modelVencidos;
   QSqlQueryModel modelVencer;
-  Tipo tipo;
+  Tipo tipo = Tipo::Nulo;
   Ui::WidgetPagamento *ui;
   // methods
   void makeConnections();

@@ -56,7 +56,7 @@ PageItemDesignIntf::Ptr PreviewReportWidgetPrivate::currentPage()
 {
     if (m_reportPages.count()>0 && m_reportPages.count()>=m_currentPage)
         return m_reportPages.at(m_currentPage-1);
-    else return PageItemDesignIntf::Ptr(0);
+    else return PageItemDesignIntf::Ptr(nullptr);
 }
 
 PreviewReportWidget::PreviewReportWidget(ReportEnginePrivate *report, QWidget *parent) :
@@ -78,7 +78,7 @@ PreviewReportWidget::PreviewReportWidget(ReportEnginePrivate *report, QWidget *p
 PreviewReportWidget::~PreviewReportWidget()
 {
     delete d_ptr->m_previewPage;
-    d_ptr->m_previewPage = 0;
+    d_ptr->m_previewPage = nullptr;
     delete d_ptr->m_zoomer;
     delete d_ptr;
     delete ui;
@@ -295,7 +295,7 @@ void PreviewReportWidget::slotSliderMoved(int value)
 void PreviewReportWidget::reportEngineDestroyed(QObject *object)
 {
     if (object == d_ptr->m_report){
-        d_ptr->m_report = 0;
+        d_ptr->m_report = nullptr;
     }
 }
 

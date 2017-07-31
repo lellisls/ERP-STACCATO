@@ -54,8 +54,8 @@ void ReportSettings::setSuppressAbsentFieldsAndVarsWarnings(bool suppressAbsentF
 QString escapeSimbols(const QString &value)
 {
     QString result = value;
-    result.replace("\"","\\\"");
-    result.replace('\n',"\\n");
+    result.replace(R"(")",R"(\")");
+    result.replace('\n',R"(\n)");
     return result;
 }
 

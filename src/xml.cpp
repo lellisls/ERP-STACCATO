@@ -2,9 +2,7 @@
 
 #include "xml.h"
 
-XML::XML(const QByteArray &fileContent, const QString &fileName) : fileContent(fileContent), fileName(fileName) {
-  montarArvore(model);
-}
+XML::XML(const QByteArray &fileContent, const QString &fileName) : fileContent(fileContent), fileName(fileName) { montarArvore(model); }
 
 void XML::readChild(QDomElement &element, QStandardItem *elementItem) {
   QDomElement child = element.firstChildElement();
@@ -21,11 +19,11 @@ void XML::readChild(QDomElement &element, QStandardItem *elementItem) {
 
     if (map.size() > 0) {
       for (int i = 0; i < map.size(); ++i) {
-        attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+        attributes += " " + map.item(i).nodeName() + R"(=")" + map.item(i).nodeValue() + R"(")";
       }
     }
 
-    QStandardItem *childItem = new QStandardItem(attributes);
+    auto *childItem = new QStandardItem(attributes);
     elementItem->appendRow(childItem);
     readChild(child, childItem);
   }
@@ -60,7 +58,7 @@ void XML::lerValores(const QStandardItem *item) {
 void XML::lerDadosProduto(const QStandardItem *child) {
   QString text = child->text();
 
-  if (text.mid(0, 10) == "det nItem=") itemNumero = text.right(text.size() - 10).remove("\"").toInt();
+  if (text.mid(0, 10) == "det nItem=") itemNumero = text.right(text.size() - 10).remove(R"(")").toInt();
 
   if (child->parent()->text() == "prod") {
     if (text.left(7) == "cProd -") codProd = text.remove(0, 8);
@@ -77,7 +75,7 @@ void XML::lerDadosProduto(const QStandardItem *child) {
     if (text.left(7) == "qTrib -") quantTrib = text.remove(0, 8).toDouble();
     if (text.left(9) == "vUnTrib -") valorTrib = text.remove(0, 10).toDouble();
     if (text.left(7) == "vDesc -") desconto = text.remove(0, 8).toDouble();
-    if (text.left(8) == "indTot -") compoeTotal = text.remove(0, 9).toInt();
+    if (text.left(8) == "indTot -") compoeTotal = static_cast<bool>(text.remove(0, 9).toInt());
     if (text.left(6) == "xPed -") numeroPedido = text.remove(0, 7);
     if (text.left(10) == "nItemPed -") itemPedido = text.remove(0, 11).toInt();
   }
@@ -163,7 +161,7 @@ void XML::montarArvore(QStandardItemModel &model) {
   QString error;
 
   if (not document.setContent(fileContent, &error)) {
-    QMessageBox::critical(0, "Erro!", "Erro lendo arquivo: " + error);
+    QMessageBox::critical(nullptr, "Erro!", "Erro lendo arquivo: " + error);
     return;
   }
 
@@ -173,11 +171,11 @@ void XML::montarArvore(QStandardItemModel &model) {
 
   if (map.size() > 0) {
     for (int i = 0; i < map.size(); ++i) {
-      attributes += " " + map.item(i).nodeName() + "=\"" + map.item(i).nodeValue() + "\"";
+      attributes += " " + map.item(i).nodeName() + R"(=")" + map.item(i).nodeValue() + R"(")";
     }
   }
 
-  QStandardItem *rootItem = new QStandardItem(attributes);
+  auto *rootItem = new QStandardItem(attributes);
 
   model.appendRow(rootItem);
 

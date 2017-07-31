@@ -13,6 +13,7 @@ class RegisterDialog : public QDialog {
 public:
   explicit RegisterDialog(const QString &table, const QString &primaryKey, QWidget *parent);
   virtual bool viewRegister();
+  static QVariant getLastInsertId();
 
 public slots:
   virtual bool viewRegisterById(const QVariant &id);
@@ -25,12 +26,10 @@ signals:
 
 protected:
   // attributes
-  bool incompleto = false;
   bool isDirty = false;
   bool isUpdate = false;
-  bool silent = false;
-  int row = -1;
-  int rowEnd = -1;
+  int currentRow = -1;
+  int currentRowEnd = -1;
   QDataWidgetMapper mapper;
   QString primaryId;
   QString primaryKey;
@@ -39,7 +38,6 @@ protected:
   // methods
   bool confirmationMessage();
   bool setData(const QString &key, const QVariant &value);
-  bool update();
   bool validaCNPJ(const QString &text);
   bool validaCPF(const QString &text);
   bool verifyFields(const QList<QLineEdit *> &list);
@@ -64,7 +62,6 @@ protected:
   void keyPressEvent(QKeyEvent *event) override;
   void remove();
   void setTextKeys(const QStringList &value);
-  QVariant getLastInsertId();
 };
 
 #endif // REGISTERDIALOG_H

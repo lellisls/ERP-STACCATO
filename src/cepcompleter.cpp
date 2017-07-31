@@ -5,10 +5,6 @@
 
 #include "cepcompleter.h"
 
-CepCompleter::CepCompleter() {}
-
-CepCompleter::~CepCompleter() {}
-
 bool CepCompleter::buscaCEP(const QString &cep) {
   QSqlQuery query;
   query.prepare("SELECT log_logradouro.log_tipo_logradouro, log_logradouro.log_no AS logradouro, log_bairro.bai_no AS "
@@ -19,7 +15,7 @@ bool CepCompleter::buscaCEP(const QString &cep) {
   query.bindValue(":cep", QString(cep).remove("-"));
 
   if (not query.exec()) {
-    QMessageBox::critical(0, "Erro!", "Erro na busca pelo cep: " + query.lastError().text());
+    QMessageBox::critical(nullptr, "Erro!", "Erro na busca pelo cep: " + query.lastError().text());
     return false;
   }
 

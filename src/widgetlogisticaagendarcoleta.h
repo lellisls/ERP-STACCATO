@@ -47,7 +47,7 @@ private:
   Ui::WidgetLogisticaAgendarColeta *ui;
   // methods
   bool adicionarProduto(const QModelIndexList &list);
-  bool processRows(const QModelIndexList &list, const QDateTime &dataPrevColeta, const bool montarCarga = false);
+  bool processRows(const QModelIndexList &list, const QDate &dataPrevColeta, const bool montarCarga = false);
   void setupTables();
 };
 

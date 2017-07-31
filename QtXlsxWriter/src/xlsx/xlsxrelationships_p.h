@@ -52,7 +52,7 @@ struct XlsxRelationship {
 
 class XLSX_AUTOTEST_EXPORT Relationships {
 public:
-  Relationships();
+  Relationships() = default;
 
   QList<XlsxRelationship> documentRelationships(const QString &relativeType) const;
   QList<XlsxRelationship> packageRelationships(const QString &relativeType) const;
@@ -62,8 +62,7 @@ public:
   void addDocumentRelationship(const QString &relativeType, const QString &target);
   void addPackageRelationship(const QString &relativeType, const QString &target);
   void addMsPackageRelationship(const QString &relativeType, const QString &target);
-  void addWorksheetRelationship(const QString &relativeType, const QString &target,
-                                const QString &targetMode = QString());
+  void addWorksheetRelationship(const QString &relativeType, const QString &target, const QString &targetMode = QString());
 
   void saveToXmlFile(QIODevice *device) const;
   QByteArray saveToXmlData() const;

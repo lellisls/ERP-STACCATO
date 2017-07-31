@@ -77,25 +77,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QSpinBox" name="spinBoxCaixas">
-           <property name="maximumSize">
-            <size>
-             <width>55</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="correctionMode">
-            <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-           </property>
-           <property name="maximum">
-            <number>9999</number>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="4">
           <widget class="QLineEdit" name="lineEditUn">
            <property name="sizePolicy">
@@ -222,6 +203,22 @@
            </property>
            <property name="maximum">
             <double>9999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxCaixas">
+           <property name="maximumSize">
+            <size>
+             <width>55</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade de caixas&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="correctionMode">
+            <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
            </property>
           </widget>
          </item>

@@ -113,6 +113,13 @@
       </widget>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Transferencia</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -295,15 +302,15 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>WidgetOrcamento</class>
-   <extends>QWidget</extends>
-   <header>src/widgetorcamento.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>WidgetVenda</class>
    <extends>QWidget</extends>
    <header>src/widgetvenda.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetOrcamento</class>
+   <extends>QWidget</extends>
+   <header>src/widgetorcamento.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

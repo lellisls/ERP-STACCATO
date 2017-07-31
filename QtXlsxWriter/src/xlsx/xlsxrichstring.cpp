@@ -34,10 +34,7 @@ QT_BEGIN_NAMESPACE_XLSX
 RichStringPrivate::RichStringPrivate() : _dirty(true) {}
 
 RichStringPrivate::RichStringPrivate(const RichStringPrivate &other)
-    : QSharedData(other), fragmentTexts(other.fragmentTexts), fragmentFormats(other.fragmentFormats),
-      _idKey(other.idKey()), _dirty(other._dirty) {}
-
-RichStringPrivate::~RichStringPrivate() {}
+    : QSharedData(other), fragmentTexts(other.fragmentTexts), fragmentFormats(other.fragmentFormats), _idKey(other.idKey()), _dirty(other._dirty) {}
 
 /*!
     \class RichString

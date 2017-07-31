@@ -2,6 +2,7 @@
 #define CADASTROFORNECEDOR_H
 
 #include "registeraddressdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class CadastroFornecedor;
@@ -33,6 +34,7 @@ private slots:
 private:
   // attributes
   QString error;
+  SearchDialog *sdFornecedor;
   Ui::CadastroFornecedor *ui;
   // methods
   bool ajustarValidade(const int newValidade);

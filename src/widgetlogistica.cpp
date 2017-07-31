@@ -124,3 +124,5 @@ void WidgetLogistica::on_tabWidgetLogistica_currentChanged(const int) { updateTa
 
 // NOTE: tela para guardar imagens (fotos/documentos scaneados)
 // NOTE: 1followup das entregas (no lugar de followup colocar campo observacao no inputDialog?)
+// TODO: colocar aba para fazer cotacao frete, puxar os orcamentos abertos com o peso das caixas para calcular frete
+// TODO: verificar nos cancelamentos se estou removendo as datas/previsoes corretamente

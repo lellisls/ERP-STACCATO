@@ -2,6 +2,7 @@
 #define CADASTROPRODUTO_H
 
 #include "registerdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class CadastroProduto;
@@ -25,6 +26,7 @@ private slots:
 private:
   // attributes
   QString error;
+  SearchDialog *sdProduto;
   Ui::CadastroProduto *ui;
   // methods
   virtual bool save() override;

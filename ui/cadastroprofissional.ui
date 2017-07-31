@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1183</width>
-    <height>728</height>
+    <width>1286</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_21">
           <item row="1" column="0">
-           <widget class="QTableView" name="tableEndereco">
+           <widget class="TableView" name="tableEndereco">
             <property name="mouseTracking">
              <bool>true</bool>
             </property>
@@ -1033,6 +1033,11 @@ color: rgb(0, 0, 0);</string>
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>src/tableview.h</header>
+  </customwidget>
   <customwidget>
    <class>ItemBox</class>
    <extends>QLineEdit</extends>

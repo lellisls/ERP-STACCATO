@@ -54,36 +54,28 @@ void WidgetVenda::montaFiltro() {
   if (financeiro) {
     for (auto const &child : ui->groupBoxStatusFinanceiro->findChildren<QCheckBox *>()) {
       if (child->isChecked()) {
-        filtroCheck += filtroCheck.isEmpty() ? "statusFinanceiro = '" + child->text().toUpper() + "'"
-                                             : " OR statusFinanceiro = '" + child->text().toUpper() + "'";
+        filtroCheck += filtroCheck.isEmpty() ? "statusFinanceiro = '" + child->text().toUpper() + "'" : " OR statusFinanceiro = '" + child->text().toUpper() + "'";
       }
     }
   } else {
     for (auto const &child : ui->groupBoxStatus->findChildren<QCheckBox *>()) {
       if (child->isChecked()) {
-        filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'"
-                                             : " OR status = '" + child->text().toUpper() + "'";
+        filtroCheck += filtroCheck.isEmpty() ? "status = '" + child->text().toUpper() + "'" : " OR status = '" + child->text().toUpper() + "'";
       }
     }
   }
 
   filtroCheck = filtroCheck.isEmpty() ? "" : " AND (" + filtroCheck + ")";
 
-  const QString filtroData =
-      ui->groupBoxMes->isChecked()
-          ? " AND DATE_FORMAT(Data, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'"
-          : "";
+  const QString filtroData = ui->groupBoxMes->isChecked() ? " AND DATE_FORMAT(Data, '%Y-%m') = '" + ui->dateEdit->date().toString("yyyy-MM") + "'" : "";
 
-  const QString filtroVendedor = ui->comboBoxVendedores->currentText().isEmpty()
-                                     ? ""
-                                     : " AND idUsuario = " + ui->comboBoxVendedores->getCurrentValue().toString();
+  const QString filtroVendedor = ui->comboBoxVendedores->currentText().isEmpty() ? "" : " AND idUsuario = " + ui->comboBoxVendedores->getCurrentValue().toString();
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  const QString filtroBusca = textoBusca.isEmpty() ? ""
-                                                   : " AND (Código LIKE '%" + textoBusca + "%' OR Vendedor LIKE '%" +
-                                                         textoBusca + "%' OR Cliente LIKE '%" + textoBusca +
-                                                         "%' OR Profissional LIKE '%" + textoBusca + "%')";
+  const QString filtroBusca =
+      textoBusca.isEmpty() ? ""
+                           : " AND (Código LIKE '%" + textoBusca + "%' OR Vendedor LIKE '%" + textoBusca + "%' OR Cliente LIKE '%" + textoBusca + "%' OR Profissional LIKE '%" + textoBusca + "%')";
 
   model.setFilter(filtroLoja + filtroData + filtroVendedor + filtroRadio + filtroCheck + filtroBusca);
 
@@ -109,8 +101,7 @@ void WidgetVenda::setPermissions() {
   if (UserSession::tipoUsuario() == "GERENTE LOJA") {
     ui->groupBoxLojas->hide();
 
-    QSqlQuery query("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND idLoja = " +
-                    QString::number(UserSession::idLoja()));
+    QSqlQuery query("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND idLoja = " + QString::number(UserSession::idLoja()));
 
     ui->comboBoxVendedores->addItem("");
 
@@ -174,7 +165,7 @@ bool WidgetVenda::updateTables() {
 }
 
 void WidgetVenda::on_table_activated(const QModelIndex &index) {
-  Venda *vendas = new Venda(this);
+  auto *vendas = new Venda(this);
   vendas->setAttribute(Qt::WA_DeleteOnClose);
   if (financeiro) vendas->setFinanceiro();
   vendas->viewRegisterById(model.data(index.row(), "Código"));
@@ -190,9 +181,7 @@ void WidgetVenda::on_comboBoxLojas_currentIndexChanged(const int) {
   ui->comboBoxVendedores->clear();
 
   QSqlQuery query2("SELECT idUsuario, user FROM usuario WHERE desativado = FALSE AND tipo = 'VENDEDOR'" +
-                   (ui->comboBoxLojas->currentText().isEmpty()
-                        ? ""
-                        : " AND idLoja = " + ui->comboBoxLojas->getCurrentValue().toString()));
+                   (ui->comboBoxLojas->currentText().isEmpty() ? "" : " AND idLoja = " + ui->comboBoxLojas->getCurrentValue().toString()));
 
   ui->comboBoxVendedores->addItem("");
 

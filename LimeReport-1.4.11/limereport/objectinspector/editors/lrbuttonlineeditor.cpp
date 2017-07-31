@@ -50,7 +50,7 @@ ButtonLineEditor::ButtonLineEditor(const QString &propertyName, QWidget *parent)
     m_buttonEdit->installEventFilter(this);
     m_buttonEdit->setAttribute(Qt::WA_Hover);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->addWidget(m_lineEdit);
     layout->addWidget(m_buttonEdit);
     layout->setContentsMargins(1,1,1,1);
@@ -64,7 +64,7 @@ ButtonLineEditor::~ButtonLineEditor(){}
 
 void ButtonLineEditor::editButtonClicked()
 {
-    TextItemPropertyEditor* editor = new TextItemPropertyEditor(QApplication::activeWindow());
+    auto* editor = new TextItemPropertyEditor(QApplication::activeWindow());
     editor->setAttribute(Qt::WA_DeleteOnClose);
     editor->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, editor->size(), QApplication::desktop()->availableGeometry()));
     editor->setWindowTitle(m_propertyName);

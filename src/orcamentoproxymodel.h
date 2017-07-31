@@ -9,7 +9,7 @@ class OrcamentoProxyModel : public QIdentityProxyModel {
 
 public:
   explicit OrcamentoProxyModel(SqlTableModel *model, QObject *parent);
-  ~OrcamentoProxyModel();
+  ~OrcamentoProxyModel() = default;
   QVariant data(const QModelIndex &proxyIndex, const int role) const override;
 
 private:

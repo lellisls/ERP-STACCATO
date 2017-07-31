@@ -53,7 +53,7 @@ VariablesHolder::~VariablesHolder()
 void VariablesHolder::addVariable(const QString& name, const QVariant& value, VarDesc::VarType type, RenderPass pass)
 {
     if (!m_varNames.contains(name)){
-        VarDesc* varValue = new VarDesc;
+        auto* varValue = new VarDesc;
         varValue->setName(name);
         varValue->setValue(value);
         varValue->setVarType(type);

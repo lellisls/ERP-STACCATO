@@ -54,7 +54,7 @@ CheckBoxEditor::~CheckBoxEditor(){}
 
 void CheckBoxEditor::init()
 {    
-    QVBoxLayout *layout=new QVBoxLayout(this);
+    auto *layout=new QVBoxLayout(this);
     layout->addStretch();
     layout->addWidget(m_checkBox);
 #ifdef HAVE_QT5

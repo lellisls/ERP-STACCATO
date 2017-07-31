@@ -13,12 +13,13 @@ class InputDialog : public QDialog {
   Q_OBJECT
 
 public:
-  enum Type { Carrinho, Faturamento, AgendarColeta, Coleta, AgendarRecebimento, AgendarEntrega };
+  enum Type { Carrinho, Faturamento, AgendarColeta, Coleta, AgendarRecebimento, AgendarEntrega, ReagendarPedido };
 
   explicit InputDialog(const Type &type, QWidget *parent = 0);
   ~InputDialog();
-  QDateTime getDate() const;
-  QDateTime getNextDate() const;
+  QDate getDate() const;
+  QDate getNextDate() const;
+  QString getObservacao() const;
 
 private slots:
   void on_dateEditEvento_dateChanged(const QDate &date);

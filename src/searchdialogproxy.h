@@ -9,7 +9,7 @@ class SearchDialogProxy : public QIdentityProxyModel {
 
 public:
   SearchDialogProxy(SqlTableModel *model, QObject *parent = 0);
-  ~SearchDialogProxy();
+  ~SearchDialogProxy() = default;
   QVariant data(const QModelIndex &proxyIndex, int role) const override;
 
 private:

@@ -72,7 +72,7 @@
  * \endlist
  */
 
-/*! \fn QSimpleUpdater::checkingFinished (void)
+/*! \fn QSimpleUpdater::checkingFinished ()
  * This signal is triggered when the updater system finishes downloading
  * and proccessing the version data and changelog data.
  */
@@ -84,8 +84,7 @@
  */
 
 QSimpleUpdater::QSimpleUpdater(QObject *parent)
-    : QObject(parent), m_silent(false), m_show_newest_version(true), m_show_update_available(true),
-      m_new_version_available(false) {
+    : QObject(parent), m_silent(false), m_show_newest_version(true), m_show_update_available(true), m_new_version_available(false) {
 
   m_progressDialog = new ProgressDialog();
   m_downloadDialog = new DownloadDialog();
@@ -115,7 +114,7 @@ QString QSimpleUpdater::changeLog() const { return m_changelog; }
  * \sa setDownloadUrl(), setReferenceUrl()
  */
 
-void QSimpleUpdater::checkForUpdates(void) {
+void QSimpleUpdater::checkForUpdates() {
   if (m_reference_url.isEmpty()) {
     qDebug() << "QSimpleUpdater: Invalid reference URL";
     return;
@@ -132,7 +131,7 @@ void QSimpleUpdater::checkForUpdates(void) {
  * \sa setDownloadUrl()
  */
 
-void QSimpleUpdater::openDownloadLink(void) {
+void QSimpleUpdater::openDownloadLink() {
   if (not m_download_url.isEmpty()) QDesktopServices::openUrl(m_download_url);
 }
 
@@ -159,7 +158,7 @@ QString QSimpleUpdater::installedVersion() const { return m_installed_version; }
  * \sa setDownloadUrl(), checkForUpdates()
  */
 
-void QSimpleUpdater::downloadLatestVersion(void) {
+void QSimpleUpdater::downloadLatestVersion() {
   if (not m_download_url.isEmpty()) m_downloadDialog->beginDownload(m_download_url);
 }
 
@@ -296,7 +295,7 @@ void QSimpleUpdater::setShowNewestVersionMessage(bool show) { m_show_newest_vers
  * clicks on the "cancel" button in the progress dialog.
  */
 
-void QSimpleUpdater::cancel(void) { m_manager->disconnect(); }
+void QSimpleUpdater::cancel() { m_manager->disconnect(); }
 
 /*! \internal
  * Alerts the user when the download of version information
@@ -305,11 +304,10 @@ void QSimpleUpdater::cancel(void) { m_manager->disconnect(); }
  * \sa checkDownloadedVersion()
  */
 
-void QSimpleUpdater::showErrorMessage(void) {
+void QSimpleUpdater::showErrorMessage() {
   if (not silent()) {
     m_progressDialog->hide();
-    QMessageBox::warning(0, tr("Atualizador de Software"),
-                         tr("Um erro desconhecido ocorreu ao checar por atualizações"));
+    QMessageBox::warning(nullptr, tr("Atualizador de Software"), tr("Um erro desconhecido ocorreu ao checar por atualizações"));
   }
 }
 
@@ -320,7 +318,7 @@ void QSimpleUpdater::showErrorMessage(void) {
  * \sa checkDownloadedVersion()
  */
 
-void QSimpleUpdater::onCheckingFinished(void) {
+void QSimpleUpdater::onCheckingFinished() {
   // Hide the progress dialog
   m_progressDialog->hide();
 
@@ -340,10 +338,8 @@ void QSimpleUpdater::onCheckingFinished(void) {
     _message.setDetailedText(changeLog());
     _message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     _message.setText("<b>" + tr("Uma nova versão de %1 está disponível!").arg(qApp->applicationName()) + "</b>");
-    _message.setInformativeText(tr("%1 %2 está disponível - você tem %3. Gostaria de baixar ela agora?")
-                                    .arg(qApp->applicationName())
-                                    .arg(latestVersion())
-                                    .arg(installedVersion()));
+    _message.setInformativeText(
+        tr("%1 %2 está disponível - você tem %3. Gostaria de baixar ela agora?").arg(qApp->applicationName()).arg(latestVersion()).arg(installedVersion()));
     _message.setButtonText(QMessageBox::Yes, "Baixar");
     _message.setButtonText(QMessageBox::No, "Pular");
 
@@ -397,7 +393,7 @@ void QSimpleUpdater::checkDownloadedVersion(QNetworkReply *reply) {
   m_new_version_available = _new_update;
 
   if (not m_changelog_url.isEmpty() and newerVersionAvailable()) {
-    QNetworkAccessManager *_manager = new QNetworkAccessManager(this);
+    auto *_manager = new QNetworkAccessManager(this);
 
     connect(_manager, &QNetworkAccessManager::finished, this, &QSimpleUpdater::processDownloadedChangelog);
     connect(_manager, &QNetworkAccessManager::sslErrors, this, &QSimpleUpdater::ignoreSslErrors);

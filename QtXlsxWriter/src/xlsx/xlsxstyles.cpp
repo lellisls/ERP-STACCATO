@@ -67,8 +67,6 @@ Styles::Styles(CreateFlag flag)
   }
 }
 
-Styles::~Styles() {}
-
 Format Styles::xfFormat(int idx) const {
   if (idx < 0 or idx >= m_xf_formatsList.size()) return Format();
 
@@ -331,7 +329,7 @@ void Styles::writeNumFmts(QXmlStreamWriter &writer) const {
 void Styles::writeFonts(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("fonts"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(m_fontsList.count()));
-  for (int i = 0; i < m_fontsList.size(); ++i) writeFont(writer, m_fontsList[i], false);
+  for (const auto & i : m_fontsList) writeFont(writer, i, false);
   writer.writeEndElement(); // fonts
 }
 
@@ -412,7 +410,7 @@ void Styles::writeFills(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("fills"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(m_fillsList.size()));
 
-  for (int i = 0; i < m_fillsList.size(); ++i) writeFill(writer, m_fillsList[i]);
+  for (const auto & i : m_fillsList) writeFill(writer, i);
 
   writer.writeEndElement(); // fills
 }
@@ -468,7 +466,7 @@ void Styles::writeFill(QXmlStreamWriter &writer, const Format &fill, bool isDxf)
 void Styles::writeBorders(QXmlStreamWriter &writer) const {
   writer.writeStartElement(QStringLiteral("borders"));
   writer.writeAttribute(QStringLiteral("count"), QString::number(m_bordersList.count()));
-  for (int i = 0; i < m_bordersList.size(); ++i) writeBorder(writer, m_bordersList[i]);
+  for (const auto & i : m_bordersList) writeBorder(writer, i);
   writer.writeEndElement(); // borders
 }
 

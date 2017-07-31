@@ -37,7 +37,7 @@ class Chart;
 class Q_XLSX_EXPORT Chartsheet : public AbstractSheet {
   Q_DECLARE_PRIVATE(Chartsheet)
 public:
-  ~Chartsheet();
+  ~Chartsheet() = default;
   Chart *chart();
 
 private:

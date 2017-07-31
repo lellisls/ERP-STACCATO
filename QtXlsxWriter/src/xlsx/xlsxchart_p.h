@@ -60,7 +60,7 @@ public:
 
   enum Pos { Left, Right, Top, Bottom };
 
-  XlsxAxis() {}
+  XlsxAxis() = default;
 
   XlsxAxis(Type t, Pos p, int id, int crossId) : type(t), axisPos(p), axisId(id), crossAx(crossId) {}
 
@@ -75,7 +75,7 @@ class ChartPrivate : public AbstractOOXmlFilePrivate {
 
 public:
   ChartPrivate(Chart *q, Chart::CreateFlag flag);
-  ~ChartPrivate();
+  ~ChartPrivate() = default;
 
   bool loadXmlChart(QXmlStreamReader &reader);
   bool loadXmlPlotArea(QXmlStreamReader &reader);

@@ -50,8 +50,7 @@ class XlsxCfVoData {
 public:
   XlsxCfVoData() : gte(true) {}
 
-  XlsxCfVoData(ConditionalFormatting::ValueObjectType type, const QString &value, bool gte = true)
-      : type(type), value(value), gte(gte) {}
+  XlsxCfVoData(ConditionalFormatting::ValueObjectType type, const QString &value, bool gte = true) : type(type), value(value), gte(gte) {}
 
   ConditionalFormatting::ValueObjectType type;
   QString value;
@@ -101,9 +100,9 @@ public:
 
 class ConditionalFormattingPrivate : public QSharedData {
 public:
-  ConditionalFormattingPrivate();
+  ConditionalFormattingPrivate() = default;
   ConditionalFormattingPrivate(const ConditionalFormattingPrivate &other);
-  ~ConditionalFormattingPrivate();
+  ~ConditionalFormattingPrivate() = default;
 
   void writeCfVo(QXmlStreamWriter &writer, const XlsxCfVoData &cfvo) const;
   bool readCfVo(QXmlStreamReader &reader, XlsxCfVoData &cfvo);

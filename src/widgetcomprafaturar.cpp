@@ -12,9 +12,7 @@
 #include "ui_widgetcomprafaturar.h"
 #include "widgetcomprafaturar.h"
 
-WidgetCompraFaturar::WidgetCompraFaturar(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraFaturar) {
-  ui->setupUi(this);
-}
+WidgetCompraFaturar::WidgetCompraFaturar(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraFaturar) { ui->setupUi(this); }
 
 WidgetCompraFaturar::~WidgetCompraFaturar() { delete ui; }
 
@@ -48,8 +46,7 @@ bool WidgetCompraFaturar::faturarCompra(const QDateTime &dataReal, const QString
   QSqlQuery query;
 
   for (auto const &idCompra : idsCompra) {
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'EM ENTREGA', "
-                  "dataRealFat = :dataRealFat WHERE idCompra = :idCompra");
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'EM ENTREGA', dataRealFat = :dataRealFat WHERE idCompra = :idCompra");
     query.bindValue(":dataRealFat", dataReal);
     query.bindValue(":idCompra", idCompra);
 
@@ -99,6 +96,8 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
   const QDateTime dataReal = inputDlg.getDate();
 
+  // TODO: quando a sigla CAMB pular
+
   const bool pularNota = ui->checkBoxRepresentacao->isChecked() or fornecedores.first() == "ATELIER" ? true : false;
 
   if (pularNota) {
@@ -113,7 +112,7 @@ void WidgetCompraFaturar::on_pushButtonMarcarFaturado_clicked() {
 
     QSqlQuery("COMMIT").exec();
   } else {
-    ImportarXML *import = new ImportarXML(idsCompra, dataReal, this);
+    auto *import = new ImportarXML(idsCompra, dataReal, this);
     import->setAttribute(Qt::WA_DeleteOnClose);
     import->showMaximized();
 
@@ -140,9 +139,11 @@ void WidgetCompraFaturar::on_checkBoxRepresentacao_toggled(bool checked) {
 }
 
 bool WidgetCompraFaturar::cancelar(const QModelIndexList &list) {
+  // TODO: nas outras telas com cancelamento verificar se estou filtrando
+
   for (auto const &item : list) {
     QSqlQuery query;
-    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'CANCELADO' WHERE ordemCompra = :ordemCompra");
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'CANCELADO' WHERE ordemCompra = :ordemCompra AND status = 'EM FATURAMENTO'");
     query.bindValue(":ordemCompra", model.data(item.row(), "OC"));
 
     if (not query.exec()) {
@@ -150,7 +151,7 @@ bool WidgetCompraFaturar::cancelar(const QModelIndexList &list) {
       return false;
     }
 
-    query.prepare("SELECT idVendaProduto FROM pedido_fornecedor_has_produto WHERE ordemCompra = :ordemCompra");
+    query.prepare("SELECT idVendaProduto FROM pedido_fornecedor_has_produto WHERE ordemCompra = :ordemCompra AND status = 'EM FATURAMENTO'");
     query.bindValue(":ordemCompra", model.data(item.row(), "OC"));
 
     if (not query.exec()) {
@@ -160,8 +161,7 @@ bool WidgetCompraFaturar::cancelar(const QModelIndexList &list) {
 
     while (query.next()) {
       QSqlQuery query2;
-      query2.prepare("UPDATE venda_has_produto SET status = 'PENDENTE' WHERE idVendaProduto = :idVendaProduto AND "
-                     "(status != 'DEVOLVIDO' OR status != 'CANCELADO')");
+      query2.prepare("UPDATE venda_has_produto SET status = 'PENDENTE' WHERE idVendaProduto = :idVendaProduto AND status = 'EM FATURAMENTO'");
       query2.bindValue(":idVendaProduto", query.value("idVendaProduto"));
 
       if (not query2.exec()) {
@@ -170,13 +170,14 @@ bool WidgetCompraFaturar::cancelar(const QModelIndexList &list) {
       }
     }
 
-    query.prepare("UPDATE conta_a_pagar_has_pagamento SET status = 'CANCELADO' WHERE idCompra = :idCompra");
-    query.bindValue(":idCompra", model.data(item.row(), "idCompra"));
+    // TODO: verificar como tratar isso
+    //    query.prepare("UPDATE conta_a_pagar_has_pagamento SET status = 'CANCELADO' WHERE idCompra = :idCompra");
+    //    query.bindValue(":idCompra", model.data(item.row(), "idCompra"));
 
-    if (not query.exec()) {
-      error = "Erro salvando pagamentos: " + query.lastError().text();
-      return false;
-    }
+    //    if (not query.exec()) {
+    //      error = "Erro salvando pagamentos: " + query.lastError().text();
+    //      return false;
+    //    }
   }
 
   return true;
@@ -190,8 +191,7 @@ void WidgetCompraFaturar::on_pushButtonCancelarCompra_clicked() {
     return;
   }
 
-  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?",
-                     QMessageBox::Yes | QMessageBox::No, this);
+  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?", QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Cancelar");
   msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -223,7 +223,7 @@ void WidgetCompraFaturar::on_pushButtonReagendar_clicked() {
   InputDialog input(InputDialog::Faturamento);
   if (input.exec() != InputDialog::Accepted) return;
 
-  const QDateTime dataPrevista = input.getNextDate();
+  const QDate dataPrevista = input.getNextDate();
 
   for (auto const &item : list) {
     const int idCompra = model.data(item.row(), "idCompra").toInt();
@@ -252,3 +252,8 @@ void WidgetCompraFaturar::on_pushButtonReagendar_clicked() {
 
   QMessageBox::information(this, "Aviso!", "Operação realizada com sucesso!");
 }
+
+// TODO: quando importar nota vincular com as contas_pagar
+// TODO: reimportar nota id 4936 que veio com o produto dividido para testar o quantConsumido
+// TODO: reestruturar na medida do possivel de forma que cada estoque tenha apenas uma nota/compra
+// TODO: colocar tela de busca

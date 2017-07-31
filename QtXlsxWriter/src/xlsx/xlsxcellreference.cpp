@@ -119,11 +119,6 @@ void CellReference::init(const QString &cell_str) {
 CellReference::CellReference(const CellReference &other) : _row(other._row), _column(other._column) {}
 
 /*!
-    Destroys the Reference.
-*/
-CellReference::~CellReference() {}
-
-/*!
      Convert the Reference to string notation, such as "A1" or "$A$1".
      If current object is invalid, an empty string will be returned.
 */

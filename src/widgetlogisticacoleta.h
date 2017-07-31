@@ -28,6 +28,7 @@ private slots:
   void on_pushButtonReagendar_clicked();
   void on_table_entered(const QModelIndex &);
   void on_pushButtonVenda_clicked();
+  void on_pushButtonCancelar_clicked();
 
 private:
   // attributes
@@ -36,9 +37,10 @@ private:
   SqlTableModel model;
   Ui::WidgetLogisticaColeta *ui;
   // methods
-  bool cadastrar(const QModelIndexList &list, const QDateTime &dataColeta, const QDateTime &dataPrevReceb);
-  bool reagendar(const QModelIndexList &list, const QDateTime &dataPrevColeta);
+  bool cadastrar(const QModelIndexList &list, const QDate &dataColeta, const QDate &dataPrevReceb);
+  bool reagendar(const QModelIndexList &list, const QDate &dataPrevColeta);
   void setupTables();
+  bool cancelar(const QModelIndexList &list);
 };
 
 #endif // WIDGETLOGISTICACOLETA_H

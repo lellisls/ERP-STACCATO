@@ -31,7 +31,7 @@ ProgressDialog::ProgressDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Pr
 
 ProgressDialog::~ProgressDialog() { delete ui; }
 
-void ProgressDialog::cancel(void) {
+void ProgressDialog::cancel() {
   hide();
   emit cancelClicked();
 }

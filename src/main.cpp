@@ -11,12 +11,11 @@ int main(int argc, char *argv[]) {
 #else
   qSetMessagePattern("%{message}");
 #endif
-
   QApplication app(argc, argv);
   app.setOrganizationName("Staccato");
   app.setApplicationName("ERP");
   app.setWindowIcon(QIcon("Staccato.ico"));
-  app.setApplicationVersion("0.4.76");
+  app.setApplicationVersion("0.5.11");
   app.setStyle("Fusion");
 
   LoginDialog dialog;

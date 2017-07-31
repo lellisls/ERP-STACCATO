@@ -16,7 +16,9 @@
 #ifndef Q_SIMPLE_UPDATER_H
 #define Q_SIMPLE_UPDATER_H
 
-#define SUPPORTS_SSL not defined(Q_OS_IOS)
+#if !defined(Q_OS_IOS)
+#define SUPPORTS_SSL 1
+#endif
 
 #include <QApplication>
 #include <QDesktopServices>
@@ -50,9 +52,9 @@ public:
   bool silent() const;
   bool newerVersionAvailable() const;
 
-  void checkForUpdates(void);
-  void openDownloadLink(void);
-  void downloadLatestVersion(void);
+  void checkForUpdates();
+  void openDownloadLink();
+  void downloadLatestVersion();
 
 public slots:
   void setSilent(bool silent);
@@ -64,12 +66,12 @@ public slots:
   void setApplicationVersion(const QString &version);
 
 signals:
-  void checkingFinished(void);
+  void checkingFinished();
 
 private slots:
-  void cancel(void);
-  void showErrorMessage(void);
-  void onCheckingFinished(void);
+  void cancel();
+  void showErrorMessage();
+  void onCheckingFinished();
   void checkDownloadedVersion(QNetworkReply *reply);
   void processDownloadedChangelog(QNetworkReply *reply);
   void ignoreSslErrors(QNetworkReply *reply, const QList<QSslError> &error);

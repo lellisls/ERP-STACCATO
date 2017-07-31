@@ -154,7 +154,7 @@ BandDesignIntf *PageItemDesignIntf::bandByType(BandDesignIntf::BandsType bandTyp
     QList<BandDesignIntf*>::const_iterator it = childBands().constBegin();
     for(;it!=childBands().constEnd();++it){
         if ( (*it)->bandType()==bandType) return (*it);
-    }    return 0;
+    }    return nullptr;
 }
 
 bool PageItemDesignIntf::isBandExists(BandDesignIntf::BandsType bandType)
@@ -178,7 +178,7 @@ BandDesignIntf* PageItemDesignIntf::bandByIndex(int index)
     foreach(BandDesignIntf* band,m_bands){
         if (band->bandIndex()==index) return band;
     }
-    return 0;
+    return nullptr;
 }
 
 BandDesignIntf *PageItemDesignIntf::bandByName(QString bandObjectName)
@@ -188,7 +188,7 @@ BandDesignIntf *PageItemDesignIntf::bandByName(QString bandObjectName)
             return band;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 int PageItemDesignIntf::calcBandIndex(BandDesignIntf::BandsType bandType, BandDesignIntf *parentBand, bool& increaseBandIndex)
@@ -429,7 +429,7 @@ BandDesignIntf *PageItemDesignIntf::dataBandAt(int index)
             count++;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void PageItemDesignIntf::setTopMargin(int value)
@@ -565,7 +565,7 @@ void PageItemDesignIntf::bandGeometryChanged(QObject* object, QRectF newGeometry
 {
     BandDesignIntf* band = dynamic_cast<BandDesignIntf*>(object);
     int curIndex = band->bandIndex();
-    BandDesignIntf* bandToSwap = 0;
+    BandDesignIntf* bandToSwap = nullptr;
     foreach(BandDesignIntf* curBand, bands()){
         if (newGeometry.y()>oldGeometry.y()) {
             if (curBand->bandType() == band->bandType()

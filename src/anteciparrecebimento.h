@@ -19,11 +19,12 @@ public:
 private slots:
   void on_comboBox_currentTextChanged(const QString &text);
   void on_doubleSpinBoxValorPresente_valueChanged(double);
+  void on_pushButtonGerar_clicked();
   void on_table_entered(const QModelIndex &);
-  void on_doubleSpinBoxDescMes_valueChanged(double);
 
 private:
   // attributes
+  // TODO: refactor those out
   bool isBlockedPresente = false;
   bool isBlockedMes = false;
   SqlTableModel model;

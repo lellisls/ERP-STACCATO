@@ -45,7 +45,7 @@ ConnectionDialog::ConnectionDialog(LimeReport::IConnectionController *conControl
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose,true);
-    m_changeMode=m_connection!=0;
+    m_changeMode=m_connection!=nullptr;
 }
 
 ConnectionDialog::~ConnectionDialog()

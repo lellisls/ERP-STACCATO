@@ -2,12 +2,9 @@
 
 #include "estoqueproxymodel.h"
 
-EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), quantUpd(model->fieldIndex("quantUpd")) {
+EstoqueProxyModel::EstoqueProxyModel(SqlTableModel *model, QObject *parent) : QIdentityProxyModel(parent), quantUpd(model->fieldIndex("quantUpd")) {
   setSourceModel(model);
 }
-
-EstoqueProxyModel::~EstoqueProxyModel() {}
 
 QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
@@ -20,7 +17,10 @@ QVariant EstoqueProxyModel::data(const QModelIndex &proxyIndex, const int role) 
     if (quantUpd == 5) return QBrush(Qt::cyan);          // Devolução
   }
 
-  if (role == Qt::ForegroundRole) return QBrush(Qt::black);
+  if (role == Qt::ForegroundRole) {
+    // TODO: manter o texto escuro quando o fundo for colorido
+    if (QIdentityProxyModel::data(proxyIndex, Qt::BackgroundRole) == QBrush(Qt::black)) return QBrush(Qt::white);
+  }
 
   return QIdentityProxyModel::data(proxyIndex, role);
 }

@@ -87,7 +87,7 @@
        <item row="1" column="0">
         <widget class="QPushButton" name="pushButtonDesfazerConsumo">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Desfazer consumo</string>

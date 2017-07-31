@@ -36,38 +36,22 @@ const QString schema_msPackage = QStringLiteral("http://schemas.microsoft.com/of
 const QString schema_package = QStringLiteral("http://schemas.openxmlformats.org/package/2006/relationships");
 // const QString schema_worksheet =
 // QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-Relationships::Relationships() {}
 
-QList<XlsxRelationship> Relationships::documentRelationships(const QString &relativeType) const {
-  return relationships(schema_doc + relativeType);
-}
+QList<XlsxRelationship> Relationships::documentRelationships(const QString &relativeType) const { return relationships(schema_doc + relativeType); }
 
-void Relationships::addDocumentRelationship(const QString &relativeType, const QString &target) {
-  addRelationship(schema_doc + relativeType, target);
-}
+void Relationships::addDocumentRelationship(const QString &relativeType, const QString &target) { addRelationship(schema_doc + relativeType, target); }
 
-QList<XlsxRelationship> Relationships::msPackageRelationships(const QString &relativeType) const {
-  return relationships(schema_msPackage + relativeType);
-}
+QList<XlsxRelationship> Relationships::msPackageRelationships(const QString &relativeType) const { return relationships(schema_msPackage + relativeType); }
 
-void Relationships::addMsPackageRelationship(const QString &relativeType, const QString &target) {
-  addRelationship(schema_msPackage + relativeType, target);
-}
+void Relationships::addMsPackageRelationship(const QString &relativeType, const QString &target) { addRelationship(schema_msPackage + relativeType, target); }
 
-QList<XlsxRelationship> Relationships::packageRelationships(const QString &relativeType) const {
-  return relationships(schema_package + relativeType);
-}
+QList<XlsxRelationship> Relationships::packageRelationships(const QString &relativeType) const { return relationships(schema_package + relativeType); }
 
-void Relationships::addPackageRelationship(const QString &relativeType, const QString &target) {
-  addRelationship(schema_package + relativeType, target);
-}
+void Relationships::addPackageRelationship(const QString &relativeType, const QString &target) { addRelationship(schema_package + relativeType, target); }
 
-QList<XlsxRelationship> Relationships::worksheetRelationships(const QString &relativeType) const {
-  return relationships(schema_doc + relativeType);
-}
+QList<XlsxRelationship> Relationships::worksheetRelationships(const QString &relativeType) const { return relationships(schema_doc + relativeType); }
 
-void Relationships::addWorksheetRelationship(const QString &relativeType, const QString &target,
-                                             const QString &targetMode) {
+void Relationships::addWorksheetRelationship(const QString &relativeType, const QString &target, const QString &targetMode) {
   addRelationship(schema_doc + relativeType, target, targetMode);
 }
 
@@ -94,8 +78,7 @@ void Relationships::saveToXmlFile(QIODevice *device) const {
 
   writer.writeStartDocument(QStringLiteral("1.0"), true);
   writer.writeStartElement(QStringLiteral("Relationships"));
-  writer.writeAttribute(QStringLiteral("xmlns"),
-                        QStringLiteral("http://schemas.openxmlformats.org/package/2006/relationships"));
+  writer.writeAttribute(QStringLiteral("xmlns"), QStringLiteral("http://schemas.openxmlformats.org/package/2006/relationships"));
   for (auto const &relation : m_relationships) {
     writer.writeStartElement(QStringLiteral("Relationship"));
     writer.writeAttribute(QStringLiteral("Id"), relation.id);

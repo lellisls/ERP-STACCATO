@@ -48,7 +48,7 @@ void XMLWriter::init()
 {
     m_rootElement=m_doc->createElement("Report");
     QDomNode xmlNode = m_doc->createProcessingInstruction("xml",
-                               "version=\"1.0\" encoding=\"UTF8\"");
+                               R"(version="1.0" encoding="UTF8")");
     m_doc->insertBefore(xmlNode,m_doc->firstChild());
     m_doc->appendChild(m_rootElement);
 }
@@ -136,7 +136,7 @@ void XMLWriter::saveProperty(QString name, QObject* item, QDomElement *node)
     else
         typeName = item->property(name.toLatin1()).typeName();
 
-    CreateSerializator creator=0;
+    CreateSerializator creator=nullptr;
     if (isCollection(name,item)) { saveCollection(name,item,node); return;}
     if (isQObject(name,item)) {
         if (qvariant_cast<QObject *>(item->property(name.toLatin1())))

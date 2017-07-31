@@ -60,7 +60,7 @@ ScriptEngineNode::~ScriptEngineNode()
 
 ScriptEngineNode*ScriptEngineNode::addChild(const QString& name, const QString& description,  ScriptEngineNode::NodeType type, const QIcon& icon)
 {
-    ScriptEngineNode* res = new ScriptEngineNode(name, description, type,this,icon);
+    auto* res = new ScriptEngineNode(name, description, type,this,icon);
     m_childs.push_back(res);
     return res;
 }
@@ -335,7 +335,7 @@ QScriptValue groupFunction(QScriptContext* pcontext, QScriptEngine* pengine){
 ScriptEngineManager::~ScriptEngineManager()
 {
     delete m_model;
-    m_model = 0;
+    m_model = nullptr;
     delete m_scriptEngine;
 }
 
@@ -427,7 +427,7 @@ void ScriptEngineManager::setDataManager(DataSourceManager *dataManager){
         if (m_dataManager){
             foreach(QString func, m_dataManager->groupFunctionNames()){
                 if (isFunctionExists(func)) deleteFunction(func);
-                addFunction(func, groupFunction,"GROUP FUNCTIONS", func+"(\""+tr("Value")+"\",\""+tr("BandName")+"\")");
+                addFunction(func, groupFunction,"GROUP FUNCTIONS", func+R"((")"+tr("Value")+R"(",")"+tr("BandName")+R"("))");
             }
             foreach(ScriptFunctionDesc func, m_functions){
                 if (func.type==ScriptFunctionDesc::Native)
@@ -496,7 +496,7 @@ QString ScriptEngineManager::expandDataFields(QString context, ExpandType expand
                 varValue = dataManager()->fieldData(field);
                 if (expandType == EscapeSymbols) {
                     if (dataManager()->fieldData(field).isNull()) {
-                        fieldValue="\"\"";
+                        fieldValue=R"("")";
                     } else {
                         fieldValue = escapeSimbols(varValue.toString());
                         switch (dataManager()->fieldData(field).type()) {
@@ -505,7 +505,7 @@ QString ScriptEngineManager::expandDataFields(QString context, ExpandType expand
                         case QVariant::StringList:
                         case QVariant::Date:
                         case QVariant::DateTime:
-                            fieldValue = "\""+fieldValue+"\"";
+                            fieldValue = R"(")"+fieldValue+R"(")";
                             break;
                         default:
                             break;
@@ -590,7 +590,7 @@ QVariant ScriptEngineManager::evaluateScript(const QString& script){
 
         ScriptExtractor scriptExtractor(script);
         if (scriptExtractor.parse()){
-            QString scriptBody = expandDataFields(scriptExtractor.bodyAt(0),EscapeSymbols, varValue, 0);
+            QString scriptBody = expandDataFields(scriptExtractor.bodyAt(0),EscapeSymbols, varValue, nullptr);
             scriptBody = expandUserVariables(scriptBody, FirstPass, EscapeSymbols, varValue);
             QScriptValue value = se->evaluate(scriptBody);
             if (!se->hasUncaughtException()) {
@@ -607,27 +607,27 @@ void ScriptEngineManager::updateModel()
 }
 
 ScriptEngineManager::ScriptEngineManager()
-    :m_model(0), m_dataManager(0)
+    :m_model(nullptr), m_dataManager(nullptr)
 {
     m_scriptEngine = new QScriptEngine;
 
     //addFunction("dateToStr",dateToStr,"DATE", "dateToStr(\"value\",\"format\")");
-    addFunction("line",line,"SYSTEM", "line(\""+tr("BandName")+"\")");
-    addFunction("numberFormat",numberFormat,"NUMBER", "numberFormat(\""+tr("Value")+"\",\""+tr("Format")+"\",\""+
-                tr("Precision")+"\",\""+
-                tr("Locale")+"\")");
-    addFunction("dateFormat",dateFormat,"DATE&TIME", "dateFormat(\""+tr("Value")+"\",\""+tr("Format")+"\")");
-    addFunction("timeFormat",timeFormat,"DATE&TIME", "dateFormat(\""+tr("Value")+"\",\""+tr("Format")+"\")");
-    addFunction("dateTimeFormat", dateTimeFormat, "DATE&TIME", "dateTimeFormat(\""+tr("Value")+"\",\""+tr("Format")+"\")");
+    addFunction("line",line,"SYSTEM", R"(line(")"+tr("BandName")+R"("))");
+    addFunction("numberFormat",numberFormat,"NUMBER", R"(numberFormat(")"+tr("Value")+R"(",")"+tr("Format")+R"(",")"+
+                tr("Precision")+R"(",")"+
+                tr("Locale")+R"("))");
+    addFunction("dateFormat",dateFormat,"DATE&TIME", R"(dateFormat(")"+tr("Value")+R"(",")"+tr("Format")+R"("))");
+    addFunction("timeFormat",timeFormat,"DATE&TIME", R"(dateFormat(")"+tr("Value")+R"(",")"+tr("Format")+R"("))");
+    addFunction("dateTimeFormat", dateTimeFormat, "DATE&TIME", R"(dateTimeFormat(")"+tr("Value")+R"(",")"+tr("Format")+R"("))");
     addFunction("date",date,"DATE&TIME","date()");
     addFunction("now",now,"DATE&TIME","now()");
 #if QT_VERSION>0x040800
-    addFunction("currencyFormat",currencyFormat,"NUMBER","currencyFormat(\""+tr("Value")+"\",\""+tr("Locale")+"\")");
-    addFunction("currencyUSBasedFormat",currencyUSBasedFormat,"NUMBER","currencyUSBasedFormat(\""+tr("Value")+",\""+tr("CurrencySymbol")+"\")");
+    addFunction("currencyFormat",currencyFormat,"NUMBER",R"(currencyFormat(")"+tr("Value")+R"(",")"+tr("Locale")+R"("))");
+    addFunction("currencyUSBasedFormat",currencyUSBasedFormat,"NUMBER",R"(currencyUSBasedFormat(")"+tr("Value")+R"(,")"+tr("CurrencySymbol")+R"("))");
 #endif
-    addFunction("setVariable", setVariable, "GENERAL", "setVariable(\""+tr("Name")+"\",\""+tr("Value")+"\")");
-    addFunction("getVariable", getVariable, "GENERAL", "getVariable(\""+tr("Name")+"\")");
-    addFunction("getField", getField, "GENERAL", "getField(\""+tr("Name")+"\")");
+    addFunction("setVariable", setVariable, "GENERAL", R"(setVariable(")"+tr("Name")+R"(",")"+tr("Value")+R"("))");
+    addFunction("getVariable", getVariable, "GENERAL", R"(getVariable(")"+tr("Name")+R"("))");
+    addFunction("getField", getField, "GENERAL", R"(getField(")"+tr("Name")+R"("))");
 
     QScriptValue colorCtor = m_scriptEngine->newFunction(constructColor);
     m_scriptEngine->globalObject().setProperty("QColor", colorCtor);
@@ -853,7 +853,7 @@ QObject* ScriptEngineContext::createElement(const QString& collectionName, const
 #else
     Q_UNUSED(collectionName)
 #endif
-    return 0;
+    return nullptr;
 }
 
 int ScriptEngineContext::elementsCount(const QString& collectionName)
@@ -878,7 +878,7 @@ QObject* ScriptEngineContext::elementAt(const QString& collectionName, int index
     Q_UNUSED(collectionName)
     Q_UNUSED(index)
 #endif
-    return 0;
+    return nullptr;
 }
 
 void ScriptEngineContext::collectionLoadFinished(const QString& collectionName)
@@ -904,7 +904,7 @@ QDialog* ScriptEngineContext::findDialog(const QString& dialogName)
         if (dialog->objectName()==dialogName)
             return dialog.data();
     }
-    return 0;
+    return nullptr;
 }
 
 DialogDescriber* ScriptEngineContext::findDialogContainer(const QString& dialogName)
@@ -914,7 +914,7 @@ DialogDescriber* ScriptEngineContext::findDialogContainer(const QString& dialogN
             return dialogCont.data();
         }
     }
-    return 0;
+    return nullptr;
 }
 
 QDialog* ScriptEngineContext::getDialog(const QString& dialogName)
@@ -930,7 +930,7 @@ QDialog* ScriptEngineContext::getDialog(const QString& dialogName)
                 return dialog;
         }
     }
-    return 0;
+    return nullptr;
 }
 #endif
 QString ScriptEngineContext::initScript() const

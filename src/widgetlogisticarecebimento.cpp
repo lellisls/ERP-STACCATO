@@ -11,10 +11,7 @@
 #include "venda.h"
 #include "widgetlogisticarecebimento.h"
 
-WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent)
-    : QWidget(parent), ui(new Ui::WidgetLogisticaRecebimento) {
-  ui->setupUi(this);
-}
+WidgetLogisticaRecebimento::WidgetLogisticaRecebimento(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaRecebimento) { ui->setupUi(this); }
 
 WidgetLogisticaRecebimento::~WidgetLogisticaRecebimento() { delete ui; }
 
@@ -41,8 +38,7 @@ void WidgetLogisticaRecebimento::tableFornLogistica_activated(const QString &for
   model.setFilter("fornecedor = '" + fornecedor + "'");
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
 
@@ -78,8 +74,7 @@ void WidgetLogisticaRecebimento::setupTables() {
   ui->table->hideColumn("");
 }
 
-bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list, const QDateTime &dataReceb,
-                                             const QString &recebidoPor) {
+bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list, const QDateTime &dataReceb, const QString &recebidoPor) {
   QSqlQuery query;
 
   for (auto const &item : list) {
@@ -92,8 +87,7 @@ bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list, const 
       return false;
     }
 
-    query.prepare(
-        "UPDATE estoque_has_consumo SET status = 'CONSUMO' WHERE status = 'PRÉ-CONSUMO' AND idEstoque = :idEstoque");
+    query.prepare("UPDATE estoque_has_consumo SET status = 'CONSUMO' WHERE status = 'PRÉ-CONSUMO' AND idEstoque = :idEstoque");
     query.bindValue(":idEstoque", model.data(item.row(), "idEstoque"));
 
     if (not query.exec()) {
@@ -114,12 +108,10 @@ bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list, const 
     }
 
     // salvar status na venda
-    query.prepare(
-        "UPDATE venda_has_produto SET status = 'ESTOQUE', dataRealReceb = :dataRealReceb WHERE idCompra IN "
-        "(SELECT idCompra FROM estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.prepare("UPDATE venda_has_produto SET status = 'ESTOQUE', dataRealReceb = :dataRealReceb WHERE idVendaProduto IN "
+                  "(SELECT idVendaProduto FROM estoque_has_consumo WHERE idEstoque = :idEstoque)");
     query.bindValue(":dataRealReceb", dataReceb);
     query.bindValue(":idEstoque", model.data(item.row(), "idEstoque"));
-    query.bindValue(":codComercial", model.data(item.row(), "codComercial"));
 
     if (not query.exec()) {
       error = "Erro atualizando produtos venda: " + query.lastError().text();
@@ -131,6 +123,8 @@ bool WidgetLogisticaRecebimento::processRows(const QModelIndexList &list, const 
 }
 
 void WidgetLogisticaRecebimento::on_pushButtonMarcarRecebido_clicked() {
+  // TODO: 1gerar gare da nota de entrada
+
   const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.isEmpty()) {
@@ -177,8 +171,7 @@ void WidgetLogisticaRecebimento::on_checkBoxMarcarTodos_clicked(const bool) { ui
 void WidgetLogisticaRecebimento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
 
 void WidgetLogisticaRecebimento::on_lineEditBusca_textChanged(const QString &text) {
-  model.setFilter("(numeroNFe LIKE '%" + text + "%' OR produto LIKE '%" + text + "%' OR idVenda LIKE '%" + text +
-                  "%' OR ordemCompra LIKE '%" + text + "%')");
+  model.setFilter("(numeroNFe LIKE '%" + text + "%' OR produto LIKE '%" + text + "%' OR idVenda LIKE '%" + text + "%' OR ordemCompra LIKE '%" + text + "%')");
 
   if (not model.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
 }
@@ -210,7 +203,7 @@ void WidgetLogisticaRecebimento::on_pushButtonReagendar_clicked() {
   QMessageBox::information(this, "Aviso!", "Reagendado com sucesso!");
 }
 
-bool WidgetLogisticaRecebimento::reagendar(const QModelIndexList &list, const QDateTime &dataPrevReceb) {
+bool WidgetLogisticaRecebimento::reagendar(const QModelIndexList &list, const QDate &dataPrevReceb) {
   for (const auto &item : list) {
     const int idEstoque = model.data(item.row(), "idEstoque").toInt();
     const QString codComercial = model.data(item.row(), "codComercial").toString();
@@ -257,13 +250,70 @@ void WidgetLogisticaRecebimento::on_pushButtonVenda_clicked() {
     if (ids.isEmpty()) return;
 
     for (auto const &id : ids) {
-      Venda *venda = new Venda(this);
+      auto *venda = new Venda(this);
       venda->setAttribute(Qt::WA_DeleteOnClose);
       venda->viewRegisterById(id);
     }
   }
 }
 
-// TODO: 2perguntar em qual bloco foi guardado
-// TODO: 2poder trocar bloco do estoque
-// TODO: 1poder voltar estoque para a tela anterior (ex: marcou estoque errado)
+void WidgetLogisticaRecebimento::on_pushButtonCancelar_clicked() {
+  const auto list = ui->table->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?", QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Cancelar");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
+
+  if (msgBox.exec() == QMessageBox::No) return;
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cancelar(list)) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  updateTables();
+  QMessageBox::information(this, "Aviso!", "Cancelado com sucesso!");
+}
+
+bool WidgetLogisticaRecebimento::cancelar(const QModelIndexList &list) {
+  for (const auto &item : list) {
+    const int idEstoque = model.data(item.row(), "idEstoque").toInt();
+    const QString codComercial = model.data(item.row(), "codComercial").toString();
+
+    QSqlQuery query;
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET dataPrevReceb = NULL WHERE idCompra IN (SELECT "
+                  "idCompra FROM estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.bindValue(":idEstoque", idEstoque);
+    query.bindValue(":codComercial", codComercial);
+
+    if (not query.exec()) {
+      error = "Erro salvando status no pedido_fornecedor: " + query.lastError().text();
+      return false;
+    }
+
+    query.prepare("UPDATE venda_has_produto SET dataPrevReceb = NULL WHERE idCompra IN (SELECT idCompra FROM "
+                  "estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.bindValue(":idEstoque", idEstoque);
+    query.bindValue(":codComercial", codComercial);
+
+    if (not query.exec()) {
+      error = "Erro salvando status na venda_produto: " + query.lastError().text();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// TODO: 0marcar em qual bloco foi guardado (opcional?)

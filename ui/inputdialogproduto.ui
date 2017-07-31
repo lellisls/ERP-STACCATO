@@ -128,10 +128,7 @@
             </sizepolicy>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="buttonSymbols">
-            <enum>QAbstractSpinBox::NoButtons</enum>
+            <bool>false</bool>
            </property>
            <property name="showGroupSeparator" stdset="0">
             <bool>true</bool>

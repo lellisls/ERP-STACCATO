@@ -201,7 +201,7 @@ void TextItemEditor::slotFieldSelected()
 
 void TextItemEditor::readSetting()
 {
-    if (settings()==0) return;
+    if (settings()==nullptr) return;
 
     m_isReadingSetting = true;
 
@@ -229,7 +229,7 @@ void TextItemEditor::readSetting()
 
 void TextItemEditor::writeSetting()
 {
-    if (settings()!=0){
+    if (settings()!=nullptr){
         settings()->beginGroup("TextItemEditor");
         settings()->setValue("Geometry",saveGeometry());
         settings()->setValue("State",ui->splitter->saveState());
@@ -239,13 +239,13 @@ void TextItemEditor::writeSetting()
 
 
 CompleaterTextEditor::CompleaterTextEditor(QWidget *parent)
-    : QTextEdit(parent),m_compleater(0)
+    : QTextEdit(parent),m_compleater(nullptr)
 {
 }
 
 void CompleaterTextEditor::setCompleter(QCompleter *value)
 {
-    if (value) disconnect(value,0,this,0);
+    if (value) disconnect(value,nullptr,this,nullptr);
     m_compleater = value;
     if (!m_compleater) return;
     m_compleater->setWidget(this);
@@ -277,7 +277,7 @@ void CompleaterTextEditor::keyPressEvent(QKeyEvent *e)
     if (!m_compleater || (ctrlOrShift && e->text().isEmpty()))
         return;
 
-    static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
+    static QString eow(R"(~!@#$%^&*()_+{}|:"<>?,./;'[]\-=)"); // end of word
     bool hasModifier = (e->modifiers() != Qt::NoModifier) && !ctrlOrShift;
 
     QString completionPrefix = textUnderCursor();
@@ -400,7 +400,7 @@ void TextItemEditor::slotScriptItemsSelectionChanged(const QModelIndex &to, cons
 
 BandDesignIntf *TextItemEditor::findParentBand()
 {
-    BandDesignIntf* result = 0;
+    BandDesignIntf* result = nullptr;
     BaseDesignIntf* item = m_textItem;
     while (true){
         item = dynamic_cast<BaseDesignIntf*>(item->parentItem());

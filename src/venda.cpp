@@ -19,12 +19,12 @@
 #include "usersession.h"
 #include "venda.h"
 
+#define NAO_HA 1
+
 Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(new Ui::Venda) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  for (auto const *line : findChildren<QLineEdit *>()) connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
 
   setupTables();
 
@@ -43,17 +43,19 @@ Venda::Venda(QWidget *parent) : RegisterDialog("venda", "idVenda", parent), ui(n
 
   setupMapper();
   newRegister();
-  makeConnections();
+  makeConnectionsToFluxoCaixa();
 
   ui->groupBoxFinanceiro->hide();
   ui->tableFluxoCaixa2->hide();
+
+  for (auto &item : ui->frameRT->findChildren<QWidget *>()) item->setHidden(true);
 
   show();
 }
 
 Venda::~Venda() { delete ui; }
 
-void Venda::makeConnections() {
+void Venda::makeConnectionsToFluxoCaixa() {
   connect(ui->checkBoxRep1, &QCheckBox::stateChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->checkBoxRep2, &QCheckBox::stateChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->checkBoxRep3, &QCheckBox::stateChanged, this, &Venda::montarFluxoCaixa);
@@ -74,6 +76,78 @@ void Venda::makeConnections() {
   connect(ui->lineEditPgt3, &QLineEdit::textChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->lineEditPgt4, &QLineEdit::textChanged, this, &Venda::montarFluxoCaixa);
   connect(ui->lineEditPgt5, &QLineEdit::textChanged, this, &Venda::montarFluxoCaixa);
+}
+
+void Venda::setupConnections() {
+  connect(ui->checkBoxFreteManual, &QCheckBox::clicked, this, &Venda::on_checkBoxFreteManual_clicked);
+  connect(ui->checkBoxPontuacaoIsento, &QCheckBox::toggled, this, &Venda::on_checkBoxPontuacaoIsento_toggled);
+  connect(ui->checkBoxPontuacaoPadrao, &QCheckBox::toggled, this, &Venda::on_checkBoxPontuacaoPadrao_toggled);
+  connect(ui->checkBoxRT, &QCheckBox::toggled, this, &Venda::on_checkBoxRT_toggled);
+  connect(ui->comboBoxPgt1, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt1_currentTextChanged);
+  connect(ui->comboBoxPgt2, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt2_currentTextChanged);
+  connect(ui->comboBoxPgt3, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt3_currentTextChanged);
+  connect(ui->comboBoxPgt4, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt4_currentTextChanged);
+  connect(ui->comboBoxPgt5, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt5_currentTextChanged);
+  connect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &Venda::on_dateTimeEdit_dateTimeChanged);
+  connect(ui->doubleSpinBoxDescontoGlobal, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxDescontoGlobal_valueChanged);
+  connect(ui->doubleSpinBoxDescontoGlobalReais, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged);
+  connect(ui->doubleSpinBoxFrete, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxFrete_valueChanged);
+  connect(ui->doubleSpinBoxPgt1, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt1_valueChanged);
+  connect(ui->doubleSpinBoxPgt2, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt2_valueChanged);
+  connect(ui->doubleSpinBoxPgt3, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt3_valueChanged);
+  connect(ui->doubleSpinBoxPgt4, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt4_valueChanged);
+  connect(ui->doubleSpinBoxPgt5, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt5_valueChanged);
+  connect(ui->doubleSpinBoxTotal, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxTotal_valueChanged);
+  connect(ui->itemBoxProfissional, &ItemBox::textChanged, this, &Venda::on_itemBoxProfissional_textChanged);
+  connect(ui->pushButtonCadastrarPedido, &QPushButton::clicked, this, &Venda::on_pushButtonCadastrarPedido_clicked);
+  connect(ui->pushButtonCancelamento, &QPushButton::clicked, this, &Venda::on_pushButtonCancelamento_clicked);
+  connect(ui->pushButtonCorrigirFluxo, &QPushButton::clicked, this, &Venda::on_pushButtonCorrigirFluxo_clicked);
+  connect(ui->pushButtonDevolucao, &QPushButton::clicked, this, &Venda::on_pushButtonDevolucao_clicked);
+  connect(ui->pushButtonFinanceiroSalvar, &QPushButton::clicked, this, &Venda::on_pushButtonFinanceiroSalvar_clicked);
+  connect(ui->pushButtonFreteLoja, &QPushButton::clicked, this, &Venda::on_pushButtonFreteLoja_clicked);
+  connect(ui->pushButtonGerarExcel, &QPushButton::clicked, this, &Venda::on_pushButtonGerarExcel_clicked);
+  connect(ui->pushButtonImprimir, &QPushButton::clicked, this, &Venda::on_pushButtonImprimir_clicked);
+  connect(ui->pushButtonLimparPag, &QPushButton::clicked, this, &Venda::on_pushButtonLimparPag_clicked);
+  connect(ui->pushButtonPgtLoja, &QPushButton::clicked, this, &Venda::on_pushButtonPgtLoja_clicked);
+  connect(ui->pushButtonVoltar, &QPushButton::clicked, this, &Venda::on_pushButtonVoltar_clicked);
+  connect(ui->tableFluxoCaixa, &TableView::entered, this, &Venda::on_tableFluxoCaixa_entered);
+  connect(ui->tableFluxoCaixa2, &TableView::entered, this, &Venda::on_tableFluxoCaixa2_entered);
+}
+
+void Venda::unsetConnections() {
+  disconnect(ui->checkBoxFreteManual, &QCheckBox::clicked, this, &Venda::on_checkBoxFreteManual_clicked);
+  disconnect(ui->checkBoxPontuacaoIsento, &QCheckBox::toggled, this, &Venda::on_checkBoxPontuacaoIsento_toggled);
+  disconnect(ui->checkBoxPontuacaoPadrao, &QCheckBox::toggled, this, &Venda::on_checkBoxPontuacaoPadrao_toggled);
+  disconnect(ui->checkBoxRT, &QCheckBox::toggled, this, &Venda::on_checkBoxRT_toggled);
+  disconnect(ui->comboBoxPgt1, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt1_currentTextChanged);
+  disconnect(ui->comboBoxPgt2, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt2_currentTextChanged);
+  disconnect(ui->comboBoxPgt3, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt3_currentTextChanged);
+  disconnect(ui->comboBoxPgt4, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt4_currentTextChanged);
+  disconnect(ui->comboBoxPgt5, &QComboBox::currentTextChanged, this, &Venda::on_comboBoxPgt5_currentTextChanged);
+  disconnect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &Venda::on_dateTimeEdit_dateTimeChanged);
+  disconnect(ui->doubleSpinBoxDescontoGlobal, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxDescontoGlobal_valueChanged);
+  disconnect(ui->doubleSpinBoxDescontoGlobalReais, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged);
+  disconnect(ui->doubleSpinBoxFrete, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxFrete_valueChanged);
+  disconnect(ui->doubleSpinBoxPgt1, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt1_valueChanged);
+  disconnect(ui->doubleSpinBoxPgt2, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt2_valueChanged);
+  disconnect(ui->doubleSpinBoxPgt3, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt3_valueChanged);
+  disconnect(ui->doubleSpinBoxPgt4, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt4_valueChanged);
+  disconnect(ui->doubleSpinBoxPgt5, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxPgt5_valueChanged);
+  disconnect(ui->doubleSpinBoxTotal, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Venda::on_doubleSpinBoxTotal_valueChanged);
+  disconnect(ui->itemBoxProfissional, &ItemBox::textChanged, this, &Venda::on_itemBoxProfissional_textChanged);
+  disconnect(ui->pushButtonCadastrarPedido, &QPushButton::clicked, this, &Venda::on_pushButtonCadastrarPedido_clicked);
+  disconnect(ui->pushButtonCancelamento, &QPushButton::clicked, this, &Venda::on_pushButtonCancelamento_clicked);
+  disconnect(ui->pushButtonCorrigirFluxo, &QPushButton::clicked, this, &Venda::on_pushButtonCorrigirFluxo_clicked);
+  disconnect(ui->pushButtonDevolucao, &QPushButton::clicked, this, &Venda::on_pushButtonDevolucao_clicked);
+  disconnect(ui->pushButtonFinanceiroSalvar, &QPushButton::clicked, this, &Venda::on_pushButtonFinanceiroSalvar_clicked);
+  disconnect(ui->pushButtonFreteLoja, &QPushButton::clicked, this, &Venda::on_pushButtonFreteLoja_clicked);
+  disconnect(ui->pushButtonGerarExcel, &QPushButton::clicked, this, &Venda::on_pushButtonGerarExcel_clicked);
+  disconnect(ui->pushButtonImprimir, &QPushButton::clicked, this, &Venda::on_pushButtonImprimir_clicked);
+  disconnect(ui->pushButtonLimparPag, &QPushButton::clicked, this, &Venda::on_pushButtonLimparPag_clicked);
+  disconnect(ui->pushButtonPgtLoja, &QPushButton::clicked, this, &Venda::on_pushButtonPgtLoja_clicked);
+  disconnect(ui->pushButtonVoltar, &QPushButton::clicked, this, &Venda::on_pushButtonVoltar_clicked);
+  disconnect(ui->tableFluxoCaixa, &TableView::entered, this, &Venda::on_tableFluxoCaixa_entered);
+  disconnect(ui->tableFluxoCaixa2, &TableView::entered, this, &Venda::on_tableFluxoCaixa2_entered);
 }
 
 void Venda::setupTables() {
@@ -152,12 +226,12 @@ void Venda::setupTables() {
   modelFluxoCaixa.setFilter("0");
 
   if (not modelFluxoCaixa.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
     return;
   }
 
   ui->tableFluxoCaixa->setModel(&modelFluxoCaixa);
+  ui->tableFluxoCaixa->hideColumn("nfe");
   ui->tableFluxoCaixa->hideColumn("contraParte");
   ui->tableFluxoCaixa->hideColumn("idVenda");
   ui->tableFluxoCaixa->hideColumn("idLoja");
@@ -174,6 +248,7 @@ void Venda::setupTables() {
   ui->tableFluxoCaixa->hideColumn("subGrupo");
   ui->tableFluxoCaixa->hideColumn("comissao");
   ui->tableFluxoCaixa->hideColumn("taxa");
+  ui->tableFluxoCaixa->hideColumn("desativado");
   ui->tableFluxoCaixa->setItemDelegate(new NoEditDelegate(this));
   ui->tableFluxoCaixa->setItemDelegateForColumn("representacao", new CheckBoxDelegate(this, true));
   ui->tableFluxoCaixa->setItemDelegateForColumn("observacao", new SingleEditDelegate(this));
@@ -193,8 +268,7 @@ void Venda::setupTables() {
   modelFluxoCaixa2.setFilter("0");
 
   if (not modelFluxoCaixa2.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa2.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa2.lastError().text());
     return;
   }
 
@@ -215,6 +289,7 @@ void Venda::setupTables() {
   ui->tableFluxoCaixa2->hideColumn("subGrupo");
   ui->tableFluxoCaixa2->hideColumn("comissao");
   ui->tableFluxoCaixa2->hideColumn("taxa");
+  ui->tableFluxoCaixa2->hideColumn("desativado");
   ui->tableFluxoCaixa2->setItemDelegateForColumn("valor", new ReaisDelegate(this));
 }
 
@@ -301,7 +376,7 @@ void Venda::resetarPagamentos() {
 }
 
 void Venda::prepararVenda(const QString &idOrcamento) {
-  m_idOrcamento = idOrcamento;
+  this->idOrcamento = idOrcamento;
   isUpdate = true;
 
   QSqlQuery queryOrc;
@@ -327,9 +402,11 @@ void Venda::prepararVenda(const QString &idOrcamento) {
     return;
   }
 
-  QStringList list{"Escolha uma opção!"};
-
-  while (queryPag.next()) list << queryPag.value("pagamento").toString();
+  const QStringList list([&queryPag]() {
+    QStringList temp("Escolha uma opção!");
+    while (queryPag.next()) temp << queryPag.value("pagamento").toString();
+    return temp;
+  }());
 
   ui->comboBoxPgt1->insertItems(0, list);
   ui->comboBoxPgt2->insertItems(0, list);
@@ -389,13 +466,12 @@ void Venda::prepararVenda(const QString &idOrcamento) {
   if (not model.setData(row, "status", queryOrc.value("status"))) return;
   if (not model.setData(row, "observacao", queryOrc.value("observacao"))) return;
   if (not model.setData(row, "prazoEntrega", queryOrc.value("prazoEntrega"))) return;
+  if (not model.setData(row, "novoPrazoEntrega", queryOrc.value("prazoEntrega"))) return;
   if (not model.setData(row, "representacao", queryOrc.value("representacao"))) return;
 
-  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCliente = " + queryOrc.value("idCliente").toString() +
-                                                    " AND desativado = FALSE");
+  ui->itemBoxEndereco->getSearchDialog()->setFilter("idCliente = " + queryOrc.value("idCliente").toString() + " AND desativado = FALSE");
 
-  ui->itemBoxEnderecoFat->getSearchDialog()->setFilter("idCliente = " + queryOrc.value("idCliente").toString() +
-                                                       " AND desativado = FALSE");
+  ui->itemBoxEnderecoFat->getSearchDialog()->setFilter("idCliente = " + queryOrc.value("idCliente").toString() + " AND desativado = FALSE");
 
   ui->itemBoxCliente->setValue(queryOrc.value("idCliente"));
   ui->itemBoxProfissional->setValue(queryOrc.value("idProfissional"));
@@ -454,6 +530,8 @@ void Venda::prepararVenda(const QString &idOrcamento) {
   resetarPagamentos();
 
   ui->lineEditVenda->setText("Auto gerado");
+
+  setupConnections();
 }
 
 bool Venda::verifyFields() {
@@ -499,9 +577,7 @@ bool Venda::verifyFields() {
     return false;
   }
 
-  if (not qFuzzyCompare(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() +
-                            ui->doubleSpinBoxPgt3->value() + ui->doubleSpinBoxPgt4->value() +
-                            ui->doubleSpinBoxPgt5->value(),
+  if (not qFuzzyCompare(ui->doubleSpinBoxPgt1->value() + ui->doubleSpinBoxPgt2->value() + ui->doubleSpinBoxPgt3->value() + ui->doubleSpinBoxPgt4->value() + ui->doubleSpinBoxPgt5->value(),
                         ui->doubleSpinBoxTotal->value())) {
     QMessageBox::critical(this, "Erro!", "Soma dos pagamentos não é igual ao total! Favor verificar.");
     return false;
@@ -509,31 +585,31 @@ bool Venda::verifyFields() {
 
   if (ui->doubleSpinBoxPgt1->value() > 0 and ui->comboBoxPgt1->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 1.");
-    ui->doubleSpinBoxPgt1->setFocus();
+    ui->comboBoxPgt1->setFocus();
     return false;
   }
 
   if (ui->doubleSpinBoxPgt2->value() > 0 and ui->comboBoxPgt2->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 2.");
-    ui->doubleSpinBoxPgt2->setFocus();
+    ui->comboBoxPgt2->setFocus();
     return false;
   }
 
   if (ui->doubleSpinBoxPgt3->value() > 0 and ui->comboBoxPgt3->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 3.");
-    ui->doubleSpinBoxPgt3->setFocus();
+    ui->comboBoxPgt3->setFocus();
     return false;
   }
 
   if (ui->doubleSpinBoxPgt4->value() > 0 and ui->comboBoxPgt4->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 4.");
-    ui->doubleSpinBoxPgt4->setFocus();
+    ui->comboBoxPgt4->setFocus();
     return false;
   }
 
   if (ui->doubleSpinBoxPgt5->value() > 0 and ui->comboBoxPgt5->currentText() == "Escolha uma opção!") {
     QMessageBox::critical(this, "Erro!", "Por favor escolha a forma de pagamento 5.");
-    ui->doubleSpinBoxPgt5->setFocus();
+    ui->comboBoxPgt5->setFocus();
     return false;
   }
 
@@ -567,35 +643,30 @@ bool Venda::verifyFields() {
     return false;
   }
 
+  if (ui->itemBoxProfissional->getValue() != 1 and not ui->checkBoxPontuacaoIsento->isChecked() and not ui->checkBoxPontuacaoPadrao->isChecked()) {
+    QMessageBox::critical(this, "Erro!", "Por favor preencha a pontuação!");
+    ui->checkBoxRT->setChecked(true);
+    ui->doubleSpinBoxPontuacao->setFocus();
+    return false;
+  }
+
   return true;
 }
 
 void Venda::calcPrecoGlobalTotal() {
-  double subTotalItens = 0.;
   double subTotalBruto = 0.;
+  double subTotalItens = 0.;
 
   for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    const double itemBruto = modelItem.data(row, "parcial").toDouble();
-    const double stItem = modelItem.data(row, "parcialDesc").toDouble();
+    const double itemBruto = modelItem.data(row, "quant").toDouble() * modelItem.data(row, "prcUnitario").toDouble();
+    const double descItem = modelItem.data(row, "desconto").toDouble() / 100.;
+    const double stItem = itemBruto * (1. - descItem);
     subTotalBruto += itemBruto;
     subTotalItens += stItem;
   }
 
-  const double descGlobal = ui->doubleSpinBoxDescontoGlobal->value() / 100.;
-  const double subTotal = subTotalItens * (1. - descGlobal);
-
-  for (int row = 0, rowCount = modelItem.rowCount(); row < rowCount; ++row) {
-    modelItem.setData(row, "descGlobal", descGlobal * 100.);
-    modelItem.setData(row, "total", modelItem.data(row, "parcialDesc").toDouble() * (1 - descGlobal));
-  }
-
   ui->doubleSpinBoxSubTotalBruto->setValue(subTotalBruto);
   ui->doubleSpinBoxSubTotalLiq->setValue(subTotalItens);
-  ui->doubleSpinBoxSubTotalDesc->setValue(subTotalItens - ui->doubleSpinBoxDescontoGlobalReais->value());
-  if (not isBlockedReais) ui->doubleSpinBoxDescontoGlobalReais->setValue(subTotalItens - subTotal);
-  if (not isBlockedTotal) ui->doubleSpinBoxTotal->setValue(subTotal + ui->doubleSpinBoxFrete->value());
-
-  resetarPagamentos();
 }
 
 void Venda::clearFields() {}
@@ -620,7 +691,7 @@ void Venda::setupMapper() {
   addMapping(ui->plainTextEdit, "observacao");
 }
 
-void Venda::on_pushButtonCadastrarPedido_clicked() { update(); }
+void Venda::on_pushButtonCadastrarPedido_clicked() { save(); }
 
 void Venda::calculoSpinBox1() {
   const double pgt1 = ui->doubleSpinBoxPgt1->value();
@@ -689,12 +760,6 @@ void Venda::calculoSpinBox2() {
     return;
   }
 
-  //  ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
-  //  ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
-
-  //  ui->doubleSpinBoxPgt3->setEnabled(true);
-  //  ui->comboBoxPgt3->setEnabled(true);
-
   montarFluxoCaixa();
 }
 
@@ -728,12 +793,6 @@ void Venda::calculoSpinBox3() {
 
     return;
   }
-
-  //  ui->doubleSpinBoxPgt3->setMaximum(restante + pgt3);
-  //  ui->doubleSpinBoxPgt3->setValue(restante + pgt3);
-
-  //  ui->doubleSpinBoxPgt3->setEnabled(true);
-  //  ui->comboBoxPgt3->setEnabled(true);
 
   montarFluxoCaixa();
 }
@@ -937,7 +996,7 @@ bool Venda::savingProcedures() {
   if (not setData("idEnderecoEntrega", ui->itemBoxEndereco->getValue())) return false;
   if (not setData("idEnderecoFaturamento", ui->itemBoxEnderecoFat->getValue())) return false;
   if (not setData("idLoja", UserSession::fromLoja("usuario.idLoja", ui->itemBoxVendedor->text()))) return false;
-  if (not setData("idOrcamento", m_idOrcamento)) return false;
+  if (not setData("idOrcamento", idOrcamento)) return false;
   if (not setData("idProfissional", ui->itemBoxProfissional->getValue())) return false;
   if (not setData("idUsuario", ui->itemBoxVendedor->getValue())) return false;
   if (not setData("observacao", ui->plainTextEdit->toPlainText())) return false;
@@ -947,6 +1006,7 @@ bool Venda::savingProcedures() {
   if (not setData("subTotalLiq", ui->doubleSpinBoxSubTotalLiq->value())) return false;
   if (not setData("total", ui->doubleSpinBoxTotal->value())) return false;
   if (not setData("representacao", ui->lineEditVenda->text().endsWith("R") ? 1 : 0)) return false;
+  if (not setData("rt", ui->doubleSpinBoxPontuacao->value())) return false;
 
   return true;
 }
@@ -998,18 +1058,17 @@ bool Venda::viewRegister() {
 
   if (not RegisterDialog::viewRegister()) return false;
 
+  calcPrecoGlobalTotal();
+
   const QString idCliente = ui->itemBoxCliente->getValue().toString();
 
   ui->itemBoxEndereco->getSearchDialog()->setFilter("idCliente = " + idCliente + " AND desativado = FALSE");
   ui->itemBoxEnderecoFat->getSearchDialog()->setFilter("idCliente = " + idCliente + " AND desativado = FALSE");
 
-  modelFluxoCaixa.setFilter(
-      "idVenda = '" + ui->lineEditVenda->text() +
-      "' AND status != 'CANCELADO' AND status != 'SUBSTITUIDO' AND comissao = FALSE AND taxa = FALSE");
+  modelFluxoCaixa.setFilter("idVenda = '" + ui->lineEditVenda->text() + "' AND status != 'CANCELADO' AND status != 'SUBSTITUIDO' AND comissao = FALSE AND taxa = FALSE");
 
   if (not modelFluxoCaixa.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
     return false;
   }
 
@@ -1019,13 +1078,10 @@ bool Venda::viewRegister() {
 
   if (financeiro) {
     // TODO: 1quando estiver tudo pago bloquear correcao de fluxo
-    modelFluxoCaixa2.setFilter(
-        "idVenda = '" + ui->lineEditVenda->text() +
-        "' AND status != 'CANCELADO' AND status != 'SUBSTITUIDO' AND (comissao = TRUE OR taxa = TRUE)");
+    modelFluxoCaixa2.setFilter("idVenda = '" + ui->lineEditVenda->text() + "' AND status != 'CANCELADO' AND status != 'SUBSTITUIDO' AND (comissao = TRUE OR taxa = TRUE)");
 
     if (not modelFluxoCaixa2.select()) {
-      QMessageBox::critical(this, "Erro!",
-                            "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
+      QMessageBox::critical(this, "Erro!", "Erro lendo tabela conta_a_receber_has_pagamento: " + modelFluxoCaixa.lastError().text());
       return false;
     }
 
@@ -1068,12 +1124,17 @@ bool Venda::viewRegister() {
 
   ui->framePagamentos->adjustSize();
 
+  ui->checkBoxRT->setChecked(false);
+  ui->checkBoxRT->setHidden(true);
+
+  setupConnections();
+
   return true;
 }
 
 void Venda::on_pushButtonVoltar_clicked() {
-  Orcamento *orcamento = new Orcamento(parentWidget());
-  orcamento->viewRegisterById(m_idOrcamento);
+  auto *orcamento = new Orcamento(parentWidget());
+  orcamento->viewRegisterById(idOrcamento);
   orcamento->show();
 
   isDirty = false;
@@ -1087,6 +1148,8 @@ void Venda::on_pushButtonVoltar_clicked() {
 }
 
 void Venda::montarFluxoCaixa() {
+  // TODO: nao calcular comissao para profissional 'NAO HA'
+
   if (ui->framePagamentos_2->isHidden()) return;
 
   modelFluxoCaixa.select();
@@ -1108,18 +1171,12 @@ void Venda::montarFluxoCaixa() {
     }
   }
 
-  const QList<QCheckBox *> checkBoxRep(
-      {ui->checkBoxRep1, ui->checkBoxRep2, ui->checkBoxRep3, ui->checkBoxRep4, ui->checkBoxRep5});
-  const QList<QComboBox *> comboParc(
-      {ui->comboBoxPgt1Parc, ui->comboBoxPgt2Parc, ui->comboBoxPgt3Parc, ui->comboBoxPgt4Parc, ui->comboBoxPgt5Parc});
-  const QList<QComboBox *> comboPgt(
-      {ui->comboBoxPgt1, ui->comboBoxPgt2, ui->comboBoxPgt3, ui->comboBoxPgt4, ui->comboBoxPgt5});
-  const QList<QDateEdit *> datePgt(
-      {ui->dateEditPgt1, ui->dateEditPgt2, ui->dateEditPgt3, ui->dateEditPgt4, ui->dateEditPgt5});
-  const QList<QDoubleSpinBox *> spinPgt({ui->doubleSpinBoxPgt1, ui->doubleSpinBoxPgt2, ui->doubleSpinBoxPgt3,
-                                         ui->doubleSpinBoxPgt4, ui->doubleSpinBoxPgt5});
-  const QList<QLineEdit *> linePgt(
-      {ui->lineEditPgt1, ui->lineEditPgt2, ui->lineEditPgt3, ui->lineEditPgt4, ui->lineEditPgt5});
+  const QList<QCheckBox *> checkBoxRep({ui->checkBoxRep1, ui->checkBoxRep2, ui->checkBoxRep3, ui->checkBoxRep4, ui->checkBoxRep5});
+  const QList<QComboBox *> comboParc({ui->comboBoxPgt1Parc, ui->comboBoxPgt2Parc, ui->comboBoxPgt3Parc, ui->comboBoxPgt4Parc, ui->comboBoxPgt5Parc});
+  const QList<QComboBox *> comboPgt({ui->comboBoxPgt1, ui->comboBoxPgt2, ui->comboBoxPgt3, ui->comboBoxPgt4, ui->comboBoxPgt5});
+  const QList<QDateEdit *> datePgt({ui->dateEditPgt1, ui->dateEditPgt2, ui->dateEditPgt3, ui->dateEditPgt4, ui->dateEditPgt5});
+  const QList<QDoubleSpinBox *> spinPgt({ui->doubleSpinBoxPgt1, ui->doubleSpinBoxPgt2, ui->doubleSpinBoxPgt3, ui->doubleSpinBoxPgt4, ui->doubleSpinBoxPgt5});
+  const QList<QLineEdit *> linePgt({ui->lineEditPgt1, ui->lineEditPgt2, ui->lineEditPgt3, ui->lineEditPgt4, ui->lineEditPgt5});
 
   for (int i = 0; i < 5; ++i) {
     if (comboPgt.at(i)->currentText() != "Escolha uma opção!") {
@@ -1229,9 +1286,7 @@ void Venda::montarFluxoCaixa() {
     }
   }
 
-  for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
-    ui->tableFluxoCaixa->openPersistentEditor(row, "representacao");
-  }
+  for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) ui->tableFluxoCaixa->openPersistentEditor(row, "representacao");
 
   ui->tableFluxoCaixa->resizeColumnsToContents();
   ui->tableFluxoCaixa2->resizeColumnsToContents();
@@ -1239,19 +1294,18 @@ void Venda::montarFluxoCaixa() {
 
 void Venda::on_pushButtonLimparPag_clicked() { resetarPagamentos(); }
 
-void Venda::on_doubleSpinBoxTotal_valueChanged(const double) {
-  if (isBlockedGlobal) return;
-
+void Venda::on_doubleSpinBoxTotal_valueChanged(const double total) {
   const double liq = ui->doubleSpinBoxSubTotalLiq->value();
   const double frete = ui->doubleSpinBoxFrete->value();
-  const double total = ui->doubleSpinBoxTotal->value();
-  const double value = 100. * (1. - ((total - frete) / liq));
 
-  if (liq == 0.) return;
+  unsetConnections();
 
-  isBlockedTotal = true;
-  ui->doubleSpinBoxDescontoGlobal->setValue(value);
-  isBlockedTotal = false;
+  ui->doubleSpinBoxDescontoGlobal->setValue((liq + frete - total) / liq * 100);
+  ui->doubleSpinBoxDescontoGlobalReais->setValue(liq + frete - total);
+
+  resetarPagamentos();
+
+  setupConnections();
 }
 
 void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
@@ -1259,36 +1313,70 @@ void Venda::on_checkBoxFreteManual_clicked(const bool checked) {
   ui->doubleSpinBoxFrete->setReadOnly(not checked);
   ui->doubleSpinBoxFrete->setButtonSymbols(checked ? QDoubleSpinBox::UpDownArrows : QDoubleSpinBox::NoButtons);
 
-  ui->doubleSpinBoxFrete->setValue(ui->checkBoxFreteManual->isChecked()
-                                       ? ui->doubleSpinBoxFrete->value()
-                                       : qMax(ui->doubleSpinBoxSubTotalBruto->value() * porcFrete / 100., minimoFrete));
+  ui->doubleSpinBoxFrete->setValue(ui->checkBoxFreteManual->isChecked() ? ui->doubleSpinBoxFrete->value() : qMax(ui->doubleSpinBoxSubTotalBruto->value() * porcFrete / 100., minimoFrete));
 }
 
-void Venda::on_doubleSpinBoxFrete_valueChanged(const double) {
-  if (isBlockedGlobal) return;
+void Venda::on_doubleSpinBoxFrete_valueChanged(const double frete) {
+  const double subTotalLiq = ui->doubleSpinBoxSubTotalLiq->value();
+  const double desconto = ui->doubleSpinBoxDescontoGlobalReais->value();
 
-  calcPrecoGlobalTotal();
+  unsetConnections();
+
+  ui->doubleSpinBoxTotal->setValue(subTotalLiq - desconto + frete);
+
+  setupConnections();
 }
 
-void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double) {
-  if (isBlockedGlobal) return;
+void Venda::on_doubleSpinBoxDescontoGlobal_valueChanged(const double desconto) {
+  unsetConnections();
 
-  isBlockedGlobal = true;
-  calcPrecoGlobalTotal();
-  isBlockedGlobal = false;
+  [=]() {
+    for (int row = 0; row < modelItem.rowCount(); ++row) {
+      if (not modelItem.setData(row, "descGlobal", desconto)) return;
+
+      const double parcialDesc = modelItem.data(row, "parcialDesc").toDouble();
+      if (not modelItem.setData(row, "total", parcialDesc * (1 - (desconto / 100)))) return;
+    }
+
+    calcPrecoGlobalTotal();
+
+    const double liq = ui->doubleSpinBoxSubTotalLiq->value();
+    const double frete = ui->doubleSpinBoxFrete->value();
+
+    ui->doubleSpinBoxDescontoGlobalReais->setValue(liq * desconto / 100);
+    ui->doubleSpinBoxTotal->setValue((liq * (1 - (desconto / 100)) + frete));
+
+    resetarPagamentos();
+  }();
+
+  setupConnections();
 }
 
-void Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double) {
-  if (isBlockedGlobal) return;
+void Venda::on_doubleSpinBoxDescontoGlobalReais_valueChanged(const double desconto) {
+  unsetConnections();
 
-  const double liq = ui->doubleSpinBoxSubTotalLiq->value();
-  const double desc = ui->doubleSpinBoxDescontoGlobalReais->value();
+  [=]() {
+    const double liq = ui->doubleSpinBoxSubTotalLiq->value();
 
-  if (liq == 0.) return;
+    for (int row = 0; row < modelItem.rowCount(); ++row) {
+      if (not modelItem.setData(row, "descGlobal", desconto / liq * 100)) return;
 
-  isBlockedReais = true;
-  ui->doubleSpinBoxDescontoGlobal->setValue(100 * (1 - ((liq - desc) / liq)));
-  isBlockedReais = false;
+      const double parcialDesc = modelItem.data(row, "parcialDesc").toDouble();
+      if (not modelItem.setData(row, "total", parcialDesc * (1 - (desconto / liq)))) return;
+    }
+
+    calcPrecoGlobalTotal();
+
+    const double liq2 = ui->doubleSpinBoxSubTotalLiq->value();
+    const double frete = ui->doubleSpinBoxFrete->value();
+
+    ui->doubleSpinBoxDescontoGlobal->setValue(desconto / liq2 * 100);
+    ui->doubleSpinBoxTotal->setValue(liq2 - desconto + frete);
+
+    resetarPagamentos();
+  }();
+
+  setupConnections();
 }
 
 void Venda::on_pushButtonImprimir_clicked() {
@@ -1296,9 +1384,7 @@ void Venda::on_pushButtonImprimir_clicked() {
   impressao.print();
 }
 
-void Venda::successMessage() {
-  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Venda cadastrada com sucesso!");
-}
+void Venda::successMessage() { QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Venda cadastrada com sucesso!"); }
 
 void Venda::on_pushButtonGerarExcel_clicked() {
   Excel excel(ui->lineEditVenda->text());
@@ -1314,9 +1400,8 @@ bool Venda::atualizarCredito() {
   if (ui->comboBoxPgt4->currentText() == "Conta Cliente") creditoRestante -= ui->doubleSpinBoxPgt4->value();
   if (ui->comboBoxPgt5->currentText() == "Conta Cliente") creditoRestante -= ui->doubleSpinBoxPgt5->value();
 
-  if (ui->comboBoxPgt1->currentText() == "Conta Cliente" or ui->comboBoxPgt2->currentText() == "Conta Cliente" or
-      ui->comboBoxPgt3->currentText() == "Conta Cliente" or ui->comboBoxPgt4->currentText() == "Conta Cliente" or
-      ui->comboBoxPgt5->currentText() == "Conta Cliente") {
+  if (ui->comboBoxPgt1->currentText() == "Conta Cliente" or ui->comboBoxPgt2->currentText() == "Conta Cliente" or ui->comboBoxPgt3->currentText() == "Conta Cliente" or
+      ui->comboBoxPgt4->currentText() == "Conta Cliente" or ui->comboBoxPgt5->currentText() == "Conta Cliente") {
     QSqlQuery query;
     query.prepare("UPDATE cliente SET credito = :credito WHERE idCliente = :idCliente");
     query.bindValue(":credito", creditoRestante);
@@ -1332,17 +1417,43 @@ bool Venda::atualizarCredito() {
 }
 
 bool Venda::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+  currentRow = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  if (row == -1) {
-    error = "Erro linha -1 Venda: " + QString::number(isUpdate) + "\nMapper: " +
-            QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
+  if (currentRow == -1) {
+    error = "Erro linha -1 Venda: " + QString::number(isUpdate) + "\nMapper: " + QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
     return false;
   }
 
   if (not generateId()) return false;
   if (not savingProcedures()) return false;
   if (not atualizarCredito()) return false;
+
+  // inserir rt em contas_pagar
+
+  const QDate date = ui->dateTimeEdit->date();
+  const double valor = ui->doubleSpinBoxSubTotalDesc->value() * ui->doubleSpinBoxPontuacao->value() / 100;
+
+  QSqlQuery query;
+
+  if (valor > 0 and ui->itemBoxProfissional->getValue() > NAO_HA) {
+    query.prepare("INSERT INTO conta_a_pagar_has_pagamento (dataEmissao, contraParte, idLoja, centroCusto, valor, tipo, dataPagamento, grupo) VALUES (:dataEmissao, :contraParte, :idLoja, "
+                  ":centroCusto, :valor, :tipo, :dataPagamento, :grupo)");
+    query.bindValue(":dataEmissao", date);
+    query.bindValue(":contraParte", ui->itemBoxProfissional->text());
+    query.bindValue(":idLoja", data("idLoja"));
+    query.bindValue(":centroCusto", data("idLoja"));
+    query.bindValue(":valor", ui->doubleSpinBoxSubTotalDesc->value() * ui->doubleSpinBoxPontuacao->value() / 100);
+    query.bindValue(":tipo", "1. Dinheiro");
+    query.bindValue(":dataPagamento", date.day() <= 15 ? QDate(date.year(), date.month(), 30 > date.daysInMonth() ? date.daysInMonth() : 30) : QDate(date.year(), date.month() + 1, 15));
+    // 01-15 paga dia 30, 16-30 paga prox dia 15
+    query.bindValue(":grupo", "RT´s");
+
+    if (not query.exec()) {
+      error = "Erro cadastrando pontuação: " + query.lastError().text();
+      return false;
+    }
+  }
+  //
 
   if (not model.submitAll()) {
     error = "Erro ao cadastrar: " + model.lastError().text();
@@ -1352,7 +1463,7 @@ bool Venda::cadastrar() {
   primaryId = ui->lineEditVenda->text();
 
   if (primaryId.isEmpty()) {
-    QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
+    error = "primaryId está vazio!";
     return false;
   }
 
@@ -1383,10 +1494,8 @@ bool Venda::cadastrar() {
     return false;
   }
 
-  QSqlQuery query;
-
   query.prepare("UPDATE orcamento SET status = 'FECHADO' WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", m_idOrcamento);
+  query.bindValue(":idOrcamento", idOrcamento);
 
   if (not query.exec()) {
     error = "Erro marcando orçamento como 'FECHADO': " + query.lastError().text();
@@ -1414,7 +1523,7 @@ bool Venda::save() {
 
   viewRegisterById(primaryId);
 
-  if (not silent) successMessage();
+  successMessage();
 
   return true;
 }
@@ -1471,6 +1580,8 @@ bool Venda::cancelamento() {
     }
   }
 
+  // TODO: nao deixar cancelar se tiver ocorrido algum evento de conta
+
   query.prepare("UPDATE conta_a_receber_has_pagamento SET status = 'CANCELADO' WHERE idVenda = :idVenda");
   query.bindValue(":idVenda", ui->lineEditVenda->text());
 
@@ -1499,8 +1610,7 @@ void Venda::on_pushButtonCancelamento_clicked() {
     return;
   }
 
-  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja cancelar?",
-                     QMessageBox::Yes | QMessageBox::No, this);
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja cancelar?", QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Cancelar venda");
   msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -1519,16 +1629,14 @@ void Venda::on_pushButtonCancelamento_clicked() {
 
   const QString idOrcamento = data("idOrcamento").toString();
 
-  QMessageBox::information(this, "Aviso!", idOrcamento.isEmpty() ? "Não havia Orçamento associado para ativar!"
-                                                                 : "Orçamento " + idOrcamento + " reativado!");
+  QMessageBox::information(this, "Aviso!", idOrcamento.isEmpty() ? "Não havia Orçamento associado para ativar!" : "Orçamento " + idOrcamento + " reativado!");
 
   QMessageBox::information(this, "Aviso!", "Venda cancelada!");
   close();
 }
 
 bool Venda::generateId() {
-  QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy") +
-               UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
+  QString id = UserSession::fromLoja("sigla", ui->itemBoxVendedor->text()) + "-" + QDate::currentDate().toString("yy") + UserSession::fromLoja("loja.idLoja", ui->itemBoxVendedor->text());
 
   QSqlQuery query;
   query.prepare("SELECT MAX(idVenda) AS idVenda FROM venda WHERE idVenda LIKE :id");
@@ -1544,7 +1652,7 @@ bool Venda::generateId() {
   id += QString("%1").arg(last + 1, 3, 10, QChar('0'));
 
   query.prepare("SELECT representacao FROM orcamento WHERE idOrcamento = :idOrcamento");
-  query.bindValue(":idOrcamento", m_idOrcamento);
+  query.bindValue(":idOrcamento", idOrcamento);
 
   if (not query.exec() or not query.first()) {
     error = "Erro na query: " + query.lastError().text();
@@ -1564,7 +1672,7 @@ bool Venda::generateId() {
 }
 
 void Venda::on_pushButtonDevolucao_clicked() {
-  Devolucao *devolucao = new Devolucao(data("idVenda").toString(), this);
+  auto *devolucao = new Devolucao(data("idVenda").toString(), this);
   devolucao->show();
 }
 
@@ -1586,7 +1694,7 @@ void Venda::on_pushButtonFreteLoja_clicked() {
 }
 
 void Venda::on_pushButtonPgtLoja_clicked() {
-  LoginDialog dialog(LoginDialog::Autorizacao, this);
+  LoginDialog dialog(LoginDialog::Tipo::Autorizacao, this);
 
   if (dialog.exec() == QDialog::Rejected) return;
 
@@ -1603,15 +1711,15 @@ void Venda::setFinanceiro() {
   ui->groupBoxFinanceiro->show();
   ui->tableFluxoCaixa2->show();
 
-  if (UserSession::tipoUsuario() != "ADMINISTRADOR" and UserSession::tipoUsuario() != "GERENTE DEPARTAMENTO") {
-    ui->pushButtonCorrigirFluxo->hide();
-  }
+  if (UserSession::tipoUsuario() != "ADMINISTRADOR" and UserSession::tipoUsuario() != "GERENTE DEPARTAMENTO") ui->pushButtonCorrigirFluxo->hide();
 
   ui->frameButtons->hide();
   financeiro = true;
 }
 
 bool Venda::financeiroSalvar() {
+  atualizarCredito();
+
   if (not model.setData(mapper.currentIndex(), "statusFinanceiro", ui->comboBoxFinanceiro->currentText())) {
     error = "Erro salvando status financeiro: " + model.lastError().text();
     return false;
@@ -1678,12 +1786,81 @@ void Venda::on_pushButtonCorrigirFluxo_clicked() {
 
   ui->comboBoxPgt1->addItem("Conta Cliente");
 
+  queryPag.prepare("SELECT credito FROM cliente WHERE idCliente = :idCliente");
+  queryPag.bindValue(":idCliente", data("idCliente"));
+
+  if (not queryPag.exec() or not queryPag.first()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo credito cliente: " + queryPag.lastError().text());
+    return;
+  }
+
+  double credito = queryPag.value("credito").toDouble();
+
+  for (int row = 0; row < modelFluxoCaixa.rowCount(); ++row) {
+    if (modelFluxoCaixa.data(row, "tipo").toString().contains("Conta Cliente")) {
+      credito += modelFluxoCaixa.data(row, "valor").toDouble();
+    }
+  }
+
+  ui->doubleSpinBoxCreditoTotal->setValue(credito);
+
   //
 
   ui->framePagamentos_2->show();
   resetarPagamentos();
 }
 
+void Venda::on_checkBoxPontuacaoPadrao_toggled(bool checked) {
+  if (checked) {
+    QSqlQuery query;
+    query.prepare("SELECT comissao FROM profissional WHERE idProfissional = :idProfissional");
+    query.bindValue(":idProfissional", ui->itemBoxProfissional->getValue());
+
+    if (not query.exec() or not query.first()) {
+      QMessageBox::critical(this, "Erro!", "Erro buscando pontuação: " + query.lastError().text());
+      return;
+    }
+
+    ui->checkBoxPontuacaoIsento->setChecked(false);
+    ui->doubleSpinBoxPontuacao->setMaximum(query.value("comissao").toDouble());
+    ui->doubleSpinBoxPontuacao->setValue(query.value("comissao").toDouble());
+    //    ui->doubleSpinBoxPontuacao->setDisabled(true);
+    ui->doubleSpinBoxPontuacao->setEnabled(true);
+  } else {
+    //    ui->doubleSpinBoxPontuacao->setValue(-1);
+    //    ui->doubleSpinBoxPontuacao->setEnabled(true);
+  }
+
+  // TODO: criar linha em contas_pagar de comissao/rt
+}
+
+void Venda::on_checkBoxPontuacaoIsento_toggled(bool checked) {
+  if (checked) {
+    ui->checkBoxPontuacaoPadrao->setChecked(false);
+    ui->doubleSpinBoxPontuacao->setValue(0);
+    ui->doubleSpinBoxPontuacao->setDisabled(true);
+  } else {
+    //    ui->doubleSpinBoxPontuacao->setValue(-1);
+    ui->doubleSpinBoxPontuacao->setEnabled(true);
+  }
+}
+
+void Venda::on_checkBoxRT_toggled(bool checked) {
+  for (auto &item : ui->frameRT->findChildren<QWidget *>()) item->setVisible(checked);
+
+  ui->checkBoxRT->setText(checked ? "Pontuação" : "");
+}
+
+void Venda::on_itemBoxProfissional_textChanged(const QString &) { on_checkBoxPontuacaoPadrao_toggled(ui->checkBoxPontuacaoPadrao->isChecked()); }
+
+// TODO: hide 'nfe' field from tables that use conta_a_receber
+// TODO: nao gerar RT quando o total for zero (e apagar os zerados quando nao houver profissional)
+// TODO: se o pedido estiver cancelado ou devolvido bloquear os botoes correspondentes
+// TODO: no corrigir fluxo esta mostrando os botoes de 'frete pago a loja' e 'pagamento total a loja' em pedidos que nao
+// sao de representacao
+// TODO: verificar se um pedido nao deveria ter seu 'statusFinanceiro' alterado para 'liberado'
+// ao ter todos os pagamentos recebidos ('status' e 'statusFinanceiro' deveriam ser vinculados?)
+// TODO: quando for 'MATR' nao criar fluxo caixa
 // NOTE: prazoEntrega por produto
 // NOTE: bloquear desconto maximo por classe de funcionario
 // TODO: 2no caso de reposicao colocar formas de pagamento diferenciado ou nao usar pagamento?

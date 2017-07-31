@@ -40,7 +40,7 @@ namespace LimeReport{
 
 ModelHolder::ModelHolder(QAbstractItemModel *model, bool owned /*false*/)
 {
-    ModelToDataSource* mh = new ModelToDataSource(model,owned);
+    auto* mh = new ModelToDataSource(model,owned);
     m_dataSource = mh;
     m_owned=owned;
     connect(mh, SIGNAL(modelStateChanged()), this, SIGNAL(modelStateChanged()));
@@ -57,7 +57,7 @@ IDataSource * ModelHolder::dataSource(IDataSource::DatasourceMode mode)
 }
 
 QueryHolder::QueryHolder(QString queryText, QString connectionName, DataSourceManager *dataManager)
-    : m_query(0), m_queryText(queryText), m_connectionName(connectionName),
+    : m_query(nullptr), m_queryText(queryText), m_connectionName(connectionName),
       m_mode(IDataSource::RENDER_MODE), m_dataManager(dataManager), m_prepared(true)
 {
     extractParams();
@@ -90,7 +90,7 @@ bool QueryHolder::runQuery(IDataSource::DatasourceMode mode)
     fillParams(m_query);
     m_query->exec();
 
-    QSqlQueryModel *model = new QSqlQueryModel;
+    auto *model = new QSqlQueryModel;
     model->setQuery(*m_query);
 
     while (model->canFetchMore())
@@ -199,19 +199,19 @@ void QueryHolder::setQueryText(QString queryText)
     m_prepared = false;
     if (m_query) {
         delete m_query;
-        m_query = 0;
+        m_query = nullptr;
     }
 }
 
 IDataSource* QueryHolder::dataSource(IDataSource::DatasourceMode mode)
 {
-    if ((m_mode != mode && m_mode == IDataSource::DESIGN_MODE) || m_dataSource==0) {
+    if ((m_mode != mode && m_mode == IDataSource::DESIGN_MODE) || m_dataSource==nullptr) {
         m_mode = mode;
         runQuery(mode);
     }
     if (m_dataSource)
         return m_dataSource.data();
-    else return 0;
+    else return nullptr;
 }
 
 // QueryHolder
@@ -232,7 +232,7 @@ ModelToDataSource::ModelToDataSource(QAbstractItemModel* model, bool owned)
 
 ModelToDataSource::~ModelToDataSource()
 {
-    if ((m_owned) && m_model!=0)
+    if ((m_owned) && m_model!=nullptr)
         delete m_model;
 }
 
@@ -338,12 +338,12 @@ int ModelToDataSource::currentRow()
 
 bool ModelToDataSource::isInvalid() const
 {
-    return m_model==0;
+    return m_model==nullptr;
 }
 
 void ModelToDataSource::slotModelDestroed()
 {
-    m_model = 0;
+    m_model = nullptr;
     m_lastError = tr("model is destroyed");
     emit modelStateChanged();
 }
@@ -421,7 +421,7 @@ void SubQueryHolder::setMasterDatasource(const QString &value)
 void SubQueryHolder::extractParams()
 {
     if (!dataManager()->containsDatasource(m_masterDatasource)){
-        setLastError(QObject::tr("Master datasource \"%1\" not found!!!").arg(m_masterDatasource));
+        setLastError(QObject::tr(R"(Master datasource "%1" not found!!!)").arg(m_masterDatasource));
         setPrepared(false);
     } else {
         m_preparedSQL = replaceFields(replaceVariables(queryText()));
@@ -475,11 +475,11 @@ SubQueryDesc::SubQueryDesc(QString queryName, QString queryText, QString connect
 QObject *ProxyDesc::createElement(const QString &collectionName, const QString &)
 {
     if (collectionName=="fields"){
-        FieldMapDesc* fieldMapDesc = new FieldMapDesc;
+        auto* fieldMapDesc = new FieldMapDesc;
         m_maps.append(fieldMapDesc);
         return fieldMapDesc;
     }
-    return 0;
+    return nullptr;
 }
 
 int ProxyDesc::elementsCount(const QString &collectionName)
@@ -495,7 +495,7 @@ QObject *ProxyDesc::elementAt(const QString &collectionName, int index)
 }
 
 ProxyHolder::ProxyHolder(ProxyDesc* desc, DataSourceManager* dataManager)
-    :m_model(0), m_desc(desc), m_lastError(""), m_mode(IDataSource::RENDER_MODE),
+    :m_model(nullptr), m_desc(desc), m_lastError(""), m_mode(IDataSource::RENDER_MODE),
      m_invalid(false), m_dataManger(dataManager)
 {}
 
@@ -529,9 +529,9 @@ void ProxyHolder::filterModel()
                 m_lastError.clear();
             } else {
                 m_lastError.clear();
-                if(!master) m_lastError+=QObject::tr("Master datasouce \"%1\" not found!").arg(m_desc->master());
+                if(!master) m_lastError+=QObject::tr(R"(Master datasouce "%1" not found!)").arg(m_desc->master());
                 if(!child) m_lastError+=((m_lastError.isEmpty())?QObject::tr("Child"):QObject::tr(" and child "))+
-                                          QObject::tr("datasouce \"%1\" not found!").arg(m_desc->child());
+                                          QObject::tr(R"(datasouce "%1" not found!)").arg(m_desc->child());
             }
         }
     } else {
@@ -544,7 +544,7 @@ void ProxyHolder::filterModel()
 
 IDataSource *ProxyHolder::dataSource(IDataSource::DatasourceMode mode)
 {
-    if ((m_mode != mode && m_mode == IDataSource::DESIGN_MODE) || m_datasource==0) {
+    if ((m_mode != mode && m_mode == IDataSource::DESIGN_MODE) || m_datasource==nullptr) {
         m_mode = mode;
         m_datasource.clear();
         filterModel();
@@ -565,7 +565,7 @@ void ProxyHolder::invalidate(IDataSource::DatasourceMode mode)
 
 void ProxyHolder::slotChildModelDestoroyed(){
     m_datasource.clear();
-    m_model = 0;
+    m_model = nullptr;
 }
 
 void ProxyDesc::addFieldsCorrelation(const FieldsCorrelation& fieldsCorrelation)
@@ -618,7 +618,7 @@ QVariant MasterDetailProxyModel::sourceData(QString fieldName, int row) const
         return sourceModel()->index(row,fieldIndex).data();
     } else {
         throw ReportError(
-            tr("Field: \"%1\" not found in \"%2\" child datasource").arg(fieldName).arg(m_childName)
+            tr(R"(Field: "%1" not found in "%2" child datasource)").arg(fieldName).arg(m_childName)
         );
     }
 }
@@ -631,7 +631,7 @@ QVariant MasterDetailProxyModel::masterData(QString fieldName) const
         return master->data(fieldName);
     } else {
         throw ReportError(
-            tr("Field: \"%1\" not found in \"%2\" master datasource").arg(fieldName).arg(m_masterName)
+            tr(R"(Field: "%1" not found in "%2" master datasource)").arg(fieldName).arg(m_masterName)
         );
     }
 }

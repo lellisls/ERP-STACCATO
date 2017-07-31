@@ -44,22 +44,12 @@ class Q_XLSX_EXPORT DataValidation {
 public:
   enum ValidationType { None, Whole, Decimal, List, Date, Time, TextLength, Custom };
 
-  enum ValidationOperator {
-    Between,
-    NotBetween,
-    Equal,
-    NotEqual,
-    LessThan,
-    LessThanOrEqual,
-    GreaterThan,
-    GreaterThanOrEqual
-  };
+  enum ValidationOperator { Between, NotBetween, Equal, NotEqual, LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual };
 
   enum ErrorStyle { Stop, Warning, Information };
 
   DataValidation();
-  DataValidation(ValidationType type, ValidationOperator op = Between, const QString &formula1 = QString(),
-                 const QString &formula2 = QString(), bool allowBlank = false);
+  DataValidation(ValidationType type, ValidationOperator op = Between, const QString &formula1 = QString(), const QString &formula2 = QString(), bool allowBlank = false);
   DataValidation(const DataValidation &other);
   ~DataValidation();
 

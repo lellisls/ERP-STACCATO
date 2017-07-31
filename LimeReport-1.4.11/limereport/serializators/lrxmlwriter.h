@@ -30,48 +30,48 @@
 #ifndef LRXMLWRITER_H
 #define LRXMLWRITER_H
 
-#include <QtXml>
+#include "lrbasedesignintf.h"
 #include "serializators/lrstorageintf.h"
 #include "serializators/lrxmlserializatorsfactory.h"
-#include "lrbasedesignintf.h"
+#include <QtXml>
 
-namespace LimeReport{
+namespace LimeReport {
 
-class XMLWriter : public ItemsWriterIntf
-{
+class XMLWriter : public ItemsWriterIntf {
 public:
-    XMLWriter();
-    XMLWriter(QSharedPointer<QDomDocument> doc);
-    ~XMLWriter() {}
-private:
-    // ItemsWriterIntf interface
-    void  putItem(QObject* item);
-    bool  saveToFile(QString fileName);
-    QString saveToString();
-    QByteArray saveToByteArray();
-    void setPassPhrase(const QString &passPhrase);
+  XMLWriter();
+  XMLWriter(QSharedPointer<QDomDocument> doc);
+  ~XMLWriter() = default;
 
-    void init();
-    QDomElement putQObjectItem(QString name, QObject* item);
-    void putChildQObjectItem(QString name, QObject* item, QDomElement* parentNode);
-    void putCollectionItem(QObject* item, QDomElement* parentNode=0);
-    void putQObjectProperty(QString propertyName, QObject *item, QDomElement* parentNode=0);
-    void saveProperties(QObject* item, QDomElement* node);
-    bool setContent(QString fileName);
-    void saveProperty(QString name, QObject* item, QDomElement* node);
-    bool enumOrFlag(QString name, QObject* item);
-    QString extractClassName(QObject* item);
-    bool isCollection(QString propertyName, QObject *item);
-    void saveCollection(QString propertyName, QObject *item, QDomElement *node);
-    bool isQObject(QString propertyName, QObject *item);
-    bool replaceNode(QDomElement node, QObject *item);
 private:
-    QSharedPointer<QDomDocument> m_doc;
-    QString m_fileName;
-    QDomElement m_rootElement;
-    QString m_passPhrase;
+  // ItemsWriterIntf interface
+  void putItem(QObject *item);
+  bool saveToFile(QString fileName);
+  QString saveToString();
+  QByteArray saveToByteArray();
+  void setPassPhrase(const QString &passPhrase);
+
+  void init();
+  QDomElement putQObjectItem(QString name, QObject *item);
+  void putChildQObjectItem(QString name, QObject *item, QDomElement *parentNode);
+  void putCollectionItem(QObject *item, QDomElement *parentNode = 0);
+  void putQObjectProperty(QString propertyName, QObject *item, QDomElement *parentNode = 0);
+  void saveProperties(QObject *item, QDomElement *node);
+  bool setContent(QString fileName);
+  void saveProperty(QString name, QObject *item, QDomElement *node);
+  bool enumOrFlag(QString name, QObject *item);
+  QString extractClassName(QObject *item);
+  bool isCollection(QString propertyName, QObject *item);
+  void saveCollection(QString propertyName, QObject *item, QDomElement *node);
+  bool isQObject(QString propertyName, QObject *item);
+  bool replaceNode(QDomElement node, QObject *item);
+
+private:
+  QSharedPointer<QDomDocument> m_doc;
+  QString m_fileName;
+  QDomElement m_rootElement;
+  QString m_passPhrase;
 };
-
 }
 
 #endif // LRXMLWRITER_H

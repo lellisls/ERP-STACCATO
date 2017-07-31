@@ -54,7 +54,7 @@ LimeReport::ItemLocationPropItem::ItemLocationPropItem(QObject* object, ObjectsL
 
 
 QWidget * LimeReport::ItemLocationPropItem::createProperyEditor(QWidget *parent) const{
-    ComboBoxEditor *editor = new ComboBoxEditor(parent);
+    auto *editor = new ComboBoxEditor(parent);
     connect(editor,SIGNAL(currentIndexChanged(QString)),this,SLOT(slotLocationChanged(QString)));
     LimeReport::BaseDesignIntf *item=dynamic_cast<LimeReport::BaseDesignIntf*>(object());
     if (item){

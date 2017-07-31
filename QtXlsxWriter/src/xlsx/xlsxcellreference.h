@@ -35,7 +35,7 @@ public:
   CellReference(const QString &cell);
   CellReference(const char *cell);
   CellReference(const CellReference &other);
-  ~CellReference();
+  ~CellReference() = default;
 
   QString toString(bool row_abs = false, bool col_abs = false) const;
   static CellReference fromString(const QString &cell);

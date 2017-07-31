@@ -83,7 +83,7 @@ SpinBoxEditor::SpinBoxEditor(QWidget *parent)
     m_valueEditor->setMinimum(std::numeric_limits<int>::min());
     m_valueEditor->setMaximum(std::numeric_limits<int>::max());
     setFocusProxy(m_valueEditor);
-    QHBoxLayout* hLayout = new QHBoxLayout(this);
+    auto* hLayout = new QHBoxLayout(this);
     hLayout->addWidget(m_valueEditor);
     hLayout->setContentsMargins(1,1,1,1);
     hLayout->setSpacing(0);

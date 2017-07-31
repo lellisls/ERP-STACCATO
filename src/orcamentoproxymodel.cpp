@@ -3,19 +3,15 @@
 #include "orcamentoproxymodel.h"
 
 OrcamentoProxyModel::OrcamentoProxyModel(SqlTableModel *model, QObject *parent)
-    : QIdentityProxyModel(parent), dias(model->fieldIndex("Dias restantes")), status(model->fieldIndex("status")),
-      followup(model->fieldIndex("Observação")), semaforo(model->fieldIndex("semaforo")) {
+    : QIdentityProxyModel(parent), dias(model->fieldIndex("Dias restantes")), status(model->fieldIndex("status")), followup(model->fieldIndex("Observação")), semaforo(model->fieldIndex("semaforo")) {
   setSourceModel(model);
 }
-
-OrcamentoProxyModel::~OrcamentoProxyModel() {}
 
 QVariant OrcamentoProxyModel::data(const QModelIndex &proxyIndex, const int role) const {
   if (role == Qt::BackgroundRole) {
     if (proxyIndex.column() == this->dias) {
       const int dias = QIdentityProxyModel::data(index(proxyIndex.row(), this->dias), Qt::DisplayRole).toInt();
-      const QString status =
-          QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
+      const QString status = QIdentityProxyModel::data(index(proxyIndex.row(), this->status), Qt::DisplayRole).toString();
 
       if (dias >= 5 or status == "FECHADO") return QBrush(Qt::green);
       if (dias >= 3 or status == "CANCELADO") return QBrush(Qt::yellow);

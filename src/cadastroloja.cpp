@@ -10,18 +10,18 @@
 #include "ui_cadastroloja.h"
 #include "usersession.h"
 
-CadastroLoja::CadastroLoja(QWidget *parent)
-    : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
+CadastroLoja::CadastroLoja(QWidget *parent) : RegisterAddressDialog("loja", "idLoja", parent), ui(new Ui::CadastroLoja) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  for (auto const *line : findChildren<QLineEdit *>()) connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
 
   setupUi();
   setupTables();
   setupMapper();
   newRegister();
+
+  sdLoja = SearchDialog::loja(this);
+  connect(sdLoja, &SearchDialog::itemSelected, this, &CadastroLoja::viewRegisterById);
 
   ui->pushButtonAtualizarPagamento->hide();
   ui->pushButtonLimparSelecao->hide();
@@ -152,6 +152,8 @@ bool CadastroLoja::savingProcedures() {
   if (not setData("tel2", ui->lineEditTel2->text())) return false;
   if (not setData("valorMinimoFrete", ui->doubleSpinBoxValorMinimoFrete->value())) return false;
   if (not setData("porcentagemFrete", ui->doubleSpinBoxPorcFrete->value())) return false;
+  if (not setData("certificadoSerie", ui->lineEditCertificadoSerie->text())) return false;
+  if (not setData("certificadoSenha", ui->lineEditCertificadoSenha->text())) return false;
 
   return true;
 }
@@ -183,6 +185,8 @@ void CadastroLoja::setupMapper() {
   addMapping(ui->lineEditSIGLA, "sigla");
   addMapping(ui->lineEditTel, "tel");
   addMapping(ui->lineEditTel2, "tel2");
+  addMapping(ui->lineEditCertificadoSerie, "certificadoSerie");
+  addMapping(ui->lineEditCertificadoSenha, "certificadoSenha");
 
   mapperEnd.addMapping(ui->comboBoxTipoEnd, modelEnd.fieldIndex("descricao"));
   mapperEnd.addMapping(ui->lineEditBairro, modelEnd.fieldIndex("bairro"));
@@ -207,22 +211,17 @@ void CadastroLoja::setupMapper() {
 
 void CadastroLoja::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroLoja::on_pushButtonAtualizar_clicked() { update(); }
+void CadastroLoja::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroLoja::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroLoja::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroLoja::on_pushButtonBuscar_clicked() {
-  SearchDialog *sdLoja = SearchDialog::loja(this);
-  connect(sdLoja, &SearchDialog::itemSelected, this, &CadastroLoja::viewRegisterById);
-  sdLoja->show();
-}
+void CadastroLoja::on_pushButtonBuscar_clicked() { sdLoja->show(); }
 
 void CadastroLoja::on_lineEditCNPJ_textEdited(const QString &text) {
-  ui->lineEditCNPJ->setStyleSheet(validaCNPJ(QString(text).remove(".").remove("/").remove("-"))
-                                      ? "background-color: rgb(255, 255, 127)"
-                                      : "background-color: rgb(255, 255, 127);color: rgb(255, 0, 0)");
+  ui->lineEditCNPJ->setStyleSheet(validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "background-color: rgb(255, 255, 127)"
+                                                                                                : "background-color: rgb(255, 255, 127);color: rgb(255, 0, 0)");
 }
 
 void CadastroLoja::on_pushButtonAdicionarEnd_clicked() {
@@ -246,8 +245,7 @@ void CadastroLoja::on_pushButtonAtualizarEnd_clicked() {
 void CadastroLoja::on_pushButtonEndLimpar_clicked() { novoEndereco(); }
 
 void CadastroLoja::on_pushButtonRemoverEnd_clicked() {
-  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
-                     QMessageBox::Yes | QMessageBox::No, this);
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?", QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Remover");
   msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -287,9 +285,9 @@ bool CadastroLoja::cadastrarEndereco(const bool isUpdate) {
     return false;
   }
 
-  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  currentRowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
 
-  if (not isUpdate) modelEnd.insertRow(rowEnd);
+  if (not isUpdate) modelEnd.insertRow(currentRowEnd);
 
   if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
   if (not setDataEnd("cep", ui->lineEditCEP->text())) return false;
@@ -405,28 +403,26 @@ bool CadastroLoja::viewRegister() {
   return true;
 }
 
-void CadastroLoja::successMessage() {
-  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Loja cadastrada com sucesso!");
-}
+void CadastroLoja::successMessage() { QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Loja cadastrada com sucesso!"); }
 
 void CadastroLoja::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
 
 bool CadastroLoja::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+  currentRow = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  if (row == -1) {
+  if (currentRow == -1) {
     error = "Erro linha -1";
     return false;
   }
 
-  if (not isUpdate and not model.insertRow(row)) return false;
+  if (not isUpdate and not model.insertRow(currentRow)) return false;
 
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    const QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(currentRow, column);
     if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+      if (not model.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
@@ -435,7 +431,7 @@ bool CadastroLoja::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+  primaryId = data(currentRow, primaryKey).isValid() ? data(currentRow, primaryKey).toString() : getLastInsertId().toString();
 
   if (primaryId.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
@@ -449,9 +445,9 @@ bool CadastroLoja::cadastrar() {
   }
 
   for (int column = 0; column < modelEnd.rowCount(); ++column) {
-    const QVariant dado = modelEnd.data(row, column);
+    const QVariant dado = modelEnd.data(currentRow, column);
     if (dado.type() == QVariant::String) {
-      if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
+      if (not modelEnd.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
@@ -494,7 +490,7 @@ bool CadastroLoja::save() {
 
   viewRegisterById(primaryId);
 
-  if (not silent) successMessage();
+  successMessage();
 
   return true;
 }
@@ -584,8 +580,7 @@ void CadastroLoja::on_pushButtonAtualizarConta_clicked() {
 void CadastroLoja::on_pushButtonContaLimpar_clicked() { novaConta(); }
 
 void CadastroLoja::on_pushButtonRemoverConta_clicked() {
-  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
-                     QMessageBox::Yes | QMessageBox::No, this);
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?", QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Remover");
   msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -842,3 +837,6 @@ void CadastroLoja::on_pushButtonLimparSelecao_clicked() {
 
   ui->tablePagamentos->clearSelection();
 }
+
+// TODO: *SUL*colocar uma opcao para dizer quais tipos de produto a loja consegue visualizar (para diferenciar loja do
+// sul)

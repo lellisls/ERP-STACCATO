@@ -37,7 +37,7 @@ private:
   SqlTableModel model;
   Ui::WidgetCompraPendentes *ui;
   // methods
-  bool insere(const QDateTime &dataPrevista);
+  bool insere(const QDate &dataPrevista);
   void makeConnections();
   void setupTables();
 };

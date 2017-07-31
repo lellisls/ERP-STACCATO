@@ -8,7 +8,8 @@ class DateFormatDelegate : public QStyledItemDelegate {
 
 public:
   explicit DateFormatDelegate(QObject *parent = 0);
-  ~DateFormatDelegate();
+  ~DateFormatDelegate() = default;
+  virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &) const override;
 
 private:
   virtual QString displayText(const QVariant &value, const QLocale &) const override;

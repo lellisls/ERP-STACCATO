@@ -1067,7 +1067,7 @@
              <widget class="QLineEdit" name="lineEditFormComercial">
               <property name="minimumSize">
                <size>
-                <width>100</width>
+                <width>200</width>
                 <height>0</height>
                </size>
               </property>
@@ -1124,6 +1124,31 @@
           </item>
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_4">
+            <item row="1" column="5">
+             <widget class="QDoubleSpinBox" name="spinBoxUnCx">
+              <property name="maximumSize">
+               <size>
+                <width>55</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidades por caixa&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="2">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxCaixas">
               <property name="maximumSize">
@@ -1153,35 +1178,10 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="5">
-             <widget class="QDoubleSpinBox" name="spinBoxUnCx">
-              <property name="maximumSize">
-               <size>
-                <width>55</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidades por caixa&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-              <property name="correctionMode">
-               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
-              </property>
-              <property name="decimals">
-               <number>3</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="labelCaixas">
+            <item row="0" column="4">
+             <widget class="QLabel" name="labelMinimo">
               <property name="text">
-               <string>Caixas</string>
+               <string>Mínimo</string>
               </property>
              </widget>
             </item>
@@ -1192,10 +1192,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="labelMinimo">
+            <item row="0" column="2">
+             <widget class="QLabel" name="labelCaixas">
               <property name="text">
-               <string>Mínimo</string>
+               <string>Caixas</string>
               </property>
              </widget>
             </item>
@@ -1242,17 +1242,17 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="8">
-             <widget class="QLabel" name="labelTotalItem">
-              <property name="text">
-               <string>Total</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="7">
              <widget class="QLabel" name="labelDesconto">
               <property name="text">
                <string>Desconto</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="8">
+             <widget class="QLabel" name="labelTotalItem">
+              <property name="text">
+               <string>Total</string>
               </property>
              </widget>
             </item>
@@ -1279,34 +1279,25 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="6">
-             <widget class="QLineEdit" name="lineEditUn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>50</width>
-                <height>0</height>
-               </size>
-              </property>
+            <item row="1" column="4">
+             <widget class="QDoubleSpinBox" name="spinBoxMinimo">
               <property name="maximumSize">
                <size>
-                <width>0</width>
+                <width>55</width>
                 <height>16777215</height>
                </size>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidade padrão do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string/>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade mínima&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="readOnly">
                <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="correctionMode">
+               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
               </property>
              </widget>
             </item>
@@ -1341,6 +1332,37 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="6">
+             <widget class="QLineEdit" name="lineEditUn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>50</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>0</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unidade padrão do produto&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="8">
              <widget class="QDoubleSpinBox" name="doubleSpinBoxTotalItem">
               <property name="toolTip">
@@ -1363,25 +1385,14 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="4">
-             <widget class="QDoubleSpinBox" name="spinBoxMinimo">
-              <property name="maximumSize">
-               <size>
-                <width>55</width>
-                <height>16777215</height>
-               </size>
+            <item row="1" column="9">
+             <widget class="QPushButton" name="pushButtonCalculadora">
+              <property name="text">
+               <string/>
               </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quantidade mínima&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-              <property name="correctionMode">
-               <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+              <property name="icon">
+               <iconset resource="../qrs/resources.qrc">
+                <normaloff>:/calculator-icon.png</normaloff>:/calculator-icon.png</iconset>
               </property>
              </widget>
             </item>
@@ -1469,6 +1480,8 @@
   <tabstop>pushButtonAtualizarOrcamento</tabstop>
   <tabstop>pushButtonImprimir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../qrs/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

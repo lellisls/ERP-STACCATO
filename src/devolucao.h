@@ -18,12 +18,12 @@ public:
   ~Devolucao();
 
 private slots:
+  void on_doubleSpinBoxCaixas_valueChanged(const double caixas);
   void on_doubleSpinBoxQuant_editingFinished();
   void on_doubleSpinBoxQuant_valueChanged(double);
   void on_doubleSpinBoxTotalItem_valueChanged(double value);
   void on_groupBoxCredito_toggled(bool);
   void on_pushButtonDevolverItem_clicked();
-  void on_spinBoxCaixas_valueChanged(const int caixas);
   void on_tableProdutos_clicked(const QModelIndex &index);
 
 private:
@@ -43,7 +43,7 @@ private:
   bool atualizarDevolucao();
   bool criarContas();
   bool criarDevolucao();
-  bool desassociarCompra();
+  bool desvincularCompra();
   bool devolverItem(const QModelIndexList &list);
   bool inserirItens(const QModelIndexList &list);
   bool salvarCredito();

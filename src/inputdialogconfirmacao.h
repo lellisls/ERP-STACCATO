@@ -47,6 +47,12 @@ private:
   void setupTables();
   bool gerarCreditoCliente();
   bool criarReposicaoCliente();
+  bool quebraEntrega(const int row);
+  bool quebraRecebimento(const int row);
+  bool processarQuebra(const int row);
+  bool quebrarLinha(const int row, const int caixas);
+  bool criarConsumo(const int row);
+  bool desfazerConsumo(const int idEstoque);
 };
 
 #endif // INPUTDIALOGCONFIRMACAO_H

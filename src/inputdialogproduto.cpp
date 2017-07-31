@@ -10,8 +10,7 @@
 #include "singleeditdelegate.h"
 #include "ui_inputdialogproduto.h"
 
-InputDialogProduto::InputDialogProduto(const Type &type, QWidget *parent)
-    : QDialog(parent), type(type), ui(new Ui::InputDialogProduto) {
+InputDialogProduto::InputDialogProduto(const Type &type, QWidget *parent) : QDialog(parent), type(type), ui(new Ui::InputDialogProduto) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -128,8 +127,7 @@ bool InputDialogProduto::setFilter(const QStringList &ids) {
   model.setFilter(filter);
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return false;
   }
 
@@ -142,8 +140,7 @@ bool InputDialogProduto::setFilter(const QStringList &ids) {
   query.bindValue(":razaoSocial", model.data(0, "fornecedor"));
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro buscando substituicao tributaria do fornecedor: " + query.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro buscando substituicao tributaria do fornecedor: " + query.lastError().text());
     return false;
   }
 
@@ -173,7 +170,8 @@ void InputDialogProduto::updateTableData(const QModelIndex &topLeft) {
     model.setData(row, "prcUnitario", preco);
   }
 
-  calcularTotal();
+  processST();
+  //  calcularTotal();
 }
 
 void InputDialogProduto::calcularTotal() {
@@ -206,8 +204,22 @@ void InputDialogProduto::on_dateEditEvento_dateChanged(const QDate &date) {
 
 void InputDialogProduto::on_doubleSpinBoxAliquota_valueChanged(double) { processST(); }
 
+void InputDialogProduto::on_doubleSpinBoxST_valueChanged(double value) {
+  // calcular a aliquota e jogar no spinbox para recalcular os totais
+  isBlockedAliquota = true;
+
+  double total = 0;
+
+  for (int row = 0; row < model.rowCount(); ++row) total += model.data(row, "preco").toDouble();
+
+  const double aliquota = value / total * 100;
+
+  ui->doubleSpinBoxAliquota->setValue(aliquota);
+
+  isBlockedAliquota = false;
+}
+
 void InputDialogProduto::processST() {
-  model.select();
   calcularTotal();
 
   const QString text = ui->comboBoxST->currentText();
@@ -222,6 +234,11 @@ void InputDialogProduto::processST() {
     ui->doubleSpinBoxAliquota->hide();
     ui->labelST->hide();
     ui->doubleSpinBoxST->hide();
+
+    for (int row = 0; row < model.rowCount(); ++row) {
+      model.setData(row, "aliquotaSt", aliquota);
+      model.setData(row, "st", text);
+    }
   }
 
   if (text == "ST Fornecedor") {
@@ -232,7 +249,7 @@ void InputDialogProduto::processST() {
 
     const double st = total * aliquota / 100;
 
-    ui->doubleSpinBoxST->setValue(st);
+    if (not isBlockedAliquota) ui->doubleSpinBoxST->setValue(st);
 
     for (int row = 0; row < model.rowCount(); ++row) {
       model.setData(row, "aliquotaSt", aliquota);
@@ -251,7 +268,7 @@ void InputDialogProduto::processST() {
 
     const double st = total * aliquota / 100;
 
-    ui->doubleSpinBoxST->setValue(st);
+    if (not isBlockedAliquota) ui->doubleSpinBoxST->setValue(st);
 
     for (int row = 0; row < model.rowCount(); ++row) {
       model.setData(row, "aliquotaSt", aliquota);

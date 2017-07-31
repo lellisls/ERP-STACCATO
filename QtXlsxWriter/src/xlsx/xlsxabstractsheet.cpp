@@ -34,8 +34,6 @@ AbstractSheetPrivate::AbstractSheetPrivate(AbstractSheet *p, AbstractSheet::Crea
   sheetState = AbstractSheet::SS_Visible;
 }
 
-AbstractSheetPrivate::~AbstractSheetPrivate() {}
-
 /*!
   \class AbstractSheet
   \inmodule QtXlsx

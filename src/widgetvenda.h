@@ -22,7 +22,6 @@ signals:
   void errorSignal(const QString &error);
 
 private slots:
-  void montaFiltro();
   void on_comboBoxLojas_currentIndexChanged(const int);
   void on_groupBoxStatus_toggled(const bool enabled);
   void on_groupBoxStatusFinanceiro_toggled(const bool enabled);
@@ -37,6 +36,7 @@ private:
   SqlTableModel model;
   Ui::WidgetVenda *ui;
   // methods
+  void montaFiltro();
   void makeConnections();
   void setPermissions();
   void setupTables();

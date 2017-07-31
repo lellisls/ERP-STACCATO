@@ -10,13 +10,10 @@
 #include "ui_cadastrousuario.h"
 #include "usersession.h"
 
-CadastroUsuario::CadastroUsuario(QWidget *parent)
-    : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
+CadastroUsuario::CadastroUsuario(QWidget *parent) : RegisterDialog("usuario", "idUsuario", parent), ui(new Ui::CadastroUsuario) {
   ui->setupUi(this);
 
-  for (auto const *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  for (auto const *line : findChildren<QLineEdit *>()) connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") ui->table->hide();
 
@@ -24,6 +21,9 @@ CadastroUsuario::CadastroUsuario(QWidget *parent)
   fillCombobox();
   setupMapper();
   newRegister();
+
+  sdUsuario = SearchDialog::usuario(this);
+  connect(sdUsuario, &SearchDialog::itemSelected, this, &CadastroUsuario::viewRegisterById);
 }
 
 CadastroUsuario::~CadastroUsuario() { delete ui; }
@@ -141,35 +141,30 @@ void CadastroUsuario::fillCombobox() {
 
 void CadastroUsuario::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroUsuario::on_pushButtonAtualizar_clicked() { update(); }
+void CadastroUsuario::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroUsuario::on_pushButtonNovoCad_clicked() { newRegister(); }
 
 void CadastroUsuario::on_pushButtonRemover_clicked() { remove(); }
 
-void CadastroUsuario::on_pushButtonBuscar_clicked() {
-  SearchDialog *sdUsuario = SearchDialog::usuario(this);
-  connect(sdUsuario, &SearchDialog::itemSelected, this, &CadastroUsuario::viewRegisterById);
-  sdUsuario->show();
-}
+void CadastroUsuario::on_pushButtonBuscar_clicked() { sdUsuario->show(); }
 
 bool CadastroUsuario::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+  currentRow = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  if (row == -1) {
-    error = "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " + QString::number(mapper.currentIndex()) +
-            "\nModel: " + QString::number(model.rowCount());
+  if (currentRow == -1) {
+    error = "Linha -1 usuário: " + QString::number(isUpdate) + "\nMapper: " + QString::number(mapper.currentIndex()) + "\nModel: " + QString::number(model.rowCount());
     return false;
   }
 
-  if (not isUpdate and not model.insertRow(row)) return false;
+  if (not isUpdate and not model.insertRow(currentRow)) return false;
 
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    const QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(currentRow, column);
     if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+      if (not model.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
@@ -178,7 +173,7 @@ bool CadastroUsuario::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+  primaryId = data(currentRow, primaryKey).isValid() ? data(currentRow, primaryKey).toString() : getLastInsertId().toString();
 
   if (primaryId.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
@@ -246,14 +241,12 @@ bool CadastroUsuario::save() {
 
   viewRegisterById(primaryId);
 
-  if (not silent) successMessage();
+  successMessage();
 
   return true;
 }
 
-void CadastroUsuario::successMessage() {
-  QMessageBox::information(this, "Aviso!", isUpdate ? "Cadastro atualizado!" : "Usuário cadastrado com sucesso!");
-}
+void CadastroUsuario::successMessage() { QMessageBox::information(this, "Aviso!", isUpdate ? "Cadastro atualizado!" : "Usuário cadastrado com sucesso!"); }
 
 void CadastroUsuario::on_lineEditUser_textEdited(const QString &text) {
   QSqlQuery query;

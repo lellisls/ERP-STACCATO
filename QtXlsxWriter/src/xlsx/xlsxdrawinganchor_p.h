@@ -44,9 +44,8 @@ class Chart;
 
 // Helper class
 struct XlsxMarker {
-  XlsxMarker() {}
-  XlsxMarker(int row, int column, int rowOffset, int colOffset)
-      : cell(QPoint(row, column)), offset(rowOffset, colOffset) {}
+  XlsxMarker() = default;
+  XlsxMarker(int row, int column, int rowOffset, int colOffset) : cell(QPoint(row, column)), offset(rowOffset, colOffset) {}
 
   int row() const { return cell.x(); }
   int col() const { return cell.y(); }
@@ -62,7 +61,7 @@ public:
   enum ObjectType { GraphicFrame, Shape, GroupShape, ConnectionShape, Picture, Unknown };
 
   DrawingAnchor(Drawing *drawing, ObjectType objectType);
-  virtual ~DrawingAnchor();
+  virtual ~DrawingAnchor() = default;
   void setObjectPicture(const QImage &img);
   void setObjectGraphicFrame(QSharedPointer<Chart> chart);
 

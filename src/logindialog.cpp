@@ -28,7 +28,7 @@ LoginDialog::LoginDialog(const Tipo tipo, QWidget *parent) : QDialog(parent), ti
   ui->lineEditHostname->hide();
   ui->comboBoxLoja->hide();
 
-  if (tipo == Autorizacao) {
+  if (tipo == Tipo::Autorizacao) {
     ui->pushButtonConfig->hide();
     ui->lineEditUser->clear();
     ui->lineEditUser->setFocus();
@@ -51,8 +51,7 @@ void LoginDialog::on_pushButtonConfig_clicked() {
 
 bool LoginDialog::dbConnect() {
   if (not QSqlDatabase::drivers().contains("QMYSQL")) {
-    QMessageBox::critical(this, "Não foi possível carregar o banco de dados.",
-                          "Este aplicativo requer o driver QMYSQL.");
+    QMessageBox::critical(this, "Não foi possível carregar o banco de dados.", "Este aplicativo requer o driver QMYSQL.");
     exit(1);
   }
 
@@ -64,8 +63,8 @@ bool LoginDialog::dbConnect() {
   db.setDatabaseName("mysql");
 
   db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1");
-  //  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;MYSQL_OPT_CONNECT_TIMEOUT=5;MYSQL_OPT_READ_TIMEOUT=5;"
-  //                       "MYSQL_OPT_WRITE_TIMEOUT=5");
+  //  db.setConnectOptions("CLIENT_COMPRESS=1;MYSQL_OPT_RECONNECT=1;MYSQL_OPT_CONNECT_TIMEOUT=60;MYSQL_OPT_READ_TIMEOUT=60;"
+  //                       "MYSQL_OPT_WRITE_TIMEOUT=60");
 
   if (not db.open()) {
     QString message;
@@ -105,9 +104,7 @@ bool LoginDialog::dbConnect() {
   }
 
   if (not hasMydb) {
-    QMessageBox::critical(
-        this, "Erro!",
-        "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
+    QMessageBox::critical(this, "Erro!", "Não encontrou as tabelas do bando de dados, verifique se o servidor está funcionando corretamente.");
     return false;
   }
 
@@ -149,10 +146,9 @@ bool LoginDialog::dbConnect() {
 }
 
 void LoginDialog::on_pushButtonLogin_clicked() {
-  if (tipo == Login and not dbConnect()) return;
+  if (tipo == Tipo::Login and not dbConnect()) return;
 
-  if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text(),
-                             tipo == Autorizacao ? UserSession::Autorizacao : UserSession::Padrao)) {
+  if (not UserSession::login(ui->lineEditUser->text(), ui->lineEditPass->text(), tipo == Tipo::Autorizacao ? UserSession::Tipo::Autorizacao : UserSession::Tipo::Padrao)) {
     QMessageBox::critical(this, "Erro!", "Login inválido!");
     ui->lineEditPass->setFocus();
     return;
@@ -160,11 +156,11 @@ void LoginDialog::on_pushButtonLogin_clicked() {
 
   accept();
 
-  if (tipo == Login) UserSession::setSettings("User/lastuser", ui->lineEditUser->text());
+  if (tipo == Tipo::Login) UserSession::setSettings("User/lastuser", ui->lineEditUser->text());
 }
 
 void LoginDialog::updater() {
-  QSimpleUpdater *updater = new QSimpleUpdater();
+  auto *updater = new QSimpleUpdater();
   updater->setApplicationVersion(qApp->applicationVersion());
   updater->setReferenceUrl("http://" + UserSession::settings("Login/hostname").toString() + "/versao.txt");
   updater->setDownloadUrl("http://" + UserSession::settings("Login/hostname").toString() + "/Instalador.exe");
@@ -180,19 +176,21 @@ void LoginDialog::storeSelection() {
           << "Gabriel"
           << "Granja";
 
-    QString loja = QInputDialog::getItem(0, "Escolha a loja", "Qual a sua loja?", items, 0, false);
+    QString loja = QInputDialog::getItem(nullptr, "Escolha a loja", "Qual a sua loja?", items, 0, false);
 
+    // TODO:__project public code
     if (loja == "Alphaville") UserSession::setSettings("Login/hostname", "192.168.2.144");
     if (loja == "Gabriel") UserSession::setSettings("Login/hostname", "192.168.1.101");
-    if (loja == "Granja") UserSession::setSettings("Login/hostname", "192.168.0.10");
+    if (loja == "Granja") UserSession::setSettings("Login/hostname", "192.168.0.6");
   }
 }
 
 void LoginDialog::on_comboBoxLoja_currentTextChanged(const QString &loja) {
+  // TODO:__project public code
   if (loja == "Localhost") ui->lineEditHostname->setText("localhost");
   if (loja == "Alphaville") ui->lineEditHostname->setText("192.168.2.144");
   if (loja == "Gabriel") ui->lineEditHostname->setText("192.168.1.101");
-  if (loja == "Granja") ui->lineEditHostname->setText("192.168.0.10");
+  if (loja == "Granja") ui->lineEditHostname->setText("192.168.0.6");
   if (loja == "Acesso Externo") ui->lineEditHostname->setText("177.139.188.75");
 }
 

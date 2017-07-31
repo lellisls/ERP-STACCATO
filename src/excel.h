@@ -13,7 +13,7 @@ public:
 
 private:
   // attributes
-  enum Type { Orcamento, Venda } type;
+  enum class Tipo { Orcamento, Venda } tipo;
   const QString id;
   QSqlQuery query;
   QSqlQuery queryCliente;

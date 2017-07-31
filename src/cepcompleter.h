@@ -4,9 +4,9 @@
 class CepCompleter {
 
 public:
-  CepCompleter();
-  ~CepCompleter();
-  bool buscaCEP(const QString &cpf);
+  CepCompleter() = default;
+  ~CepCompleter() = default;
+  bool buscaCEP(const QString &cep);
   QString getBairro() const;
   QString getCidade() const;
   QString getEndereco() const;

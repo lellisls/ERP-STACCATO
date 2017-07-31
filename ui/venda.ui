@@ -368,12 +368,6 @@
                    <height>0</height>
                   </size>
                  </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
                  <property name="showGroupSeparator" stdset="0">
                   <bool>true</bool>
                  </property>
@@ -474,12 +468,6 @@
                    <width>80</width>
                    <height>0</height>
                   </size>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
                  <property name="showGroupSeparator" stdset="0">
                   <bool>true</bool>
@@ -1208,102 +1196,6 @@
           <number>0</number>
          </property>
          <layout class="QGridLayout" name="gridLayout_10">
-          <item row="3" column="0">
-           <widget class="QLabel" name="labelPrazoEntrega">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Prazo de entrega:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="spinBoxPrazoEntrega">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Validade em dias do orçamento, contando a partir de hoje&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="suffix">
-             <string> dias</string>
-            </property>
-            <property name="maximum">
-             <number>365</number>
-            </property>
-            <property name="singleStep">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="ItemBox" name="itemBoxEnderecoFat"/>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="labelPrazoEntrega_2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>End. de faturamento:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="TableView" name="tableVenda">
-            <property name="mouseTracking">
-             <bool>true</bool>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::NoSelection</enum>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <property name="sortingEnabled">
-             <bool>true</bool>
-            </property>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>false</bool>
-            </attribute>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="labelEndereco_9">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Observação:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="12" column="0">
-           <widget class="QLabel" name="labelIdOrcamento">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>IdOrçamento:</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_9">
             <property name="title">
@@ -1466,13 +1358,6 @@
             </property>
            </widget>
           </item>
-          <item row="10" column="0">
-           <widget class="QLabel" name="labelDateTimeOrc">
-            <property name="text">
-             <string>Data orçamento:</string>
-            </property>
-           </widget>
-          </item>
           <item row="9" column="0" colspan="2">
            <widget class="QPlainTextEdit" name="plainTextEdit">
             <property name="sizePolicy">
@@ -1486,6 +1371,167 @@
               <width>16777215</width>
               <height>100</height>
              </size>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="labelDateTimeOrc">
+            <property name="text">
+             <string>Data orçamento:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="ItemBox" name="itemBoxEnderecoFat"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="spinBoxPrazoEntrega">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Validade em dias do orçamento, contando a partir de hoje&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> dias</string>
+            </property>
+            <property name="maximum">
+             <number>365</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelPrazoEntrega">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Prazo de entrega:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelPrazoEntrega_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>End. de faturamento:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="0">
+           <widget class="QLabel" name="labelIdOrcamento">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Orçamento:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="labelEndereco_9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Observação:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="TableView" name="tableVenda">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::NoSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+          </item>
+          <item row="15" column="1">
+           <widget class="QFrame" name="frameRT">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_16">
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="checkBoxPontuacaoIsento">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Não</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="checkBoxPontuacaoPadrao">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Sim</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxPontuacao">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="suffix">
+                <string/>
+               </property>
+               <property name="maximum">
+                <double>15.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="15" column="0">
+           <widget class="QCheckBox" name="checkBoxRT">
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>

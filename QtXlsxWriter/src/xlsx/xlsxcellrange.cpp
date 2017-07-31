@@ -90,13 +90,7 @@ void CellRange::init(const QString &range) {
     Constructs a the range by copying the given \a
     other range.
 */
-CellRange::CellRange(const CellRange &other)
-    : top(other.top), left(other.left), bottom(other.bottom), right(other.right) {}
-
-/*!
-    Destroys the range.
-*/
-CellRange::~CellRange() {}
+CellRange::CellRange(const CellRange &other) : top(other.top), left(other.left), bottom(other.bottom), right(other.right) {}
 
 /*!
      Convert the range to string notation, such as "A1:B5".

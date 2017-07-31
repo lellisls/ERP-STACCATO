@@ -159,7 +159,7 @@ void XMLReader::readProperty(QObject *item, QDomElement *node)
 
 QVariant XMLReader::getValue(QDomElement *node)
 {
-    CreateSerializator creator = 0;
+    CreateSerializator creator = nullptr;
     try {
         creator=XMLAbstractSerializatorFactory::instance().objectCreator(
                 node->attribute("Type")

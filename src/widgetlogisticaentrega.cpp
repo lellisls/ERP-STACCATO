@@ -3,10 +3,12 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QSqlRecord>
 
 #include "checkboxdelegate.h"
 #include "doubledelegate.h"
 #include "financeiroproxymodel.h"
+#include "followup.h"
 #include "inputdialog.h"
 #include "ui_widgetlogisticaentrega.h"
 #include "usersession.h"
@@ -23,6 +25,8 @@ WidgetLogisticaEntrega::WidgetLogisticaEntrega(QWidget *parent) : QWidget(parent
   ui->itemBoxVeiculo->setSearchDialog(SearchDialog::veiculo(this));
 
   ui->dateTimeEdit->setDate(QDate::currentDate());
+
+  connect(ui->dateTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &WidgetLogisticaEntrega::calcularDisponivel);
 }
 
 WidgetLogisticaEntrega::~WidgetLogisticaEntrega() { delete ui; }
@@ -31,17 +35,24 @@ void WidgetLogisticaEntrega::setupTables() {
   modelProdutos.setTable("venda_has_produto");
   modelProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
+  // -----------------------------------------------------------------
+
   modelVendas.setTable("view_entrega_pendente");
   modelVendas.setEditStrategy(QSqlTableModel::OnManualSubmit);
 
   modelVendas.setHeaderData("idVenda", "Venda");
   modelVendas.setHeaderData("statusFinanceiro", "Financeiro");
   modelVendas.setHeaderData("prazoEntrega", "Prazo Limite");
+  modelVendas.setHeaderData("novoPrazoEntrega", "Novo Prazo");
 
   ui->tableVendas->setModel(new FinanceiroProxyModel(&modelVendas, this));
   ui->tableVendas->setItemDelegate(new DoubleDelegate(this));
 
+  ui->tableVendas->hideColumn("data");
+
   if (UserSession::tipoUsuario() != "VENDEDOR ESPECIAL") ui->tableVendas->hideColumn("Indicou");
+
+  // -----------------------------------------------------------------
 
   modelViewProdutos.setTable("view_entrega_produtos");
   modelViewProdutos.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -147,9 +158,7 @@ void WidgetLogisticaEntrega::setupTables() {
 void WidgetLogisticaEntrega::calcularPeso() {
   double peso = 0;
 
-  const auto list = ui->tableProdutos->selectionModel()->selectedRows();
-
-  for (auto const &item : list) {
+  for (auto const &item : ui->tableProdutos->selectionModel()->selectedRows()) {
     QSqlQuery query;
     query.prepare("SELECT kgcx FROM produto WHERE idProduto = :idProduto");
     query.bindValue(":idProduto", modelViewProdutos.data(item.row(), "idProduto"));
@@ -166,16 +175,14 @@ void WidgetLogisticaEntrega::calcularPeso() {
 
   ui->doubleSpinBoxPeso->setValue(peso);
 
-  ui->doubleSpinBoxPeso->setStyleSheet(
-      ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value() ? "color: rgb(255, 0, 0);" : "");
+  ui->doubleSpinBoxPeso->setStyleSheet(ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value() ? "color: rgb(255, 0, 0);" : "");
 }
 
 bool WidgetLogisticaEntrega::updateTables() {
   if (modelVendas.tableName().isEmpty()) {
     setupTables();
 
-    connect(ui->tableProdutos->selectionModel(), &QItemSelectionModel::selectionChanged, this,
-            &WidgetLogisticaEntrega::calcularPeso);
+    connect(ui->tableProdutos->selectionModel(), &QItemSelectionModel::selectionChanged, this, &WidgetLogisticaEntrega::calcularPeso);
 
     connect(ui->radioButtonEntregaLimpar, &QRadioButton::clicked, this, &WidgetLogisticaEntrega::montaFiltro);
     connect(ui->radioButtonParcialEstoque, &QRadioButton::clicked, this, &WidgetLogisticaEntrega::montaFiltro);
@@ -203,8 +210,7 @@ bool WidgetLogisticaEntrega::updateTables() {
     return false;
   }
 
-  for (int row = 0; row < modelViewProdutos.rowCount(); ++row)
-    ui->tableProdutos->openPersistentEditor(row, "selecionado");
+  for (int row = 0; row < modelViewProdutos.rowCount(); ++row) ui->tableProdutos->openPersistentEditor(row, "selecionado");
 
   ui->tableProdutos->resizeColumnsToContents();
 
@@ -214,6 +220,8 @@ bool WidgetLogisticaEntrega::updateTables() {
   }
 
   ui->tableTransp2->resizeColumnsToContents();
+
+  calcularDisponivel();
 
   return true;
 }
@@ -227,8 +235,7 @@ void WidgetLogisticaEntrega::on_tableVendas_clicked(const QModelIndex &index) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelViewProdutos.lastError().text());
   }
 
-  for (int row = 0; row < modelViewProdutos.rowCount(); ++row)
-    ui->tableProdutos->openPersistentEditor(row, "selecionado");
+  for (int row = 0; row < modelViewProdutos.rowCount(); ++row) ui->tableProdutos->openPersistentEditor(row, "selecionado");
 
   ui->tableProdutos->resizeColumnsToContents();
 
@@ -247,10 +254,8 @@ void WidgetLogisticaEntrega::montaFiltro() {
 
   const QString textoBusca = ui->lineEditBusca->text();
 
-  QString filtroBusca = textoBusca.isEmpty()
-                            ? ""
-                            : "idVenda LIKE '%" + textoBusca + "%' OR Bairro LIKE '%" + textoBusca +
-                                  "%' OR Logradouro LIKE '%" + textoBusca + "%' OR Cidade LIKE '%" + textoBusca + "%'";
+  QString filtroBusca =
+      textoBusca.isEmpty() ? "" : "idVenda LIKE '%" + textoBusca + "%' OR Bairro LIKE '%" + textoBusca + "%' OR Logradouro LIKE '%" + textoBusca + "%' OR Cidade LIKE '%" + textoBusca + "%'";
 
   if (not filtroCheck.isEmpty() and not filtroBusca.isEmpty()) filtroBusca.prepend(" AND ");
 
@@ -272,9 +277,7 @@ void WidgetLogisticaEntrega::montaFiltro() {
   }
 }
 
-void WidgetLogisticaEntrega::on_tableProdutos_entered(const QModelIndex &) {
-  ui->tableProdutos->resizeColumnsToContents();
-}
+void WidgetLogisticaEntrega::on_tableProdutos_entered(const QModelIndex &) { ui->tableProdutos->resizeColumnsToContents(); }
 
 void WidgetLogisticaEntrega::on_pushButtonAgendarCarga_clicked() {
   if (modelTransp.rowCount() == 0) {
@@ -288,6 +291,7 @@ void WidgetLogisticaEntrega::on_pushButtonAgendarCarga_clicked() {
   if (not processRows()) {
     QSqlQuery("ROLLBACK").exec();
     if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    error.clear();
     return;
   }
 
@@ -328,15 +332,15 @@ bool WidgetLogisticaEntrega::processRows() {
       return false;
     }
 
-    //        query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGA AGEND.', "
-    //                      "dataPrevEnt = :dataPrevEnt WHERE idVendaProduto = :idVendaProduto");
-    //        query.bindValue(":dataPrevEnt", dataPrevEnt);
-    //        query.bindValue(":idVenda", idVendaProduto);
+    query.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGA AGEND.', "
+                  "dataPrevEnt = :dataPrevEnt WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":dataPrevEnt", dataPrevEnt);
+    query.bindValue(":idVenda", idVendaProduto);
 
-    //    if (not query.exec()) {
-    //      error = "Erro atualizando status da compra: " + query.lastError().text();
-    //      return false;
-    //    }
+    if (not query.exec()) {
+      error = "Erro atualizando status da compra: " + query.lastError().text();
+      return false;
+    }
 
     query.prepare("UPDATE venda_has_produto SET status = 'ENTREGA AGEND.', dataPrevEnt = :dataPrevEnt WHERE "
                   "idVendaProduto = :idVendaProduto");
@@ -380,12 +384,10 @@ bool WidgetLogisticaEntrega::adicionarProduto(const QModelIndexList &list) {
 
     if (not modelTransp.setData(row, "fornecedor", modelViewProdutos.data(item.row(), "fornecedor"))) return false;
     if (not modelTransp.setData(row, "unCaixa", modelViewProdutos.data(item.row(), "unCaixa"))) return false;
-    if (not modelTransp.setData(row, "formComercial", modelViewProdutos.data(item.row(), "formComercial")))
-      return false;
+    if (not modelTransp.setData(row, "formComercial", modelViewProdutos.data(item.row(), "formComercial"))) return false;
     if (not modelTransp.setData(row, "idVeiculo", ui->itemBoxVeiculo->getValue())) return false;
     if (not modelTransp.setData(row, "idVenda", modelViewProdutos.data(item.row(), "idVenda"))) return false;
-    if (not modelTransp.setData(row, "idVendaProduto", modelViewProdutos.data(item.row(), "idVendaProduto")))
-      return false;
+    if (not modelTransp.setData(row, "idVendaProduto", modelViewProdutos.data(item.row(), "idVendaProduto"))) return false;
     if (not modelTransp.setData(row, "idProduto", modelViewProdutos.data(item.row(), "idProduto"))) return false;
     if (not modelTransp.setData(row, "produto", modelViewProdutos.data(item.row(), "produto"))) return false;
     if (not modelTransp.setData(row, "codComercial", modelViewProdutos.data(item.row(), "codComercial"))) return false;
@@ -414,7 +416,6 @@ void WidgetLogisticaEntrega::on_pushButtonAdicionarProduto_clicked() {
     return;
   }
 
-  // TODO: 1calcular disponivel por hora
   if (ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value()) {
     QMessageBox::warning(this, "Aviso!", "Peso maior que capacidade do veículo!");
   }
@@ -462,9 +463,7 @@ void WidgetLogisticaEntrega::on_itemBoxVeiculo_textChanged(const QString &) {
     return;
   }
 
-  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
-                         " AND status != 'FINALIZADO' AND DATE(data) = '" +
-                         ui->dateTimeEdit->date().toString("yyyy-MM-dd") + "'");
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() + " AND status != 'FINALIZADO' AND DATE(data) = '" + ui->dateTimeEdit->date().toString("yyyy-MM-dd") + "'");
 
   if (not modelTransp2.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
@@ -478,15 +477,21 @@ void WidgetLogisticaEntrega::on_itemBoxVeiculo_textChanged(const QString &) {
   calcularDisponivel();
 }
 
-void WidgetLogisticaEntrega::on_tableTransp2_entered(const QModelIndex &) {
-  ui->tableTransp2->resizeColumnsToContents();
-}
+void WidgetLogisticaEntrega::on_tableTransp2_entered(const QModelIndex &) { ui->tableTransp2->resizeColumnsToContents(); }
 
 void WidgetLogisticaEntrega::calcularDisponivel() {
   double peso = 0;
 
-  for (int row = 0; row < modelTransp2.rowCount(); ++row) peso += modelTransp2.data(row, "kg").toDouble();
+  for (int row = 0; row < modelTransp2.rowCount(); ++row) {
+    const int hour = modelTransp2.data(row, "data").toDateTime().time().hour();
 
+    //    qDebug() << "data: " << modelTransp2.data(row, "data");
+    //    qDebug() << "hora: " << hour;
+
+    if (hour != ui->dateTimeEdit->time().hour()) continue;
+
+    peso += modelTransp2.data(row, "kg").toDouble();
+  }
   const double capacidade = ui->doubleSpinBoxCapacidade->value();
 
   ui->doubleSpinBoxDisponivel->setValue(capacidade - peso);
@@ -495,8 +500,7 @@ void WidgetLogisticaEntrega::calcularDisponivel() {
 void WidgetLogisticaEntrega::on_dateTimeEdit_dateChanged(const QDate &date) {
   if (ui->itemBoxVeiculo->text().isEmpty()) return;
 
-  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
-                         " AND status != 'FINALIZADO' AND DATE(data) = '" + date.toString("yyyy-MM-dd") + "'");
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() + " AND status != 'FINALIZADO' AND DATE(data) = '" + date.toString("yyyy-MM-dd") + "'");
 
   if (not modelTransp2.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
@@ -528,7 +532,6 @@ void WidgetLogisticaEntrega::on_pushButtonAdicionarParcial_clicked() {
 
   const int row = list.first().row();
 
-  // TODO: 1calcular disponivel por hora
   if (ui->doubleSpinBoxPeso->value() > ui->doubleSpinBoxDisponivel->value()) {
     QMessageBox::warning(this, "Aviso!", "Peso maior que capacidade do veículo!");
   }
@@ -538,12 +541,27 @@ void WidgetLogisticaEntrega::on_pushButtonAdicionarParcial_clicked() {
     return;
   }
 
+  if (modelViewProdutos.data(row, "caixas").toInt() == 1) {
+    QMessageBox::critical(this, "Erro!", "Produto tem apenas uma caixa!");
+    return;
+  }
+
   if (not modelViewProdutos.data(row, "dataPrevEnt").isNull()) {
     QMessageBox::critical(this, "Erro!", "Produto já agendado!");
     return;
   }
 
-  adicionarProdutoParcial(row);
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not adicionarProdutoParcial(row)) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    error.clear();
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
 }
 
 bool WidgetLogisticaEntrega::adicionarProdutoParcial(const int row) {
@@ -552,10 +570,10 @@ bool WidgetLogisticaEntrega::adicionarProdutoParcial(const int row) {
 
   bool ok;
 
-  const int quantAgendar =
-      QInputDialog::getInt(this, "Agendar", "Quantidade de caixas: ", quantTotal, 0, quantTotal, 1, &ok);
+  // TODO: put this outside transaction
+  const int quantAgendar = QInputDialog::getInt(this, "Agendar", "Quantidade de caixas: ", quantTotal, 0, quantTotal, 1, &ok);
 
-  if (not ok) return false;
+  if (quantAgendar == 0 or not ok) return false;
 
   // quebrar se necessario
 
@@ -569,7 +587,7 @@ bool WidgetLogisticaEntrega::adicionarProdutoParcial(const int row) {
   query.bindValue(":idProduto", modelViewProdutos.data(row, "idProduto"));
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::critical(this, "Erro!", "Erro buscando peso do produto: " + query.lastError().text());
+    error = "Erro buscando peso do produto: " + query.lastError().text();
     return false;
   }
 
@@ -603,7 +621,7 @@ bool WidgetLogisticaEntrega::quebrarProduto(const int row, const int quantAgenda
   modelProdutos.setFilter("idVendaProduto = " + modelViewProdutos.data(row, "idVendaProduto").toString());
 
   if (not modelProdutos.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela venda_produto: " + modelProdutos.lastError().text());
+    error = "Erro lendo tabela venda_produto: " + modelProdutos.lastError().text();
     return false;
   }
 
@@ -647,13 +665,152 @@ bool WidgetLogisticaEntrega::quebrarProduto(const int row, const int quantAgenda
   if (not modelProdutos.setData(newRow, "total", totalNovo)) return false;
 
   if (not modelProdutos.submitAll()) {
-    QMessageBox::critical(this, "Erro!", "Erro salvando dados venda_produto: " + modelProdutos.lastError().text());
+    error = "Erro salvando dados venda_produto: " + modelProdutos.lastError().text();
     return false;
   }
 
+  const QVariant lastId = RegisterDialog::getLastInsertId();
+
   modelViewProdutos.select();
+
+  // refactor below into another function
+
+  // get idVendaProduto lastInsertId
+
+  //  qDebug() << "lastInsert: " << lastId;
+  // break consumo into two lines
+
+  SqlTableModel modelConsumo;
+  modelConsumo.setTable("estoque_has_consumo");
+  modelConsumo.setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  modelConsumo.setFilter("idVendaProduto = " + modelViewProdutos.data(row, "idVendaProduto").toString());
+
+  if (not modelConsumo.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelConsumo.lastError().text());
+    return false;
+  }
+
+  //  qDebug() << "consumo rows: " << modelConsumo.rowCount();
+
+  const int rowConsumo = modelConsumo.rowCount();
+  modelConsumo.insertRow(rowConsumo);
+
+  for (int column = 0, columnCount = modelConsumo.columnCount(); column < columnCount; ++column) {
+    if (modelConsumo.fieldIndex("idConsumo") == column) continue;
+    if (modelConsumo.fieldIndex("idVendaProduto") == column) continue;
+    if (modelConsumo.fieldIndex("created") == column) continue;
+    if (modelConsumo.fieldIndex("lastUpdated") == column) continue;
+
+    const QVariant value = modelConsumo.data(0, column);
+
+    if (not modelConsumo.setData(rowConsumo, column, value)) return false;
+  }
+
+  // alterar quant, caixas, valor
+
+  const double quantConsumo = modelConsumo.data(0, "quant").toDouble() * proporcao;
+  const int caixasConsumo = modelConsumo.data(0, "caixas").toInt() * proporcao;
+  const double valorConsumo = modelConsumo.data(0, "valor").toDouble() * proporcao;
+
+  if (not modelConsumo.setData(0, "quant", quantConsumo)) return false;
+  if (not modelConsumo.setData(0, "caixas", caixasConsumo)) return false;
+  if (not modelConsumo.setData(0, "valor", valorConsumo)) return false;
+
+  // alterar linha nova
+  const double quantConsumo2 = modelConsumo.data(rowConsumo, "quant").toDouble() * proporcaoNovo;
+  const int caixasConsumo2 = modelConsumo.data(rowConsumo, "caixas").toInt() * proporcaoNovo;
+  const double valorConsumo2 = modelConsumo.data(rowConsumo, "valor").toDouble() * proporcaoNovo;
+
+  if (not modelConsumo.setData(rowConsumo, "quant", quantConsumo2)) return false;
+  if (not modelConsumo.setData(rowConsumo, "caixas", caixasConsumo2)) return false;
+  if (not modelConsumo.setData(rowConsumo, "valor", valorConsumo2)) return false;
+  if (not modelConsumo.setData(rowConsumo, "idVendaProduto", lastId)) return false;
+
+  if (not modelConsumo.submitAll()) {
+    error = "Erro quebrando consumo em duas linhas: " + modelConsumo.lastError().text();
+    return false;
+  }
 
   return true;
 }
 
 // TODO: 1'em entrega' deve entrar na categoria 100% estoque?
+// TODO: adicionar botao para cancelar agendamento (verificar com Anderson)
+
+void WidgetLogisticaEntrega::on_pushButtonReagendarPedido_clicked() {
+  // get idVenda from view_entrega_pendente/modelVendas and set 'novoPrazo'
+
+  const auto list = ui->tableVendas->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
+    return;
+  }
+
+  InputDialog input(InputDialog::ReagendarPedido);
+
+  if (input.exec() != InputDialog::Accepted) return;
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not reagendar(list, input.getNextDate(), input.getObservacao())) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  updateTables();
+  QMessageBox::information(this, "Aviso!", "Reagendado com sucesso!");
+}
+
+bool WidgetLogisticaEntrega::reagendar(const QModelIndexList &list, const QDate &dataPrev, const QString &observacao) {
+  QSqlQuery query;
+
+  for (auto const &item : list) {
+    query.prepare("UPDATE venda SET novoPrazoEntrega = :novoPrazoEntrega WHERE idVenda = :idVenda");
+    query.bindValue(":novoPrazoEntrega", modelVendas.data(item.row(), "data").toDate().daysTo(dataPrev));
+    query.bindValue(":idVenda", modelVendas.data(item.row(), "idVenda"));
+
+    if (not query.exec()) {
+      error = "Erro atualizando novo prazo: " + query.lastError().text();
+      return false;
+    }
+
+    query.prepare("INSERT INTO venda_has_followup (idVenda, idLoja, idUsuario, tipoOperacao, observacao, dataFollowup) VALUES "
+                  "(:idVenda, :idLoja, :idUsuario, :tipoOperacao, :observacao, :dataFollowup)");
+    query.bindValue(":idVenda", modelVendas.data(item.row(), "idVenda"));
+    query.bindValue(":idLoja", UserSession::idLoja());
+    query.bindValue(":idUsuario", UserSession::idUsuario());
+    query.bindValue(":tipoOperacao", "Alteração do prazo de entrega");
+    query.bindValue(":observacao", observacao);
+    query.bindValue(":dataFollowup", QDate::currentDate());
+
+    if (not query.exec()) {
+      error = "Erro salvando followup: " + query.lastError().text();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void WidgetLogisticaEntrega::on_tableVendas_doubleClicked(const QModelIndex &index) {
+  if (index.column() == modelVendas.record().indexOf("novoPrazoEntrega")) {
+    const auto list = ui->tableVendas->selectionModel()->selectedRows();
+
+    if (list.isEmpty()) {
+      QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
+      return;
+    }
+
+    FollowUp *followup = new FollowUp(modelVendas.data(list.first().row(), "idVenda").toString(), FollowUp::Venda, this);
+    followup->setAttribute(Qt::WA_DeleteOnClose);
+    followup->show();
+  }
+}
+
+// TODO: refazer filtros do estoque (casos 'devolvido', 'cancelado', 'em entrega')

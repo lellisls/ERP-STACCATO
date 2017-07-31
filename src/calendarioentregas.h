@@ -29,6 +29,10 @@ private slots:
   void on_pushButtonReagendar_clicked();
   void on_tableCalendario_clicked(const QModelIndex &index);
   void on_tableCarga_clicked(const QModelIndex &index);
+  void on_tableCarga_entered(const QModelIndex &);
+  void on_pushButtonConsultarNFe_clicked();
+
+  void on_pushButtonTestarProtocolo_clicked();
 
 private:
   // attributes
@@ -40,8 +44,9 @@ private:
   // methods
   bool cancelarEntrega(const QModelIndexList &list);
   bool confirmarEntrega(const QDateTime &dataRealEnt, const QString &entregou, const QString &recebeu);
-  bool reagendar(const QModelIndexList &list, const QDateTime &dataPrevEnt);
+  bool reagendar(const QModelIndexList &list, const QDate &dataPrevEnt);
   void setupTables();
+  bool consultarNFe(const int idNFe);
 };
 
 #endif // CALENDARIOENTREGAS_H

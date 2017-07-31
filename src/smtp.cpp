@@ -20,8 +20,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 #include "smtp.h"
 
-Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const quint16 port, const int timeout)
-    : timeout(timeout), host(host), pass(pass), user(user), port(port) {
+Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const quint16 port, const int timeout) : timeout(timeout), host(host), pass(pass), user(user), port(port) {
   socket = new QSslSocket(this);
 
   connect(socket, &QIODevice::readyRead, this, &Smtp::readyRead);
@@ -31,8 +30,7 @@ Smtp::Smtp(const QString &user, const QString &pass, const QString &host, const 
   connect(socket, &QAbstractSocket::disconnected, this, &Smtp::disconnected);
 }
 
-void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, const QString &subject,
-                    const QString &body, const QStringList &files) {
+void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, const QString &subject, const QString &body, const QStringList &files) {
   message = "To: " + to + "\n";
   message.append("Cc: " + cc + "\n");
   message.append("From: " + from + "\n");
@@ -48,6 +46,8 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, c
   message.append(body);
   message.append("\n\n");
 
+  // TODO: dont hardcode this
+  // TODO:__project public code
   //
   QFile file("://assinatura conrado.png");
   file.open(QIODevice::ReadOnly);
@@ -68,15 +68,15 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &cc, c
       if (file.exists()) {
         if (not file.open(QIODevice::ReadOnly)) {
           //          qDebug("Couldn't open the file");
-          QMessageBox::critical(0, "Qt Simple SMTP client", "Erro ao abrir o arquivo do anexo");
+          QMessageBox::critical(nullptr, "Qt Simple SMTP client", "Erro ao abrir o arquivo do anexo!");
+          QMessageBox::critical(nullptr, "Erro!", "Erro: " + file.errorString());
           return;
         }
 
         QByteArray bytes = file.readAll();
         message.append("--frontier\n");
-        message.append("Content-Type: application/octet-stream; name=\"" + QFileInfo(file.fileName()).fileName() +
-                       "\"\nContent-Disposition: attachment; filename=\"" + QFileInfo(file.fileName()).fileName() +
-                       "\";\nContent-Transfer-Encoding: base64\n\n");
+        message.append(R"(Content-Type: application/octet-stream; name=")" + QFileInfo(file.fileName()).fileName() + "\"\nContent-Disposition: attachment; filename=\"" +
+                       QFileInfo(file.fileName()).fileName() + "\";\nContent-Transfer-Encoding: base64\n\n");
         message.append(bytes.toBase64());
         message.append("\n");
       }
@@ -257,7 +257,7 @@ void Smtp::readyRead() {
     return;
   } else {
     // something broke.
-    QMessageBox::critical(0, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
+    QMessageBox::critical(nullptr, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
     state = Close;
     emit status(tr("Failed to send message"));
   }

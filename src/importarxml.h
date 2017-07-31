@@ -23,7 +23,6 @@ private slots:
   void on_pushButtonCancelar_clicked();
   void on_pushButtonImportar_clicked();
   void on_pushButtonProcurar_clicked();
-  void on_pushButtonRemoverLinha_clicked();
   void on_tableCompra_entered(const QModelIndex &);
   void on_tableConsumo_entered(const QModelIndex &);
   void on_tableEstoque_entered(const QModelIndex &);
@@ -58,11 +57,14 @@ private:
   bool inserirNoSqlModel(XML &xml, const QStandardItem *item);
   bool lerXML(QFile &file);
   bool limparAssociacoes();
-  bool parear();
+  void WrapParear();
   bool perguntarLocal(XML &xml);
-  bool verificaCNPJ(XML &xml);
+  bool verificaCNPJ(const XML &xml);
   bool verificaExiste(XML &xml);
   void setupTables(const QStringList &idsCompra);
+  bool criarConsumo2(const int rowCompra, const int rowEstoque, const double quantAdicionar);
+  void procurar();
+  bool parear();
 };
 
 #endif // IMPORTARXML_H

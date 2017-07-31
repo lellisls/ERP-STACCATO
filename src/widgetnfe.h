@@ -20,7 +20,6 @@ signals:
 
 private slots:
   void on_tabWidgetNfe_currentChanged(const int);
-  void on_pushButtonExibirXML_clicked();
 
 private:
   Ui::WidgetNfe *ui;

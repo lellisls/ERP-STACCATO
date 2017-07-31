@@ -21,22 +21,15 @@ void LineEditTel::processTel(const QString &value) {
 
   if (size < 11) {
     for (int i = 2; i < 6 and i < size; ++i) tel += temp.at(i);
-
     if (size > 6) tel += '-';
-
     for (int i = 6; i < 10 and i < size; ++i) tel += temp.at(i);
 
   } else {
     tel += temp.at(2); // + '-';
-
     for (int i = 3; i < 7 and i < size; ++i) tel += temp.at(i);
-
     if (size >= 7) tel += '-';
-
     for (int i = 7; i < 11 and i < size; ++i) tel += temp.at(i);
   }
 
   setText(tel);
 }
-
-LineEditTel::~LineEditTel() {}

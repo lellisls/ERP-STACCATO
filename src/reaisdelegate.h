@@ -7,7 +7,7 @@ class ReaisDelegate : public QStyledItemDelegate {
 
 public:
   explicit ReaisDelegate(QObject *parent = 0, const double decimais = 2.);
-  ~ReaisDelegate();
+  ~ReaisDelegate() = default;
   QString displayText(const QVariant &value, const QLocale &locale) const override;
 
 private:

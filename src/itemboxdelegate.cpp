@@ -3,13 +3,10 @@
 #include "itembox.h"
 #include "itemboxdelegate.h"
 
-ItemBoxDelegate::ItemBoxDelegate(const Tipo tipo, const bool isReadOnly, QObject *parent)
-    : QStyledItemDelegate(parent), isReadOnly(isReadOnly), tipo(tipo) {}
-
-ItemBoxDelegate::~ItemBoxDelegate() {}
+ItemBoxDelegate::ItemBoxDelegate(const Tipo tipo, const bool isReadOnly, QObject *parent) : QStyledItemDelegate(parent), isReadOnly(isReadOnly), tipo(tipo) {}
 
 QWidget *ItemBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
-  ItemBox *editor = new ItemBox(parent);
+  auto *editor = new ItemBox(parent);
 
   editor->setReadOnlyItemBox(isReadOnly);
 
@@ -29,10 +26,7 @@ void ItemBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, c
   if (auto *box = qobject_cast<ItemBox *>(editor)) model->setData(index, box->getValue(), Qt::EditRole);
 }
 
-void ItemBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
-                                           const QModelIndex &) const {
-  editor->setGeometry(option.rect);
-}
+void ItemBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const { editor->setGeometry(option.rect); }
 
 void ItemBoxDelegate::commitAndCloseEditor() {
   QWidget *editor = qobject_cast<QWidget *>(sender());

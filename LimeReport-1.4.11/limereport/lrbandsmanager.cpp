@@ -95,7 +95,7 @@ BandDesignIntf *BandsManager::createBand(BandDesignIntf::BandsType bandType, QOb
         return new TearOffBand(owner, parent);
     }
 
-    return 0;
+    return nullptr;
 }
 
 }

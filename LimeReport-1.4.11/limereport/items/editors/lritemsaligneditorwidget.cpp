@@ -32,25 +32,25 @@
 namespace LimeReport{
 
 ItemsAlignmentEditorWidget::ItemsAlignmentEditorWidget(LimeReport::ReportDesignWidget* reportEditor, const QString& title, QWidget* parent)
-    :QToolBar(title,parent), m_reportEditor(reportEditor), m_page(0)
+    :QToolBar(title,parent), m_reportEditor(reportEditor), m_page(nullptr)
 {
     initEditor();
 }
 
 ItemsAlignmentEditorWidget::ItemsAlignmentEditorWidget(ReportDesignWidget* reportEditor, QWidget* parent)
-    :QToolBar(parent), m_reportEditor(reportEditor), m_page(0)
+    :QToolBar(parent), m_reportEditor(reportEditor), m_page(nullptr)
 {
     initEditor();
 }
 
 ItemsAlignmentEditorWidget::ItemsAlignmentEditorWidget(PageDesignIntf* page, const QString& title, QWidget* parent)
-    :QToolBar(title,parent), m_reportEditor(0), m_page(page)
+    :QToolBar(title,parent), m_reportEditor(nullptr), m_page(page)
 {
     initEditor();
 }
 
 ItemsAlignmentEditorWidget::ItemsAlignmentEditorWidget(PageDesignIntf* page, QWidget* parent)
-    :QToolBar(parent), m_reportEditor(0), m_page(page)
+    :QToolBar(parent), m_reportEditor(nullptr), m_page(page)
 {
     initEditor();
 }

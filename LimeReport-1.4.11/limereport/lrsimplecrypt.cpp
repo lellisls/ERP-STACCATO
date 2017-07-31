@@ -54,9 +54,9 @@ union WTB{
 };
 
 void initPt(WTB& pt, QByteArray::Iterator* it, QByteArray::Iterator end){
-    for (int i = 0; i<8; i++){
+    for (char & byte : pt.bytes){
         if (*it != end){
-            pt.bytes[i]=**it;
+            byte=**it;
             ++*it;
         } else break;
     }
@@ -140,8 +140,8 @@ QByteArray Chipper::cryptString(QString value)
         prior.word[0] = pt.word[0];
         prior.word[1] = pt.word[1];
 
-        for (int i=0;i<8;i++){
-            result += ct.bytes[i];
+        for (char byte : ct.bytes){
+            result += byte;
         }
     }
     return result;
@@ -173,8 +173,8 @@ QString Chipper::decryptByteArray(QByteArray value)
         prior.word[0] = ct.word[0];
         prior.word[1] = ct.word[1];
 
-        for (int i=0;i<8;i++){
-            result += ct.bytes[i];
+        for (char byte : ct.bytes){
+            result += byte;
         }
 
     }

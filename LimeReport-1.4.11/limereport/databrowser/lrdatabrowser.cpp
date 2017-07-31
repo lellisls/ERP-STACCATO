@@ -52,7 +52,7 @@ namespace LimeReport{
 
 DataBrowser::DataBrowser(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::DataBrowser), m_report(0), m_closingWindows(false), m_settings(0), m_ownedSettings(false)
+    ui(new Ui::DataBrowser), m_report(nullptr), m_closingWindows(false), m_settings(nullptr), m_ownedSettings(false)
 {
     ui->setupUi(this);
     connect(ui->addConnection,SIGNAL(clicked()),this,SLOT(slotAddConnection()));
@@ -81,7 +81,7 @@ QSize DataBrowser::sizeHint() const
 
 void DataBrowser::slotAddConnection()
 {
-    ConnectionDialog *connectionEdit = new ConnectionDialog(this,0,this);
+    auto *connectionEdit = new ConnectionDialog(this,nullptr,this);
     connectionEdit->setAttribute(Qt::WA_DeleteOnClose,true);
 #ifdef Q_OS_MAC
     connectionEdit->setWindowModality(Qt::WindowModal);
@@ -131,7 +131,7 @@ void DataBrowser::slotDeleteConnection()
                 QMessageBox::critical(
                     this,
                     tr("Attention"),
-                    tr("Do you really want to delete \"%1\" connection ?").arg(getConnectionName(NameForUser)),
+                    tr(R"(Do you really want to delete "%1" connection ?)").arg(getConnectionName(NameForUser)),
                     QMessageBox::Ok|QMessageBox::No,
                     QMessageBox::No
                 ) == QMessageBox::Ok
@@ -144,7 +144,7 @@ void DataBrowser::slotDeleteConnection()
 
 void DataBrowser::slotAddDataSource()
 {
-    SQLEditDialog *sqlEdit = new SQLEditDialog(this,m_report->dataManager(),SQLEditDialog::AddMode);
+    auto *sqlEdit = new SQLEditDialog(this,m_report->dataManager(),SQLEditDialog::AddMode);
     sqlEdit->setAttribute(Qt::WA_DeleteOnClose,true);
 #ifdef Q_OS_MAC
     sqlEdit->setWindowModality(Qt::WindowModal);
@@ -228,7 +228,7 @@ void DataBrowser::updateVariablesTree()
                                      "  ["+m_report->dataManager()->variable(variableName).toString()+"]"
                              )
               <<variableName;
-        QTreeWidgetItem *item=new QTreeWidgetItem(values,DataBrowserTree::Variable);
+        auto *item=new QTreeWidgetItem(values,DataBrowserTree::Variable);
         item->setIcon(0,QIcon(":/databrowser/images/value"));
         if (m_report->dataManager()->variableIsSystem(variableName)){
            systemVariables->addChild(item);
@@ -242,7 +242,7 @@ void DataBrowser::updateVariablesTree()
             QStringList values;
             values<<variableName+"  ["+m_report->dataManager()->variable(variableName).toString()+"]"
                   <<variableName;
-            QTreeWidgetItem *item=new QTreeWidgetItem(values,DataBrowserTree::ExternalVariable);
+            auto *item=new QTreeWidgetItem(values,DataBrowserTree::ExternalVariable);
             item->setIcon(0,QIcon(":/databrowser/images/value"));
             externalVariables->addChild(item);
         }
@@ -301,14 +301,14 @@ void DataBrowser::fillFields(QTreeWidgetItem *parentItem, LimeReport::IDataSourc
 
 QTreeWidgetItem * DataBrowser::findByNameAndType(QString name, int itemType)
 {
-    if (name.isEmpty()) return 0;
+    if (name.isEmpty()) return nullptr;
     QList<QTreeWidgetItem *>items = ui->dataTree->findItems(name,Qt::MatchContains | Qt::MatchRecursive);
     if (!items.isEmpty()){
         for (int i=0;i<items.count();i++){
             if ( (items.at(i)->type()==itemType)/* && (items.at(0)->text(0)==name)*/){ return items.at(i);}
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void DataBrowser::slotViewDatasource()
@@ -335,7 +335,7 @@ QTreeWidgetItem* findConnectionItem(QTreeWidgetItem* item){
         if (item->parent())
             return findConnectionItem(item->parent());
         else
-            return 0;
+            return nullptr;
     }
 }
 
@@ -372,7 +372,7 @@ void DataBrowser::slotEditDatasource()
 {
     if (!getDatasourceName().isEmpty()){
        closeDataWindow(getDatasourceName());
-       SQLEditDialog *sqlEdit = new SQLEditDialog(this,m_report->dataManager(),SQLEditDialog::EditMode);
+       auto *sqlEdit = new SQLEditDialog(this,m_report->dataManager(),SQLEditDialog::EditMode);
        sqlEdit->setAttribute(Qt::WA_DeleteOnClose);
 #ifdef Q_OS_MAC
        sqlEdit->setWindowModality(Qt::WindowModal);
@@ -395,7 +395,7 @@ void DataBrowser::slotDeleteDatasource()
                 QMessageBox::critical(
                     this,
                     tr("Attention"),
-                    tr("Do you really want to delete \"%1\" datasource ?").arg(datasourceName),
+                    tr(R"(Do you really want to delete "%1" datasource ?)").arg(datasourceName),
                     QMessageBox::Ok|QMessageBox::No,
                     QMessageBox::No
                 ) == QMessageBox::Ok
@@ -484,7 +484,7 @@ void DataBrowser::initConnections()
 QDockWidget *DataBrowser::createDataWindow(QString datasourceName)
 {
     QDockWidget *window = new QDockWidget("Table: "+datasourceName);
-    QTableView *tableView = new QTableView(window);
+    auto *tableView = new QTableView(window);
 
     try {
         IDataSourceHolder* holder = m_report->dataManager()->dataSourceHolder(datasourceName);
@@ -765,7 +765,7 @@ void DataBrowser::on_deleteVariable_clicked()
 {
     QString varName = getVariable();
     if (!varName.isEmpty()){
-        if (QMessageBox::critical(this,tr("Attention"),QString(tr("Do you really want to delete variable \"%1\" ?")).arg(varName),
+        if (QMessageBox::critical(this,tr("Attention"),QString(tr(R"(Do you really want to delete variable "%1" ?)")).arg(varName),
                  QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel
         )==QMessageBox::Ok){
             m_report->dataManager()->deleteVariable(varName);

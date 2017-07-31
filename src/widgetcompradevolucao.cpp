@@ -6,9 +6,7 @@
 #include "ui_widgetcompradevolucao.h"
 #include "widgetcompradevolucao.h"
 
-WidgetCompraDevolucao::WidgetCompraDevolucao(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraDevolucao) {
-  ui->setupUi(this);
-}
+WidgetCompraDevolucao::WidgetCompraDevolucao(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetCompraDevolucao) { ui->setupUi(this); }
 
 WidgetCompraDevolucao::~WidgetCompraDevolucao() { delete ui; }
 
@@ -84,6 +82,8 @@ void WidgetCompraDevolucao::setupTables() {
 
 void WidgetCompraDevolucao::on_pushButtonDevolucaoFornecedor_clicked() {
   // NOTE: colocar produto no fluxo da logistica para devolver ao fornecedor?
+  // TODO: 2criar nota de devolucao caso tenha recebido nota (troca cfop, inverte remetente/destinario, nat. 'devolucao
+  // de mercadoria'
 
   const auto list = ui->table->selectionModel()->selectedRows();
 
@@ -111,10 +111,19 @@ bool WidgetCompraDevolucao::retornarEstoque(const QModelIndexList &list) {
   for (auto const &item : list) {
     const QString status = model.data(item.row(), "status").toString();
 
+    // TODO: refazer isso para bloquear o botao
     if (status == "PENDENTE" or status == "INICIADO" or status == "EM COMPRA" or status == "EM FATURAMENTO") {
       // se nao faturado nao faz nada
       if (not model.setData(item.row(), "status", "PROCESSADO")) return false;
-    } else if (status == "EM COLETA" or status == "EM RECEBIMENTO" or status == "ESTOQUE") {
+
+      // TODO: perguntar se quer cancelar o produto correspondente da compra/ ou a compra inteira (verificar pelo
+      // idVendaProduto)
+      // TODO: colocar uma linha de pagamento negativa no fluxo da compra para quando corrigir fluxo ter o valor total
+      // alterado
+      // TODO: criar uma tabelinha de coisas pendentes para o financeiro
+
+    } else {
+      //    else if (status == "EM COLETA" or status == "EM RECEBIMENTO" or status == "ESTOQUE") {
       // se faturado criar devolucao estoque_has_consumo
       // 1.procurar em estoque pelo idVendaProduto
       // 2.copiar linha consumo mudando quant, status para devolucao e idCompra 0
@@ -123,6 +132,7 @@ bool WidgetCompraDevolucao::retornarEstoque(const QModelIndexList &list) {
       const QString idVenda = model.data(item.row(), "idVenda").toString();
 
       QSqlQuery query;
+      // TODO: verificar se estou pegando o idVendaProduto da devolucao e nao o original
       query.prepare("SELECT idVendaProduto FROM venda_has_produto WHERE idVenda = :idVenda AND idProduto = :idProduto "
                     "AND status = 'DEVOLVIDO'");
       query.bindValue(":idVenda", idVenda.left(11));
@@ -171,16 +181,17 @@ bool WidgetCompraDevolucao::retornarEstoque(const QModelIndexList &list) {
       modelEstoque.setData(newRow, "status", "DEVOLVIDO");
       modelEstoque.setData(newRow, "quant", model.data(item.row(), "quant").toDouble() * -1);
       modelEstoque.setData(newRow, "quantUpd", 5);
-      // TODO: substituir idVendaProduto pelo id da devolucao
+      // TODO: 2substituir idVendaProduto pelo id da devolucao
 
       if (not modelEstoque.submitAll()) {
         error = "Erro salvando devolução de estoque: " + modelEstoque.lastError().text();
         return false;
       }
-    } else {
-      error = "Status inválido!";
-      return false;
     }
+    //    else {
+    //      error = "Status inválido!";
+    //      return false;
+    //    }
   }
 
   if (not model.submitAll()) {
@@ -192,6 +203,8 @@ bool WidgetCompraDevolucao::retornarEstoque(const QModelIndexList &list) {
 }
 
 void WidgetCompraDevolucao::on_pushButtonRetornarEstoque_clicked() {
+  // TODO: 0verificar se o sistema nao esta tentando fazer a devolucao do idVendaProduto da devolucao e nao do original
+
   const auto list = ui->table->selectionModel()->selectedRows();
 
   if (list.isEmpty()) {

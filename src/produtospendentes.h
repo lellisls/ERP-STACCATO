@@ -33,14 +33,15 @@ private:
   // methods
   bool insere(const QDateTime &dataPrevista);
   void setupTables();
-  bool comprar(const QModelIndexList &list, const QDateTime &dataPrevista);
-  bool consumirEstoque(const int rowProduto, const int rowEstoque);
-  bool enviarExcedenteParaCompra(const int row, const QDateTime &dataPrevista);
-  bool enviarProdutoParaCompra(const int row, const QDateTime &dataPrevista);
-  bool atualizarVendaCompra(const int row, const QDateTime &dataPrevista);
+  bool comprar(const QModelIndexList &list, const QDate &dataPrevista);
+  bool consumirEstoque(const int rowProduto, const int rowEstoque, const double quantConsumir, const double quantTotalVenda, const double quantEstoque);
+  bool enviarExcedenteParaCompra(const int row, const QDate &dataPrevista);
+  bool enviarProdutoParaCompra(const int row, const QDate &dataPrevista);
+  bool atualizarVendaCompra(const int row, const QDate &dataPrevista);
   bool quebrarVendaConsumo(const double quantConsumir, const double quantTotalVenda, const int rowProduto);
-  bool quebrarVenda(const int row, const QDateTime &dataPrevista);
+  bool quebrarVenda(const int row, const QDate &dataPrevista);
   void recarregarTabelas();
+  void recalcularQuantidade();
 };
 
 #endif // PRODUTOSPENDENTES_H

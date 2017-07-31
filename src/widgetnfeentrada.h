@@ -29,9 +29,11 @@ private slots:
 private:
   // attributes
   SqlTableModel model;
+  QString error;
   Ui::WidgetNfeEntrada *ui;
   // methods
   void setupTables();
+  bool cancelar(const int row);
 };
 
 #endif // WIDGETNFEENTRADA_H

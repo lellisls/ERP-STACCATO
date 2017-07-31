@@ -75,8 +75,6 @@ DrawingAnchor::DrawingAnchor(Drawing *drawing, ObjectType objectType) : m_drawin
   m_id = m_drawing->anchors.size(); // must be unique in one drawing{x}.xml file.
 }
 
-DrawingAnchor::~DrawingAnchor() {}
-
 void DrawingAnchor::setObjectPicture(const QImage &img) {
   QByteArray ba;
   QBuffer buffer(&ba);
@@ -182,11 +180,11 @@ void DrawingAnchor::loadXmlObjectGraphicFrame(QXmlStreamReader &reader) {
 
         bool exist = false;
         QList<QSharedPointer<Chart>> cfs = m_drawing->workbook->chartFiles();
-        for (int i = 0; i < cfs.size(); ++i) {
-          if (cfs[i]->filePath() == path) {
+        for (auto & cf : cfs) {
+          if (cf->filePath() == path) {
             // already exist
             exist = true;
-            m_chartFile = cfs[i];
+            m_chartFile = cf;
           }
         }
         if (not exist) {
@@ -218,11 +216,11 @@ void DrawingAnchor::loadXmlObjectPicture(QXmlStreamReader &reader) {
 
         bool exist = false;
         QList<QSharedPointer<MediaFile>> mfs = m_drawing->workbook->mediaFiles();
-        for (int i = 0; i < mfs.size(); ++i) {
-          if (mfs[i]->fileName() == path) {
+        for (auto & mf : mfs) {
+          if (mf->fileName() == path) {
             // already exist
             exist = true;
-            m_pictureFile = mfs[i];
+            m_pictureFile = mf;
           }
         }
         if (not exist) {
@@ -293,18 +291,14 @@ void DrawingAnchor::saveXmlObjectGraphicFrame(QXmlStreamWriter &writer) const {
 
   writer.writeStartElement(QStringLiteral("a:graphic"));
   writer.writeStartElement(QStringLiteral("a:graphicData"));
-  writer.writeAttribute(QStringLiteral("uri"),
-                        QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
+  writer.writeAttribute(QStringLiteral("uri"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
 
   int idx = m_drawing->workbook->chartFiles().indexOf(m_chartFile);
-  m_drawing->relationships()->addDocumentRelationship(QStringLiteral("/chart"),
-                                                      QStringLiteral("../charts/chart%1.xml").arg(idx + 1));
+  m_drawing->relationships()->addDocumentRelationship(QStringLiteral("/chart"), QStringLiteral("../charts/chart%1.xml").arg(idx + 1));
 
   writer.writeEmptyElement(QStringLiteral("c:chart"));
-  writer.writeAttribute(QStringLiteral("xmlns:c"),
-                        QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
-  writer.writeAttribute(QStringLiteral("xmlns:r"),
-                        QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
+  writer.writeAttribute(QStringLiteral("xmlns:c"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/chart"));
+  writer.writeAttribute(QStringLiteral("xmlns:r"), QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
   writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(m_drawing->relationships()->count()));
 
   writer.writeEndElement(); // a:graphicData
@@ -331,14 +325,12 @@ void DrawingAnchor::saveXmlObjectPicture(QXmlStreamWriter &writer) const {
 
   writer.writeEndElement(); // xdr:nvPicPr
 
-  m_drawing->relationships()->addDocumentRelationship(
-      QStringLiteral("/image"),
-      QStringLiteral("../media/image%1.%2").arg(m_pictureFile->index() + 1).arg(m_pictureFile->suffix()));
+  m_drawing->relationships()->addDocumentRelationship(QStringLiteral("/image"),
+                                                      QStringLiteral("../media/image%1.%2").arg(m_pictureFile->index() + 1).arg(m_pictureFile->suffix()));
 
   writer.writeStartElement(QStringLiteral("xdr:blipFill"));
   writer.writeEmptyElement(QStringLiteral("a:blip"));
-  writer.writeAttribute(QStringLiteral("xmlns:r"),
-                        QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
+  writer.writeAttribute(QStringLiteral("xmlns:r"), QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
   writer.writeAttribute(QStringLiteral("r:embed"), QStringLiteral("rId%1").arg(m_drawing->relationships()->count()));
   writer.writeStartElement(QStringLiteral("a:stretch"));
   writer.writeEmptyElement(QStringLiteral("a:fillRect"));
@@ -361,8 +353,7 @@ void DrawingAnchor::saveXmlObjectShape(QXmlStreamWriter &writer) const { Q_UNUSE
 
 // absolute anchor
 
-DrawingAbsoluteAnchor::DrawingAbsoluteAnchor(Drawing *drawing, ObjectType objectType)
-    : DrawingAnchor(drawing, objectType) {}
+DrawingAbsoluteAnchor::DrawingAbsoluteAnchor(Drawing *drawing, ObjectType objectType) : DrawingAnchor(drawing, objectType) {}
 
 bool DrawingAbsoluteAnchor::loadFromXml(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("absoluteAnchor"));
@@ -377,8 +368,7 @@ bool DrawingAbsoluteAnchor::loadFromXml(QXmlStreamReader &reader) {
       } else {
         loadXmlObject(reader);
       }
-    } else if (reader.tokenType() == QXmlStreamReader::EndElement and
-               reader.name() == QLatin1String("absoluteAnchor")) {
+    } else if (reader.tokenType() == QXmlStreamReader::EndElement and reader.name() == QLatin1String("absoluteAnchor")) {
       break;
     }
   }
@@ -398,8 +388,7 @@ void DrawingAbsoluteAnchor::saveToXml(QXmlStreamWriter &writer) const {
 
 // one cell anchor
 
-DrawingOneCellAnchor::DrawingOneCellAnchor(Drawing *drawing, ObjectType objectType)
-    : DrawingAnchor(drawing, objectType) {}
+DrawingOneCellAnchor::DrawingOneCellAnchor(Drawing *drawing, ObjectType objectType) : DrawingAnchor(drawing, objectType) {}
 
 bool DrawingOneCellAnchor::loadFromXml(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("oneCellAnchor"));
@@ -439,8 +428,7 @@ void DrawingOneCellAnchor::saveToXml(QXmlStreamWriter &writer) const {
  , a shape, or a drawing element. It moves with
  cells and its extents are in EMU units.
 */
-DrawingTwoCellAnchor::DrawingTwoCellAnchor(Drawing *drawing, ObjectType objectType)
-    : DrawingAnchor(drawing, objectType) {}
+DrawingTwoCellAnchor::DrawingTwoCellAnchor(Drawing *drawing, ObjectType objectType) : DrawingAnchor(drawing, objectType) {}
 
 bool DrawingTwoCellAnchor::loadFromXml(QXmlStreamReader &reader) {
   Q_ASSERT(reader.name() == QLatin1String("twoCellAnchor"));

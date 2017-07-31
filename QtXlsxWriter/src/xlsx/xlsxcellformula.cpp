@@ -41,10 +41,7 @@ CellFormulaPrivate::CellFormulaPrivate(const QString &formula_, const CellRange 
 }
 
 CellFormulaPrivate::CellFormulaPrivate(const CellFormulaPrivate &other)
-    : QSharedData(other), formula(other.formula), type(other.type), reference(other.reference), ca(other.ca),
-      si(other.si) {}
-
-CellFormulaPrivate::~CellFormulaPrivate() {}
+    : QSharedData(other), formula(other.formula), type(other.type), reference(other.reference), ca(other.ca), si(other.si) {}
 
 /*!
   \class CellFormula
@@ -71,20 +68,17 @@ CellFormula::CellFormula() {
 /*!
  *  Creates a new formula with the given \a formula and \a type.
  */
-CellFormula::CellFormula(const char *formula, FormulaType type)
-    : d(new CellFormulaPrivate(QString::fromLatin1(formula), CellRange(), type)) {}
+CellFormula::CellFormula(const char *formula, FormulaType type) : d(new CellFormulaPrivate(QString::fromLatin1(formula), CellRange(), type)) {}
 
 /*!
  *  Creates a new formula with the given \a formula and \a type.
  */
-CellFormula::CellFormula(const QString &formula, FormulaType type)
-    : d(new CellFormulaPrivate(formula, CellRange(), type)) {}
+CellFormula::CellFormula(const QString &formula, FormulaType type) : d(new CellFormulaPrivate(formula, CellRange(), type)) {}
 
 /*!
  *  Creates a new formula with the given \a formula, \a ref and \a type.
  */
-CellFormula::CellFormula(const QString &formula, const CellRange &ref, FormulaType type)
-    : d(new CellFormulaPrivate(formula, ref, type)) {}
+CellFormula::CellFormula(const QString &formula, const CellRange &ref, FormulaType type) : d(new CellFormulaPrivate(formula, ref, type)) {}
 
 /*!
    Creates a new formula with the same attributes as the \a other formula.
@@ -192,15 +186,11 @@ bool CellFormula::loadFromXml(QXmlStreamReader &reader) {
 /*!
  * \internal
  */
-bool CellFormula::operator==(const CellFormula &formula) const {
-  return d->formula == formula.d->formula and d->type == formula.d->type and d->si == formula.d->si;
-}
+bool CellFormula::operator==(const CellFormula &formula) const { return d->formula == formula.d->formula and d->type == formula.d->type and d->si == formula.d->si; }
 
 /*!
  * \internal
  */
-bool CellFormula::operator!=(const CellFormula &formula) const {
-  return d->formula != formula.d->formula or d->type != formula.d->type or d->si != formula.d->si;
-}
+bool CellFormula::operator!=(const CellFormula &formula) const { return d->formula != formula.d->formula or d->type != formula.d->type or d->si != formula.d->si; }
 
 QT_END_NAMESPACE_XLSX

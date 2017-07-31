@@ -1,15 +1,14 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QPieSeries>
 #include <QSqlError>
-#include <xlsxdocument.h>
 
 #include "porcentagemdelegate.h"
 #include "reaisdelegate.h"
 #include "ui_widgetrelatorio.h"
 #include "usersession.h"
 #include "widgetrelatorio.h"
+#include <xlsxdocument.h>
 
 WidgetRelatorio::WidgetRelatorio(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetRelatorio) { ui->setupUi(this); }
 
@@ -19,11 +18,9 @@ void WidgetRelatorio::setFilterTotaisVendedor() {
   QString filter;
 
   if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND idUsuario = " +
-             QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor";
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND idUsuario = " + QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor";
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" +
-             UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor";
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" + UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor";
   } else {
     filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' ORDER BY Loja, Vendedor";
   }
@@ -39,8 +36,7 @@ void WidgetRelatorio::setFilterTotaisLoja() {
   QString filter;
 
   if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" +
-             UserSession::fromLoja("descricao") + "' ORDER BY Loja";
+    filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' AND Loja = '" + UserSession::fromLoja("descricao") + "' ORDER BY Loja";
   } else {
     filter = "Mês = '" + ui->dateEditMes->date().toString("yyyy-MM") + "' ORDER BY Loja";
   }
@@ -134,11 +130,9 @@ void WidgetRelatorio::setFilterRelatorio() {
   QString filter;
 
   if (UserSession::tipoUsuario() == "VENDEDOR" or UserSession::tipoUsuario() == "VENDEDOR ESPECIAL") {
-    filter = "Mês = '" + date + "' AND idUsuario = " + QString::number(UserSession::idUsuario()) +
-             " ORDER BY Loja, Vendedor, idVenda";
+    filter = "Mês = '" + date + "' AND idUsuario = " + QString::number(UserSession::idUsuario()) + " ORDER BY Loja, Vendedor, idVenda";
   } else if (UserSession::tipoUsuario() == "GERENTE LOJA") {
-    filter =
-        "Mês = '" + date + "' AND Loja = '" + UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor, idVenda";
+    filter = "Mês = '" + date + "' AND Loja = '" + UserSession::fromLoja("descricao") + "' ORDER BY Loja, Vendedor, idVenda";
   } else {
     filter = "Mês = '" + date + "' ORDER BY Loja, Vendedor, idVenda";
   }
@@ -162,7 +156,6 @@ bool WidgetRelatorio::updateTables() {
       ui->labelGeral->hide();
       ui->doubleSpinBoxGeral->hide();
       ui->groupBoxResumoOrcamento->hide();
-      ui->chartView->hide();
     }
 
     ui->dateEditMes->setDate(QDate::currentDate());
@@ -221,45 +214,12 @@ bool WidgetRelatorio::updateTables() {
   ui->tableTotalVendedor->resizeColumnsToContents();
   ui->tableTotalLoja->resizeColumnsToContents();
 
-  //
-
-  QtCharts::QChart *chart = new QtCharts::QChart();
-  chart->setTheme(QtCharts::QChart::ChartThemeLight);
-  chart->setAnimationOptions(QtCharts::QChart::AllAnimations);
-  chart->legend()->setVisible(true);
-  chart->legend()->setAlignment(Qt::AlignRight);
-
-  QtCharts::QPieSeries *series = new QtCharts::QPieSeries(this);
-  series->setName("Funcionarios");
-
-  for (int row = 0; row < modelTotalVendedor.rowCount(); ++row) {
-    const double value = modelTotalVendedor.data(row, "Faturamento").toDouble();
-    const QString name =
-        modelTotalVendedor.data(row, "Vendedor").toString() + " - R$ " + QString::number(value, 'f', 2);
-
-    QtCharts::QPieSlice *slice = new QtCharts::QPieSlice(name, value, this);
-    connect(slice, &QtCharts::QPieSlice::hovered, slice, &QtCharts::QPieSlice::setExploded);
-    connect(slice, &QtCharts::QPieSlice::hovered, slice, &QtCharts::QPieSlice::setLabelVisible);
-
-    series->append(slice);
-  }
-
-  chart->addSeries(series);
-  chart->setTitle(series->name());
-
-  ui->chartView->setChart(chart);
-  ui->chartView->setRenderHint(QPainter::Antialiasing);
-
-  //
-
   return true;
 }
 
 void WidgetRelatorio::on_tableTotalLoja_entered(const QModelIndex &) { ui->tableTotalLoja->resizeColumnsToContents(); }
 
-void WidgetRelatorio::on_tableTotalVendedor_entered(const QModelIndex &) {
-  ui->tableTotalVendedor->resizeColumnsToContents();
-}
+void WidgetRelatorio::on_tableTotalVendedor_entered(const QModelIndex &) { ui->tableTotalVendedor->resizeColumnsToContents(); }
 
 void WidgetRelatorio::on_pushButtonExcel_clicked() {
   const QString dir = QFileDialog::getExistingDirectory(this, "Pasta para salvar relatório");
@@ -281,6 +241,7 @@ void WidgetRelatorio::on_pushButtonExcel_clicked() {
 
   if (not file.open(QFile::WriteOnly)) {
     QMessageBox::critical(this, "Erro!", "Não foi possível abrir o arquivo para escrita: " + fileName);
+    QMessageBox::critical(this, "Erro!", "Erro: " + file.errorString());
     return;
   }
 

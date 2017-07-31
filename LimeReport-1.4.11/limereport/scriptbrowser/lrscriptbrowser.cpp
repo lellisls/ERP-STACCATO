@@ -103,7 +103,7 @@ void ScriptBrowser::fillDialog(QTreeWidgetItem* dialogItem,const QString& descri
             if (!child->objectName().isEmpty()){
                 QStringList row;
                 row<<child->metaObject()->className()<<child->objectName();
-                QTreeWidgetItem* item = new QTreeWidgetItem(dialogItem,row);
+                auto* item = new QTreeWidgetItem(dialogItem,row);
                 item->setIcon(0,QIcon(":/scriptbrowser/images/item"));
                 fillProperties(item,child);
             }
@@ -176,14 +176,14 @@ void ScriptBrowser::on_tbAddDialog_clicked()
 
 void ScriptBrowser::on_tbRunDialog_clicked()
 {
-    if (ui->twDialogs->currentItem()&& ui->twDialogs->currentItem()->parent()==0){
+    if (ui->twDialogs->currentItem()&& ui->twDialogs->currentItem()->parent()==nullptr){
         m_report->scriptContext()->previewDialog(ui->twDialogs->currentItem()->text(0));
     }
 }
 
 void ScriptBrowser::on_tbDeleteDialog_clicked()
 {
-    if (ui->twDialogs->currentItem()&& ui->twDialogs->currentItem()->parent()==0){
+    if (ui->twDialogs->currentItem()&& ui->twDialogs->currentItem()->parent()==nullptr){
         m_report->scriptContext()->deleteDialog(ui->twDialogs->currentItem()->text(0));
         updateDialogsTree();
     }

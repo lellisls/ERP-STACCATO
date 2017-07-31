@@ -11,8 +11,8 @@ class LoginDialog : public QDialog {
   Q_OBJECT
 
 public:
-  enum Tipo { Login, Autorizacao };
-  explicit LoginDialog(const Tipo tipo = Login, QWidget *parent = 0);
+  enum class Tipo { Login, Autorizacao };
+  explicit LoginDialog(const Tipo tipo = Tipo::Login, QWidget *parent = 0);
   ~LoginDialog();
 
 private slots:

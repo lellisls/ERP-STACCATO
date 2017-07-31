@@ -42,7 +42,7 @@ namespace LimeReport{
 ComboBoxEditor::ComboBoxEditor(QWidget *parent, bool clearable) :
     QWidget(parent),
     m_comboBox(new InternalComboBox(this)),
-    m_buttonClear(0),
+    m_buttonClear(nullptr),
     m_settingValues(false)
 {
     setFocusProxy(m_comboBox);
@@ -58,7 +58,7 @@ ComboBoxEditor::ComboBoxEditor(QWidget *parent, bool clearable) :
 
     connect(m_comboBox,SIGNAL(currentIndexChanged(QString)),this,SLOT(slotCurrentIndexChanged(QString)));
     m_comboBox->installEventFilter(this);
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->addWidget(m_comboBox);
     if (clearable)
         layout->addWidget(m_buttonClear);

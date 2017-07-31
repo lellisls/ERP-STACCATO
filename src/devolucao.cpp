@@ -12,8 +12,7 @@
 #include "ui_devolucao.h"
 #include "usersession.h"
 
-Devolucao::Devolucao(const QString &idVenda, QWidget *parent)
-    : QDialog(parent), idVenda(idVenda), ui(new Ui::Devolucao) {
+Devolucao::Devolucao(const QString &idVenda, QWidget *parent) : QDialog(parent), idVenda(idVenda), ui(new Ui::Devolucao) {
   ui->setupUi(this);
 
   setWindowFlags(Qt::Window);
@@ -27,8 +26,7 @@ Devolucao::~Devolucao() { delete ui; }
 
 void Devolucao::determinarIdDevolucao() {
   QSqlQuery query;
-  query.prepare("SELECT MAX(idVenda) AS id FROM venda WHERE idVenda LIKE :idVenda AND MONTH(data) = :month "
-                "HAVING MAX(idVenda) IS NOT NULL");
+  query.prepare("SELECT MAX(idVenda) AS id FROM venda WHERE idVenda LIKE :idVenda AND MONTH(data) = :month HAVING MAX(idVenda) IS NOT NULL");
   query.bindValue(":idVenda", idVenda + "D%");
   query.bindValue(":month", QDate::currentDate().month());
 
@@ -186,6 +184,7 @@ void Devolucao::setupTables() {
   }
 
   ui->tablePagamentos->setModel(&modelPagamentos);
+  ui->tablePagamentos->hideColumn("nfe");
   ui->tablePagamentos->hideColumn("idVenda");
   ui->tablePagamentos->hideColumn("idLoja");
   ui->tablePagamentos->hideColumn("idPagamento");
@@ -202,8 +201,7 @@ void Devolucao::setupTables() {
   ui->tablePagamentos->hideColumn("taxa");
   ui->tablePagamentos->hideColumn("contraParte");
   ui->tablePagamentos->hideColumn("comissao");
-  ui->tablePagamentos->setItemDelegateForColumn(modelPagamentos.fieldIndex("representacao"),
-                                                new CheckBoxDelegate(this, true));
+  ui->tablePagamentos->setItemDelegateForColumn(modelPagamentos.fieldIndex("representacao"), new CheckBoxDelegate(this, true));
 
   for (int row = 0; row < modelPagamentos.rowCount(); ++row) {
     ui->tablePagamentos->openPersistentEditor(row, "representacao");
@@ -234,7 +232,7 @@ void Devolucao::setupTables() {
   mapperItem.setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
 
   mapperItem.addMapping(ui->doubleSpinBoxQuant, modelProdutos.fieldIndex("quant"), "value");
-  mapperItem.addMapping(ui->spinBoxCaixas, modelProdutos.fieldIndex("caixas"), "value");
+  mapperItem.addMapping(ui->doubleSpinBoxCaixas, modelProdutos.fieldIndex("caixas"), "value");
   mapperItem.addMapping(ui->lineEditUn, modelProdutos.fieldIndex("un"), "text");
 }
 
@@ -246,7 +244,7 @@ void Devolucao::on_tableProdutos_clicked(const QModelIndex &index) {
   ui->doubleSpinBoxQuant->setSingleStep(quant / caixas);
 
   ui->doubleSpinBoxQuant->setMaximum(quant);
-  ui->spinBoxCaixas->setMaximum(caixas);
+  ui->doubleSpinBoxCaixas->setMaximum(caixas);
 
   mapperItem.setCurrentModelIndex(index);
 
@@ -255,11 +253,9 @@ void Devolucao::on_tableProdutos_clicked(const QModelIndex &index) {
   calcPrecoItemTotal();
 }
 
-void Devolucao::calcPrecoItemTotal() {
-  ui->doubleSpinBoxTotalItem->setValue(ui->doubleSpinBoxQuant->value() * ui->doubleSpinBoxPrecoUn->value());
-}
+void Devolucao::calcPrecoItemTotal() { ui->doubleSpinBoxTotalItem->setValue(ui->doubleSpinBoxQuant->value() * ui->doubleSpinBoxPrecoUn->value()); }
 
-void Devolucao::on_spinBoxCaixas_valueChanged(const int caixas) {
+void Devolucao::on_doubleSpinBoxCaixas_valueChanged(const double caixas) {
   const double quant = caixas * ui->doubleSpinBoxQuant->singleStep();
 
   if (ui->doubleSpinBoxQuant->value() != quant) ui->doubleSpinBoxQuant->setValue(quant);
@@ -268,14 +264,12 @@ void Devolucao::on_spinBoxCaixas_valueChanged(const int caixas) {
 }
 
 void Devolucao::on_doubleSpinBoxQuant_valueChanged(double) {
-  const int caixas = qRound(ui->doubleSpinBoxQuant->value() / ui->doubleSpinBoxQuant->singleStep());
+  const double caixas = qRound(ui->doubleSpinBoxQuant->value() / ui->doubleSpinBoxQuant->singleStep() * 100) / 100;
 
-  if (ui->spinBoxCaixas->value() != caixas) ui->spinBoxCaixas->setValue(caixas);
+  if (ui->doubleSpinBoxCaixas->value() != caixas) ui->doubleSpinBoxCaixas->setValue(caixas);
 }
 
-void Devolucao::on_doubleSpinBoxQuant_editingFinished() {
-  ui->doubleSpinBoxQuant->setValue(ui->spinBoxCaixas->value() * ui->doubleSpinBoxQuant->singleStep());
-}
+void Devolucao::on_doubleSpinBoxQuant_editingFinished() { ui->doubleSpinBoxQuant->setValue(ui->doubleSpinBoxCaixas->value() * ui->doubleSpinBoxQuant->singleStep()); }
 
 bool Devolucao::criarDevolucao() {
   const int newRow = modelVenda.rowCount();
@@ -307,10 +301,9 @@ bool Devolucao::criarDevolucao() {
   return true;
 }
 
-bool Devolucao::desassociarCompra() {
+bool Devolucao::desvincularCompra() {
   QSqlQuery query;
-  query.prepare("UPDATE pedido_fornecedor_has_produto SET idVenda = NULL, idVendaProduto = NULL WHERE idVendaProduto = "
-                ":idVendaProduto");
+  query.prepare("UPDATE pedido_fornecedor_has_produto SET idVenda = NULL, idVendaProduto = NULL WHERE idVendaProduto = :idVendaProduto");
   query.bindValue(":idVendaProduto", modelProdutos.data(mapperItem.currentIndex(), "idVendaProduto"));
 
   if (not query.exec()) {
@@ -322,7 +315,7 @@ bool Devolucao::desassociarCompra() {
 }
 
 bool Devolucao::inserirItens(const QModelIndexList &list) {
-  if (not desassociarCompra()) return false;
+  if (not desvincularCompra()) return false;
 
   const double quant = modelProdutos.data(mapperItem.currentIndex(), "quant").toDouble();
   const double quantDevolvida = ui->doubleSpinBoxQuant->value();
@@ -417,6 +410,9 @@ bool Devolucao::inserirItens(const QModelIndexList &list) {
 }
 
 bool Devolucao::criarContas() {
+  // TODO: considerar a 'conta cliente' e ajustar as telas do financeiro para poder visualizar/trabalhar os dois fluxos
+  // de contas
+
   if (not ui->groupBoxCredito->isChecked()) return true;
 
   const int newRowPag = modelPagamentos.rowCount();
@@ -430,6 +426,12 @@ bool Devolucao::criarContas() {
   if (not modelPagamentos.setData(newRowPag, "tipo", "1. Conta Cliente")) return false;
   if (not modelPagamentos.setData(newRowPag, "parcela", 1)) return false;
   if (not modelPagamentos.setData(newRowPag, "observacao", "")) return false;
+  if (not modelPagamentos.setData(newRowPag, "status", "RECEBIDO")) return false;
+  if (not modelPagamentos.setData(newRowPag, "dataPagamento", QDate::currentDate())) return false;
+  if (not modelPagamentos.setData(newRowPag, "dataRealizado", QDate::currentDate())) return false;
+  if (not modelPagamentos.setData(newRowPag, "valorReal", ui->doubleSpinBoxCredito->value() * -1)) return false;
+  // TODO: dont hardcode
+  if (not modelPagamentos.setData(newRowPag, "contaDestino", 11)) return false;
   //----------------
 
   // NOTE: verificar quando devo criar comissao negativa (quando gera credito ou sempre?)
@@ -439,6 +441,8 @@ bool Devolucao::criarContas() {
   //    if (not modelPagamentos.insertRow(row)) return false;
 
   //    const QString fornecedor = modelProdutos.data(0, "fornecedor").toString();
+
+  // TODO: no lugar de pegar a 'comissaoLoja' pegar a comissao do fluxo e calcular o proporcional
 
   //    QSqlQuery query;
   //    query.prepare("SELECT comissaoLoja FROM fornecedor WHERE razaoSocial = :razaoSocial");
@@ -461,6 +465,7 @@ bool Devolucao::criarContas() {
   //    modelPagamentos.setData(row, "dataEmissao", QDate::currentDate());
   //    modelPagamentos.setData(row, "idVenda", idDevolucao);
   //    modelPagamentos.setData(row, "idLoja", modelVenda.data(0, "idLoja"));
+  // TODO: colocar mesma data do fluxo original
   //    modelPagamentos.setData(row, "dataPagamento", QDate::currentDate());
   //    modelPagamentos.setData(row, "valor", valorAjustado);
   //    modelPagamentos.setData(row, "tipo", "1. Comissão");
@@ -479,6 +484,8 @@ bool Devolucao::criarContas() {
 }
 
 bool Devolucao::salvarCredito() {
+  if (not ui->groupBoxCredito->isChecked()) return true;
+
   const double credito = modelCliente.data(0, "credito").toDouble() + ui->doubleSpinBoxCredito->value();
 
   if (not modelCliente.setData(0, "credito", credito)) return false;
@@ -528,7 +535,7 @@ bool Devolucao::devolverItem(const QModelIndexList &list) {
 
 void Devolucao::limparCampos() {
   ui->doubleSpinBoxPrecoUn->clear();
-  ui->spinBoxCaixas->clear();
+  ui->doubleSpinBoxCaixas->clear();
   ui->doubleSpinBoxQuant->clear();
   ui->lineEditUn->clear();
   ui->doubleSpinBoxTotalItem->clear();
@@ -582,8 +589,7 @@ bool Devolucao::atualizarDevolucao() {
     subTotalLiq += query.value("parcialDesc").toDouble();
   }
 
-  query.prepare("UPDATE venda SET subTotalBru = :subTotalBru, subTotalLiq = :subTotalLiq, "
-                "total = :total WHERE idVenda = :idVenda");
+  query.prepare("UPDATE venda SET subTotalBru = :subTotalBru, subTotalLiq = :subTotalLiq, total = :total WHERE idVenda = :idVenda");
   query.bindValue(":subTotalBru", subTotalBru);
   query.bindValue(":subTotalLiq", subTotalLiq);
   query.bindValue(":total", subTotalLiq);
@@ -615,3 +621,9 @@ void Devolucao::on_groupBoxCredito_toggled(bool) {
 
 // TODO: 2nao criar linha conta
 // TODO: 2criar linha no followup
+// TODO: verificar erro quando a devolucao do item é feita com valor menor, conta_cliente saiu certo mas venda_devolucao
+// saiu com valor cheio
+// TODO: perguntar e guardar data em que ocorreu a devolucao
+// TODO: quando for devolver para o fornecedor perguntar a quantidade
+// TODO: quando fizer devolucao no consumo/estoque alterar os dados no pedido_fornecedor?
+// se as quantidades forem iguais trocar idVenda/idVendaProduto

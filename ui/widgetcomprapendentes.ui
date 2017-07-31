@@ -186,16 +186,6 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="0">
-          <widget class="QCheckBox" name="checkBoxFiltroEmEntrega">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Em entrega</string>
-           </property>
-          </widget>
-         </item>
          <item row="5" column="0">
           <widget class="QCheckBox" name="checkBoxFiltroRecebimento">
            <property name="enabled">
@@ -206,6 +196,16 @@
            </property>
           </widget>
          </item>
+         <item row="8" column="0">
+          <widget class="QCheckBox" name="checkBoxFiltroEmEntrega">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Em entrega</string>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="0">
           <widget class="QCheckBox" name="checkBoxFiltroColeta">
            <property name="enabled">
@@ -213,16 +213,6 @@
            </property>
            <property name="text">
             <string>Em coleta</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxFiltroPendentes">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Pendente</string>
            </property>
           </widget>
          </item>
@@ -256,6 +246,16 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxFiltroPendentes">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Pendente</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="0">
           <widget class="QCheckBox" name="checkBoxFiltroIniciados">
            <property name="enabled">
@@ -263,6 +263,16 @@
            </property>
            <property name="text">
             <string>Iniciado</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QCheckBox" name="checkBoxFiltroEntregaAgend">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Entrega Agend.</string>
            </property>
           </widget>
          </item>
@@ -276,13 +286,13 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
-          <widget class="QCheckBox" name="checkBoxFiltroEntregaAgend">
+         <item row="11" column="0">
+          <widget class="QCheckBox" name="checkBoxFiltroSul">
            <property name="enabled">
             <bool>true</bool>
            </property>
            <property name="text">
-            <string>Entrega Agend.</string>
+            <string>SUL</string>
            </property>
           </widget>
          </item>

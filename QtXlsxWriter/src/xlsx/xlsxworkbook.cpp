@@ -68,8 +68,6 @@ WorkbookPrivate::WorkbookPrivate(Workbook *q, Workbook::CreateFlag flag) : Abstr
 
 Workbook::Workbook(CreateFlag flag) : AbstractOOXmlFile(new WorkbookPrivate(this, flag)) {}
 
-Workbook::~Workbook() {}
-
 bool Workbook::isDate1904() const {
   Q_D(const Workbook);
   return d->date1904;
@@ -154,9 +152,9 @@ bool Workbook::defineName(const QString &name, const QString &formula, const QSt
 
   int id = -1;
   if (not scope.isEmpty()) {
-    for (int i = 0; i < d->sheets.size(); ++i) {
-      if (d->sheets[i]->sheetName() == scope) {
-        id = d->sheets[i]->sheetId();
+    for (auto & sheet : d->sheets) {
+      if (sheet->sheetName() == scope) {
+        id = sheet->sheetId();
         break;
       }
     }
@@ -186,7 +184,7 @@ QStringList Workbook::worksheetNames() const {
 AbstractSheet *Workbook::addSheet(const QString &name, int sheetId, AbstractSheet::SheetType type) {
   Q_D(Workbook);
   if (sheetId > d->last_sheet_id) d->last_sheet_id = sheetId;
-  AbstractSheet *sheet = 0;
+  AbstractSheet *sheet = nullptr;
   if (type == AbstractSheet::ST_WorkSheet) {
     sheet = new Worksheet(name, sheetId, this, F_LoadFromExists);
   } else if (type == AbstractSheet::ST_ChartSheet) {
@@ -205,7 +203,7 @@ AbstractSheet *Workbook::insertSheet(int index, const QString &name, AbstractShe
   QString sheetName = createSafeSheetName(name);
   if (not sheetName.isEmpty()) {
     // If user given an already in-used name, we should not continue any more!
-    if (d->sheetNames.contains(sheetName)) return 0;
+    if (d->sheetNames.contains(sheetName)) return nullptr;
   } else {
     if (type == AbstractSheet::ST_WorkSheet) {
       do {
@@ -219,7 +217,7 @@ AbstractSheet *Workbook::insertSheet(int index, const QString &name, AbstractShe
       } while (d->sheetNames.contains(sheetName));
     } else {
       qWarning("unsupported sheet type.");
-      return 0;
+      return nullptr;
     }
   }
 
@@ -264,8 +262,8 @@ bool Workbook::renameSheet(int index, const QString &newName) {
   if (index < 0 or index >= d->sheets.size()) return false;
 
   // If user given an already in-used name, return false
-  for (int i = 0; i < d->sheets.size(); ++i) {
-    if (d->sheets[i]->sheetName() == name) return false;
+  for (auto & sheet : d->sheets) {
+    if (sheet->sheetName() == name) return false;
   }
 
   d->sheets[index]->setSheetName(name);
@@ -343,7 +341,7 @@ int Workbook::sheetCount() const {
  */
 AbstractSheet *Workbook::sheet(int index) const {
   Q_D(const Workbook);
-  if (index < 0 or index >= d->sheets.size()) return 0;
+  if (index < 0 or index >= d->sheets.size()) return nullptr;
   return d->sheets.at(index).data();
 }
 
@@ -370,8 +368,7 @@ Theme *Workbook::theme() {
 QList<Drawing *> Workbook::drawings() {
   Q_D(Workbook);
   QList<Drawing *> ds;
-  for (int i = 0; i < d->sheets.size(); ++i) {
-    QSharedPointer<AbstractSheet> sheet = d->sheets[i];
+  for (auto sheet : d->sheets) {
     if (sheet->drawing()) ds.append(sheet->drawing());
   }
 
@@ -384,8 +381,8 @@ QList<Drawing *> Workbook::drawings() {
 QList<QSharedPointer<AbstractSheet>> Workbook::getSheetsByTypes(AbstractSheet::SheetType type) const {
   Q_D(const Workbook);
   QList<QSharedPointer<AbstractSheet>> list;
-  for (int i = 0; i < d->sheets.size(); ++i) {
-    if (d->sheets[i]->sheetType() == type) list.append(d->sheets[i]);
+  for (const auto & sheet : d->sheets) {
+    if (sheet->sheetType() == type) list.append(sheet);
   }
   return list;
 }
@@ -399,10 +396,8 @@ void Workbook::saveToXmlFile(QIODevice *device) const {
 
   writer.writeStartDocument(QStringLiteral("1.0"), true);
   writer.writeStartElement(QStringLiteral("workbook"));
-  writer.writeAttribute(QStringLiteral("xmlns"),
-                        QStringLiteral("http://schemas.openxmlformats.org/spreadsheetml/2006/main"));
-  writer.writeAttribute(QStringLiteral("xmlns:r"),
-                        QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
+  writer.writeAttribute(QStringLiteral("xmlns"), QStringLiteral("http://schemas.openxmlformats.org/spreadsheetml/2006/main"));
+  writer.writeAttribute(QStringLiteral("xmlns:r"), QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
 
   writer.writeEmptyElement(QStringLiteral("fileVersion"));
   writer.writeAttribute(QStringLiteral("appName"), QStringLiteral("xl"));
@@ -442,11 +437,9 @@ void Workbook::saveToXmlFile(QIODevice *device) const {
       writer.writeAttribute(QStringLiteral("state"), QStringLiteral("veryHidden"));
 
     if (sheet->sheetType() == AbstractSheet::ST_WorkSheet)
-      d->relationships->addDocumentRelationship(QStringLiteral("/worksheet"),
-                                                QStringLiteral("worksheets/sheet%1.xml").arg(++worksheetIndex));
+      d->relationships->addDocumentRelationship(QStringLiteral("/worksheet"), QStringLiteral("worksheets/sheet%1.xml").arg(++worksheetIndex));
     else
-      d->relationships->addDocumentRelationship(QStringLiteral("/chartsheet"),
-                                                QStringLiteral("chartsheets/sheet%1.xml").arg(++chartsheetIndex));
+      d->relationships->addDocumentRelationship(QStringLiteral("/chartsheet"), QStringLiteral("chartsheets/sheet%1.xml").arg(++chartsheetIndex));
 
     writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(d->relationships->count()));
   }
@@ -456,8 +449,7 @@ void Workbook::saveToXmlFile(QIODevice *device) const {
     writer.writeStartElement(QStringLiteral("externalReferences"));
     for (int i = 0; i < d->externalLinks.size(); ++i) {
       writer.writeEmptyElement(QStringLiteral("externalReference"));
-      d->relationships->addDocumentRelationship(QStringLiteral("/externalLink"),
-                                                QStringLiteral("externalLinks/externalLink%1.xml").arg(i + 1));
+      d->relationships->addDocumentRelationship(QStringLiteral("/externalLink"), QStringLiteral("externalLinks/externalLink%1.xml").arg(i + 1));
       writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(d->relationships->count()));
     }
     writer.writeEndElement(); // externalReferences
@@ -493,8 +485,7 @@ void Workbook::saveToXmlFile(QIODevice *device) const {
 
   d->relationships->addDocumentRelationship(QStringLiteral("/theme"), QStringLiteral("theme/theme1.xml"));
   d->relationships->addDocumentRelationship(QStringLiteral("/styles"), QStringLiteral("styles.xml"));
-  if (not sharedStrings()->isEmpty())
-    d->relationships->addDocumentRelationship(QStringLiteral("/sharedStrings"), QStringLiteral("sharedStrings.xml"));
+  if (not sharedStrings()->isEmpty()) d->relationships->addDocumentRelationship(QStringLiteral("/sharedStrings"), QStringLiteral("sharedStrings.xml"));
 }
 
 bool Workbook::loadFromXmlFile(QIODevice *device) {
@@ -538,24 +529,17 @@ bool Workbook::loadFromXmlFile(QIODevice *device) {
         QXmlStreamAttributes attrs = reader.attributes();
         if (attrs.hasAttribute(QLatin1String("date1904"))) d->date1904 = true;
       } else if (reader.name() == QLatin1String("bookviews")) {
-        while (
-            not(reader.name() == QLatin1String("bookviews") and reader.tokenType() == QXmlStreamReader::EndElement)) {
+        while (not(reader.name() == QLatin1String("bookviews") and reader.tokenType() == QXmlStreamReader::EndElement)) {
           reader.readNextStartElement();
           if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("workbookView")) {
               QXmlStreamAttributes attrs = reader.attributes();
-              if (attrs.hasAttribute(QLatin1String("xWindow")))
-                d->x_window = attrs.value(QLatin1String("xWindow")).toString().toInt();
-              if (attrs.hasAttribute(QLatin1String("yWindow")))
-                d->y_window = attrs.value(QLatin1String("yWindow")).toString().toInt();
-              if (attrs.hasAttribute(QLatin1String("windowWidth")))
-                d->window_width = attrs.value(QLatin1String("windowWidth")).toString().toInt();
-              if (attrs.hasAttribute(QLatin1String("windowHeight")))
-                d->window_height = attrs.value(QLatin1String("windowHeight")).toString().toInt();
-              if (attrs.hasAttribute(QLatin1String("firstSheet")))
-                d->firstsheet = attrs.value(QLatin1String("firstSheet")).toString().toInt();
-              if (attrs.hasAttribute(QLatin1String("activeTab")))
-                d->activesheetIndex = attrs.value(QLatin1String("activeTab")).toString().toInt();
+              if (attrs.hasAttribute(QLatin1String("xWindow"))) d->x_window = attrs.value(QLatin1String("xWindow")).toString().toInt();
+              if (attrs.hasAttribute(QLatin1String("yWindow"))) d->y_window = attrs.value(QLatin1String("yWindow")).toString().toInt();
+              if (attrs.hasAttribute(QLatin1String("windowWidth"))) d->window_width = attrs.value(QLatin1String("windowWidth")).toString().toInt();
+              if (attrs.hasAttribute(QLatin1String("windowHeight"))) d->window_height = attrs.value(QLatin1String("windowHeight")).toString().toInt();
+              if (attrs.hasAttribute(QLatin1String("firstSheet"))) d->firstsheet = attrs.value(QLatin1String("firstSheet")).toString().toInt();
+              if (attrs.hasAttribute(QLatin1String("activeTab"))) d->activesheetIndex = attrs.value(QLatin1String("activeTab")).toString().toInt();
             }
           }
         }
@@ -573,8 +557,7 @@ bool Workbook::loadFromXmlFile(QIODevice *device) {
         XlsxDefineNameData data;
 
         data.name = attrs.value(QLatin1String("name")).toString();
-        if (attrs.hasAttribute(QLatin1String("comment")))
-          data.comment = attrs.value(QLatin1String("comment")).toString();
+        if (attrs.hasAttribute(QLatin1String("comment"))) data.comment = attrs.value(QLatin1String("comment")).toString();
         if (attrs.hasAttribute(QLatin1String("localSheetId"))) {
           int localId = attrs.value(QLatin1String("localSheetId")).toString().toInt();
           int sheetId = d->sheets.at(localId)->sheetId();

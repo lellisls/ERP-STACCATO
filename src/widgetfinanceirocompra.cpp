@@ -6,9 +6,7 @@
 #include "ui_widgetfinanceirocompra.h"
 #include "widgetfinanceirocompra.h"
 
-WidgetFinanceiroCompra::WidgetFinanceiroCompra(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetFinanceiroCompra) {
-  ui->setupUi(this);
-}
+WidgetFinanceiroCompra::WidgetFinanceiroCompra(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetFinanceiroCompra) { ui->setupUi(this); }
 
 WidgetFinanceiroCompra::~WidgetFinanceiroCompra() { delete ui; }
 
@@ -33,6 +31,7 @@ void WidgetFinanceiroCompra::setupTables() {
 
   ui->table->setModel(&model);
   ui->table->setItemDelegateForColumn("Total", new ReaisDelegate(this));
+  ui->table->hideColumn("desativado");
 }
 
 void WidgetFinanceiroCompra::on_table_activated(const QModelIndex &index) {
@@ -53,3 +52,8 @@ void WidgetFinanceiroCompra::on_lineEditBusca_textChanged(const QString &text) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
   }
 }
+
+// TODO: quando recalcula fluxo deve ter um campo para digitar/calcular ST pois o antigo é substituido e não é criado um
+// novo
+// TODO: associar notas com cada produto? e verificar se dá para refazer/ajustar o fluxo de pagamento de acordo com as
+// duplicatas da nota

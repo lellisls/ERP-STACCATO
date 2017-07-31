@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QMessageBox>
 #include <QSqlError>
 
@@ -7,10 +8,7 @@
 #include "vendaproxymodel.h"
 #include "widgetlogisticaentregues.h"
 
-WidgetLogisticaEntregues::WidgetLogisticaEntregues(QWidget *parent)
-    : QWidget(parent), ui(new Ui::WidgetLogisticaEntregues) {
-  ui->setupUi(this);
-}
+WidgetLogisticaEntregues::WidgetLogisticaEntregues(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaEntregues) { ui->setupUi(this); }
 
 WidgetLogisticaEntregues::~WidgetLogisticaEntregues() { delete ui; }
 
@@ -113,3 +111,71 @@ void WidgetLogisticaEntregues::on_tableVendas_clicked(const QModelIndex &index) 
 
   ui->tableProdutos->resizeColumnsToContents();
 }
+
+void WidgetLogisticaEntregues::on_pushButtonCancelar_clicked() {
+  const auto list = ui->tableProdutos->selectionModel()->selectedRows();
+
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhuma linha selecionada!");
+    return;
+  }
+
+  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?", QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Cancelar");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
+
+  if (msgBox.exec() == QMessageBox::No) return;
+
+  // desfazer passos da confirmacao de entrega (volta para tela de confirmar entrega)
+
+  QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
+  QSqlQuery("START TRANSACTION").exec();
+
+  if (not cancelar(list)) {
+    QSqlQuery("ROLLBACK").exec();
+    if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
+    return;
+  }
+
+  QSqlQuery("COMMIT").exec();
+
+  QSqlQuery query;
+
+  if (not query.exec("CALL update_venda_status()")) {
+    QMessageBox::critical(this, "Erro!", "Erro atualizando status das vendas: " + query.lastError().text());
+    return;
+  }
+
+  updateTables();
+  QMessageBox::information(this, "Aviso!", "Entrega cancelada! Produto voltou para 'EM ENTREGA'!");
+}
+
+bool WidgetLogisticaEntregues::cancelar(const QModelIndexList &list) {
+  // TODO: testar essa funcao
+  // TODO: dataPrevEnt nao foi limpa
+  QSqlQuery query;
+
+  for (const auto item : list) {
+    // TODO: cancelar no lugar de voltar para em entrega?
+    query.prepare("UPDATE veiculo_has_produto SET status = 'EM ENTREGA' WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":idVendaProduto", modelProdutos.data(item.row(), "idVendaProduto"));
+
+    if (not query.exec()) {
+      error = "Erro atualizando veiculo_produto: " + query.lastError().text();
+      return false;
+    }
+
+    query.prepare("UPDATE venda_has_produto SET status = 'ESTOQUE', entregou = NULL, recebeu = NULL, "
+                  "dataRealEnt = NULL WHERE idVendaProduto = :idVendaProduto");
+    query.bindValue(":idVendaProduto", modelProdutos.data(item.row(), "idVendaProduto"));
+
+    if (not query.exec()) {
+      error = "Erro atualizando venda_produto: " + query.lastError().text();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// TODO: mostrar quem entregou/recebeu

@@ -54,8 +54,8 @@ FontPropItem::FontPropItem(QObject *object, ObjectPropItem::ObjectsList *objects
     m_bold = new FontAttribPropItem(object,objects,"bold",tr("bold"),propertyValue().value<QFont>().bold(),this,false);
     m_italic = new FontAttribPropItem(object,objects,"italic",tr("italic"),propertyValue().value<QFont>().italic(),this,false);
     m_underline = new FontAttribPropItem(object,objects,"underline",tr("underline"),propertyValue().value<QFont>().underline(),this,false);
-    m_pointSize = new FontPointSizePropItem(object,0,"pointSize",tr("size"),propertyValue().value<QFont>().pointSize(),this,false);
-    m_family = new FontFamilyPropItem(object,0,"family",tr("family"),propertyValue().value<QFont>(),this,false);
+    m_pointSize = new FontPointSizePropItem(object,nullptr,"pointSize",tr("size"),propertyValue().value<QFont>().pointSize(),this,false);
+    m_family = new FontFamilyPropItem(object,nullptr,"family",tr("family"),propertyValue().value<QFont>(),this,false);
 
     this->appendItem(m_family);
     this->appendItem(m_pointSize);
@@ -102,7 +102,7 @@ QString FontPropItem::toString(QFont value) const
     if (value.bold()) (attribs=="") ? attribs+="b":attribs+=",b";
     if (value.italic()) (attribs=="") ? attribs+="i":attribs+=",i";
     if (attribs!="") attribs="["+attribs+"]";
-    return "\""+ value.family()+"\" "+QString::number(value.pointSize())+" "+attribs;
+    return R"(")"+ value.family()+R"(" )"+QString::number(value.pointSize())+" "+attribs;
 }
 
 QString FontFamilyPropItem::displayValue() const
@@ -113,7 +113,7 @@ QString FontFamilyPropItem::displayValue() const
 
 QWidget *FontFamilyPropItem::createProperyEditor(QWidget *parent) const
 {
-    FontFamilyEditor* editor = new FontFamilyEditor(parent);
+    auto* editor = new FontFamilyEditor(parent);
 //    QFontComboBox* editor = new QFontComboBox(parent);
     editor->setAutoFillBackground(true);
     editor->setFont(propertyValue().value<QFont>());
@@ -165,7 +165,7 @@ FontFamilyEditor::FontFamilyEditor(QWidget *parent)
 {
     m_valueEditor = new QFontComboBox(this);
     setFocusProxy(m_valueEditor);
-    QHBoxLayout* hLayout = new QHBoxLayout(this);
+    auto* hLayout = new QHBoxLayout(this);
     hLayout->addWidget(m_valueEditor);
     hLayout->setContentsMargins(1,1,1,1);
     hLayout->setSpacing(0);

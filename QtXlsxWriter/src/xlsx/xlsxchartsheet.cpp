@@ -36,10 +36,7 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
-ChartsheetPrivate::ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag)
-    : AbstractSheetPrivate(p, flag), chart(0) {}
-
-ChartsheetPrivate::~ChartsheetPrivate() {}
+ChartsheetPrivate::ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag) : AbstractSheetPrivate(p, flag), chart(nullptr) {}
 
 /*!
   \class Chartsheet
@@ -50,14 +47,13 @@ ChartsheetPrivate::~ChartsheetPrivate() {}
 /*!
  * \internal
  */
-Chartsheet::Chartsheet(const QString &name, int id, Workbook *workbook, CreateFlag flag)
-    : AbstractSheet(name, id, workbook, new ChartsheetPrivate(this, flag)) {
+Chartsheet::Chartsheet(const QString &name, int id, Workbook *workbook, CreateFlag flag) : AbstractSheet(name, id, workbook, new ChartsheetPrivate(this, flag)) {
   setSheetType(ST_ChartSheet);
 
   if (flag == Chartsheet::F_NewFromScratch) {
     d_func()->drawing = QSharedPointer<Drawing>(new Drawing(this, flag));
 
-    DrawingAbsoluteAnchor *anchor = new DrawingAbsoluteAnchor(drawing(), DrawingAnchor::Picture);
+    auto *anchor = new DrawingAbsoluteAnchor(drawing(), DrawingAnchor::Picture);
 
     anchor->pos = QPoint(0, 0);
     anchor->ext = QSize(9293679, 6068786);
@@ -80,13 +76,8 @@ Chartsheet *Chartsheet::copy(const QString &distName, int distId) const {
   //:Todo
   Q_UNUSED(distName)
   Q_UNUSED(distId)
-  return 0;
+  return nullptr;
 }
-
-/*!
- * Destroys this workssheet.
- */
-Chartsheet::~Chartsheet() {}
 
 /*!
  * Returns the chart object of the sheet.
@@ -105,8 +96,7 @@ void Chartsheet::saveToXmlFile(QIODevice *device) const {
 
   writer.writeStartDocument(QStringLiteral("1.0"), true);
   writer.writeDefaultNamespace(QStringLiteral("http://schemas.openxmlformats.org/spreadsheetml/2006/main"));
-  writer.writeNamespace(QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"),
-                        QStringLiteral("r"));
+  writer.writeNamespace(QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"), QStringLiteral("r"));
   writer.writeStartElement(QStringLiteral("chartsheet"));
 
   writer.writeStartElement(QStringLiteral("sheetViews"));
@@ -116,8 +106,7 @@ void Chartsheet::saveToXmlFile(QIODevice *device) const {
   writer.writeEndElement(); // sheetViews
 
   int idx = d->workbook->drawings().indexOf(d->drawing.data());
-  d->relationships->addWorksheetRelationship(QStringLiteral("/drawing"),
-                                             QStringLiteral("../drawings/drawing%1.xml").arg(idx + 1));
+  d->relationships->addWorksheetRelationship(QStringLiteral("/drawing"), QStringLiteral("../drawings/drawing%1.xml").arg(idx + 1));
 
   writer.writeEmptyElement(QStringLiteral("drawing"));
   writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(d->relationships->count()));

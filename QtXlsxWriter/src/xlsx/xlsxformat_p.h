@@ -45,15 +45,7 @@ namespace QXlsx {
 
 class FormatPrivate : public QSharedData {
 public:
-  enum FormatType {
-    FT_Invalid = 0,
-    FT_NumFmt = 0x01,
-    FT_Font = 0x02,
-    FT_Alignment = 0x04,
-    FT_Border = 0x08,
-    FT_Fill = 0x10,
-    FT_Protection = 0x20
-  };
+  enum FormatType { FT_Invalid = 0, FT_NumFmt = 0x01, FT_Font = 0x02, FT_Alignment = 0x04, FT_Border = 0x08, FT_Fill = 0x10, FT_Protection = 0x20 };
 
   enum Property {
     P_STARTID,
@@ -122,7 +114,7 @@ public:
 
   FormatPrivate();
   FormatPrivate(const FormatPrivate &other);
-  ~FormatPrivate();
+  ~FormatPrivate() = default;
 
   bool dirty; // The key re-generation is need.
   QByteArray formatKey;

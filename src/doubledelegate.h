@@ -7,7 +7,7 @@ class DoubleDelegate : public QStyledItemDelegate {
 
 public:
   explicit DoubleDelegate(QObject *parent = 0, const int decimais = 2);
-  ~DoubleDelegate();
+  ~DoubleDelegate() = default;
   QString displayText(const QVariant &value, const QLocale &locale) const override;
 
 private:

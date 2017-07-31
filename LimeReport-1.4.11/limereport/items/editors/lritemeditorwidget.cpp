@@ -32,22 +32,22 @@
 namespace LimeReport{
 
 ItemEditorWidget::ItemEditorWidget(ReportDesignWidget* reportEditor, const QString& title, QWidget* parent)
-    :QToolBar(title,parent), m_reportEditor(reportEditor), m_item(0), m_page(0)
+    :QToolBar(title,parent), m_reportEditor(reportEditor), m_item(nullptr), m_page(nullptr)
 {
 }
 
 ItemEditorWidget::ItemEditorWidget(ReportDesignWidget* reportEditor, QWidget* parent)
-    :QToolBar(parent), m_reportEditor(reportEditor), m_item(0), m_page(0)
+    :QToolBar(parent), m_reportEditor(reportEditor), m_item(nullptr), m_page(nullptr)
 {
 }
 
 ItemEditorWidget::ItemEditorWidget(PageDesignIntf* page, const QString& title, QWidget* parent)
-    :QToolBar(title,parent), m_reportEditor(0), m_item(0), m_page(page)
+    :QToolBar(title,parent), m_reportEditor(nullptr), m_item(nullptr), m_page(page)
 {
 }
 
 ItemEditorWidget::ItemEditorWidget(PageDesignIntf* page, QWidget* parent)
-    :QToolBar(parent), m_reportEditor(0), m_item(0), m_page(page)
+    :QToolBar(parent), m_reportEditor(nullptr), m_item(nullptr), m_page(page)
 {
 }
 
@@ -74,7 +74,7 @@ void ItemEditorWidget::properyChangedEvent(const QString& propertName, const QVa
 void ItemEditorWidget::slotItemDestroyed(QObject* item)
 {
     if (item==m_item) {
-        m_item = 0;
+        m_item = nullptr;
         setEnabled(false);
     }
 }

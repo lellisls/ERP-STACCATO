@@ -6,6 +6,7 @@
 #include "anteciparrecebimento.h"
 #include "checkboxdelegate.h"
 #include "doubledelegate.h"
+#include "reaisdelegate.h"
 #include "ui_anteciparrecebimento.h"
 
 AnteciparRecebimento::AnteciparRecebimento(QWidget *parent) : QDialog(parent), ui(new Ui::AnteciparRecebimento) {
@@ -24,11 +25,9 @@ AnteciparRecebimento::AnteciparRecebimento(QWidget *parent) : QDialog(parent), u
 
   ui->dateEditEvento->setDate(QDate::currentDate());
 
+  connect(ui->doubleSpinBoxDescMes, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AnteciparRecebimento::calcularTotais);
   connect(ui->dateEditEvento, &QDateEdit::dateChanged, this, &AnteciparRecebimento::calcularTotais);
-  connect(ui->table->selectionModel(), &QItemSelectionModel::selectionChanged, this,
-          &AnteciparRecebimento::calcularTotais);
-
-  // TODO: 1fazer calculo inverso quando usuario digitar o valor presente liquido
+  connect(ui->table->selectionModel(), &QItemSelectionModel::selectionChanged, this, &AnteciparRecebimento::calcularTotais);
 }
 
 AnteciparRecebimento::~AnteciparRecebimento() { delete ui; }
@@ -65,7 +64,10 @@ void AnteciparRecebimento::calcularTotais() {
   ui->spinBoxPrazoMedio->setValue(prazoMedio);
   ui->doubleSpinBoxValorBruto->setValue(bruto);
   ui->doubleSpinBoxValorLiquido->setValue(liquido);
+
+  isBlockedMes = true;
   ui->doubleSpinBoxValorPresente->setValue(liquido * (1 - ui->doubleSpinBoxDescTotal->value() / 100));
+  isBlockedMes = false;
 }
 
 void AnteciparRecebimento::setupTables() {
@@ -103,9 +105,42 @@ void AnteciparRecebimento::setupTables() {
   ui->table->hideColumn("idPagamento");
   ui->table->hideColumn("idLoja");
   ui->table->setItemDelegate(new DoubleDelegate(this));
+  ui->table->setItemDelegateForColumn("valor", new ReaisDelegate(this));
 }
 
 void AnteciparRecebimento::on_table_entered(const QModelIndex &) { ui->table->resizeColumnsToContents(); }
+
+void AnteciparRecebimento::on_comboBox_currentTextChanged(const QString &text) {
+  model.setFilter("tipo LIKE '%" + text + "%' AND status = 'PENDENTE' AND dataPagamento > NOW()");
+
+  if (text == "Cartão de crédito") {
+    model.setFilter("(tipo LIKE '%Cartão de crédito%' OR tipo LIKE '%Taxa Cartão%') AND status = 'PENDENTE' AND "
+                    "dataPagamento > NOW()");
+  }
+
+  if (not model.select()) {
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+    return;
+  }
+}
+
+void AnteciparRecebimento::on_doubleSpinBoxValorPresente_valueChanged(double) {
+  if (isBlockedMes) return;
+
+  const double presente = ui->doubleSpinBoxValorPresente->value();
+  const double liquido = ui->doubleSpinBoxValorLiquido->value();
+  const double descTotal = 1 - (presente / liquido);
+  const int prazoMedio = ui->spinBoxPrazoMedio->value();
+
+  ui->doubleSpinBoxDescTotal->setValue(descTotal * 100);
+
+  isBlockedPresente = true;
+  const double valor = descTotal / prazoMedio * 30 * 100;
+  ui->doubleSpinBoxDescMes->setValue(valor != valor ? 0 : valor); // if nan set zero
+  //qDebug() << "comparison: " << (valor != valor);
+  //qDebug() << "isnan: " << qIsNaN(valor);
+  isBlockedPresente = false;
+}
 
 // NOTE: usar essa tela para recebimentos normais de cartão além dos antecipamentos
 
@@ -149,48 +184,30 @@ void AnteciparRecebimento::on_table_entered(const QModelIndex &) { ui->table->re
 
 // TODO: 1para recebiveis diferentes de cartao calcular IOF
 
-void AnteciparRecebimento::on_comboBox_currentTextChanged(const QString &text) {
-  model.setFilter("tipo LIKE '%" + text + "%' AND status = 'PENDENTE' AND dataPagamento > NOW()");
+void AnteciparRecebimento::on_pushButtonGerar_clicked() {
+  // TODO: 1para gerar a antecipacao: dar baixa nas linhas selecionadas (colocar RECEBIDO e marcar em qual data) e criar
+  // uma unica linha dizendo quanto foi pago de juros
 
-  if (text == "Cartão de crédito") {
-    model.setFilter("(tipo LIKE '%Cartão de crédito%' OR tipo LIKE '%Taxa Cartão%') AND status = 'PENDENTE' AND "
-                    "dataPagamento > NOW()");
-  }
+  const auto list = ui->table->selectionModel()->selectedRows();
 
-  if (not model.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + model.lastError().text());
+  if (list.isEmpty()) {
+    QMessageBox::critical(this, "Erro!", "Nenhum item selecionado!");
     return;
   }
-}
 
-// TODO: 1para gerar a antecipacao: dar baixa nas linhas selecionadas (colocar RECEBIDO e marcar em qual data) e criar
-// uma unica linha dizendo quanto foi pago de juros
+  // this is a view, edit the original table
 
-void AnteciparRecebimento::on_doubleSpinBoxValorPresente_valueChanged(double) {
-  // block this function so it dont go changing values back and forth
-  if (isBlockedMes) return;
+  //  for (auto const &item : list) {
+  //    model.setData(item.row(), "status", "RECEBIDO");
+  //    model.setData(item.row(), "dataRealizado", ui->dateEditEvento->date());
+  //    model.setData(item.row(), "observacao", "Antecipação");
+  //  }
 
-  const double presente = ui->doubleSpinBoxValorPresente->value();
-  const double liquido = ui->doubleSpinBoxValorLiquido->value();
-  const double descTotal = 1 - (presente / liquido);
-  const int prazoMedio = ui->spinBoxPrazoMedio->value();
+  const int newRow = model.rowCount();
+  model.insertRow(newRow);
 
-  ui->doubleSpinBoxDescTotal->setValue(descTotal);
-
-  isBlockedPresente = true;
-  // if prazoMedio is 0 set zero
-  const double valor = descTotal / prazoMedio * 30;
-  ui->doubleSpinBoxDescMes->setValue(valor != valor ? 0 : valor);
-  qDebug() << "setMes: " << descTotal / prazoMedio * 30;
-  qDebug() << "nan? " << (valor != valor);
-  isBlockedPresente = false;
-
-  // desctotal = descmes / 30 * prazoMedio
-  // descMes = desctotal / prazoMedio * 30
-}
-
-void AnteciparRecebimento::on_doubleSpinBoxDescMes_valueChanged(double) {
-  isBlockedMes = true;
-  calcularTotais();
-  isBlockedMes = false;
+  model.setData(newRow, "status", "PAGO");
+  model.setData(newRow, "valor", ui->doubleSpinBoxValorLiquido->value() - ui->doubleSpinBoxValorPresente->value());
+  model.setData(newRow, "observacao", "Juros da antecipação");
+  model.setData(newRow, "tipo", "JUROS ANTECIPAÇÃO");
 }

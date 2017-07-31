@@ -10,7 +10,6 @@ UserConfig::UserConfig(QWidget *parent) : QDialog(parent), ui(new Ui::UserConfig
   ui->setupUi(this);
 
   ui->itemBoxLoja->setSearchDialog(SearchDialog::loja(this));
-
   ui->itemBoxLoja->setValue(UserSession::settings("User/lojaACBr"));
 
   ui->lineEditServidorSMTP->setText(UserSession::settings("User/servidorSMTP").toString());
@@ -67,7 +66,7 @@ void UserConfig::on_pushButtonSalvar_clicked() {
 }
 
 void UserConfig::on_pushButtonAlterarDados_clicked() {
-  CadastroUsuario *usuario = new CadastroUsuario(this);
+  auto *usuario = new CadastroUsuario(this);
   usuario->show();
   usuario->viewRegisterById(UserSession::idUsuario());
   usuario->modificarUsuario();

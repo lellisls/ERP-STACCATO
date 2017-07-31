@@ -2,8 +2,6 @@
 
 ComboBox::ComboBox(QWidget *parent) : QComboBox(parent) {}
 
-ComboBox::~ComboBox() {}
-
 QVariant ComboBox::getCurrentValue() const { return (currentData()); }
 
 bool ComboBox::setCurrentValue(const QVariant &value) {

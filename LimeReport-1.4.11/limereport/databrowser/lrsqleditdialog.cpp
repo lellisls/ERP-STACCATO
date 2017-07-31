@@ -40,7 +40,7 @@ namespace LimeReport{
 SQLEditDialog::SQLEditDialog(QWidget *parent, LimeReport::DataSourceManager *dataSources, SQLDialogMode dialogMode) :
     QDialog(parent),
     ui(new Ui::SQLEditDialog),m_datasources(dataSources),m_dialogMode(dialogMode), m_oldDatasourceName(""),
-    m_settings(0), m_ownedSettings(false)
+    m_settings(nullptr), m_ownedSettings(false)
 {
     ui->setupUi(this);
     m_masterDatasources = new QCompleter(this);
@@ -151,7 +151,7 @@ void SQLEditDialog::check()
     if (ui->textEditSQL->toPlainText().isEmpty() && (!ui->rbProxy) ) throw LimeReport::ReportError(tr("SQL is empty !"));
     if (m_dialogMode==AddMode){
         if (m_datasources->containsDatasource(ui->leDatasourceName->text())){
-            throw LimeReport::ReportError(QString(tr("Datasource with name: \"%1\" already exists !")).arg(ui->leDatasourceName->text()));
+            throw LimeReport::ReportError(QString(tr(R"(Datasource with name: "%1" already exists !)")).arg(ui->leDatasourceName->text()));
         }
     }
 }
@@ -326,7 +326,7 @@ void SQLEditDialog::slotHidePreview()
 
 void SQLEditDialog::writeSetting()
 {
-    if (settings()!=0){
+    if (settings()!=nullptr){
         settings()->beginGroup("SQLEditor");
         settings()->setValue("Geometry",saveGeometry());
         settings()->endGroup();
@@ -335,7 +335,7 @@ void SQLEditDialog::writeSetting()
 
 void SQLEditDialog::readSettings()
 {
-    if (settings()==0) return;
+    if (settings()==nullptr) return;
     settings()->beginGroup("SQLEditor");
     QVariant v = settings()->value("Geometry");
     if (v.isValid()){

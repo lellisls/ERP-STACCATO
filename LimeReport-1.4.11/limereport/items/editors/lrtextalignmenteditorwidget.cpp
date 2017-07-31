@@ -136,7 +136,7 @@ void TextAlignmentEditorWidget::updateValues(const Qt::Alignment &align)
 
 Qt::Alignment TextAlignmentEditorWidget::createAlignment()
 {
-    Qt::Alignment align = 0 ;
+    Qt::Alignment align = nullptr ;
     if (m_textAliginLeft->isChecked()) align |= Qt::AlignLeft;
     if (m_textAliginHCenter->isChecked()) align |= Qt::AlignHCenter;
     if (m_textAliginRight->isChecked()) align |= Qt::AlignRight;

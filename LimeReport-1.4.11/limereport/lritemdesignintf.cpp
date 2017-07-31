@@ -100,7 +100,7 @@ QGraphicsItem * ItemDesignIntf::bandByPos()
             return item;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void ItemDesignIntf::initFlags()

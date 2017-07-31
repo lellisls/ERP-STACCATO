@@ -65,19 +65,19 @@ BaseDesignIntf::BaseDesignIntf(const QString &storageTypeName, QObject *owner, Q
     m_borderLineSize(1),
     m_BGMode(OpaqueMode),
     m_opacity(100),
-    m_borderLinesFlags(0),
+    m_borderLinesFlags(nullptr),
     m_storageTypeName(storageTypeName),
     m_itemMode(DesignMode),
     m_objectState(ObjectCreated),
-    m_selectionMarker(0),
-    m_joinMarker(0),
+    m_selectionMarker(nullptr),
+    m_joinMarker(nullptr),
     m_backgroundBrushStyle(SolidPattern),
     m_backgroundColor(Qt::white),
     m_margin(4),
     m_itemAlign(DesignedItemAlign),
     m_changingItemAlign(false),
     m_borderColor(Qt::black),
-    m_reportSettings(0),
+    m_reportSettings(nullptr),
     m_patternName("")
 {
     setGeometry(QRectF(0, 0, m_width, m_height));
@@ -100,7 +100,7 @@ QRectF BaseDesignIntf::boundingRect() const
     return m_boundingRect;
 }
 
-BaseDesignIntf::~BaseDesignIntf(void) {
+BaseDesignIntf::~BaseDesignIntf() {
     delete m_selectionMarker;
     delete m_joinMarker;
 }
@@ -651,7 +651,7 @@ void BaseDesignIntf::turnOnJoinMarker(bool value)
         m_joinMarker->setVisible(true);
     } else {
         delete m_joinMarker;
-        m_joinMarker = 0;
+        m_joinMarker = nullptr;
     }
 }
 
@@ -697,7 +697,7 @@ void BaseDesignIntf::turnOnSelectionMarker(bool value)
         m_selectionMarker->setVisible(true);
     } else {
         delete m_selectionMarker;
-        m_selectionMarker = 0;
+        m_selectionMarker = nullptr;
     }
 }
 
@@ -1266,7 +1266,7 @@ ReportEnginePrivate *BaseDesignIntf::reportEditor()
 {
     PageDesignIntf *page = dynamic_cast<PageDesignIntf *>(scene());
     if (page) return page->reportEditor();
-    else return 0;
+    else return nullptr;
 }
 
 void BaseDesignIntf::updateItemSize(DataSourceManager *dataManager, RenderPass pass, int maxHeight)
@@ -1287,7 +1287,7 @@ void BaseDesignIntf::drawPinArea(QPainter *painter) const
 
 QObject *BaseDesignIntf::createElement(const QString& /*collectionName*/, const QString &elementType)
 {
-    BaseDesignIntf* obj = 0;
+    BaseDesignIntf* obj = nullptr;
     try{
         if (LimeReport::DesignElementsFactory::instance().objectCreator(elementType)){
             obj = LimeReport::DesignElementsFactory::instance().objectCreator(elementType)(this, this);
@@ -1378,13 +1378,13 @@ bool BaseDesignIntf::isEmpty() const
 {return false;}
 
 BaseDesignIntf *BaseDesignIntf::cloneUpperPart(int height, QObject *owner, QGraphicsItem *parent)
-{Q_UNUSED(height); Q_UNUSED(owner); Q_UNUSED(parent); return 0;}
+{Q_UNUSED(height); Q_UNUSED(owner); Q_UNUSED(parent); return nullptr;}
 
 BaseDesignIntf *BaseDesignIntf::cloneBottomPart(int height, QObject *owner, QGraphicsItem *parent)
-{Q_UNUSED(height); Q_UNUSED(owner); Q_UNUSED(parent); return 0;}
+{Q_UNUSED(height); Q_UNUSED(owner); Q_UNUSED(parent); return nullptr;}
 
 BaseDesignIntf *BaseDesignIntf::cloneEmpty(int height, QObject *owner, QGraphicsItem *parent)
-{Q_UNUSED(height); Q_UNUSED(owner); Q_UNUSED(parent); return 0;}
+{Q_UNUSED(height); Q_UNUSED(owner); Q_UNUSED(parent); return nullptr;}
 
 
 void BaseDesignIntf::objectLoadStarted()
@@ -1421,12 +1421,12 @@ BaseDesignIntf *BaseDesignIntf::childByName(const QString &name)
             if (child) return child;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 QWidget *BaseDesignIntf::defaultEditor()
 {
-    return 0;
+    return nullptr;
 }
 
 void BaseDesignIntf::notify(const QString &propertyName, const QVariant& oldValue, const QVariant& newValue)

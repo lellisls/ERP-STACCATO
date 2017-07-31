@@ -2,4 +2,4 @@
 
 NoEditDelegate::NoEditDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
 
-QWidget *NoEditDelegate::createEditor(QWidget *, const QStyleOptionViewItem &, const QModelIndex &) const { return 0; }
+QWidget *NoEditDelegate::createEditor(QWidget *, const QStyleOptionViewItem &, const QModelIndex &) const { return nullptr; }

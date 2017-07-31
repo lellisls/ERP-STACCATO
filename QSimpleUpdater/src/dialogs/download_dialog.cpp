@@ -44,7 +44,7 @@ DownloadDialog::DownloadDialog(QWidget *parent) : QWidget(parent), ui(new Ui::Do
   connect(m_manager, &QNetworkAccessManager::sslErrors, this, &DownloadDialog::ignoreSslErrors);
 }
 
-DownloadDialog::~DownloadDialog(void) { delete ui; }
+DownloadDialog::~DownloadDialog() { delete ui; }
 
 void DownloadDialog::beginDownload(const QUrl &url) {
   Q_ASSERT(not url.isEmpty());
@@ -69,12 +69,12 @@ void DownloadDialog::beginDownload(const QUrl &url) {
   showNormal();
 }
 
-void DownloadDialog::installUpdate(void) {
+void DownloadDialog::installUpdate() {
   openDownload();
   qApp->closeAllWindows();
 }
 
-void DownloadDialog::openDownload(void) {
+void DownloadDialog::openDownload() {
   if (not m_path.isEmpty()) {
     QString url = m_path;
 
@@ -88,7 +88,7 @@ void DownloadDialog::openDownload(void) {
   }
 }
 
-void DownloadDialog::cancelDownload(void) {
+void DownloadDialog::cancelDownload() {
   if (not m_reply->isFinished()) {
     QMessageBox _message;
     _message.setWindowTitle(tr("Atualizador"));
@@ -107,7 +107,7 @@ void DownloadDialog::cancelDownload(void) {
   }
 }
 
-void DownloadDialog::downloadFinished(void) {
+void DownloadDialog::downloadFinished() {
   ui->stopButton->setText(tr("Fechar"));
   ui->downloadLabel->setText(tr("Download completo!"));
   ui->timeLabel->setText(tr("O instalador vai abrir em uma janela separada..."));

@@ -7,8 +7,7 @@
 #include "ui_cadastroproduto.h"
 #include "usersession.h"
 
-CadastroProduto::CadastroProduto(QWidget *parent)
-    : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
+CadastroProduto::CadastroProduto(QWidget *parent) : RegisterDialog("produto", "idProduto", parent), ui(new Ui::CadastroProduto) {
   ui->setupUi(this);
 
   ui->lineEditCodBarras->setInputMask("9999999999999;_");
@@ -23,9 +22,9 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 
   ui->itemBoxFornecedor->setSearchDialog(SearchDialog::fornecedor(this));
 
-  SearchDialog *sdProd = SearchDialog::produto(this);
-  connect(sdProd, &SearchDialog::itemSelected, this, &CadastroProduto::viewRegisterById);
-  connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProd, &SearchDialog::show);
+  sdProduto = SearchDialog::produto(true, this);
+  connect(sdProduto, &SearchDialog::itemSelected, this, &CadastroProduto::viewRegisterById);
+  connect(ui->pushButtonBuscar, &QAbstractButton::clicked, sdProduto, &SearchDialog::show);
 
   ui->itemBoxFornecedor->setRegisterDialog(new CadastroFornecedor(this));
 
@@ -42,9 +41,7 @@ CadastroProduto::CadastroProduto(QWidget *parent)
 
   //  model.setEditStrategy(QSqlTableModel::OnRowChange); // for avoiding reloading the entire table
 
-  for (const QLineEdit *line : findChildren<QLineEdit *>()) {
-    connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
-  }
+  for (const QLineEdit *line : findChildren<QLineEdit *>()) connect(line, &QLineEdit::textEdited, this, &RegisterDialog::marcarDirty);
 }
 
 CadastroProduto::~CadastroProduto() { delete ui; }
@@ -169,9 +166,7 @@ void CadastroProduto::setupMapper() {
   addMapping(ui->textEditObserv, "observacoes", "plainText");
 }
 
-void CadastroProduto::successMessage() {
-  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Produto cadastrado com sucesso!");
-}
+void CadastroProduto::successMessage() { QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Produto cadastrado com sucesso!"); }
 
 bool CadastroProduto::savingProcedures() {
   if (not setData("codBarras", ui->lineEditCodBarras->text())) return false;
@@ -221,7 +216,7 @@ bool CadastroProduto::savingProcedures() {
 
 void CadastroProduto::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroProduto::on_pushButtonAtualizar_clicked() { update(); }
+void CadastroProduto::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroProduto::on_pushButtonNovoCad_clicked() { newRegister(); }
 
@@ -237,21 +232,21 @@ void CadastroProduto::calcularMarkup() {
 }
 
 bool CadastroProduto::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+  currentRow = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  if (row == -1) {
+  if (currentRow == -1) {
     error = "Erro: linha -1 RegisterDialog!";
     return false;
   }
 
-  if (not isUpdate and not model.insertRow(row)) return false;
+  if (not isUpdate and not model.insertRow(currentRow)) return false;
 
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    const QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(currentRow, column);
     if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+      if (not model.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
@@ -260,7 +255,7 @@ bool CadastroProduto::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+  primaryId = data(currentRow, primaryKey).isValid() ? data(currentRow, primaryKey).toString() : getLastInsertId().toString();
 
   if (primaryId.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
@@ -288,7 +283,13 @@ bool CadastroProduto::save() {
 
   viewRegisterById(primaryId);
 
-  if (not silent) successMessage();
+  successMessage();
 
   return true;
 }
+
+// TODO: poder alterar nesta tela a quantidade minima/multiplo dos produtos
+// TODO: separar estoque_promocao em duas colunas no bd
+// TODO: nao bloquear a selecao de produtos descontinuados
+// TODO: verificar se estou usando corretamente a tabela 'produto_has_preco'
+// me parece que ela só é preenchida na importacao de tabela e nao na modificacao manual de produtos

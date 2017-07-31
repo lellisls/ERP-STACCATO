@@ -10,8 +10,7 @@
 #include "ui_cadastrocliente.h"
 #include "usersession.h"
 
-CadastroCliente::CadastroCliente(QWidget *parent)
-    : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
+CadastroCliente::CadastroCliente(QWidget *parent) : RegisterAddressDialog("cliente", "idCliente", parent), ui(new Ui::CadastroCliente) {
   ui->setupUi(this);
 
   for (auto const *line : findChildren<QLineEdit *>()) {
@@ -26,6 +25,9 @@ CadastroCliente::CadastroCliente(QWidget *parent)
   setupTables();
   setupMapper();
   newRegister();
+
+  sdCliente = SearchDialog::cliente(this);
+  connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::viewRegisterById);
 
   if (UserSession::tipoUsuario() != "ADMINISTRADOR") {
     ui->pushButtonRemover->setDisabled(true);
@@ -43,7 +45,7 @@ void CadastroCliente::setupUi() {
   ui->lineEditContatoRG->setInputMask("99.999.999-9;_");
   ui->lineEditIdNextel->setInputMask("99*9999999*99999;_");
   ui->lineEditCNPJ->setInputMask("99.999.999/9999-99;_");
-  ui->lineEditInscEstadual->setValidator(new QRegExpValidator(QRegExp("[0-9]\\d{0,15}"), this));
+  ui->lineEditInscEstadual->setValidator(new QRegExpValidator(QRegExp(R"([0-9]\d{0,15})"), this));
   ui->lineEditCEP->setInputMask("99999-999;_");
   ui->lineEditUF->setInputMask(">AA;_");
 }
@@ -188,26 +190,9 @@ bool CadastroCliente::viewRegister() {
 
   modelEnd.setFilter("idCliente = " + data("idCliente").toString() + " AND desativado = FALSE");
 
-  if (not modelEnd.select()) {
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço do cliente: " + modelEnd.lastError().text());
-  }
+  if (not modelEnd.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela endereço do cliente: " + modelEnd.lastError().text());
 
   ui->itemBoxCliente->getSearchDialog()->setFilter("idCliente NOT IN (" + data("idCliente").toString() + ")");
-
-  QSqlQuery query;
-  query.prepare("SELECT idCliente, nome_razao, nomeFantasia FROM cliente WHERE idCadastroRel = :idCadastroRel");
-  query.bindValue(":idCadastroRel", data("idCliente"));
-
-  if (not query.exec()) {
-    QMessageBox::critical(this, "Erro!", "Erro na query cliente: " + query.lastError().text());
-    return false;
-  }
-
-  while (query.next()) {
-    ui->textEditObservacoes->insertPlainText(query.value("idCliente").toString() + " - " +
-                                             query.value("nome_razao").toString() + " - " +
-                                             query.value("nomeFantasia").toString() + "\n");
-  }
 
   tipoPFPJ = data("pfpj").toString();
 
@@ -222,17 +207,13 @@ bool CadastroCliente::viewRegister() {
 
 void CadastroCliente::on_pushButtonCadastrar_clicked() { save(); }
 
-void CadastroCliente::on_pushButtonAtualizar_clicked() { update(); }
+void CadastroCliente::on_pushButtonAtualizar_clicked() { save(); }
 
 void CadastroCliente::on_pushButtonRemover_clicked() { remove(); }
 
 void CadastroCliente::on_pushButtonNovoCad_clicked() { newRegister(); }
 
-void CadastroCliente::on_pushButtonBuscar_clicked() {
-  SearchDialog *sdCliente = SearchDialog::cliente(this);
-  connect(sdCliente, &SearchDialog::itemSelected, this, &CadastroCliente::viewRegisterById);
-  sdCliente->show();
-}
+void CadastroCliente::on_pushButtonBuscar_clicked() { sdCliente->show(); }
 
 void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
   ui->lineEditCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)");
@@ -255,8 +236,7 @@ void CadastroCliente::on_lineEditCPF_textEdited(const QString &text) {
 }
 
 void CadastroCliente::on_lineEditCNPJ_textEdited(const QString &text) {
-  ui->lineEditCNPJ->setStyleSheet(
-      validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
+  ui->lineEditCNPJ->setStyleSheet(validaCNPJ(QString(text).remove(".").remove("/").remove("-")) ? "" : "color: rgb(255, 0, 0)");
 
   if (not ui->lineEditCNPJ->styleSheet().contains("color: rgb(255, 0, 0)")) {
     QSqlQuery query;
@@ -286,9 +266,15 @@ bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
     return false;
   }
 
-  rowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
+  if (ui->lineEditNro->text().isEmpty()) {
+    ui->lineEditNro->setFocus();
+    QMessageBox::critical(this, "Erro!", "Número vazio!");
+    return false;
+  }
 
-  if (not isUpdate) modelEnd.insertRow(rowEnd);
+  currentRowEnd = isUpdate ? mapperEnd.currentIndex() : modelEnd.rowCount();
+
+  if (not isUpdate) modelEnd.insertRow(currentRowEnd);
 
   if (not setDataEnd("descricao", ui->comboBoxTipoEnd->currentText())) return false;
   if (not setDataEnd("cep", ui->lineEditCEP->text())) return false;
@@ -309,21 +295,21 @@ bool CadastroCliente::cadastrarEndereco(const bool isUpdate) {
 }
 
 bool CadastroCliente::cadastrar() {
-  row = isUpdate ? mapper.currentIndex() : model.rowCount();
+  currentRow = isUpdate ? mapper.currentIndex() : model.rowCount();
 
-  if (row == -1) {
+  if (currentRow == -1) {
     QMessageBox::critical(this, "Erro!", "Erro linha -1");
     return false;
   }
 
-  if (not isUpdate and not model.insertRow(row)) return false;
+  if (not isUpdate and not model.insertRow(currentRow)) return false;
 
   if (not savingProcedures()) return false;
 
   for (int column = 0; column < model.rowCount(); ++column) {
-    QVariant dado = model.data(row, column);
+    const QVariant dado = model.data(currentRow, column);
     if (dado.type() == QVariant::String) {
-      if (not model.setData(row, column, dado.toString().toUpper())) return false;
+      if (not model.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
@@ -332,7 +318,7 @@ bool CadastroCliente::cadastrar() {
     return false;
   }
 
-  primaryId = data(row, primaryKey).isValid() ? data(row, primaryKey).toString() : getLastInsertId().toString();
+  primaryId = data(currentRow, primaryKey).isValid() ? data(currentRow, primaryKey).toString() : getLastInsertId().toString();
 
   if (primaryId.isEmpty()) {
     QMessageBox::critical(this, "Erro!", "primaryId está vazio!");
@@ -344,9 +330,9 @@ bool CadastroCliente::cadastrar() {
   }
 
   for (int column = 0; column < modelEnd.rowCount(); ++column) {
-    QVariant dado = modelEnd.data(row, column);
+    const QVariant dado = modelEnd.data(currentRow, column);
     if (dado.type() == QVariant::String) {
-      if (not modelEnd.setData(row, column, dado.toString().toUpper())) return false;
+      if (not modelEnd.setData(currentRow, column, dado.toString().toUpper())) return false;
     }
   }
 
@@ -452,10 +438,7 @@ void CadastroCliente::on_radioButtonPF_toggled(const bool checked) {
   adjustSize();
 }
 
-void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) {
-  ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? ""
-                                                                                         : "color: rgb(255, 0, 0)");
-}
+void CadastroCliente::on_lineEditContatoCPF_textEdited(const QString &text) { ui->lineEditContatoCPF->setStyleSheet(validaCPF(QString(text).remove(".").remove("-")) ? "" : "color: rgb(255, 0, 0)"); }
 
 void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool checked) {
   modelEnd.setFilter("idCliente = " + data("idCliente").toString() + (checked ? "" : " AND desativado = FALSE"));
@@ -466,8 +449,7 @@ void CadastroCliente::on_checkBoxMostrarInativos_clicked(const bool checked) {
 }
 
 void CadastroCliente::on_pushButtonRemoverEnd_clicked() {
-  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?",
-                     QMessageBox::Yes | QMessageBox::No, this);
+  QMessageBox msgBox(QMessageBox::Question, "Atenção!", "Tem certeza que deseja remover?", QMessageBox::Yes | QMessageBox::No, this);
   msgBox.setButtonText(QMessageBox::Yes, "Remover");
   msgBox.setButtonText(QMessageBox::No, "Voltar");
 
@@ -503,25 +485,26 @@ bool CadastroCliente::save() {
 
   viewRegisterById(primaryId);
 
-  if (not silent) successMessage();
+  successMessage();
 
   return true;
 }
 
-void CadastroCliente::successMessage() {
-  QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Cliente cadastrado com sucesso!");
-}
+void CadastroCliente::successMessage() { QMessageBox::information(this, "Atenção!", isUpdate ? "Cadastro atualizado!" : "Cliente cadastrado com sucesso!"); }
 
 void CadastroCliente::on_tableEndereco_entered(const QModelIndex &) { ui->tableEndereco->resizeColumnsToContents(); }
 
 void CadastroCliente::on_checkBoxInscEstIsento_toggled(bool checked) {
   if (checked) {
-    ui->lineEditInscEstadual->setValidator(0);
+    ui->lineEditInscEstadual->setValidator(nullptr);
     ui->lineEditInscEstadual->setText("ISENTO");
     ui->lineEditInscEstadual->setReadOnly(true);
   } else {
-    ui->lineEditInscEstadual->setValidator(new QRegExpValidator(QRegExp("[0-9]\\d{0,15}"), this));
+    ui->lineEditInscEstadual->setValidator(new QRegExpValidator(QRegExp(R"([0-9]\d{0,15})"), this));
     ui->lineEditInscEstadual->clear();
     ui->lineEditInscEstadual->setReadOnly(false);
   }
 }
+
+// TODO: ao trocar de cadastro nao esta limpando observacao (esta fazendo append)
+// TODO: nao deixar cadastrar endereco sem numero, se necessario colocar 'S/N'

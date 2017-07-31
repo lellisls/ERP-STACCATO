@@ -8,7 +8,7 @@ class LineEditCEP : public QLineEdit {
 
 public:
   explicit LineEditCEP(QWidget *parent);
-  ~LineEditCEP();
+  ~LineEditCEP() = default;
   bool isValid() const;
 
 private:

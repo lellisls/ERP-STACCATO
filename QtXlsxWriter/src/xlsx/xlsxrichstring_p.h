@@ -44,7 +44,7 @@ class RichStringPrivate : public QSharedData {
 public:
   RichStringPrivate();
   RichStringPrivate(const RichStringPrivate &other);
-  ~RichStringPrivate();
+  ~RichStringPrivate() = default;
 
   QByteArray idKey() const;
 

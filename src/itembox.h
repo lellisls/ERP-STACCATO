@@ -12,7 +12,7 @@ class ItemBox : public QLineEdit {
 
 public:
   explicit ItemBox(QWidget *parent);
-  ~ItemBox();
+  ~ItemBox() = default;
   QVariant getValue() const;
   SearchDialog *getSearchDialog();
   void changeItem(const QVariant &value);

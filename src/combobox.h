@@ -8,7 +8,7 @@ class ComboBox : public QComboBox {
 
 public:
   explicit ComboBox(QWidget *parent);
-  ~ComboBox();
+  ~ComboBox() = default;
   QVariant getCurrentValue() const;
 
 public slots:

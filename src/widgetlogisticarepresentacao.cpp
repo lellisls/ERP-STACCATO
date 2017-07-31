@@ -9,10 +9,7 @@
 #include "ui_widgetlogisticarepresentacao.h"
 #include "widgetlogisticarepresentacao.h"
 
-WidgetLogisticaRepresentacao::WidgetLogisticaRepresentacao(QWidget *parent)
-    : QWidget(parent), ui(new Ui::WidgetLogisticaRepresentacao) {
-  ui->setupUi(this);
-}
+WidgetLogisticaRepresentacao::WidgetLogisticaRepresentacao(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaRepresentacao) { ui->setupUi(this); }
 
 WidgetLogisticaRepresentacao::~WidgetLogisticaRepresentacao() { delete ui; }
 
@@ -37,8 +34,7 @@ void WidgetLogisticaRepresentacao::tableFornLogistica_activated(const QString &f
   model.setFilter("fornecedor = '" + fornecedor + "'");
 
   if (not model.select()) {
-    QMessageBox::critical(this, "Erro!",
-                          "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
+    QMessageBox::critical(this, "Erro!", "Erro lendo tabela pedido_fornecedor_has_produto: " + model.lastError().text());
     return;
   }
 
@@ -101,22 +97,22 @@ void WidgetLogisticaRepresentacao::on_pushButtonMarcarEntregue_clicked() {
 }
 
 bool WidgetLogisticaRepresentacao::processRows(const QModelIndexList &list, const QDateTime &dataEntrega) {
-  //  QSqlQuery query1;
-  //  query1.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGUE', "
-  //                 "dataRealEnt = :dataRealEnt WHERE idPedido = :idPedido");
+  QSqlQuery query1;
+  query1.prepare("UPDATE pedido_fornecedor_has_produto SET status = 'ENTREGUE', "
+                 "dataRealEnt = :dataRealEnt WHERE idVendaProduto = :idVendaProduto");
 
   QSqlQuery query;
   query.prepare("UPDATE venda_has_produto SET status = 'ENTREGUE', dataRealEnt = :dataRealEnt "
                 "WHERE idVendaProduto = :idVendaProduto");
 
   for (auto const &item : list) {
-    //    query1.bindValue(":dataRealEnt", dataEntrega);
-    //    query1.bindValue(":idPedido", model.data(item.row(), "idPedido"));
+    query1.bindValue(":dataRealEnt", dataEntrega);
+    query1.bindValue(":idVendaProduto", model.data(item.row(), "idVendaProduto"));
 
-    //    if (not query1.exec()) {
-    //      error = "Erro salvando status no pedido_fornecedor: " + query1.lastError().text();
-    //      return false;
-    //    }
+    if (not query1.exec()) {
+      error = "Erro salvando status no pedido_fornecedor: " + query1.lastError().text();
+      return false;
+    }
 
     query.bindValue(":dataRealEnt", dataEntrega);
     query.bindValue(":idVendaProduto", model.data(item.row(), "idVendaProduto"));

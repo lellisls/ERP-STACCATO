@@ -23,6 +23,7 @@ signals:
 private slots:
   void on_table_activated(const QModelIndex &index);
   void on_table_entered(const QModelIndex &);
+  void on_pushButtonRelatorio_clicked();
 
 private:
   // attributes

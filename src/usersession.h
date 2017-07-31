@@ -7,8 +7,8 @@
 class UserSession {
 
 public:
-  enum Tipo { Padrao, Autorizacao };
-  static bool login(const QString &user, const QString &password, Tipo tipo = Padrao);
+  enum class Tipo { Padrao, Autorizacao };
+  static bool login(const QString &user, const QString &password, Tipo tipo = Tipo::Padrao);
   static int idUsuario();
   static int idLoja();
   static QString nome();
@@ -17,14 +17,14 @@ public:
   static QVariant settings(const QString &key);
   static void setSettings(const QString &key, const QVariant &value);
   static bool settingsContains(const QString &key);
-  static void free();
 
 private:
   // attributes
   static QSqlQuery *query;
   // methods
   UserSession();
-  static QSqlQuery *initialize();
+  static void free();
+  static void initialize();
   static void logout();
 };
 

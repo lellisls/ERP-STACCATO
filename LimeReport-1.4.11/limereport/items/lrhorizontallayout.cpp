@@ -74,7 +74,7 @@ HorizontalLayout::HorizontalLayout(QObject *owner, QGraphicsItem *parent)
 HorizontalLayout::~HorizontalLayout()
 {
     if (m_layoutMarker) {
-        delete m_layoutMarker; m_layoutMarker=0;
+        delete m_layoutMarker; m_layoutMarker=nullptr;
     }
 }
 
@@ -398,7 +398,7 @@ BaseDesignIntf* HorizontalLayout::findNext(BaseDesignIntf* item){
     for (int i=0; i<m_children.count();++i){
         if (m_children[i]==item && m_children.size()>i+1){ return m_children[i+1];}
     }
-    return 0;
+    return nullptr;
 }
 
 BaseDesignIntf* HorizontalLayout::findPrior(BaseDesignIntf* item){
@@ -412,7 +412,7 @@ BaseDesignIntf* HorizontalLayout::findPrior(BaseDesignIntf* item){
     for (int i=0; i<m_children.count();++i){
         if (m_children[i]==item && i!=0){ return m_children[i-1];}
     }
-    return 0;
+    return nullptr;
 }
 
 void HorizontalLayout::divideSpace(){

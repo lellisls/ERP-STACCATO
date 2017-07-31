@@ -35,9 +35,9 @@
 namespace LimeReport{
 
 ObjectBrowser::ObjectBrowser(QWidget *parent)
-    :QWidget(parent), m_report(NULL), m_mainWindow(NULL), m_changingItemSelection(false)
+    :QWidget(parent), m_report(nullptr), m_mainWindow(nullptr), m_changingItemSelection(false)
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    auto *layout = new QVBoxLayout(this);
     setLayout(layout);
     layout->setMargin(2);
     m_treeView = new QTreeWidget(this);
@@ -88,7 +88,7 @@ void ObjectBrowser::slotClear()
 void ObjectBrowser::fillNode(QTreeWidgetItem* parentNode, BaseDesignIntf* reportItem, BaseDesignIntf *ignoredItem){
     foreach (BaseDesignIntf* item, reportItem->childBaseItems()) {
         if (item != ignoredItem){
-            ObjectBrowserNode* treeItem = new ObjectBrowserNode(parentNode);
+            auto* treeItem = new ObjectBrowserNode(parentNode);
             treeItem->setText(0,item->objectName());
             treeItem->setObject(item);
             treeItem->setIcon(0,QIcon(":/items/"+extractClassName(item->metaObject()->className())));
@@ -108,7 +108,7 @@ void ObjectBrowser::buildTree(BaseDesignIntf* ignoredItem){
     m_itemsMap.clear();
     if (!m_report->activePage()) return;
 
-    ObjectBrowserNode *topLevelItem=new ObjectBrowserNode(m_treeView);
+    auto *topLevelItem=new ObjectBrowserNode(m_treeView);
     topLevelItem->setText(0,m_report->activePage()->objectName());
     topLevelItem->setObject(m_report->activePage());
     m_itemsMap.insert(m_report->activePage(),topLevelItem);
@@ -118,8 +118,8 @@ void ObjectBrowser::buildTree(BaseDesignIntf* ignoredItem){
     foreach (QGraphicsItem* item, itemsList) {
         if (item != ignoredItem){
             BaseDesignIntf* reportItem = dynamic_cast<BaseDesignIntf*>(item);
-            if (reportItem && reportItem->parentItem()==0){
-                ObjectBrowserNode* tItem = new ObjectBrowserNode(topLevelItem);
+            if (reportItem && reportItem->parentItem()==nullptr){
+                auto* tItem = new ObjectBrowserNode(topLevelItem);
                 tItem->setText(0,reportItem->objectName());
                 tItem->setObject(reportItem);
                 tItem->setIcon(0,QIcon(":/items/"+extractClassName(reportItem->metaObject()->className())));
@@ -289,10 +289,10 @@ QObject *ObjectBrowserNode::object() const
 }
 
 ObjectBrowserNode::ObjectBrowserNode(QTreeWidget *view)
-    :QTreeWidgetItem(view), m_object(0){}
+    :QTreeWidgetItem(view), m_object(nullptr){}
 
 ObjectBrowserNode::ObjectBrowserNode(QTreeWidgetItem *parent)
-    :QTreeWidgetItem(parent), m_object(0){}
+    :QTreeWidgetItem(parent), m_object(nullptr){}
 
 bool ObjectBrowserNode::operator <(const QTreeWidgetItem &other) const
 {

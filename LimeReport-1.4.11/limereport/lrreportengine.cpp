@@ -34,7 +34,7 @@
 #include <QDesktopWidget>
 #include <QFileSystemWatcher>
 
-#include "time.h"
+#include <ctime>
 
 #include "lrreportengine_p.h"
 #include "lrreportengine.h"
@@ -53,12 +53,12 @@
 
 namespace LimeReport{
 
-QSettings* ReportEngine::m_settings = 0;
+QSettings* ReportEngine::m_settings = nullptr;
 
 ReportEnginePrivate::ReportEnginePrivate(QObject *parent) :
-    QObject(parent), m_fileName(""), m_settings(0), m_ownedSettings(false),
+    QObject(parent), m_fileName(""), m_settings(nullptr), m_ownedSettings(false),
     m_printer(new QPrinter(QPrinter::HighResolution)), m_printerSelected(false),
-    m_showProgressDialog(true), m_reportName(""), m_activePreview(0),
+    m_showProgressDialog(true), m_reportName(""), m_activePreview(nullptr),
     m_previewWindowIcon(":/report/images/logo32"), m_previewWindowTitle(tr("Preview")),
     m_reportRendering(false), m_resultIsEditable(true), m_passPhrase("HjccbzHjlbyfCkjy"),
     m_fileWatcher( new QFileSystemWatcher( this ) )
@@ -96,7 +96,7 @@ QObject *ReportEnginePrivate::elementAt(const QString &, int index)
 
 PageDesignIntf *ReportEnginePrivate::createPage(const QString &pageName)
 {
-    PageDesignIntf* page =new PageDesignIntf();
+    auto* page =new PageDesignIntf();
     page->setObjectName(pageName);
     page->setReportEditor(this);
     page->setReportSettings(&m_reportSettings);
@@ -150,7 +150,7 @@ void ReportEnginePrivate::saveError(QString message)
 
 void ReportEnginePrivate::showError(QString message)
 {
-    QMessageBox::critical(0,tr("Error"),message);
+    QMessageBox::critical(nullptr,tr("Error"),message);
 }
 
 void ReportEnginePrivate::slotDataSourceCollectionLoaded(const QString &collectionName)
@@ -161,7 +161,7 @@ void ReportEnginePrivate::slotDataSourceCollectionLoaded(const QString &collecti
 void ReportEnginePrivate::slotPreviewWindowDestroyed(QObject* window)
 {
     if (m_activePreview == window){
-        m_activePreview = 0;
+        m_activePreview = nullptr;
     }
 }
 
@@ -212,7 +212,7 @@ void ReportEnginePrivate::printReport(ReportPages pages, QPrinter &printer)
 {
     LimeReport::PageDesignIntf renderPage;
     renderPage.setItemMode(PrintMode);
-    QPainter* painter=0;
+    QPainter* painter=nullptr;
 
     bool isFirst = true;
     int currenPage = 1;
@@ -361,7 +361,7 @@ void ReportEnginePrivate::previewReport(PreviewHints hints)
         ReportPages pages = renderToPages();
         dataManager()->setDesignTime(true);
         if (pages.count()>0){
-            PreviewReportWindow* w = new PreviewReportWindow(this,0,settings());
+            PreviewReportWindow* w = new PreviewReportWindow(this,nullptr,settings());
             w->setWindowFlags(Qt::Dialog|Qt::WindowMaximizeButtonHint|Qt::WindowCloseButtonHint| Qt::WindowMinMaxButtonsHint);
             w->setAttribute(Qt::WA_DeleteOnClose,true);
             w->setWindowModality(Qt::ApplicationModal);
@@ -395,7 +395,7 @@ void ReportEnginePrivate::previewReport(PreviewHints hints)
 
 PreviewReportWidget* ReportEnginePrivate::createPreviewWidget(QWidget* parent){
 
-    PreviewReportWidget* widget = new PreviewReportWidget(this, parent);
+    auto* widget = new PreviewReportWidget(this, parent);
     try{
         dataManager()->setDesignTime(false);
         ReportPages pages = renderToPages();
@@ -410,7 +410,7 @@ PreviewReportWidget* ReportEnginePrivate::createPreviewWidget(QWidget* parent){
 }
 
 PageDesignIntf* ReportEnginePrivate::createPreviewScene(QObject* parent){
-    PageDesignIntf* result = 0;
+    PageDesignIntf* result = nullptr;
     try {
         ReportPages pages = renderToPages();
         result = new PageDesignIntf(parent);
@@ -461,7 +461,7 @@ bool ReportEnginePrivate::slotLoadFromFile(const QString &fileName)
     {
        if ( hasActivePreview() )
        {          
-          QMessageBox::information( NULL,
+          QMessageBox::information( nullptr,
                                     tr( "Report File Change" ),
                                     tr( "The report file \"%1\" has changed names or been deleted.\n\nThis preview is no longer valid." ).arg( fileName )
                                     );
@@ -534,7 +534,7 @@ void ReportEnginePrivate::designReport()
 #ifdef Q_OS_WIN    
     m_designerWindow->setWindowModality(Qt::ApplicationModal);
 #endif
-    if (QApplication::activeWindow()==0){
+    if (QApplication::activeWindow()==nullptr){
         m_designerWindow->show();;
     } else {
         m_designerWindow->showModal();

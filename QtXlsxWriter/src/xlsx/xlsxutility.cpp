@@ -136,7 +136,7 @@ QString escapeSheetName(const QString &sheetName) {
 
   // OK, escape is needed.
   QString name = sheetName;
-  name.replace(QLatin1Char('\''), QLatin1String("\'\'"));
+  name.replace(QLatin1Char('\''), QLatin1String(R"('')"));
   return QLatin1Char('\'') + name + QLatin1Char('\'');
 }
 
@@ -147,7 +147,7 @@ QString unescapeSheetName(const QString &sheetName) {
            sheetName.endsWith(QLatin1Char('\'')));
 
   QString name = sheetName.mid(1, sheetName.length() - 2);
-  name.replace(QLatin1String("\'\'"), QLatin1String("\'"));
+  name.replace(QLatin1String(R"('')"), QLatin1String(R"(')"));
   return name;
 }
 

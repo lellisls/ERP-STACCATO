@@ -9,7 +9,7 @@ class FollowUpProxyModel : public QIdentityProxyModel {
 
 public:
   FollowUpProxyModel(SqlTableModel *model, QObject *parent = 0);
-  ~FollowUpProxyModel();
+  ~FollowUpProxyModel() = default;
   QVariant data(const QModelIndex &proxyIndex, int role) const override;
 
 private:

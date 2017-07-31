@@ -22,7 +22,7 @@
      <widget class="QWidget" name="layoutWidget">
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="0" colspan="2">
-        <widget class="QTableView" name="tableVencidos">
+        <widget class="TableView" name="tableVencidos">
          <property name="mouseTracking">
           <bool>true</bool>
          </property>
@@ -38,7 +38,7 @@
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
-        <widget class="QTableView" name="tableVencer">
+        <widget class="TableView" name="tableVencer">
          <property name="mouseTracking">
           <bool>true</bool>
          </property>
@@ -75,7 +75,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget2">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBoxFiltros">
@@ -86,6 +86,89 @@
           <string>Filtros:</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_12">
+          <item row="13" column="0">
+           <widget class="QPushButton" name="pushButtonInserirLancamento">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Inserir lançamento</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QRadioButton" name="radioButtonCancelado">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Cancelado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="radioButtonPendente">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Pendente/Conferido</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="radioButtonTodos">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Todos</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="0">
+           <widget class="QPushButton" name="pushButtonAdiantarRecebimento">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Antecipar recebimento</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QRadioButton" name="radioButtonRecebido">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Recebido</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QRadioButton" name="radioButtonPago">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Pago</string>
+            </property>
+           </widget>
+          </item>
+          <item row="14" column="0">
+           <widget class="QPushButton" name="pushButtonInserirTransferencia">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Inserir transferência</string>
+            </property>
+           </widget>
+          </item>
           <item row="9" column="0">
            <widget class="QGroupBox" name="groupBox">
             <property name="title">
@@ -109,34 +192,6 @@
                </property>
                <property name="maximum">
                 <double>99999.990000000005239</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QGroupBox" name="groupBoxLojas">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="title">
-             <string>Loja</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_2">
-             <item row="0" column="0">
-              <widget class="ItemBox" name="itemBoxLojas">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
                </property>
               </widget>
              </item>
@@ -175,6 +230,44 @@
             </layout>
            </widget>
           </item>
+          <item row="7" column="0">
+           <widget class="QGroupBox" name="groupBoxLojas">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="title">
+             <string>Loja</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="ItemBox" name="itemBoxLojas">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="15" column="0">
+           <widget class="QPushButton" name="pushButtonExcluirLancamento">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Excluir lançamento</string>
+            </property>
+           </widget>
+          </item>
           <item row="11" column="0">
            <spacer name="verticalSpacer_5">
             <property name="orientation">
@@ -187,79 +280,6 @@
              </size>
             </property>
            </spacer>
-          </item>
-          <item row="13" column="0">
-           <widget class="QPushButton" name="pushButtonInserirLancamento">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Inserir lançamento</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QRadioButton" name="radioButtonRecebido">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Recebido</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="radioButtonTodos">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Todos</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QRadioButton" name="radioButtonCancelado">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Cancelado</string>
-            </property>
-           </widget>
-          </item>
-          <item row="12" column="0">
-           <widget class="QPushButton" name="pushButtonAdiantarRecebimento">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Antecipar recebimento</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="radioButtonPendente">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Pendente/Conferido</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QRadioButton" name="radioButtonPago">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Pago</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>

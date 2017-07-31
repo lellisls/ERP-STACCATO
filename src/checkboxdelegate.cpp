@@ -3,13 +3,10 @@
 
 #include "checkboxdelegate.h"
 
-CheckBoxDelegate::CheckBoxDelegate(QObject *parent, const bool readOnly)
-    : QStyledItemDelegate(parent), readOnly(readOnly) {}
-
-CheckBoxDelegate::~CheckBoxDelegate() {}
+CheckBoxDelegate::CheckBoxDelegate(QObject *parent, const bool readOnly) : QStyledItemDelegate(parent), readOnly(readOnly) {}
 
 QWidget *CheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
-  QCheckBox *editor = new QCheckBox(parent);
+  auto *editor = new QCheckBox(parent);
   if (readOnly) editor->setDisabled(true);
 
   connect(editor, &QCheckBox::toggled, this, &CheckBoxDelegate::commitAndCloseEditor);
@@ -25,10 +22,7 @@ void CheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
   if (auto *cb = qobject_cast<QCheckBox *>(editor)) model->setData(index, cb->isChecked(), Qt::EditRole);
 }
 
-void CheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
-                                            const QModelIndex &) const {
-  editor->setGeometry(option.rect);
-}
+void CheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const { editor->setGeometry(option.rect); }
 
 QString CheckBoxDelegate::displayText(const QVariant &, const QLocale &) const { return QString(); }
 

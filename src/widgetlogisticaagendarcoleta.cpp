@@ -19,8 +19,7 @@
 #include "venda.h"
 #include "widgetlogisticaagendarcoleta.h"
 
-WidgetLogisticaAgendarColeta::WidgetLogisticaAgendarColeta(QWidget *parent)
-    : QWidget(parent), ui(new Ui::WidgetLogisticaAgendarColeta) {
+WidgetLogisticaAgendarColeta::WidgetLogisticaAgendarColeta(QWidget *parent) : QWidget(parent), ui(new Ui::WidgetLogisticaAgendarColeta) {
   ui->setupUi(this);
 
   ui->frameCaminhao->hide();
@@ -164,8 +163,7 @@ bool WidgetLogisticaAgendarColeta::updateTables() {
 
     ui->itemBoxVeiculo->setSearchDialog(SearchDialog::veiculo(this));
 
-    connect(ui->tableEstoque->selectionModel(), &QItemSelectionModel::selectionChanged, this,
-            &WidgetLogisticaAgendarColeta::calcularPeso);
+    connect(ui->tableEstoque->selectionModel(), &QItemSelectionModel::selectionChanged, this, &WidgetLogisticaAgendarColeta::calcularPeso);
   }
 
   if (not modelEstoque.select()) {
@@ -190,8 +188,7 @@ void WidgetLogisticaAgendarColeta::tableFornLogistica_activated(const QString &f
 
   ui->lineEditBusca->clear();
 
-  modelEstoque.setFilter("fornecedor = '" + fornecedor + "' AND idVenda IS " +
-                         QString(ui->checkBoxEstoque->isChecked() ? "NULL" : "NOT NULL"));
+  modelEstoque.setFilter("fornecedor = '" + fornecedor + "' AND idVenda IS " + QString(ui->checkBoxEstoque->isChecked() ? "NULL" : "NOT NULL"));
 
   if (not modelEstoque.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela estoque: " + modelEstoque.lastError().text());
@@ -223,7 +220,7 @@ void WidgetLogisticaAgendarColeta::on_pushButtonMontarCarga_clicked() {
   QSqlQuery("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE").exec();
   QSqlQuery("START TRANSACTION").exec();
 
-  if (not processRows(list, ui->dateTimeEdit->dateTime(), true)) {
+  if (not processRows(list, ui->dateTimeEdit->date(), true)) {
     QSqlQuery("ROLLBACK").exec();
     if (not error.isEmpty()) QMessageBox::critical(this, "Erro!", error);
     return;
@@ -246,6 +243,7 @@ void WidgetLogisticaAgendarColeta::on_pushButtonAgendarColeta_clicked() {
   }
 
   InputDialog input(InputDialog::AgendarColeta, this);
+  // TODO: colocar qual a linha/id esta sendo trabalhada para o usuario nao se perder ao trocar de janela e voltar
 
   if (input.exec() != InputDialog::Accepted) return;
 
@@ -264,8 +262,7 @@ void WidgetLogisticaAgendarColeta::on_pushButtonAgendarColeta_clicked() {
   QMessageBox::information(this, "Aviso!", "Agendado com sucesso!");
 }
 
-bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, const QDateTime &dataPrevColeta,
-                                               const bool montarCarga) {
+bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, const QDate &dataPrevColeta, const bool montarCarga) {
   for (auto const &item : list) {
     int idEstoque;
     QString codComercial;
@@ -317,12 +314,10 @@ bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, cons
       return false;
     }
 
-    query.prepare(
-        "UPDATE venda_has_produto SET dataPrevColeta = :dataPrevColeta WHERE idCompra IN (SELECT idCompra FROM "
-        "estoque_has_compra WHERE idEstoque = :idEstoque) AND codComercial = :codComercial");
+    query.prepare("UPDATE venda_has_produto SET dataPrevColeta = :dataPrevColeta WHERE idVendaProduto IN (SELECT "
+                  "idVendaProduto FROM estoque_has_consumo WHERE idEstoque = :idEstoque)");
     query.bindValue(":dataPrevColeta", dataPrevColeta);
     query.bindValue(":idEstoque", idEstoque);
-    query.bindValue(":codComercial", codComercial);
 
     if (not query.exec()) {
       error = "Erro salvando status na venda_produto: " + query.lastError().text();
@@ -338,9 +333,7 @@ bool WidgetLogisticaAgendarColeta::processRows(const QModelIndexList &list, cons
   return true;
 }
 
-void WidgetLogisticaAgendarColeta::on_tableEstoque_entered(const QModelIndex &) {
-  ui->tableEstoque->resizeColumnsToContents();
-}
+void WidgetLogisticaAgendarColeta::on_tableEstoque_entered(const QModelIndex &) { ui->tableEstoque->resizeColumnsToContents(); }
 
 void WidgetLogisticaAgendarColeta::on_itemBoxVeiculo_textChanged(const QString &) {
   QSqlQuery query;
@@ -352,9 +345,7 @@ void WidgetLogisticaAgendarColeta::on_itemBoxVeiculo_textChanged(const QString &
     return;
   }
 
-  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
-                         " AND status != 'FINALIZADO' AND DATE(data) = '" +
-                         ui->dateTimeEdit->date().toString("yyyy-MM-dd") + "'");
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() + " AND status != 'FINALIZADO' AND DATE(data) = '" + ui->dateTimeEdit->date().toString("yyyy-MM-dd") + "'");
 
   if (not modelTransp2.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
@@ -434,6 +425,12 @@ void WidgetLogisticaAgendarColeta::on_pushButtonRemoverProduto_clicked() {
 }
 
 void WidgetLogisticaAgendarColeta::on_pushButtonCancelarCarga_clicked() {
+  QMessageBox msgBox(QMessageBox::Question, "Cancelar?", "Tem certeza que deseja cancelar?", QMessageBox::Yes | QMessageBox::No, this);
+  msgBox.setButtonText(QMessageBox::Yes, "Cancelar");
+  msgBox.setButtonText(QMessageBox::No, "Voltar");
+
+  if (msgBox.exec() == QMessageBox::No) return;
+
   ui->frameCaminhao->hide();
   ui->pushButtonAgendarColeta->show();
   ui->pushButtonCancelarCarga->hide();
@@ -453,18 +450,15 @@ void WidgetLogisticaAgendarColeta::on_pushButtonDanfe_clicked() {
 }
 
 void WidgetLogisticaAgendarColeta::on_lineEditBusca_textChanged(const QString &text) {
-  modelEstoque.setFilter("(numeroNFe LIKE '%" + text + "%' OR produto LIKE '%" + text + "%' OR idVenda LIKE '%" + text +
-                         "%' OR ordemCompra LIKE '%" + text + "%')");
+  modelEstoque.setFilter("(numeroNFe LIKE '%" + text + "%' OR produto LIKE '%" + text + "%' OR idVenda LIKE '%" + text + "%' OR ordemCompra LIKE '%" + text + "%')");
 
-  if (not modelEstoque.select())
-    QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelEstoque.lastError().text());
+  if (not modelEstoque.select()) QMessageBox::critical(this, "Erro!", "Erro lendo tabela: " + modelEstoque.lastError().text());
 }
 
 void WidgetLogisticaAgendarColeta::on_dateTimeEdit_dateChanged(const QDate &date) {
   if (ui->itemBoxVeiculo->text().isEmpty()) return;
 
-  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() +
-                         " AND status != 'FINALIZADO' AND DATE(data) = '" + date.toString("yyyy-MM-dd") + "'");
+  modelTransp2.setFilter("idVeiculo = " + ui->itemBoxVeiculo->getValue().toString() + " AND status != 'FINALIZADO' AND DATE(data) = '" + date.toString("yyyy-MM-dd") + "'");
 
   if (not modelTransp2.select()) {
     QMessageBox::critical(this, "Erro!", "Erro lendo tabela veiculo: " + modelTransp2.lastError().text());
@@ -498,7 +492,7 @@ void WidgetLogisticaAgendarColeta::on_pushButtonVenda_clicked() {
     if (ids.isEmpty()) return;
 
     for (auto const &id : ids) {
-      Venda *venda = new Venda(this);
+      auto *venda = new Venda(this);
       venda->setAttribute(Qt::WA_DeleteOnClose);
       venda->viewRegisterById(id);
     }
@@ -506,3 +500,5 @@ void WidgetLogisticaAgendarColeta::on_pushButtonVenda_clicked() {
 }
 
 // TODO: 1poder marcar nota de entrada como cancelada (talvez direto na tela de nfe's e retirar dos fluxos os estoques?)
+// TODO: importar nota de amostra nesta tela dizendo para qual loja ela vai e no final do fluxo gerar nota de
+// tranferencia

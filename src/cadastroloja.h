@@ -2,6 +2,7 @@
 #define CADASTROLOJA_H
 
 #include "registeraddressdialog.h"
+#include "searchdialog.h"
 
 namespace Ui {
 class CadastroLoja;
@@ -49,6 +50,7 @@ private:
   QDataWidgetMapper mapperConta;
   QDataWidgetMapper mapperPagamento;
   QString error;
+  SearchDialog *sdLoja;
   SqlTableModel modelAssocia1;
   SqlTableModel modelAssocia2;
   SqlTableModel modelConta;

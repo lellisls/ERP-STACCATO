@@ -37,7 +37,7 @@ LRVariableDialog::LRVariableDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LRVariableDialog),
     m_variableName(""),
-    m_variablesContainer(0),
+    m_variablesContainer(nullptr),
     m_changeMode(false),
     m_oldVariableName("")
 {

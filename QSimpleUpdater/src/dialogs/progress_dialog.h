@@ -32,7 +32,7 @@ signals:
   void cancelClicked();
 
 private slots:
-  void cancel(void);
+  void cancel();
 
 private:
   Ui::ProgressDialog *ui;

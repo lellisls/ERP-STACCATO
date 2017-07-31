@@ -13,7 +13,7 @@ ACBr::ACBr(QObject *parent) : QObject(parent) {}
 
 bool ACBr::gerarDanfe(const int idNFe) {
   if (idNFe == 0) {
-    QMessageBox::critical(0, "Erro!", "Produto não possui nota!");
+    QMessageBox::critical(nullptr, "Erro!", "Produto não possui nota!");
     return false;
   }
 
@@ -22,32 +22,45 @@ bool ACBr::gerarDanfe(const int idNFe) {
   query.bindValue(":idNFe", idNFe);
 
   if (not query.exec() or not query.first()) {
-    QMessageBox::critical(0, "Erro!", "Erro buscando chaveAcesso: " + query.lastError().text());
+    QMessageBox::critical(nullptr, "Erro!", "Erro buscando chaveAcesso: " + query.lastError().text());
     return false;
   }
 
   QString resposta;
 
-  if (not enviarComando("NFE.SaveToFile(xml.xml,\"" + query.value("xml").toString() + "\"", resposta)) return false;
-  if (not enviarComando("NFE.ImprimirDANFEPDF(xml.xml)", resposta)) return false;
-  if (not abrirPdf(resposta)) return false;
-
-  return true;
-}
-
-bool ACBr::gerarDanfe(const QByteArray &fileContent, QString &resposta, const bool openFile) {
-  if (not enviarComando("NFE.SaveToFile(xml.xml,\"" + fileContent + "\"", resposta)) return false;
+  if (not enviarComando(R"(NFE.SaveToFile(xml.xml,")" + query.value("xml").toString() + R"(")", resposta)) return false;
 
   if (not resposta.contains("OK")) {
-    QMessageBox::critical(0, "Erro!", "Erro salvando XML: " + resposta);
+    QMessageBox::critical(nullptr, "Erro!", "Erro salvando XML: " + resposta);
     return false;
   }
 
   if (not enviarComando("NFE.ImprimirDANFEPDF(xml.xml)", resposta)) return false;
 
   if (not resposta.contains("Arquivo criado em:")) {
-    QMessageBox::critical(0, "Erro!", resposta);
-    QMessageBox::critical(0, "Erro!", "Verifique se o arquivo não está aberto!");
+    QMessageBox::critical(nullptr, "Erro!", resposta);
+    QMessageBox::critical(nullptr, "Erro!", "Verifique se o arquivo não está aberto!");
+    return false;
+  }
+
+  resposta = resposta.remove("OK: Arquivo criado em: ");
+
+  return abrirPdf(resposta);
+}
+
+bool ACBr::gerarDanfe(const QByteArray &fileContent, QString &resposta, const bool openFile) {
+  if (not enviarComando(R"(NFE.SaveToFile(xml.xml,")" + fileContent + R"(")", resposta)) return false;
+
+  if (not resposta.contains("OK")) {
+    QMessageBox::critical(nullptr, "Erro!", "Erro salvando XML: " + resposta);
+    return false;
+  }
+
+  if (not enviarComando("NFE.ImprimirDANFEPDF(xml.xml)", resposta)) return false;
+
+  if (not resposta.contains("Arquivo criado em:")) {
+    QMessageBox::critical(nullptr, "Erro!", resposta);
+    QMessageBox::critical(nullptr, "Erro!", "Verifique se o arquivo não está aberto!");
     return false;
   }
 
@@ -55,12 +68,14 @@ bool ACBr::gerarDanfe(const QByteArray &fileContent, QString &resposta, const bo
 
   if (openFile) abrirPdf(resposta);
 
+  // TODO: 1copiar arquivo para pasta predefinida e renomear arquivo para formato 'DANFE_xxx.xxx_idpedido'
+
   return true;
 }
 
 bool ACBr::abrirPdf(QString &resposta) {
   if (not QDesktopServices::openUrl(QUrl::fromLocalFile(resposta))) {
-    QMessageBox::critical(0, "Erro!", "Erro abrindo PDF!");
+    QMessageBox::critical(nullptr, "Erro!", "Erro abrindo PDF!");
     return false;
   }
 
@@ -77,9 +92,9 @@ bool ACBr::enviarComando(const QString &comando, QString &resposta) {
     return false;
   }
 
-  QProgressDialog *progressDialog = new QProgressDialog(0);
+  QProgressDialog *progressDialog = new QProgressDialog(nullptr);
   progressDialog->reset();
-  progressDialog->setCancelButton(0);
+  progressDialog->setCancelButton(nullptr);
   progressDialog->setLabelText("Esperando ACBr...");
   progressDialog->setWindowTitle("ERP Staccato");
   progressDialog->setWindowModality(Qt::WindowModal);
